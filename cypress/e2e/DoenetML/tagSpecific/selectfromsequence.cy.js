@@ -3594,10 +3594,10 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectFromSequence assignNames="n1" from="10" to="20" step="0.000001" /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n2" from="10" to="20" step="0.000001" displayDigits="3" /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n3" from="10" to="20" step="0.000001" displayDecimals="3" /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n4" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n1" from="10" to="20" step="0.000001" displayDigits="10" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n2" from="10" to="20" step="0.000001" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n3" from="10" to="20" step="0.000001" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n4" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

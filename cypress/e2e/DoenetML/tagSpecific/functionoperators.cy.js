@@ -22,7 +22,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="true">x^3</function>
+    <function name="original" symbolic="true" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -98,7 +98,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 21; i++) {
@@ -203,7 +203,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false">x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -279,7 +279,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 21; i++) {
@@ -384,7 +384,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original">x^3<label>orig</label></function>
+    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3<label>orig</label></function>
     <clampfunction name="clamp01"><copy target="original" /><label>clamp 1</label></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /><label>clamp 2</label></clampfunction>
 
@@ -445,7 +445,7 @@ describe("Function Operator Tag Tests", function () {
 
       let clamp01 = (x) => Math.min(1, Math.max(0, x));
       let clampn35 = (x) => Math.min(5, Math.max(-3, x));
-      let indToVal = (ind) => me.math.round((ind - 3) ** 3, 8);
+      let indToVal = (ind) => me.math.round((ind - 3) ** 3, 3);
 
       cy.log("Check values in DOM");
       for (let i = 1; i <= 5; i++) {
@@ -522,7 +522,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original">x^3</function>
+    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -596,9 +596,9 @@ describe("Function Operator Tag Tests", function () {
         cesc2("#" + x.componentName),
       );
 
-      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 8);
-      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 3);
+      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 3);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
 
@@ -704,7 +704,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false">x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -778,9 +778,9 @@ describe("Function Operator Tag Tests", function () {
         cesc2("#" + x.componentName),
       );
 
-      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 8);
-      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
-      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 8);
+      let wrap01 = (x) => me.math.round(me.math.mod(x, 1), 3);
+      let wrapn23 = (x) => me.math.round(-2 + me.math.mod(x + 2, 5), 3);
+      let indToVal = (ind) => me.math.round((0.2 * (ind - 11)) ** 3, 3);
 
       cy.log("Check values in DOM");
 
@@ -896,7 +896,7 @@ describe("Function Operator Tag Tests", function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variables="$x">$formula</function>
+    <function name="f" variable="$x">$formula</function>
     </m></p>
 
     <p><m>f'($x) =
@@ -1112,7 +1112,7 @@ describe("Function Operator Tag Tests", function () {
       <function name="f1">sin(x)</function>
       <function name="f2" variables="y">e^(2y)</function>
       <function name="f3">xyz</function>
-      <function name="f4" variables="z">xyz</function>
+      <function name="f4" variable="z">xyz</function>
       <derivative name="d1"><function>x^2</function></derivative>
       <derivative name="d2"><math name="x2">x^2</math></derivative>
       <derivative name="d2b">$x2</derivative>
@@ -1120,7 +1120,7 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d3"><function>x^2sin(z)</function></derivative>
       <derivative name="d4" variables="z">x^2sin(z)</derivative>
       <math name='var'>z</math><number name="a">2</number>
-      <derivative name="d4b" variables="$var">x^$a sin($var)</derivative>
+      <derivative name="d4b" variable="$var">x^$a sin($var)</derivative>
       <derivative name="d5"><copy target="f1" /></derivative>
       <derivative name="d5b">$f1</derivative>
       <derivative name="d6"><copy target="f2" /></derivative>
@@ -1130,11 +1130,11 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d8"><copy target="f4" /></derivative>
       <derivative name="d8b">$f4</derivative>
       <derivative variables="q" name="d9"><copy target="f1" /></derivative>
-      <derivative variables="q" name="d10"><copy target="f2" /></derivative>
+      <derivative variable="q" name="d10"><copy target="f2" /></derivative>
       <derivative variables="q" name="d11"><copy target="f3" /></derivative>
-      <derivative variables="q" name="d12"><copy target="f4" /></derivative>
+      <derivative variable="q" name="d12"><copy target="f4" /></derivative>
       <derivative variables="y" name="d13"><copy target="f3" /></derivative>
-      <derivative variables="y" name="d14"><copy target="f4" /></derivative>
+      <derivative variable="y" name="d14"><copy target="f4" /></derivative>
       `,
         },
         "*",
@@ -1313,7 +1313,7 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <function name="f1">sin(x)</function>
-      <function name="f2" variables="y">e^(2y)</function>
+      <function name="f2" variable="y">e^(2y)</function>
       <function name="f3">xyz</function>
       <function name="f4" variables="z">xyz</function>
       <derivative name="d1"><function>x^2</function><label>d1</label></derivative>
@@ -1321,7 +1321,7 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d2b">$x2<label>d2b</label></derivative>
       <derivative name="d2c"><label>d2c</label><copy target="x2" /></derivative>
       <derivative name="d3"><function>x^2sin(z)</function><label>d3</label></derivative>
-      <derivative name="d4" variables="z"><label>d4</label>x^2sin(z)</derivative>
+      <derivative name="d4" variable="z"><label>d4</label>x^2sin(z)</derivative>
       <math name='var'>z</math><number name="a">2</number>
       <derivative name="d4b" variables="$var">x^$a sin($var)<label>d4b</label></derivative>
       <derivative name="d5"><label>d5</label><copy target="f1" /></derivative>
@@ -1332,11 +1332,11 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d7b"><label>d7b</label>$f3</derivative>
       <derivative name="d8"><label>d8</label><copy target="f4" /></derivative>
       <derivative name="d8b">$f4<label>d8b</label></derivative>
-      <derivative variables="q" name="d9"><label>d9</label><copy target="f1" /></derivative>
+      <derivative variable="q" name="d9"><label>d9</label><copy target="f1" /></derivative>
       <derivative variables="q" name="d10"><copy target="f2" /><label>d10</label></derivative>
-      <derivative variables="q" name="d11"><label>d11</label><copy target="f3" /></derivative>
+      <derivative variable="q" name="d11"><label>d11</label><copy target="f3" /></derivative>
       <derivative variables="q" name="d12"><copy target="f4" /><label>d12</label></derivative>
-      <derivative variables="y" name="d13"><label>d13</label><copy target="f3" /></derivative>
+      <derivative variable="y" name="d13"><label>d13</label><copy target="f3" /></derivative>
       <derivative variables="y" name="d14"><copy target="f4" /><label>d14</label></derivative>
       `,
         },
@@ -1547,19 +1547,19 @@ describe("Function Operator Tag Tests", function () {
 
       <p><aslist>
       <derivative name="d11">$f1</derivative>
-      <derivative name="d12" variables="z">$f1</derivative>
+      <derivative name="d12" variable="z">$f1</derivative>
       <derivative name="d13" derivVariables="x">$f1</derivative>
-      <derivative name="d14" derivVariables="z">$f1</derivative>
+      <derivative name="d14" derivVariable="z">$f1</derivative>
       <derivative name="d15" derivVariables="y z">$f1</derivative>
       <derivative name="d16" derivVariables="x x y">$f1</derivative>
-      <derivative name="d17" derivVariables="u">$f1</derivative>
+      <derivative name="d17" derivVariable="u">$f1</derivative>
       <derivative name="d18" derivVariables="x x y" variables="z">$f1</derivative>
       </aslist></p>
 
       <p><aslist>
       <derivative name="d21">$f2</derivative>
       <derivative name="d22" variables="x">$f2</derivative>
-      <derivative name="d23" derivVariables="x">$f2</derivative>
+      <derivative name="d23" derivVariable="x">$f2</derivative>
       <derivative name="d24" derivVariables="z">$f2</derivative>
       <derivative name="d25" derivVariables="y z">$f2</derivative>
       <derivative name="d26" derivVariables="x x y">$f2</derivative>
@@ -1571,17 +1571,17 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d31">$f3</derivative>
       <derivative name="d32" variables="z">$f3</derivative>
       <derivative name="d33" derivVariables="x">$f3</derivative>
-      <derivative name="d34" derivVariables="z">$f3</derivative>
+      <derivative name="d34" derivVariable="z">$f3</derivative>
       <derivative name="d35" derivVariables="y z">$f3</derivative>
       <derivative name="d36" derivVariables="x x y">$f3</derivative>
-      <derivative name="d37" derivVariables="u">$f3</derivative>
+      <derivative name="d37" derivVariable="u">$f3</derivative>
       <derivative name="d38" derivVariables="x x y" variables="z">$f3</derivative>
       </aslist></p>
 
       <p><aslist>
       <derivative name="d41">$f4</derivative>
       <derivative name="d42" derivVariables="x_1 x_2 x_3">$f4</derivative>
-      <derivative name="d43" derivVariables="x">$f4</derivative>
+      <derivative name="d43" derivVariable="x">$f4</derivative>
       <derivative name="d44" derivVariables="x_1 x_2 x_3" variables="x_3 x_2 x_1">$f4</derivative>
       </aslist></p>
 
@@ -1938,30 +1938,30 @@ describe("Function Operator Tag Tests", function () {
       <math name="m1">sin(x+y^2)z</math>
       <math name="m2">sin(x_1+x_2^2)x_3</math>
       <derivative name="d1">$m1</derivative>
-      <derivative name="d2" variables="x">$m1</derivative>
+      <derivative name="d2" variable="x">$m1</derivative>
       <derivative name="d3" variables="x y z">$m1</derivative>
       <derivative name="d4" variables="z y x">$m1</derivative>
       <derivative name="d5" derivVariables="x">$m1</derivative>
-      <derivative name="d5a" derivVariables="x" variables="x y z">$m1</derivative>
+      <derivative name="d5a" derivVariable="x" variables="x y z">$m1</derivative>
       <derivative name="d6" derivVariables="x x">$m1</derivative>
-      <derivative name="d6a" derivVariables="x"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d6a" derivVariable="x"><derivative derivVariable="x">$m1</derivative></derivative>
       <derivative name="d6b" derivVariables="x" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative>
-      <derivative name="d6c" derivVariables="x"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative>
+      <derivative name="d6c" derivVariables="x"><derivative derivVariable="x" variables="x y z">$m1</derivative></derivative>
       <derivative name="d6d" derivVariables="x x" variables="x y z">$m1</derivative>
       <derivative name="d7" derivVariables="x y">$m1</derivative>
-      <derivative name="d7a" derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative>
-      <derivative name="d7b" derivVariables="y" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative>
-      <derivative name="d7c" derivVariables="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative>
+      <derivative name="d7a" derivVariable="y"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d7b" derivVariables="y" variables="x y z"><derivative derivVariable="x">$m1</derivative></derivative>
+      <derivative name="d7c" derivVariable="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative>
       <derivative name="d8" derivVariables="x y z">$m1</derivative>
-      <derivative name="d8a" derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative>
-      <derivative name="d8b" derivVariables="z" variables="x y z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative>
-      <derivative name="d8c" derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative></derivative>
+      <derivative name="d8a" derivVariables="z"><derivative derivVariable="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative>
+      <derivative name="d8b" derivVariable="z" variables="x y z"><derivative derivVariables="y"><derivative derivVariable="x">$m1</derivative></derivative></derivative>
+      <derivative name="d8c" derivVariables="z"><derivative derivVariable="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative></derivative>
       <derivative name="d9" derivVariables="x y z x">$m1</derivative>
       <derivative name="d9a" derivVariables="x"><derivative derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
-      <derivative name="d9b" derivVariables="x"><derivative derivVariables="z" variables="x y z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
-      <derivative name="d9c" derivVariables="x"><derivative derivVariables="z"><derivative derivVariables="y" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
+      <derivative name="d9b" derivVariable="x"><derivative derivVariable="z" variables="x y z"><derivative derivVariable="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
+      <derivative name="d9c" derivVariable="x"><derivative derivVariables="z"><derivative derivVariables="y" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
       <derivative name="d10" derivVariables="q">$m1</derivative>
-      <derivative name="d11" derivVariables="y" variables="x y z">$m1</derivative>
+      <derivative name="d11" derivVariable="y" variables="x y z">$m1</derivative>
       <derivative name="d12" derivVariables="y" variables="x z">$m1</derivative>
 
 
@@ -2385,15 +2385,15 @@ describe("Function Operator Tag Tests", function () {
       
       <derivative derivvariables="z" name="df1" >$f1</derivative>
       <derivative name="df2">$f2</derivative>
-      <function variables="x" name="df2a">$df2.formula</function>
+      <function variable="x" name="df2a">$df2.formula</function>
       <derivative derivvariables="z y" name="df3zy">$f3</derivative>
-      <derivative derivvariables="y" name="df3y">$f3</derivative>
+      <derivative derivvariable="y" name="df3y">$f3</derivative>
       <derivative derivvariables="z" name="df3zya">$df3y</derivative>
       <derivative derivvariables="z y" name="df4zy">$f4</derivative>
       <derivative name="df4z">$f4</derivative>
-      <derivative derivvariables="y" name="df4yz">$df4z</derivative>
+      <derivative derivvariable="y" name="df4yz">$df4z</derivative>
       <function variables="x" name="df4zya">$df4zy.formula</function>
-      <function variables="x" name="df4yza">$df4yz.formula</function>
+      <function variable="x" name="df4yza">$df4yz.formula</function>
       
       <graph>
         $df2a
@@ -2920,16 +2920,16 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <function name="f" variables="x" maxima="(5,-3)" minima="(-5,3)" />
-      <function name="g" styleNumber="2" variables="y" minima="(3,-9)" maxima="(-3,9)" />
+      <function name="g" styleNumber="2" variable="y" minima="(3,-9)" maxima="(-3,9)" />
     
       <derivative name="df1">$f</derivative>
       <derivative name="dg1" styleNumber="2">$g</derivative>
     
       <derivative name="df1b" derivVariables="x">$f</derivative>
-      <derivative name="zero1" derivVariables="x" styleNumber="2">$g</derivative>
+      <derivative name="zero1" derivVariable="x" styleNumber="2">$g</derivative>
     
       <derivative name="zero2" derivVariables="y">$f</derivative>
-      <derivative name="dg1b" derivVariables="y" styleNumber="2">$g</derivative>
+      <derivative name="dg1b" derivVariable="y" styleNumber="2">$g</derivative>
     
       <derivative name="df2" derivVariables="x x">$f</derivative>
       <derivative name="dg2" derivVariables="y y" styleNumber="2">$g</derivative>
@@ -3071,32 +3071,32 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <function name="f" variables="x" maxima="(5,-3)" minima="(-5,3)" />
-      <function name="g" styleNumber="2" variables="y" >$f</function>
+      <function name="g" styleNumber="2" variable="y" >$f</function>
       <function name="h" styleNumber="3" variables="z" >$g</function>
     
       <derivative name="df1">$f</derivative>
       <derivative name="dg1" styleNumber="2">$g</derivative>
       <derivative name="dh1" styleNumber="3">$h</derivative>
     
-      <derivative name="df1b" derivVariables="x">$f</derivative>
+      <derivative name="df1b" derivVariable="x">$f</derivative>
       <derivative name="zero1" derivVariables="x" styleNumber="2">$g</derivative>
-      <derivative name="zero2" derivVariables="x" styleNumber="3">$h</derivative>
+      <derivative name="zero2" derivVariable="x" styleNumber="3">$h</derivative>
     
       <derivative name="zero3" derivVariables="y">$f</derivative>
-      <derivative name="dg1b" derivVariables="y" styleNumber="2">$g</derivative>
+      <derivative name="dg1b" derivVariable="y" styleNumber="2">$g</derivative>
       <derivative name="zero4" derivVariables="y" styleNumber="3">$h</derivative>
     
-      <derivative name="zero5" derivVariables="z">$f</derivative>
+      <derivative name="zero5" derivVariable="z">$f</derivative>
       <derivative name="zero6" derivVariables="z" styleNumber="2">$g</derivative>
-      <derivative name="dh1b" derivVariables="z" styleNumber="3">$h</derivative>
+      <derivative name="dh1b" derivVariable="z" styleNumber="3">$h</derivative>
 
       <derivative name="df2" derivVariables="x x">$f</derivative>
       <derivative name="dg2" derivVariables="y y" styleNumber="2">$g</derivative>
       <derivative name="dh2" derivVariables="z z" styleNumber="3">$h</derivative>
     
-      <derivative name="df2b" derivVariables="x"><derivative derivVariables="x">$f</derivative></derivative>
+      <derivative name="df2b" derivVariable="x"><derivative derivVariable="x">$f</derivative></derivative>
       <derivative name="dg2b" derivVariables="y" styleNumber="2"><derivative derivVariables="y">$g</derivative></derivative>
-      <derivative name="dh2b" derivVariables="z" styleNumber="3"><derivative derivVariables="z">$h</derivative></derivative>
+      <derivative name="dh2b" derivVariables="z" styleNumber="3"><derivative derivVariable="z">$h</derivative></derivative>
 
       <derivative name="zero7" derivVariables="x y">$f</derivative>
       <derivative name="zero8" derivVariables="x y" styleNumber="2">$g</derivative>
@@ -3413,22 +3413,22 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <function name="f" variables="x_1" maxima="(5,-3)" minima="(-5,3)" />
+      <function name="f" variable="x_1" maxima="(5,-3)" minima="(-5,3)" />
       <function name="g" styleNumber="2" variables="x_2" >$f</function>
     
       <derivative name="df1">$f</derivative>
       <derivative name="dg1" styleNumber="2">$g</derivative>
     
-      <derivative name="df1b" derivVariables="x_1">$f</derivative>
+      <derivative name="df1b" derivVariable="x_1">$f</derivative>
       <derivative name="zero1" derivVariables="x_1" styleNumber="2">$g</derivative>
     
       <derivative name="zero2" derivVariables="x_2">$f</derivative>
-      <derivative name="dg1b" derivVariables="x_2" styleNumber="2">$g</derivative>
+      <derivative name="dg1b" derivVariable="x_2" styleNumber="2">$g</derivative>
     
       <derivative name="df2" derivVariables="x_1 x_1">$f</derivative>
       <derivative name="dg2" derivVariables="x_2 x_2" styleNumber="2">$g</derivative>
     
-      <derivative name="df2b" derivVariables="x_1"><derivative derivVariables="x_1">$f</derivative></derivative>
+      <derivative name="df2b" derivVariable="x_1"><derivative derivVariable="x_1">$f</derivative></derivative>
       <derivative name="dg2b" derivVariables="x_2" styleNumber="2"><derivative derivVariables="x_2">$g</derivative></derivative>
 
       <derivative name="zero3" derivVariables="x_1 x_2">$f</derivative>
@@ -3589,7 +3589,7 @@ describe("Function Operator Tag Tests", function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variables="$x">$formula</function>
+    <function name="f" variable="$x">$formula</function>
     </m></p>
 
     <p><m>f'($x) =

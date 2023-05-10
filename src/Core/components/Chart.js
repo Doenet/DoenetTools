@@ -1,3 +1,8 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import BlockComponent from "./abstract/BlockComponent";
 
 export default class Chart extends BlockComponent {
@@ -142,11 +147,18 @@ export default class Chart extends BlockComponent {
       validValues: ["left", "right"],
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.dataFrame = {
       forRenderer: true,
@@ -222,6 +234,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -323,6 +337,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -432,6 +448,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -537,6 +555,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -645,6 +665,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         xmin: {
@@ -669,6 +691,8 @@ export default class Chart extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         ymin: {

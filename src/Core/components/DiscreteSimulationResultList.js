@@ -1,4 +1,8 @@
 import { roundForDisplay, vectorOperators } from "../utils/math";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import BlockComponent from "./abstract/BlockComponent";
 
 export default class DiscreteSimulationResultList extends BlockComponent {
@@ -95,23 +99,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
       defaultValue: null,
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     return attributes;
   }
@@ -119,71 +107,10 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault =
-            dependencyValues.displayDigitsAttr === null ||
-            usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not used default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.cells = {
       forRenderer: true,
@@ -210,7 +137,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           variableName: "displaySmallAsZero",
         },
       }),
-      definition({ dependencyValues, usedDefault }) {
+      definition({ dependencyValues }) {
         let cells = [];
 
         let nComponents = 1;
@@ -247,7 +174,6 @@ export default class DiscreteSimulationResultList extends BlockComponent {
             let rounded = roundForDisplay({
               value: val,
               dependencyValues,
-              usedDefault,
             });
             // catch exceptions until math-expressions can handle
             // complex numbers

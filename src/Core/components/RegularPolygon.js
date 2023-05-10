@@ -1,3 +1,4 @@
+import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
 import Polygon from "./Polygon";
 import me from "math-expressions";
 
@@ -1123,6 +1124,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];
@@ -1405,6 +1408,8 @@ export default class RegularPolygon extends Polygon {
       entryPrefixes: ["centerX"],
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];
@@ -1487,6 +1492,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         center: {
@@ -1564,6 +1571,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         circumradius: {
@@ -1612,6 +1621,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         circumradius: {
@@ -1655,6 +1666,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         circumradius: {
@@ -1699,6 +1712,8 @@ export default class RegularPolygon extends Polygon {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         circumradius: {

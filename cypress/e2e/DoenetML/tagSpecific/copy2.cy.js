@@ -4396,7 +4396,7 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph size="small">
-      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" />
+      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" ignoreDisplayDecimals />
     </graph>
     
     <p name="p1">$l.points.coords</p>
@@ -5771,19 +5771,19 @@ describe("Copy Tag Tests", function () {
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n2" displayDigits="3" /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n2" displayDigits="10" /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
-    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="3" name="n4" /></p>
+    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="10" name="n4" /></p>
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n6" displayDigits="3" newNamespace /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n6" displayDigits="10" newNamespace /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
-    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="3" name="n8" newNamespace /></p>
+    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="10" name="n8" newNamespace /></p>
 
     `,
         },
@@ -5791,14 +5791,14 @@ describe("Copy Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n2")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_number1")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n4")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_p5")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/_copy4\\/n6")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_number3")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n8")).should("have.text", "8.85");
+    cy.get(cesc("#\\/_p1")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n2")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_number1")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n4")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_p5")).should("have.text", "8.85");
+    cy.get(cesc("#\\/_copy4\\/n6")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_number3")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n8")).should("have.text", "8.853729375");
   });
 
   it("correctly wrap replacement changes when verifying to force component type", () => {

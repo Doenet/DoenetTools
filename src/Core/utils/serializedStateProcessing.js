@@ -358,6 +358,7 @@ function substituteDeprecations(serializedComponents) {
     constraintogrid: ["ignoregraphbounds"],
     attracttogrid: ["ignoregraphbounds"],
     constraints: ["baseongraph"],
+    graph: ["xlabel", "ylabel"],
   };
 
   for (let component of serializedComponents) {

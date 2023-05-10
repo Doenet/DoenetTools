@@ -108,19 +108,19 @@ async function testLineCopiedTwiceBaseOnSlope({
 }) {
   cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `(${nInDOM(x1).substring(0, 6)}`,
+    `(${nInDOM(x1).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `,${nInDOM(y1).substring(0, 6)}`,
+    `,${nInDOM(y1).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `(${nInDOM(x2).substring(0, 6)}`,
+    `(${nInDOM(x2).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `,${nInDOM(y2).substring(0, 6)}`,
+    `,${nInDOM(y2).substring(0, 2)}`,
   );
 
   cy.window().then(async (win) => {
@@ -494,11 +494,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -588,11 +588,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -794,11 +794,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -893,11 +893,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -1056,11 +1056,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -8040,27 +8040,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -8691,27 +8691,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -9560,27 +9560,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -10226,35 +10226,35 @@ describe("Line Tag Tests", function () {
     }) {
       cy.get(cesc("#\\/x11") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x11).substring(0, 6)}`,
+        `${nInDOM(x11).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y11") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y11).substring(0, 6)}`,
+        `${nInDOM(y11).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x12") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x12).substring(0, 6)}`,
+        `${nInDOM(x12).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y12") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y12).substring(0, 6)}`,
+        `${nInDOM(y12).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -10841,27 +10841,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -11773,13 +11773,13 @@ describe("Line Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <line name="l" equation="0=52.82340235234x + 2.235980242343224y+0.486234234" />
-    <line name="ldg3" displayDigits="3" copySource="l" />
-    <line name="ldc5" displayDecimals="5" copySource="l" />
-    <line name="ldg3a" displayDigits="3" copySource="ldc5" />
-    <line name="ldc5a" displayDecimals="5" copySource="ldg3" />
-    <line name="ldg3b" displayDigits="3" copySource="ldc5a" />
-    <line name="ldc5b" displayDecimals="5" copySource="ldg3a" />
+    <line name="l" equation="0=528.2340235234x + 2.235980242343224y+0.0486234234" />
+    <line name="ldg4" displayDigits="4" copySource="l" />
+    <line name="ldc3" displayDecimals="3" copySource="l" />
+    <line name="ldc3dg4" displayDigits="4" copySource="ldc3" />
+    <line name="ldg4dc3" displayDecimals="3" copySource="ldg4" />
+    <line name="ldc3dg5" displayDigits="5" copySource="ldg4dc3" />
+    <line name="ldg4dc4" displayDecimals="4" copySource="ldc3dg4" />
 
     `,
         },
@@ -11791,25 +11791,25 @@ describe("Line Tag Tests", function () {
 
     cy.get(cesc("#\\/l") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.82340235x+2.235980242y+0.486234234");
-    cy.get(cesc("#\\/ldg3") + " .mjx-mrow")
+      .should("have.text", "0=528.23x+2.24y+0.0486");
+    cy.get(cesc("#\\/ldg4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldg3a") + " .mjx-mrow")
+      .should("have.text", "0=528.23x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldc3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldg3b") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.0486");
+    cy.get(cesc("#\\/ldc3dg4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldc5") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldg4dc3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
-    cy.get(cesc("#\\/ldc5a") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldc3dg5") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
-    cy.get(cesc("#\\/ldc5b") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.048623");
+    cy.get(cesc("#\\/ldg4dc4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
+      .should("have.text", "0=528.234x+2.236y+0.04862");
   });
 
   it("label positioning", () => {

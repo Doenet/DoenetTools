@@ -297,8 +297,8 @@ describe("Video Tag Tests", function () {
   <p>State: <copy prop="state" target="v" assignNames="state" /></p>
   <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
   <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
-  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
-  <p>Fraction watched:  <copy prop="fractionWatched" target="v" assignNames="fractionWatched" displayDecimals="2" /></p>
+  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" ignoreDisplayDigits /></p>
+  <p>Fraction watched:  <copy prop="fractionWatched" target="v" assignNames="fractionWatched" displayDecimals="2" ignoreDisplayDigits /></p>
 
   <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 
@@ -402,7 +402,7 @@ describe("Video Tag Tests", function () {
   <p>State: <copy prop="state" target="v" assignNames="state" /></p>
   <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
   <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
-  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
+  <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" ignoreDisplayDigits /></p>
 
   <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 

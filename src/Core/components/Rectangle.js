@@ -1,3 +1,4 @@
+import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
 import Polygon from "./Polygon";
 import me from "math-expressions";
 
@@ -341,6 +342,8 @@ export default class Rectangle extends Polygon {
       entryPrefixes: ["centerX"],
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];
@@ -439,9 +442,11 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
 
-      returnDependencies({}) {
+      returnDependencies() {
         return {
           vertex0: {
             dependencyType: "stateVariable",
@@ -495,9 +500,11 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
 
-      returnDependencies({}) {
+      returnDependencies() {
         return {
           vertex0: {
             dependencyType: "stateVariable",
@@ -552,6 +559,8 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];

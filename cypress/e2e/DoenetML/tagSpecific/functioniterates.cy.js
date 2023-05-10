@@ -306,7 +306,7 @@ describe("FunctionIterates Tag Tests", function () {
   Then</p>
   <ul>
   <map assignNames="(l1) (l2) (l3) (l4) (l5) (l6) (l7)">
-    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" /></m></li></template>
+    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" displayDigits="10" /></m></li></template>
     <sources indexAlias="i"><sequence length="$n" /></sources>
   </map>
   </ul>

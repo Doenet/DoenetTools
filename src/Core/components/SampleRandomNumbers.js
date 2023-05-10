@@ -1,5 +1,6 @@
 import { convertAttributesForComponentType } from "../utils/copy";
 import { sampleFromRandomNumbers } from "../utils/randomNumbers";
+import { returnRoundingAttributes } from "../utils/rounding";
 import { processAssignNames } from "../utils/serializedStateProcessing";
 import { setUpVariantSeedAndRng } from "../utils/variants";
 import CompositeComponent from "./abstract/CompositeComponent";
@@ -83,18 +84,11 @@ export default class SampleRandomNumbers extends CompositeComponent {
       defaultValue: 1,
     };
 
-    attributes.displayDigits = {
-      leaveRaw: true,
-    };
-    attributes.displayDecimals = {
-      leaveRaw: true,
-    };
-    attributes.displaySmallAsZero = {
-      leaveRaw: true,
-    };
-    attributes.padZeros = {
-      leaveRaw: true,
-    };
+    for (let attrName in returnRoundingAttributes()) {
+      attributes[attrName] = {
+        leaveRaw: true,
+      };
+    }
 
     attributes.variantDeterminesSeed = {
       createComponentOfType: "boolean",
@@ -484,12 +478,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of [
-      "displayDigits",
-      "displaySmallAsZero",
-      "displayDecimals",
-      "padZeros",
-    ]) {
+    for (let attr of Object.keys(returnRoundingAttributes())) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr];
       }

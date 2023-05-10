@@ -2879,12 +2879,40 @@ describe("MathList Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><mathlist displayDigits="3">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
-    <p><mathlist displayDigits="3" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
-    <p><mathlist displayDecimals="3">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
-    <p><mathlist displayDecimals="3" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
-    <p><mathlist displayDigits="3" displaySmallAsZero>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
-    <p><mathlist displayDigits="3" displaySmallAsZero padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDigits="4" ignoreDisplayDecimals>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDigits="4" ignoreDisplayDecimals padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDecimals="3" ignoreDisplayDigits>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDecimals="3" ignoreDisplayDigits padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDecimals="4" displaySmallAsZero="false">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+    <p><mathlist displayDecimals="4" displaySmallAsZero="false" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</mathList></p>
+
+    <p><mathlist name="ml1a" copySource="_mathlist1" /></p>
+    <p><mathlist name="ml2a" copySource="_mathlist2" /></p>
+    <p><mathlist name="ml3a" copySource="_mathlist3" /></p>
+    <p><mathlist name="ml4a" copySource="_mathlist4" /></p>
+    <p><mathlist name="ml5a" copySource="_mathlist5" /></p>
+    <p><mathlist name="ml6a" copySource="_mathlist6" /></p>
+
+    <p name="pms1"><copy source="_mathlist1.maths" assignNames="m1_1 m1_2 m1_3 m1_4 m1_5" /></p>
+    <p name="pms2"><copy source="_mathlist2.maths" assignNames="m2_1 m2_2 m2_3 m2_4 m2_5" /></p>
+    <p name="pms3"><copy source="_mathlist3.maths" assignNames="m3_1 m3_2 m3_3 m3_4 m3_5" /></p>
+    <p name="pms4"><copy source="_mathlist4.maths" assignNames="m4_1 m4_2 m4_3 m4_4 m4_5" /></p>
+    <p name="pms5"><copy source="_mathlist5.maths" assignNames="m5_1 m5_2 m5_3 m5_4 m5_5" /></p>
+    <p name="pms6"><copy source="_mathlist6.maths" assignNames="m6_1 m6_2 m6_3 m6_4 m6_5" /></p>
+
+    <p><mathlist name="ml1b" copySource="_mathlist1" link="false" /></p>
+    <p><mathlist name="ml2b" copySource="_mathlist2" link="false" /></p>
+    <p><mathlist name="ml3b" copySource="_mathlist3" link="false" /></p>
+    <p><mathlist name="ml4b" copySource="_mathlist4" link="false" /></p>
+    <p><mathlist name="ml5b" copySource="_mathlist5" link="false" /></p>
+    <p><mathlist name="ml6b" copySource="_mathlist6" link="false" /></p>
+
+    <p name="pms1a"><copy source="_mathlist1.maths" assignNames="m1_1a m1_2a m1_3a m1_4a m1_5a" link="false" /></p>
+    <p name="pms2a"><copy source="_mathlist2.maths" assignNames="m2_1a m2_2a m2_3a m2_4a m2_5a" link="false" /></p>
+    <p name="pms3a"><copy source="_mathlist3.maths" assignNames="m3_1a m3_2a m3_3a m3_4a m3_5a" link="false" /></p>
+    <p name="pms4a"><copy source="_mathlist4.maths" assignNames="m4_1a m4_2a m4_3a m4_4a m4_5a" link="false" /></p>
+    <p name="pms5a"><copy source="_mathlist5.maths" assignNames="m5_1a m5_2a m5_3a m5_4a m5_5a" link="false" /></p>
+    <p name="pms6a"><copy source="_mathlist6.maths" assignNames="m6_1a m6_2a m6_3a m6_4a m6_5a" link="false" /></p>
 
     `,
         },
@@ -2896,211 +2924,292 @@ describe("MathList Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 0; i < 5; i++) {
+        let maths1, maths2, maths3, maths4, maths5, maths6;
 
-      let maths1 = stateVariables["/_mathlist1"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths2 = stateVariables["/_mathlist2"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths3 = stateVariables["/_mathlist3"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths4 = stateVariables["/_mathlist4"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths5 = stateVariables["/_mathlist5"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let maths6 = stateVariables["/_mathlist6"].activeChildren.map(
-        (x) => x.componentName,
-      );
+        if (i === 0) {
+          maths1 = stateVariables["/_mathlist1"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/_mathlist2"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/_mathlist3"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/_mathlist4"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/_mathlist5"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/_mathlist6"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 1) {
+          maths1 = stateVariables["/ml1a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/ml2a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/ml3a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/ml4a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/ml5a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/ml6a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 2) {
+          maths1 = stateVariables["/pms1"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/pms2"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/pms3"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/pms4"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/pms5"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/pms6"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else if (i === 3) {
+          maths1 = stateVariables["/ml1b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/ml2b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/ml3b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/ml4b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/ml5b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/ml6b"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        } else {
+          maths1 = stateVariables["/pms1a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths2 = stateVariables["/pms2a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths3 = stateVariables["/pms3a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths4 = stateVariables["/pms4a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths5 = stateVariables["/pms5a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+          maths6 = stateVariables["/pms6a"].activeChildren.map(
+            (x) => x.componentName,
+          );
+        }
 
-      cy.get(cesc2("#" + maths1[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2350");
-        });
-      cy.get(cesc2("#" + maths1[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.52");
-        });
-      cy.get(cesc2("#" + maths1[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths1[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths1[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("6⋅10−21");
-        });
+        cy.get(cesc2("#" + maths1[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345");
+          });
+        cy.get(cesc2("#" + maths1[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths1[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths1[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.252⋅10−13");
+          });
+        cy.get(cesc2("#" + maths1[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
 
-      cy.get(cesc2("#" + maths2[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2350");
-        });
-      cy.get(cesc2("#" + maths2[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.52");
-        });
-      cy.get(cesc2("#" + maths2[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.500");
-        });
-      cy.get(cesc2("#" + maths2[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths2[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("6.00⋅10−21");
-        });
+        cy.get(cesc2("#" + maths2[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345");
+          });
+        cy.get(cesc2("#" + maths2[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths2[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5000");
+          });
+        cy.get(cesc2("#" + maths2[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.252⋅10−13");
+          });
+        cy.get(cesc2("#" + maths2[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
 
-      cy.get(cesc2("#" + maths3[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.154");
-        });
-      cy.get(cesc2("#" + maths3[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths3[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths3[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
-      cy.get(cesc2("#" + maths3[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
+        cy.get(cesc2("#" + maths3[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.154");
+          });
+        cy.get(cesc2("#" + maths3[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths3[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths3[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
+        cy.get(cesc2("#" + maths3[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0");
+          });
 
-      cy.get(cesc2("#" + maths4[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2345.154");
-        });
-      cy.get(cesc2("#" + maths4[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.523");
-        });
-      cy.get(cesc2("#" + maths4[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.500");
-        });
-      cy.get(cesc2("#" + maths4[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.000");
-        });
-      cy.get(cesc2("#" + maths4[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.000");
-        });
+        cy.get(cesc2("#" + maths4[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.154");
+          });
+        cy.get(cesc2("#" + maths4[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.523");
+          });
+        cy.get(cesc2("#" + maths4[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.500");
+          });
+        cy.get(cesc2("#" + maths4[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
+        cy.get(cesc2("#" + maths4[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.000");
+          });
 
-      cy.get(cesc2("#" + maths5[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2350");
-        });
-      cy.get(cesc2("#" + maths5[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.52");
-        });
-      cy.get(cesc2("#" + maths5[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.5");
-        });
-      cy.get(cesc2("#" + maths5[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths5[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0");
-        });
+        cy.get(cesc2("#" + maths5[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.1535");
+          });
+        cy.get(cesc2("#" + maths5[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.5234");
+          });
+        cy.get(cesc2("#" + maths5[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5");
+          });
+        cy.get(cesc2("#" + maths5[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.25⋅10−13");
+          });
+        cy.get(cesc2("#" + maths5[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("6⋅10−21");
+          });
 
-      cy.get(cesc2("#" + maths6[0]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("2350");
-        });
-      cy.get(cesc2("#" + maths6[1]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("3.52");
-        });
-      cy.get(cesc2("#" + maths6[2]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.500");
-        });
-      cy.get(cesc2("#" + maths6[3]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("5.25⋅10−13");
-        });
-      cy.get(cesc2("#" + maths6[4]) + " .mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text).eq("0.00");
-        });
+        cy.get(cesc2("#" + maths6[0]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("2345.1535");
+          });
+        cy.get(cesc2("#" + maths6[1]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("3.5234");
+          });
+        cy.get(cesc2("#" + maths6[2]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("0.5000");
+          });
+        cy.get(cesc2("#" + maths6[3]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("5.25⋅10−13");
+          });
+        cy.get(cesc2("#" + maths6[4]) + " .mjx-mrow")
+          .eq(0)
+          .invoke("text")
+          .then((text) => {
+            expect(text).eq("6.00⋅10−21");
+          });
+      }
     });
   });
 
@@ -3111,67 +3220,67 @@ describe("MathList Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><mathlist name="ml1">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml2" displayDigits="3">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml2" displayDigits="4">
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml3" displayDigits="3" padZeros>
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml3" displayDigits="4" padZeros>
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml4" displayDigits="3" padZeros="false">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml4" displayDigits="4" padZeros="false">
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml5" displayDecimals="3">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml5" displayDecimals="4" ignoreDisplayDigits>
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml6" displayDecimals="3" padZeros>
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml6" displayDecimals="4" ignoreDisplayDigits padZeros>
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml7" displayDecimals="3" padZeros="false">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml7" displayDecimals="4" ignoreDisplayDigits padZeros="false">
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml8" displayDigits="3" displaySmallAsZero>
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml8" displayDigits="4" displaySmallAsZero>
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
-    <p><mathlist name="ml9" displayDigits="3" displaySmallAsZero="false">
-      <math displayDigits="5">2345.1535268</math>
-      <math displayDecimals="5">3.52343</math>
+    <p><mathlist name="ml9" displayDigits="4" displaySmallAsZero="false">
+      <math displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math displayDecimals="4">3.52343</math>
       <math displayDigits="5" padZeros>5</math>
-      <math>0.00000000000000052523</math>
-      <math displaySmallAsZero>0.000000000000000000006</math>
+      <math displaySmallAsZero="false">0.00000000000000052523</math>
+      <math>0.000000000000000000006</math>
     </mathList></p>
     `,
         },
@@ -3222,7 +3331,7 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52343");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths1[2]) + " .mjx-mrow")
         .eq(0)
@@ -3234,7 +3343,7 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.2523⋅10−16");
+          expect(text).eq("5.25⋅10−16");
         });
       cy.get(cesc2("#" + maths1[4]) + " .mjx-mrow")
         .eq(0)
@@ -3247,25 +3356,25 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2350");
+          expect(text).eq("2345");
         });
       cy.get(cesc2("#" + maths2[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths2[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.00");
+          expect(text).eq("5.000");
         });
       cy.get(cesc2("#" + maths2[3]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.25⋅10−16");
+          expect(text).eq("5.252⋅10−16");
         });
       cy.get(cesc2("#" + maths2[4]) + " .mjx-mrow")
         .eq(0)
@@ -3278,44 +3387,44 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2350");
+          expect(text).eq("2345");
         });
       cy.get(cesc2("#" + maths3[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths3[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.00");
+          expect(text).eq("5.000");
         });
       cy.get(cesc2("#" + maths3[3]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.25⋅10−16");
+          expect(text).eq("5.252⋅10−16");
         });
       cy.get(cesc2("#" + maths3[4]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("0.00");
+          expect(text).eq("0.000");
         });
 
       cy.get(cesc2("#" + maths4[0]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2350");
+          expect(text).eq("2345");
         });
       cy.get(cesc2("#" + maths4[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths4[2]) + " .mjx-mrow")
         .eq(0)
@@ -3327,7 +3436,7 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.25⋅10−16");
+          expect(text).eq("5.252⋅10−16");
         });
       cy.get(cesc2("#" + maths4[4]) + " .mjx-mrow")
         .eq(0)
@@ -3340,19 +3449,19 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2345.154");
+          expect(text).eq("2345.1535");
         });
       cy.get(cesc2("#" + maths5[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.523");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths5[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.000");
+          expect(text).eq("5.0000");
         });
       cy.get(cesc2("#" + maths5[3]) + " .mjx-mrow")
         .eq(0)
@@ -3371,44 +3480,44 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2345.154");
+          expect(text).eq("2345.1535");
         });
       cy.get(cesc2("#" + maths6[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.523");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths6[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.000");
+          expect(text).eq("5.0000");
         });
       cy.get(cesc2("#" + maths6[3]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("0.000");
+          expect(text).eq("0.0000");
         });
       cy.get(cesc2("#" + maths6[4]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("0.000");
+          expect(text).eq("0.0000");
         });
 
       cy.get(cesc2("#" + maths7[0]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2345.154");
+          expect(text).eq("2345.1535");
         });
       cy.get(cesc2("#" + maths7[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.523");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths7[2]) + " .mjx-mrow")
         .eq(0)
@@ -3433,19 +3542,19 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2350");
+          expect(text).eq("2345");
         });
       cy.get(cesc2("#" + maths8[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths8[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.00");
+          expect(text).eq("5.000");
         });
       cy.get(cesc2("#" + maths8[3]) + " .mjx-mrow")
         .eq(0)
@@ -3464,25 +3573,25 @@ describe("MathList Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("2350");
+          expect(text).eq("2345");
         });
       cy.get(cesc2("#" + maths9[1]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("3.52");
+          expect(text).eq("3.5234");
         });
       cy.get(cesc2("#" + maths9[2]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.00");
+          expect(text).eq("5.000");
         });
       cy.get(cesc2("#" + maths9[3]) + " .mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text).eq("5.25⋅10−16");
+          expect(text).eq("5.252⋅10−16");
         });
       cy.get(cesc2("#" + maths9[4]) + " .mjx-mrow")
         .eq(0)
@@ -3500,67 +3609,67 @@ describe("MathList Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><mathlist name="ml1">
-      <number name="n11" displayDigits="5">2345.1535268</number>
-      <number name="n12" displayDecimals="5">3.52343</number>
+      <number name="n11" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n12" displayDecimals="4">3.52343</number>
       <number name="n13" displayDigits="5" padZeros>5</number>
-      <number name="n14">0.00000000000000052523</number>
-      <number name="n15" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n14" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n15">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml2" displayDigits="3">
-      <number name="n21" displayDigits="5">2345.1535268</number>
-      <number name="n22" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml2" displayDigits="4">
+      <number name="n21" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n22" displayDecimals="4">3.52343</number>
       <number name="n23" displayDigits="5" padZeros>5</number>
-      <number name="n24">0.00000000000000052523</number>
-      <number name="n25" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n24" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n25">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml3" displayDigits="3" padZeros>
-      <number name="n31" displayDigits="5">2345.1535268</number>
-      <number name="n32" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml3" displayDigits="4" padZeros>
+      <number name="n31" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n32" displayDecimals="4">3.52343</number>
       <number name="n33" displayDigits="5" padZeros>5</number>
-      <number name="n34">0.00000000000000052523</number>
-      <number name="n35" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n34" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n35">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml4" displayDigits="3" padZeros="false">
-      <number name="n41" displayDigits="5">2345.1535268</number>
-      <number name="n42" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml4" displayDigits="4" padZeros="false">
+      <number name="n41" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n42" displayDecimals="4">3.52343</number>
       <number name="n43" displayDigits="5" padZeros>5</number>
-      <number name="n44">0.00000000000000052523</number>
-      <number name="n45" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n44" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n45">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml5" displayDecimals="3">
-      <number name="n51" displayDigits="5">2345.1535268</number>
-      <number name="n52" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml5" displayDecimals="4" ignoreDisplayDigits>
+      <number name="n51" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n52" displayDecimals="4">3.52343</number>
       <number name="n53" displayDigits="5" padZeros>5</number>
-      <number name="n54">0.00000000000000052523</number>
-      <number name="n55" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n54" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n55">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml6" displayDecimals="3" padZeros>
-      <number name="n61" displayDigits="5">2345.1535268</number>
-      <number name="n62" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml6" displayDecimals="4" padZeros ignoreDisplayDigits>
+      <number name="n61" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n62" displayDecimals="4">3.52343</number>
       <number name="n63" displayDigits="5" padZeros>5</number>
-      <number name="n64">0.00000000000000052523</number>
-      <number name="n65" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n64" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n65">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml7" displayDecimals="3" padZeros="false">
-      <number name="n71" displayDigits="5">2345.1535268</number>
-      <number name="n72" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml7" displayDecimals="4" padZeros="false" ignoreDisplayDigits>
+      <number name="n71" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n72" displayDecimals="4">3.52343</number>
       <number name="n73" displayDigits="5" padZeros>5</number>
-      <number name="n74">0.00000000000000052523</number>
-      <number name="n75" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n74" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n75">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml8" displayDigits="3" displaySmallAsZero>
-      <number name="n81" displayDigits="5">2345.1535268</number>
-      <number name="n82" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml8" displayDigits="4" displaySmallAsZero>
+      <number name="n81" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n82" displayDecimals="4">3.52343</number>
       <number name="n83" displayDigits="5" padZeros>5</number>
-      <number name="n84">0.00000000000000052523</number>
-      <number name="n85" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n84" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n85">0.000000000000000000006</number>
     </mathList></p>
-    <p><mathlist name="ml9" displayDigits="3" displaySmallAsZero="false">
-      <number name="n91" displayDigits="5">2345.1535268</number>
-      <number name="n92" displayDecimals="5">3.52343</number>
+    <p><mathlist name="ml9" displayDigits="4" displaySmallAsZero="false">
+      <number name="n91" displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number name="n92" displayDecimals="4">3.52343</number>
       <number name="n93" displayDigits="5" padZeros>5</number>
-      <number name="n94">0.00000000000000052523</number>
-      <number name="n95" displaySmallAsZero>0.000000000000000000006</number>
+      <number name="n94" displaySmallAsZero="false">0.00000000000000052523</number>
+      <number name="n95">0.000000000000000000006</number>
     </mathList></p>
     `,
         },
@@ -3580,7 +3689,7 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52343");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n13") + " .mjx-mrow")
       .eq(0)
@@ -3592,7 +3701,7 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.2523⋅10−16");
+        expect(text).eq("5.25⋅10−16");
       });
     cy.get(cesc2("#/n15") + " .mjx-mrow")
       .eq(0)
@@ -3605,25 +3714,25 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2350");
+        expect(text).eq("2345");
       });
     cy.get(cesc2("#/n22") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n23") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.00");
+        expect(text).eq("5.000");
       });
     cy.get(cesc2("#/n24") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.25⋅10−16");
+        expect(text).eq("5.252⋅10−16");
       });
     cy.get(cesc2("#/n25") + " .mjx-mrow")
       .eq(0)
@@ -3636,44 +3745,44 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2350");
+        expect(text).eq("2345");
       });
     cy.get(cesc2("#/n32") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n33") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.00");
+        expect(text).eq("5.000");
       });
     cy.get(cesc2("#/n34") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.25⋅10−16");
+        expect(text).eq("5.252⋅10−16");
       });
     cy.get(cesc2("#/n35") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("0.00");
+        expect(text).eq("0.000");
       });
 
     cy.get(cesc2("#/n41") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2350");
+        expect(text).eq("2345");
       });
     cy.get(cesc2("#/n42") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n43") + " .mjx-mrow")
       .eq(0)
@@ -3685,7 +3794,7 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.25⋅10−16");
+        expect(text).eq("5.252⋅10−16");
       });
     cy.get(cesc2("#/n45") + " .mjx-mrow")
       .eq(0)
@@ -3698,19 +3807,19 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2345.154");
+        expect(text).eq("2345.1535");
       });
     cy.get(cesc2("#/n52") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.523");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n53") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.000");
+        expect(text).eq("5.0000");
       });
     cy.get(cesc2("#/n54") + " .mjx-mrow")
       .eq(0)
@@ -3729,44 +3838,44 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2345.154");
+        expect(text).eq("2345.1535");
       });
     cy.get(cesc2("#/n62") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.523");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n63") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.000");
+        expect(text).eq("5.0000");
       });
     cy.get(cesc2("#/n64") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("0.000");
+        expect(text).eq("0.0000");
       });
     cy.get(cesc2("#/n65") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("0.000");
+        expect(text).eq("0.0000");
       });
 
     cy.get(cesc2("#/n71") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2345.154");
+        expect(text).eq("2345.1535");
       });
     cy.get(cesc2("#/n72") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.523");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n73") + " .mjx-mrow")
       .eq(0)
@@ -3791,19 +3900,19 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2350");
+        expect(text).eq("2345");
       });
     cy.get(cesc2("#/n82") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n83") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.00");
+        expect(text).eq("5.000");
       });
     cy.get(cesc2("#/n84") + " .mjx-mrow")
       .eq(0)
@@ -3822,25 +3931,25 @@ describe("MathList Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("2350");
+        expect(text).eq("2345");
       });
     cy.get(cesc2("#/n92") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("3.52");
+        expect(text).eq("3.5234");
       });
     cy.get(cesc2("#/n93") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.00");
+        expect(text).eq("5.000");
       });
     cy.get(cesc2("#/n94") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.25⋅10−16");
+        expect(text).eq("5.252⋅10−16");
       });
     cy.get(cesc2("#/n95") + " .mjx-mrow")
       .eq(0)
@@ -3856,11 +3965,11 @@ describe("MathList Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><mathList name="ml1">34.245023482352345 <math displayDigits="2">245.23823402358234234</math></mathList></p>
-    <p><mathList name="ml1Dig4" copySource="ml1" displayDigits="4" /></p>
+    <p><mathList name="ml1">34.245023482352345 <math displayDigits="7">245.23823402358234234</math></mathList></p>
+    <p><mathList name="ml1Dig6" copySource="ml1" displayDigits="6" /></p>
     <p><mathList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
-    <p><mathList name="ml1Dig4a" copySource="ml1Dec6" displayDigits="4" /></p>
-    <p><mathList name="ml1Dec6a" copySource="ml1Dig4" displayDecimals="6" /></p>
+    <p><mathList name="ml1Dig6a" copySource="ml1Dec6" displayDigits="6" ignoreDisplayDecimals /></p>
+    <p><mathList name="ml1Dec6a" copySource="ml1Dig6" displayDecimals="6" /></p>
     `,
         },
         "*",
@@ -3871,23 +3980,23 @@ describe("MathList Tag Tests", function () {
 
     cy.get(cesc("#\\/ml1") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "34.24502348");
+      .should("have.text", "34.25");
     cy.get(cesc("#\\/ml1") + " .mjx-mrow")
       .eq(1)
-      .should("have.text", "250");
+      .should("have.text", "245.2382");
 
-    cy.get(cesc("#\\/ml1Dig4") + " .mjx-mrow")
+    cy.get(cesc("#\\/ml1Dig6") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "34.25");
-    cy.get(cesc("#\\/ml1Dig4") + " .mjx-mrow")
+      .should("have.text", "34.245");
+    cy.get(cesc("#\\/ml1Dig6") + " .mjx-mrow")
       .eq(1)
-      .should("have.text", "245.2");
-    cy.get(cesc("#\\/ml1Dig4a") + " .mjx-mrow")
+      .should("have.text", "245.238");
+    cy.get(cesc("#\\/ml1Dig6a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "34.25");
-    cy.get(cesc("#\\/ml1Dig4a") + " .mjx-mrow")
+      .should("have.text", "34.245");
+    cy.get(cesc("#\\/ml1Dig6a") + " .mjx-mrow")
       .eq(1)
-      .should("have.text", "245.2");
+      .should("have.text", "245.238");
 
     cy.get(cesc("#\\/ml1Dec6") + " .mjx-mrow")
       .eq(0)

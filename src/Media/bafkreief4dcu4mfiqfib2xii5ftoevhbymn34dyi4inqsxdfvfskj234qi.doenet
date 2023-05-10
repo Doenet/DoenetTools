@@ -10,7 +10,7 @@
     <customAttribute componentType="number" attribute="ymin" defaultValue="-1" assignNames="ymin" />
     <customAttribute componentType="number" attribute="ymax" defaultValue="5" assignNames="ymax" />
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
-    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="math" attribute="variable" defaultValue="x" assignNames="variable" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.1" assignNames="attractThreshold" />
     <customAttribute componentType="number" attribute="answerWeight" defaultValue="1" assignNames="answerWeight" />
 

@@ -1,3 +1,8 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
 
@@ -33,11 +38,18 @@ export default class Polyline extends GraphicalComponent {
       createComponentOfType: "_pointListComponent",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -195,6 +207,8 @@ export default class Polyline extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];

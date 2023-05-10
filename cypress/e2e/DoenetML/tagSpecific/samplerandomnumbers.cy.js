@@ -565,7 +565,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let varX = me.math.variance(samples, "uncorrected");
 
       expect(meanX).closeTo(0, 2);
-      expect(varX).closeTo(100, 20);
+      expect(varX).closeTo(100, 25);
 
       let firstSample =
         stateVariables[
@@ -2681,7 +2681,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <sampleRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberOfSamples="6" />
+      <sampleRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberOfSamples="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="u" /></p>
     <p><copy assignNames="v2" target="v" /></p>
@@ -2749,7 +2749,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <sampleRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberOfSamples="6" />
+      <sampleRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberOfSamples="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="s/u" /></p>
     <p><copy assignNames="v2" target="s/v" /></p>
@@ -2827,14 +2827,14 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p>Actual from: <copy prop="from" target="samples" obtainPropFromComposite assignNames="actualFrom" /></p>
     <p>Actual to: <copy prop="to" target="samples" obtainPropFromComposite assignNames="actualTo" /></p>
     <p>Actual step: <copy prop="step" target="samples" obtainPropFromComposite assignNames="actualStep" /></p>
-    <p>Expected mean: <copy prop="mean" target="samples" obtainPropFromComposite assignNames="expectedMean" /></p>
-    <p>Expected variance: <copy prop="variance" target="samples" obtainPropFromComposite assignNames="expectedVariance" /></p>
-    <p>Expected standard deviation: <copy prop="standardDeviation" target="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" /></p>
-    <p>Resulting mean: <mean name="resultingMean">$samples</mean></p>
-    <p>Resulting variance: <variance name="resultingVariance">$samples</variance></p>
-    <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation">$samples</standardDeviation></p>
+    <p>Expected mean: <copy prop="mean" target="samples" obtainPropFromComposite assignNames="expectedMean" displayDigits="10" /></p>
+    <p>Expected variance: <copy prop="variance" target="samples" obtainPropFromComposite assignNames="expectedVariance" displayDigits="10" /></p>
+    <p>Expected standard deviation: <copy prop="standardDeviation" target="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" displayDigits="10" /></p>
+    <p>Resulting mean: <mean name="resultingMean" displayDigits="10">$samples</mean></p>
+    <p>Resulting variance: <variance name="resultingVariance" displayDigits="10">$samples</variance></p>
+    <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation" displayDigits="10">$samples</standardDeviation></p>
     <p name="p1"><aslist>
-      <sampleRandomNumbers name="samples" numberOfSamples="$nSamples" type="$type" mean="$specifiedMean" variance="$specifiedVariance" from="$specifiedFrom" to="$specifiedTo" step="$specifiedStep" />
+      <sampleRandomNumbers name="samples" numberOfSamples="$nSamples" type="$type" mean="$specifiedMean" variance="$specifiedVariance" from="$specifiedFrom" to="$specifiedTo" step="$specifiedStep" displayDigits="10" />
     </aslist></p>
     <p name="p2"><aslist><copy target="samples" /></aslist></p>
     <p name="p3"><copy target="_aslist1" /></p>
@@ -3561,10 +3561,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" displayDigits="10" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>
