@@ -208,6 +208,14 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+
+    attributes.hideOffGraphIndicators = {
+      createComponentOfType: "boolean",
+      createStateVariable: "hideOffGraphIndicators",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -887,6 +895,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1032,6 +1041,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1173,6 +1183,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1319,6 +1330,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,

@@ -38,6 +38,10 @@ export default class Circle extends Curve {
       forRenderer: true,
     };
 
+    attributes.hideOffGraphIndicator = {
+      createComponentOfType: "boolean",
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -277,6 +281,49 @@ export default class Circle extends Curve {
         }
 
         return { setValue: { fillStyleDescription } };
+      },
+    };
+
+    stateVariableDefinitions.hideOffGraphIndicator = {
+      public: true,
+      forRenderer: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({
+        hideOffGraphIndicatorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "hideOffGraphIndicator",
+          variableNames: ["value"],
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["hideOffGraphIndicators"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.hideOffGraphIndicatorAttr) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.hideOffGraphIndicatorAttr.stateValues.value,
+            },
+          };
+        } else if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.graphAncestor.stateValues
+                  .hideOffGraphIndicators,
+            },
+          };
+        } else {
+          return {
+            useEssentialOrDefaultValue: { hideOffGraphIndicator: true },
+          };
+        }
       },
     };
 

@@ -6911,6 +6911,19 @@ export default class Core {
     );
   }
 
+  async markDescendantsToUpdateRenderers(component) {
+    if (component.constructor.renderChildren) {
+      let indicesToRender = await this.returnActiveChildrenIndicesToRender(
+        component,
+      );
+      for (let ind of indicesToRender) {
+        let child = component.activeChildren[ind];
+        this.updateInfo.componentsToUpdateRenderers.add(child.componentName);
+        await this.markDescendantsToUpdateRenderers(child);
+      }
+    }
+  }
+
   async markStateVariableAndUpstreamDependentsStale({ component, varName }) {
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
@@ -7032,6 +7045,10 @@ export default class Core {
 
       if (result.updateRenderedChildren) {
         this.componentsWithChangedChildrenToRender.add(component.componentName);
+      }
+
+      if (result.updateDescendantRenderers) {
+        await this.markDescendantsToUpdateRenderers(component);
       }
 
       if (result.updateActionChaining) {
@@ -7543,6 +7560,10 @@ export default class Core {
               this.componentsWithChangedChildrenToRender.add(
                 component.componentName,
               );
+            }
+
+            if (result.updateDescendantRenderers) {
+              await this.markDescendantsToUpdateRenderers(component);
             }
 
             if (result.updateActionChaining) {
