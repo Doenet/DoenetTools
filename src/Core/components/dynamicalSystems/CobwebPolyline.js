@@ -1,3 +1,8 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 import Polyline from "../Polyline";
 import me from "math-expressions";
 
@@ -25,7 +30,7 @@ export default class CobwebPolyline extends Polyline {
     };
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
       public: true,
@@ -57,11 +62,18 @@ export default class CobwebPolyline extends Polyline {
       createComponentOfType: "point",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.nDimensions.returnDependencies = () => ({});
     stateVariableDefinitions.nDimensions.definition = () => ({
@@ -73,6 +85,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "initialPointX") {
             return [];
@@ -674,6 +688,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
@@ -727,6 +743,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
@@ -803,6 +821,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["iterateValue"],
       returnArraySizeDependencies: () => ({

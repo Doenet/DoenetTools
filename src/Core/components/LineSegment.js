@@ -1,6 +1,11 @@
 import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
 import { convertValueToMathExpression } from "../utils/math";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class LineSegment extends GraphicalComponent {
   constructor(args) {
@@ -51,11 +56,18 @@ export default class LineSegment extends GraphicalComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"],
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -189,6 +201,8 @@ export default class LineSegment extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "endpointX") {
             return [];
@@ -390,6 +404,8 @@ export default class LineSegment extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         nDimensions: {
@@ -638,6 +654,8 @@ export default class LineSegment extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         numericalEndpoints: {

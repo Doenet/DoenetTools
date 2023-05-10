@@ -1,5 +1,6 @@
 import { convertAttributesForComponentType } from "../utils/copy";
 import { sampleFromRandomNumbers } from "../utils/randomNumbers";
+import { returnRoundingAttributes } from "../utils/rounding";
 import { processAssignNames } from "../utils/serializedStateProcessing";
 import SampleRandomNumbers from "./SampleRandomNumbers";
 
@@ -180,12 +181,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of [
-      "displayDigits",
-      "displaySmallAsZero",
-      "displayDecimals",
-      "padZeros",
-    ]) {
+    for (let attr of Object.keys(returnRoundingAttributes())) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr];
       }

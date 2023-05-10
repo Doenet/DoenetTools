@@ -4,6 +4,7 @@ import {
   returnNumericalFunctionFromFormula,
   returnSymbolicFunctionFromFormula,
 } from "../../utils/function";
+import { returnRoundingAttributeComponentShadowing } from "../../utils/rounding";
 
 export default class FunctionOperator extends Function {
   static componentType = "_functionOperator";
@@ -170,6 +171,8 @@ export default class FunctionOperator extends Function {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: ["operatorBasedOnFormula"],
       // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],

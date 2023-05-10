@@ -5618,7 +5618,7 @@ describe("MathInput Tag Tests", function () {
     <p>a4: <copy source="a" prop="value" assignNames="a4" displayDigits="16" /></p>
     <p>a5: <copy source="a" prop="immediateValue" assignNames="a5" displayDigits="16" /></p>
 
-    <p>b: <math name="b">10e^(3y)</math></p>
+    <p>b: <math name="b" displayDigits="10">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
     <p>b3: <copy source="b2" prop="value" assignNames="b3" /></p>
     <p>b4: <copy source="b2" prop="immediateValue" assignNames="b4" /></p>
@@ -6334,12 +6334,12 @@ describe("MathInput Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>a: <mathinput name="a" displayDecimals="2" prefill="sin(2x)"/></p>
+    <p>a: <mathinput name="a" displayDecimals="2" ignoreDisplayDigits prefill="sin(2x)"/></p>
     <p>a2: <copy source="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy source="a" prop="immediateValue" assignNames="a3" /></p>
 
-    <p>b: <math name="b">10e^(3y)</math></p>
-    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="8" /></p>
+    <p>b: <math name="b" displayDigits="10">10e^(3y)</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="8" ignoreDisplayDigits /></p>
     <p>b3: <copy source="b2" prop="value" assignNames="b3" /></p>
     <p>b4: <copy source="b2" prop="immediateValue" assignNames="b4" /></p>
     `,
@@ -7038,7 +7038,7 @@ describe("MathInput Tag Tests", function () {
     <p>a4: <copy source="a" prop="value" assignNames="a4" displayDigits="16" /></p>
     <p>a5: <copy source="a" prop="immediatevalue" assignNames="a5" displayDigits="16" /></p>
   
-    <p>b: <math name="b">10e^(3y)</math></p>
+    <p>b: <math name="b" displayDigits="10" displaySmallAsZero="false">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
     <p>b3: <copy source="b2" prop="value" assignNames="b3" /></p>
     <p>b4: <copy source="b2" prop="immediatevalue" assignNames="b4" /></p>
@@ -7047,7 +7047,7 @@ describe("MathInput Tag Tests", function () {
     <p>c2: <copy source="c" prop="value" assignNames="c2" /></p>
     <p>c3: <copy source="c" prop="immediatevalue" assignNames="c3" /></p>
 
-    <p>d: <math name="d">10e^(3y)</math></p>
+    <p>d: <math name="d" displayDigits="10" displaySmallAsZero="false">10e^(3y)</math></p>
     <p>d2: <mathinput name="d2" bindValueTo="$d"  displayDigits="3" displaySmallAsZero /></p>
     <p>d3: <copy source="d2" prop="value" assignNames="d3" /></p>
     <p>d4: <copy source="d2" prop="immediatevalue" assignNames="d4" /></p>
@@ -7375,10 +7375,10 @@ describe("MathInput Tag Tests", function () {
 
     cy.get(cesc("#\\/c") + " .mq-editable-field").should(
       "contain.text",
-      "sin(0)",
+      "sin(0x)",
     );
-    cy.get(cesc("#\\/c2") + " .mjx-mrow").should("contain.text", "sin(0)");
-    cy.get(cesc("#\\/c3") + " .mjx-mrow").should("contain.text", "sin(0)");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow").should("contain.text", "sin(0x)");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow").should("contain.text", "sin(0x)");
     cy.get(cesc("#\\/c") + " .mq-editable-field")
       .invoke("text")
       .then((text) => {
@@ -7386,21 +7386,21 @@ describe("MathInput Tag Tests", function () {
           text
             .replace(/[\s\u200B-\u200D\uFEFF]/g, "")
             .replace(/\u00B7/g, "\u22C5"),
-        ).equal("sin(0)");
+        ).equal("sin(0x)");
       });
     cy.get(cesc("#\\/c2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("sin(0)");
+        expect(text.trim()).equal("sin(0x)");
       });
     cy.get(cesc("#\\/c3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("sin(0)");
+        expect(text.trim()).equal("sin(0x)");
       });
 
     cy.get(cesc("#\\/d") + " .mjx-mrow").should("contain.text", "9.347203572");
@@ -7424,28 +7424,25 @@ describe("MathInput Tag Tests", function () {
           text
             .replace(/[\s\u200B-\u200D\uFEFF]/g, "")
             .replace(/\u00B7/g, "\u22C5"),
-        ).equal("9.35⋅10−14");
+        ).equal("9.35⋅10−14e0y");
       });
     cy.get(cesc("#\\/d3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("9.35⋅10−14");
+        expect(text.trim()).equal("9.35⋅10−14e0y");
       });
     cy.get(cesc("#\\/d4"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("9.35⋅10−14");
+        expect(text.trim()).equal("9.35⋅10−14e0y");
       });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      console.log(stateVariables["/a"].stateValues.value);
-      console.log(["apply", "sin", ["*", 4.72946384739473e-16, "x"]]);
-      console.log(stateVariables["/a3"].stateValues.value);
 
       expect(stateVariables["/a"].stateValues.value).eqls([
         "apply",
@@ -7520,7 +7517,7 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/c"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        0,
+        ["*", 0, "x"],
       ]);
       expect(stateVariables["/c2"].stateValues.value).eqls([
         "apply",
@@ -7530,7 +7527,7 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/c2"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        0,
+        ["*", 0, "x"],
       ]);
       expect(stateVariables["/c3"].stateValues.value).eqls([
         "apply",
@@ -7540,7 +7537,7 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/c3"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        0,
+        ["*", 0, "x"],
       ]);
       expect(stateVariables["/d"].stateValues.value).eqls([
         "*",
@@ -7552,19 +7549,31 @@ describe("MathInput Tag Tests", function () {
         9.34720357236e-14,
         ["^", "e", ["*", 7.3013048309e-15, "y"]],
       ]);
-      expect(stateVariables["/d2"].stateValues.valueForDisplay).eqls(9.35e-14);
+      expect(stateVariables["/d2"].stateValues.valueForDisplay).eqls([
+        "*",
+        9.35e-14,
+        ["^", "e", ["*", 0, "y"]],
+      ]);
       expect(stateVariables["/d3"].stateValues.value).eqls([
         "*",
         9.34720357236e-14,
         ["^", "e", ["*", 7.3013048309e-15, "y"]],
       ]);
-      expect(stateVariables["/d3"].stateValues.valueForDisplay).eqls(9.35e-14);
+      expect(stateVariables["/d3"].stateValues.valueForDisplay).eqls([
+        "*",
+        9.35e-14,
+        ["^", "e", ["*", 0, "y"]],
+      ]);
       expect(stateVariables["/d4"].stateValues.value).eqls([
         "*",
         9.34720357236e-14,
         ["^", "e", ["*", 7.3013048309e-15, "y"]],
       ]);
-      expect(stateVariables["/d4"].stateValues.valueForDisplay).eqls(9.35e-14);
+      expect(stateVariables["/d4"].stateValues.valueForDisplay).eqls([
+        "*",
+        9.35e-14,
+        ["^", "e", ["*", 0, "y"]],
+      ]);
     });
 
     cy.get(cesc("#\\/a") + " textarea").type(
@@ -7576,7 +7585,7 @@ describe("MathInput Tag Tests", function () {
       { force: true },
     );
     cy.get(cesc("#\\/c") + " textarea").type(
-      "{end}{leftArrow}{leftArrow}3{enter}",
+      "{end}{leftArrow}{leftArrow}{leftArrow}3{enter}",
       { force: true, delay: 100 },
     );
     cy.get(cesc("#\\/d2") + " textarea")
@@ -7655,10 +7664,10 @@ describe("MathInput Tag Tests", function () {
 
     cy.get(cesc("#\\/c") + " .mq-editable-field").should(
       "contain.text",
-      "sin(30)",
+      "sin(30x)",
     );
-    cy.get(cesc("#\\/c2") + " .mjx-mrow").should("contain.text", "sin(30)");
-    cy.get(cesc("#\\/c3") + " .mjx-mrow").should("contain.text", "sin(30)");
+    cy.get(cesc("#\\/c2") + " .mjx-mrow").should("contain.text", "sin(30x)");
+    cy.get(cesc("#\\/c3") + " .mjx-mrow").should("contain.text", "sin(30x)");
     cy.get(cesc("#\\/c") + " .mq-editable-field")
       .invoke("text")
       .then((text) => {
@@ -7666,21 +7675,21 @@ describe("MathInput Tag Tests", function () {
           text
             .replace(/[\s\u200B-\u200D\uFEFF]/g, "")
             .replace(/\u00B7/g, "\u22C5"),
-        ).equal("sin(30)");
+        ).equal("sin(30x)");
       });
     cy.get(cesc("#\\/c2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("sin(30)");
+        expect(text.trim()).equal("sin(30x)");
       });
     cy.get(cesc("#\\/c3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("sin(30)");
+        expect(text.trim()).equal("sin(30x)");
       });
 
     cy.get(cesc("#\\/d") + " .mjx-mrow").should("contain.text", "6.35");
@@ -7695,7 +7704,7 @@ describe("MathInput Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("6.35⋅10−14");
+        expect(text.trim()).equal("6.35⋅10−14e0y");
       });
     cy.get(cesc("#\\/d2") + " .mq-editable-field")
       .invoke("text")
@@ -7704,21 +7713,21 @@ describe("MathInput Tag Tests", function () {
           text
             .replace(/[\s\u200B-\u200D\uFEFF]/g, "")
             .replace(/\u00B7/g, "\u22C5"),
-        ).equal("6.35⋅10−14");
+        ).equal("6.35⋅10−14e0y");
       });
     cy.get(cesc("#\\/d3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("6.35⋅10−14");
+        expect(text.trim()).equal("6.35⋅10−14e0y");
       });
     cy.get(cesc("#\\/d4"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("6.35⋅10−14");
+        expect(text.trim()).equal("6.35⋅10−14e0y");
       });
 
     cy.window().then(async (win) => {
@@ -7795,56 +7804,282 @@ describe("MathInput Tag Tests", function () {
         ["^", 10, -14],
         ["^", "e", ["*", 7.3, ["^", 10, -15], "y"]],
       ]);
-      expect(stateVariables["/c"].stateValues.value).eqls(["apply", "sin", 30]);
+      expect(stateVariables["/c"].stateValues.value).eqls([
+        "apply",
+        "sin",
+        ["*", 30, "x"],
+      ]);
       expect(stateVariables["/c"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        30,
+        ["*", 30, "x"],
       ]);
       expect(stateVariables["/c2"].stateValues.value).eqls([
         "apply",
         "sin",
-        30,
+        ["*", 30, "x"],
       ]);
       expect(stateVariables["/c2"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        30,
+        ["*", 30, "x"],
       ]);
       expect(stateVariables["/c3"].stateValues.value).eqls([
         "apply",
         "sin",
-        30,
+        ["*", 30, "x"],
       ]);
       expect(stateVariables["/c3"].stateValues.valueForDisplay).eqls([
         "apply",
         "sin",
-        30,
+        ["*", 30, "x"],
       ]);
       expect(stateVariables["/d"].stateValues.value).eqls([
         "*",
         6.35,
         ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
       ]);
       expect(stateVariables["/d2"].stateValues.value).eqls([
         "*",
         6.35,
         ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
       ]);
-      expect(stateVariables["/d2"].stateValues.valueForDisplay).eqls(6.35e-14);
+      expect(stateVariables["/d2"].stateValues.valueForDisplay).eqls([
+        "*",
+        6.35,
+        ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
+      ]);
       expect(stateVariables["/d3"].stateValues.value).eqls([
         "*",
         6.35,
         ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
       ]);
-      expect(stateVariables["/d3"].stateValues.valueForDisplay).eqls(6.35e-14);
+      expect(stateVariables["/d3"].stateValues.valueForDisplay).eqls([
+        "*",
+        6.35,
+        ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
+      ]);
       expect(stateVariables["/d4"].stateValues.value).eqls([
         "*",
         6.35,
         ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
       ]);
-      expect(stateVariables["/d4"].stateValues.valueForDisplay).eqls(6.35e-14);
+      expect(stateVariables["/d4"].stateValues.valueForDisplay).eqls([
+        "*",
+        6.35,
+        ["^", 10, -14],
+        ["^", "e", ["*", 0, "y"]],
+      ]);
     });
+  });
+
+  it("propagate larger default display digits", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" prefill="123.4567891234"/></p>
+    <p>a2: <copy source="a" prop="value" assignNames="a2" /></p>
+    <p>a3: <copy source="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a4: <copy source="a" prop="value" assignNames="a4" displayDigits="4" /></p>
+    <p>a5: <copy source="a" prop="immediateValue" assignNames="a5" displayDigits="4" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.get(cesc("#\\/a") + " .mq-editable-field")
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(
+          "123.4567891",
+        );
+      });
+    cy.get(cesc("#\\/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+    cy.get(cesc("#\\/a4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.46");
+      });
+    cy.get(cesc("#\\/a5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.46");
+      });
+
+    cy.get(cesc("#\\/a") + " textarea")
+      .type("{ctrl+home}{ctrl+shift+end}{backspace}98765.4321876{ctrl+end}", {
+        force: true,
+      })
+      .blur();
+
+    cy.get(cesc("#\\/a4") + " .mjx-mrow").should("contain.text", "98765");
+    cy.get(cesc("#\\/a") + " .mq-editable-field")
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(
+          "98765.43219",
+        );
+      });
+    cy.get(cesc("#\\/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("98765.43219");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("98765.43219");
+      });
+    cy.get(cesc("#\\/a4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("98765.43");
+      });
+    cy.get(cesc("#\\/a5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("98765.43");
+      });
+  });
+
+  it("propagate false default display small as zero", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" prefill="123.4567891234"/></p>
+    <p>a2: <copy source="a" prop="value" assignNames="a2" /></p>
+    <p>a3: <copy source="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a4: <copy source="a" prop="value" assignNames="a4" displaySmallAsZero /></p>
+    <p>a5: <copy source="a" prop="immediateValue" assignNames="a5" displaySmallAsZero /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.get(cesc("#\\/a") + " .mq-editable-field")
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(
+          "123.4567891",
+        );
+      });
+    cy.get(cesc("#\\/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+    cy.get(cesc("#\\/a4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+    cy.get(cesc("#\\/a5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("123.4567891");
+      });
+
+    cy.get(cesc("#\\/a") + " textarea")
+      .type(
+        "{ctrl+home}{ctrl+shift+end}{backspace}0.00000000000000004736286523434185{ctrl+end}",
+        {
+          force: true,
+        },
+      )
+      .blur();
+
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("contain.text", "4.736286523");
+    cy.get(cesc("#\\/a") + " .mq-editable-field")
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal(
+          "4.736286523·10−17",
+        );
+      });
+    cy.get(cesc("#\\/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4.736286523⋅10−17");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("4.736286523⋅10−17");
+      });
+    cy.get(cesc("#\\/a4"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
+    cy.get(cesc("#\\/a5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("0");
+      });
   });
 
   it("display digits, change from downstream", () => {
@@ -7855,7 +8090,7 @@ describe("MathInput Tag Tests", function () {
     <text>a</text>
     <p>a: <mathinput name="a" displayDigits="5" prefill="3"/></p>
 
-    <p>b: <math name="b">5</math></p>
+    <p>b: <math name="b" displayDigits="10">5</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
 
     <graph>
@@ -8002,10 +8237,10 @@ describe("MathInput Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>a: <mathinput name="a" displayDecimals="4" prefill="3"/></p>
+    <p>a: <mathinput name="a" displayDecimals="4" ignoreDisplayDigits prefill="3"/></p>
 
-    <p>b: <math name="b">5</math></p>
-    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="2" /></p>
+    <p>b: <math name="b" displayDigits="10">5</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="2" ignoreDisplayDigits /></p>
 
     <graph>
       <point name="p">($a, $b2)</point>
@@ -8810,7 +9045,7 @@ describe("MathInput Tag Tests", function () {
     cy.get(cesc("#\\/a2") + " .mjx-mrow").should("contain.text", "325");
     cy.get(cesc("#\\/a3") + " .mjx-mrow").should(
       "contain.text",
-      "847288609400",
+      "847288609443",
     );
 
     cy.window().then(async (win) => {

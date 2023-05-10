@@ -661,7 +661,7 @@ describe("Image Tag Tests", function () {
       <image source="http://mathinsight.org/media/image/image/giant_anteater.jpg" rotate="$rotate1" name="image1" />
     </graph>
     
-    <p name="pRotate1">Rotate 1: $image1.rotate</p>
+    <p name="pRotate1">Rotate 1: $image1.rotate{displayDigits="8"}</p>
     <p>Change rotate 1 <mathinput name="rotate1" prefill="pi/4" /></p>
     <p>Change rotate 1a <mathinput name="rotate1a" bindValueTo="$image1.rotate" /></p>
 

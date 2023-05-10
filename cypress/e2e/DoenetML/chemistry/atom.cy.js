@@ -26,17 +26,17 @@ describe("Atom Tests", function () {
   <p>Atomic number: <copy prop="atomicNumber" target="atom" assignNames="atomicNumber" /></p>
   <p>Group: <copy prop="group" target="atom" assignNames="group" /></p>
   <p>Group Name: <copy prop="groupName" target="atom" assignNames="groupName" /></p>
-  <p>Atomic mass: <copy prop="atomicMass" target="atom" assignNames="atomicMass" /></p>
-  <p>Phase at STP: <copy prop="phaseAtSTP" target="atom" assignNames="pahseAtSTP" /></p>
-  <p>Charge of common ion: <copy prop="chargeOfCommonIon" target="atom" assignNames="chargeOfCommonIon" /></p>
-  <p>Metal category: <copy prop="metalCategory" target="atom" assignNames="metalCategory" /></p>
-  <p>Period: <copy prop="period" target="atom" assignNames="period" /></p>
-  <p>Ionization energy: <copy prop="ionizationEnergy" target="atom" assignNames="ionizationEnergy" /></p>
-  <p>Melting point: <copy prop="meltingPoint" target="atom" assignNames="meltingPoint" /></p>
-  <p>Boiling point: <copy prop="boilingPoint" target="atom" assignNames="boilingPoint" /></p>
-  <p>Atomic radius: <copy prop="atomicRadius" target="atom" assignNames="atomicRadius" /></p>
-  <p>Density: <copy prop="density" target="atom" assignNames="density" /></p>
-  <p>Electronegativity: <copy prop="electronegativity" target="atom" assignNames="electronegativity" /></p>
+  <p>Atomic mass: <copy prop="atomicMass" target="atom" assignNames="atomicMass" displayDigits="10" /></p>
+  <p>Phase at STP: <copy prop="phaseAtSTP" target="atom" assignNames="pahseAtSTP" displayDigits="10" /></p>
+  <p>Charge of common ion: <copy prop="chargeOfCommonIon" target="atom" assignNames="chargeOfCommonIon" displayDigits="10" /></p>
+  <p>Metal category: <copy prop="metalCategory" target="atom" assignNames="metalCategory" displayDigits="10" /></p>
+  <p>Period: <copy prop="period" target="atom" assignNames="period" displayDigits="10" /></p>
+  <p>Ionization energy: <copy prop="ionizationEnergy" target="atom" assignNames="ionizationEnergy" displayDigits="10" /></p>
+  <p>Melting point: <copy prop="meltingPoint" target="atom" assignNames="meltingPoint" displayDigits="10" /></p>
+  <p>Boiling point: <copy prop="boilingPoint" target="atom" assignNames="boilingPoint" displayDigits="10" /></p>
+  <p>Atomic radius: <copy prop="atomicRadius" target="atom" assignNames="atomicRadius" displayDigits="10" /></p>
+  <p>Density: <copy prop="density" target="atom" assignNames="density" displayDigits="10" /></p>
+  <p>Electronegativity: <copy prop="electronegativity" target="atom" assignNames="electronegativity" displayDigits="10" /></p>
   <p>Electron configuration: <copy prop="electronConfiguration" target="atom" assignNames="electronConfiguration" /></p>
   Orbital diagram: <copy prop="orbitalDiagram" target="atom" assignNames="orbitalDiagram" />
   

@@ -2610,7 +2610,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <selectRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberToSelect="6" />
+      <selectRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberToSelect="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="u" /></p>
     <p><copy assignNames="v2" target="v" /></p>
@@ -2678,7 +2678,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <selectRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberToSelect="6" />
+      <selectRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberToSelect="6" displayDigits="10"  />
     </aslist></p>
     <p><copy assignNames="u2" target="s/u" /></p>
     <p><copy assignNames="v2" target="s/v" /></p>
@@ -2747,23 +2747,23 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
 
     <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums1" from="1" to="10" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums1" from="1" to="10" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" displayDigits="10" /></aslist></p>
     <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
 
     <p>n2 = <selectFromSequence from="1" to="5" assignNames="n2" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums2" from="1" to="10" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums2" from="1" to="10" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" displayDigits="10" /></aslist></p>
     <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
 
     <p>n3 = <selectFromSequence from="1" to="5" assignNames="n3" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums3" from="1" to="10" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums3" from="1" to="10" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" displayDigits="10" /></aslist></p>
     <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
 
     <p>n4 = <selectFromSequence from="1" to="5" assignNames="n4" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums4" from="1" to="10" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums4" from="1" to="10" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" displayDigits="10" /></aslist></p>
     <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
 
     <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums5" from="1" to="10" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums5" from="1" to="10" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" displayDigits="10" /></aslist></p>
     <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
       `,
         },
@@ -2856,10 +2856,10 @@ describe("SelectRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectRandomNumbers assignNames="n1" from="10" to="20" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n1" from="10" to="20" displayDigits="10" /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

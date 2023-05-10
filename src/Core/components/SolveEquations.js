@@ -14,7 +14,7 @@ export default class SolveEquations extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.variables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
 
     attributes.nDiscretizationPoints = {
@@ -102,7 +102,7 @@ export default class SolveEquations extends InlineComponent {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({

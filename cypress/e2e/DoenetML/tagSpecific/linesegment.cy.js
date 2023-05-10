@@ -3980,7 +3980,7 @@ describe("LineSegment Tag Tests", function () {
       <point name="B">(7,-2)</point>
       <linesegment name="l" endpoints="$A $B" />
     </graph>
-    <copy prop="length" target="l" assignNames="length" />
+    <copy prop="length" target="l" assignNames="length" displayDigits="10" />
     <point name="Ap" copySource="A" />
     <point name="Bp" copySource="B" />
     <mathinput name="milength" bindValueTo="$length" />

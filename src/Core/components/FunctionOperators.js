@@ -170,7 +170,10 @@ export class Derivative extends FunctionBaseOperator {
     let attributes = super.createAttributesObject();
 
     attributes.derivVariables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
+    };
+    attributes.derivVariable = {
+      createComponentOfType: "_variableName",
     };
 
     return attributes;
@@ -209,12 +212,7 @@ export class Derivative extends FunctionBaseOperator {
       },
     };
 
-    // modify nInputs to use derivVariablesAttr instead of variablesAttr
-    // if don't have a function child and variablesAttr isn't specified
-
     stateVariableDefinitions.nInputs = {
-      defaultValue: 1,
-      hasEssential: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -236,6 +234,12 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "variables",
             variableNames: ["nComponents"],
+            dontRecurseToShadowsIfHaveAttribute: "variable",
+          },
+          variableAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "variable",
+            dontRecurseToShadowsIfHaveAttribute: "variables",
           },
         };
 
@@ -244,6 +248,7 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "derivVariables",
             variableNames: ["variables"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariable",
           };
         }
 
@@ -256,12 +261,15 @@ export class Derivative extends FunctionBaseOperator {
             nInputs = 1;
           }
           return { setValue: { nInputs } };
-        } else if (dependencyValues.variablesAttr !== null) {
+        } else if (
+          dependencyValues.variablesAttr !== null ||
+          dependencyValues.variableAttr !== null
+        ) {
           return {
             setValue: {
               nInputs: Math.max(
                 1,
-                dependencyValues.variablesAttr.stateValues.nComponents,
+                dependencyValues.variablesAttr?.stateValues.nComponents || 0,
               ),
             },
           };
@@ -282,7 +290,7 @@ export class Derivative extends FunctionBaseOperator {
 
           return { setValue: { nInputs: nUniqueDerivVariables } };
         } else {
-          return { useEssentialOrDefaultValue: { nInputs: true } };
+          return { setValue: { nInputs: 1 } };
         }
       },
     };
@@ -291,7 +299,7 @@ export class Derivative extends FunctionBaseOperator {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
@@ -310,6 +318,13 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "variables",
             variableNames: ["variables"],
+            dontRecurseToShadowsIfHaveAttribute: "variable",
+          },
+          variableAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "variable",
+            variableNames: ["value"],
+            dontRecurseToShadowsIfHaveAttribute: "variables",
           },
           parentVariableForChild: {
             dependencyType: "parentStateVariable",
@@ -342,6 +357,13 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "derivVariables",
             variableNames: ["variables"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariable",
+          };
+          globalDependencies.derivVariableAttr = {
+            dependencyType: "attributeComponent",
+            attributeName: "derivVariable",
+            variableNames: ["value"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariables",
           };
         }
 
@@ -354,9 +376,17 @@ export class Derivative extends FunctionBaseOperator {
         arrayKeys,
         usedDefault,
       }) {
-        if (globalDependencyValues.variablesAttr !== null) {
+        if (
+          globalDependencyValues.variablesAttr !== null ||
+          globalDependencyValues.variableAttr !== null
+        ) {
           let variablesSpecified =
-            globalDependencyValues.variablesAttr.stateValues.variables;
+            globalDependencyValues.variablesAttr?.stateValues.variables;
+          if (!variablesSpecified) {
+            variablesSpecified = [
+              globalDependencyValues.variableAttr.stateValues.value,
+            ];
+          }
           return {
             setValue: {
               variables: returnNVariables(arraySize[0], variablesSpecified),
@@ -371,12 +401,22 @@ export class Derivative extends FunctionBaseOperator {
               ];
           }
           return { setValue: { variables } };
-        } else if (globalDependencyValues.derivVariablesAttr !== null) {
+        } else if (
+          globalDependencyValues.derivVariablesAttr !== null ||
+          globalDependencyValues.derivVariableAttr !== null
+        ) {
           let variablesSpecified = [];
           let variablesSpecifiedTrans = [];
 
-          for (let variable of globalDependencyValues.derivVariablesAttr
-            .stateValues.variables) {
+          let variablesFromAttribute =
+            globalDependencyValues.derivVariablesAttr?.stateValues.variables;
+          if (!variablesFromAttribute) {
+            variablesFromAttribute = [
+              globalDependencyValues.derivVariableAttr.stateValues.value,
+            ];
+          }
+
+          for (let variable of variablesFromAttribute) {
             let variableTrans = variable.subscripts_to_strings().tree;
 
             if (!variablesSpecifiedTrans.includes(variableTrans)) {
@@ -422,6 +462,7 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "derivVariables",
             variableNames: ["nComponents"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariable",
           },
         };
 
@@ -445,7 +486,7 @@ export class Derivative extends FunctionBaseOperator {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["derivVariable"],
       returnArraySizeDependencies: () => ({
@@ -463,6 +504,13 @@ export class Derivative extends FunctionBaseOperator {
             dependencyType: "attributeComponent",
             attributeName: "derivVariables",
             variableNames: ["variables"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariable",
+          },
+          derivVariableAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "derivVariable",
+            variableNames: ["value"],
+            dontRecurseToShadowsIfHaveAttribute: "derivVariables",
           },
           variable1: {
             dependencyType: "stateVariable",
@@ -478,6 +526,14 @@ export class Derivative extends FunctionBaseOperator {
             setValue: {
               derivVariables:
                 globalDependencyValues.derivVariablesAttr.stateValues.variables,
+            },
+          };
+        } else if (globalDependencyValues.derivVariableAttr !== null) {
+          return {
+            setValue: {
+              derivVariables: [
+                globalDependencyValues.derivVariableAttr.stateValues.value,
+              ],
             },
           };
         } else {

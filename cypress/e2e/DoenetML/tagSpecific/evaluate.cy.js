@@ -209,27 +209,21 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_symbolic"))
       .find(".mjx-mrow")
@@ -250,18 +244,14 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_numeric_symbolic"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
 
     cy.window().then(async (win) => {
@@ -453,27 +443,21 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_symbolic"))
       .find(".mjx-mrow")
@@ -494,18 +478,14 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_numeric_symbolic"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
 
     cy.window().then(async (win) => {
@@ -707,8 +687,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <function displayDigits="3" name="f1" symbolic="false">100sin(x)</function>
-  <function displayDecimals="3" name="f2" symbolic="false">100sin(x)</function>
+  <function displayDigits="5" ignoreDisplayDecimals name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="4" ignoreDisplayDigits name="f2" symbolic="false">100sin(x)</function>
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <function name="f4" symbolic="false">100sin(x)</function>
 
@@ -737,10 +717,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
-  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
-  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
-  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
   <copy target="ef1dc6" assignNames="ef1dc6a" />
   <copy target="ef2dc6" assignNames="ef2dc6a" />
   <copy target="ef3dc6" assignNames="ef3dc6a" />
@@ -781,56 +761,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1dg6"))
@@ -952,56 +932,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1m"))
@@ -1009,56 +989,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/input") + " textarea").type("{end}{backspace}pi{enter}", {
@@ -1071,8 +1051,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2"))
@@ -1094,8 +1074,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
     cy.get(cesc("#\\/ef1a"))
@@ -1103,8 +1083,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2a"))
@@ -1126,8 +1106,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
 
@@ -1319,8 +1299,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 6)).eq(
+          Math.sin(Math.PI).toString().slice(0, 6),
         );
       });
     cy.get(cesc("#\\/ef2m"))
@@ -1342,8 +1322,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
     cy.get(cesc("#\\/ef1ma"))
@@ -1351,8 +1331,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 6)).eq(
+          Math.sin(Math.PI).toString().slice(0, 6),
         );
       });
     cy.get(cesc("#\\/ef2ma"))
@@ -1374,8 +1354,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
   });
@@ -1386,8 +1366,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <function displayDigits="3" name="f1" symbolic="false">100sin(x)</function>
-  <function displayDecimals="3" name="f2" symbolic="false">100sin(x)</function>
+  <function displayDigits="5" ignoreDisplayDecimals name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="4" ignoreDisplayDigits name="f2" symbolic="false">100sin(x)</function>
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <function name="f4" symbolic="false">100sin(x)</function>
 
@@ -1398,56 +1378,56 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2" />
   <evaluate function="$f3" input="$input" name="ef3" />
   <evaluate function="$f4" input="$input" name="ef4" />
-  <copy target="ef1" assignNames="ef1dg6" displayDigits="6" />
-  <copy target="ef2" assignNames="ef2dg6" displayDigits="6" />
-  <copy target="ef3" assignNames="ef3dg6" displayDigits="6" />
-  <copy target="ef4" assignNames="ef4dg6" displayDigits="6" />
-  <copy target="ef1" assignNames="ef1dc6" displayDecimals="6" />
-  <copy target="ef2" assignNames="ef2dc6" displayDecimals="6" />
-  <copy target="ef3" assignNames="ef3dc6" displayDecimals="6" />
-  <copy target="ef4" assignNames="ef4dc6" displayDecimals="6" />
+  <copy target="ef1" assignNames="ef1dg6" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef2" assignNames="ef2dg6" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef3" assignNames="ef3dg6" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef4" assignNames="ef4dg6" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef1" assignNames="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef2" assignNames="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef3" assignNames="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef4" assignNames="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
   <copy target="ef1" assignNames="ef1dsz" displaySmallAsZero="1E-13" />
   <copy target="ef2" assignNames="ef2dsz" displaySmallAsZero="1E-13" />
   <copy target="ef3" assignNames="ef3dsz" displaySmallAsZero="1E-13" />
   <copy target="ef4" assignNames="ef4dsz" displaySmallAsZero="1E-13" />
-  <copy target="ef1dc6" assignNames="ef1dg6a" displayDigits="6" />
-  <copy target="ef2dc6" assignNames="ef2dg6a" displayDigits="6" />
-  <copy target="ef3dc6" assignNames="ef3dg6a" displayDigits="6" />
-  <copy target="ef4dc6" assignNames="ef4dg6a" displayDigits="6" />
-  <copy target="ef1dg6" assignNames="ef1dc6a" displayDecimals="6" />
-  <copy target="ef2dg6" assignNames="ef2dc6a" displayDecimals="6" />
-  <copy target="ef3dg6" assignNames="ef3dc6a" displayDecimals="6" />
-  <copy target="ef4dg6" assignNames="ef4dc6a" displayDecimals="6" />
+  <copy target="ef1dc6" assignNames="ef1dg6a" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef2dc6" assignNames="ef2dg6a" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef3dc6" assignNames="ef3dg6a" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef4dc6" assignNames="ef4dg6a" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef1dg6" assignNames="ef1dc6a" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef2dg6" assignNames="ef2dc6a" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef3dg6" assignNames="ef3dc6a" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef4dg6" assignNames="ef4dc6a" displayDecimals="6" ignoreDisplayDigits />
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dg6b" displayDigits="6" />
-  <evaluate function="$f2" input="$input" name="ef2dg6b" displayDigits="6" />
-  <evaluate function="$f3" input="$input" name="ef3dg6b" displayDigits="6" />
-  <evaluate function="$f4" input="$input" name="ef4dg6b" displayDigits="6" />
-  <copy target="ef1dg6b" assignNames="ef1dg8" displayDigits="8" />
-  <copy target="ef2dg6b" assignNames="ef2dg8" displayDigits="8" />
-  <copy target="ef3dg6b" assignNames="ef3dg8" displayDigits="8" />
-  <copy target="ef4dg6b" assignNames="ef4dg8" displayDigits="8" />
-  <copy target="ef1dg6b" assignNames="ef1dc6b" displayDecimals="6" />
-  <copy target="ef2dg6b" assignNames="ef2dc6b" displayDecimals="6" />
-  <copy target="ef3dg6b" assignNames="ef3dc6b" displayDecimals="6" />
-  <copy target="ef4dg6b" assignNames="ef4dc6b" displayDecimals="6" />
+  <evaluate function="$f1" input="$input" name="ef1dg6b" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f2" input="$input" name="ef2dg6b" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f3" input="$input" name="ef3dg6b" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f4" input="$input" name="ef4dg6b" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef1dg6b" assignNames="ef1dg8" displayDigits="8" ignoreDisplayDecimals />
+  <copy target="ef2dg6b" assignNames="ef2dg8" displayDigits="8" ignoreDisplayDecimals />
+  <copy target="ef3dg6b" assignNames="ef3dg8" displayDigits="8" ignoreDisplayDecimals />
+  <copy target="ef4dg6b" assignNames="ef4dg8" displayDigits="8" ignoreDisplayDecimals />
+  <copy target="ef1dg6b" assignNames="ef1dc6b" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef2dg6b" assignNames="ef2dc6b" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef3dg6b" assignNames="ef3dc6b" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef4dg6b" assignNames="ef4dc6b" displayDecimals="6" ignoreDisplayDigits />
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6c" displayDecimals="6" />
-  <evaluate function="$f2" input="$input" name="ef2dc6c" displayDecimals="6" />
-  <evaluate function="$f3" input="$input" name="ef3dc6c" displayDecimals="6" />
-  <evaluate function="$f4" input="$input" name="ef4dc6c" displayDecimals="6" />
-  <copy target="ef1dc6c" assignNames="ef1dc7" displayDecimals="7" />
-  <copy target="ef2dc6c" assignNames="ef2dc7" displayDecimals="7" />
-  <copy target="ef3dc6c" assignNames="ef3dc7" displayDecimals="7" />
-  <copy target="ef4dc6c" assignNames="ef4dc7" displayDecimals="7" />
-  <copy target="ef1dc6c" assignNames="ef1dg6c" displayDigits="6" />
-  <copy target="ef2dc6c" assignNames="ef2dg6c" displayDigits="6" />
-  <copy target="ef3dc6c" assignNames="ef3dg6c" displayDigits="6" />
-  <copy target="ef4dc6c" assignNames="ef4dg6c" displayDigits="6" />
+  <evaluate function="$f1" input="$input" name="ef1dc6c" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f2" input="$input" name="ef2dc6c" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f3" input="$input" name="ef3dc6c" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f4" input="$input" name="ef4dc6c" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef1dc6c" assignNames="ef1dc7" displayDecimals="7" ignoreDisplayDigits />
+  <copy target="ef2dc6c" assignNames="ef2dc7" displayDecimals="7" ignoreDisplayDigits />
+  <copy target="ef3dc6c" assignNames="ef3dc7" displayDecimals="7" ignoreDisplayDigits />
+  <copy target="ef4dc6c" assignNames="ef4dc7" displayDecimals="7" ignoreDisplayDigits />
+  <copy target="ef1dc6c" assignNames="ef1dg6c" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef2dc6c" assignNames="ef2dg6c" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef3dc6c" assignNames="ef3dg6c" displayDigits="6" ignoreDisplayDecimals />
+  <copy target="ef4dc6c" assignNames="ef4dg6c" displayDigits="6" ignoreDisplayDecimals />
   </p>
 
   <p>
@@ -1475,28 +1455,28 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1dg6"))
@@ -1794,28 +1774,28 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1dsza"))
@@ -1823,56 +1803,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1dsz0a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsz0a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsz0a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsz0a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/input") + " textarea").type("{end}{backspace}pi{enter}", {
@@ -1885,8 +1865,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 6)).eq(
+          Math.sin(Math.PI).toString().slice(0, 6),
         );
       });
     cy.get(cesc("#\\/ef2"))
@@ -1908,8 +1888,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
 
@@ -2312,8 +2292,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
     cy.get(cesc("#\\/ef4dsz0a"))
@@ -2321,8 +2301,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
   });
@@ -2333,8 +2313,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <copy target="f2" displayDigits="3" assignNames="f1" />
-  <copy target="f4" displayDecimals="3" assignNames="f2" />
+  <copy target="f2" displayDigits="5" ignoreDisplayDecimals assignNames="f1" />
+  <copy target="f4" displayDecimals="4" ignoreDisplayDigits assignNames="f2" />
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <copy target="f3" displaySmallAsZero="0" assignNames="f4" />
 
@@ -2352,10 +2332,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" />
-  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
-  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
-  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
+  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" ignoreDisplayDecimals />
   <copy target="ef1dg6" assignNames="ef1dg6a" />
   <copy target="ef2dg6" assignNames="ef2dg6a" />
   <copy target="ef3dg6" assignNames="ef3dg6a" />
@@ -2363,10 +2343,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
-  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
-  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
-  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
   <copy target="ef1dc6" assignNames="ef1dc6a" />
   <copy target="ef2dc6" assignNames="ef2dc6a" />
   <copy target="ef3dc6" assignNames="ef3dc6a" />
@@ -2407,56 +2387,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1dg6"))
@@ -2578,56 +2558,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsz"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4dsza"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/ef1m"))
@@ -2635,56 +2615,56 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4m"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef1ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.1");
+        expect(text.trim()).equal("84.147");
       });
     cy.get(cesc("#\\/ef2ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.147");
+        expect(text.trim()).equal("84.1471");
       });
     cy.get(cesc("#\\/ef3ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
     cy.get(cesc("#\\/ef4ma"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("84.14709848");
+        expect(text.trim()).equal("84.15");
       });
 
     cy.get(cesc("#\\/input") + " textarea").type("{end}{backspace}pi{enter}", {
@@ -2697,8 +2677,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2"))
@@ -2720,8 +2700,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
     cy.get(cesc("#\\/ef1a"))
@@ -2729,8 +2709,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2a"))
@@ -2752,8 +2732,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
 
@@ -2945,8 +2925,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2m"))
@@ -2968,8 +2948,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
     cy.get(cesc("#\\/ef1ma"))
@@ -2977,8 +2957,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 3)).eq(
-          Math.sin(Math.PI).toString().slice(0, 3),
+        expect(text.trim().slice(0, 5)).eq(
+          Math.sin(Math.PI).toString().slice(0, 5),
         );
       });
     cy.get(cesc("#\\/ef2ma"))
@@ -3000,8 +2980,8 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(Math.PI).toString().slice(0, 9),
+        expect(text.trim().slice(0, 3)).eq(
+          Math.sin(Math.PI).toString().slice(0, 3),
         );
       });
   });
@@ -3183,33 +3163,21 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_symbolic_numeric"))
       .find(".mjx-mrow")
@@ -3223,11 +3191,7 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
 
     cy.window().then(async (win) => {
@@ -3394,33 +3358,21 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_numeric3"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
     cy.get(cesc("#\\/result_force_symbolic_numeric"))
       .find(".mjx-mrow")
@@ -3434,11 +3386,7 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().slice(0, 9)).eq(
-          Math.sin(3 * Math.PI)
-            .toString()
-            .slice(0, 9),
-        );
+        expect(text.trim()).eq("0");
       });
 
     cy.window().then(async (win) => {
@@ -4283,9 +4231,9 @@ describe("Evaluate Tag Tests", function () {
   <p>Input 1 value: <mathinput name="input1" prefill="0" /></p>
   <p>Input 2 value: <mathinput name="input2" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable1 $variable2" simplify="false" displaySmallAsZero >$formula</function>
+  <function name="f_symbolic" variables="$variable1 $variable2" simplify="numbersPreserveOrder" displaySmallAsZero >$formula</function>
 
-  <function name="f_numeric" variables="$variable1 $variable2" symbolic="false" simplify="false" displaySmallAsZero >$formula</function>
+  <function name="f_numeric" variables="$variable1 $variable2" symbolic="false" simplify="numbersPreserveOrder" displaySmallAsZero >$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input1 $input2" />
@@ -4385,20 +4333,20 @@ describe("Evaluate Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/result_symbolic"].stateValues.value).eqls([
         "vector",
-        ["apply", "sin", ["+", 0, 0]],
-        ["apply", "cos", ["+", 0, ["-", 0]]],
+        ["apply", "sin", 0],
+        ["apply", "cos", 0],
       ]);
       result_symbolic2_name =
         stateVariables["/result_symbolic2"].activeChildren[0].componentName;
       expect(stateVariables[result_symbolic2_name].stateValues.value).eqls([
         "vector",
-        ["apply", "sin", ["+", 0, 0]],
-        ["apply", "cos", ["+", 0, ["-", 0]]],
+        ["apply", "sin", 0],
+        ["apply", "cos", 0],
       ]);
       expect(stateVariables["/result_symbolic3"].stateValues.value).eqls([
         "vector",
-        ["apply", "sin", ["+", 0, 0]],
-        ["apply", "cos", ["+", 0, ["-", 0]]],
+        ["apply", "sin", 0],
+        ["apply", "cos", 0],
       ]);
       expect(stateVariables["/result_numeric"].stateValues.value).eqls([
         "vector",
@@ -4419,11 +4367,7 @@ describe("Evaluate Tag Tests", function () {
       ]);
       expect(
         stateVariables["/result_force_symbolic_numeric"].stateValues.value,
-      ).eqls([
-        "vector",
-        ["apply", "sin", ["+", 0, 0]],
-        ["apply", "cos", ["+", 0, ["-", 0]]],
-      ]);
+      ).eqls(["vector", ["apply", "sin", 0], ["apply", "cos", 0]]);
       expect(
         stateVariables["/result_force_numeric_symbolic"].stateValues.value,
       ).eqls(["vector", 0, 1]);
@@ -4504,17 +4448,17 @@ describe("Evaluate Tag Tests", function () {
       expect(stateVariables["/result_symbolic"].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(stateVariables[result_symbolic2_name].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(stateVariables["/result_symbolic3"].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(
         stateVariables["/result_numeric"].stateValues.value.map((x) =>
@@ -4536,7 +4480,7 @@ describe("Evaluate Tag Tests", function () {
       ).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(
         stateVariables["/result_force_numeric_symbolic"].stateValues.value.map(
@@ -4725,17 +4669,17 @@ describe("Evaluate Tag Tests", function () {
       expect(stateVariables["/result_symbolic"].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(stateVariables[result_symbolic2_name].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(stateVariables["/result_symbolic3"].stateValues.value).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(
         stateVariables["/result_numeric"].stateValues.value.map((x) =>
@@ -4757,7 +4701,7 @@ describe("Evaluate Tag Tests", function () {
       ).eqls([
         "vector",
         ["apply", "sin", ["+", "pi", ["*", 2, "pi"]]],
-        ["apply", "cos", ["+", "pi", ["-", ["*", 2, "pi"]]]],
+        ["apply", "cos", ["+", "pi", ["*", -2, "pi"]]],
       ]);
       expect(
         stateVariables["/result_force_numeric_symbolic"].stateValues.value.map(

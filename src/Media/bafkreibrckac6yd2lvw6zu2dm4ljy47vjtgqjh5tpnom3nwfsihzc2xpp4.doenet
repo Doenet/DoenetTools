@@ -14,8 +14,8 @@
     <customAttribute componentType="number" attribute="ymax" defaultValue="10" assignNames="ymax" />
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
-    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
-    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
+    <customAttribute componentType="math" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="math" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
     <customAttribute componentType="text" attribute="grid" defaultValue="none" assignNames="grid" />
     <customAttribute componentType="point" attribute="defaultPoint" defaultValue="" assignNames="defaultPoint" />
