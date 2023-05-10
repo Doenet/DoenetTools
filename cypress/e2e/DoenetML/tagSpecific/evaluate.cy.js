@@ -3812,140 +3812,140 @@ describe("Evaluate Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.log("initial state");
-    cy.get("#\\/result1a")
+    cy.get(cesc("#\\/result1a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result1b")
+    cy.get(cesc("#\\/result1b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result2a")
+    cy.get(cesc("#\\/result2a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result2b")
+    cy.get(cesc("#\\/result2b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result3a")
+    cy.get(cesc("#\\/result3a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result3b")
+    cy.get(cesc("#\\/result3b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result4a")
+    cy.get(cesc("#\\/result4a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result4b")
+    cy.get(cesc("#\\/result4b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result4c")
+    cy.get(cesc("#\\/result4c"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result5a")
+    cy.get(cesc("#\\/result5a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result5b")
+    cy.get(cesc("#\\/result5b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result5c")
+    cy.get(cesc("#\\/result5c"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result5d")
+    cy.get(cesc("#\\/result5d"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result6a")
+    cy.get(cesc("#\\/result6a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result6b")
+    cy.get(cesc("#\\/result6b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result6c")
+    cy.get(cesc("#\\/result6c"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result7a")
+    cy.get(cesc("#\\/result7a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result7a")
+    cy.get(cesc("#\\/result7a"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result7c")
+    cy.get(cesc("#\\/result7c"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("427");
       });
-    cy.get("#\\/result7d")
+    cy.get(cesc("#\\/result7d"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -4049,91 +4049,91 @@ describe("Evaluate Tag Tests", function () {
         args: { x: 5, y: -9 },
       });
 
-      cy.get("#\\/result1a")
+      cy.get(cesc("#\\/result1a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result1b")
+      cy.get(cesc("#\\/result1b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result2a")
+      cy.get(cesc("#\\/result2a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result2b")
+      cy.get(cesc("#\\/result2b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result3a")
+      cy.get(cesc("#\\/result3a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result3b")
+      cy.get(cesc("#\\/result3b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result4a")
+      cy.get(cesc("#\\/result4a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result4b")
+      cy.get(cesc("#\\/result4b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result4c")
+      cy.get(cesc("#\\/result4c"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result5a")
+      cy.get(cesc("#\\/result5a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result5b")
+      cy.get(cesc("#\\/result5b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result5c")
+      cy.get(cesc("#\\/result5c"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("9125");
         });
-      cy.get("#\\/result5d")
+      cy.get(cesc("#\\/result5d"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")

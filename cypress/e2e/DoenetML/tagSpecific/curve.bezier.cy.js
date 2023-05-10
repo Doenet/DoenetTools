@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("Curve Tag Bezier Tests", function () {
   beforeEach(() => {
@@ -11637,38 +11637,38 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/cv6 .mjx-mrow").should("contain.text", "(2,6)");
-    cy.get("#\\/cv1 .mjx-mrow")
+    cy.get(cesc("#\\/cv6") + " .mjx-mrow").should("contain.text", "(2,6)");
+    cy.get(cesc("#\\/cv1") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).eq("(−2,−1)");
       });
-    cy.get("#\\/cv2 .mjx-mrow")
+    cy.get(cesc("#\\/cv2") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).eq("(2,1)");
       });
-    cy.get("#\\/cv3 .mjx-mrow")
+    cy.get(cesc("#\\/cv3") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).eq("(3,−5)");
       });
-    cy.get("#\\/cv4 .mjx-mrow")
+    cy.get(cesc("#\\/cv4") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).eq("(2,−4)");
       });
-    cy.get("#\\/cv5 .mjx-mrow")
+    cy.get(cesc("#\\/cv5") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).eq("(−2,−6)");
       });
-    cy.get("#\\/cv6 .mjx-mrow")
+    cy.get(cesc("#\\/cv6") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
@@ -11698,15 +11698,33 @@ describe("Curve Tag Bezier Tests", function () {
       );
     });
 
-    cy.get("#\\/m .mjx-mrow").eq(0).should("have.text", "(−3,2)");
-    cy.get("#\\/V1 .mjx-mrow").eq(0).should("have.text", "(7,−2)");
-    cy.get("#\\/V2 .mjx-mrow").eq(0).should("have.text", "(−7,2)");
-    cy.get("#\\/V3 .mjx-mrow").eq(0).should("have.text", "(6,3)");
-    cy.get("#\\/V4 .mjx-mrow").eq(0).should("have.text", "(−6,−3)");
-    cy.get("#\\/V5 .mjx-mrow").eq(0).should("have.text", "(−4,5)");
-    cy.get("#\\/V6 .mjx-mrow").eq(0).should("have.text", "(4,−5)");
-    cy.get("#\\/V7 .mjx-mrow").eq(0).should("have.text", "(−3,2)");
-    cy.get("#\\/V8 .mjx-mrow").eq(0).should("have.text", "(3,−2)");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−7,2)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−6,−3)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,−5)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,−2)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11741,14 +11759,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−5)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(6,3)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(−6,−3)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−4,5)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(4,−5)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(3,−2)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−5)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(−6,−3)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−4,5)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(4,−5)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(3,−2)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11783,14 +11801,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−5)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(−9,−6)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(9,6)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−9,2)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(9,−2)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(3,−2)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−5)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(9,6)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−9,2)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(9,−2)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(3,−2)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11825,14 +11843,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−5)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(9,−9)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(−9,9)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−3,1)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(3,−1)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(3,−2)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−5)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(−9,9)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−3,1)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(3,−1)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(3,−2)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11867,14 +11885,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−5)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(9,−9)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(−9,9)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−5,3)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(5,−3)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(−4,3)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(4,−3)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−5)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(−9,9)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−5,3)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(5,−3)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(−4,3)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(4,−3)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11926,17 +11944,35 @@ describe("Curve Tag Bezier Tests", function () {
       );
     });
 
-    cy.get("#\\/_text1").should("have.text", "a"); //wait for window to load
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for window to load
 
-    cy.get("#\\/m .mjx-mrow").eq(0).should("have.text", "(−3,2)");
-    cy.get("#\\/V1 .mjx-mrow").eq(0).should("have.text", "(3,1)");
-    cy.get("#\\/V2 .mjx-mrow").eq(0).should("have.text", "(−3,−1)");
-    cy.get("#\\/V3 .mjx-mrow").eq(0).should("have.text", "(7,−2)");
-    cy.get("#\\/V4 .mjx-mrow").eq(0).should("have.text", "(6,3)");
-    cy.get("#\\/V5 .mjx-mrow").eq(0).should("have.text", "(−4,5)");
-    cy.get("#\\/V6 .mjx-mrow").eq(0).should("have.text", "(−3,2)");
-    cy.get("#\\/V7 .mjx-mrow").eq(0).should("have.text", "(0,0)");
-    cy.get("#\\/V8 .mjx-mrow").eq(0).should("have.text", "(0,0)");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,1)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,−1)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -11971,14 +12007,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,1)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−1)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(6,3)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−4,5)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(0,0)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,1)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−1)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−4,5)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12013,14 +12049,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,1)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−1)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(−9,−6)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−9,2)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(0,0)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,1)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−1)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−9,2)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12055,14 +12091,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,1)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−1)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(9,−9)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−3,1)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(−3,2)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(0,0)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,1)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−1)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−3,1)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(−3,2)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -12097,14 +12133,14 @@ describe("Curve Tag Bezier Tests", function () {
       });
     });
 
-    cy.get("#\\/V1 .mjx-mrow").should("contain.text", "(3,1)");
-    cy.get("#\\/V2 .mjx-mrow").should("contain.text", "(−3,−1)");
-    cy.get("#\\/V3 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/V4 .mjx-mrow").should("contain.text", "(9,−9)");
-    cy.get("#\\/V5 .mjx-mrow").should("contain.text", "(−5,3)");
-    cy.get("#\\/V6 .mjx-mrow").should("contain.text", "(−4,3)");
-    cy.get("#\\/V7 .mjx-mrow").should("contain.text", "(0,0)");
-    cy.get("#\\/V8 .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V1") + " .mjx-mrow").should("contain.text", "(3,1)");
+    cy.get(cesc2("#/V2") + " .mjx-mrow").should("contain.text", "(−3,−1)");
+    cy.get(cesc2("#/V3") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/V4") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/V5") + " .mjx-mrow").should("contain.text", "(−5,3)");
+    cy.get(cesc2("#/V6") + " .mjx-mrow").should("contain.text", "(−4,3)");
+    cy.get(cesc2("#/V7") + " .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/V8") + " .mjx-mrow").should("contain.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

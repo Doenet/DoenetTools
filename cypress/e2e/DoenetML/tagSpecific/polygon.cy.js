@@ -3858,10 +3858,18 @@ describe("Polygon Tag Tests", function () {
       );
     });
 
-    cy.get("#\\/m .mjx-mrow").eq(0).should("have.text", "(−3,2)");
-    cy.get("#\\/P1 .mjx-mrow").eq(0).should("have.text", "(7,−2)");
-    cy.get("#\\/P2 .mjx-mrow").eq(0).should("have.text", "(6,3)");
-    cy.get("#\\/P3 .mjx-mrow").eq(0).should("have.text", "(−4,5)");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3882,9 +3890,9 @@ describe("Polygon Tag Tests", function () {
       });
     });
 
-    cy.get("#\\/P1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/P2 .mjx-mrow").should("contain.text", "(6,3)");
-    cy.get("#\\/P3 .mjx-mrow").should("contain.text", "(−4,5)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3905,9 +3913,9 @@ describe("Polygon Tag Tests", function () {
       });
     });
 
-    cy.get("#\\/P1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/P2 .mjx-mrow").should("contain.text", "(−9,−6)");
-    cy.get("#\\/P3 .mjx-mrow").should("contain.text", "(−9,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
 
     cy.window().then(async (win) => {
       win.callAction1({
@@ -3919,9 +3927,9 @@ describe("Polygon Tag Tests", function () {
       });
     });
 
-    cy.get("#\\/P1 .mjx-mrow").should("contain.text", "(3,5)");
-    cy.get("#\\/P2 .mjx-mrow").should("contain.text", "(9,−9)");
-    cy.get("#\\/P3 .mjx-mrow").should("contain.text", "(−3,1)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
   });
 
   it("changing styles", () => {

@@ -411,7 +411,7 @@ describe("Line Tag Tests", function () {
       );
     });
 
-    cy.get("#\\/_text1").should("have.text", "a"); // to wait for page to load
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.log("points are where they should be");
     cy.window().then(async (win) => {

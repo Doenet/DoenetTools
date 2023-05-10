@@ -9675,9 +9675,15 @@ describe("Point Tag Tests 2", function () {
       );
     });
 
-    cy.get("#\\/m .mjx-mrow").eq(0).should("have.text", "(6,3)");
-    cy.get("#\\/P2 .mjx-mrow").eq(0).should("have.text", "(5,2)");
-    cy.get("#\\/Q2 .mjx-mrow").eq(0).should("have.text", "(−3,0)");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9694,8 +9700,8 @@ describe("Point Tag Tests 2", function () {
       });
     });
 
-    cy.get("#\\/P2 .mjx-mrow").should("contain.text", "(1,4)");
-    cy.get("#\\/Q2 .mjx-mrow").should("contain.text", "(9,−6)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(1,4)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(9,−6)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9711,8 +9717,8 @@ describe("Point Tag Tests 2", function () {
       });
     });
 
-    cy.get("#\\/P2 .mjx-mrow").should("contain.text", "(7,−1)");
-    cy.get("#\\/Q2 .mjx-mrow").should("contain.text", "(−9,9)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(7,−1)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(−9,9)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
