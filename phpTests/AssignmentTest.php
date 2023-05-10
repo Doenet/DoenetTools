@@ -20,6 +20,16 @@ namespace Tests {
             $response = $this->runScriptExpectJson('public/api/createCourseItem.php');
 
             $this->assertTrue($response['success']);
+            $this->assertEquals('Untitled Activity', $response['itemEntered']['label']);
+            $this->assertEquals(1, $response['itemEntered']['isGloballyAssigned']);
+            $this->assertEquals('0.1.0', $response['itemEntered']['version']);
+            $this->assertEquals([1], $response['itemEntered']['itemWeights']);
+            // TODO - review, asserts the behavior that we put courseId in a DoenetId field
+            $this->assertEquals($this->course1, $response['itemEntered']['parentDoenetId']);
+            $this->assertEquals('page', $response['pageEntered']['type']);
+            $this->assertEquals('Untitled Page', $response['pageEntered']['label']);
+            // Cid for a blank doc
+            $this->assertEquals('bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku', $response['pageEntered']['cid']);
         }
     }
 }
