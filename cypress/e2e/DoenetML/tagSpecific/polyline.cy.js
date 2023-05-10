@@ -3498,8 +3498,8 @@ describe("Polyline Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <polyline vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="p" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="p" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -4268,7 +4268,7 @@ describe("Polyline Tag Tests", function () {
     <point>(-4,-1)</point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>
@@ -4378,13 +4378,13 @@ describe("Polyline Tag Tests", function () {
   <graph name="g1" newNamespace>
     <point>(3,5)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-4,-1)</point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>
@@ -4494,17 +4494,17 @@ describe("Polyline Tag Tests", function () {
   <graph name="g1" newNamespace>
     <point>(3,5)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-4,-1)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>

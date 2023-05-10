@@ -6868,8 +6868,8 @@ describe("Vector Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <vector head="(-1,-0.05)" tail="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -19704,7 +19704,7 @@ describe("Vector Tag Tests", function () {
   <graph>
   <point name="P">(4,1)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <point name="Q">(-4,2)</point>
@@ -19873,7 +19873,7 @@ describe("Vector Tag Tests", function () {
   <point name="P">(4,1)</point>
   <point name="Q">(-4,2)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <vector tail="$P" head="$Q" />
