@@ -8,7 +8,7 @@ import {
   markToCreateAllUniqueNames,
   processAssignNames,
 } from "../utils/serializedStateProcessing";
-import { returnGroupIntoComponentTypeSeparatedBySpaces } from "./commonsugar/lists";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 import { gatherVariantComponents } from "../utils/variants";
 
 export default class Select extends CompositeComponent {
@@ -59,12 +59,12 @@ export default class Select extends CompositeComponent {
       componentAttributes,
       componentInfoObjects,
     }) {
-      // only if all children are strings or options
+      // only if all children are strings or macros
       if (
         !matchedChildren.every(
           (child) =>
             typeof child === "string" ||
-            (child.doenetAttributes && child.doenetAttributes.createdFromMacro),
+            child.doenetAttributes?.createdFromMacro,
         )
       ) {
         return { success: false };
@@ -84,7 +84,7 @@ export default class Select extends CompositeComponent {
 
       // break any string by white space and wrap pieces with option and type
       let groupIntoComponentTypesSeparatedBySpaces =
-        returnGroupIntoComponentTypeSeparatedBySpaces({
+        returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
           componentType: type,
           forceComponentType: true,
         });

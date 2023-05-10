@@ -392,6 +392,42 @@ describe("Line Tag Tests", function () {
     });
   });
 
+  it("through = maths for points, label child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <math>(1,2)</math>
+  <math>(4,7)</math>
+  <graph>
+    <line through="$_math1 $_math2" ><label>l</label></line>
+  </graph>
+  <copy prop="point1" target="_line1" assignNames="p1" />
+  <copy prop="point2" target="_line1" assignNames="p2" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.log("points are where they should be");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1"].stateValues.xs[0]).eq(1);
+      expect(stateVariables["/p1"].stateValues.xs[1]).eq(2);
+      expect(stateVariables["/p1"].stateValues.coords).eqls(["vector", 1, 2]);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(4);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(7);
+      expect(stateVariables["/p2"].stateValues.coords).eqls(["vector", 4, 7]);
+
+      expect(stateVariables["/_line1"].stateValues.label).eq("l");
+      expect(stateVariables["/_line1"].stateValues.slope).eqls(["/", 5, 3]);
+    });
+  });
+
   it("line from sugared equation, single string", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -2251,7 +2287,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(5,1)(1,5)" />
+    <line through="(5,1) (1,5)" />
   </graph>
   <graph>
   <line equation="$(_line1.equation)" />

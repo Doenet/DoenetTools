@@ -1,41 +1,28 @@
 import BaseComponent from "./BaseComponent";
-import { breakEmbeddedStringsIntoParensPieces } from "../commonsugar/breakstrings";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "../commonsugar/lists";
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointListComponent";
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let createPointList = function ({ matchedChildren }) {
-      let results = breakEmbeddedStringsIntoParensPieces({
-        componentList: matchedChildren,
+    let groupIntoPointsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "point",
       });
 
-      if (results.success !== true) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || typeof piece[0] === "string") {
-            return {
-              componentType: "point",
-              children: piece,
-            };
-          } else {
-            return piece[0];
-          }
-        }),
-      };
-    };
-
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
-      replacementFunction: createPointList,
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoPointsSeparatedBySpacesOutsideParens({
+          matchedChildren,
+        });
+      },
     });
 
     return sugarInstructions;

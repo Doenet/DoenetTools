@@ -1027,7 +1027,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function maxima="(-2,2)" through="(-5,0) (-6,-1)(0,0) (1,0)" />
+    <function maxima="(-2,2)" through="(-5,0) (-6,-1) (0, 0) (1, 0)" />
     </graph>
     `,
         },

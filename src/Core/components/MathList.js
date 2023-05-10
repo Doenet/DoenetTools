@@ -1,9 +1,6 @@
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
-import {
-  returnBreakStringsIntoComponentTypeBySpaces,
-  returnGroupIntoComponentTypeSeparatedBySpaces,
-} from "./commonsugar/lists";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 import { convertValueToMathExpression, roundForDisplay } from "../utils/math";
 import {
   returnRoundingAttributeComponentShadowing,
@@ -55,29 +52,13 @@ export default class MathList extends InlineComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let groupIntoMathsSeparatedBySpaces =
-      returnGroupIntoComponentTypeSeparatedBySpaces({
-        componentType: "math",
-      });
-    let breakStringsIntoMathsBySpaces =
-      returnBreakStringsIntoComponentTypeBySpaces({
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
         componentType: "math",
       });
 
     sugarInstructions.push({
-      replacementFunction: function ({
-        matchedChildren,
-        isAttributeComponent = false,
-        createdFromMacro = false,
-      }) {
-        if (isAttributeComponent && !createdFromMacro) {
-          // if in attribute not created by a macros,
-          // then group expressions like 3$x+3 into a single match by wrapping with a math
-          return groupIntoMathsSeparatedBySpaces({ matchedChildren });
-        } else {
-          // otherwise, just break strings into pieces and wrap each piece with a math,
-          // leaving all othe components alone
-          return breakStringsIntoMathsBySpaces({ matchedChildren });
-        }
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoMathsSeparatedBySpaces({ matchedChildren });
       },
     });
 

@@ -1,41 +1,28 @@
 import BaseComponent from "./BaseComponent";
-import { breakEmbeddedStringsIntoParensPieces } from "../commonsugar/breakstrings";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "../commonsugar/lists";
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorListComponent";
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let createVectorList = function ({ matchedChildren }) {
-      let results = breakEmbeddedStringsIntoParensPieces({
-        componentList: matchedChildren,
+    let groupIntoVectorsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "vector",
       });
 
-      if (results.success !== true) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || typeof piece[0] === "string") {
-            return {
-              componentType: "vector",
-              children: piece,
-            };
-          } else {
-            return piece[0];
-          }
-        }),
-      };
-    };
-
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
-      replacementFunction: createVectorList,
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoVectorsSeparatedBySpacesOutsideParens({
+          matchedChildren,
+        });
+      },
     });
 
     return sugarInstructions;

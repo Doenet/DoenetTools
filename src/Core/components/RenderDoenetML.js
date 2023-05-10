@@ -143,27 +143,6 @@ export default class RenderDoenetML extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.refreshNumber = {
-      forRenderer: true,
-      hasEssential: true,
-      defaultValue: 0,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: { refreshNumber: true },
-      }),
-      inverseDefinition({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [
-            {
-              setEssentialValue: "refreshNumber",
-              value: Number(desiredStateVariableValues.refreshNumber),
-            },
-          ],
-        };
-      },
-    };
-
     return stateVariableDefinitions;
   }
 
@@ -173,12 +152,6 @@ export default class RenderDoenetML extends BlockComponent {
     skipRendererUpdate = false,
   }) {
     let updateInstructions = [
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "refreshNumber",
-        value: (await this.stateValues.refreshNumber) + 1,
-      },
       {
         updateType: "updateValue",
         componentName: this.componentName,

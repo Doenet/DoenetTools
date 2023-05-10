@@ -5,7 +5,7 @@ import {
   roundForDisplay,
   vectorOperators,
 } from "../utils/math";
-import { returnBreakStringsSugarFunction } from "./commonsugar/breakstrings";
+import { breakEmbeddedStringByCommas } from "./commonsugar/breakstrings";
 import { deepClone } from "../utils/deepFunctions";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 import {
@@ -100,123 +100,124 @@ export default class Point extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoXsByCommas = function ({
+    let breakIntoXsOrCoords = function ({
       matchedChildren,
       componentInfoObjects,
     }) {
-      let childrenToComponentFunction = (x) => ({
-        componentType: "math",
-        children: x,
-      });
+      let componentIsSpecifiedType =
+        componentInfoObjects.componentIsSpecifiedType;
 
-      let breakFunction = returnBreakStringsSugarFunction({
-        childrenToComponentFunction,
-        mustStripOffOuterParentheses: true,
-      });
+      // Find potential component children, i.e., consecutive children that aren't constraints or labels
+      let componentChildren = [],
+        nonComponentChildrenBegin = [],
+        nonComponentChildrenEnd = [];
 
-      // find index of first and last string
-      let cTypes = matchedChildren.map((x) => typeof x);
-      let beginInd = cTypes.indexOf("string");
-      let lastInd = cTypes.lastIndexOf("string");
-
-      if (beginInd === -1) {
-        // if have no strings but have exactly one child that isn't in child group,
-        // (point, vector, constraints, label)
-        // use that for coords
-
-        let componentIsSpecifiedType =
-          componentInfoObjects.componentIsSpecifiedType;
-
-        let otherChildren = matchedChildren.filter(
-          (child) =>
-            !(
-              componentIsSpecifiedType(child, "point") ||
-              componentIsSpecifiedType(child, "vector") ||
-              componentIsSpecifiedType(child, "constraints") ||
-              componentIsSpecifiedType(child, "label")
-            ),
-        );
-
-        if (otherChildren.length === 1) {
-          let mathChild = otherChildren[0];
-          let mathInd = matchedChildren.indexOf(mathChild);
-
-          let newChildren = [
-            ...matchedChildren.slice(0, mathInd),
-            ...matchedChildren.slice(mathInd + 1),
-          ];
-
-          return {
-            success: true,
-            newAttributes: {
-              coords: {
-                component: {
-                  componentType: "math",
-                  children: otherChildren,
-                },
-              },
-            },
-            newChildren,
-          };
+      for (let child of matchedChildren) {
+        if (
+          componentIsSpecifiedType(child, "constraints") ||
+          componentIsSpecifiedType(child, "label")
+        ) {
+          if (componentChildren.length > 0) {
+            nonComponentChildrenEnd.push(child);
+          } else {
+            nonComponentChildrenBegin.push(child);
+          }
+        } else if (nonComponentChildrenEnd.length > 0) {
+          nonComponentChildrenEnd.push(child);
         } else {
-          // no strings and don't have exactly one non child-group child
+          componentChildren.push(child);
+        }
+      }
+
+      if (componentChildren.length === 0) {
+        return { success: false };
+      }
+
+      if (componentChildren.length === 1) {
+        let child = componentChildren[0];
+
+        if (
+          componentIsSpecifiedType(child, "point") ||
+          componentIsSpecifiedType(child, "vector")
+        ) {
+          // if have an isolated point or vector, don't use sugar
+          // and that child will picked up by the point or vector child group
           return { success: false };
         }
       }
 
-      let newChildren = [
-        ...matchedChildren.slice(0, beginInd),
-        ...matchedChildren.slice(lastInd + 1),
-      ];
-      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
+      let nCompChildren = componentChildren.length;
 
-      let result = breakFunction({ matchedChildren });
+      // check if componentChildren represent a single expression inside parens
+      let firstChar, lastChar;
+      if (typeof componentChildren[0] === "string") {
+        componentChildren[0] = componentChildren[0].trimStart();
+        firstChar = componentChildren[0][0];
+      }
+      if (typeof componentChildren[nCompChildren - 1] === "string") {
+        componentChildren[nCompChildren - 1] =
+          componentChildren[nCompChildren - 1].trimEnd();
+        let lastChild = componentChildren[nCompChildren - 1];
+        lastChar = lastChild[lastChild.length - 1];
+      }
 
-      if (!result.success && matchedChildren.length === 1) {
-        // if didn't succeed and just have a single string child,
-        // then just wrap string with an xs
-        return {
-          success: true,
-          newAttributes: {
-            xs: {
-              component: {
-                componentType: "mathList",
-                children: [
-                  {
+      if (firstChar === "(" && lastChar === ")") {
+        // start and end with parens, check if can split by commas after removing these parens
+        let modifiedChildren = [...componentChildren];
+        modifiedChildren[0] = modifiedChildren[0].substring(1);
+
+        let lastChild = modifiedChildren[modifiedChildren.length - 1];
+        modifiedChildren[modifiedChildren.length - 1] = lastChild.substring(
+          0,
+          lastChild.length - 1,
+        );
+
+        let breakResult = breakEmbeddedStringByCommas({
+          childrenList: modifiedChildren,
+        });
+
+        if (breakResult.success) {
+          // wrap maths around each piece, wrap whole thing in mathList
+          // and use for xs attribute
+          return {
+            success: true,
+            newAttributes: {
+              xs: {
+                component: {
+                  componentType: "mathList",
+                  children: breakResult.pieces.map((x) => ({
                     componentType: "math",
-                    children: matchedChildren,
-                  },
-                ],
+                    children: x,
+                  })),
+                  skipSugar: true,
+                },
               },
             },
-          },
-          newChildren,
-        };
+            newChildren: [
+              ...nonComponentChildrenBegin,
+              ...nonComponentChildrenEnd,
+            ],
+          };
+        }
       }
 
-      if (result.success) {
-        // wrap xs around the x children
-        return {
-          success: true,
-          newAttributes: {
-            xs: {
-              component: {
-                componentType: "mathList",
-                children: result.newChildren,
-                skipSugar: true,
-              },
+      // if didn't succeed in breaking it into xs, then use the component children as a coords
+      return {
+        success: true,
+        newAttributes: {
+          coords: {
+            component: {
+              componentType: "coords",
+              children: componentChildren,
             },
           },
-          newChildren,
-        };
-      } else {
-        return { success: false };
-      }
+        },
+        newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd],
+      };
     };
 
     sugarInstructions.push({
-      // childrenRegex: /n*s+(.*s)?n*/,
-      replacementFunction: breakIntoXsByCommas,
+      replacementFunction: breakIntoXsOrCoords,
     });
 
     return sugarInstructions;
@@ -228,12 +229,8 @@ export default class Point extends GraphicalComponent {
     childGroups.push(
       ...[
         {
-          group: "points",
-          componentTypes: ["point"],
-        },
-        {
-          group: "vectors",
-          componentTypes: ["vector"],
+          group: "pointsAndVectors",
+          componentTypes: ["point", "vector"],
         },
         {
           group: "constraints",
@@ -420,14 +417,9 @@ export default class Point extends GraphicalComponent {
           attributeName: "xs",
           variableNames: ["nComponents"],
         },
-        pointChild: {
+        pointOrVectorChild: {
           dependencyType: "child",
-          childGroups: ["points"],
-          variableNames: ["nDimensions"],
-        },
-        vectorChild: {
-          dependencyType: "child",
-          childGroups: ["vectors"],
+          childGroups: ["pointsAndVectors"],
           variableNames: ["nDimensions"],
         },
       }),
@@ -457,11 +449,11 @@ export default class Point extends GraphicalComponent {
           coords = dependencyValues.coords.stateValues.value;
         } else if (dependencyValues.coordsShadow) {
           basedOnCoords = true;
-          coords = dependencyValues.coordsShadow;
+          coords = dependencyValues.coordsShadow.tuples_to_vectors();
         }
 
         if (basedOnCoords) {
-          let coordsTree = coords.tree;
+          let coordsTree = coords.expand().simplify().tree;
           if (
             Array.isArray(coordsTree) &&
             vectorOperators.includes(coordsTree[0])
@@ -488,21 +480,12 @@ export default class Point extends GraphicalComponent {
               },
             };
           }
-          if (dependencyValues.pointChild.length > 0) {
+          if (dependencyValues.pointOrVectorChild.length > 0) {
             return {
               setValue: {
                 nDimensions: Math.max(
-                  dependencyValues.pointChild[0].stateValues.nDimensions,
-                  nDimensions,
-                ),
-              },
-            };
-          }
-          if (dependencyValues.vectorChild.length > 0) {
-            return {
-              setValue: {
-                nDimensions: Math.max(
-                  dependencyValues.vectorChild[0].stateValues.nDimensions,
+                  dependencyValues.pointOrVectorChild[0].stateValues
+                    .nDimensions,
                   nDimensions,
                 ),
               },
@@ -578,14 +561,9 @@ export default class Point extends GraphicalComponent {
               attributeName: "xs",
               variableNames: ["math" + varEnding],
             },
-            pointChild: {
+            pointOrVectorChild: {
               dependencyType: "child",
-              childGroups: ["points"],
-              variableNames: ["x" + varEnding],
-            },
-            vectorChild: {
-              dependencyType: "child",
-              childGroups: ["vectors"],
+              childGroups: ["pointsAndVectors"],
               variableNames: ["x" + varEnding],
             },
           };
@@ -633,10 +611,11 @@ export default class Point extends GraphicalComponent {
           coords = globalDependencyValues.coords.stateValues.value;
         } else if (globalDependencyValues.coordsShadow) {
           basedOnCoords = true;
-          coords = globalDependencyValues.coordsShadow;
+          coords = globalDependencyValues.coordsShadow.tuples_to_vectors();
         }
 
         if (basedOnCoords) {
+          coords = coords.expand().simplify();
           let coordsTree = coords.tree;
           if (
             Array.isArray(coordsTree) &&
@@ -645,16 +624,16 @@ export default class Point extends GraphicalComponent {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
-                if (coords.tree[ind + 1] === undefined) {
+                if (coordsTree[ind + 1] === undefined) {
                   newXs[arrayKey] = me.fromAst("\uff3f");
                 } else {
-                  newXs[arrayKey] = coords.get_component(ind).simplify();
+                  newXs[arrayKey] = coords.get_component(ind);
                 }
               }
             }
           } else {
             if (arrayKeys.includes("0")) {
-              newXs[0] = coords.simplify();
+              newXs[0] = coords;
             }
           }
         } else {
@@ -667,14 +646,11 @@ export default class Point extends GraphicalComponent {
                 newXs[arrayKey] = val.simplify();
               }
             } else {
-              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length > 0) {
-                newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding];
-              } else {
-                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
-                if (vectorChild.length > 0) {
-                  newXs[arrayKey] = vectorChild[0].stateValues["x" + varEnding];
-                }
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              if (pointOrVectorChild.length > 0) {
+                newXs[arrayKey] =
+                  pointOrVectorChild[0].stateValues["x" + varEnding];
               }
             }
           }
@@ -759,29 +735,21 @@ export default class Point extends GraphicalComponent {
                 variableIndex: 0,
               });
             } else {
-              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length > 0) {
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              if (pointOrVectorChild.length > 0) {
                 instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                  setDependency:
+                    dependencyNamesByKey[arrayKey].pointOrVectorChild,
                   desiredValue,
                   childIndex: 0,
                   variableIndex: 0,
                 });
               } else {
-                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
-                if (vectorChild.length > 0) {
-                  instructions.push({
-                    setDependency: dependencyNamesByKey[arrayKey].vectorChild,
-                    desiredValue,
-                    childIndex: 0,
-                    variableIndex: 0,
-                  });
-                } else {
-                  instructions.push({
-                    setEssentialValue: "unconstrainedXs",
-                    value: { [arrayKey]: desiredValue },
-                  });
-                }
+                instructions.push({
+                  setEssentialValue: "unconstrainedXs",
+                  value: { [arrayKey]: desiredValue },
+                });
               }
             }
           }

@@ -75,7 +75,7 @@ describe("MathList Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <mathlist>a (  1+1 </mathlist>
+    <mathlist>a @  1+1 </mathlist>
     `,
         },
         "*",

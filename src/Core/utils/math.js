@@ -413,6 +413,8 @@ export async function preprocessMathInverseDefinition({
   } else {
     let currentValue = await stateValues[variableName];
 
+    currentValue = currentValue.expand().simplify();
+
     if (currentValue && arrayKey !== undefined) {
       // TODO: generalize to multi-dimensional arrays?
       currentValue = currentValue[arrayKey];

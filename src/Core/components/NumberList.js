@@ -5,10 +5,7 @@ import {
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
 import InlineComponent from "./abstract/InlineComponent";
-import {
-  returnBreakStringsIntoComponentTypeBySpaces,
-  returnGroupIntoComponentTypeSeparatedBySpaces,
-} from "./commonsugar/lists";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 import me from "math-expressions";
 
 export default class NumberList extends InlineComponent {
@@ -49,25 +46,13 @@ export default class NumberList extends InlineComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let groupIntoNumbersSeparatedBySpaces =
-      returnGroupIntoComponentTypeSeparatedBySpaces({
-        componentType: "number",
-      });
-    let breakStringsIntoNumbersBySpaces =
-      returnBreakStringsIntoComponentTypeBySpaces({
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
         componentType: "number",
       });
 
     sugarInstructions.push({
-      replacementFunction: function ({
-        matchedChildren,
-        isAttributeComponent = false,
-        createdFromMacro = false,
-      }) {
-        if (isAttributeComponent && !createdFromMacro) {
-          return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
-        } else {
-          return breakStringsIntoNumbersBySpaces({ matchedChildren });
-        }
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
       },
     });
 

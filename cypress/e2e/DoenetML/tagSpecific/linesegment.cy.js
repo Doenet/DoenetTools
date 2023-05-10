@@ -2794,7 +2794,7 @@ describe("LineSegment Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="(1,2)(3,4)"/>
+  <linesegment endpoints="(1,2) (3,4)"/>
   </graph>
   <graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p1" />
