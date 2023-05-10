@@ -32,7 +32,7 @@ export default function ActivityCard({
       <Link to={imageLink}>
         <Image
           height="120px"
-          maxWidth="180px"
+          width="180px"
           src={imagePath}
           alt="Activity Card Image"
           borderTopRadius="md"

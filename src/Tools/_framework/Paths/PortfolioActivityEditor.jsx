@@ -1225,8 +1225,11 @@ function MathKeyboard() {
 }
 
 export function PortfolioActivityEditor() {
-  const { doenetML, pageId, courseId, activityData, lastKnownCid } =
+  const { doenetId, doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
+
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -1352,7 +1355,7 @@ export function PortfolioActivityEditor() {
             <GridItem area="leftControls">
               <HStack ml="10px" mt="4px">
                 <ButtonGroup size="sm" isAttached variant="outline">
-                  <Tooltip hasArrow label="View Activity cmd+v">
+                  <Tooltip hasArrow label="View Activity">
                     <Button
                       isActive={mode == "View"}
                       size="sm"
@@ -1364,7 +1367,7 @@ export function PortfolioActivityEditor() {
                       View
                     </Button>
                   </Tooltip>
-                  <Tooltip hasArrow label="Edit Activity cmd+e">
+                  <Tooltip hasArrow label="Edit Activity">
                     <Button
                       isActive={mode == "Edit"}
                       size="sm"
@@ -1434,6 +1437,37 @@ export function PortfolioActivityEditor() {
               justifyContent="flex-end"
             >
               <HStack mr="10px">
+                {activityData?.isPublic == "1" && (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      //Process making activity public here
+                      compileActivity({
+                        activityDoenetId: doenetId,
+                        isAssigned: true,
+                        courseId,
+                        activity: {
+                          version: activityData.version,
+                          isSinglePage: true,
+                          content: activityData.content,
+                        },
+                        // successCallback: () => {
+                        //   addToast('Activity Assigned.', toastType.INFO);
+                        // },
+                      });
+                      updateAssignItem({
+                        doenetId,
+                        isAssigned: true,
+                        successCallback: () => {
+                          //addToast(assignActivityToast, toastType.INFO);
+                        },
+                      });
+                    }}
+                  >
+                    Update Public Activity
+                  </Button>
+                )}
+                {/* <Button colorScheme="orange">Orange</Button> */}
                 <Link
                   href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
                   isExternal
