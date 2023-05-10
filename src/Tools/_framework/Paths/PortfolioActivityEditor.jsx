@@ -575,7 +575,7 @@ function SupportFilesControls() {
           }
           return (
             <Card
-              key={`file${i}`}
+              key={`file${file.cid}`}
               width="100%"
               height="100px"
               p="0"
@@ -602,26 +602,29 @@ function SupportFilesControls() {
                     <GridItem area="information">
                       <VStack spacing="2px" height="50px" align="flex-start">
                         {/* TODO: Make this editable */}
-                        {/* <Editable
-                          mt="4px"
-                          value={label}
-                          textAlign="center"
-                          onChange={(value) => {
-                            setLabel(value);
-                          }}
+                        <Editable
+                          // mt="4px"
+                          fontSize="md"
+                          fontWeight="700"
+                          noOfLines={1}
+                          textAlign="left"
+                          defaultValue={file.description}
                           onSubmit={(value) => {
-                            let submitValue = value;
-
                             fetcher.submit(
-                              { _action: "update label", label: submitValue },
+                              {
+                                _action: "update description",
+                                description: value,
+                                doenetId,
+                                cid: file.cid,
+                              },
                               { method: "post" },
                             );
                           }}
                         >
                           <EditablePreview />
                           <EditableInput width="400px" />
-                        </Editable> */}
-                        <Text
+                        </Editable>
+                        {/* <Text
                           height="26px"
                           // lineHeight="1.1"
                           fontSize="md"
@@ -630,7 +633,7 @@ function SupportFilesControls() {
                           textAlign="left"
                         >
                           {file.description}
-                        </Text>
+                        </Text> */}
                         <Text>
                           {file.fileType} {file.width} x {file.height}
                         </Text>
