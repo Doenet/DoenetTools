@@ -1496,7 +1496,6 @@ export function PortfolioActivityEditor() {
             <ResizeableSideBySide
               left={
                 <PageViewer
-                  key={`HPpageViewer`}
                   doenetML={viewerDoenetML}
                   flags={{
                     showCorrectness: true,
@@ -1519,7 +1518,6 @@ export function PortfolioActivityEditor() {
               }
               right={
                 <CodeMirror
-                  key="codemirror"
                   editorRef={editorRef}
                   setInternalValueTo={textEditorDoenetML.current}
                   onBeforeChange={(value) => {
@@ -1597,7 +1595,6 @@ export function PortfolioActivityEditor() {
                     marginBottom="50vh"
                   >
                     <PageViewer
-                      key={`HPpageViewer`}
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
