@@ -57,7 +57,7 @@ export default function RecoilActivityCard({
       <Link to={`/portfolioeditor/${doenetId}/${pageDoenetId}`}>
         <Image
           height="120px"
-          maxWidth="180px"
+          width="180px"
           src={imagePath}
           alt="Activity Card Image"
           borderTopRadius="md"
