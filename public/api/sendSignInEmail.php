@@ -80,7 +80,7 @@ $headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n";
 mail($emailaddress,$subject,$htmlContent, $headers);
 
 $response_arr = array(
-    "success" => 1,
+    "success" => true,
     "deviceName" => $deviceName,
     );
 

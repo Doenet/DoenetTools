@@ -1,58 +1,26 @@
 <?php
-
-namespace Legacy {
-     function file_get_contents($path) {
-        if ($path == "php://input") {
-            return json_encode([
-                'driveId' => 'ADFASDF',
-                'parentFolderId' => '1234',
-                'itemId' => 'itemId123',
-                'versionId' => 'versionId123',
-                'label' => 'label in test',
-                'type' => 'DoenetML',
-                'doenetId' => 'doenetId123',
-                'userId' => 'cyuserid'
-            ]);
-        }
-    }
-
-    function mail($emailaddress,$subject,$htmlContent, $headers) {}
-}
-
 namespace Tests {
-    use \Firebase\JWT\JWT;
-    require_once "vendor/autoload.php";
+    include 'DoenetTestBase.php';
+    class AssignmentTest extends DoenetTestBase {
 
-    class AssignmentTest extends \PHPUnit\Framework\TestCase {
-    /**
+        /**
          * @runInSeparateProcess
          */
-        public function testAddItem() {
-            $_SERVER = ['HTTP_HOST' => 'localhost'];
-            $_POST = [
-                'driveId' => 'ADFASDF',
-                'parentFolderId' => '1234',
-                'itemId' => 'itemId123',
-                'versionId' => 'versionId123',
-                'label' => 'label in test',
-                'type' => 'DoenetML',
-                'doenetId' => 'doenetId123',
-                'userId' => 'cyuserid'
-            ];
-            $_REQUEST["emailaddress"] = "test@test.com";
-            include "public/api/sendSignInEmail.php";
-
-            $payload = [
-                // "email" => $emailaddress,
-                'userId' => "134124234",
-                'deviceName' => "a test device name",
-                // "expires" => $expirationTime
-            ];
-            $key = $ini_array['key'];
-            $jwt = JWT::encode($payload, $key);
-            $_COOKIE = ['JWT' => $jwt];
+        public function testCreateCourseItem() {
+            $this->mockJsonBody([
+                'courseId' => $this->course1,
+                // TODO - review this
+                // this is what the app code does, it passes the course Id for these
+                // if there is no content in the course
+                'previousContainingDoenetId' => $this->course1,
+                'parentDoenetId' => $this->course1,
+                'itemType' => 'activity'
+            ]);
             
-            include 'public/api/addItem.php';
+            $response = $this->runScriptExpectJson('public/api/createCourseItem.php');
+
+            print_r($response);
+            $this->assertTrue($response['success']);
         }
     }
 }
