@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
-} from 'recoil';
-import { coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
-import { UTCDateStringToDate } from '../../../_utils/dateUtilityFunction';
+} from "recoil";
+import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
+import { UTCDateStringToDate } from "../../../_utils/dateUtilityFunction";
 
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
 import {
   Styles,
   Table,
@@ -16,29 +16,29 @@ import {
   overviewData,
   gradeSorting,
   gradeCategories,
-} from './Gradebook';
+} from "./Gradebook";
 
 export default function GradebookStudent() {
   //const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  let courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  let userId = useRecoilValue(searchParamAtomFamily('userId'));
+  let courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  let userId = useRecoilValue(searchParamAtomFamily("userId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let assignments = useRecoilValueLoadable(assignmentData);
   let students = useRecoilValueLoadable(studentData);
   let overview = useRecoilValueLoadable(overviewData);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (course?.canViewCourse == '0') {
-    return <h1>No Access to view this page.</h1>
+  if (course?.canViewCourse == "0") {
+    return <h1>No Access to view this page.</h1>;
   }
 
   let overviewTable = {};
 
   overviewTable.headers = [
     {
-      Header: 'Assignment',
-      Footer: 'Course Total',
-      accessor: 'assignment',
+      Header: "Assignment",
+      Footer: "Course Total",
+      accessor: "assignment",
       disableFilters: true,
       disableSortBy: true,
     },
@@ -49,15 +49,17 @@ export default function GradebookStudent() {
   let totalScore = 0;
 
   if (
-    assignments.state == 'hasValue' &&
-    students.state === 'hasValue' &&
-    overview.state === 'hasValue' &&
+    assignments.state == "hasValue" &&
+    students.state === "hasValue" &&
+    overview.state === "hasValue" &&
     userId !== null &&
-    userId !== ''
+    userId !== ""
   ) {
     let totalPossiblePoints = 0;
     let sortedAssignments = Object.entries(assignments.contents);
-    sortedAssignments.sort((a, b) => (a[1].sortOrder < b[1].sortOrder ? -1 : 1));
+    sortedAssignments.sort((a, b) =>
+      a[1].sortOrder < b[1].sortOrder ? -1 : 1,
+    );
 
     for (let {
       category,
@@ -82,13 +84,13 @@ export default function GradebookStudent() {
           continue;
         }
 
-        let assignedpoints = '-';
+        let assignedpoints = "-";
         let possiblepoints =
           assignments.contents[doenetId].totalPointsOrPercent * 1;
         let credit = overview.contents[userId].assignments[doenetId];
         if (
           credit === null &&
-          assignments.contents[doenetId].isGloballyAssigned === '0'
+          assignments.contents[doenetId].isGloballyAssigned === "0"
         ) {
           continue;
         }
@@ -98,7 +100,7 @@ export default function GradebookStudent() {
         scores.push(score);
 
         score = Math.round(score * 100) / 100;
-        let percentage = Math.round(credit * 1000) / 10 + '%';
+        let percentage = Math.round(credit * 1000) / 10 + "%";
 
         const convertedTZAssignedDate = UTCDateStringToDate(assignedDate);
 
@@ -118,18 +120,18 @@ export default function GradebookStudent() {
             onClick={() => {
               // e.stopPropagation()
               setPageToolView({
-                page: 'course',
-                tool: 'gradebookStudentAssignment',
-                view: '',
+                page: "course",
+                tool: "gradebookStudentAssignment",
+                view: "",
                 params: {
                   courseId,
                   userId,
                   doenetId,
-                  previousCrumb: 'student',
+                  previousCrumb: "student",
                 },
               });
             }}
-            style={{ paddingLeft: '15px' }}
+            style={{ paddingLeft: "15px" }}
           >
             {assignments.contents[doenetId].label}
           </a>
@@ -164,7 +166,7 @@ export default function GradebookStudent() {
       let categoryAssignedPoints = Math.min(scaledAssignedPoints, maximumValue);
 
       if (categoryAssignedPointsAreAllDashes) {
-        categoryAssignedPoints = '-';
+        categoryAssignedPoints = "-";
       }
 
       //Sort by points value and retain the maximumNumber
@@ -179,16 +181,16 @@ export default function GradebookStudent() {
       //cap value to maximumValue
       let categoryPossiblePoints = Math.min(scaledPossiblePoints, maximumValue);
 
-      let categoryPercentage = '0%';
+      let categoryPercentage = "0%";
 
       if (categoryPossiblePoints !== 0) {
         categoryPercentage =
           Math.round((categoryScore / categoryPossiblePoints) * 1000) / 10 +
-          '%';
+          "%";
       }
       totalScore += categoryScore;
       totalPossiblePoints += categoryPossiblePoints;
-      if (categoryAssignedPoints != '-') {
+      if (categoryAssignedPoints != "-") {
         totalAssignedPoints += categoryAssignedPoints;
         categoryAssignedPoints = Math.round(categoryAssignedPoints * 100) / 100;
       }
@@ -213,8 +215,8 @@ export default function GradebookStudent() {
           <b>
             {`Subtotal for ${category}`}
             {description.length > 0 && (
-              <div style={{ fontSize: '.7em' }}>
-                Based on {description.join(',')}
+              <div style={{ fontSize: ".7em" }}>
+                Based on {description.join(",")}
               </div>
             )}
           </b>
@@ -226,7 +228,7 @@ export default function GradebookStudent() {
       });
     }
     let totalPercentage =
-      Math.round((totalScore / totalPossiblePoints) * 1000) / 10 + '%';
+      Math.round((totalScore / totalPossiblePoints) * 1000) / 10 + "%";
 
     totalScore = Math.round(totalScore * 100) / 100;
     totalPossiblePoints = Math.round(totalPossiblePoints * 100) / 100;
@@ -234,30 +236,30 @@ export default function GradebookStudent() {
 
     overviewTable.headers.push(
       {
-        Header: 'Possible Points',
+        Header: "Possible Points",
         Footer: totalPossiblePoints,
-        accessor: 'possiblepoints',
+        accessor: "possiblepoints",
         disableFilters: true,
         disableSortBy: true,
       },
       {
-        Header: 'Assigned Points',
+        Header: "Assigned Points",
         Footer: totalAssignedPoints,
-        accessor: 'assignedpoints',
+        accessor: "assignedpoints",
         disableFilters: true,
         disableSortBy: true,
       },
       {
-        Header: 'Score',
+        Header: "Score",
         Footer: totalScore,
-        accessor: 'score',
+        accessor: "score",
         disableFilters: true,
         disableSortBy: true,
       },
       {
-        Header: 'Percentage',
+        Header: "Percentage",
         Footer: totalPercentage,
-        accessor: 'percentage',
+        accessor: "percentage",
         disableFilters: true,
         disableSortBy: true,
       },
@@ -268,10 +270,10 @@ export default function GradebookStudent() {
 
   return (
     <>
-      <div style={{ marginLeft: '18px' }}>
+      <div style={{ marginLeft: "18px" }}>
         <b>Gradebook for {studentName}</b>
       </div>
-      <div style={{ marginLeft: '18px' }}>
+      <div style={{ marginLeft: "18px" }}>
         <b>
           Current Score {totalScore}/{totalAssignedPoints}
         </b>

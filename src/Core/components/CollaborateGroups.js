@@ -1,5 +1,5 @@
-import BaseComponent from './abstract/BaseComponent';
-import { breakStringsAndOthersIntoComponentsByStringCommas } from './commonsugar/breakstrings';
+import BaseComponent from "./abstract/BaseComponent";
+import { breakStringsAndOthersIntoComponentsByStringCommas } from "./commonsugar/breakstrings";
 
 export default class CollaborateGroups extends BaseComponent {
   static componentType = "collaborateGroups";
@@ -12,20 +12,25 @@ export default class CollaborateGroups extends BaseComponent {
 
     let atLeastZeroPoints = childLogic.newLeaf({
       name: "atLeastZeroPoints",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 0
+      componentType: "point",
+      comparison: "atLeast",
+      number: 0,
     });
 
-    let breakIntoPointsByCommas = breakStringsAndOthersIntoComponentsByStringCommas(x => ({
-      componentType: "point", children: [{
-        componentType: "coords", children: x
-      }]
-    }));
+    let breakIntoPointsByCommas =
+      breakStringsAndOthersIntoComponentsByStringCommas((x) => ({
+        componentType: "point",
+        children: [
+          {
+            componentType: "coords",
+            children: x,
+          },
+        ],
+      }));
 
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
-      componentType: 'string',
+      componentType: "string",
       number: 1,
       isSugar: true,
       logicToWaitOnSugar: ["atLeastZeroPoints"],
@@ -34,7 +39,7 @@ export default class CollaborateGroups extends BaseComponent {
 
     childLogic.newOperator({
       name: "pointsXorSugar",
-      operator: 'xor',
+      operator: "xor",
       propositions: [exactlyOneString, atLeastZeroPoints],
       setAsBase: true,
     });
@@ -42,9 +47,7 @@ export default class CollaborateGroups extends BaseComponent {
     return childLogic;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.collaborateGroups = {
@@ -52,33 +55,38 @@ export default class CollaborateGroups extends BaseComponent {
         pointChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
-          variableNames: ["xs", "coords", "nDimensions"]
-        }
+          variableNames: ["xs", "coords", "nDimensions"],
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         let groups = {};
 
         for (let point of dependencyValues.pointChildren) {
-
           if (point.stateValues.nDimensions !== 2) {
-            console.warn(`invalid collaborate group: ${point.stateValues.coords.toString()}`)
-
+            console.warn(
+              `invalid collaborate group: ${point.stateValues.coords.toString()}`,
+            );
           } else {
             let numberOfGroups = point.stateValues.xs[0].evaluate_to_constant();
             let group = point.stateValues.xs[1].evaluate_to_constant();
 
-            if (!(Number.isInteger(numberOfGroups) && numberOfGroups > 0
-              && Number.isInteger(group) && group > 0)
+            if (
+              !(
+                Number.isInteger(numberOfGroups) &&
+                numberOfGroups > 0 &&
+                Number.isInteger(group) &&
+                group > 0
+              )
             ) {
-              console.warn(`invalid collaborate group: ${point.stateValues.coords.toString()}`)
+              console.warn(
+                `invalid collaborate group: ${point.stateValues.coords.toString()}`,
+              );
             } else {
               if (groups[numberOfGroups] === undefined) {
                 groups[numberOfGroups] = [];
               }
               groups[numberOfGroups].push(group);
             }
-
           }
         }
 
@@ -87,30 +95,25 @@ export default class CollaborateGroups extends BaseComponent {
             let collaborationAssignment = groups[numberOfGroups];
             if (collaborationAssignment === undefined) {
               return false;
-            }
-            else {
+            } else {
               return collaborationAssignment.includes(groupNumber);
             }
           } else {
             return true;
           }
-
-        }
+        };
 
         return {
           setValue: {
             collaborateGroups: {
-              groups, matchGroup
-            }
-          }
-        }
-
-      }
-    }
+              groups,
+              matchGroup,
+            },
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
 }

@@ -1,4 +1,4 @@
-import Point from './Point';
+import Point from "./Point";
 
 export default class Endpoint extends Point {
   static componentType = "endpoint";
@@ -26,17 +26,24 @@ export default class Endpoint extends Point {
     return attributes;
   }
 
-
-  async switchPoint({ actionId, }) {
+  async switchPoint({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "open",
-          value: !await this.stateValues.open,
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "open",
+            value: !(await this.stateValues.open),
+          },
+        ],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -44,14 +51,12 @@ export default class Endpoint extends Point {
             componentType: this.componentType,
           },
           result: {
-            open: !await this.stateValues.open
-          }
-        }
+            open: !(await this.stateValues.open),
+          },
+        },
       });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
-
   }
-
 }

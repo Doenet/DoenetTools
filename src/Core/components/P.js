@@ -1,22 +1,28 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class P extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "p";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {
-
-    return [{
-      group: "inlines",
-      componentTypes: ["_inline"]
-    }]
-
+    return [
+      {
+        group: "inlinesAndLists",
+        componentTypes: ["_inline", "ol", "ul"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.text = {
@@ -27,14 +33,13 @@ export default class P extends BlockComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childGroups: ["inlines"],
+          childGroups: ["inlinesAndLists"],
           variableNames: ["text"],
           variablesOptional: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let text = ""
+        let text = "";
         for (let child of dependencyValues.inlineChildren) {
           if (typeof child !== "object") {
             text += child.toString();
@@ -46,11 +51,10 @@ export default class P extends BlockComponent {
         }
 
         return { setValue: { text } };
-      }
-    }
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -60,13 +64,8 @@ export default class P extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
 }

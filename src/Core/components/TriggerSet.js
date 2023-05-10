@@ -1,8 +1,29 @@
-import { returnLabelStateVariableDefinitions } from '../utils/label';
-import InlineComponent from './abstract/InlineComponent';
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
+import {
+  addStandardTriggeringStateVariableDefinitions,
+  returnStandardTriggeringAttributes,
+} from "../utils/triggering";
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
 
 export default class triggerSet extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      triggerActions: this.triggerActions.bind(this),
+      triggerActionsIfTriggerNewlyTrue:
+        this.triggerActionsIfTriggerNewlyTrue.bind(this),
+      moveButton: this.moveButton.bind(this),
+    });
+  }
   static componentType = "triggerSet";
+  static rendererType = "button";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -16,201 +37,106 @@ export default class triggerSet extends InlineComponent {
       public: true,
     };
 
-    attributes.triggerWhen = {
+    attributes.draggable = {
       createComponentOfType: "boolean",
-      createStateVariable: "triggerWhen",
-      defaultValue: false,
-      triggerActionOnChange: "triggerActionsIfTriggerNewlyTrue"
-    }
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
 
-    attributes.triggerWith = {
-      createPrimitiveOfType: "string"
-    }
+    Object.assign(attributes, returnAnchorAttributes());
 
-    attributes.triggerWhenObjectsClicked = {
-      createPrimitiveOfType: "string"
-    }
+    let triggerAttributes = returnStandardTriggeringAttributes(
+      "triggerActionsIfTriggerNewlyTrue",
+    );
+
+    Object.assign(attributes, triggerAttributes);
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "updateValuesCallActions",
-      componentTypes: ["updateValue", "callAction"]
-    }, {
-      group: "labels",
-      componentTypes: ["label"]
-    }]
-
+    return [
+      {
+        group: "updateValuesCallActions",
+        componentTypes: ["updateValue", "callAction"],
+      },
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
+    ];
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let labelDefinitions = returnLabelStateVariableDefinitions();
+    addStandardTriggeringStateVariableDefinitions(
+      stateVariableDefinitions,
+      "triggerActions",
+    );
 
+    let labelDefinitions = returnLabelStateVariableDefinitions();
     Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
+    stateVariableDefinitions.clickAction = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { clickAction: "triggerActions" } }),
+    };
 
     stateVariableDefinitions.updateValueAndActionsToTrigger = {
       returnDependencies: () => ({
         updateValueAndCallActionChildren: {
           dependencyType: "child",
           childGroups: ["updateValuesCallActions"],
-        }
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            updateValueAndActionsToTrigger: dependencyValues.updateValueAndCallActionChildren
-          }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWith = {
-      returnDependencies: () => ({
-        triggerWith: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWith"
-        },
-        triggerWhenObjectsClicked: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWhenObjectsClicked"
-        },
-        triggerWhen: {
-          dependencyType: "attributeComponent",
-          attributeName: "triggerWhen"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen) {
-          return { setValue: { triggerWith: null } }
-        } else {
-          let triggerWith = [];
-          if (dependencyValues.triggerWith !== null) {
-            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target })
-            }
-          }
-          if (dependencyValues.triggerWhenObjectsClicked !== null) {
-            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target, triggeringAction: "click" })
-            }
-          }
-
-          if (triggerWith.length === 0) {
-            triggerWith = null;
-          }
-
-          return { setValue: { triggerWith } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithTargetIds = {
-      chainActionOnActionOfStateVariableTargets: {
-        triggeredAction: "triggerActions"
-      },
-      stateVariablesDeterminingDependencies: ["triggerWith"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          triggerWith: {
-            dependencyType: "stateVariable",
-            variableName: "triggerWith"
-          }
+            updateValueAndActionsToTrigger:
+              dependencyValues.updateValueAndCallActionChildren,
+          },
         };
-        if (stateValues.triggerWith) {
-          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
-
-            dependencies[`triggerWithTargetComponentName${ind}`] = {
-              dependencyType: "expandTargetName",
-              target: targetObj.target
-            }
-          }
-        }
-        return dependencies;
       },
-      definition({ dependencyValues }) {
-        let triggerWithTargetIds = [];
-
-        if (dependencyValues.triggerWith) {
-          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
-
-            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
-
-            if (targetObj.triggeringAction) {
-              id += "|" + targetObj.triggeringAction;
-            };
-
-            if (!triggerWithTargetIds.includes(id)) {
-              triggerWithTargetIds.push(id);
-            }
-
-          }
-        }
-
-        return { setValue: { triggerWithTargetIds } }
-      },
-      markStale() {
-        return { updateActionChaining: true }
-      },
-    }
-
-
-    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
-    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
-
-    stateVariableDefinitions.hidden.returnDependencies = function (args) {
-      let dependencies = originalHiddenReturnDependencies(args);
-      dependencies.triggerWhen = {
-        dependencyType: "attributeComponent",
-        attributeName: "triggerWhen"
-      },
-        dependencies.triggerWith = {
-          dependencyType: "stateVariable",
-          variableName: "triggerWith"
-        }
-      return dependencies;
-    }
-
-    stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWith) {
-        return { setValue: { hidden: true } }
-      } else {
-        return originalHiddenDefinition(args);
-      }
-    }
+    };
 
     return stateVariableDefinitions;
-
   }
 
-
-  async triggerActions({ actionId }) {
-
+  async triggerActions({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     for (let child of await this.stateValues.updateValueAndActionsToTrigger) {
-
-      if (this.componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: child.componentType,
-        baseComponentType: "updateValue"
-      })) {
+      if (
+        this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "updateValue",
+        })
+      ) {
         await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "updateValue",
+          args: { actionId, sourceInformation, skipRendererUpdate: true },
+        });
+      } else if (
+        this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "callAction",
         })
-      } else if (this.componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: child.componentType,
-        baseComponentType: "callAction"
-      })) {
+      ) {
         await this.coreFunctions.performAction({
           componentName: child.componentName,
           actionName: "callAction",
-        })
+          args: { actionId, sourceInformation, skipRendererUpdate: true },
+        });
       }
     }
 
@@ -218,22 +144,46 @@ export default class triggerSet extends InlineComponent {
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
-    })
-
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 
-  async triggerActionsIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
+  async triggerActionsIfTriggerNewlyTrue({
+    stateValues,
+    previousValues,
+    actionId,
+  }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
-      return await this.triggerActions({ actionId });
+      return await this.triggerActions({ actionId, skipRendererUpdate: true });
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  actions = {
-    triggerActions: this.triggerActions.bind(this),
-    triggerActionsIfTriggerNewlyTrue: this.triggerActionsIfTriggerNewlyTrue.bind(this)
-  };
+  async moveButton({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    return await moveGraphicalObjectWithAnchorAction({
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions,
+    });
+  }
 }

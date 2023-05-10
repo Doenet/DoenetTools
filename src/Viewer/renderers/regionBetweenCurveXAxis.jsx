@@ -1,17 +1,21 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
-import { createFunctionFromDefinition } from '../../Core/utils/function';
+import React, { useContext, useEffect, useState, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
+import { createFunctionFromDefinition } from "../../Core/utils/function";
+import { useRecoilValue } from "recoil";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, id, SVs } = useDoenetRender(props);
 
-  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
+  RegionBetweenCurveXAxis.ignoreActionsWithoutCore = () => true;
 
   const board = useContext(BoardContext);
 
-  let curveJXG = useRef(null)
-  let integralJXG = useRef(null)
+  let curveJXG = useRef(null);
+  let integralJXG = useRef(null);
+
+  const darkMode = useRecoilValue(darkModeAtom);
 
   useEffect(() => {
     //On unmount
@@ -20,23 +24,22 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       if (integralJXG.current !== null) {
         deleteRegion();
       }
-    }
-  }, [])
-
+    };
+  }, []);
 
   function createRegion() {
-
-    if (!SVs.haveFunction || SVs.boundaryValues.length !== 2 ||
+    if (
+      !SVs.haveFunction ||
+      SVs.boundaryValues.length !== 2 ||
       !SVs.boundaryValues.every(Number.isFinite)
     ) {
       return null;
     }
 
-    let fillColor = SVs.selectedStyle.fillColor;
-    if(fillColor === "none") {
-      fillColor = SVs.selectedStyle.lineColor;
-    }
-
+    let fillColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.fillColorDarkMode
+        : SVs.selectedStyle.fillColor;
 
     // Note: actual content of label is being ignored
     // but, if label is non-empty, then jsxgraph display a label
@@ -49,7 +52,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.labelForGraph !== "",
       fixed: true,
-      layer: 10 * SVs.layer + 7,
+      layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 
       fillColor,
       fillOpacity: SVs.selectedStyle.fillOpacity,
@@ -57,22 +60,24 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
 
       // don't display points at left and right endpoints along function
       curveLeft: { visible: false },
-      curveRight: { visible: false }
+      curveRight: { visible: false },
     };
 
     jsxAttributes.label = {
-      highlight: false
-    }
+      highlight: false,
+    };
 
     let f = createFunctionFromDefinition(SVs.fDefinition);
-    curveJXG.current = board.create('functiongraph', f, { visible: false });
+    curveJXG.current = board.create("functiongraph", f, { visible: false });
 
-    return board.create('integral', [SVs.boundaryValues, curveJXG.current], jsxAttributes);
-
+    return board.create(
+      "integral",
+      [SVs.boundaryValues, curveJXG.current],
+      jsxAttributes,
+    );
   }
 
   function deleteRegion() {
-
     if (integralJXG.current) {
       board.removeObject(integralJXG.current);
       integralJXG.current = null;
@@ -82,17 +87,16 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
     }
   }
 
-
-
   if (board) {
     if (integralJXG.current === null) {
       integralJXG.current = createRegion();
-    } else if (!SVs.haveFunction || SVs.boundaryValues.length !== 2 ||
+    } else if (
+      !SVs.haveFunction ||
+      SVs.boundaryValues.length !== 2 ||
       !SVs.boundaryValues.every(Number.isFinite)
     ) {
       deleteRegion();
     } else {
-
       let f = createFunctionFromDefinition(SVs.fDefinition);
 
       curveJXG.current.Y = f;
@@ -104,27 +108,36 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.visPropCalc["visible"] = !SVs.hidden;
 
       let [x1, x2] = SVs.boundaryValues;
-      let [y1, y2] = SVs.boundaryValues.map(f)
-      integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
-      integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [x2, y2]);
+      let [y1, y2] = SVs.boundaryValues.map(f);
+      integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [
+        x1,
+        y1,
+      ]);
+      integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [
+        x2,
+        y2,
+      ]);
 
-      let layer = 10 * SVs.layer + 7;
+      let layer = 10 * SVs.layer + LINE_LAYER_OFFSET;
       let layerChanged = integralJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         integralJXG.current.setAttribute({ layer });
       }
 
-      let fillColor = SVs.selectedStyle.fillColor;
-      if(fillColor === "none") {
-        fillColor = SVs.selectedStyle.lineColor;
-      }
+      let fillColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.fillColorDarkMode
+          : SVs.selectedStyle.fillColor;
 
       if (integralJXG.current.visProp.fillcolor !== fillColor) {
         integralJXG.current.visProp.fillcolor = fillColor;
       }
 
-      if (integralJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+      if (
+        integralJXG.current.visProp.fillopacity !==
+        SVs.selectedStyle.fillOpacity
+      ) {
         integralJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
       }
 
@@ -142,15 +155,18 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.needsUpdate = true;
       integralJXG.current.curveLeft.update();
       integralJXG.current.fullUpdate();
-      
+
       board.update();
       board.fullUpdate();
 
       board.updateRenderer();
     }
 
-    return <><a name={id} /></>
-
+    return (
+      <>
+        <a name={id} />
+      </>
+    );
   }
 
   if (SVs.hidden) {
@@ -158,5 +174,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={id} /></>
-})
+  return (
+    <>
+      <a name={id} />
+    </>
+  );
+});

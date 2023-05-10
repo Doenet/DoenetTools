@@ -1,20 +1,19 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class ConsiderAsResponses extends BaseComponent {
   static componentType = "considerAsResponses";
   static rendererType = undefined;
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenWithNValues = {
@@ -24,12 +23,12 @@ export default class ConsiderAsResponses extends BaseComponent {
           childGroups: ["anything"],
           variableNames: ["nValues"],
           variablesOptional: true,
-        }
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { childrenWithNValues: dependencyValues.children }
-      })
-    }
+        setValue: { childrenWithNValues: dependencyValues.children },
+      }),
+    };
 
     stateVariableDefinitions.childrenAsResponses = {
       returnDependencies: () => ({
@@ -38,14 +37,13 @@ export default class ConsiderAsResponses extends BaseComponent {
           childGroups: ["anything"],
           variableNames: ["value", "values", "componentType"],
           variablesOptional: true,
-        }
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { childrenAsResponses: dependencyValues.children }
-      })
-    }
+        setValue: { childrenAsResponses: dependencyValues.children },
+      }),
+    };
 
     return stateVariableDefinitions;
-
   }
 }

@@ -1,7 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
+import { cesc } from "../../../src/_utils/url";
 
-
-describe('Single page activity tests', function () {
+describe("Single page activity tests", function () {
   const userId = "cyuserId";
   const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
@@ -20,22 +20,21 @@ describe('Single page activity tests', function () {
     cy.clearAllOfAUsersCoursesAndItems({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
     cy.createCourse({ userId, courseId, studentUserId });
-  })
+  });
   beforeEach(() => {
     cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId })
-    cy.clearAllOfAUsersActivities({ userId: studentUserId })
-  })
+    cy.clearAllOfAUsersActivities({ userId });
+    cy.clearAllOfAUsersActivities({ userId: studentUserId });
+  });
 
-
-  Cypress.on('uncaught:exception', (err, runnable) => {
+  Cypress.on("uncaught:exception", (err, runnable) => {
     // returning false here prevents Cypress from
     // failing the test
-    return false
-  })
+    return false;
+  });
 
-  it('Repeatedly select same internal link', () => {
+  it("Repeatedly select same internal link", () => {
     const doenetML = `
 <section>
   <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -49,71 +48,76 @@ describe('Single page activity tests', function () {
 
   <lorem generateParagraphs="8" />
 
-</section>`
+</section>`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.url().should('match', /[^#]/)
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.url().should("match", /[^#]/);
 
-    cy.get('[data-test="Main Panel"]').then(el => {
+    cy.get('[data-test="Main Panel"]').then((el) => {
       expect(el.scrollTop()).eq(0);
-    })
+    });
 
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc("#\\/toAside")).click();
+    cy.url().should("match", /#\\\/aside$/);
 
-
-    cy.get('#\\/toAside').click();
-    cy.url().should('match', /#\/aside$/)
-
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc("#\\/asideTitle")).click();
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc("#\\/toAside")).scrollIntoView();
 
-    cy.get('#\\/toAside').scrollIntoView();
-
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc("#\\/toAside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    cy.url().should('match', /#\/aside$/)
+    cy.url().should("match", /#\\\/aside$/);
 
+    cy.get(cesc("#\\/toAside")).click();
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
 
-    cy.get('#\\/toAside').click();
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.url().should("match", /#\\\/aside$/);
 
-    cy.url().should('match', /#\/aside$/)
-
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+  });
 
-
-
-  })
-
-  it.skip('Navigating back remembers position where clicked internal link', () => {
+  it.skip("Navigating back remembers position where clicked internal link", () => {
     const doenetML = `
 <section>
 <lorem generateParagraphs="8" />
@@ -133,71 +137,79 @@ describe('Single page activity tests', function () {
 
 <lorem generateParagraphs="8" />
 
-</section>`
+</section>`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.get('[data-test="View Assigned Activity"]').click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.url().should('match', /[^#]/)
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.url().should("match", /[^#]/);
 
-    cy.get('[data-test="Main Panel"]').then(el => {
+    cy.get('[data-test="Main Panel"]').then((el) => {
       expect(el.scrollTop()).eq(0);
-    })
+    });
 
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc("#\\/toAside")).scrollIntoView();
 
-    cy.get('#\\/toAside').scrollIntoView();
-
-    cy.get('#\\/toAside').then(el => {
+    cy.get(cesc("#\\/toAside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    cy.get('#\\/toAside').click();
-    cy.url().should('match', /#\/aside$/)
+    cy.get(cesc("#\\/toAside")).click();
+    cy.url().should("match", /#\\\/aside$/);
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
+    cy.get(cesc("#\\/bottom")).scrollIntoView();
 
-
-    cy.get('#\\/bottom').scrollIntoView();
-
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc("#\\/bottom")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      cy.log(rect.top)
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      cy.log(rect.top);
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
     cy.go("back");
-    cy.url().should('match', /[^#]/)
-    
-    cy.get('#\\/toAside').then(el => {
+    cy.url().should("match", /[^#]/);
+
+    cy.get(cesc("#\\/toAside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      cy.log(rect.top)
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      cy.log(rect.top);
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+  });
 
-
-
-  })
-
-  it('Links to activity', () => {
+  it("Links to activity", () => {
     const doenetML = `
   <section>
     <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -211,120 +223,132 @@ describe('Single page activity tests', function () {
   
     <lorem generateParagraphs="8" />
   
-  </section>`
-
+  </section>`;
 
     const doenetMLother = `
 <p><ref name="toTop" uri="doenet:doenetId=${doenetId}">Link to top</ref></p>
 <p><ref name="toAside" uri="doenet:doenetId=${doenetId}" target="aside">Link to aside</ref></p>
-<p><ref name="toAsideb" uri="doenet:doenetId=${doenetId}#/aside">Link to aside</ref></p>
-`
+<p><ref name="toAsideb" uri="doenet:doenetId=${doenetId}#\\/aside">Link to aside</ref></p>
+`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
+    cy.createActivity({
+      courseId,
+      doenetId: doenetId2,
+      parentDoenetId: courseId,
+      pageDoenetId: pageDoenetId3,
+      doenetML: doenetMLother,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
-    cy.createActivity({ courseId, doenetId: doenetId2, parentDoenetId: courseId, pageDoenetId: pageDoenetId3, doenetML: doenetMLother });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 2); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-
-    cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(1).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
+    cy.wait(200);
+    // TODO: should not have to wait here.  It seems like this a bug
+    // Without the wait get into an inconsistent situation where the activity does appear for the student,
+    // but when click "View Activity" it says the assignment is not assigned
 
+    cy.signin({ userId: studentUserId });
 
-    cy.signin({ userId: studentUserId })
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 2); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(1).find('.navigationColumn1').click();
-
+    cy.get(".navigationRow").should("have.length", 2); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(1).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
 
-    cy.log('click link to top, remove target so uses same tab')
-    cy.get('#\\/toTop').invoke('removeAttr', 'target').click();
+    cy.log("click link to top, remove target so uses same tab");
+    cy.get(cesc("#\\/toTop")).invoke("removeAttr", "target").click();
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
-    cy.url().should('contain', doenetId)
+    cy.url().should("contain", doenetId);
 
     cy.go("back");
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
-    cy.url().should('contain', doenetId2)
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
 
-    cy.log('click link to aside, remove target so uses same tab')
-    cy.get('#\\/toAside').invoke('removeAttr', 'target').click();
+    cy.log("click link to aside, remove target so uses same tab");
+    cy.get(cesc("#\\/toAside")).invoke("removeAttr", "target").click();
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
 
+    cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("contain", doenetId);
 
-    cy.url().should('match', /#\/aside$/)
-    cy.url().should('contain', doenetId)
-
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    cy.wait(1500);  // wait for debounce
-
-    cy.go("back");
-
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
-    cy.url().should('contain', doenetId2)
-
-    cy.log('click link to top, remove target so uses same tab')
-    cy.get('#\\/toTop').invoke('removeAttr', 'target').click();
-
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-
-    cy.get('#\\/asideTitle').click();
-    cy.get('#\\/insideAside').should('not.exist');
-
-    cy.wait(1500);  // wait for debounce
+    cy.wait(1500); // wait for debounce
 
     cy.go("back");
 
-    cy.get('#\\/_p1').should('have.text', 'Link to top');
-    cy.url().should('contain', doenetId2)
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
 
+    cy.log("click link to top, remove target so uses same tab");
+    cy.get(cesc("#\\/toTop")).invoke("removeAttr", "target").click();
 
-    cy.log('click link b to aside, remove target so uses same tab')
-    cy.get('#\\/toAsideb').invoke('removeAttr', 'target').click();
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.get(cesc("#\\/asideTitle")).click();
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
+    cy.wait(1500); // wait for debounce
 
-    cy.url().should('match', /#\/aside$/)
-    cy.url().should('contain', doenetId)
+    cy.go("back");
 
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
+
+    cy.log("click link b to aside, remove target so uses same tab");
+    cy.get(cesc("#\\/toAsideb")).invoke("removeAttr", "target").click();
+
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+
+    cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("contain", doenetId);
+
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
-  })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+  });
 
-  it('Go directly to URLs of activity', () => {
+  it("Go directly to URLs of activity", () => {
     const doenetML = `
   <section>
     <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -338,757 +362,919 @@ describe('Single page activity tests', function () {
   
     <lorem generateParagraphs="8" />
   
-  </section>`
+  </section>`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(100);
 
-    cy.log('go to url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
+    cy.log("go to url");
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`);
 
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
-    cy.get('#\\/insideAside').should('not.exist');
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
 
-    cy.url().should('contain', doenetId)
+    cy.url().should("contain", doenetId);
 
     cy.go("back");
-    cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
+    cy.url().should("contain", `course?tool=navigation&courseId=${courseId}`);
 
+    cy.log("go to aside url");
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}#\\/aside`);
 
-    cy.log('go to aside url')
-    cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}#/aside`)
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
 
-    cy.get('#\\/insideAside').should('have.text', 'Content in aside');
-    cy.get('#\\/_section1_title').should('have.text', 'Section 1')
-    cy.get('#\\/asideTitle').should('have.text', 'The aside');
+    cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("contain", doenetId);
 
-
-    cy.url().should('match', /#\/aside$/)
-    cy.url().should('contain', doenetId)
-
-    cy.get('#\\/aside').then(el => {
+    cy.get(cesc("#\\/aside")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+  });
 
-  })
-
-  it('Update to new version, infinite attempts allowed, separate student signin', () => {
+  it("Update to new version, infinite attempts allowed, separate student signin", () => {
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
-  </problem >`
+  </problem >`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(100);
 
-    cy.signin({ userId: studentUserId })
+    cy.signin({ userId: studentUserId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
-    cy.wait(2000)
+    cy.wait(2000);
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/credit")).should("have.text", "1");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#\\/ans") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
 
-    cy.log('At least for now, hitting enter before core is intialized does not submit response')
-    cy.get('#\\/cr').should("contain.text", '1')
-    cy.get('#\\/ans textarea').type("{enter}", { force: true });
+    cy.log(
+      "At least for now, hitting enter before core is intialized does not submit response",
+    );
+    cy.get(cesc("#\\/cr")).should("contain.text", "1");
+    cy.get(cesc("#\\/ans") + " textarea").type("{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '0')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-
+    cy.get(cesc("#\\/credit")).should("have.text", "0");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
 
-    cy.signin({ userId })
+    cy.signin({ userId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer><mathinput name='ans2' />3</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+2? <answer><mathinput name='ans2' />3</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1000)
-    cy.go("back")
+    cy.wait(1000);
+    cy.go("back");
 
-    cy.signin({ userId: studentUserId })
+    cy.signin({ userId: studentUserId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
-    cy.get('#\\/cr').should('contain.text', '1');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc("#\\/cr")).should("contain.text", "1");
+    cy.get(cesc("#\\/ans2")).should("not.exist");
 
-    
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test=CancelNewVersion]').click();
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", "new version");
+    cy.get("[data-test=CancelNewVersion]").click();
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      "new version",
+    );
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
-    cy.get('[data-test=ConfirmNewVersion]').click();
-  
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
+    cy.get("[data-test=ConfirmNewVersion]").click();
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+
+    cy.get(cesc("#\\/ans2") + " textarea").type("3{enter}", { force: true });
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "50%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.wait(1500);  // just making sure nothing gets saved even if wait for debounce
+    cy.wait(1500); // just making sure nothing gets saved even if wait for debounce
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.signin({ userId })
+    cy.signin({ userId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1500)
-    cy.go("back")
+    cy.wait(1500);
+    cy.go("back");
 
-    cy.signin({ userId: studentUserId })
+    cy.signin({ userId: studentUserId });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('immediately get new version')
+    cy.log("immediately get new version");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true }); 
+    cy.get(cesc("#\\/ans3") + " textarea").type("4{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-  })
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "33.3%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+  });
 
-  it('Update to new version, infinite attempts allowed, change roles', () => {
+  it("Update to new version, infinite attempts allowed, change roles", () => {
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
-  </problem >`
+  </problem >`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/credit")).should("have.text", "1");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#\\/ans") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
 
-    cy.log('At least for now, hitting enter before core is intialized does not submit response')
-    cy.get('#\\/cr').should("contain.text", '1')
-    cy.get('#\\/ans textarea').type("{enter}", { force: true });
+    cy.log(
+      "At least for now, hitting enter before core is intialized does not submit response",
+    );
+    cy.get(cesc("#\\/cr")).should("contain.text", "1");
+    cy.get(cesc("#\\/ans") + " textarea").type("{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '0')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-
+    cy.get(cesc("#\\/credit")).should("have.text", "0");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '1');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc("#\\/cr")).should("contain.text", "1");
+    cy.get(cesc("#\\/ans2")).should("not.exist");
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test=CancelNewVersion]').click();
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", "new version");
+    cy.get("[data-test=CancelNewVersion]").click();
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      "new version",
+    );
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
-    cy.get('[data-test=ConfirmNewVersion]').click();
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
+    cy.get("[data-test=ConfirmNewVersion]").click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans2") + " textarea").type("3{enter}", { force: true });
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "50%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.wait(1500);  // just making sure nothing gets saved even if wait for debounce
+    cy.wait(1500); // just making sure nothing gets saved even if wait for debounce
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(1000);
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('immediately get new version')
+    cy.log("immediately get new version");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans3 textarea').type("4{enter}", { force: true });
+    cy.get(cesc("#\\/ans3") + " textarea").type("4{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '33.3%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-  })
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "33.3%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+  });
 
-  it('Update to new version, one attempt allowed', () => {
+  it("Update to new version, one attempt allowed", () => {
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
-  </problem >`
+  </problem >`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/credit")).should("have.text", "1");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
-
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc("#\\/cr")).should("contain.text", "2");
+    cy.get(cesc("#\\/ans2")).should("not.exist");
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test=CancelNewVersion]').click();
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", "new version");
+    cy.get("[data-test=CancelNewVersion]").click();
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      "new version",
+    );
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test="New Attempt"]').should('not.be.disabled')
-    cy.get('[data-test=ConfirmNewVersion]').click();
+    cy.get('[data-test="New Attempt"]').should("not.be.disabled");
+    cy.get("[data-test=ConfirmNewVersion]").click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans2") + " textarea").type("3{enter}", { force: true });
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "50%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('get updated new version but do not interact with it')
+    cy.log("get updated new version but do not interact with it");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
-    cy.get('#\\/ans2').should('be.visible');
-    cy.get('#\\/ans3').should('not.exist');
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
+    cy.get(cesc("#\\/ans2")).should("be.visible");
+    cy.get(cesc("#\\/ans3")).should("not.exist");
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test=ConfirmNewVersion]').click();
+    cy.get("[data-test=ConfirmNewVersion]").click();
 
-    cy.get('#\\/ans3').should('be.visible');
+    cy.get(cesc("#\\/ans3")).should("be.visible");
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
+    cy.go("back");
 
-    cy.go("back")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-
-    cy.log('immediately get new version')
+    cy.log("immediately get new version");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get(cesc("#\\/ans4") + " textarea").type("5{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('Can use New Attempt Button to get new content')
+    cy.log("Can use New Attempt Button to get new content");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans4').should('be.visible');
-    cy.get('#\\/ans5').should('not.exist');
+    cy.get(cesc("#\\/ans4")).should("be.visible");
+    cy.get(cesc("#\\/ans5")).should("not.exist");
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').click()
+    cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc("#\\/ans5") + " textarea").type("6{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "20%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
+  });
 
-
-
-  })
-
-  it('Update to new version, two attempts allowed', () => {
+  it("Update to new version, two attempts allowed", () => {
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
-  </problem >`
+  </problem >`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Attempt Limit Checkbox"]').click();
 
-    cy.get('[data-test="Attempt Limit"]').type("{end}{backspace}2{enter}")
+    cy.get('[data-test="Attempt Limit"]').type("{end}{backspace}2{enter}");
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 1:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/credit")).should("have.text", "1");
+    cy.get(cesc("#\\/cr")).should("contain.text", "2");
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 1:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('#\\/credit').should('have.text', '0')
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
+    cy.get(cesc("#\\/credit")).should("have.text", "0");
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 2:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 2:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans textarea').type("2{enter}", { force: true });
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
 
-    cy.get('#\\/credit').should('have.text', '1')
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '100%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/credit")).should("have.text", "1");
+    cy.get(cesc("#\\/cr")).should("contain.text", "2");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
-
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/cr').should('contain.text', '2');
-    cy.get('#\\/ans2').should('not.exist');
+    cy.get(cesc("#\\/cr")).should("contain.text", "2");
+    cy.get(cesc("#\\/ans2")).should("not.exist");
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 2:')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 2:",
+    );
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test=CancelNewVersion]').click();
-    cy.get('[data-test="Main Panel"]').should("not.contain.text", "new version");
+    cy.get("[data-test=CancelNewVersion]").click();
+    cy.get('[data-test="Main Panel"]').should(
+      "not.contain.text",
+      "new version",
+    );
 
-    cy.get('[data-test=NewVersionAvailable]').click();
+    cy.get("[data-test=NewVersionAvailable]").click();
     cy.get('[data-test="Main Panel"]').should("contain.text", "new version");
-    cy.get('[data-test="Main Panel"]').should("contain.text", " and the number of available attempts");
+    cy.get('[data-test="Main Panel"]').should(
+      "contain.text",
+      " and the number of available attempts",
+    );
 
-    cy.get('[data-test="New Attempt"]').should('not.be.disabled')
-    cy.get('[data-test=ConfirmNewVersion]').click();
+    cy.get('[data-test="New Attempt"]').should("not.be.disabled");
+    cy.get("[data-test=ConfirmNewVersion]").click();
 
-    cy.get('#\\/cr').should('contain.text', '\uff3f');
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 3:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/cr")).should("contain.text", "\uff3f");
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 3:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans2 textarea').type("3{enter}", { force: true })
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '50%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get(cesc("#\\/ans2") + " textarea").type("3{enter}", { force: true });
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "50%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 4:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 4:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
+    cy.go("back");
 
-    cy.go("back")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('immediately get new version and two more attempts')
+    cy.log("immediately get new version and two more attempts");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="New Attempt"]').should('not.be.disabled')
-    cy.get('#\\/ans2').should('be.visible');
-    cy.get('#\\/ans3').should('be.visible');
+    cy.get('[data-test="New Attempt"]').should("not.be.disabled");
+    cy.get(cesc("#\\/ans2")).should("be.visible");
+    cy.get(cesc("#\\/ans3")).should("be.visible");
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 4:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 4:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 5:')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 5:",
+    );
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
 
+    cy.go("back");
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.go("back")
-
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-
-    cy.log('again, immediately get new version and two more attempts')
+    cy.log("again, immediately get new version and two more attempts");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 5:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 5:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get(cesc("#\\/ans4") + " textarea").type("5{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.get('[data-test="New Attempt"]').click();
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 6:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 6:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
+    cy.get(cesc("#\\/ans4") + " textarea").type("5{enter}", { force: true });
 
-    cy.get('#\\/ans4 textarea').type("5{enter}", { force: true });
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.go("back");
 
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.go("back")
-
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.log('Can use New Attempt Button to get new content')
+    cy.log("Can use New Attempt Button to get new content");
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ans4').should('be.visible');
-    cy.get('#\\/ans5').should('not.exist');
+    cy.get(cesc("#\\/ans4")).should("be.visible");
+    cy.get(cesc("#\\/ans5")).should("not.exist");
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 6:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '25%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 6:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').click()
+    cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 7:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 7:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc("#\\/ans5") + " textarea").type("6{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "20%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('[data-test="New Attempt"]').click()
+    cy.get('[data-test="New Attempt"]').click();
 
-    cy.get('[data-test="Attempt Container"]').should('contain.text', 'Attempt 8:')
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '0%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
+    cy.get('[data-test="Attempt Container"]').should(
+      "contain.text",
+      "Attempt 8:",
+    );
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "0%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
-    cy.get('#\\/ans5 textarea').type("6{enter}", { force: true });
+    cy.get(cesc("#\\/ans5") + " textarea").type("6{enter}", { force: true });
 
-    cy.get('[data-test="Attempt Percent"]').should('have.text', '20%')
-    cy.get('[data-test="Assignment Percent"]').should('have.text', '100%')
-    cy.get('[data-test="New Attempt"]').should('be.disabled')
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "20%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
+    cy.get('[data-test="New Attempt"]').should("be.disabled");
+  });
 
-
-  })
-
-  it('Clicking links does not give update version prompt', () => {
+  it("Clicking links does not give update version prompt", () => {
     const doenetML = `
 <section name="sect">
   <title>Info only</title>
@@ -1114,85 +1300,100 @@ describe('Single page activity tests', function () {
   <lorem generateParagraphs="8" />
 
 </section >
-`
+`;
 
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/sect_title').should('have.text', 'Info only')
-    cy.get('[data-test="Main Panel"]').then(el => {
+    cy.get(cesc("#\\/sect_title")).should("have.text", "Info only");
+    cy.get('[data-test="Main Panel"]').then((el) => {
       expect(el.scrollTop()).eq(0);
-    })
+    });
 
+    cy.get(cesc("#\\/goMiddle1")).click();
+    cy.url().should("match", /#\\\/middle$/);
 
-    cy.get('#\\/goMiddle1').click();
-    cy.url().should('match', /#\/middle$/)
-
-    cy.get('#\\/middle').then(el => {
+    cy.get(cesc("#\\/middle")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
+    cy.get(cesc("#\\/goBottom2")).click();
+    cy.url().should("match", /#\\\/bottom$/);
 
-    cy.get('#\\/goBottom2').click();
-    cy.url().should('match', /#\/bottom$/)
-
-    cy.get('#\\/bottom').then(el => {
+    cy.get(cesc("#\\/bottom")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    cy.wait(2000);  // wait for debounce
-
+    cy.wait(2000); // wait for debounce
 
     cy.go("back");
 
-    cy.get('#\\/middle').then(el => {
+    cy.get(cesc("#\\/middle")).then((el) => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(headerPixels - 1).lt(headerPixels + 1)
-    })
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
     cy.go("back");
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.go("back")
+    cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get("#\\/extra").should('have.text', 'Extra content');
+    cy.get(cesc("#\\/extra")).should("have.text", "Extra content");
 
-    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
+    cy.get("[data-test=NewVersionAvailable]").should("not.exist");
+  });
 
-  })
-
-  it('Presence of video does not give update version prompt', () => {
+  it("Presence of video does not give update version prompt", () => {
     const doenetML = `
 <title>A video</title>
 <video youtube="tJ4ypc5L6uU" width="640px" height="360px" name="v" />
@@ -1203,92 +1404,111 @@ describe('Single page activity tests', function () {
   <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
   <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
 </p>
-`
+`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_title1').should('have.text', 'A video')
-    cy.get('#\\/duration').should('have.text', '300')
+    cy.get(cesc("#\\/_title1")).should("have.text", "A video");
+    cy.get(cesc("#\\/duration")).should("have.text", "300");
 
-    cy.wait(1500);  // wait for debounce
+    cy.wait(1500); // wait for debounce
 
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Edit Activity"]').click();
 
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}")
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}",
+    );
 
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
-
-    cy.go("back")
-
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-
-    cy.get('[data-test="View Activity"]').click();
-
-    cy.get('#\\/duration').should('have.text', '300')
-    cy.get("#\\/more1").should('have.text', 'More content 1');
-
-    cy.get('[data-test=NewVersionAvailable]').should('not.exist')
-
-    cy.get('#\\/state').contains("stopped")
-    cy.get('#\\/playAction').click();
-    cy.get('#\\/time').contains("1")
-    cy.get('#\\/pauseAction').click();
-
-    cy.wait(1500);  // wait for debounce
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.go("back");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{upArrow}{upArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-    cy.get('[data-test="Edit Activity"]').click();
-
-    cy.get('.cm-content').type("{moveToEnd}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}")
-
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
-
-    cy.go("back")
-
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
-
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/duration').should('have.text', '300')
-    cy.get("#\\/more2").should('not.exist');
+    cy.get(cesc("#\\/duration")).should("have.text", "300");
+    cy.get(cesc("#\\/more1")).should("have.text", "More content 1");
 
-    cy.get('[data-test=NewVersionAvailable]').click();
-    cy.get('[data-test=ConfirmNewVersion]').click();
+    cy.get("[data-test=NewVersionAvailable]").should("not.exist");
 
-    cy.get("#\\/more2").should('have.text', 'More content 2');
+    cy.get(cesc("#\\/state")).contains("stopped");
+    cy.get(cesc("#\\/playAction")).click();
+    cy.get(cesc("#\\/time")).contains("1");
+    cy.get(cesc("#\\/pauseAction")).click();
 
-  })
+    cy.wait(1500); // wait for debounce
 
-  it('Auto submit answers', () => {
+    cy.go("back");
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{upArrow}{upArrow}{enter}");
+
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Edit Activity"]').click();
+
+    cy.get(".cm-content").type(
+      "{moveToEnd}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}",
+    );
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.go("back");
+
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
+
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get(cesc("#\\/duration")).should("have.text", "300");
+    cy.get(cesc("#\\/more2")).should("not.exist");
+
+    cy.get("[data-test=NewVersionAvailable]").click();
+    cy.get("[data-test=ConfirmNewVersion]").click();
+
+    cy.get(cesc("#\\/more2")).should("have.text", "More content 2");
+  });
+
+  it("Auto submit answers", () => {
     const doenetML = `
 <p>Enter x: <answer name="x">x</answer></p>
 <p>Enter hello: <answer type="text" name="hello">hello</answer></p>
@@ -1296,166 +1516,186 @@ describe('Single page activity tests', function () {
 <p>Move point to first quadrant</p>
 <graph><point name="P" /></graph>
 <answer name="firstQuad"><award><when>$P.x >0 and $P.y > 0</when></award></answer>
-`
+`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Auto Submit"]').click();
 
-    cy.get('[data-test="Attempt Aggregation"] > div:nth-child(2)').click().type("{downArrow}{enter}")
+    cy.get('[data-test="Attempt Aggregation"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{enter}");
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
+    cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
+      .click()
+      .type("{downArrow}{downArrow}{enter}");
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/_p1').should("have.text", "Enter x: ")
+    cy.get(cesc("#\\/_p1")).should("have.text", "Enter x: ");
 
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "0%");
 
+    cy.get(cesc("#\\/x") + " textarea")
+      .type("x", { force: true })
+      .blur();
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "25%");
 
-    cy.get('#\\/x textarea').type("x", {force: true}).blur();
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+    cy.get(cesc("#\\/x") + " textarea")
+      .type("{end}{backspace}y", { force: true })
+      .blur();
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "0%");
 
-    cy.get('#\\/x textarea').type("{end}{backspace}y", {force: true}).blur();
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '0%')
+    cy.get(cesc("#\\/hello") + " input")
+      .type("hello")
+      .blur();
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "25%");
 
-    cy.get('#\\/hello input').type("hello").blur();
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+    cy.get(cesc("#\\/correct") + " select")
+      .select(1)
+      .blur();
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%");
 
-    cy.get('#\\/correct select').select(1).blur();
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
-
-    cy.get('#\\/correct select').select(2).blur();
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: '/P',
-        args: { x: 2, y: 3 }
-      })
-    })
-
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
-
-    cy.window().then(async (win) => {
-      await win.callAction1({
-        actionName: "movePoint",
-        componentName: '/P',
-        args: { x: -2, y: 3 }
-      })
-    })
-    
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '25%')
+    cy.get(cesc("#\\/correct") + " select")
+      .select(2)
+      .blur();
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "25%");
 
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",
-        componentName: '/P',
-        args: { x: 9, y: 1 }
-      })
-    })
+        componentName: "/P",
+        args: { x: 2, y: 3 },
+      });
+    });
 
-    cy.get('[data-test="Item 1 Credit"]').should('have.text', '50%')
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%");
 
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -2, y: 3 },
+      });
+    });
 
-  })
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "25%");
 
-  it('reload text answer without blurring or hitting enter', () => {
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 1 },
+      });
+    });
+
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%");
+  });
+
+  it("reload text answer without blurring or hitting enter", () => {
     const doenetML = `
     <p>Enter 1: <answer>
       <textinput name="ti" />
       <award><when>$ti=hello</when></award>
     </answer>
     </p>
-`
+`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(100);
 
     // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
+    cy.signin({ userId: studentUserId });
 
-    cy.signin({ userId: studentUserId })
-
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc("#\\/ti_input")).type("hello", { force: true });
 
-    cy.wait(1500);  // wait for debounce
+    cy.wait(1500); // wait for debounce
 
     cy.reload();
 
-    cy.get('#\\/ti_submit').click();
-    cy.get('#\\/ti_correct').should('be.visible');
+    cy.get(cesc("#\\/ti_submit")).click();
+    cy.get(cesc("#\\/ti_correct")).should("be.visible");
+  });
 
-
-  })
-
-  it('reload text answer without blurring or hitting enter, clear IndexedDB', () => {
+  it("reload text answer without blurring or hitting enter, clear IndexedDB", () => {
     const doenetML = `
     <p>Enter 1: <answer>
       <textinput name="ti" />
       <award><when>$ti=hello</when></award>
     </answer>
     </p>
-`
+`;
 
-    cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId, doenetML });
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
 
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should('be.visible')
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(100);
 
     // cy.get('[data-test="RoleDropDown"] > div:nth-child(2)').click().type("{downArrow}{downArrow}{enter}")
 
+    cy.signin({ userId: studentUserId });
 
-    cy.signin({ userId: studentUserId })
-
-    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
-    cy.get('.navigationRow').should('have.length', 1); //Need this to wait for the row to appear
-    cy.get('.navigationRow').eq(0).find('.navigationColumn1').click();
-
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get('#\\/ti_input').type("hello", { force: true });
+    cy.get(cesc("#\\/ti_input")).type("hello", { force: true });
 
-    cy.wait(1500);  // wait for debounce
+    cy.wait(1500); // wait for debounce
 
     cy.clearIndexedDB();
     cy.reload();
 
-    cy.get('#\\/ti_submit').click();
-    cy.get('#\\/ti_correct').should('be.visible');
-
-
-  })
-
-})
+    cy.get(cesc("#\\/ti_submit")).click();
+    cy.get(cesc("#\\/ti_correct")).should("be.visible");
+  });
+});

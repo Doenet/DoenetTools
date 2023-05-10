@@ -1,6 +1,6 @@
-import BaseComponent from './BaseComponent';
-import { returnSelectedStyleStateVariableDefinition } from '../../utils/style';
-import { returnLabelStateVariableDefinitions } from '../../utils/label';
+import BaseComponent from "./BaseComponent";
+import { returnSelectedStyleStateVariableDefinition } from "../../utils/style";
+import { returnLabelStateVariableDefinitions } from "../../utils/label";
 
 export default class GraphicalComponent extends BaseComponent {
   static componentType = "_graphical";
@@ -18,38 +18,36 @@ export default class GraphicalComponent extends BaseComponent {
       createStateVariable: "showLabel",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.applyStyleToLabel = {
       createComponentOfType: "boolean",
       createStateVariable: "applyStyleToLabel",
       defaultValue: false,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.layer = {
       createComponentOfType: "integer",
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,
-      forRenderer: true
+      forRenderer: true,
+      attributesForCreatedComponent: { valueOnNaN: 0 },
     };
     return attributes;
-
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "labels",
-      componentTypes: ["label"]
-    }]
-
+    return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
@@ -62,6 +60,4 @@ export default class GraphicalComponent extends BaseComponent {
 
     return stateVariableDefinitions;
   }
-
-
 }

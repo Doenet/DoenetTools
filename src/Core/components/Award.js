@@ -1,7 +1,7 @@
-import BaseComponent from './abstract/BaseComponent';
-import me from 'math-expressions';
-import { evaluateLogic } from '../utils/booleanLogic';
-import { getNamespaceFromName } from '../utils/naming';
+import BaseComponent from "./abstract/BaseComponent";
+import me from "math-expressions";
+import { evaluateLogic } from "../utils/booleanLogic";
+import { getNamespaceFromName } from "../utils/naming";
 
 export default class Award extends BaseComponent {
   static componentType = "award";
@@ -9,6 +9,9 @@ export default class Award extends BaseComponent {
 
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
+
+  static variableForPlainMacro = "awarded";
+  static variableForPlainCopy = "awarded";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -18,7 +21,7 @@ export default class Award extends BaseComponent {
       createStateVariable: "credit",
       defaultValue: 1,
       public: true,
-      attributesForCreatedComponent: { convertBoolean: true }
+      attributesForCreatedComponent: { convertBoolean: true },
     };
     attributes.matchPartial = {
       createComponentOfType: "boolean",
@@ -46,7 +49,7 @@ export default class Award extends BaseComponent {
       createStateVariable: "simplifyOnCompare",
       defaultValue: "none",
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "": "full", true: "full", false: "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
       fallBackToParentStateVariable: "simplifyOnCompare",
@@ -127,8 +130,8 @@ export default class Award extends BaseComponent {
       public: true,
     };
     attributes.sourcesAreResponses = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
 
     attributes.splitSymbols = {
       createComponentOfType: "boolean",
@@ -136,7 +139,7 @@ export default class Award extends BaseComponent {
       defaultValue: true,
       public: true,
       fallBackToParentStateVariable: "splitSymbols",
-    }
+    };
 
     attributes.parseScientificNotation = {
       createComponentOfType: "boolean",
@@ -144,15 +147,20 @@ export default class Award extends BaseComponent {
       defaultValue: false,
       public: true,
       fallBackToParentStateVariable: "parseScientificNotation",
-    }
+    };
 
     return attributes;
-
   }
 
-  static preprocessSerializedChildren({ serializedChildren, attributes, componentName }) {
+  static preprocessSerializedChildren({
+    serializedChildren,
+    attributes,
+    componentName,
+  }) {
     if (attributes.sourcesAreResponses) {
-      let targetNames = attributes.sourcesAreResponses.primitive.split(/\s+/).filter(s => s);
+      let targetNames = attributes.sourcesAreResponses.primitive
+        .split(/\s+/)
+        .filter((s) => s);
       let nameSpace;
       if (attributes.newNamespace?.primitive) {
         nameSpace = componentName + "/";
@@ -164,14 +172,18 @@ export default class Award extends BaseComponent {
         if (target[0] === "/") {
           absoluteTarget = target;
         } else if (target.slice(0, 3) === "../") {
-          let adjustedNameSpace = getNamespaceFromName(nameSpace.slice(0, nameSpace.length - 1))
+          let adjustedNameSpace = getNamespaceFromName(
+            nameSpace.slice(0, nameSpace.length - 1),
+          );
           let adjustedTarget = target.slice(3);
           while (adjustedTarget.slice(0, 3) === "../") {
             if (adjustedNameSpace === "/") {
               absoluteTarget = null;
               break;
             }
-            adjustedNameSpace = getNamespaceFromName(adjustedNameSpace.slice(0, adjustedNameSpace.length - 1))
+            adjustedNameSpace = getNamespaceFromName(
+              adjustedNameSpace.slice(0, adjustedNameSpace.length - 1),
+            );
             adjustedTarget = adjustedTarget.slice(3);
           }
           if (absoluteTarget !== null) {
@@ -180,52 +192,73 @@ export default class Award extends BaseComponent {
         } else {
           absoluteTarget = nameSpace + target;
         }
-        addResponsesToDescendantsWithTarget(serializedChildren, target, absoluteTarget);
+        addResponsesToDescendantsWithTarget(
+          serializedChildren,
+          target,
+          absoluteTarget,
+        );
       }
-
     }
   }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapWithComponentTypeIfNeeded = function ({ matchedChildren, parentAttributes, componentInfoObjects }) {
-
+    let wrapWithComponentTypeIfNeeded = function ({
+      matchedChildren,
+      parentAttributes,
+      componentInfoObjects,
+    }) {
       // wrap with componentType if have more than one child or a single string
 
       // remove any blank string children from beginning or end of children
-      while (typeof matchedChildren[0] === "string" && matchedChildren[0].trim() === "") {
+      while (
+        typeof matchedChildren[0] === "string" &&
+        matchedChildren[0].trim() === ""
+      ) {
         matchedChildren = matchedChildren.slice(1);
       }
       let nChildren = matchedChildren.length;
-      while (typeof matchedChildren[nChildren - 1] === "string" && matchedChildren[nChildren - 1].trim() === "") {
+      while (
+        typeof matchedChildren[nChildren - 1] === "string" &&
+        matchedChildren[nChildren - 1].trim() === ""
+      ) {
         matchedChildren = matchedChildren.slice(0, nChildren - 1);
         nChildren = matchedChildren.length;
       }
 
-      if (matchedChildren.length === 1 && typeof matchedChildren[0] === "object") {
-        return { success: false }
+      if (
+        matchedChildren.length === 1 &&
+        typeof matchedChildren[0] === "object"
+      ) {
+        return { success: false };
       }
 
-      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
+      let componentIsSpecifiedType =
+        componentInfoObjects.componentIsSpecifiedType;
 
-      let foundMath = false, foundText = false, foundBoolean = false;
+      let foundMath = false,
+        foundText = false,
+        foundBoolean = false;
 
       for (let child of matchedChildren) {
         if (typeof child !== "object") {
           continue;
-        } else if (componentIsSpecifiedType(child, "math")
-          || componentIsSpecifiedType(child, "number")
-          || componentIsSpecifiedType(child, "mathList")
-          || componentIsSpecifiedType(child, "numberList")
+        } else if (
+          componentIsSpecifiedType(child, "math") ||
+          componentIsSpecifiedType(child, "number") ||
+          componentIsSpecifiedType(child, "mathList") ||
+          componentIsSpecifiedType(child, "numberList")
         ) {
           foundMath = true;
-        } else if (componentIsSpecifiedType(child, "text")
-          || componentIsSpecifiedType(child, "textList")
+        } else if (
+          componentIsSpecifiedType(child, "text") ||
+          componentIsSpecifiedType(child, "textList")
         ) {
           foundText = true;
-        } else if (componentIsSpecifiedType(child, "boolean")
-          || componentIsSpecifiedType(child, "booleanList")
+        } else if (
+          componentIsSpecifiedType(child, "boolean") ||
+          componentIsSpecifiedType(child, "booleanList")
         ) {
           foundBoolean = true;
         }
@@ -233,83 +266,90 @@ export default class Award extends BaseComponent {
 
       let type;
       if (parentAttributes.type) {
-        type = parentAttributes.type
+        type = parentAttributes.type;
         if (!["math", "text", "boolean"].includes(type)) {
           console.warn(`Invalid type ${type}`);
           type = "math";
         }
       } else {
         if (foundMath) {
-          type = "math"
+          type = "math";
         } else if (foundText) {
-          type = "text"
+          type = "text";
         } else if (foundBoolean) {
           // TODO: if have multiple booleans,
           // it doesn't make sense to wrap in one big boolean.
           // What is a better solution?
-          type = "boolean"
+          type = "boolean";
         } else {
-          type = "math"
+          type = "math";
         }
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType: type,
-          children: matchedChildren
-        }],
-      }
-    }
+        newChildren: [
+          {
+            componentType: type,
+            children: matchedChildren,
+          },
+        ],
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: wrapWithComponentTypeIfNeeded
-    })
-
+      replacementFunction: wrapWithComponentTypeIfNeeded,
+    });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "whens",
-      componentTypes: ["when"]
-    }, {
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "numbers",
-      componentTypes: ["number"]
-    }, {
-      group: "texts",
-      componentTypes: ["text"]
-    }, {
-      group: "booleans",
-      componentTypes: ["boolean"]
-    }, {
-      group: "mathLists",
-      componentTypes: ["mathList"]
-    }, {
-      group: "numberLists",
-      componentTypes: ["numberList"]
-    }, {
-      group: "textLists",
-      componentTypes: ["textList"]
-    }, {
-      group: "booleanLists",
-      componentTypes: ["booleanList"]
-    }, {
-      group: "otherComparableTypes",
-      componentTypes: ["orbitalDiagram"]
-    }]
-
+    return [
+      {
+        group: "whens",
+        componentTypes: ["when"],
+      },
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+      {
+        group: "numbers",
+        componentTypes: ["number"],
+      },
+      {
+        group: "texts",
+        componentTypes: ["text"],
+      },
+      {
+        group: "booleans",
+        componentTypes: ["boolean"],
+      },
+      {
+        group: "mathLists",
+        componentTypes: ["mathList"],
+      },
+      {
+        group: "numberLists",
+        componentTypes: ["numberList"],
+      },
+      {
+        group: "textLists",
+        componentTypes: ["textList"],
+      },
+      {
+        group: "booleanLists",
+        componentTypes: ["booleanList"],
+      },
+      {
+        group: "otherComparableTypes",
+        componentTypes: ["orbitalDiagram"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.parsedExpression = {
@@ -321,25 +361,34 @@ export default class Award extends BaseComponent {
         },
         typeChildren: {
           dependencyType: "child",
-          childGroups: ["maths", "numbers", "texts", "booleans", "mathLists", "numberLists", "textLists", "booleanLists", "otherComparableTypes"],
+          childGroups: [
+            "maths",
+            "numbers",
+            "texts",
+            "booleans",
+            "mathLists",
+            "numberLists",
+            "textLists",
+            "booleanLists",
+            "otherComparableTypes",
+          ],
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let parsedExpression = null;
         let requireInputInAnswer = false;
 
         if (
           dependencyValues.whenChild.length == 0 &&
-          dependencyValues.typeChildren.length > 0) {
-
+          dependencyValues.typeChildren.length > 0
+        ) {
           requireInputInAnswer = true;
 
           parsedExpression = me.fromAst(["=", "comp1", "comp2"]);
         }
 
         return { setValue: { parsedExpression, requireInputInAnswer } };
-      }
+      },
     };
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
@@ -347,75 +396,77 @@ export default class Award extends BaseComponent {
       shadowingInstructions: {
         createComponentOfType: "number",
       },
-      additionalStateVariablesDefined: [{
-        variableName: "fractionSatisfiedIfSubmit",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "number",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "fractionSatisfiedIfSubmit",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
         },
-      }],
+      ],
       returnDependencies: () => ({
         credit: {
           dependencyType: "stateVariable",
-          variableName: "credit"
+          variableName: "credit",
         },
         whenChild: {
           dependencyType: "child",
           childGroups: ["whens"],
-          variableNames: ["fractionSatisfied"]
+          variableNames: ["fractionSatisfied"],
         },
         mathChild: {
           dependencyType: "child",
           childGroups: ["maths"],
-          variableNames: ["value", "unordered"]
+          variableNames: ["value", "unordered"],
         },
         numberChild: {
           dependencyType: "child",
           childGroups: ["numbers"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         textChild: {
           dependencyType: "child",
           childGroups: ["texts"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         booleanChild: {
           dependencyType: "child",
           childGroups: ["booleans"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         mathListChild: {
           dependencyType: "child",
           childGroups: ["mathLists"],
-          variableNames: ["maths", "unordered"]
+          variableNames: ["maths", "unordered"],
         },
         numberListChild: {
           dependencyType: "child",
           childGroups: ["numberLists"],
-          variableNames: ["numbers", "unordered"]
+          variableNames: ["numbers", "unordered"],
         },
         textListChild: {
           dependencyType: "child",
           childGroups: ["textLists"],
-          variableNames: ["texts", "unordered"]
+          variableNames: ["texts", "unordered"],
         },
         booleanListChild: {
           dependencyType: "child",
           childGroups: ["booleanLists"],
-          variableNames: ["booleans", "unordered"]
+          variableNames: ["booleans", "unordered"],
         },
         otherComparableChild: {
           dependencyType: "child",
           childGroups: ["otherComparableTypes"],
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         answerInput: {
           dependencyType: "parentStateVariable",
-          variableName: "inputChildWithValues"
+          variableName: "inputChildWithValues",
         },
         parsedExpression: {
           dependencyType: "stateVariable",
-          variableName: "parsedExpression"
+          variableName: "parsedExpression",
         },
         matchPartial: {
           dependencyType: "stateVariable",
@@ -471,42 +522,49 @@ export default class Award extends BaseComponent {
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
-
         let fractionSatisfiedIfSubmit;
 
         if (dependencyValues.whenChild.length > 0) {
-          fractionSatisfiedIfSubmit = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
+          fractionSatisfiedIfSubmit =
+            dependencyValues.whenChild[0].stateValues.fractionSatisfied;
         } else {
-          if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
+          if (
+            !dependencyValues.answerInput ||
+            !dependencyValues.parsedExpression
+          ) {
             return {
               setValue: {
                 creditAchievedIfSubmit: 0,
                 fractionSatisfiedIfSubmit: 0,
-              }
-            }
+              },
+            };
           }
 
           fractionSatisfiedIfSubmit = evaluateLogicDirectlyFromChildren({
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
-
         }
 
-        fractionSatisfiedIfSubmit = Math.max(0, Math.min(1, fractionSatisfiedIfSubmit));
+        fractionSatisfiedIfSubmit = Math.max(
+          0,
+          Math.min(1, fractionSatisfiedIfSubmit),
+        );
 
         let creditAchievedIfSubmit = 0;
         if (Number.isFinite(dependencyValues.credit)) {
-          creditAchievedIfSubmit = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfiedIfSubmit;
+          creditAchievedIfSubmit =
+            Math.max(0, Math.min(1, dependencyValues.credit)) *
+            fractionSatisfiedIfSubmit;
         }
         return {
           setValue: {
-            fractionSatisfiedIfSubmit, creditAchievedIfSubmit,
-          }
-        }
-      }
-
-    }
-
+            fractionSatisfiedIfSubmit,
+            creditAchievedIfSubmit,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.fractionSatisfied = {
       public: true,
@@ -518,24 +576,28 @@ export default class Award extends BaseComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          fractionSatisfied: true
-        }
+          fractionSatisfied: true,
+        },
       }),
-      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+      inverseDefinition: function ({
+        desiredStateVariableValues,
+        initialChange,
+      }) {
         if (!initialChange) {
-          return { success: false }
+          return { success: false };
         }
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "fractionSatisfied",
-            value: desiredStateVariableValues.fractionSatisfied
-          }]
+          instructions: [
+            {
+              setEssentialValue: "fractionSatisfied",
+              value: desiredStateVariableValues.fractionSatisfied,
+            },
+          ],
         };
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
@@ -547,24 +609,28 @@ export default class Award extends BaseComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          creditAchieved: true
-        }
+          creditAchieved: true,
+        },
       }),
-      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+      inverseDefinition: function ({
+        desiredStateVariableValues,
+        initialChange,
+      }) {
         if (!initialChange) {
-          return { success: false }
+          return { success: false };
         }
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
+          instructions: [
+            {
+              setEssentialValue: "creditAchieved",
+              value: desiredStateVariableValues.creditAchieved,
+            },
+          ],
         };
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.awarded = {
       public: true,
@@ -573,28 +639,32 @@ export default class Award extends BaseComponent {
       },
       defaultValue: false,
       hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          awarded: true
-        }
+          awarded: true,
+        },
       }),
-      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+      inverseDefinition: function ({
+        desiredStateVariableValues,
+        initialChange,
+      }) {
         if (!initialChange) {
-          return { success: false }
+          return { success: false };
         }
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "awarded",
-            value: desiredStateVariableValues.awarded
-          }]
+          instructions: [
+            {
+              setEssentialValue: "awarded",
+              value: desiredStateVariableValues.awarded,
+            },
+          ],
         };
-      }
-
-    }
-
+      },
+    };
 
     stateVariableDefinitions.allFeedbacks = {
       returnDependencies: () => ({
@@ -608,22 +678,23 @@ export default class Award extends BaseComponent {
         },
         feedbackDefinitionAncestor: {
           dependencyType: "ancestor",
-          variableNames: ["feedbackDefinitions"]
+          variableNames: ["feedbackDefinitions"],
         },
         awarded: {
           dependencyType: "stateVariable",
-          variableName: "awarded"
-        }
+          variableName: "awarded",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         if (!dependencyValues.awarded) {
-          return { setValue: { allFeedbacks: [] } }
+          return { setValue: { allFeedbacks: [] } };
         }
 
         let allFeedbacks = [];
 
-        let feedbackDefinitions = dependencyValues.feedbackDefinitionAncestor.stateValues.feedbackDefinitions;
+        let feedbackDefinitions =
+          dependencyValues.feedbackDefinitionAncestor.stateValues
+            .feedbackDefinitions;
 
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
@@ -637,9 +708,8 @@ export default class Award extends BaseComponent {
           allFeedbacks.push(dependencyValues.feedbackText);
         }
 
-        return { setValue: { allFeedbacks } }
-
-      }
+        return { setValue: { allFeedbacks } };
+      },
     };
 
     stateVariableDefinitions.numberFeedbacks = {
@@ -650,16 +720,16 @@ export default class Award extends BaseComponent {
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "allFeedbacks"
-        }
+          variableName: "allFeedbacks",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
-          checkForActualChange: { numberFeedbacks: true }
-        }
-      }
-    }
+          checkForActualChange: { numberFeedbacks: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.feedbacks = {
       public: true,
@@ -681,12 +751,11 @@ export default class Award extends BaseComponent {
         let globalDependencies = {
           allFeedbacks: {
             dependencyType: "stateVariable",
-            variableName: "allFeedbacks"
-          }
-        }
+            variableName: "allFeedbacks",
+          },
+        };
 
-        return { globalDependencies }
-
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
         // console.log(`array definition by key of function feedbacks`)
@@ -694,40 +763,35 @@ export default class Award extends BaseComponent {
 
         let feedbacks = {};
 
-        for (let arrayKey = 0; arrayKey < globalDependencyValues.__array_size; arrayKey++) {
+        for (
+          let arrayKey = 0;
+          arrayKey < globalDependencyValues.__array_size;
+          arrayKey++
+        ) {
           feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
         }
 
-        return { setValue: { feedbacks } }
-      }
-
-    }
-
+        return { setValue: { feedbacks } };
+      },
+    };
 
     stateVariableDefinitions.feedback = {
       isAlias: true,
-      targetVariableName: "feedback1"
+      targetVariableName: "feedback1",
     };
 
     return stateVariableDefinitions;
   }
 
-
-  static adapters = ["awarded"];
-
-
   static standardizedFeedback = {
-    'numericalerror': `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`,
-    'goodjob': `Good job!`,
-    'onesignerror': `Credit reduced because it appears that you made a sign error.`,
-    'twosignerrors': `Credit reduced because it appears that you made two sign errors.`,
-  }
-
+    numericalerror: `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`,
+    goodjob: `Good job!`,
+    onesignerror: `Credit reduced because it appears that you made a sign error.`,
+    twosignerrors: `Credit reduced because it appears that you made two sign errors.`,
+  };
 }
 
-
 function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
-
   let dependenciesForEvaluateLogic = {
     mathChildrenByCode: {},
     mathListChildrenByCode: {},
@@ -745,23 +809,32 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
   let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
   if (dependencyValues.textChild.length > 0) {
-    dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
+    dependenciesForEvaluateLogic.textChildrenByCode.comp2 =
+      dependencyValues.textChild[0];
   } else if (dependencyValues.mathChild.length > 0) {
-    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 =
+      dependencyValues.mathChild[0];
   } else if (dependencyValues.numberChild.length > 0) {
-    dependenciesForEvaluateLogic.numberChildrenByCode.comp2 = dependencyValues.numberChild[0];
+    dependenciesForEvaluateLogic.numberChildrenByCode.comp2 =
+      dependencyValues.numberChild[0];
   } else if (dependencyValues.booleanChild.length > 0) {
-    dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 =
+      dependencyValues.booleanChild[0];
   } else if (dependencyValues.textListChild.length > 0) {
-    dependenciesForEvaluateLogic.textListChildrenByCode.comp2 = dependencyValues.textListChild[0];
+    dependenciesForEvaluateLogic.textListChildrenByCode.comp2 =
+      dependencyValues.textListChild[0];
   } else if (dependencyValues.mathListChild.length > 0) {
-    dependenciesForEvaluateLogic.mathListChildrenByCode.comp2 = dependencyValues.mathListChild[0];
+    dependenciesForEvaluateLogic.mathListChildrenByCode.comp2 =
+      dependencyValues.mathListChild[0];
   } else if (dependencyValues.numberListChild.length > 0) {
-    dependenciesForEvaluateLogic.numberListChildrenByCode.comp2 = dependencyValues.numberListChild[0];
+    dependenciesForEvaluateLogic.numberListChildrenByCode.comp2 =
+      dependencyValues.numberListChild[0];
   } else if (dependencyValues.booleanListChild.length > 0) {
-    dependenciesForEvaluateLogic.booleanListChildrenByCode.comp2 = dependencyValues.booleanListChild[0];
+    dependenciesForEvaluateLogic.booleanListChildrenByCode.comp2 =
+      dependencyValues.booleanListChild[0];
   } else if (dependencyValues.otherComparableChild.length > 0) {
-    dependenciesForEvaluateLogic.otherChildrenByCode.comp2 = dependencyValues.otherComparableChild[0];
+    dependenciesForEvaluateLogic.otherChildrenByCode.comp2 =
+      dependencyValues.otherComparableChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;
@@ -770,13 +843,14 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
   }
 
   let answerChildForLogic = {
-    stateValues: { value: answerValue }
+    stateValues: { value: answerValue },
   };
 
   if (dependencyValues.answerInput.componentType === "textInput") {
     dependenciesForEvaluateLogic.textChildrenByCode.comp1 = answerChildForLogic;
   } else if (dependencyValues.answerInput.componentType === "booleanInput") {
-    dependenciesForEvaluateLogic.booleanChildrenByCode.comp1 = answerChildForLogic;
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp1 =
+      answerChildForLogic;
   } else {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp1 = answerChildForLogic;
   }
@@ -786,11 +860,13 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     canOverrideUnorderedCompare,
     dependencyValues: dependenciesForEvaluateLogic,
   });
-
 }
 
-function addResponsesToDescendantsWithTarget(components, target, absoluteTarget) {
-  
+function addResponsesToDescendantsWithTarget(
+  components,
+  target,
+  absoluteTarget,
+) {
   for (let component of components) {
     let propsOrDAttrs = component.props;
     if (!propsOrDAttrs || Object.keys(propsOrDAttrs).length === 0) {
@@ -799,14 +875,16 @@ function addResponsesToDescendantsWithTarget(components, target, absoluteTarget)
     if (propsOrDAttrs) {
       for (let prop in propsOrDAttrs) {
         if (
-          (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target)
-          ||
-          (prop.toLowerCase() === "targetcomponentname" && propsOrDAttrs[prop] === absoluteTarget)
+          (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target) ||
+          (prop.toLowerCase() === "targetcomponentname" &&
+            propsOrDAttrs[prop] === absoluteTarget)
         ) {
           if (!component.attributes) {
             component.attributes = {};
           }
-          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
+          let foundIsResponse = Object.keys(component.attributes)
+            .map((x) => x.toLowerCase())
+            .includes("isresponse");
           if (!foundIsResponse) {
             // Note we don't add the attribute as {primitive: true}
             // because the composite don't have the attribute isResponse
@@ -815,12 +893,14 @@ function addResponsesToDescendantsWithTarget(components, target, absoluteTarget)
           }
         }
       }
-
     }
 
     if (component.children) {
-      addResponsesToDescendantsWithTarget(component.children, target, absoluteTarget)
+      addResponsesToDescendantsWithTarget(
+        component.children,
+        target,
+        absoluteTarget,
+      );
     }
   }
-
 }

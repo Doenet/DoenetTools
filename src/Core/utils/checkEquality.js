@@ -1,13 +1,19 @@
-import me from 'math-expressions';
-import { deepCompare } from './deepFunctions';
-import { normalizeMathExpression } from './math';
-import periodicSetEquality from './periodicSetEquality';
+import me from "math-expressions";
+import { deepCompare } from "./deepFunctions";
+import { normalizeMathExpression, vectorOperators } from "./math";
+import periodicSetEquality from "./periodicSetEquality";
+
+const nonTupleVectorOperators = ["vector", "altvector"];
 
 export default function checkEquality({
-  object1, object2, isUnordered = false, partialMatches = false,
+  object1,
+  object2,
+  isUnordered = false,
+  partialMatches = false,
   matchByExactPositions = false,
   symbolicEquality = false,
-  simplify = "none", expand = false,
+  simplify = "none",
+  expand = false,
   allowedErrorInNumbers = 0,
   includeErrorInNumberExponents = false,
   allowedErrorIsAbsolute = false,
@@ -16,7 +22,6 @@ export default function checkEquality({
   caseInsensitiveMatch = false,
   matchBlanks = false,
 }) {
-
   /*
     Equality check
     
@@ -74,7 +79,7 @@ export default function checkEquality({
     }
   }
 
-  let normalize = function (x) {
+  let normalize = function (x, forNumeric = false) {
     if (!(x instanceof me.class)) {
       x = me.fromAst(x);
     }
@@ -85,31 +90,47 @@ export default function checkEquality({
       x = me.fromAst(setStringsInTreeToLowerCase(x.tree));
     }
 
-    if (simplify === "none") {
+    let effectiveSimplify = simplify,
+      effectiveExpand = expand;
+    if (forNumeric) {
+      effectiveSimplify = "full";
+      effectiveExpand = true;
+    }
+
+    if (effectiveSimplify === "none") {
       if (allowedErrorInNumbers > 0) {
         // only if allowing rounding, do we replace constants with floats
         x = x.constants_to_floats();
       }
-    } else if (simplify === "numberspreserveorder") {
+    } else if (effectiveSimplify === "numberspreserveorder") {
       x = x.evaluate_numbers({ max_digits: Infinity, skip_ordering: true });
-    } else if (simplify === "number") {
+    } else if (effectiveSimplify === "number") {
       x = x.evaluate_numbers({ max_digits: Infinity });
     } else {
-      x = x.evaluate_numbers({ max_digits: Infinity, evaluate_functions: true });
+      x = x.evaluate_numbers({
+        max_digits: Infinity,
+        evaluate_functions: true,
+      });
     }
     return normalizeMathExpression({
-      value: x, simplify: simplify, expand: expand
+      value: x,
+      simplify: effectiveSimplify,
+      expand: effectiveExpand,
     });
-  }
-
+  };
 
   let check_equality;
   if (haveMathExpressions) {
     if (symbolicEquality) {
       check_equality = function (a, b) {
-
-        let expr_a = normalize(a);
-        let expr_b = normalize(b);
+        let expr_a = a;
+        let expr_b = b;
+        if (!(a instanceof me.class)) {
+          expr_a = me.fromAst(a);
+        }
+        if (!(b instanceof me.class)) {
+          expr_b = me.fromAst(b);
+        }
 
         if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
@@ -120,7 +141,10 @@ export default function checkEquality({
 
           let equalityFunction = function (aa, bb) {
             // temporary fix until equalsViaSyntax returns false for \uff3f
-            if (aa.variables().includes('\uFF3F') || bb.variables().includes('\uFF3F')) {
+            if (
+              aa.variables().includes("\uFF3F") ||
+              bb.variables().includes("\uFF3F")
+            ) {
               return false;
             }
             aa = normalize(aa); // only have to normalize aa as that is the one that gets modified
@@ -129,38 +153,40 @@ export default function checkEquality({
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
               allow_blanks: matchBlanks,
-            })
-          }
+            });
+          };
           // temporary fix to keep complex numbers from crashing math-expressions
           // TODO: handle complex numbers
           if (expr_a.tree.im || expr_b.tree.im) {
-            return { fraction_equal: 0 }
+            return { fraction_equal: 0 };
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nSignErrorsMatched
+            n_sign_errors: nSignErrorsMatched,
           });
           return { fraction_equal: equality ? 1 : 0 };
-
         } else {
           // temporary fix until equalsViaSyntax returns false for \uff3f
-          if (expr_a.variables().includes('\uFF3F') || expr_b.variables().includes('\uFF3F')) {
+          if (
+            expr_a.variables().includes("\uFF3F") ||
+            expr_b.variables().includes("\uFF3F")
+          ) {
             return { fraction_equal: 0 };
           }
           // temporary fix to keep complex numbers from crashing math-expressions
           // TODO: handle complex numbers
           if (expr_a.tree.im || expr_b.tree.im) {
-            return { fraction_equal: 0 }
+            return { fraction_equal: 0 };
           }
           let equality = expr_a.equalsViaSyntax(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
-            allow_blanks: matchBlanks
-          })
+            allow_blanks: matchBlanks,
+          });
           return { fraction_equal: equality ? 1 : 0 };
         }
-      }
+      };
     } else {
       check_equality = function (a, b) {
         let expr_a = a;
@@ -182,7 +208,6 @@ export default function checkEquality({
 
         // console.log(expr_a, expr_b)
 
-
         // if (aIsPeriodicSet || bIsPeriodicSet) {
         //   let set1 = expr_a, set2 = expr_b;
         //   if (!aIsPeriodicSet) {
@@ -202,7 +227,6 @@ export default function checkEquality({
 
         // }
 
-
         if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
           // because equalSpecifiedSignErrors does in-place changes of ast
@@ -215,44 +239,41 @@ export default function checkEquality({
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
               allow_blanks: matchBlanks,
-            })
-          }
+            });
+          };
           // temporary fix to keep complex numbers from crashing math-expressions
           // TODO: handle complex numbers
           if (expr_a.tree.im || expr_b.tree.im) {
-            return { fraction_equal: 0 }
+            return { fraction_equal: 0 };
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nSignErrorsMatched
+            n_sign_errors: nSignErrorsMatched,
           });
           return { fraction_equal: equality ? 1 : 0 };
-
         } else {
-
           // temporary fix to keep complex numbers from crashing math-expressions
           // TODO: handle complex numbers
           if (expr_a.tree.im || expr_b.tree.im) {
-            return { fraction_equal: 0 }
+            return { fraction_equal: 0 };
           }
           let equality = expr_a.equals(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
-            allow_blanks: matchBlanks
-          })
+            allow_blanks: matchBlanks,
+          });
           return { fraction_equal: equality ? 1 : 0 };
         }
-      }
+      };
     }
-
   } else {
     check_equality = (a, b) => {
       if (caseInsensitiveMatch) {
         a = convertStringsToLowerCase(a);
         b = convertStringsToLowerCase(b);
       }
-      return { fraction_equal: deepCompare(a, b) ? 1 : 0 }
+      return { fraction_equal: deepCompare(a, b) ? 1 : 0 };
     };
   }
 
@@ -260,6 +281,10 @@ export default function checkEquality({
   let matchByExactPositionsOnRecursion = false;
 
   if (haveMathExpressions) {
+    // normalize at the beginning so that expand vectors, etc.
+    object1 = normalize(object1, !symbolicEquality);
+    object2 = normalize(object2, !symbolicEquality);
+
     // if can convert same type of math-expression
     // change object1 and object2 to array of asts
     // otherwise return that are unequal
@@ -267,9 +292,12 @@ export default function checkEquality({
     let object1_operator = object1.tree[0];
     let object2_operator = object2.tree[0];
 
-    if (object1_operator === "periodic_set" || object2_operator === "periodic_set") {
-
-      let set1 = object1, set2 = object2;
+    if (
+      object1_operator === "periodic_set" ||
+      object2_operator === "periodic_set"
+    ) {
+      let set1 = object1,
+        set2 = object2;
       if (object1_operator !== "periodic_set") {
         set1 = object2;
         set2 = object1;
@@ -287,7 +315,6 @@ export default function checkEquality({
       } else {
         return { fraction_equal: equality };
       }
-
     } else if (object1_operator === "list") {
       object1 = object1.tree.slice(1);
       if (object2_operator === "list") {
@@ -304,16 +331,18 @@ export default function checkEquality({
       // a list of length 1
       // make object1 act like a list of the one element
       object1 = [object1.tree];
-    } else if (object1_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object1_operator)) {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
-      if (object2_operator === "interval"
-        || object2_operator === "matrix" || object2_operator === "array"
-        || object2_operator === "set"
+      if (
+        object2_operator === "interval" ||
+        object2_operator === "matrix" ||
+        object2_operator === "array" ||
+        object2_operator === "set"
       ) {
         return { fraction_equal: 0 };
-      } else if (object2_operator === "tuple" || object2_operator === "vector") {
+      } else if (vectorOperators.includes(object2_operator)) {
         // since we can convert tuple to vector
         // change object2 to array of selements
         object2 = object2.tree.slice(1);
@@ -322,13 +351,15 @@ export default function checkEquality({
         // make object2 array of the one element
         object2 = [object2.tree];
       }
-    } else if (object2_operator === "vector") {
+    } else if (nonTupleVectorOperators.includes(object2_operator)) {
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 
-      if (object1_operator === "interval"
-        || object1_operator === "matrix" || object1_operator === "array"
-        || object1_operator === "set"
+      if (
+        object1_operator === "interval" ||
+        object1_operator === "matrix" ||
+        object1_operator === "array" ||
+        object1_operator === "set"
       ) {
         return { fraction_equal: 0 };
       } else if (object1_operator === "tuple") {
@@ -354,7 +385,11 @@ export default function checkEquality({
         return { fraction_equal: 0 };
       } else if (object2_operator === "tuple") {
         let operands = object2.tree.slice(1);
-        if (operands.length === 2 && leftClosed === false && rightClosed === false) {
+        if (
+          operands.length === 2 &&
+          leftClosed === false &&
+          rightClosed === false
+        ) {
           // since can convert tuple to open interval
           // and object1 is open interval
           // make object2 be array of endpoints
@@ -364,7 +399,11 @@ export default function checkEquality({
         }
       } else if (object2_operator === "array") {
         let operands = object2.tree.slice(1);
-        if (operands.length === 2 && leftClosed === true && rightClosed === true) {
+        if (
+          operands.length === 2 &&
+          leftClosed === true &&
+          rightClosed === true
+        ) {
           // since can convert array to closed interval
           // and object1 is closed interval
           // make object2 be array of endpoints
@@ -381,17 +420,14 @@ export default function checkEquality({
         object2 = object2.tree[1].slice(1);
       } else {
         // can't convert anything else to interval
-        return { fraction_equal: 0 }
+        return { fraction_equal: 0 };
       }
-
     } else if (object2_operator === "interval") {
-
       matchByExactPositions = true;
 
       let closedInfo = object2.tree[2];
       let leftClosed = closedInfo[1];
       let rightClosed = closedInfo[2];
-
 
       // change object to be the array of the interval endpoints
       object2 = object2.tree[1].slice(1);
@@ -400,7 +436,11 @@ export default function checkEquality({
         return { fraction_equal: 0 };
       } else if (object1_operator === "tuple") {
         let operands = object1.tree.slice(1);
-        if (operands.length === 2 && leftClosed === false && rightClosed === false) {
+        if (
+          operands.length === 2 &&
+          leftClosed === false &&
+          rightClosed === false
+        ) {
           // since can convert tuple to open interval
           // and object2 is open interval
           // make object1 be array of endpoints
@@ -410,7 +450,11 @@ export default function checkEquality({
         }
       } else if (object1_operator === "array") {
         let operands = object1.tree.slice(1);
-        if (operands.length === 2 && leftClosed === true && rightClosed === true) {
+        if (
+          operands.length === 2 &&
+          leftClosed === true &&
+          rightClosed === true
+        ) {
           // since can convert array to closed interval
           // and object2 is closed interval
           // make object1 be array of endpoints
@@ -422,18 +466,16 @@ export default function checkEquality({
         // can't convert anything else to interval
         return { fraction_equal: 0 };
       }
-
     } else if (object1_operator === "matrix") {
       if (object2_operator === "matrix") {
         // convert to array of matrix rows
 
-        object1 = convertMatrixToArrayOfTuples(object1.tree.slice(1))
-        object2 = convertMatrixToArrayOfTuples(object2.tree.slice(1))
+        object1 = convertMatrixToArrayOfTuples(object1.tree.slice(1));
+        object2 = convertMatrixToArrayOfTuples(object2.tree.slice(1));
 
         matchByExactPositions = true;
         matchByExactPositionsOnRecursion = true;
         partialMatchesOnRecursion = true;
-
       } else {
         return { fraction_equal: 0 };
       }
@@ -443,7 +485,11 @@ export default function checkEquality({
       let distinctElements = [];
       for (let v of object1.tree.slice(1)) {
         // if v doesn't match any previous elements, add to array
-        if (!distinctElements.some(x => check_equality(x, v).fraction_equal === 1)) {
+        if (
+          !distinctElements.some(
+            (x) => check_equality(x, v).fraction_equal === 1,
+          )
+        ) {
           distinctElements.push(v);
         }
       }
@@ -455,7 +501,11 @@ export default function checkEquality({
         distinctElements = [];
         for (let v of object2.tree.slice(1)) {
           // if v doesn't match any previous elements, add to array
-          if (!distinctElements.some(x => check_equality(x, v).fraction_equal === 1)) {
+          if (
+            !distinctElements.some(
+              (x) => check_equality(x, v).fraction_equal === 1,
+            )
+          ) {
             distinctElements.push(v);
           }
         }
@@ -469,7 +519,11 @@ export default function checkEquality({
       let distinctElements = [];
       for (let v of object2.tree.slice(1)) {
         // if v doesn't match any previous elements, add to array
-        if (!distinctElements.some(x => check_equality(x, v).fraction_equal === 1)) {
+        if (
+          !distinctElements.some(
+            (x) => check_equality(x, v).fraction_equal === 1,
+          )
+        ) {
           distinctElements.push(v);
         }
       }
@@ -520,7 +574,6 @@ export default function checkEquality({
       // neither object is a container type, just return usual equality
       return check_equality(object1.tree, object2.tree);
     }
-
   } else {
     // don't have math expression, just see if have an array of objects
     if (Array.isArray(object1)) {
@@ -528,10 +581,11 @@ export default function checkEquality({
         // if object1 is an array of strings with no commas
         // and object2 is a string,
         // split object2 by commas
-        if (typeof object2 === "string" && object1.every(x =>
-          typeof x === "string" && !x.includes(",")
-        )) {
-          object2 = object2.split(",").map(x => x.trim());
+        if (
+          typeof object2 === "string" &&
+          object1.every((x) => typeof x === "string" && !x.includes(","))
+        ) {
+          object2 = object2.split(",").map((x) => x.trim());
         } else {
           // otherwise convert object2 to array of one element
           object2 = [object2];
@@ -541,10 +595,11 @@ export default function checkEquality({
       // if object2 is an array of strings with no commas
       // and object1 is a string,
       // split object1 by commas
-      if (typeof object1 === "string" && object2.every(x =>
-        typeof x === "string" && !x.includes(",")
-      )) {
-        object1 = object1.split(",").map(x => x.trim());
+      if (
+        typeof object1 === "string" &&
+        object2.every((x) => typeof x === "string" && !x.includes(","))
+      ) {
+        object1 = object1.split(",").map((x) => x.trim());
       } else {
         // otherwise convert object1 to array of one element
         object1 = [object1];
@@ -554,7 +609,6 @@ export default function checkEquality({
       return check_equality(object1, object2);
     }
   }
-
 
   let nelts1 = object1.length;
   let nelts2 = object2.length;
@@ -567,25 +621,27 @@ export default function checkEquality({
 
   // if isUnordered isn't set, demand exact equality
   if (!isUnordered) {
-
     // check how many elements match in order from the beginning
     let n_matches = 0;
 
     let minN = Math.min(nelts1, nelts2);
     for (let i = 0; i < minN; i++) {
       let sub_results = checkEquality({
-        object1: me.fromAst(object1[i]), object2: me.fromAst(object2[i]),
-        isUnordered: false, partialMatches: partialMatchesOnRecursion,
+        object1: me.fromAst(object1[i]),
+        object2: me.fromAst(object2[i]),
+        isUnordered: false,
+        partialMatches: partialMatchesOnRecursion,
         matchByExactPositions: matchByExactPositionsOnRecursion,
         symbolicEquality,
-        simplify, expand,
+        simplify,
+        expand,
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
         matchBlanks,
-      })
+      });
       n_matches += sub_results.fraction_equal;
     }
 
@@ -595,9 +651,8 @@ export default function checkEquality({
       return results;
     }
 
-
     if (!partialMatches) {
-      return results;   // return failure
+      return results; // return failure
     }
 
     // if match_exact locations, get partial credit only
@@ -606,7 +661,6 @@ export default function checkEquality({
       results["fraction_equal"] = n_matches / Math.max(nelts1, nelts2);
       return results;
     }
-
 
     // if partial matches, find length of largest common subsequence
 
@@ -617,35 +671,40 @@ export default function checkEquality({
     // In the end C[nelts1][nelts2] will be the total score
 
     // 2D array of zeros from https://stackoverflow.com/a/46792350
-    let C = Array.from(Array(nelts1 + 1), _ => Array(nelts2 + 1).fill(0));
+    let C = Array.from(Array(nelts1 + 1), (_) => Array(nelts2 + 1).fill(0));
 
     for (let i = 0; i < nelts1; i++) {
       for (let j = 0; j < nelts2; j++) {
         let sub_results = checkEquality({
-          object1: me.fromAst(object1[i]), object2: me.fromAst(object2[j]),
-          isUnordered: false, partialMatches: partialMatchesOnRecursion,
+          object1: me.fromAst(object1[i]),
+          object2: me.fromAst(object2[j]),
+          isUnordered: false,
+          partialMatches: partialMatchesOnRecursion,
           matchByExactPositions: matchByExactPositionsOnRecursion,
           symbolicEquality,
-          simplify, expand,
+          simplify,
+          expand,
           allowedErrorInNumbers,
           allowedErrorIsAbsolute,
           nSignErrorsMatched,
           nPeriodicSetMatchesRequired,
           caseInsensitiveMatch,
           matchBlanks,
-        })
-        C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
-          C[i + 1][j], C[i][j + 1])
+        });
+        C[i + 1][j + 1] = Math.max(
+          C[i][j] + sub_results.fraction_equal,
+          C[i + 1][j],
+          C[i][j + 1],
+        );
       }
     }
 
     let max_matched = C[nelts1][nelts2];
 
-    results["fraction_equal"] = max_matched / Math.max(nelts1, nelts2)
+    results["fraction_equal"] = max_matched / Math.max(nelts1, nelts2);
 
     return results;
   }
-
 
   // if not ordered, check if match with any order
 
@@ -655,9 +714,8 @@ export default function checkEquality({
   let object2_indices_used = new Set();
   let n_matches = 0;
   for (let expr1 of object1) {
-
-    let best_match_ind = -1
-    let best_match = 0
+    let best_match_ind = -1;
+    let best_match = 0;
 
     for (let [i, expr2] of object2.entries()) {
       if (object2_indices_used.has(i)) {
@@ -665,18 +723,21 @@ export default function checkEquality({
       }
 
       let sub_results = checkEquality({
-        object1: me.fromAst(expr1), object2: me.fromAst(expr2),
-        isUnordered: false, partialMatches: partialMatchesOnRecursion,
+        object1: me.fromAst(expr1),
+        object2: me.fromAst(expr2),
+        isUnordered: false,
+        partialMatches: partialMatchesOnRecursion,
         matchByExactPositions: matchByExactPositionsOnRecursion,
         symbolicEquality,
-        simplify, expand,
+        simplify,
+        expand,
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
         matchBlanks,
-      })
+      });
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;
         best_match_ind = i;
@@ -684,7 +745,7 @@ export default function checkEquality({
     }
 
     if (best_match_ind !== -1) {
-      n_matches += best_match
+      n_matches += best_match;
       object2_indices_used.add(best_match_ind);
     }
   }
@@ -695,18 +756,15 @@ export default function checkEquality({
   }
 
   if (!partialMatches) {
-    return results
+    return results;
   }
 
   results["fraction_equal"] = n_matches / Math.max(nelts1, nelts2);
 
-  return results
-
-
+  return results;
 }
 
 function setStringsInTreeToLowerCase(tree) {
-
   if (typeof tree === "string") {
     return tree.toLowerCase();
   }
@@ -716,7 +774,6 @@ function setStringsInTreeToLowerCase(tree) {
   }
 
   return [tree[0], ...tree.slice(1).map(setStringsInTreeToLowerCase)];
-
 }
 
 function convertStringsToLowerCase(x) {
@@ -728,7 +785,6 @@ function convertStringsToLowerCase(x) {
   }
 
   return x.map(convertStringsToLowerCase);
-
 }
 
 function convertMatrixToArrayOfTuples(matrixOperands) {
@@ -750,15 +806,13 @@ function convertMatrixToArrayOfTuples(matrixOperands) {
     for (let colInd = 0; colInd < nCols; colInd++) {
       let val = rowOperands[colInd + 1];
       if (val === undefined || val === null) {
-        val = '\uff3f';
+        val = "\uff3f";
       }
-      row.push(val)
+      row.push(val);
     }
 
     result.push(row);
-
   }
 
   return result;
-
 }

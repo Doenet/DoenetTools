@@ -1,12 +1,23 @@
-import InlineComponent from './abstract/InlineComponent';
-import { deepCompare } from '../utils/deepFunctions';
-import { renameStateVariable } from '../utils/stateVariables';
-import { serializedComponentsReplacer, serializedComponentsReviver } from '../utils/serializedStateProcessing';
-import sha1 from 'crypto-js/sha1';
-import Base64 from 'crypto-js/enc-base64';
-import stringify from 'json-stringify-deterministic';
+import InlineComponent from "./abstract/InlineComponent";
+import { deepCompare } from "../utils/deepFunctions";
+import { renameStateVariable } from "../utils/stateVariables";
+import {
+  serializedComponentsReplacer,
+  serializedComponentsReviver,
+} from "../utils/serializedStateProcessing";
+import sha1 from "crypto-js/sha1";
+import Base64 from "crypto-js/enc-base64";
+import stringify from "json-stringify-deterministic";
+import me from "math-expressions";
 
 export default class Answer extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      submitAnswer: this.submitAnswer.bind(this),
+    });
+  }
   static componentType = "answer";
 
   static renderChildren = true;
@@ -25,6 +36,12 @@ export default class Answer extends InlineComponent {
       createComponentOfType: "number",
       createStateVariable: "weight",
       defaultValue: 1,
+      public: true,
+    };
+    attributes.handGraded = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "handGraded",
+      defaultValue: false,
       public: true,
     };
     attributes.inline = {
@@ -56,7 +73,7 @@ export default class Answer extends InlineComponent {
       createStateVariable: "simplifyOnCompare",
       defaultValue: "none",
       toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
+      valueTransformations: { "": "full", true: "full", false: "none" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       public: true,
     };
@@ -83,13 +100,13 @@ export default class Answer extends InlineComponent {
       createStateVariable: "nAwardsCredited",
       defaultValue: 1,
       public: true,
-    }
+    };
     attributes.maximumNumberOfAttempts = {
       createComponentOfType: "integer",
       createStateVariable: "maximumNumberOfAttempts",
       defaultValue: Infinity,
       public: true,
-    }
+    };
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
@@ -136,17 +153,17 @@ export default class Answer extends InlineComponent {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectnessPreliminary",
       defaultValue: null,
-    }
+    };
     attributes.type = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
 
     attributes.disableAfterCorrect = {
       createComponentOfType: "boolean",
       createStateVariable: "disableAfterCorrect",
       defaultValue: false,
       public: true,
-    }
+    };
 
     attributes.submitLabel = {
       createComponentOfType: "text",
@@ -154,7 +171,7 @@ export default class Answer extends InlineComponent {
       defaultValue: "Check Work",
       public: true,
       forRenderer: true,
-    }
+    };
 
     attributes.submitLabelNoCorrectness = {
       createComponentOfType: "text",
@@ -162,7 +179,7 @@ export default class Answer extends InlineComponent {
       defaultValue: "Submit Response",
       public: true,
       forRenderer: true,
-    }
+    };
 
     attributes.selectMultiple = {
       createComponentOfType: "boolean",
@@ -182,21 +199,28 @@ export default class Answer extends InlineComponent {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
-    }
+    };
 
     attributes.parseScientificNotation = {
       createComponentOfType: "boolean",
       createStateVariable: "parseScientificNotation",
       defaultValue: false,
       public: true,
-    }
+    };
+
+    attributes.expanded = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expanded",
+      defaultValue: false,
+      public: true,
+    };
 
     // temporary attribute until fix toast
     attributes.suppressToast = {
       createComponentOfType: "boolean",
       createStateVariable: "suppressToast",
       defaultValue: false,
-    }
+    };
 
     return attributes;
   }
@@ -204,16 +228,26 @@ export default class Answer extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let addAwardAndPossiblyInput = function ({ matchedChildren, componentAttributes, componentInfoObjects }) {
+    let addAwardAndPossiblyInput = function ({
+      matchedChildren,
+      componentAttributes,
+      componentInfoObjects,
+    }) {
       // if chidren are strings and macros
       // wrap with award and type
 
       function checkForResponseDescendant(components) {
         for (let component of components) {
-          if (component?.attributes?.isResponse && component.attributes.isResponse.primitive !== false) {
+          if (
+            component?.attributes?.isResponse &&
+            component.attributes.isResponse.primitive !== false
+          ) {
             // idea: catch either isResponse = true or isResponse.primitive=true
             return true;
-          } else if (component.children && checkForResponseDescendant(component.children)) {
+          } else if (
+            component.children &&
+            checkForResponseDescendant(component.children)
+          ) {
             return true;
           }
         }
@@ -221,13 +255,13 @@ export default class Answer extends InlineComponent {
       }
 
       function addResponsesToCompositeDescendants(components) {
-
         for (let component of components) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: component.componentType,
-            baseComponentType: "_composite"
-          })) {
-
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: component.componentType,
+              baseComponentType: "_composite",
+            })
+          ) {
             if (!component.attributes) {
               component.attributes = {};
             }
@@ -235,21 +269,23 @@ export default class Answer extends InlineComponent {
             // because the composite don't have the attribute isResponse
             // but pass it on to their replacements
             component.attributes.isResponse = true;
-
           } else if (component.children) {
-            addResponsesToCompositeDescendants(component.children)
+            addResponsesToCompositeDescendants(component.children);
           }
         }
-
       }
 
+      let componentIsSpecifiedType =
+        componentInfoObjects.componentIsSpecifiedType;
 
-      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
-
-      let foundMath = false, foundText = false, foundBoolean = false;
+      let foundMath = false,
+        foundText = false,
+        foundBoolean = false;
       let nChoicesFound = 0;
-      let definitelyDoNotAddInput = false, mayNeedInput = false;
+      let definitelyDoNotAddInput = false,
+        mayNeedInput = false;
       let foundResponse = false;
+      let foundAward = false;
 
       let childIsWrappable = [];
       for (let child of matchedChildren) {
@@ -258,16 +294,18 @@ export default class Answer extends InlineComponent {
           if (child.trim()) {
             mayNeedInput = true;
           }
-        } else if (componentIsSpecifiedType(child, "math")
-          || componentIsSpecifiedType(child, "number")
-          || componentIsSpecifiedType(child, "mathList")
-          || componentIsSpecifiedType(child, "numberList")
+        } else if (
+          componentIsSpecifiedType(child, "math") ||
+          componentIsSpecifiedType(child, "number") ||
+          componentIsSpecifiedType(child, "mathList") ||
+          componentIsSpecifiedType(child, "numberList")
         ) {
           childIsWrappable.push(true);
           mayNeedInput = true;
           foundMath = true;
-        } else if (componentIsSpecifiedType(child, "text")
-          || componentIsSpecifiedType(child, "textList")
+        } else if (
+          componentIsSpecifiedType(child, "text") ||
+          componentIsSpecifiedType(child, "textList")
         ) {
           childIsWrappable.push(true);
           foundText = true;
@@ -285,6 +323,7 @@ export default class Answer extends InlineComponent {
           childIsWrappable.push(true);
           nChoicesFound++;
         } else if (componentIsSpecifiedType(child, "award")) {
+          foundAward = true;
           childIsWrappable.push(false);
           if (child.attributes?.sourcesAreResponses) {
             foundResponse = true;
@@ -297,16 +336,17 @@ export default class Answer extends InlineComponent {
                 }
               } else if (componentIsSpecifiedType(grandChild, "when")) {
                 // have to test for when before boolean, sincd when is derived from boolean!
-
-              } else if (componentIsSpecifiedType(grandChild, "math")
-                || componentIsSpecifiedType(grandChild, "number")
-                || componentIsSpecifiedType(grandChild, "mathList")
-                || componentIsSpecifiedType(grandChild, "numberList")
+              } else if (
+                componentIsSpecifiedType(grandChild, "math") ||
+                componentIsSpecifiedType(grandChild, "number") ||
+                componentIsSpecifiedType(grandChild, "mathList") ||
+                componentIsSpecifiedType(grandChild, "numberList")
               ) {
                 foundMath = true;
                 mayNeedInput = true;
-              } else if (componentIsSpecifiedType(grandChild, "text")
-                || componentIsSpecifiedType(grandChild, "textList")
+              } else if (
+                componentIsSpecifiedType(grandChild, "text") ||
+                componentIsSpecifiedType(grandChild, "textList")
               ) {
                 foundText = true;
                 mayNeedInput = true;
@@ -317,14 +357,17 @@ export default class Answer extends InlineComponent {
                 // TODO: what should we do with a booleanList,
                 // as don't have a booleanList input?
                 foundBoolean = true;
-              } else if (componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: grandChild.componentType,
-                baseComponentType: "_composite"
-              })
-                && !grandChild.attributes?.createComponentOfType?.primitive
+              } else if (
+                componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: grandChild.componentType,
+                  baseComponentType: "_composite",
+                }) &&
+                !grandChild.attributes?.createComponentOfType?.primitive
               ) {
                 mayNeedInput = true;
-              } else if (componentIsSpecifiedType(grandChild, "orbitalDiagram")) {
+              } else if (
+                componentIsSpecifiedType(grandChild, "orbitalDiagram")
+              ) {
                 // Note: should add componentTypes as create more comparable types in award
               } else {
                 // could be a component that could adapt into a math/text/boolean
@@ -349,11 +392,12 @@ export default class Answer extends InlineComponent {
         } else if (componentIsSpecifiedType(child, "considerAsResponses")) {
           childIsWrappable.push(false);
           definitelyDoNotAddInput = true;
-        } else if (componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: child.componentType,
-          baseComponentType: "_composite"
-        })
-          && !child.attributes?.createComponentOfType?.primitive
+        } else if (
+          componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "_composite",
+          }) &&
+          !child.attributes?.createComponentOfType?.primitive
         ) {
           // have a composite without specified componentType
           childIsWrappable.push(true);
@@ -371,25 +415,30 @@ export default class Answer extends InlineComponent {
 
       if (nChoicesFound > 0) {
         // remove blank string children
-        matchedChildren = matchedChildren.filter(x => typeof x !== "string" || x.trim() !== "");
+        matchedChildren = matchedChildren.filter(
+          (x) => typeof x !== "string" || x.trim() !== "",
+        );
         if (matchedChildren.length !== nChoicesFound) {
-          return { success: false }
+          return { success: false };
         } else {
           // wrap all choices in a choiceinput
           let choiceinput = {
             componentType: "choiceInput",
-            children: matchedChildren
+            children: matchedChildren,
           };
           if (componentAttributes.shuffleOrder) {
-            choiceinput.attributes = { shuffleOrder: { primitive: true } }
+            choiceinput.attributes = { shuffleOrder: { primitive: true } };
           }
           return {
             success: true,
-            newChildren: [choiceinput]
-          }
+            newChildren: [choiceinput],
+          };
         }
       }
 
+      if (componentAttributes.handGraded && !foundAward) {
+        mayNeedInput = true;
+      }
 
       if (!mayNeedInput && !foundResponse) {
         // recurse to all descendants of awards to see if have a response
@@ -404,24 +453,25 @@ export default class Answer extends InlineComponent {
           }
         }
 
-
         if (!foundResponse) {
           // definitely have a case where there is not a response
           // look inside each award and add isResponse to any composites
           for (let child of matchedChildren) {
             if (componentIsSpecifiedType(child, "award")) {
               if (child.children?.length > 0) {
-                addResponsesToCompositeDescendants(child.children)
+                addResponsesToCompositeDescendants(child.children);
               }
             }
           }
         }
       }
 
-      let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
+      let childrenToWrap = [],
+        childrenToNotWrapBegin = [],
+        childrenToNotWrapEnd = [];
 
-      if (childIsWrappable.filter(x => !x).length === 0) {
-        childrenToWrap = matchedChildren
+      if (childIsWrappable.filter((x) => !x).length === 0) {
+        childrenToWrap = matchedChildren;
       } else {
         if (!childIsWrappable[0]) {
           // started with non-wrappable, find first wrappable child
@@ -429,7 +479,7 @@ export default class Answer extends InlineComponent {
           if (firstNonLabelInd !== -1) {
             childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
             matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsWrappable = childIsWrappable.slice(firstNonLabelInd)
+            childIsWrappable = childIsWrappable.slice(firstNonLabelInd);
           }
         }
 
@@ -442,65 +492,69 @@ export default class Answer extends InlineComponent {
           childrenToWrap = matchedChildren.slice(0, firstLabelInd);
           childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
         }
-
       }
 
       // remove any blank string children from beginning or end of children to wrap
-      while (typeof childrenToWrap[0] === "string" && childrenToWrap[0].trim() === "") {
+      while (
+        typeof childrenToWrap[0] === "string" &&
+        childrenToWrap[0].trim() === ""
+      ) {
         childrenToWrap = childrenToWrap.slice(1);
       }
       let nWrap = childrenToWrap.length;
-      while (typeof childrenToWrap[nWrap - 1] === "string" && childrenToWrap[nWrap - 1].trim() === "") {
+      while (
+        typeof childrenToWrap[nWrap - 1] === "string" &&
+        childrenToWrap[nWrap - 1].trim() === ""
+      ) {
         childrenToWrap = childrenToWrap.slice(0, nWrap - 1);
         nWrap = childrenToWrap.length;
       }
 
-
       let newChildren;
       let type;
       if (componentAttributes.type) {
-        type = componentAttributes.type
+        type = componentAttributes.type;
         if (!["math", "text", "boolean"].includes(type)) {
           console.warn(`Invalid type ${type}`);
           type = "math";
         }
       } else {
         if (foundMath) {
-          type = "math"
+          type = "math";
         } else if (foundText) {
-          type = "text"
+          type = "text";
         } else if (foundBoolean) {
           // TODO: if have multiple booleans,
           // it doesn't make sense to wrap in one big boolean.
           // What is a better solution?
-          type = "boolean"
+          type = "boolean";
         } else {
-          type = "math"
+          type = "math";
         }
       }
 
       if (childrenToWrap.length === 0) {
         newChildren = [...childrenToNotWrapBegin, ...childrenToNotWrapEnd];
       } else {
-
         // if have one child and it has a specified componentType
         // then no need to wrap with componentType
 
-        let needToWrapWithComponentType = childrenToWrap.length > 1
-          || (
-            componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: childrenToWrap[0].componentType,
-              baseComponentType: "_composite"
-            })
-            && !childrenToWrap[0].props?.componentType
-          )
+        let needToWrapWithComponentType =
+          childrenToWrap.length > 1 ||
+          (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: childrenToWrap[0].componentType,
+            baseComponentType: "_composite",
+          }) &&
+            !childrenToWrap[0].props?.componentType);
 
         let awardChildren;
         if (needToWrapWithComponentType) {
-          awardChildren = [{
-            componentType: type,
-            children: childrenToWrap
-          }]
+          awardChildren = [
+            {
+              componentType: type,
+              children: childrenToWrap,
+            },
+          ];
         } else {
           awardChildren = childrenToWrap;
         }
@@ -508,14 +562,13 @@ export default class Answer extends InlineComponent {
           ...childrenToNotWrapBegin,
           {
             componentType: "award",
-            children: awardChildren
+            children: awardChildren,
           },
-          ...childrenToNotWrapEnd
-        ]
+          ...childrenToNotWrapEnd,
+        ];
       }
 
       if (mayNeedInput && !definitelyDoNotAddInput) {
-
         let inputType = type + "Input";
 
         newChildren = [{ componentType: inputType }, ...newChildren];
@@ -524,42 +577,41 @@ export default class Answer extends InlineComponent {
       return {
         success: true,
         newChildren: newChildren,
-      }
-    }
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: addAwardAndPossiblyInput
-    })
-
+      replacementFunction: addAwardAndPossiblyInput,
+    });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "awards",
-      componentTypes: ["award"]
-    }, {
-      group: "inputs",
-      componentTypes: ["_input"]
-    }, {
-      group: "responses",
-      componentTypes: ["considerAsResponses"]
-    }]
-
+    return [
+      {
+        group: "awards",
+        componentTypes: ["award"],
+      },
+      {
+        group: "inputs",
+        componentTypes: ["_input"],
+      },
+      {
+        group: "responses",
+        componentTypes: ["considerAsResponses"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // rename disabled to disabledOriginal
     renameStateVariable({
       stateVariableDefinitions,
       oldName: "disabled",
-      newName: "disabledOriginal"
+      newName: "disabledOriginal",
     });
 
     stateVariableDefinitions.showCorrectness = {
@@ -567,100 +619,122 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         showCorrectnessPreliminary: {
           dependencyType: "stateVariable",
-          variableName: "showCorrectnessPreliminary"
+          variableName: "showCorrectnessPreliminary",
         },
         showCorrectnessFlag: {
           dependencyType: "flag",
-          flagName: "showCorrectness"
-        }
+          flagName: "showCorrectness",
+        },
+        handGraded: {
+          dependencyType: "stateVariable",
+          variableName: "handGraded",
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         let showCorrectness;
         if (!usedDefault.showCorrectnessPreliminary) {
-          showCorrectness = dependencyValues.showCorrectnessPreliminary
+          showCorrectness = dependencyValues.showCorrectnessPreliminary;
         } else {
-          showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+          showCorrectness =
+            dependencyValues.showCorrectnessFlag !== false &&
+            !dependencyValues.handGraded;
         }
-        return { setValue: { showCorrectness } }
-      }
-    }
+        return { setValue: { showCorrectness } };
+      },
+    };
 
     stateVariableDefinitions.haveAwardThatRequiresInput = {
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "child",
           childGroups: ["awards"],
-          variableNames: ["requireInputInAnswer"]
-        }
+          variableNames: ["requireInputInAnswer"],
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            haveAwardThatRequiresInput:
-              dependencyValues.awardChildren.some(x => x.stateValues.requireInputInAnswer)
-          }
-        }
-      }
-    }
+            haveAwardThatRequiresInput: dependencyValues.awardChildren.some(
+              (x) => x.stateValues.requireInputInAnswer,
+            ),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.allInputChildrenIncludingSugared = {
       returnDependencies: () => ({
         allInputChildrenIncludingSugared: {
           dependencyType: "child",
           childGroups: ["inputs"],
-        }
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { allInputChildrenIncludingSugared: dependencyValues.allInputChildrenIncludingSugared } }
-      }
-    }
-
+        return {
+          setValue: {
+            allInputChildrenIncludingSugared:
+              dependencyValues.allInputChildrenIncludingSugared,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.inputChildren = {
-      stateVariablesDeterminingDependencies: ["allInputChildrenIncludingSugared"],
-      additionalStateVariablesDefined: ["inputChildIndices", "skippedFirstInput"],
+      stateVariablesDeterminingDependencies: [
+        "allInputChildrenIncludingSugared",
+      ],
+      additionalStateVariablesDefined: [
+        "inputChildIndices",
+        "skippedFirstInput",
+      ],
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
           allInputChildrenIncludingSugared: {
             dependencyType: "stateVariable",
-            variableName: "allInputChildrenIncludingSugared"
+            variableName: "allInputChildrenIncludingSugared",
           },
           haveAwardThatRequiresInput: {
             dependencyType: "stateVariable",
-            variableName: "haveAwardThatRequiresInput"
-          }
+            variableName: "haveAwardThatRequiresInput",
+          },
+          handGraded: {
+            dependencyType: "stateVariable",
+            variableName: "handGraded",
+          },
         };
 
         if (stateValues.allInputChildrenIncludingSugared.length > 0) {
           dependencies.firstInputFromSugar = {
             dependencyType: "doenetAttribute",
-            componentName: stateValues.allInputChildrenIncludingSugared[0].componentName,
-            attributeName: "createdFromSugar"
-          }
+            componentName:
+              stateValues.allInputChildrenIncludingSugared[0].componentName,
+            attributeName: "createdFromSugar",
+          };
         }
 
         return dependencies;
-
       },
       definition({ dependencyValues }) {
-
         // if have award the requires input,
         // use the input child from sugar if none other exists
         // but if first input is choiceInput, use that anyway
 
-
-        let inputChildren = [...dependencyValues.allInputChildrenIncludingSugared];
-        let inputChildIndices = [...dependencyValues.allInputChildrenIncludingSugared.keys()];
+        let inputChildren = [
+          ...dependencyValues.allInputChildrenIncludingSugared,
+        ];
+        let inputChildIndices = [
+          ...dependencyValues.allInputChildrenIncludingSugared.keys(),
+        ];
         let skippedFirstInput = false;
 
-
         let skipFirstSugaredInput =
-          inputChildren[0]?.componentType !== "choiceInput"
-          && (
-            !dependencyValues.haveAwardThatRequiresInput
-            || dependencyValues.allInputChildrenIncludingSugared.length > 1
-          );
+          inputChildren[0]?.componentType !== "choiceInput" &&
+          (!(
+            dependencyValues.haveAwardThatRequiresInput ||
+            dependencyValues.handGraded
+          ) ||
+            dependencyValues.allInputChildrenIncludingSugared.length > 1);
 
         if (skipFirstSugaredInput && dependencyValues.firstInputFromSugar) {
           skippedFirstInput = true;
@@ -668,10 +742,11 @@ export default class Answer extends InlineComponent {
           inputChildIndices = inputChildIndices.slice(1);
         }
 
-
-        return { setValue: { inputChildren, inputChildIndices, skippedFirstInput } };
-      }
-    }
+        return {
+          setValue: { inputChildren, inputChildIndices, skippedFirstInput },
+        };
+      },
+    };
 
     stateVariableDefinitions.inputChildrenWithValues = {
       stateVariablesDeterminingDependencies: ["inputChildIndices"],
@@ -690,17 +765,19 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { inputChildrenWithValues: dependencyValues.inputChildren } }
-      }
-    }
+        return {
+          setValue: { inputChildrenWithValues: dependencyValues.inputChildren },
+        };
+      },
+    };
 
     // for award children to find the one input child
     stateVariableDefinitions.inputChildWithValues = {
       returnDependencies: () => ({
         inputChildrenWithValues: {
           dependencyType: "stateVariable",
-          variableName: "inputChildrenWithValues"
-        }
+          variableName: "inputChildrenWithValues",
+        },
       }),
       definition({ dependencyValues }) {
         let inputChildWithValues = null;
@@ -708,8 +785,8 @@ export default class Answer extends InlineComponent {
           inputChildWithValues = dependencyValues.inputChildrenWithValues[0];
         }
         return { setValue: { inputChildWithValues } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.awardInputResponseChildren = {
       returnDependencies: () => ({
@@ -719,19 +796,21 @@ export default class Answer extends InlineComponent {
         },
         skippedFirstInput: {
           dependencyType: "stateVariable",
-          variableName: "skippedFirstInput"
-        }
+          variableName: "skippedFirstInput",
+        },
       }),
       definition({ dependencyValues }) {
-        let awardInputResponseChildren = [...dependencyValues.awardInputResponseChildren];
+        let awardInputResponseChildren = [
+          ...dependencyValues.awardInputResponseChildren,
+        ];
         if (dependencyValues.skippedFirstInput) {
           awardInputResponseChildren = awardInputResponseChildren.slice(1);
         }
         return {
-          setValue: { awardInputResponseChildren }
-        }
-      }
-    }
+          setValue: { awardInputResponseChildren },
+        };
+      },
+    };
 
     stateVariableDefinitions.nResponses = {
       public: true,
@@ -743,16 +822,23 @@ export default class Answer extends InlineComponent {
         let dependencies = {
           childTypes: {
             dependencyType: "value",
-            value: stateValues.awardInputResponseChildren.map(x => x.componentType)
-          }
+            value: stateValues.awardInputResponseChildren.map(
+              (x) => x.componentType,
+            ),
+          },
         };
 
-        for (let [ind, child] of stateValues.awardInputResponseChildren.entries()) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "award"
-          })) {
-            dependencies['child' + ind] = {
+        for (let [
+          ind,
+          child,
+        ] of stateValues.awardInputResponseChildren.entries()) {
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "award",
+            })
+          ) {
+            dependencies["child" + ind] = {
               dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
@@ -761,44 +847,47 @@ export default class Answer extends InlineComponent {
               recurseToMatchedChildren: true,
               includeNonActiveChildren: true,
               skipOverAdapters: true,
-            }
-
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "_input"
-          })) {
-            dependencies['childNValues' + ind] = {
+            };
+          } else if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "_input",
+            })
+          ) {
+            dependencies["childNValues" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
               variableName: "nValues",
               variablesOptional: true,
-            }
+            };
           } else {
             // considerAsResponses
-            dependencies['child' + ind] = {
+            dependencies["child" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
-              variableName: "childrenWithNValues"
-            }
+              variableName: "childrenWithNValues",
+            };
           }
         }
 
         return dependencies;
       },
       definition({ dependencyValues, componentInfoObjects }) {
-
         let nResponses = 0;
 
         for (let [ind, childType] of dependencyValues.childTypes.entries()) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: childType,
-            baseComponentType: "award"
-          })) {
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: childType,
+              baseComponentType: "award",
+            })
+          ) {
             for (let descendant of dependencyValues["child" + ind]) {
-              if (!descendant.stateValues.isResponse ||
+              if (
+                !descendant.stateValues.isResponse ||
                 componentInfoObjects.isInheritedComponentType({
                   inheritedComponentType: descendant.componentType,
-                  baseComponentType: "_composite"
+                  baseComponentType: "_composite",
                 })
               ) {
                 continue;
@@ -810,18 +899,18 @@ export default class Answer extends InlineComponent {
                 nResponses += descendant.stateValues.nValues;
               }
             }
-
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: childType,
-            baseComponentType: "_input"
-          })) {
+          } else if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: childType,
+              baseComponentType: "_input",
+            })
+          ) {
             let nValues = dependencyValues["childNValues" + ind];
             if (nValues === undefined) {
               nResponses += 1;
             } else {
               nResponses += nValues;
             }
-
           } else {
             // considerAsResponses
 
@@ -835,10 +924,9 @@ export default class Answer extends InlineComponent {
           }
         }
 
-        return { setValue: { nResponses } }
-
-      }
-    }
+        return { setValue: { nResponses } };
+      },
+    };
 
     stateVariableDefinitions.currentResponses = {
       public: true,
@@ -861,80 +949,97 @@ export default class Answer extends InlineComponent {
         let globalDependencies = {
           childTypes: {
             dependencyType: "value",
-            value: stateValues.awardInputResponseChildren.map(x => x.componentType)
-          }
+            value: stateValues.awardInputResponseChildren.map(
+              (x) => x.componentType,
+            ),
+          },
         };
 
-        for (let [ind, child] of stateValues.awardInputResponseChildren.entries()) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "award"
-          })) {
-            globalDependencies['child' + ind] = {
+        for (let [
+          ind,
+          child,
+        ] of stateValues.awardInputResponseChildren.entries()) {
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "award",
+            })
+          ) {
+            globalDependencies["child" + ind] = {
               dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
-              variableNames: ["isResponse", "value", "values", "componentType"],
+              variableNames: [
+                "isResponse",
+                "value",
+                "values",
+                "formula",
+                "componentType",
+              ],
               variablesOptional: true,
               recurseToMatchedChildren: true,
               includeAttributeChildren: true,
               includeNonActiveChildren: true,
               skipOverAdapters: true,
-            }
-
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "_input"
-          })) {
-            globalDependencies['childValue' + ind] = {
+            };
+          } else if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "_input",
+            })
+          ) {
+            globalDependencies["childValue" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
               variableName: "value",
               variablesOptional: true,
-            }
-            globalDependencies['childValues' + ind] = {
+            };
+            globalDependencies["childValues" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
               variableName: "values",
               variablesOptional: true,
-            }
-            globalDependencies['childComponentType' + ind] = {
+            };
+            globalDependencies["childComponentType" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
               variableName: "componentType",
               variablesOptional: true,
-            }
+            };
           } else {
             // considerAsResponses
-            globalDependencies['child' + ind] = {
+            globalDependencies["child" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
-              variableName: "childrenAsResponses"
-            }
+              variableName: "childrenAsResponses",
+            };
           }
         }
 
         return { globalDependencies };
-
       },
       arrayDefinitionByKey({ globalDependencyValues, componentInfoObjects }) {
-
         let currentResponses = [];
         let componentType = [];
 
-
         let responseComponents = [];
 
-        for (let [ind, childType] of globalDependencyValues.childTypes.entries()) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: childType,
-            baseComponentType: "award"
-          })) {
+        for (let [
+          ind,
+          childType,
+        ] of globalDependencyValues.childTypes.entries()) {
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: childType,
+              baseComponentType: "award",
+            })
+          ) {
             for (let descendant of globalDependencyValues["child" + ind]) {
-              if (!descendant.stateValues.isResponse ||
+              if (
+                !descendant.stateValues.isResponse ||
                 componentInfoObjects.isInheritedComponentType({
                   inheritedComponentType: descendant.componentType,
-                  baseComponentType: "_composite"
+                  baseComponentType: "_composite",
                 })
               ) {
                 continue;
@@ -942,33 +1047,31 @@ export default class Answer extends InlineComponent {
 
               responseComponents.push(descendant);
             }
-
-          } else if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: childType,
-            baseComponentType: "_input"
-          })) {
-
+          } else if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: childType,
+              baseComponentType: "_input",
+            })
+          ) {
             // reconstruct child in same way as for other components
             let child = {
               componentType: childType,
               stateValues: {
                 value: globalDependencyValues["childValue" + ind],
                 values: globalDependencyValues["childValues" + ind],
-                componentType: globalDependencyValues["childComponentType" + ind]
-              }
-            }
+                componentType:
+                  globalDependencyValues["childComponentType" + ind],
+              },
+            };
 
             responseComponents.push(child);
-
           } else {
             // considerAsResponses
             responseComponents.push(...globalDependencyValues["child" + ind]);
           }
         }
 
-
         for (let component of responseComponents) {
-
           let ct = component.stateValues.componentType;
           if (!ct) {
             ct = component.componentType;
@@ -985,28 +1088,33 @@ export default class Answer extends InlineComponent {
           }
 
           if (Array.isArray(component.stateValues.values)) {
-            currentResponses.push(...component.stateValues.values)
-            componentType.push(...Array(component.stateValues.values.length)
-              .fill(ct));
+            currentResponses.push(...component.stateValues.values);
+            componentType.push(
+              ...Array(component.stateValues.values.length).fill(ct),
+            );
+          } else if (component.stateValues.value !== undefined) {
+            currentResponses.push(component.stateValues.value);
+            componentType.push(ct);
+          } else if (component.stateValues.formula instanceof me.class) {
+            currentResponses.push(component.stateValues.formula);
+            componentType.push("math");
           } else {
-            currentResponses.push(component.stateValues.value)
-            componentType.push(ct)
+            currentResponses.push("");
+            componentType.push("text");
           }
         }
 
         return {
           setValue: { currentResponses },
           setCreateComponentOfType: { currentResponses: componentType },
-        }
-      }
-    }
-
+        };
+      },
+    };
 
     stateVariableDefinitions.currentResponse = {
       isAlias: true,
-      targetVariableName: "currentResponse1"
+      targetVariableName: "currentResponse1",
     };
-
 
     stateVariableDefinitions.nSubmittedResponses = {
       public: true,
@@ -1018,19 +1126,21 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          nSubmittedResponses: true
-        }
+          nSubmittedResponses: true,
+        },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "nSubmittedResponses",
-            value: desiredStateVariableValues.nSubmittedResponses
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "nSubmittedResponses",
+              value: desiredStateVariableValues.nSubmittedResponses,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.submittedResponsesComponentType = {
       hasEssential: true,
@@ -1038,29 +1148,35 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          submittedResponsesComponentType: true
-        }
+          submittedResponsesComponentType: true,
+        },
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         if (desiredStateVariableValues.submittedResponsesComponentType) {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "submittedResponsesComponentType",
-              value: [...desiredStateVariableValues.submittedResponsesComponentType]
-            }]
+            instructions: [
+              {
+                setEssentialValue: "submittedResponsesComponentType",
+                value: [
+                  ...desiredStateVariableValues.submittedResponsesComponentType,
+                ],
+              },
+            ],
           };
         } else {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "submittedResponsesComponentType",
-              value: []
-            }]
+            instructions: [
+              {
+                setEssentialValue: "submittedResponsesComponentType",
+                value: [],
+              },
+            ],
           };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.submittedResponses = {
       public: true,
@@ -1069,7 +1185,7 @@ export default class Answer extends InlineComponent {
       },
       isArray: true,
       entryPrefixes: ["submittedResponse"],
-      defaultValueByArrayKey: () => '\uFF3F',
+      defaultValueByArrayKey: () => "\uFF3F",
       hasEssential: true,
       inverseShadowToSetEntireArray: true,
       doNotCombineInverseArrayInstructions: true,
@@ -1086,68 +1202,78 @@ export default class Answer extends InlineComponent {
         let globalDependencies = {
           submittedResponsesComponentType: {
             dependencyType: "stateVariable",
-            variableName: "submittedResponsesComponentType"
+            variableName: "submittedResponsesComponentType",
           },
           nSubmittedResponses: {
             dependencyType: "stateVariable",
-            variableName: "nSubmittedResponses"
+            variableName: "nSubmittedResponses",
           },
-        }
-        return { globalDependencies }
+        };
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
-
         let componentType = [];
 
         if (globalDependencyValues.submittedResponsesComponentType) {
-          componentType.push(...globalDependencyValues.submittedResponsesComponentType.slice(0, globalDependencyValues.nSubmittedResponses))
+          componentType.push(
+            ...globalDependencyValues.submittedResponsesComponentType.slice(
+              0,
+              globalDependencyValues.nSubmittedResponses,
+            ),
+          );
         }
 
         let essentialSubmittedResponses = {};
 
-        for (let ind = 0; ind < globalDependencyValues.nSubmittedResponses; ind++) {
-
+        for (
+          let ind = 0;
+          ind < globalDependencyValues.nSubmittedResponses;
+          ind++
+        ) {
           // this function doesn't change the values once they set for the first time
           // (The values will just be changed using the inverse function)
-          essentialSubmittedResponses[ind] = true
+          essentialSubmittedResponses[ind] = true;
 
           if (!componentType[ind]) {
-            componentType[ind] = "math"
+            componentType[ind] = "math";
           }
-
         }
-
 
         return {
           useEssentialOrDefaultValue: {
             submittedResponses: essentialSubmittedResponses,
           },
           setCreateComponentOfType: { submittedResponses: componentType },
-        }
+        };
       },
-      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, initialChange }) {
+      inverseArrayDefinitionByKey: function ({
+        desiredStateVariableValues,
+        initialChange,
+      }) {
         if (!initialChange) {
           return { success: false };
         }
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "nSubmittedResponses",
-            desiredValue: desiredStateVariableValues.submittedResponses.length
-          },
-          {
-            setEssentialValue: "submittedResponses",
-            value: [...desiredStateVariableValues.submittedResponses]
-          }
-          ]
+          instructions: [
+            {
+              setDependency: "nSubmittedResponses",
+              desiredValue:
+                desiredStateVariableValues.submittedResponses.length,
+            },
+            {
+              setEssentialValue: "submittedResponses",
+              value: [...desiredStateVariableValues.submittedResponses],
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.submittedResponse = {
       isAlias: true,
-      targetVariableName: "submittedResponse1"
+      targetVariableName: "submittedResponse1",
     };
 
     stateVariableDefinitions.suppressCheckwork = {
@@ -1155,20 +1281,19 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         autoSubmit: {
           dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
+          flagName: "autoSubmit",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
-      }
-    }
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } };
+      },
+    };
 
     stateVariableDefinitions.delegateCheckWork = {
-      additionalStateVariablesDefined:
-        [
-          "delegateCheckWorkToInput",
-          "delegateCheckWorkToAncestor",
-        ],
+      additionalStateVariablesDefined: [
+        "delegateCheckWorkToInput",
+        "delegateCheckWorkToAncestor",
+      ],
       forRenderer: true,
       returnDependencies: () => ({
         inputChildren: {
@@ -1177,21 +1302,17 @@ export default class Answer extends InlineComponent {
         },
         forceFullCheckworkButton: {
           dependencyType: "stateVariable",
-          variableName: "forceFullCheckworkButton"
+          variableName: "forceFullCheckworkButton",
         },
         sectionAncestor: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
-          variableNames: [
-            "suppressAnswerSubmitButtons",
-          ]
+          variableNames: ["suppressAnswerSubmitButtons"],
         },
         documentAncestor: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: [
-            "suppressAnswerSubmitButtons",
-          ]
+          variableNames: ["suppressAnswerSubmitButtons"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -1199,38 +1320,53 @@ export default class Answer extends InlineComponent {
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
 
-        if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
+        if (
+          dependencyValues.documentAncestor.stateValues
+            .suppressAnswerSubmitButtons
+        ) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;
-        } else if (dependencyValues.sectionAncestor?.stateValues.suppressAnswerSubmitButtons) {
+        } else if (
+          dependencyValues.sectionAncestor?.stateValues
+            .suppressAnswerSubmitButtons
+        ) {
           delegateCheckWorkToAncestor = delegateCheckWork = true;
-        } else if (dependencyValues.inputChildren.length === 1 &&
+        } else if (
+          dependencyValues.inputChildren.length === 1 &&
           !dependencyValues.forceFullCheckworkButton
         ) {
           delegateCheckWorkToInput = delegateCheckWork = true;
         }
         return {
           setValue: {
-            delegateCheckWork, delegateCheckWorkToAncestor,
-            delegateCheckWorkToInput
-          }
+            delegateCheckWork,
+            delegateCheckWorkToAncestor,
+            delegateCheckWorkToInput,
+          },
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
-      additionalStateVariablesDefined: ["awardsUsedIfSubmit", "awardChildren",
-        "inputUsedIfSubmit"],
+      additionalStateVariablesDefined: [
+        "awardsUsedIfSubmit",
+        "awardChildren",
+        "inputUsedIfSubmit",
+      ],
       stateVariablesDeterminingDependencies: ["inputChildIndices"],
       returnDependencies: ({ stateValues }) => ({
         awardChildren: {
           dependencyType: "child",
           childGroups: ["awards"],
-          variableNames: ["credit", "creditAchievedIfSubmit", "fractionSatisfiedIfSubmit"]
+          variableNames: [
+            "credit",
+            "creditAchievedIfSubmit",
+            "fractionSatisfiedIfSubmit",
+          ],
         },
         inputChildren: {
           dependencyType: "child",
           childGroups: ["inputs"],
-          variableNames: ["creditAchievedIfSubmit"],
+          variableNames: ["creditAchievedIfSubmit", "value"], // include value so inputs always make dependency values change
           childIndices: stateValues.inputChildIndices,
           variablesOptional: true,
         },
@@ -1240,7 +1376,6 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-
         let creditAchieved = 0;
 
         let n = dependencyValues.nAwardsCredited;
@@ -1249,7 +1384,9 @@ export default class Answer extends InlineComponent {
 
         if (dependencyValues.awardChildren.length === 0) {
           if (dependencyValues.inputChildren.length === 1) {
-            let inputCredit = dependencyValues.inputChildren[0].stateValues.creditAchievedIfSubmit;
+            let inputCredit =
+              dependencyValues.inputChildren[0].stateValues
+                .creditAchievedIfSubmit;
             // if input has a state variable creditAchievedIfSubmit
             // that is a non-negative number, use that value
             if (inputCredit >= 0) {
@@ -1267,7 +1404,10 @@ export default class Answer extends InlineComponent {
           let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
             let creditFromChild = child.stateValues.creditAchievedIfSubmit;
-            if (creditFromChild > minimumFromAwardCredits || awardsUsed[n - 1] === null) {
+            if (
+              creditFromChild > minimumFromAwardCredits ||
+              awardsUsed[n - 1] === null
+            ) {
               if (child.stateValues.fractionSatisfiedIfSubmit > 0) {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
@@ -1277,7 +1417,7 @@ export default class Answer extends InlineComponent {
                   for (let [ind, credit] of awardCredits.entries()) {
                     if (creditFromChild > credit || credit === null) {
                       awardsUsed.splice(ind, 0, child.componentName);
-                      awardsUsed = awardsUsed.slice(0, n)
+                      awardsUsed = awardsUsed.slice(0, n);
                       awardCredits.splice(ind, 0, creditFromChild);
                       awardCredits = awardCredits.slice(0, n);
                       minimumFromAwardCredits = Math.min(...awardCredits);
@@ -1289,8 +1429,10 @@ export default class Answer extends InlineComponent {
             }
           }
 
-          creditAchieved = Math.min(1, awardCredits.reduce((a, c) => a + c, 0));
-
+          creditAchieved = Math.min(
+            1,
+            awardCredits.reduce((a, c) => a + c, 0),
+          );
         }
         return {
           setValue: {
@@ -1298,10 +1440,10 @@ export default class Answer extends InlineComponent {
             awardsUsedIfSubmit: awardsUsed,
             awardChildren: dependencyValues.awardChildren,
             inputUsedIfSubmit: inputUsed,
-          }
-        }
-      }
-    }
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
@@ -1314,19 +1456,21 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          creditAchieved: true
-        }
+          creditAchieved: true,
+        },
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
+          instructions: [
+            {
+              setEssentialValue: "creditAchieved",
+              value: desiredStateVariableValues.creditAchieved,
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.responseHasBeenSubmitted = {
       public: true,
@@ -1338,31 +1482,35 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          responseHasBeenSubmitted: true
-        }
+          responseHasBeenSubmitted: true,
+        },
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "responseHasBeenSubmitted",
-            value: desiredStateVariableValues.responseHasBeenSubmitted
-          }]
+          instructions: [
+            {
+              setEssentialValue: "responseHasBeenSubmitted",
+              value: desiredStateVariableValues.responseHasBeenSubmitted,
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.autoSubmit = {
       returnDependencies: () => ({
         autoSubmit: {
           dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
+          flagName: "autoSubmit",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { autoSubmit: Boolean(dependencyValues.autoSubmit) } }
-      }
-    }
+        return {
+          setValue: { autoSubmit: Boolean(dependencyValues.autoSubmit) },
+        };
+      },
+    };
 
     stateVariableDefinitions.creditAchievedDependencies = {
       shadowVariable: true,
@@ -1384,17 +1532,16 @@ export default class Answer extends InlineComponent {
 
         let stringified = stringify(
           dependencyValues.currentCreditAchievedDependencies,
-          { replacer: serializedComponentsReplacer }
+          { replacer: serializedComponentsReplacer },
         );
         return {
           setValue: {
-            creditAchievedDependencies: Base64.stringify(sha1(stringified))
-          }
-        }
+            creditAchievedDependencies: Base64.stringify(sha1(stringified)),
+          },
+        };
       },
       markStale: () => ({ answerCreditPotentiallyChanged: true }),
-    }
-
+    };
 
     stateVariableDefinitions.creditAchievedDependenciesAtSubmit = {
       defaultValue: null,
@@ -1402,20 +1549,22 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          creditAchievedDependenciesAtSubmit: true
-        }
+          creditAchievedDependenciesAtSubmit: true,
+        },
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "creditAchievedDependenciesAtSubmit",
-            value: desiredStateVariableValues.creditAchievedDependenciesAtSubmit
-          }]
+          instructions: [
+            {
+              setEssentialValue: "creditAchievedDependenciesAtSubmit",
+              value:
+                desiredStateVariableValues.creditAchievedDependenciesAtSubmit,
+            },
+          ],
         };
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.justSubmitted = {
       public: true,
@@ -1433,59 +1582,65 @@ export default class Answer extends InlineComponent {
         },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",
-          variableName: "creditAchievedDependenciesAtSubmit"
+          variableName: "creditAchievedDependenciesAtSubmit",
         },
         disableAfterCorrect: {
           dependencyType: "stateVariable",
-          variableName: "disableAfterCorrect"
+          variableName: "disableAfterCorrect",
         },
         hasBeenCorrect: {
           dependencyType: "stateVariable",
-          variableName: "hasBeenCorrect"
-        }
-
+          variableName: "hasBeenCorrect",
+        },
       }),
-      definition: function ({ dependencyValues, justUpdatedForNewComponent, componentName }) {
-
-        if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
+      definition: function ({
+        dependencyValues,
+        justUpdatedForNewComponent,
+        componentName,
+      }) {
+        if (
+          dependencyValues.disableAfterCorrect &&
+          dependencyValues.hasBeenCorrect
+        ) {
           return {
-            setValue: { justSubmitted: true }
-          }
+            setValue: { justSubmitted: true },
+          };
         }
 
-        let foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
-          !== dependencyValues.currentCreditAchievedDependencies;
+        let foundChange =
+          dependencyValues.creditAchievedDependenciesAtSubmit !==
+          dependencyValues.currentCreditAchievedDependencies;
 
         if (foundChange && !justUpdatedForNewComponent) {
           return {
             setValue: { justSubmitted: false },
             setEssentialValue: { justSubmitted: false },
-          }
+          };
         } else {
           return {
-            useEssentialOrDefaultValue: { justSubmitted: true }
-          }
+            useEssentialOrDefaultValue: { justSubmitted: true },
+          };
         }
-
       },
       inverseDefinition({ desiredStateVariableValues, componentName }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "justSubmitted",
-            value: desiredStateVariableValues.justSubmitted
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setEssentialValue: "justSubmitted",
+              value: desiredStateVariableValues.justSubmitted,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.allFeedbacks = {
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "child",
           childGroups: ["awards"],
-          variableNames: ["feedbacks"]
+          variableNames: ["feedbacks"],
         },
         feedbackComponents: {
           dependencyType: "descendant",
@@ -1502,16 +1657,16 @@ export default class Answer extends InlineComponent {
         }
         for (let feedbackComponent of dependencyValues.feedbackComponents) {
           if (Array.isArray(feedbackComponent.stateValues.feedbacks)) {
-            feedbacks.push(...feedbackComponent.stateValues.feedbacks)
+            feedbacks.push(...feedbackComponent.stateValues.feedbacks);
           }
         }
         return {
           setValue: {
-            allFeedbacks: feedbacks
-          }
-        }
-      }
-    }
+            allFeedbacks: feedbacks,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
@@ -1521,16 +1676,16 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "allFeedbacks"
-        }
+          variableName: "allFeedbacks",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
-          checkForActualChange: { numberFeedbacks: true }
-        }
-      }
-    }
+          checkForActualChange: { numberFeedbacks: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.feedbacks = {
       public: true,
@@ -1552,12 +1707,11 @@ export default class Answer extends InlineComponent {
         let globalDependencies = {
           allFeedbacks: {
             dependencyType: "stateVariable",
-            variableName: "allFeedbacks"
-          }
-        }
+            variableName: "allFeedbacks",
+          },
+        };
 
-        return { globalDependencies }
-
+        return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
         // console.log(`array definition by key of function feedbacks`)
@@ -1565,14 +1719,17 @@ export default class Answer extends InlineComponent {
 
         let feedbacks = {};
 
-        for (let arrayKey = 0; arrayKey < globalDependencyValues.__array_size; arrayKey++) {
+        for (
+          let arrayKey = 0;
+          arrayKey < globalDependencyValues.__array_size;
+          arrayKey++
+        ) {
           feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
         }
 
-        return { setValue: { feedbacks } }
-      }
-
-    }
+        return { setValue: { feedbacks } };
+      },
+    };
 
     stateVariableDefinitions.nSubmissions = {
       public: true,
@@ -1584,17 +1741,19 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          nSubmissions: true
-        }
+          nSubmissions: true,
+        },
       }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
-        instructions: [{
-          setEssentialValue: "nSubmissions",
-          value: desiredStateVariableValues.nSubmissions
-        }]
-      })
-    }
+        instructions: [
+          {
+            setEssentialValue: "nSubmissions",
+            value: desiredStateVariableValues.nSubmissions,
+          },
+        ],
+      }),
+    };
 
     stateVariableDefinitions.numberOfAttemptsLeft = {
       public: true,
@@ -1605,22 +1764,23 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         nSubmissions: {
           dependencyType: "stateVariable",
-          variableName: "nSubmissions"
+          variableName: "nSubmissions",
         },
         maximumNumberOfAttempts: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumberOfAttempts"
-        }
+          variableName: "maximumNumberOfAttempts",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            numberOfAttemptsLeft: dependencyValues.maximumNumberOfAttempts
-              - dependencyValues.nSubmissions
-          }
-        }
-      }
-    }
+            numberOfAttemptsLeft:
+              dependencyValues.maximumNumberOfAttempts -
+              dependencyValues.nSubmissions,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.hasBeenCorrect = {
       defaultValue: false,
@@ -1629,24 +1789,24 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         creditAchieved: {
           dependencyType: "stateVariable",
-          variableName: "creditAchieved"
-        }
+          variableName: "creditAchieved",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.creditAchieved === 1) {
           return {
             setValue: { hasBeenCorrect: true },
             setEssentialValue: { hasBeenCorrect: true },
-          }
+          };
         }
 
         return {
           useEssentialOrDefaultValue: {
-            hasBeenCorrect: true
-          }
-        }
-      }
-    }
+            hasBeenCorrect: true,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.disabled = {
       public: true,
@@ -1656,7 +1816,6 @@ export default class Answer extends InlineComponent {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["disableAfterCorrect"],
       returnDependencies({ stateValues }) {
-
         let dependencies = {
           disabledOriginal: {
             dependencyType: "stateVariable",
@@ -1670,82 +1829,88 @@ export default class Answer extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "disableAfterCorrect",
           },
-        }
+        };
 
         if (stateValues.disableAfterCorrect) {
           dependencies.hasBeenCorrect = {
             dependencyType: "stateVariable",
             variableName: "hasBeenCorrect",
-          }
+          };
         }
 
         return dependencies;
-
       },
       definition({ dependencyValues }) {
+        let disabled =
+          dependencyValues.disabledOriginal ||
+          dependencyValues.numberOfAttemptsLeft < 1 ||
+          (dependencyValues.disableAfterCorrect &&
+            dependencyValues.hasBeenCorrect);
 
-        let disabled = dependencyValues.disabledOriginal
-          || dependencyValues.numberOfAttemptsLeft < 1
-          || (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect);
-
-        return { setValue: { disabled } }
-      }
-    }
-
+        return { setValue: { disabled } };
+      },
+    };
 
     stateVariableDefinitions.inItemNumber = {
       returnDependencies: () => ({
         documentAncestor: {
           dependencyType: "ancestor",
           componentType: "document",
-          variableNames: ["itemNumberByAnswerName"]
-        }
+          variableNames: ["itemNumberByAnswerName"],
+        },
       }),
       definition({ dependencyValues, componentName }) {
         return {
           setValue: {
             inItemNumber:
-              dependencyValues.documentAncestor.stateValues.itemNumberByAnswerName[componentName]
-          }
-        }
-
-      }
-    }
+              dependencyValues.documentAncestor.stateValues
+                .itemNumberByAnswerName[componentName],
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-  actions = {
-    submitAnswer: this.submitAnswer.bind(this)
-  };
-
-
-  async submitAnswer({ actionId }) {
-
+  async submitAnswer({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
-      console.warn(`Cannot submit answer for ${this.componentName} as number of attempts left is ${numberOfAttemptsLeft}`);
+      console.warn(
+        `Cannot submit answer for ${this.componentName} as number of attempts left is ${numberOfAttemptsLeft}`,
+      );
       return;
     }
 
     let creditAchieved = await this.stateValues.creditAchievedIfSubmit;
+    if (await this.stateValues.handGraded) {
+      creditAchieved = 0;
+    }
     let awardsUsed = await this.stateValues.awardsUsedIfSubmit;
     let inputUsed = await this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
-    let instructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "creditAchieved",
-      value: creditAchieved,
-    }, {
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "responseHasBeenSubmitted",
-      value: true
-    }];
+    let instructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "creditAchieved",
+        value: creditAchieved,
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "responseHasBeenSubmitted",
+        value: true,
+      },
+    ];
 
-    let inputChildrenWithValues = await this.stateValues.inputChildrenWithValues;
+    let inputChildrenWithValues = await this.stateValues
+      .inputChildrenWithValues;
 
     if (inputChildrenWithValues.length === 1) {
       // if have a single input descendant,
@@ -1753,16 +1918,17 @@ export default class Answer extends InlineComponent {
 
       let inputChild = inputChildrenWithValues[0];
 
-      if (inputUsed === inputChild.componentName
-        && "valueToRecordOnSubmit" in inputChild.stateValues
-        && "valueRecordedAtSubmit" in inputChild.stateValues
+      if (
+        inputUsed === inputChild.componentName &&
+        "valueToRecordOnSubmit" in inputChild.stateValues &&
+        "valueRecordedAtSubmit" in inputChild.stateValues
       ) {
         instructions.push({
           updateType: "updateValue",
           componentName: inputChild.componentName,
           stateVariable: "valueRecordedAtSubmit",
-          value: inputChild.stateValues.valueToRecordOnSubmit
-        })
+          value: inputChild.stateValues.valueToRecordOnSubmit,
+        });
       }
     }
 
@@ -1774,36 +1940,37 @@ export default class Answer extends InlineComponent {
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponses",
-      value: currentResponses
-    })
+      value: currentResponses,
+    });
 
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponsesComponentType",
-      value: this.state.currentResponses.shadowingInstructions.createComponentOfType
-    })
+      value:
+        this.state.currentResponses.shadowingInstructions.createComponentOfType,
+    });
 
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "justSubmitted",
-      value: true
-    })
+      value: true,
+    });
 
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "creditAchievedDependenciesAtSubmit",
-      value: await this.stateValues.creditAchievedDependencies
-    })
+      value: await this.stateValues.creditAchievedDependencies,
+    });
 
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "nSubmissions",
-      value: await this.stateValues.nSubmissions + 1,
-    })
+      value: (await this.stateValues.nSubmissions) + 1,
+    });
 
     for (let child of await this.stateValues.awardChildren) {
       let awarded = awardsUsed.includes(child.componentName);
@@ -1811,33 +1978,32 @@ export default class Answer extends InlineComponent {
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "awarded",
-        value: awarded
+        value: awarded,
       });
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "creditAchieved",
-        value: child.stateValues.creditAchievedIfSubmit
+        value: child.stateValues.creditAchievedIfSubmit,
       });
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "fractionSatisfied",
-        value: child.stateValues.fractionSatisfiedIfSubmit
+        value: child.stateValues.fractionSatisfiedIfSubmit,
       });
     }
-
 
     let responseText = [];
     for (let response of currentResponses) {
       if (response.toString) {
         try {
-          responseText.push(response.toString())
+          responseText.push(response.toString());
         } catch (e) {
-          responseText.push('\uff3f')
+          responseText.push("\uff3f");
         }
       } else {
-        responseText.push(response)
+        responseText.push(response);
       }
     }
 
@@ -1848,7 +2014,7 @@ export default class Answer extends InlineComponent {
       response: currentResponses,
       responseText,
       creditAchieved,
-    })
+    });
 
     // console.log(`submit instructions`)
     // console.log(instructions);
@@ -1856,6 +2022,8 @@ export default class Answer extends InlineComponent {
     await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       event: {
         verb: "submitted",
         object: {
@@ -1865,18 +2033,17 @@ export default class Answer extends InlineComponent {
         result: {
           response: currentResponses,
           responseText,
-          creditAchieved
-        }
-
+          creditAchieved,
+        },
       },
-      suppressToast: await this.stateValues.suppressToast // temporary
+      suppressToast: await this.stateValues.suppressToast, // temporary
     });
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
-
-
   }
-
 }

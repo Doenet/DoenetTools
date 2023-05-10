@@ -1,6 +1,4 @@
-import me from 'math-expressions';
-
-
+import me from "math-expressions";
 
 // Enumerates the unique combinations of repeeated selecting an index
 // from the same set of options, with or without replacement
@@ -10,11 +8,12 @@ import me from 'math-expressions';
 // Begins with combinations that contain distinct indices, if possible
 // Returns a maximum of maxNumber
 export function enumerateSelectionCombinations({
-  numberOfIndices, numberOfOptions, maxNumber = Infinity,
+  numberOfIndices,
+  numberOfOptions,
+  maxNumber = Infinity,
   withReplacement = false,
-  skipZero = false // for case when generating offsets but without replacement
+  skipZero = false, // for case when generating offsets but without replacement
 }) {
-
   if (numberOfIndices === 1) {
     let options = [...Array(numberOfOptions).keys()];
     // remove zero
@@ -23,9 +22,9 @@ export function enumerateSelectionCombinations({
       // but put 0 last (so in recursion where the numbers are offsets, repeated combination is last)
       options = [...options, 0];
     }
-    options = options.slice(0, maxNumber)
+    options = options.slice(0, maxNumber);
     // convert to array of arrays
-    options = options.map(x => [x]);
+    options = options.map((x) => [x]);
     return options;
   }
 
@@ -34,15 +33,17 @@ export function enumerateSelectionCombinations({
     numberOfOptions: numberOfOptions,
     maxNumber,
     withReplacement,
-    skipZero: !withReplacement
+    skipZero: !withReplacement,
   });
 
   let results = [];
   let numberSoFar = 0;
   for (let offsets of allOffsetsCombinations) {
     for (let ind0 = 1; ind0 <= numberOfOptions; ind0++) {
-      let combination = [ind0 % numberOfOptions,
-      ...offsets.map(x => (ind0 + x) % numberOfOptions)];
+      let combination = [
+        ind0 % numberOfOptions,
+        ...offsets.map((x) => (ind0 + x) % numberOfOptions),
+      ];
       if (skipZero && combination.includes(0)) {
         continue;
       }
@@ -55,21 +56,18 @@ export function enumerateSelectionCombinations({
   }
 
   return results;
-
 }
 
-
 // Enumerate the unique combinations of picking a set of indices
-// The number of possible options for each index is given 
+// The number of possible options for each index is given
 // by the array numberOfOptionsByIndex
 // whose length gives the total number of options
 // Returns an array of arrays, where each array gives an index for each option
 // Returns at most maxNumber of combinations
 export function enumerateCombinations({
   numberOfOptionsByIndex,
-  maxNumber = Infinity
+  maxNumber = Infinity,
 }) {
-
   let numberOfIndices = numberOfOptionsByIndex.length;
 
   if (numberOfIndices === 0) {
@@ -80,13 +78,17 @@ export function enumerateCombinations({
   for (let ind1 = 0; ind1 < numberOfIndices; ind1++) {
     let g = [];
     for (let ind2 = 0; ind2 < ind1; ind2++) {
-      g.push(me.math.gcd(numberOfOptionsByIndex[ind1], numberOfOptionsByIndex[ind2]));
+      g.push(
+        me.math.gcd(numberOfOptionsByIndex[ind1], numberOfOptionsByIndex[ind2]),
+      );
     }
     gcds.push(g);
   }
 
   // flatten and take max
-  let maxGCD = gcds.reduce((a, c) => [...c, ...a], []).reduce((a, c) => Math.max(a, c), 1);
+  let maxGCD = gcds
+    .reduce((a, c) => [...c, ...a], [])
+    .reduce((a, c) => Math.max(a, c), 1);
 
   // if maxGCD is one, then can just sequentially pick the same component for each index
   // (mod the size)
@@ -96,7 +98,7 @@ export function enumerateCombinations({
     totalCombinations = Math.min(totalCombinations, maxNumber);
     let results = [];
     for (let ind = 0; ind < totalCombinations; ind++) {
-      let r = numberOfOptionsByIndex.map(x => ind % x);
+      let r = numberOfOptionsByIndex.map((x) => ind % x);
       results.push(r);
     }
     return results;
@@ -113,7 +115,10 @@ export function enumerateCombinations({
     let numberSoFar = 0;
     for (let offset = 0; offset < gcd; offset++) {
       for (let ind = 0; ind < lcm; ind++) {
-        let r = [ind % numberOfOptionsByIndex[0], (ind + offset) % numberOfOptionsByIndex[1]];
+        let r = [
+          ind % numberOfOptionsByIndex[0],
+          (ind + offset) % numberOfOptionsByIndex[1],
+        ];
         results.push(r);
         numberSoFar++;
         if (numberSoFar >= maxNumber) {
@@ -136,17 +141,23 @@ export function enumerateCombinations({
     let m = [];
     for (let ind2 = 0; ind2 < ind1; ind2++) {
       if (gcds[ind1][ind2] > 1) {
-        m.push(me.math.lcm(numberOfOptionsByIndex[ind1], numberOfOptionsByIndex[ind2]));
+        m.push(
+          me.math.lcm(
+            numberOfOptionsByIndex[ind1],
+            numberOfOptionsByIndex[ind2],
+          ),
+        );
       } else {
-        m.push(null);  // be sure to skip those with gcd == 1
+        m.push(null); // be sure to skip those with gcd == 1
       }
     }
     lcms.push(m);
   }
 
   // flatten and take min, filering out the nulls
-  let minLCM = lcms.reduce((a, c) => [...c, ...a], [])
-    .filter(x => x !== null)
+  let minLCM = lcms
+    .reduce((a, c) => [...c, ...a], [])
+    .filter((x) => x !== null)
     .reduce((a, c) => Math.min(a, c), Infinity);
 
   // find indices where minimum occurs
@@ -155,7 +166,7 @@ export function enumerateCombinations({
   for (let ind1 = 0; ind1 < numberOfIndices; ind1++) {
     for (let ind2 = 0; ind2 < ind1; ind2++) {
       if (lcms[ind1][ind2] === minLCM) {
-        matchInds = [ind2, ind1];  // want lowest index first
+        matchInds = [ind2, ind1]; // want lowest index first
         break;
       }
     }
@@ -170,21 +181,20 @@ export function enumerateCombinations({
 
   let innerOptions = [n0, n1];
 
-  // create new options where replace matched results with single one 
+  // create new options where replace matched results with single one
   // that has number of options set equal to the total number of inner options (n1*n2)
   let outerOptions = [...numberOfOptionsByIndex];
-  outerOptions[matchInds[0]] = n0 * n1;  // replace first with total number of combinations
+  outerOptions[matchInds[0]] = n0 * n1; // replace first with total number of combinations
   outerOptions.splice(matchInds[1], 1); // delete second matched ind
 
   let outerResult = enumerateCombinations({
     numberOfOptionsByIndex: outerOptions,
-    maxNumber: maxNumber
+    maxNumber: maxNumber,
   });
   let innerResult = enumerateCombinations({
     numberOfOptionsByIndex: innerOptions,
-    maxNumber: maxNumber
+    maxNumber: maxNumber,
   });
-
 
   // to splice back together
   // - replace the combined entry (which is at the lower index)
@@ -197,30 +207,28 @@ export function enumerateCombinations({
   }
 
   return outerResult;
-
 }
 
 // from https://stackoverflow.com/a/20871714
 export function enumeratePermutations({ values, maxNumber }) {
-
   let result = [];
 
   const permute = (arr, m = []) => {
     if (arr.length === 0) {
-      result.push(m)
+      result.push(m);
     } else {
       for (let i = 0; i < arr.length; i++) {
         let curr = arr.slice();
         let next = curr.splice(i, 1);
-        permute(curr.slice(), m.concat(next))
+        permute(curr.slice(), m.concat(next));
         if (result.length >= maxNumber) {
           return;
         }
       }
     }
-  }
+  };
 
-  permute(values)
+  permute(values);
 
   return result;
 }

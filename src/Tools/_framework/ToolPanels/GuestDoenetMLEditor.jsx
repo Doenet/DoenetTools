@@ -1,14 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import {
   useRecoilValue,
   // useRecoilState,
   useSetRecoilState,
   // atom,
-} from 'recoil';
-import { textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../../../_sharedRecoil/EditorViewerRecoil';
+} from "recoil";
+import {
+  textEditorDoenetMLAtom,
+  updateTextEditorDoenetMLAtom,
+} from "../../../_sharedRecoil/EditorViewerRecoil";
 
-import CodeMirror from '../CodeMirror';
-
+import CodeMirror from "../CodeMirror";
 
 export default function GuestDoenetMLEditor(props) {
   // console.log(">>>===BuestDoenetMLEditor")
@@ -21,14 +23,17 @@ export default function GuestDoenetMLEditor(props) {
 
   // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
 
-  return <div><CodeMirror
-    key="codemirror"
-    editorRef={editorRef}
-    setInternalValue={updateInternalValue}
-    // value={editorDoenetML} 
-    onBeforeChange={(value) => {
-      setEditorDoenetML(value);
-    }}
-  />
-  </div>
+  return (
+    <div>
+      <CodeMirror
+        key="codemirror"
+        editorRef={editorRef}
+        setInternalValueTo={updateInternalValue}
+        // value={editorDoenetML}
+        onBeforeChange={(value) => {
+          setEditorDoenetML(value);
+        }}
+      />
+    </div>
+  );
 }

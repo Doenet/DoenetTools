@@ -1,5 +1,5 @@
-import React from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import React from "react";
+import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function AsList(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
@@ -9,10 +9,17 @@ export default React.memo(function AsList(props) {
   }
 
   if (children.length === 0) {
-    return <React.Fragment key={id} />
+    return <React.Fragment key={id} />;
   }
 
-  let withCommas = children.slice(1).reduce((a, b) => [...a, ', ', b], [children[0]])
+  let withCommas = children
+    .slice(1)
+    .reduce((a, b) => [...a, ", ", b], [children[0]]);
 
-  return <React.Fragment key={id}><a name={id} />{withCommas}</React.Fragment>;
-})
+  return (
+    <React.Fragment key={id}>
+      <a name={id} />
+      {withCommas}
+    </React.Fragment>
+  );
+});

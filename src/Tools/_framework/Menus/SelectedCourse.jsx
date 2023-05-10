@@ -1,23 +1,24 @@
-import { faChalkboard } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
-import { useToast, toastType } from '../../_framework/Toast';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
+import { faChalkboard } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import DoenetDriveCardMenu from "../../../_reactComponents/Drive/DoenetDriveCardMenu";
+import { useToast, toastType } from "../../_framework/Toast";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import { drivecardSelectedNodesAtom } from "../ToolHandlers/CourseToolHandler";
 
 import {
   DeleteCourse,
+  DuplicateCourse,
   EditImageAndColor,
   EditLabel,
-} from '../../../_reactComponents/Course/SettingComponents';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { pageToolViewAtom } from '../NewToolRoot';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+} from "../../../_reactComponents/Course/SettingComponents";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { pageToolViewAtom } from "../NewToolRoot";
+import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 
 export default function SelectedCourse() {
   const [courseCardsSelection, setCourseCardsSelection] = useRecoilState(
@@ -47,7 +48,7 @@ export default function SelectedCourse() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('>>>This will Duplicate courses');
+              console.log(">>>This will Duplicate courses");
               setCourseCardsSelection([]);
             }}
           />
@@ -58,7 +59,7 @@ export default function SelectedCourse() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('>>>This will Delete multiple courses');
+              console.log(">>>This will Delete multiple courses");
               setCourseCardsSelection([]);
             }}
           />
@@ -94,9 +95,9 @@ const CourseInfoPanel = function ({ courseId }) {
             e.preventDefault();
             e.stopPropagation();
             setPageToolView({
-              page: 'course',
-              tool: 'dashboard',
-              view: '',
+              page: "course",
+              tool: "dashboard",
+              view: "",
               params: {
                 courseId,
               },
@@ -159,12 +160,13 @@ const CourseInfoPanel = function ({ courseId }) {
           />
         )} */}
       </ActionButtonGroup>
-      {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
-      {canModifyCourseSettings === '1' && (
+      {canModifyCourseSettings === "1" && <EditLabel courseId={courseId} />}
+      {canModifyCourseSettings === "1" && (
         <EditImageAndColor courseId={courseId} />
       )}
       <br />
-      {isOwner === '1' && <DeleteCourse courseId={courseId} />}
+      {isOwner === "1" && <DeleteCourse courseId={courseId} />}
+      {isOwner === "1" && <DuplicateCourse courseId={courseId} />}
     </>
   );
 };

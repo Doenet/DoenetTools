@@ -1,7 +1,28 @@
-import BlockComponent from './abstract/BlockComponent';
-import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
+import BlockComponent from "./abstract/BlockComponent";
+import {
+  orderedPercentWidthMidpoints,
+  orderedWidthMidpoints,
+  widthsBySize,
+  sizePossibilities,
+} from "../utils/size";
 
 export default class Video extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVideoStarted: this.recordVideoStarted.bind(this),
+      recordVideoWatched: this.recordVideoWatched.bind(this),
+      recordVideoPaused: this.recordVideoPaused.bind(this),
+      recordVideoSkipped: this.recordVideoSkipped.bind(this),
+      recordVideoCompleted: this.recordVideoCompleted.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+      recordVideoReady: this.recordVideoReady.bind(this),
+      playVideo: this.playVideo.bind(this),
+      pauseVideo: this.pauseVideo.bind(this),
+      setTime: this.setTime.bind(this),
+    });
+  }
   static componentType = "video";
 
   static createAttributesObject() {
@@ -12,7 +33,7 @@ export default class Video extends BlockComponent {
     };
     attributes.size = {
       createComponentOfType: "text",
-    }
+    };
     attributes.aspectRatio = {
       createComponentOfType: "number",
     };
@@ -29,7 +50,7 @@ export default class Video extends BlockComponent {
       defaultValue: "block",
       forRenderer: true,
       public: true,
-    }
+    };
 
     attributes.horizontalAlign = {
       createComponentOfType: "text",
@@ -38,7 +59,7 @@ export default class Video extends BlockComponent {
       defaultValue: "center",
       forRenderer: true,
       public: true,
-    }
+    };
 
     attributes.youtube = {
       createComponentOfType: "text",
@@ -58,18 +79,15 @@ export default class Video extends BlockComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.size = {
       public: true,
       defaultValue: "full",
       hasEssential: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "text",
       },
       returnDependencies: () => ({
         sizeAttr: {
@@ -84,7 +102,7 @@ export default class Video extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
-        const defaultSize = 'full';
+        const defaultSize = "full";
 
         if (dependencyValues.sizeAttr) {
           let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
@@ -93,15 +111,15 @@ export default class Video extends BlockComponent {
             size = defaultSize;
           }
           return {
-            setValue: { size }
-          }
+            setValue: { size },
+          };
         } else if (dependencyValues.widthAttr) {
-          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          let componentSize =
+            dependencyValues.widthAttr.stateValues.componentSize;
           if (componentSize === null) {
-
             return {
-              setValue: { size: defaultSize }
-            }
+              setValue: { size: defaultSize },
+            };
           }
           let { isAbsolute, size: widthSize } = componentSize;
           let size;
@@ -110,58 +128,57 @@ export default class Video extends BlockComponent {
             for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
               if (widthSize <= pixels) {
                 size = sizePossibilities[ind];
-                break
+                break;
               }
             }
             if (!size) {
-              size = defaultSize
+              size = defaultSize;
             }
           } else {
             for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
               if (widthSize <= percent) {
                 size = sizePossibilities[ind];
-                break
+                break;
               }
             }
             if (!size) {
-              size = defaultSize
+              size = defaultSize;
             }
           }
           return {
-            setValue: { size }
-          }
+            setValue: { size },
+          };
         } else {
           return {
-            useEssentialOrDefaultValue: { size: true }
-          }
+            useEssentialOrDefaultValue: { size: true },
+          };
         }
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.width = {
       public: true,
       forRenderer: true,
       shadowingInstructions: {
-        createComponentOfType: "_componentSize"
+        createComponentOfType: "_componentSize",
       },
       returnDependencies: () => ({
         size: {
           dependencyType: "stateVariable",
           variableName: "size",
-        }
+        },
       }),
       definition({ dependencyValues }) {
-
-        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
+        let width = {
+          isAbsolute: true,
+          size: widthsBySize[dependencyValues.size],
+        };
 
         return {
-          setValue: { width }
-        }
-
-      }
-
-    }
+          setValue: { width },
+        };
+      },
+    };
 
     stateVariableDefinitions.aspectRatio = {
       public: true,
@@ -169,18 +186,18 @@ export default class Video extends BlockComponent {
       defaultValue: "16 / 9",
       hasEssential: true,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       returnDependencies: () => ({
         aspectRatioAttr: {
           dependencyType: "attributeComponent",
           attributeName: "aspectRatio",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         width: {
           dependencyType: "stateVariable",
-          variableName: "width"
-        }
+          variableName: "width",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.aspectRatioAttr !== null) {
@@ -189,15 +206,15 @@ export default class Video extends BlockComponent {
             aspectRatio = 1;
           }
           return {
-            setValue: { aspectRatio }
-          }
+            setValue: { aspectRatio },
+          };
         } else {
           return {
-            useEssentialOrDefaultValue: { aspectRatio: true }
-          }
+            useEssentialOrDefaultValue: { aspectRatio: true },
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.state = {
       hasEssential: true,
@@ -205,28 +222,30 @@ export default class Video extends BlockComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "text",
       },
       ignoreFixed: true,
       returnDependencies: () => ({}),
       definition() {
-        return { useEssentialOrDefaultValue: { state: true } }
+        return { useEssentialOrDefaultValue: { state: true } };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         let desiredState = desiredStateVariableValues.state.toLowerCase();
         let validValues = ["stopped", "playing"];
         if (!validValues.includes(desiredState)) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "state",
-            value: desiredState
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "state",
+              value: desiredState,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.time = {
       hasEssential: true,
@@ -234,156 +253,190 @@ export default class Video extends BlockComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       ignoreFixed: true,
       returnDependencies: () => ({}),
       definition() {
-        return { useEssentialOrDefaultValue: { time: true } }
+        return { useEssentialOrDefaultValue: { time: true } };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         let desiredTime = desiredStateVariableValues.time;
         if (!(desiredTime >= 0)) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "time",
-            value: desiredTime
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "time",
+              value: desiredTime,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.duration = {
       hasEssential: true,
       defaultValue: null,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       ignoreFixed: true,
       returnDependencies: () => ({}),
       definition: () => ({ useEssentialOrDefaultValue: { duration: true } }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
-        instructions: [{
-          setEssentialValue: "duration",
-          value: desiredStateVariableValues.duration
-        }]
-      })
-    }
+        instructions: [
+          {
+            setEssentialValue: "duration",
+            value: desiredStateVariableValues.duration,
+          },
+        ],
+      }),
+    };
 
     stateVariableDefinitions.segmentsWatched = {
       hasEssential: true,
       defaultValue: null,
       returnDependencies: () => ({}),
-      definition: () => ({ useEssentialOrDefaultValue: { segmentsWatched: true } }),
+      definition: () => ({
+        useEssentialOrDefaultValue: { segmentsWatched: true },
+      }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
-        instructions: [{
-          setEssentialValue: "segmentsWatched",
-          value: desiredStateVariableValues.segmentsWatched
-        }]
-      })
-    }
+        instructions: [
+          {
+            setEssentialValue: "segmentsWatched",
+            value: desiredStateVariableValues.segmentsWatched,
+          },
+        ],
+      }),
+    };
 
     stateVariableDefinitions.secondsWatched = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       returnDependencies: () => ({
         segmentsWatched: {
           dependencyType: "stateVariable",
-          variableName: "segmentsWatched"
-        }
+          variableName: "segmentsWatched",
+        },
       }),
       definition({ dependencyValues }) {
         let secondsWatched = 0;
         if (dependencyValues.segmentsWatched) {
-          secondsWatched = dependencyValues.segmentsWatched.reduce((a, c) => a + c[1] - c[0], 0);
+          secondsWatched = dependencyValues.segmentsWatched.reduce(
+            (a, c) => a + c[1] - c[0],
+            0,
+          );
         }
-        return { setValue: { secondsWatched } }
-      }
-    }
+        return { setValue: { secondsWatched } };
+      },
+    };
 
     stateVariableDefinitions.fractionWatched = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number"
+        createComponentOfType: "number",
       },
       returnDependencies: () => ({
         secondsWatched: {
           dependencyType: "stateVariable",
-          variableName: "secondsWatched"
+          variableName: "secondsWatched",
         },
         duration: {
           dependencyType: "stateVariable",
-          variableName: "duration"
-        }
+          variableName: "duration",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { fractionWatched: dependencyValues.secondsWatched / dependencyValues.duration } }
-      }
-    }
+        return {
+          setValue: {
+            fractionWatched:
+              dependencyValues.secondsWatched / dependencyValues.duration,
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-
-
-  recordVideoStarted({ beginTime, duration, rate }) {
+  recordVideoStarted({
+    beginTime,
+    duration,
+    rate,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "played",
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-        duration: duration
+        duration: duration,
       },
       context: {
         startingPoint: beginTime,
-        rate: rate
-      }
-    })
+        rate: rate,
+      },
+    });
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "playing",
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "playing",
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
-    })
+    });
   }
 
-  async recordVideoWatched({ beginTime, endTime, duration, rates }) {
+  async recordVideoWatched({
+    beginTime,
+    endTime,
+    duration,
+    rates,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "watched",
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-        duration: duration
+        duration: duration,
       },
       context: {
         startingPoint: beginTime,
         endingPoint: endTime,
-        rates
-      }
-    })
+        rates,
+      },
+    });
 
     let previousSegments = await this.stateValues.segmentsWatched;
     let segmentsWatched;
 
     if (beginTime < 1) {
-      beginTime = 0;  // get credit for the beginning even though it typically doesn't say 0
+      beginTime = 0; // get credit for the beginning even though it typically doesn't say 0
     } else if (endTime > duration - 2) {
-      endTime = duration;  // get credit for the end even though it typically doesn't get to duration
+      endTime = duration; // get credit for the end even though it typically doesn't get to duration
     }
 
     if (!previousSegments) {
-      segmentsWatched = [[beginTime, endTime]]
+      segmentsWatched = [[beginTime, endTime]];
     } else {
       segmentsWatched = [];
       let addedNew = false;
@@ -393,7 +446,7 @@ export default class Video extends BlockComponent {
       // when pause and then continue
       for (let [ind, seg] of previousSegments.entries()) {
         if (endTime < seg[0] - 1) {
-          segmentsWatched.push([beginTime, endTime])
+          segmentsWatched.push([beginTime, endTime]);
           segmentsWatched.push(...previousSegments.slice(ind));
           addedNew = true;
           break;
@@ -403,51 +456,69 @@ export default class Video extends BlockComponent {
         }
         // have overlap with segment
         beginTime = Math.min(seg[0], beginTime);
-        endTime = Math.max(seg[1], endTime)
+        endTime = Math.max(seg[1], endTime);
       }
 
       if (!addedNew) {
-        segmentsWatched.push([beginTime, endTime])
+        segmentsWatched.push([beginTime, endTime]);
       }
     }
 
-
     await this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "segmentsWatched",
-        value: segmentsWatched,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "segmentsWatched",
+          value: segmentsWatched,
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate: true,
       canSkipUpdatingRenderer: true,
-    })
+    });
 
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
     });
   }
 
-  recordVideoPaused({ endTime, duration }) {
+  recordVideoPaused({
+    endTime,
+    duration,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "paused",
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-        duration: duration
+        duration: duration,
       },
       context: {
-        endingPoint: endTime
-      }
-    })
+        endingPoint: endTime,
+      },
+    });
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "stopped",
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "stopped",
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
-    })
+    });
   }
 
   recordVideoSkipped({ beginTime, endTime, duration }) {
@@ -456,33 +527,43 @@ export default class Video extends BlockComponent {
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-        duration: duration
+        duration: duration,
       },
       context: {
         startingPoint: beginTime,
-        endingPoint: endTime
-      }
-    })
+        endingPoint: endTime,
+      },
+    });
   }
 
-  recordVideoCompleted({ duration }) {
+  recordVideoCompleted({
+    duration,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "completed",
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-        duration: duration
+        duration: duration,
       },
-    })
+    });
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "stopped",
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "stopped",
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
-    })
+    });
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -492,78 +573,101 @@ export default class Video extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
 
-
-  recordVideoReady({ duration }) {
+  recordVideoReady({
+    duration,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "stopped",
-      },
-      {
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "duration",
-        value: duration,
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "stopped",
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "duration",
+          value: duration,
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
-      doNotSave: true  // video actions don't count as changing page state
-    })
+      doNotSave: true, // video actions don't count as changing page state
+    });
   }
 
-  playVideo() {
+  async playVideo({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    await this.coreFunctions.performUpdate({
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "playing",
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+      overrideReadOnly: true,
+    });
+  }
+
+  async pauseVideo({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    await this.coreFunctions.performUpdate({
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "state",
+          value: "stopped",
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+      overrideReadOnly: true,
+    });
+  }
+
+  setTime({
+    time,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "playing",
-      }],
+      updateInstructions: [
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "time",
+          value: time,
+        },
+      ],
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
       overrideReadOnly: true,
-    })
+    });
   }
-
-  pauseVideo() {
-    this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "state",
-        value: "stopped",
-      }],
-      overrideReadOnly: true,
-    })
-  }
-
-  setTime({ time }) {
-    this.coreFunctions.performUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "time",
-        value: time,
-      }],
-      overrideReadOnly: true,
-    })
-  }
-
-  actions = {
-    recordVideoStarted: this.recordVideoStarted.bind(this),
-    recordVideoWatched: this.recordVideoWatched.bind(this),
-    recordVideoPaused: this.recordVideoPaused.bind(this),
-    recordVideoSkipped: this.recordVideoSkipped.bind(this),
-    recordVideoCompleted: this.recordVideoCompleted.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-    recordVideoReady: this.recordVideoReady.bind(this),
-    playVideo: this.playVideo.bind(this),
-    pauseVideo: this.pauseVideo.bind(this),
-    setTime: this.setTime.bind(this),
-  }
-
 }

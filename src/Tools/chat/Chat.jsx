@@ -1,10 +1,10 @@
 /*jshint esversion: 8 */
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { atomFamily, useRecoilState } from 'recoil';
-import { io } from 'socket.io-client';
-import Tool from '@Tool';
-import { v4 as uuidV4 } from 'uuid';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { atomFamily, useRecoilState } from "recoil";
+import { io } from "socket.io-client";
+import Tool from "@Tool";
+import { v4 as uuidV4 } from "uuid";
 
 const ChatContainer = styled.div`
   border: solid var(--canvastext) 1px;
@@ -62,32 +62,32 @@ export default function Chat() {
   const [socket, setSocket] = useState();
   const [room, setRoom] = useState(12);
   const [screenName] = useState(
-    JSON.parse(localStorage.getItem('Profile')).screenName,
+    JSON.parse(localStorage.getItem("Profile")).screenName,
   );
   const [driveSocket, setDriveSocket] = useState();
-  const [docName, setDocName] = useState('one');
-  const [currentTransaction, setCurrentTransaction] = useState('');
+  const [docName, setDocName] = useState("one");
+  const [currentTransaction, setCurrentTransaction] = useState("");
 
   useEffect(() => {
-    let chatSocket = io('localhost:81/chat', {
+    let chatSocket = io("localhost:81/chat", {
       withCredentials: true,
     });
-    chatSocket.on('connect', () => {
-      console.log('socket', chatSocket.id, 'connected');
+    chatSocket.on("connect", () => {
+      console.log("socket", chatSocket.id, "connected");
       setSocket(chatSocket);
     });
-    chatSocket.on('connect_error', (e) => {
-      console.log('socket connection error:', e);
+    chatSocket.on("connect_error", (e) => {
+      console.log("socket connection error:", e);
     });
 
-    chatSocket.on('chat message', (message) => {
+    chatSocket.on("chat message", (message) => {
       setCL((prev) => [...prev, message]);
-      let log = document.getElementById('messageLogContainer');
+      let log = document.getElementById("messageLogContainer");
       log.scrollTop = log.scrollHeight;
     });
 
-    chatSocket.on('disconnect', () => {
-      console.log('socket disconnected');
+    chatSocket.on("disconnect", () => {
+      console.log("socket disconnected");
     });
 
     // let driveSocket = io('localhost:81/drive', {
@@ -136,9 +136,9 @@ export default function Chat() {
           <ChatForm
             onSubmit={(e) => {
               e.preventDefault();
-              let messageEl = document.getElementById('chatInput');
+              let messageEl = document.getElementById("chatInput");
               socket.emit(
-                'chat message',
+                "chat message",
                 {
                   message: messageEl.value,
                   messageId: new Date(),
@@ -153,7 +153,7 @@ export default function Chat() {
                 //     room,
                 //   ).toString(),
               );
-              messageEl.value = '';
+              messageEl.value = "";
             }}
           >
             <ChatInput type="text" autocomplete="hidden" id="chatInput" />
@@ -167,9 +167,9 @@ export default function Chat() {
         <RoomForm
           onSubmit={(e) => {
             e.preventDefault();
-            let roomEl = document.getElementById('roomInput');
-            socket.emit('leaveRoom', `chat:${room}`);
-            socket.emit('joinRoom', `chat:${roomEl.value}`, (resp) => {
+            let roomEl = document.getElementById("roomInput");
+            socket.emit("leaveRoom", `chat:${room}`);
+            socket.emit("joinRoom", `chat:${roomEl.value}`, (resp) => {
               console.log(resp);
             });
             setRoom(roomEl.value);
@@ -183,26 +183,26 @@ export default function Chat() {
         <input type="text" id="newName" defaultValue="two" />
         <button
           onClick={() => {
-            let nameEl = document.getElementById('newName');
+            let nameEl = document.getElementById("newName");
             let name = nameEl.value;
             let transactionId = uuidV4();
             driveSocket.emit(
-              'rename_item',
+              "rename_item",
               {
                 name,
                 transactionId,
-                respCode: document.getElementById('respCode').value,
+                respCode: document.getElementById("respCode").value,
               },
               (resp, transactionId) => {
                 if (resp === 200) {
-                  console.log('success!');
+                  console.log("success!");
                   setDocName(name);
                   setCurrentTransaction(transactionId);
                 } else if (resp === 403) {
-                  console.log('access deined');
+                  console.log("access deined");
                   nameEl.value = docName;
                 } else {
-                  console.log('error:', resp);
+                  console.log("error:", resp);
                   nameEl.value = docName;
                 }
               },

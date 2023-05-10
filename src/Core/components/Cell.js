@@ -1,6 +1,6 @@
-import BaseComponent from './abstract/BaseComponent';
-import me from 'math-expressions';
-import { preprocessMathInverseDefinition, textToAst } from '../utils/math';
+import BaseComponent from "./abstract/BaseComponent";
+import me from "math-expressions";
+import { preprocessMathInverseDefinition, textToAst } from "../utils/math";
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -31,16 +31,16 @@ export default class Cell extends BaseComponent {
       defaultValue: 1,
       public: true,
       forRenderer: true,
-    }
+    };
     attributes.halign = {
       createComponentOfType: "text",
-    }
+    };
     attributes.bottom = {
       createComponentOfType: "text",
-    }
+    };
     attributes.right = {
       createComponentOfType: "text",
-    }
+    };
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",
@@ -51,21 +51,20 @@ export default class Cell extends BaseComponent {
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "maths",
+        componentTypes: ["math"],
+      },
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.halign = {
@@ -80,36 +79,42 @@ export default class Cell extends BaseComponent {
         halignAttr: {
           dependencyType: "attributeComponent",
           attributeName: "halign",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentHalign: {
           dependencyType: "parentStateVariable",
-          variableName: "halign"
+          variableName: "halign",
         },
         // TODO: get halign for corresponding col
         tabularHalign: {
           dependencyType: "ancestor",
           componentType: "tabular",
           variableNames: ["halign"],
-        }
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.halignAttr !== null) {
           let halign = dependencyValues.halignAttr.stateValues.value;
           if (!["left", "center", "right", "justify"].includes(halign)) {
             halign = "left";
           }
-          return { setValue: { halign } }
+          return { setValue: { halign } };
         } else if (!usedDefault.parentHalign && dependencyValues.parentHalign) {
-          return { setValue: { halign: dependencyValues.parentHalign } }
-        } else if (!usedDefault.tabularHalign && dependencyValues.tabularHalign) {
-          return { setValue: { halign: dependencyValues.tabularHalign.stateValues.halign } }
+          return { setValue: { halign: dependencyValues.parentHalign } };
+        } else if (
+          !usedDefault.tabularHalign &&
+          dependencyValues.tabularHalign
+        ) {
+          return {
+            setValue: {
+              halign: dependencyValues.tabularHalign.stateValues.halign,
+            },
+          };
         } else {
-          return { useEssentialOrDefaultValue: { halign: true } }
+          return { useEssentialOrDefaultValue: { halign: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.bottom = {
       public: true,
@@ -123,35 +128,41 @@ export default class Cell extends BaseComponent {
         bottomAttr: {
           dependencyType: "attributeComponent",
           attributeName: "bottom",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         parentBottom: {
           dependencyType: "parentStateVariable",
-          variableName: "bottom"
+          variableName: "bottom",
         },
         tabularBottom: {
           dependencyType: "ancestor",
           componentType: "tabular",
           variableNames: ["bottom"],
-        }
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.bottomAttr !== null) {
           let bottom = dependencyValues.bottomAttr.stateValues.value;
           if (!["none", "minor", "medium", "major"].includes(bottom)) {
             bottom = "none";
           }
-          return { setValue: { bottom } }
+          return { setValue: { bottom } };
         } else if (!usedDefault.parentBottom && dependencyValues.parentBottom) {
-          return { setValue: { bottom: dependencyValues.parentBottom } }
-        } else if (!usedDefault.tabularBottom && dependencyValues.tabularBottom) {
-          return { setValue: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
+          return { setValue: { bottom: dependencyValues.parentBottom } };
+        } else if (
+          !usedDefault.tabularBottom &&
+          dependencyValues.tabularBottom
+        ) {
+          return {
+            setValue: {
+              bottom: dependencyValues.tabularBottom.stateValues.bottom,
+            },
+          };
         } else {
-          return { useEssentialOrDefaultValue: { bottom: true } }
+          return { useEssentialOrDefaultValue: { bottom: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.right = {
       public: true,
@@ -165,48 +176,53 @@ export default class Cell extends BaseComponent {
         rightAttr: {
           dependencyType: "attributeComponent",
           attributeName: "right",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         // TODO: get right for corresponding col
         tabularRight: {
           dependencyType: "ancestor",
           componentType: "tabular",
           variableNames: ["right"],
-        }
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.rightAttr !== null) {
           let right = dependencyValues.rightAttr.stateValues.value;
           if (!["none", "minor", "medium", "major"].includes(right)) {
             right = "none";
           }
-          return { setValue: { right } }
+          return { setValue: { right } };
         } else if (!usedDefault.tabularRight && dependencyValues.tabularRight) {
-          return { setValue: { right: dependencyValues.tabularRight.stateValues.right } }
+          return {
+            setValue: {
+              right: dependencyValues.tabularRight.stateValues.right,
+            },
+          };
         } else {
-          return { useEssentialOrDefaultValue: { right: true } }
+          return { useEssentialOrDefaultValue: { right: true } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.inHeader = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "booloean",
+        createComponentOfType: "boolean",
       },
       forRenderer: true,
       defaultValue: false,
       returnDependencies: () => ({
         parentHeader: {
           dependencyType: "parentStateVariable",
-          variableName: "header"
+          variableName: "header",
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { inHeader: dependencyValues.parentHeader === true } }
-      }
-    }
+        return {
+          setValue: { inHeader: dependencyValues.parentHeader === true },
+        };
+      },
+    };
 
     stateVariableDefinitions.onlyMathChild = {
       returnDependencies: () => ({
@@ -221,11 +237,12 @@ export default class Cell extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          onlyMathChild: dependencyValues.mathChild.length === 1 &&
-            dependencyValues.otherChildren.length === 0
-        }
-      })
-    }
+          onlyMathChild:
+            dependencyValues.mathChild.length === 1 &&
+            dependencyValues.otherChildren.length === 0,
+        },
+      }),
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -243,7 +260,7 @@ export default class Cell extends BaseComponent {
         },
         prefill: {
           dependencyType: "stateVariable",
-          variableName: "prefill"
+          variableName: "prefill",
         },
       }),
       definition({ dependencyValues }) {
@@ -251,10 +268,10 @@ export default class Cell extends BaseComponent {
           return {
             useEssentialOrDefaultValue: {
               text: {
-                defaultValue: dependencyValues.prefill
-              }
-            }
-          }
+                defaultValue: dependencyValues.prefill,
+              },
+            },
+          };
         }
         let text = "";
         for (let child of dependencyValues.children) {
@@ -267,40 +284,46 @@ export default class Cell extends BaseComponent {
           }
         }
 
-        return { setValue: { text } }
-
+        return { setValue: { text } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.children.length === 0) {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "text",
-              value: desiredStateVariableValues.text === null ? "" : String(desiredStateVariableValues.text)
-            }]
-          }
+            instructions: [
+              {
+                setEssentialValue: "text",
+                value:
+                  desiredStateVariableValues.text === null
+                    ? ""
+                    : String(desiredStateVariableValues.text),
+              },
+            ],
+          };
         } else if (dependencyValues.children.length === 1) {
-          if (typeof dependencyValues.children[0] === "object" &&
+          if (
+            typeof dependencyValues.children[0] === "object" &&
             dependencyValues.children[0].stateValues.text === undefined
           ) {
-            return { success: false }
+            return { success: false };
           } else {
             return {
               success: true,
-              instructions: [{
-                setDependency: "children",
-                desiredValue: desiredStateVariableValues.text,
-                childIndex: 0,
-                variableIndex: 0
-              }]
-            }
+              instructions: [
+                {
+                  setDependency: "children",
+                  desiredValue: desiredStateVariableValues.text,
+                  childIndex: 0,
+                  variableIndex: 0,
+                },
+              ],
+            };
           }
         } else {
-          return { success: false }
+          return { success: false };
         }
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.math = {
       public: true,
@@ -316,60 +339,70 @@ export default class Cell extends BaseComponent {
               childGroups: ["maths"],
               variableNames: ["value"],
             },
-          }
+          };
         } else {
           return {
             text: {
               dependencyType: "stateVariable",
-              variableName: "text"
-            }
-          }
+              variableName: "text",
+            },
+          };
         }
       },
       definition({ dependencyValues }) {
         if (dependencyValues.mathChild) {
-          return { setValue: { math: dependencyValues.mathChild[0].stateValues.value } }
+          return {
+            setValue: { math: dependencyValues.mathChild[0].stateValues.value },
+          };
         } else {
           let math;
           try {
             math = me.fromAst(textToAst.convert(dependencyValues.text));
           } catch (e) {
-            math = me.fromAst('\uff3f')
+            math = me.fromAst("\uff3f");
           }
 
-          return { setValue: { math } }
+          return { setValue: { math } };
         }
       },
-      async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
+      async inverseDefinition({
+        desiredStateVariableValues,
+        dependencyValues,
+        stateValues,
+        workspace,
+      }) {
         if (dependencyValues.mathChild) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "mathChild",
-              desiredValue: desiredStateVariableValues.math,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "mathChild",
+                desiredValue: desiredStateVariableValues.math,
+                childIndex: 0,
+                variableIndex: 0,
+              },
+            ],
+          };
         } else {
-
           let result = await preprocessMathInverseDefinition({
             desiredValue: desiredStateVariableValues.math,
             stateValues,
             variableName: "math",
             workspace,
-          })
+          });
 
           return {
             success: true,
-            instructions: [{
-              setDependency: "text",
-              desiredValue: result.desiredValue.toString(),
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "text",
+                desiredValue: result.desiredValue.toString(),
+              },
+            ],
+          };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.number = {
       public: true,
@@ -379,31 +412,28 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         math: {
           dependencyType: "stateVariable",
-          variableName: "math"
-        }
+          variableName: "math",
+        },
       }),
       definition({ dependencyValues }) {
         let number = dependencyValues.math.evaluate_to_constant();
-        if (!Number.isFinite(number)) {
-          number = NaN;
-        }
-        return { setValue: { number } }
+        return { setValue: { number } };
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setDependency: "math",
-            desiredValue: me.fromAst(desiredStateVariableValues.number)
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setDependency: "math",
+              desiredValue: me.fromAst(desiredStateVariableValues.number),
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
   static adapters = ["text", "math", "number"];
-
 }

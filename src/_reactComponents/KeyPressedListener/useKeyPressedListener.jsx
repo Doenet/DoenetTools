@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 function useKeyPressedListener(targetKey) {
   const [keyPressed, setKeyPressed] = useState(false);
-  
+
   function downHandler({ key }) {
     if (key === targetKey) {
       setKeyPressed(true);
@@ -13,7 +13,7 @@ function useKeyPressedListener(targetKey) {
       setKeyPressed(false);
     }
   };
-  
+
   // Attach event listeners
   useEffect(() => {
     window.addEventListener("keydown", downHandler);

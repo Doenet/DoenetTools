@@ -1,12 +1,18 @@
-import React from 'react';
-import { useRecoilCallback, atom, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import React from "react";
+import { useNavigate } from "react-router";
+import {
+  useRecoilCallback,
+  atom,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
 
-import styled from 'styled-components';
-import { pageToolViewAtom } from './NewToolRoot';
+import styled from "styled-components";
+import { pageToolViewAtom } from "./NewToolRoot";
 
 const LogoButton = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/Doenet_Logo_cloud_only.png');
+    url("/Doenet_Logo_cloud_only.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 50px 25px;
@@ -22,7 +28,7 @@ const LogoButton = styled.button`
   // border-radius: 50%;
   // margin-top: 8px;
   // margin-left: 90px;
-  cursor: ${props => props.hasLink ? "pointer" : "default"};
+  cursor: ${(props) => (props.hasLink ? "pointer" : "default")};
   &:focus {
     outline: 2px solid var(--canvastext);
     outline-offset: 2px;
@@ -31,27 +37,27 @@ const LogoButton = styled.button`
 
 export const profileToolViewStashAtom = atom({
   key: "profileToolViewStashAtom",
-  default:{},
-})
+  default: {},
+});
 
- 
-export default function Logo({hasLink=true}){
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+export default function Logo({ hasLink = true }) {
+  const navigate = useNavigate();
 
   // if (profile.state === "loading"){ return null;}
-  //   if (profile.state === "hasError"){ 
+  //   if (profile.state === "hasError"){
   //     console.error(profile.contents)
   //     return null;}
 
-
   // let profilePicName = "cat";
-// return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
-return <LogoButton
-hasLink={hasLink}
-onClick={()=>{
-  if (hasLink){
-    setPageToolView({page:'home',tool:'',view:''})
-  }
-}
-}/>
+  // return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
+  return (
+    <LogoButton
+      hasLink={hasLink}
+      onClick={() => {
+        if (hasLink) {
+          navigate("/");
+        }
+      }}
+    />
+  );
 }

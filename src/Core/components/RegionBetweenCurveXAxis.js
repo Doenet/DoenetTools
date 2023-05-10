@@ -1,4 +1,4 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
+import GraphicalComponent from "./abstract/GraphicalComponent";
 
 export default class RegionBetweenCurveXAxis extends GraphicalComponent {
   static componentType = "regionBetweenCurveXAxis";
@@ -12,19 +12,16 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
       defaultValue: [0, 1],
       forRenderer: true,
       public: true,
-    }
+    };
 
     attributes.function = {
-      createComponentOfType: "function"
-    }
-
+      createComponentOfType: "function",
+    };
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
@@ -37,19 +34,23 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"],
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let styleDescription;
-        if (dependencyValues.selectedStyle.fillColor === "none") {
-          styleDescription = dependencyValues.selectedStyle.lineColorWord;
+        let fillColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          fillColorWord = dependencyValues.selectedStyle.fillColorWordDarkMode;
         } else {
-          styleDescription = dependencyValues.selectedStyle.fillColorWord;
+          fillColorWord = dependencyValues.selectedStyle.fillColorWord;
         }
 
-        return { setValue: { styleDescription } };
-      }
-    }
+        return { setValue: { styleDescription: fillColorWord } };
+      },
+    };
 
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
@@ -63,19 +64,24 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-
-        let styleDescriptionWithNoun = dependencyValues.styleDescription + " region";
+        let styleDescriptionWithNoun =
+          dependencyValues.styleDescription + " region";
 
         return { setValue: { styleDescriptionWithNoun } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.function = {
-      additionalStateVariablesDefined: [{
-        variableName: "haveFunction", forRenderer: true,
-      }, {
-        variableName: "fDefinition", forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "haveFunction",
+          forRenderer: true,
+        },
+        {
+          variableName: "fDefinition",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -84,11 +90,18 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionAttr === null
-          || dependencyValues.functionAttr.stateValues.nInputs !== 1
-          || dependencyValues.functionAttr.stateValues.nOutputs !== 1
+        if (
+          dependencyValues.functionAttr === null ||
+          dependencyValues.functionAttr.stateValues.nInputs !== 1 ||
+          dependencyValues.functionAttr.stateValues.nOutputs !== 1
         ) {
-          return { setValue: { function: () => NaN, haveFunction: false, fDefinition: {} } }
+          return {
+            setValue: {
+              function: () => NaN,
+              haveFunction: false,
+              fDefinition: {},
+            },
+          };
         }
 
         return {
@@ -96,14 +109,11 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
             function: dependencyValues.functionAttr.stateValues.numericalfs[0],
             haveFunction: true,
             fDefinition: dependencyValues.functionAttr.stateValues.fDefinition,
-          }
-        }
-      }
-    }
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
-
-
 }

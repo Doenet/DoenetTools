@@ -1,6 +1,6 @@
-import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
-import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from './commonsugar/lists';
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 
 export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
@@ -22,60 +22,63 @@ export default class BezierControls extends InlineComponent {
     return attributes;
   }
 
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoVectorsSeparatedBySpacesOutsideParens = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
-      componentType: "vector"
-    });
+    let groupIntoVectorsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "vector",
+      });
 
-
-    let createControlVectorsList = function ({ matchedChildren, componentInfoObjects }) {
-
-      let results = groupIntoVectorsSeparatedBySpacesOutsideParens({ matchedChildren });
-
+    let createControlVectorsList = function ({
+      matchedChildren,
+      componentInfoObjects,
+    }) {
+      let results = groupIntoVectorsSeparatedBySpacesOutsideParens({
+        matchedChildren,
+      });
 
       if (!results.success) {
-        return { success: false }
+        return { success: false };
       }
 
       return {
         success: true,
         newChildren: results.newChildren.map(function (child) {
-          if (!componentInfoObjects.componentIsSpecifiedType(child, "controlVectors")) {
+          if (
+            !componentInfoObjects.componentIsSpecifiedType(
+              child,
+              "controlVectors",
+            )
+          ) {
             return {
               componentType: "controlVectors",
-              children: [child]
-            }
+              children: [child],
+            };
           } else {
             return child;
           }
-        })
-      }
-    }
+        }),
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: createControlVectorsList
+      replacementFunction: createControlVectorsList,
     });
 
     return sugarInstructions;
-
   }
-
 
   static returnChildGroups() {
-
-    return [{
-      group: "controlVectors",
-      componentTypes: ["controlVectors"]
-    }]
-
+    return [
+      {
+        group: "controlVectors",
+        componentTypes: ["controlVectors"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nControls = {
@@ -84,17 +87,16 @@ export default class BezierControls extends InlineComponent {
           dependencyType: "parentStateVariable",
           variableName: "nThroughPoints",
           skipComponentNames: true,
-        }
+        },
       }),
       definition({ dependencyValues }) {
         let nControls = dependencyValues.nParentPoints;
         if (!(Number.isInteger(nControls) && nControls >= 0)) {
           nControls = 0;
         }
-        return { setValue: { nControls } }
-      }
-    }
-
+        return { setValue: { nControls } };
+      },
+    };
 
     stateVariableDefinitions.pointIndMap = {
       returnDependencies: () => ({
@@ -102,12 +104,15 @@ export default class BezierControls extends InlineComponent {
           dependencyType: "child",
           childGroups: ["controlVectors"],
           variableNames: ["pointNumber"],
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         let pointIndMap = [];
         let currentPointInd = -1;
-        for (let [controlInd, controlChild] of dependencyValues.controlChildren.entries()) {
+        for (let [
+          controlInd,
+          controlChild,
+        ] of dependencyValues.controlChildren.entries()) {
           let pointNumber = controlChild.stateValues.pointNumber;
           if (Number.isFinite(pointNumber)) {
             currentPointInd = Math.round(pointNumber) - 1;
@@ -117,14 +122,15 @@ export default class BezierControls extends InlineComponent {
           pointIndMap[currentPointInd] = controlInd;
         }
 
-        return { setValue: { pointIndMap } }
-      }
-    }
+        return { setValue: { pointIndMap } };
+      },
+    };
 
     stateVariableDefinitions.directions = {
       isArray: true,
       entryPrefixes: ["direction"],
       hasEssential: true,
+      isLocation: true,
       defaultValueByArrayKey: () => "none",
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
@@ -147,40 +153,38 @@ export default class BezierControls extends InlineComponent {
                 childGroups: ["controlVectors"],
                 variableNames: ["direction"],
                 childIndices: [controlInd],
-              }
-            }
+              },
+            };
           }
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let directions = {};
         let essentialDirections = {};
 
         for (let arrayKey of arrayKeys) {
-
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
           if (controlChild && controlChild.length === 1) {
             directions[arrayKey] = controlChild[0].stateValues.direction;
           } else {
-            essentialDirections[arrayKey] = true
+            essentialDirections[arrayKey] = true;
           }
-
         }
 
         return {
           setValue: { directions },
-          useEssentialOrDefaultValue: { directions: essentialDirections }
-        }
+          useEssentialOrDefaultValue: { directions: essentialDirections },
+        };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey, dependencyValuesByKey,
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyNamesByKey,
+        dependencyValuesByKey,
         // componentName
       }) {
-
         // console.log(`inverse definition of directions for beziercontrols of ${componentName}`)
         // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)));
         // console.log(JSON.parse(JSON.stringify(dependencyNamesByKey)));
@@ -196,29 +200,27 @@ export default class BezierControls extends InlineComponent {
               setDependency: dependencyNamesByKey[arrayKey].controlChild,
               desiredValue: desiredStateVariableValues.directions[arrayKey],
               childIndex: 0,
-              variableIndex: 0
-            })
-
+              variableIndex: 0,
+            });
           } else {
-            newDirectionValues[arrayKey] = desiredStateVariableValues.directions[arrayKey]
+            newDirectionValues[arrayKey] =
+              desiredStateVariableValues.directions[arrayKey];
           }
-
         }
 
         if (Object.keys(newDirectionValues).length > 0) {
           instructions.push({
             setEssentialValue: "directions",
-            value: newDirectionValues
-          })
+            value: newDirectionValues,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.hiddenControls = {
       isArray: true,
@@ -246,40 +248,40 @@ export default class BezierControls extends InlineComponent {
                 childGroups: ["controlVectors"],
                 variableNames: ["hide"],
                 childIndices: [controlInd],
-              }
-            }
+              },
+            };
           }
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         let hiddenControls = {};
         let essentialHiddenControls = {};
 
         for (let arrayKey of arrayKeys) {
-
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
           if (controlChild && controlChild.length === 1) {
             hiddenControls[arrayKey] = controlChild[0].stateValues.hide;
           } else {
-            essentialHiddenControls[arrayKey] = true
+            essentialHiddenControls[arrayKey] = true;
           }
-
         }
 
         return {
           setValue: { hiddenControls },
-          useEssentialOrDefaultValue: { hiddenControls: essentialHiddenControls }
-        }
+          useEssentialOrDefaultValue: {
+            hiddenControls: essentialHiddenControls,
+          },
+        };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey, dependencyValuesByKey,
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyNamesByKey,
+        dependencyValuesByKey,
         // componentName
       }) {
-
         // console.log(`inverse definition of hiddenControls for beziercontrols of ${componentName}`)
         // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)));
         // console.log(JSON.parse(JSON.stringify(dependencyNamesByKey)));
@@ -295,41 +297,38 @@ export default class BezierControls extends InlineComponent {
               setDependency: dependencyNamesByKey[arrayKey].controlChild,
               desiredValue: desiredStateVariableValues.hiddenControls[arrayKey],
               childIndex: 0,
-              variableIndex: 0
-            })
-
+              variableIndex: 0,
+            });
           } else {
-            newHiddenControlValues[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
+            newHiddenControlValues[arrayKey] =
+              desiredStateVariableValues.hiddenControls[arrayKey];
           }
-
         }
 
         if (Object.keys(newHiddenControlValues).length > 0) {
           instructions.push({
             setEssentialValue: "hiddenControls",
-            value: newHiddenControlValues
-          })
+            value: newHiddenControlValues,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.nDimensions = {
       returnDependencies() {
         return {
           nParentDimensions: {
             dependencyType: "parentStateVariable",
-            variableName: "nDimensions"
-          }
-        }
+            variableName: "nDimensions",
+          },
+        };
       },
       definition: function ({ dependencyValues }) {
-
         let nDimensions = dependencyValues.nParentDimensions;
         if (!(Number.isInteger(nDimensions) && nDimensions >= 0)) {
           nDimensions = 0;
@@ -337,11 +336,10 @@ export default class BezierControls extends InlineComponent {
 
         return {
           setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true }
-        }
-
-      }
-    }
+          checkForActualChange: { nDimensions: true },
+        };
+      },
+    };
 
     // if have an essential symmetric control
     // need one vector that both control vectors depend on
@@ -350,6 +348,7 @@ export default class BezierControls extends InlineComponent {
       entryPrefixes: ["essentialSymmetricControl"],
       nDimensions: 2,
       hasEssential: true,
+      isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       returnArraySizeDependencies: () => ({
         nControls: {
@@ -366,45 +365,41 @@ export default class BezierControls extends InlineComponent {
       },
       returnArrayDependenciesByKey: () => ({}),
       arrayDefinitionByKey({ arrayKeys }) {
-
         let essentialControls = {};
 
         for (let arrayKey of arrayKeys) {
-          let arrayIndices = arrayKey.split(",").map(x => Number(x));
+          let arrayIndices = arrayKey.split(",").map((x) => Number(x));
 
-          essentialControls[arrayKey] = true
-
+          essentialControls[arrayKey] = true;
         }
 
         return {
           useEssentialOrDefaultValue: {
             essentialSymmetricControls: essentialControls,
           },
-        }
+        };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-      }) {
-
+      inverseArrayDefinitionByKey({ desiredStateVariableValues }) {
         let instructions = [];
         let newControlValues = {};
         for (let arrayKey in desiredStateVariableValues.essentialSymmetricControls) {
-          newControlValues[arrayKey] = desiredStateVariableValues.essentialSymmetricControls[arrayKey]
+          newControlValues[arrayKey] =
+            desiredStateVariableValues.essentialSymmetricControls[arrayKey];
         }
 
         if (Object.keys(newControlValues).length > 0) {
           instructions.push({
             setEssentialValue: "essentialSymmetricControls",
-            value: newControlValues
-          })
+            value: newControlValues,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-      }
-
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.controls = {
       isArray: true,
@@ -412,6 +407,7 @@ export default class BezierControls extends InlineComponent {
       nDimensions: 3,
       hasEssential: true,
       shadowVariable: true,
+      isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       stateVariablesDeterminingDependencies: ["pointIndMap", "directions"],
       returnArraySizeDependencies: () => ({
@@ -428,60 +424,69 @@ export default class BezierControls extends InlineComponent {
         return [dependencyValues.nControls, 2, dependencyValues.nDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
-
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
-          let arrayIndices = arrayKey.split(",").map(x => Number(x));
-          let varEndings = arrayIndices.map(x => x + 1);
+          let arrayIndices = arrayKey.split(",").map((x) => Number(x));
+          let varEndings = arrayIndices.map((x) => x + 1);
 
           dependenciesByKey[arrayKey] = {
             direction: {
               dependencyType: "stateVariable",
-              variableName: "direction" + varEndings[0]
-            }
-          }
-
+              variableName: "direction" + varEndings[0],
+            },
+          };
 
           let direction = stateValues.directions[arrayIndices[0]];
-          if (direction !== "none" &&
+          if (
+            direction !== "none" &&
             (arrayIndices[1] === 0 || arrayIndices[1] === 1)
           ) {
             let controlInd = stateValues.pointIndMap[arrayIndices[0]];
             if (controlInd !== undefined) {
-              if (direction === "symmetric"
-                || (direction === "previous" && arrayIndices[1] === 0)
-                || (direction === "next" && arrayIndices[1] === 1)
+              if (
+                direction === "symmetric" ||
+                (direction === "previous" && arrayIndices[1] === 0) ||
+                (direction === "next" && arrayIndices[1] === 1)
               ) {
                 dependenciesByKey[arrayKey].controlChild = {
                   dependencyType: "child",
                   childGroups: ["controlVectors"],
                   variableNames: ["vectorX1_" + varEndings[2]],
                   childIndices: [controlInd],
-                }
+                };
               } else if (direction === "both") {
                 dependenciesByKey[arrayKey].controlChild = {
                   dependencyType: "child",
                   childGroups: ["controlVectors"],
-                  variableNames: ["vectorX" + varEndings[1] + "_" + varEndings[2]],
+                  variableNames: [
+                    "vectorX" + varEndings[1] + "_" + varEndings[2],
+                  ],
                   childIndices: [controlInd],
-                }
+                };
               }
             }
 
             if (direction === "symmetric") {
               dependenciesByKey[arrayKey].essentialSymmetricControl = {
                 dependencyType: "stateVariable",
-                variableName: "essentialSymmetricControl" + varEndings[0] + "_" + varEndings[2]
-              }
+                variableName:
+                  "essentialSymmetricControl" +
+                  varEndings[0] +
+                  "_" +
+                  varEndings[2],
+              };
             }
           }
         }
 
         return { dependenciesByKey };
       },
-      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, componentName }) {
-
+      arrayDefinitionByKey({
+        dependencyValuesByKey,
+        arrayKeys,
+        componentName,
+      }) {
         // console.log(`definition of controls for beziercontrols of ${componentName}`)
         // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
         // console.log(JSON.parse(JSON.stringify(arrayKeys)))
@@ -490,8 +495,8 @@ export default class BezierControls extends InlineComponent {
         let essentialControls = {};
 
         for (let arrayKey of arrayKeys) {
-          let arrayIndices = arrayKey.split(",").map(x => Number(x));
-          let varEndings = arrayIndices.map(x => x + 1);
+          let arrayIndices = arrayKey.split(",").map((x) => Number(x));
+          let varEndings = arrayIndices.map((x) => x + 1);
 
           let direction = dependencyValuesByKey[arrayKey].direction;
 
@@ -502,22 +507,21 @@ export default class BezierControls extends InlineComponent {
               let controlChild = dependencyValuesByKey[arrayKey].controlChild;
               let useEssential = true;
               if (controlChild && controlChild.length === 1) {
-                let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                let value =
+                  controlChild[0].stateValues["vectorX1_" + varEndings[2]];
                 if (value) {
                   useEssential = false;
                   value = value.evaluate_to_constant();
-                  if (!Number.isFinite(value)) {
-                    value = NaN;
-                  }
                   newControlValues[arrayKey] = me.fromAst(value);
                 }
               }
 
               if (useEssential) {
                 if (direction === "symmetric") {
-                  newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].essentialSymmetricControl
+                  newControlValues[arrayKey] =
+                    dependencyValuesByKey[arrayKey].essentialSymmetricControl;
                 } else {
-                  essentialControls[arrayKey] = true
+                  essentialControls[arrayKey] = true;
                 }
               }
             }
@@ -529,23 +533,19 @@ export default class BezierControls extends InlineComponent {
               let useEssential = true;
               if (controlChild && controlChild.length === 1) {
                 if (direction === "both") {
-                  let value = controlChild[0].stateValues["vectorX2_" + varEndings[2]];
+                  let value =
+                    controlChild[0].stateValues["vectorX2_" + varEndings[2]];
                   if (value) {
                     useEssential = false;
                     value = value.evaluate_to_constant();
-                    if (!Number.isFinite(value)) {
-                      value = NaN;
-                    }
                     newControlValues[arrayKey] = me.fromAst(value);
                   }
                 } else {
-                  let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                  let value =
+                    controlChild[0].stateValues["vectorX1_" + varEndings[2]];
                   if (value) {
                     useEssential = false;
                     value = value.evaluate_to_constant();
-                    if (!Number.isFinite(value)) {
-                      value = NaN;
-                    }
                     if (direction === "symmetric") {
                       newControlValues[arrayKey] = me.fromAst(-value);
                     } else {
@@ -557,30 +557,35 @@ export default class BezierControls extends InlineComponent {
 
               if (useEssential) {
                 if (direction === "symmetric") {
-                  if (dependencyValuesByKey[arrayKey].essentialSymmetricControl) {
-                    newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
+                  if (
+                    dependencyValuesByKey[arrayKey].essentialSymmetricControl
+                  ) {
+                    newControlValues[arrayKey] = me.fromAst(
+                      -dependencyValuesByKey[arrayKey].essentialSymmetricControl
+                        .tree,
+                    );
                   }
                 } else {
-                  essentialControls[arrayKey] = true
+                  essentialControls[arrayKey] = true;
                 }
               }
-
             }
           }
         }
         return {
           setValue: {
-            controls: newControlValues
+            controls: newControlValues,
           },
           useEssentialOrDefaultValue: {
             controls: essentialControls,
           },
-        }
+        };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey, dependencyValuesByKey
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyNamesByKey,
+        dependencyValuesByKey,
       }) {
-
         // console.log('inverse definition of controls for beziercontrols')
         // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)));
         // console.log(JSON.parse(JSON.stringify(dependencyNamesByKey)));
@@ -589,8 +594,8 @@ export default class BezierControls extends InlineComponent {
         let instructions = [];
         let newControlValues = {};
         for (let arrayKey in desiredStateVariableValues.controls) {
-          let arrayIndices = arrayKey.split(",").map(x => Number(x));
-          let varEndings = arrayIndices.map(x => x + 1);
+          let arrayIndices = arrayKey.split(",").map((x) => Number(x));
+          let varEndings = arrayIndices.map((x) => x + 1);
 
           let direction = dependencyValuesByKey[arrayKey].direction;
           if (direction) {
@@ -599,32 +604,37 @@ export default class BezierControls extends InlineComponent {
                 let controlChild = dependencyValuesByKey[arrayKey].controlChild;
                 let useEssential = true;
                 if (controlChild && controlChild.length === 1) {
-                  let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                  let value =
+                    controlChild[0].stateValues["vectorX1_" + varEndings[2]];
                   if (value) {
                     useEssential = false;
                     instructions.push({
-                      setDependency: dependencyNamesByKey[arrayKey].controlChild,
-                      desiredValue: desiredStateVariableValues.controls[arrayKey],
+                      setDependency:
+                        dependencyNamesByKey[arrayKey].controlChild,
+                      desiredValue:
+                        desiredStateVariableValues.controls[arrayKey],
                       childIndex: 0,
-                      variableIndex: 0
-                    })
+                      variableIndex: 0,
+                    });
                   }
                 }
 
                 if (useEssential) {
                   // make sure essential values are numeric
-                  let desiredValue = desiredStateVariableValues.controls[arrayKey].evaluate_to_constant();
-                  if (!Number.isFinite(desiredValue)) {
-                    desiredValue = NaN;
-                  }
-                  desiredValue = me.fromAst(desiredValue);
+                  let desiredValue = me.fromAst(
+                    desiredStateVariableValues.controls[
+                      arrayKey
+                    ].evaluate_to_constant(),
+                  );
                   if (direction === "symmetric") {
                     instructions.push({
-                      setDependency: dependencyNamesByKey[arrayKey].essentialSymmetricControl,
+                      setDependency:
+                        dependencyNamesByKey[arrayKey]
+                          .essentialSymmetricControl,
                       desiredValue,
-                    })
+                    });
                   } else {
-                    newControlValues[arrayKey] = desiredValue
+                    newControlValues[arrayKey] = desiredValue;
                   }
                 }
               }
@@ -634,12 +644,14 @@ export default class BezierControls extends InlineComponent {
                 let useEssential = true;
                 if (controlChild && controlChild.length === 1) {
                   if (direction === "both") {
-                    let value = controlChild[0].stateValues["vectorX2_" + varEndings[2]];
+                    let value =
+                      controlChild[0].stateValues["vectorX2_" + varEndings[2]];
                     if (value) {
                       useEssential = false;
                     }
                   } else {
-                    let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                    let value =
+                      controlChild[0].stateValues["vectorX1_" + varEndings[2]];
                     if (value) {
                       useEssential = false;
                     }
@@ -648,57 +660,56 @@ export default class BezierControls extends InlineComponent {
 
                 let desiredValue;
                 if (direction === "symmetric") {
-                  desiredValue = me.fromAst(['-', desiredStateVariableValues.controls[arrayKey].tree]);
+                  desiredValue = me.fromAst([
+                    "-",
+                    desiredStateVariableValues.controls[arrayKey].tree,
+                  ]);
                 } else {
                   desiredValue = desiredStateVariableValues.controls[arrayKey];
                 }
 
                 if (useEssential) {
                   // make sure essential values are numeric
-                  desiredValue = desiredValue.evaluate_to_constant();
-                  if (!Number.isFinite(desiredValue)) {
-                    desiredValue = NaN;
-                  }
-                  desiredValue = me.fromAst(desiredValue);
+                  desiredValue = me.fromAst(
+                    desiredValue.evaluate_to_constant(),
+                  );
                   if (direction === "symmetric") {
                     instructions.push({
-                      setDependency: dependencyNamesByKey[arrayKey].essentialSymmetricControl,
-                      desiredValue
-                    })
+                      setDependency:
+                        dependencyNamesByKey[arrayKey]
+                          .essentialSymmetricControl,
+                      desiredValue,
+                    });
                   } else {
-                    newControlValues[arrayKey] = desiredValue
+                    newControlValues[arrayKey] = desiredValue;
                   }
                 } else {
                   instructions.push({
                     setDependency: dependencyNamesByKey[arrayKey].controlChild,
                     desiredValue,
                     childIndex: 0,
-                    variableIndex: 0
-                  })
+                    variableIndex: 0,
+                  });
                 }
               }
             }
           }
         }
 
-
         if (Object.keys(newControlValues).length > 0) {
           instructions.push({
             setEssentialValue: "controls",
-            value: newControlValues
-          })
+            value: newControlValues,
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-      }
-
-    }
+          instructions,
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

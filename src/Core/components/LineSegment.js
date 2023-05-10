@@ -1,14 +1,18 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
-import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import GraphicalComponent from "./abstract/GraphicalComponent";
+import me from "math-expressions";
+import { convertValueToMathExpression } from "../utils/math";
 
 export default class LineSegment extends GraphicalComponent {
-  static componentType = "lineSegment";
+  constructor(args) {
+    super(args);
 
-  actions = {
-    moveLineSegment: this.moveLineSegment.bind(this),
-    lineSegmentClicked: this.lineSegmentClicked.bind(this),
-  };
+    Object.assign(this.actions, {
+      moveLineSegment: this.moveLineSegment.bind(this),
+      lineSegmentClicked: this.lineSegmentClicked.bind(this),
+      lineSegmentFocused: this.lineSegmentFocused.bind(this),
+    });
+  }
+  static componentType = "lineSegment";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -18,20 +22,24 @@ export default class LineSegment extends GraphicalComponent {
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
+    };
+
+    attributes.endpointsDraggable = {
+      createComponentOfType: "boolean",
     };
 
     attributes.endpoints = {
-      createComponentOfType: "_pointListComponent"
-    }
+      createComponentOfType: "_pointListComponent",
+    };
 
     attributes.showCoordsWhenDragging = {
       createComponentOfType: "boolean",
       createStateVariable: "showCoordsWhenDragging",
       defaultValue: true,
       public: true,
-      forRenderer: true
-    }
+      forRenderer: true,
+    };
 
     attributes.labelPosition = {
       createComponentOfType: "text",
@@ -40,15 +48,13 @@ export default class LineSegment extends GraphicalComponent {
       public: true,
       forRenderer: true,
       toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
-    }
+      validValues: ["upperright", "upperleft", "lowerright", "lowerleft"],
+    };
 
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
@@ -61,8 +67,19 @@ export default class LineSegment extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"],
+        },
       }),
       definition: function ({ dependencyValues }) {
+        let lineColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWordDarkMode;
+        } else {
+          lineColorWord = dependencyValues.selectedStyle.lineColorWord;
+        }
 
         let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
         if (dependencyValues.selectedStyle.lineStyleWord) {
@@ -76,11 +93,11 @@ export default class LineSegment extends GraphicalComponent {
           styleDescription += " ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord
+        styleDescription += lineColorWord;
 
         return { setValue: { styleDescription } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
@@ -94,12 +111,48 @@ export default class LineSegment extends GraphicalComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-
-        let styleDescriptionWithNoun = dependencyValues.styleDescription + " line segment";
+        let styleDescriptionWithNoun =
+          dependencyValues.styleDescription + " line segment";
 
         return { setValue: { styleDescriptionWithNoun } };
-      }
-    }
+      },
+    };
+
+    stateVariableDefinitions.endpointsDraggable = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      hasEssential: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        endpointsDraggableAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "endpointsDraggable",
+          variableNames: ["value"],
+        },
+        draggable: {
+          dependencyType: "stateVariable",
+          variableName: "draggable",
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.endpointsDraggableAttr) {
+          return {
+            setValue: {
+              endpointsDraggable:
+                dependencyValues.endpointsDraggableAttr.stateValues.value,
+            },
+          };
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              endpointsDraggable: { defaultValue: dependencyValues.draggable },
+            },
+          };
+        }
+      },
+    };
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -111,30 +164,29 @@ export default class LineSegment extends GraphicalComponent {
           dependencyType: "attributeComponent",
           attributeName: "endpoints",
           variableNames: ["nDimensions"],
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
-
         // console.log('definition of nDimensions')
         // console.log(dependencyValues)
 
         if (dependencyValues.endpointsAttr !== null) {
-          let nDimensions = dependencyValues.endpointsAttr.stateValues.nDimensions;
+          let nDimensions =
+            dependencyValues.endpointsAttr.stateValues.nDimensions;
           return {
             setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true }
-          }
+            checkForActualChange: { nDimensions: true },
+          };
         } else {
           // line segment through zero points
-          return { setValue: { nDimensions: 2 } }
+          return { setValue: { nDimensions: 2 } };
         }
-
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.endpoints = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         returnWrappingComponents(prefix) {
@@ -144,7 +196,9 @@ export default class LineSegment extends GraphicalComponent {
             // endpoint or entire array
             // wrap inner dimension by both <point> and <xs>
             // don't wrap outer dimension (for entire array)
-            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+            return [
+              ["point", { componentType: "mathList", isAttribute: "xs" }],
+            ];
           }
         },
       },
@@ -153,14 +207,16 @@ export default class LineSegment extends GraphicalComponent {
       entryPrefixes: ["endpointX", "endpoint"],
       hasEssential: true,
       set: convertValueToMathExpression,
-      defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
+      defaultValueByArrayKey: (arrayKey) =>
+        me.fromAst(arrayKey === "0,0" ? 1 : 0),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "endpointX") {
           // pointX1_2 is the 2nd component of the first point
-          let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === 2 && indices.every(
-            (x, i) => Number.isInteger(x) && x >= 0
-          )) {
+          let indices = varEnding.split("_").map((x) => Number(x) - 1);
+          if (
+            indices.length === 2 &&
+            indices.every((x, i) => Number.isInteger(x) && x >= 0)
+          ) {
             if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
@@ -191,7 +247,10 @@ export default class LineSegment extends GraphicalComponent {
           }
           if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+            return Array.from(
+              Array(arraySize[1]),
+              (_, i) => pointInd + "," + i,
+            );
           } else {
             return [];
           }
@@ -203,7 +262,7 @@ export default class LineSegment extends GraphicalComponent {
             return "endpoint" + propIndex[0];
           } else {
             // if propIndex has additional entries, ignore them
-            return `endpointX${propIndex[0]}_${propIndex[1]}`
+            return `endpointX${propIndex[0]}_${propIndex[1]}`;
           }
         }
         if (varName.slice(0, 8) === "endpoint") {
@@ -211,7 +270,7 @@ export default class LineSegment extends GraphicalComponent {
           let endpointNum = Number(varName.slice(8));
           if (Number.isInteger(endpointNum) && endpointNum > 0) {
             // if propIndex has additional entries, ignore them
-            return `endpointX${endpointNum}_${propIndex[0]}`
+            return `endpointX${endpointNum}_${propIndex[0]}`;
           }
         }
         return null;
@@ -219,8 +278,8 @@ export default class LineSegment extends GraphicalComponent {
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions"
-        }
+          variableName: "nDimensions",
+        },
       }),
       returnArraySize({ dependencyValues }) {
         return [2, dependencyValues.nDimensions];
@@ -229,21 +288,19 @@ export default class LineSegment extends GraphicalComponent {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
           let [pointInd, dim] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+          let varEnding = Number(pointInd) + 1 + "_" + (Number(dim) + 1);
 
           dependenciesByKey[arrayKey] = {
             endpointsAttr: {
               dependencyType: "attributeComponent",
               attributeName: "endpoints",
-              variableNames: ["pointX" + varEnding]
-            }
-          }
+              variableNames: ["pointX" + varEnding],
+            },
+          };
         }
-        return { dependenciesByKey }
-
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, arraySize }) {
-
         // console.log('array definition of linesegment endpoints');
         // console.log(dependencyValuesByKey)
         // console.log(arrayKeys);
@@ -252,14 +309,19 @@ export default class LineSegment extends GraphicalComponent {
         let essentialEndpoints = {};
 
         for (let arrayKey of arrayKeys) {
-
           let [pointInd, dim] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+          let varEnding = Number(pointInd) + 1 + "_" + (Number(dim) + 1);
 
-          if (dependencyValuesByKey[arrayKey].endpointsAttr !== null
-            && dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding]
+          if (
+            dependencyValuesByKey[arrayKey].endpointsAttr !== null &&
+            dependencyValuesByKey[arrayKey].endpointsAttr.stateValues[
+              "pointX" + varEnding
+            ]
           ) {
-            endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding];
+            endpoints[arrayKey] =
+              dependencyValuesByKey[arrayKey].endpointsAttr.stateValues[
+                "pointX" + varEnding
+              ];
           } else {
             essentialEndpoints[arrayKey] = true;
           }
@@ -268,66 +330,172 @@ export default class LineSegment extends GraphicalComponent {
         let result = {};
 
         if (Object.keys(endpoints).length > 0) {
-          result.setValue = { endpoints }
+          result.setValue = { endpoints };
         }
         if (Object.keys(essentialEndpoints).length > 0) {
-          result.useEssentialOrDefaultValue = { endpoints: essentialEndpoints }
+          result.useEssentialOrDefaultValue = { endpoints: essentialEndpoints };
         }
 
         return result;
-
-
       },
-      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues,
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        initialChange,
+        stateValues,
       }) {
-
         // console.log(`inverse array definition of endpoints of linesegment`);
         // console.log(desiredStateVariableValues)
         // console.log(JSON.parse(JSON.stringify(stateValues)))
         // console.log(dependencyValuesByKey);
 
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
-          return { success: false };
-        }
-
-
         let instructions = [];
 
         for (let arrayKey in desiredStateVariableValues.endpoints) {
-
           let [pointInd, dim] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+          let varEnding = Number(pointInd) + 1 + "_" + (Number(dim) + 1);
 
-          if (dependencyValuesByKey[arrayKey].endpointsAttr !== null
-            && dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding]
+          if (
+            dependencyValuesByKey[arrayKey].endpointsAttr !== null &&
+            dependencyValuesByKey[arrayKey].endpointsAttr.stateValues[
+              "pointX" + varEnding
+            ]
           ) {
             instructions.push({
               setDependency: dependencyNamesByKey[arrayKey].endpointsAttr,
               desiredValue: desiredStateVariableValues.endpoints[arrayKey],
               childIndex: 0,
               variableIndex: 0,
-            })
-
+            });
           } else {
             instructions.push({
               setEssentialValue: "endpoints",
-              value: { [arrayKey]: desiredStateVariableValues.endpoints[arrayKey] }
-            })
-
+              value: {
+                [arrayKey]: desiredStateVariableValues.endpoints[arrayKey],
+              },
+            });
           }
         }
 
         return {
           success: true,
-          instructions
+          instructions,
+        };
+      },
+    };
+
+    stateVariableDefinitions.length = {
+      public: true,
+      isLocation: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+        endpoints: {
+          dependencyType: "stateVariable",
+          variableName: "endpoints",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let length2 = 0;
+        let epoint1 = dependencyValues.endpoints[0];
+        let epoint2 = dependencyValues.endpoints[1];
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let v1 = epoint1[dim].evaluate_to_constant();
+          if (!Number.isFinite(v1)) {
+            all_numeric = false;
+            break;
+          }
+          let v2 = epoint2[dim].evaluate_to_constant();
+          if (!Number.isFinite(v2)) {
+            all_numeric = false;
+            break;
+          }
+          let d = v1 - v2;
+          length2 += d * d;
         }
 
-      }
-    }
+        if (all_numeric) {
+          return { setValue: { length: me.fromAst(Math.sqrt(length2)) } };
+        }
 
+        length2 = ["+"];
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          length2.push(["^", ["+", epoint1[dim], ["-", epoint2[dim]]], 2]);
+        }
+
+        return {
+          setValue: {
+            length: me.fromAst(["apply", "sqrt", length2]),
+          },
+        };
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let midpoint = [];
+        let dir = [];
+        let epoint1 = dependencyValues.endpoints[0];
+        let epoint2 = dependencyValues.endpoints[1];
+        let all_numeric = true;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          let v1 = epoint1[dim].evaluate_to_constant();
+          if (!Number.isFinite(v1)) {
+            all_numeric = false;
+            break;
+          }
+          let v2 = epoint2[dim].evaluate_to_constant();
+          if (!Number.isFinite(v2)) {
+            all_numeric = false;
+            break;
+          }
+          midpoint.push((v1 + v2) / 2);
+          dir.push(v1 - v2);
+        }
+
+        if (!all_numeric) {
+          return { success: false };
+        }
+
+        // make dir be unit length
+        let dir_length = Math.sqrt(dir.reduce((a, c) => a + c * c, 0));
+        dir = dir.map((x) => x / dir_length);
+
+        let desiredLength =
+          desiredStateVariableValues.length.evaluate_to_constant();
+
+        if (!Number.isFinite(desiredLength) || desiredLength < 0) {
+          return { success: false };
+        }
+
+        let desiredEndpoint1 = [],
+          desiredEndpoint2 = [];
+        let halfDesiredlength = desiredLength / 2;
+
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          desiredEndpoint1.push(
+            me.fromAst(midpoint[dim] + dir[dim] * halfDesiredlength),
+          );
+          desiredEndpoint2.push(
+            me.fromAst(midpoint[dim] - dir[dim] * halfDesiredlength),
+          );
+        }
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "endpoints",
+              desiredValue: [desiredEndpoint1, desiredEndpoint2],
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.numericalEndpoints = {
       isArray: true,
@@ -337,11 +505,11 @@ export default class LineSegment extends GraphicalComponent {
         nDimensions: {
           dependencyType: "stateVariable",
           variableName: "nDimensions",
-        }
+        },
       }),
       returnArraySize({ dependencyValues }) {
         if (Number.isNaN(dependencyValues.nDimensions)) {
-          return [0]
+          return [0];
         }
         return [2];
       },
@@ -350,25 +518,29 @@ export default class LineSegment extends GraphicalComponent {
           nDimensions: {
             dependencyType: "stateVariable",
             variableName: "nDimensions",
-          }
-        }
+          },
+        };
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
             endpoint: {
               dependencyType: "stateVariable",
-              variableName: "endpoint" + (Number(arrayKey) + 1)
+              variableName: "endpoint" + (Number(arrayKey) + 1),
             },
-          }
+          };
         }
 
-        return { globalDependencies, dependenciesByKey }
+        return { globalDependencies, dependenciesByKey };
       },
 
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
+      }) {
         if (Number.isNaN(globalDependencyValues.nDimensions)) {
-          return {}
+          return {};
         }
 
         let numericalEndpoints = {};
@@ -377,53 +549,50 @@ export default class LineSegment extends GraphicalComponent {
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = endpoint[ind].evaluate_to_constant();
-            if (!Number.isFinite(val)) {
-              val = NaN;
-            }
             numericalP.push(val);
           }
           numericalEndpoints[arrayKey] = numericalP;
         }
 
-        return { setValue: { numericalEndpoints } }
-      }
-    }
+        return { setValue: { numericalEndpoints } };
+      },
+    };
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions"
+          variableName: "nDimensions",
         },
         numericalEndpoints: {
           dependencyType: "stateVariable",
-          variableName: "numericalEndpoints"
+          variableName: "numericalEndpoints",
         },
       }),
       definition({ dependencyValues }) {
-
         let A1 = dependencyValues.numericalEndpoints[0][0];
         let A2 = dependencyValues.numericalEndpoints[0][1];
         let B1 = dependencyValues.numericalEndpoints[1][0];
         let B2 = dependencyValues.numericalEndpoints[1][1];
 
-        let haveConstants = Number.isFinite(A1) && Number.isFinite(A2) &&
-          Number.isFinite(B1) && Number.isFinite(B2);
+        let haveConstants =
+          Number.isFinite(A1) &&
+          Number.isFinite(A2) &&
+          Number.isFinite(B1) &&
+          Number.isFinite(B2);
 
-
-        // only implement for 
+        // only implement for
         // - 2D
-        // - constant endpoints and 
+        // - constant endpoints and
         // - non-degenerate parameters
-        let skip = dependencyValues.nDimensions !== 2
-          || !haveConstants
-          || (B1 === A1 && B2 === A2);
-
+        let skip =
+          dependencyValues.nDimensions !== 2 ||
+          !haveConstants ||
+          (B1 === A1 && B2 === A2);
 
         return {
           setValue: {
             nearestPoint: function ({ variables, scales }) {
-
               if (skip) {
                 return {};
               }
@@ -433,9 +602,12 @@ export default class LineSegment extends GraphicalComponent {
 
               let BA1 = (B1 - A1) / xscale;
               let BA2 = (B2 - A2) / yscale;
-              let denom = (BA1 * BA1 + BA2 * BA2);
+              let denom = BA1 * BA1 + BA2 * BA2;
 
-              let t = ((variables.x1 - A1) / xscale * BA1 + (variables.x2 - A2) / yscale * BA2) / denom;
+              let t =
+                (((variables.x1 - A1) / xscale) * BA1 +
+                  ((variables.x2 - A2) / yscale) * BA2) /
+                denom;
 
               let result = {};
 
@@ -455,71 +627,63 @@ export default class LineSegment extends GraphicalComponent {
               }
 
               return result;
-
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.slope = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({
         numericalEndpoints: {
           dependencyType: "stateVariable",
-          variableName: "numericalEndpoints"
+          variableName: "numericalEndpoints",
         },
         nDimensions: {
           dependencyType: "stateVariable",
           variableName: "nDimensions",
-        }
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.nDimensions !== 2) {
-          return { setValue: { slope: NaN } }
+          return { setValue: { slope: NaN } };
         }
 
         let ps = dependencyValues.numericalEndpoints;
         let slope = (ps[1][1] - ps[0][1]) / (ps[1][0] - ps[0][0]);
 
-        return { setValue: { slope } }
-      }
-    }
-
-    stateVariableDefinitions.length = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "number",
+        return { setValue: { slope } };
       },
-      returnDependencies: () => ({
-        numericalEndpoints: {
-          dependencyType: "stateVariable",
-          variableName: "numericalEndpoints"
-        },
-        nDimensions: {
-          dependencyType: "stateVariable",
-          variableName: "nDimensions",
-        }
-      }),
-      definition({ dependencyValues }) {
-        let ps = dependencyValues.numericalEndpoints;
-        let length2 = 0;
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
-          length2 += (ps[1][dim] - ps[0][dim]) ** 2;
-        }
-
-        return { setValue: { length: Math.sqrt(length2) } }
-      }
-    }
+    };
 
     return stateVariableDefinitions;
   }
 
-
-  async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
+  async moveLineSegment({
+    point1coords,
+    point2coords,
+    transient,
+    actionId,
+    sourceDetails,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (point1coords === undefined || point2coords === undefined) {
+      // single point dragged
+      if (!(await this.stateValues.endpointsDraggable)) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    } else {
+      // whole line segment dragged
+      if (!(await this.stateValues.draggable)) {
+        return await this.coreFunctions.resolveAction({ actionId });
+      }
+    }
 
     let newComponents = {};
 
@@ -532,27 +696,38 @@ export default class LineSegment extends GraphicalComponent {
       newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
-
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          componentName: this.componentName,
-          updateType: "updateValue",
-          stateVariable: "endpoints",
-          value: newComponents
-        }],
+      await this.coreFunctions.performUpdate({
+        updateInstructions: [
+          {
+            componentName: this.componentName,
+            updateType: "updateValue",
+            stateVariable: "endpoints",
+            value: newComponents,
+            sourceDetails,
+          },
+        ],
         transient: true,
         actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
       });
     } else {
-      return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          componentName: this.componentName,
-          updateType: "updateValue",
-          stateVariable: "endpoints",
-          value: newComponents
-        }],
+      await this.coreFunctions.performUpdate({
+        updateInstructions: [
+          {
+            componentName: this.componentName,
+            updateType: "updateValue",
+            stateVariable: "endpoints",
+            value: newComponents,
+            sourceDetails,
+          },
+        ],
         actionId,
+        sourceInformation,
+        skipRendererUpdate: true,
         event: {
           verb: "interacted",
           object: {
@@ -562,23 +737,128 @@ export default class LineSegment extends GraphicalComponent {
           result: {
             point1: point1coords,
             point2: point2coords,
-          }
-        }
+          },
+        },
       });
     }
 
+    // we will attempt to keep the relationship between the two endpoints fixed
+    // when the whole line segment is moved,
+    // even if one of the endpoints is constrained.
+
+    // if dragged the whole line segment,
+    // address case where only one endpoint is constrained
+    // to make line segment just translate in this case
+    if (point1coords !== undefined && point2coords !== undefined) {
+      let numericalPoints = [point1coords, point2coords];
+      let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
+
+      let pointsChanged = [];
+      let nPointsChanged = 0;
+
+      for (let [ind, pt] of numericalPoints.entries()) {
+        if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+          pointsChanged.push(ind);
+          nPointsChanged++;
+        }
+      }
+
+      if (nPointsChanged === 1) {
+        // One endpoint was altered from the requested location
+        // while the other endpoint stayed at the requested location.
+        // We interpret this as one endpoint being constrained and the second one being free
+        // and we move the second endpoint to keep their relative position fixed.
+
+        let changedInd = pointsChanged[0];
+
+        let orig1 = numericalPoints[changedInd];
+        let changed1 = resultingNumericalPoints[changedInd];
+        let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+        let newNumericalPoints = [];
+
+        for (let i = 0; i < 2; i++) {
+          if (i === changedInd) {
+            newNumericalPoints.push(resultingNumericalPoints[i]);
+          } else {
+            newNumericalPoints.push(
+              numericalPoints[i].map((v, j) => v - changevec1[j]),
+            );
+          }
+        }
+
+        let newPointComponents = {};
+        for (let ind in newNumericalPoints) {
+          newPointComponents[ind + ",0"] = me.fromAst(
+            newNumericalPoints[ind][0],
+          );
+          newPointComponents[ind + ",1"] = me.fromAst(
+            newNumericalPoints[ind][1],
+          );
+        }
+
+        let newInstructions = [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "endpoints",
+            value: newPointComponents,
+          },
+        ];
+        return await this.coreFunctions.performUpdate({
+          updateInstructions: newInstructions,
+          transient,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
+      }
+    }
+
+    // if no modifications were made, still need to update renderers
+    // as original update was performed with skipping renderer update
+    return await this.coreFunctions.updateRenderers({
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 
-
-  async lineSegmentClicked({ actionId }) {
-
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-    })
+  async lineSegmentClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
+  async lineSegmentFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    }
+
+    this.coreFunctions.resolveAction({ actionId });
+  }
 }

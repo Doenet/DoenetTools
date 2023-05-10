@@ -1,12 +1,26 @@
-import GraphicalComponent from './abstract/GraphicalComponent';
-import me from 'math-expressions';
-import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
-import { breakEmbeddedStringByCommas } from './commonsugar/breakstrings';
-import { deepClone } from '../utils/deepFunctions';
+import GraphicalComponent from "./abstract/GraphicalComponent";
+import me from "math-expressions";
+import {
+  convertValueToMathExpression,
+  roundForDisplay,
+  vectorOperators,
+} from "../utils/math";
+import { breakEmbeddedStringByCommas } from "./commonsugar/breakstrings";
+import { deepClone } from "../utils/deepFunctions";
+import { returnTextStyleDescriptionDefinitions } from "../utils/style";
 
 export default class Point extends GraphicalComponent {
-  static componentType = "point";
+  constructor(args) {
+    super(args);
 
+    Object.assign(this.actions, {
+      movePoint: this.movePoint.bind(this),
+      switchPoint: this.switchPoint.bind(this),
+      pointClicked: this.pointClicked.bind(this),
+      pointFocused: this.pointFocused.bind(this),
+    });
+  }
+  static componentType = "point";
 
   // Note: for other components with public point state variables,
   // the recommended course of action is not to have
@@ -23,7 +37,7 @@ export default class Point extends GraphicalComponent {
       createStateVariable: "draggable",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
 
     attributes.x = {
@@ -56,7 +70,7 @@ export default class Point extends GraphicalComponent {
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
@@ -76,16 +90,29 @@ export default class Point extends GraphicalComponent {
       public: true,
       forRenderer: true,
       toLowerCase: true,
-      validValues: ["upperright", "upperleft", "lowerright", "lowerleft", "top", "bottom", "left", "right"]
-    }
+      validValues: [
+        "upperright",
+        "upperleft",
+        "lowerright",
+        "lowerleft",
+        "top",
+        "bottom",
+        "left",
+        "right",
+      ],
+    };
 
     attributes.showCoordsWhenDragging = {
       createComponentOfType: "boolean",
       createStateVariable: "showCoordsWhenDragging",
       defaultValue: true,
       public: true,
-      forRenderer: true
-    }
+      forRenderer: true,
+    };
+
+    attributes.hideOffGraphIndicator = {
+      createComponentOfType: "boolean",
+    };
 
     return attributes;
   }
@@ -93,16 +120,22 @@ export default class Point extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoXsOrCoords = function ({ matchedChildren, componentInfoObjects }) {
-
-      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
+    let breakIntoXsOrCoords = function ({
+      matchedChildren,
+      componentInfoObjects,
+    }) {
+      let componentIsSpecifiedType =
+        componentInfoObjects.componentIsSpecifiedType;
 
       // Find potential component children, i.e., consecutive children that aren't constraints or labels
-      let componentChildren = [], nonComponentChildrenBegin = [], nonComponentChildrenEnd = [];
+      let componentChildren = [],
+        nonComponentChildrenBegin = [],
+        nonComponentChildrenEnd = [];
 
       for (let child of matchedChildren) {
-        if (componentIsSpecifiedType(child, "constraints")
-          || componentIsSpecifiedType(child, "label")
+        if (
+          componentIsSpecifiedType(child, "constraints") ||
+          componentIsSpecifiedType(child, "label")
         ) {
           if (componentChildren.length > 0) {
             nonComponentChildrenEnd.push(child);
@@ -117,16 +150,19 @@ export default class Point extends GraphicalComponent {
       }
 
       if (componentChildren.length === 0) {
-        return { success: false }
+        return { success: false };
       }
 
       if (componentChildren.length === 1) {
         let child = componentChildren[0];
 
-        if (componentIsSpecifiedType(child, "point") || componentIsSpecifiedType(child, "vector")) {
+        if (
+          componentIsSpecifiedType(child, "point") ||
+          componentIsSpecifiedType(child, "vector")
+        ) {
           // if have an isolated point or vector, don't use sugar
           // and that child will picked up by the point or vector child group
-          return { success: false }
+          return { success: false };
         }
       }
 
@@ -139,11 +175,11 @@ export default class Point extends GraphicalComponent {
         firstChar = componentChildren[0][0];
       }
       if (typeof componentChildren[nCompChildren - 1] === "string") {
-        componentChildren[nCompChildren - 1] = componentChildren[nCompChildren - 1].trimEnd();
+        componentChildren[nCompChildren - 1] =
+          componentChildren[nCompChildren - 1].trimEnd();
         let lastChild = componentChildren[nCompChildren - 1];
         lastChar = lastChild[lastChild.length - 1];
       }
-
 
       if (firstChar === "(" && lastChar === ")") {
         // start and end with parens, check if can split by commas after removing these parens
@@ -151,9 +187,14 @@ export default class Point extends GraphicalComponent {
         modifiedChildren[0] = modifiedChildren[0].substring(1);
 
         let lastChild = modifiedChildren[modifiedChildren.length - 1];
-        modifiedChildren[modifiedChildren.length - 1] = lastChild.substring(0, lastChild.length - 1);
+        modifiedChildren[modifiedChildren.length - 1] = lastChild.substring(
+          0,
+          lastChild.length - 1,
+        );
 
-        let breakResult = breakEmbeddedStringByCommas({ childrenList: modifiedChildren });
+        let breakResult = breakEmbeddedStringByCommas({
+          childrenList: modifiedChildren,
+        });
 
         if (breakResult.success) {
           // wrap maths around each piece, wrap whole thing in mathList
@@ -164,18 +205,21 @@ export default class Point extends GraphicalComponent {
               xs: {
                 component: {
                   componentType: "mathList",
-                  children: breakResult.pieces.map(x => ({ componentType: "math", children: x })),
+                  children: breakResult.pieces.map((x) => ({
+                    componentType: "math",
+                    children: x,
+                  })),
                   skipSugar: true,
-                }
-              }
+                },
+              },
             },
-            newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd]
-          }
+            newChildren: [
+              ...nonComponentChildrenBegin,
+              ...nonComponentChildrenEnd,
+            ],
+          };
         }
-
       }
-
-
 
       // if didn't succeed in breaking it into xs, then use the component children as a coords
       return {
@@ -185,44 +229,45 @@ export default class Point extends GraphicalComponent {
             component: {
               componentType: "coords",
               children: componentChildren,
-            }
-          }
+            },
+          },
         },
-        newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd]
-      }
-
-
+        newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd],
+      };
     };
 
     sugarInstructions.push({
       // childrenRegex: /n*s+(.*s)?n*/,
-      replacementFunction: breakIntoXsOrCoords
-    })
+      replacementFunction: breakIntoXsOrCoords,
+    });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
     let childGroups = super.returnChildGroups();
 
-    childGroups.push(...[{
-      group: "pointsAndVectors",
-      componentTypes: ["point", "vector"]
-    }, {
-      group: "constraints",
-      componentTypes: ["constraints"]
-    }])
+    childGroups.push(
+      ...[
+        {
+          group: "pointsAndVectors",
+          componentTypes: ["point", "vector"],
+        },
+        {
+          group: "constraints",
+          componentTypes: ["constraints"],
+        },
+      ],
+    );
 
     return childGroups;
-
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
+    Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -234,16 +279,27 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        document: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"],
+        },
       }),
       definition: function ({ dependencyValues }) {
-
+        let markerColorWord;
+        if (dependencyValues.document?.stateValues.theme === "dark") {
+          markerColorWord =
+            dependencyValues.selectedStyle.markerColorWordDarkMode;
+        } else {
+          markerColorWord = dependencyValues.selectedStyle.markerColorWord;
+        }
         return {
           setValue: {
-            styleDescription: dependencyValues.selectedStyle.markerColorWord
-          }
+            styleDescription: markerColorWord,
+          },
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
@@ -255,14 +311,62 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "selectedStyle",
         },
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let pointDescription = dependencyValues.selectedStyle.markerColorWord
-          + " " + dependencyValues.selectedStyle.markerStyleWord;
+        let pointDescription =
+          dependencyValues.styleDescription +
+          " " +
+          dependencyValues.selectedStyle.markerStyleWord;
         return { setValue: { styleDescriptionWithNoun: pointDescription } };
-      }
-    }
+      },
+    };
+
+    stateVariableDefinitions.hideOffGraphIndicator = {
+      public: true,
+      forRenderer: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({
+        hideOffGraphIndicatorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "hideOffGraphIndicator",
+          variableNames: ["value"],
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["hideOffGraphIndicators"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.hideOffGraphIndicatorAttr) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.hideOffGraphIndicatorAttr.stateValues.value,
+            },
+          };
+        } else if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.graphAncestor.stateValues
+                  .hideOffGraphIndicators,
+            },
+          };
+        } else {
+          return {
+            useEssentialOrDefaultValue: { hideOffGraphIndicator: true },
+          };
+        }
+      },
+    };
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -275,26 +379,32 @@ export default class Point extends GraphicalComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.displayDigitsAttr !== null) {
+          let displayDigitsAttrUsedDefault =
+            dependencyValues.displayDigitsAttr === null ||
+            usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
-
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not used default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -302,20 +412,27 @@ export default class Point extends GraphicalComponent {
           }
 
           if (displayDigitsAttrUsedDefault) {
-            return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         }
 
-        return { useEssentialOrDefaultValue: { displayDigits: true } }
-
-      }
-    }
+        return { useEssentialOrDefaultValue: { displayDigits: true } };
+      },
+    };
 
     // coordsShadow will be null unless point was created
     // via an adapter or copy prop or from serialized state with coords value
@@ -325,25 +442,31 @@ export default class Point extends GraphicalComponent {
     // that shadows the component adapted or copied
     stateVariableDefinitions.coordsShadow = {
       defaultValue: null,
+      isLocation: true,
       hasEssential: true,
       essentialVarName: "coords",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          coordsShadow: true
-        }
+          coordsShadow: true,
+        },
       }),
-      inverseDefinition: async function ({ desiredStateVariableValues, stateValues, workspace }) {
-
+      inverseDefinition: async function ({
+        desiredStateVariableValues,
+        stateValues,
+        workspace,
+      }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "coordsShadow",
-            value: desiredStateVariableValues.coordsShadow
-          }]
+          instructions: [
+            {
+              setEssentialValue: "coordsShadow",
+              value: desiredStateVariableValues.coordsShadow,
+            },
+          ],
         };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -375,12 +498,12 @@ export default class Point extends GraphicalComponent {
         xs: {
           dependencyType: "attributeComponent",
           attributeName: "xs",
-          variableNames: ["nComponents"]
+          variableNames: ["nComponents"],
         },
         pointOrVectorChild: {
           dependencyType: "child",
           childGroups: ["pointsAndVectors"],
-          variableNames: ["nDimensions"]
+          variableNames: ["nDimensions"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -413,9 +536,11 @@ export default class Point extends GraphicalComponent {
         }
 
         if (basedOnCoords) {
-
           let coordsTree = coords.expand().simplify().tree;
-          if (Array.isArray(coordsTree) && coordsTree[0] === "vector") {
+          if (
+            Array.isArray(coordsTree) &&
+            vectorOperators.includes(coordsTree[0])
+          ) {
             nDimensions = Math.max(coordsTree.length - 1, nDimensions);
           } else {
             nDimensions = Math.max(1, nDimensions);
@@ -423,24 +548,31 @@ export default class Point extends GraphicalComponent {
 
           // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
-          return { setValue: { nDimensions }, checkForActualChange: { nDimensions: true } };
-
-
+          return {
+            setValue: { nDimensions },
+            checkForActualChange: { nDimensions: true },
+          };
         } else {
-
           if (dependencyValues.xs !== null) {
             return {
               setValue: {
-                nDimensions: Math.max(dependencyValues.xs.stateValues.nComponents, nDimensions)
-              }
-            }
+                nDimensions: Math.max(
+                  dependencyValues.xs.stateValues.nComponents,
+                  nDimensions,
+                ),
+              },
+            };
           }
           if (dependencyValues.pointOrVectorChild.length > 0) {
             return {
               setValue: {
-                nDimensions: Math.max(dependencyValues.pointOrVectorChild[0].stateValues.nDimensions, nDimensions)
-              }
-            }
+                nDimensions: Math.max(
+                  dependencyValues.pointOrVectorChild[0].stateValues
+                    .nDimensions,
+                  nDimensions,
+                ),
+              },
+            };
           }
 
           if (nDimensions === 0) {
@@ -448,32 +580,36 @@ export default class Point extends GraphicalComponent {
             nDimensions = 2;
           }
 
-          return { setValue: { nDimensions }, checkForActualChange: { nDimensions: true } };
-
+          return {
+            setValue: { nDimensions },
+            checkForActualChange: { nDimensions: true },
+          };
         }
-
-
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.arrayVariableForConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { arrayVariableForConstraints: "unconstrainedXs" } })
-    }
+      definition: () => ({
+        setValue: { arrayVariableForConstraints: "unconstrainedXs" },
+      }),
+    };
 
     stateVariableDefinitions.arrayEntryPrefixForConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { arrayEntryPrefixForConstraints: "unconstrainedX" } })
-    }
+      definition: () => ({
+        setValue: { arrayEntryPrefixForConstraints: "unconstrainedX" },
+      }),
+    };
 
     stateVariableDefinitions.nDimensionsForConstraints = {
       isAlias: true,
-      targetVariableName: "nDimensions"
+      targetVariableName: "nDimensions",
     };
-
 
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
+      isLocation: true,
       entryPrefixes: ["unconstrainedX"],
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
@@ -506,41 +642,42 @@ export default class Point extends GraphicalComponent {
             xs: {
               dependencyType: "attributeComponent",
               attributeName: "xs",
-              variableNames: ["math" + varEnding]
+              variableNames: ["math" + varEnding],
             },
             pointOrVectorChild: {
               dependencyType: "child",
               childGroups: ["pointsAndVectors"],
-              variableNames: ["x" + varEnding]
+              variableNames: ["x" + varEnding],
             },
-          }
+          };
           if (arrayKey === "0") {
             dependenciesByKey[arrayKey].component = {
               dependencyType: "attributeComponent",
               attributeName: "x",
               variableNames: ["value"],
-            }
+            };
           } else if (arrayKey === "1") {
             dependenciesByKey[arrayKey].component = {
               dependencyType: "attributeComponent",
               attributeName: "y",
               variableNames: ["value"],
-            }
+            };
           } else if (arrayKey === "2") {
             dependenciesByKey[arrayKey].component = {
               dependencyType: "attributeComponent",
               attributeName: "z",
               variableNames: ["value"],
-            }
+            };
           }
         }
 
-        return { globalDependencies, dependenciesByKey }
+        return { globalDependencies, dependenciesByKey };
       },
       arrayDefinitionByKey({
-        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
       }) {
-
         // console.log(`unconstrained xs definition by key for ${componentName}`)
         // console.log(deepClone(globalDependencyValues))
         // console.log(deepClone(dependencyValuesByKey))
@@ -561,10 +698,12 @@ export default class Point extends GraphicalComponent {
         }
 
         if (basedOnCoords) {
-
           coords = coords.expand().simplify();
           let coordsTree = coords.tree;
-          if (Array.isArray(coordsTree) && coordsTree[0] === "vector") {
+          if (
+            Array.isArray(coordsTree) &&
+            vectorOperators.includes(coordsTree[0])
+          ) {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
@@ -576,13 +715,11 @@ export default class Point extends GraphicalComponent {
               }
             }
           } else {
-            if (arrayKeys.includes('0')) {
+            if (arrayKeys.includes("0")) {
               newXs[0] = coords;
             }
           }
-
         } else {
-
           for (let arrayKey of arrayKeys) {
             let varEnding = Number(arrayKey) + 1;
             let xs = dependencyValuesByKey[arrayKey].xs;
@@ -592,14 +729,15 @@ export default class Point extends GraphicalComponent {
                 newXs[arrayKey] = val.simplify();
               }
             } else {
-              let pointOrVectorChild = dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
               if (pointOrVectorChild.length > 0) {
-                newXs[arrayKey] = pointOrVectorChild[0].stateValues["x" + varEnding]
+                newXs[arrayKey] =
+                  pointOrVectorChild[0].stateValues["x" + varEnding];
               }
             }
           }
         }
-
 
         // if have a component, that supercedes other values
         for (let arrayKey of arrayKeys) {
@@ -607,7 +745,7 @@ export default class Point extends GraphicalComponent {
           if (component) {
             newXs[arrayKey] = component.stateValues.value.simplify();
           } else if (newXs[arrayKey] === undefined) {
-            essentialXs[arrayKey] = true
+            essentialXs[arrayKey] = true;
           }
         }
 
@@ -623,12 +761,14 @@ export default class Point extends GraphicalComponent {
           result.useEssentialOrDefaultValue = { unconstrainedXs: essentialXs };
         }
         return result;
-
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        arraySize,
       }) {
-
         // console.log(`invertUnconstrainedXs, ${componentName}`);
         // console.log(desiredStateVariableValues)
         // console.log(globalDependencyValues);
@@ -646,13 +786,16 @@ export default class Point extends GraphicalComponent {
           coordsTree = Array(arraySize[0] + 1);
         } else if (globalDependencyValues.coordsShadow !== null) {
           basedOnCoords = true;
-          coordsDependency = "coordsShadow"
+          coordsDependency = "coordsShadow";
           coordsTree = Array(arraySize[0] + 1);
         }
 
-
-        for (let arrayKey of Object.keys(desiredStateVariableValues.unconstrainedXs).reverse()) {
-          let desiredValue = convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey])
+        for (let arrayKey of Object.keys(
+          desiredStateVariableValues.unconstrainedXs,
+        ).reverse()) {
+          let desiredValue = convertValueToMathExpression(
+            desiredStateVariableValues.unconstrainedXs[arrayKey],
+          );
 
           let component = dependencyValuesByKey[arrayKey].component;
           if (component !== null) {
@@ -665,9 +808,7 @@ export default class Point extends GraphicalComponent {
           } else if (basedOnCoords) {
             coordsTree[Number(arrayKey) + 1] = desiredValue.tree;
             setCoords = true;
-
           } else {
-
             let xs = dependencyValuesByKey[arrayKey].xs;
             if (xs !== null) {
               instructions.push({
@@ -677,11 +818,12 @@ export default class Point extends GraphicalComponent {
                 variableIndex: 0,
               });
             } else {
-
-              let pointOrVectorChild = dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
               if (pointOrVectorChild.length > 0) {
                 instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].pointOrVectorChild,
+                  setDependency:
+                    dependencyNamesByKey[arrayKey].pointOrVectorChild,
                   desiredValue,
                   childIndex: 0,
                   variableIndex: 0,
@@ -699,37 +841,41 @@ export default class Point extends GraphicalComponent {
         if (setCoords) {
           let desiredCoords;
           if (arraySize[0] === 1) {
-            desiredCoords = me.fromAst(coordsTree[1])
+            desiredCoords = me.fromAst(coordsTree[1]);
           } else {
             coordsTree[0] = "vector";
-            desiredCoords = me.fromAst(coordsTree)
-          };
+            desiredCoords = me.fromAst(coordsTree);
+          }
           let instruction = {
             setDependency: coordsDependency,
-            desiredValue: desiredCoords
-          }
+            desiredValue: desiredCoords,
+          };
           if (coordsDependency === "coords") {
             instruction.childIndex = 0;
             instruction.variableIndex = 0;
           }
 
           instructions.push(instruction);
-
         }
 
         return {
           success: true,
           instructions,
-        }
-
+        };
       },
-    }
+    };
 
     stateVariableDefinitions.xs = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+          "padZeros",
+        ],
       },
       isArray: true,
       entryPrefixes: ["x"],
@@ -755,14 +901,13 @@ export default class Point extends GraphicalComponent {
           keyDeps.constraintsChild = {
             dependencyType: "child",
             childGroups: ["constraints"],
-            variableNames: [`constraintResult${varEnding}`]
-          }
+            variableNames: [`constraintResult${varEnding}`],
+          };
           dependenciesByKey[arrayKey] = keyDeps;
         }
         return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         // console.log('array definition of xs')
         // console.log(deepClone(dependencyValuesByKey))
         // console.log(deepClone(arrayKeys));
@@ -770,43 +915,47 @@ export default class Point extends GraphicalComponent {
         let xs = {};
 
         for (let arrayKey of arrayKeys) {
-
           if (dependencyValuesByKey[arrayKey].constraintsChild.length > 0) {
             let varEnding = Number(arrayKey) + 1;
             xs[arrayKey] = convertValueToMathExpression(
-              dependencyValuesByKey[arrayKey].constraintsChild[0].stateValues["constraintResult" + varEnding]
-            )
+              dependencyValuesByKey[arrayKey].constraintsChild[0].stateValues[
+                "constraintResult" + varEnding
+              ],
+            );
           } else {
             xs[arrayKey] = convertValueToMathExpression(
-              dependencyValuesByKey[arrayKey].unconstrainedX
-            )
+              dependencyValuesByKey[arrayKey].unconstrainedX,
+            );
           }
         }
 
         if (arrayKeys.length > 0) {
-          return { setValue: { xs } }
+          return { setValue: { xs } };
         } else {
           return {};
         }
       },
-      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyValuesByKey, dependencyNamesByKey,
-        initialChange, stateValues,
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        initialChange,
+        stateValues,
       }) {
-
         // console.log('invert xs')
         // console.log(desiredStateVariableValues);
         // console.log(dependencyValuesByKey);
         // console.log(dependencyNamesByKey);
 
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
+        // if not draggable, then disallow initial change
+        if (initialChange && !(await stateValues.draggable)) {
           return { success: false };
         }
 
-
         let instructions = [];
-        for (let arrayKey of Object.keys(desiredStateVariableValues.xs).reverse()) {
+        for (let arrayKey of Object.keys(
+          desiredStateVariableValues.xs,
+        ).reverse()) {
           if (!dependencyValuesByKey[arrayKey]) {
             continue;
           }
@@ -816,50 +965,54 @@ export default class Point extends GraphicalComponent {
               desiredValue: desiredStateVariableValues.xs[arrayKey],
               childIndex: 0,
               variableIndex: 0,
-            })
+            });
           } else {
             instructions.push({
               setDependency: dependencyNamesByKey[arrayKey].unconstrainedX,
               desiredValue: desiredStateVariableValues.xs[arrayKey],
-            })
+            });
           }
-
         }
 
         return {
           success: true,
-          instructions
-        }
-
+          instructions,
+        };
       },
-    }
+    };
 
     stateVariableDefinitions.x = {
       isAlias: true,
-      targetVariableName: "x1"
+      targetVariableName: "x1",
     };
 
     stateVariableDefinitions.y = {
       isAlias: true,
-      targetVariableName: "x2"
+      targetVariableName: "x2",
     };
 
     stateVariableDefinitions.z = {
       isAlias: true,
-      targetVariableName: "x3"
+      targetVariableName: "x3",
     };
 
     stateVariableDefinitions.coords = {
       public: true,
+      isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+          "padZeros",
+        ],
       },
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
           variableName: "xs",
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
         // console.log(`definition of coords`)
@@ -869,7 +1022,7 @@ export default class Point extends GraphicalComponent {
           if (v) {
             coordsAst.push(v.tree);
           } else {
-            coordsAst.push('\uff3f');
+            coordsAst.push("\uff3f");
           }
         }
         if (coordsAst.length > 1) {
@@ -877,19 +1030,23 @@ export default class Point extends GraphicalComponent {
         } else if (coordsAst.length === 1) {
           coordsAst = coordsAst[0];
         } else {
-          coordsAst = '\uff3f';
+          coordsAst = "\uff3f";
         }
 
-        return { setValue: { coords: me.fromAst(coordsAst) } }
+        return { setValue: { coords: me.fromAst(coordsAst) } };
       },
 
-      inverseDefinition: async function ({ desiredStateVariableValues, stateValues, initialChange }) {
+      inverseDefinition: async function ({
+        desiredStateVariableValues,
+        stateValues,
+        initialChange,
+      }) {
         // console.log("invertCoords");
         // console.log(desiredStateVariableValues)
         // console.log(stateValues);
 
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
+        // if not draggable, then disallow initial change
+        if (initialChange && !(await stateValues.draggable)) {
           return { success: false };
         }
 
@@ -899,11 +1056,16 @@ export default class Point extends GraphicalComponent {
 
         let coordsTree = desiredStateVariableValues.coords.tree;
 
-        if (!(Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0]))) {
+        if (
+          !(
+            Array.isArray(coordsTree) && vectorOperators.includes(coordsTree[0])
+          )
+        ) {
           desiredXValues[0] = desiredStateVariableValues.coords;
         } else {
           for (let i = 0; i < coordsTree.length - 1; i++) {
-            let desiredValue = desiredStateVariableValues.coords.get_component(i);
+            let desiredValue =
+              desiredStateVariableValues.coords.get_component(i);
             if (desiredValue.tree !== undefined) {
               desiredXValues[i] = desiredValue;
             }
@@ -918,38 +1080,36 @@ export default class Point extends GraphicalComponent {
         return {
           success: true,
           instructions,
-        }
-
-      }
-
-    }
+        };
+      },
+    };
 
     stateVariableDefinitions.latex = {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text"
+        createComponentOfType: "latex",
       },
       returnDependencies: () => ({
         coords: {
           dependencyType: "stateVariable",
-          variableName: "coords"
+          variableName: "coords",
         },
         displayDigits: {
           dependencyType: "stateVariable",
-          variableName: "displayDigits"
+          variableName: "displayDigits",
         },
         displayDecimals: {
           dependencyType: "stateVariable",
-          variableName: "displayDecimals"
+          variableName: "displayDecimals",
         },
         displaySmallAsZero: {
           dependencyType: "stateVariable",
-          variableName: "displaySmallAsZero"
+          variableName: "displaySmallAsZero",
         },
         padZeros: {
           dependencyType: "stateVariable",
-          variableName: "padZeros"
+          variableName: "padZeros",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
@@ -965,18 +1125,18 @@ export default class Point extends GraphicalComponent {
         }
         let latex = roundForDisplay({
           value: dependencyValues.coords,
-          dependencyValues, usedDefault
+          dependencyValues,
+          usedDefault,
         }).toLatex(params);
 
-        return { setValue: { latex } }
-
-      }
-    }
+        return { setValue: { latex } };
+      },
+    };
 
     // currently value is used by answer to get variable for response
     stateVariableDefinitions.value = {
       isAlias: true,
-      targetVariableName: "coords"
+      targetVariableName: "coords",
     };
 
     stateVariableDefinitions.constraintUsed = {
@@ -988,24 +1148,22 @@ export default class Point extends GraphicalComponent {
         constraintsChild: {
           dependencyType: "child",
           childGroups: ["constraints"],
-          variableNames: ["constraintUsed"]
-        }
+          variableNames: ["constraintUsed"],
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.constraintsChild.length === 0) {
-          return { setValue: { constraintUsed: false } }
+          return { setValue: { constraintUsed: false } };
         } else {
           return {
             setValue: {
               constraintUsed:
-                dependencyValues.constraintsChild[0].stateValues.constraintUsed
-            }
-          }
-
+                dependencyValues.constraintsChild[0].stateValues.constraintUsed,
+            },
+          };
         }
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.numericalXs = {
       isArray: true,
@@ -1028,13 +1186,12 @@ export default class Point extends GraphicalComponent {
             [`x`]: {
               dependencyType: "stateVariable",
               variableName: `x${varEnding}`,
-            }
+            },
           };
         }
         return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
         // console.log(`definition of numericalXs`)
         // console.log(deepClone(dependencyValuesByKey))
         // console.log(deepClone(arrayKeys))
@@ -1045,59 +1202,54 @@ export default class Point extends GraphicalComponent {
           let x = dependencyValuesByKey[arrayKey].x;
           if (x) {
             x = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
-            if (Number.isFinite(x)) {
-              numericalXs[arrayKey] = x;
-            } else {
-              numericalXs[arrayKey] = NaN;
-            }
+            numericalXs[arrayKey] = x;
           } else {
             numericalXs[arrayKey] = NaN;
           }
         }
 
-        return { setValue: { numericalXs } }
+        return { setValue: { numericalXs } };
       },
 
-      async inverseArrayDefinitionByKey({ desiredStateVariableValues,
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
         dependencyNamesByKey,
-        initialChange, stateValues,
+        initialChange,
+        stateValues,
       }) {
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !await stateValues.draggable) {
+        // if not draggable, then disallow initial change
+        if (initialChange && !(await stateValues.draggable)) {
           return { success: false };
         }
 
-
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.numericalXs) {
-          if (!dependencyValuesByKey[arrayKey]) {
+          if (!dependencyNamesByKey[arrayKey]) {
             continue;
           }
           instructions.push({
             setDependency: dependencyNamesByKey[arrayKey].xs,
             desiredValue: desiredStateVariableValues.numericalXs[arrayKey],
-          })
+          });
         }
 
         return {
           success: true,
-          instructions
-        }
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions"
+          variableName: "nDimensions",
         },
         numericalXs: {
           dependencyType: "stateVariable",
-          variableName: "numericalXs"
-        }
+          variableName: "numericalXs",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
@@ -1111,25 +1263,38 @@ export default class Point extends GraphicalComponent {
               if (!Number.isFinite(x)) {
                 return {};
               }
-              result['x' + ind] = x;
+              result["x" + ind] = x;
             }
             return result;
-          }
-        }
-      })
-    }
-
+          },
+        },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
 
+  static adapters = [
+    {
+      stateVariable: "coords",
+      stateVariablesToShadow: [
+        "displayDigits",
+        "displayDecimals",
+        "displaySmallAsZero",
+        "padZeros",
+      ],
+    },
+  ];
 
-  static adapters = [{
-    stateVariable: "coords",
-    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
-  }];
-
-  async movePoint({ x, y, z, transient, actionId }) {
+  async movePoint({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1142,24 +1307,32 @@ export default class Point extends GraphicalComponent {
     }
     if (transient) {
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "xs",
-          value: components,
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "xs",
+            value: components,
+          },
+        ],
         transient,
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     } else {
       return await this.coreFunctions.performUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "xs",
-          value: components,
-        }],
+        updateInstructions: [
+          {
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "xs",
+            value: components,
+          },
+        ],
         actionId,
+        sourceInformation,
+        skipRendererUpdate,
         event: {
           verb: "interacted",
           object: {
@@ -1167,35 +1340,52 @@ export default class Point extends GraphicalComponent {
             componentType: this.componentType,
           },
           result: {
-            x, y, z
-          }
-        }
+            x,
+            y,
+            z,
+          },
+        },
+      });
+    }
+  }
+
+  switchPoint() {}
+
+  async pointClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
     }
 
+    this.coreFunctions.resolveAction({ actionId });
   }
 
-
-  switchPoint() {
-  }
-
-
-  async pointClicked({ actionId }) {
-
-    await this.coreFunctions.triggerChainedActions({
-      triggeringAction: "click",
-      componentName: this.componentName,
-    })
+  async pointFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
-
-
-  actions = {
-    movePoint: this.movePoint.bind(this),
-    switchPoint: this.switchPoint.bind(this),
-    pointClicked: this.pointClicked.bind(this),
-  };
-
 }

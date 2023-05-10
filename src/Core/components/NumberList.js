@@ -1,7 +1,7 @@
-import { roundForDisplay } from '../utils/math';
-import InlineComponent from './abstract/InlineComponent';
-import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from './commonsugar/lists';
-import me from 'math-expressions';
+import { roundForDisplay } from "../utils/math";
+import InlineComponent from "./abstract/InlineComponent";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
+import me from "math-expressions";
 
 export default class NumberList extends InlineComponent {
   static componentType = "numberList";
@@ -43,7 +43,7 @@ export default class NumberList extends InlineComponent {
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
@@ -58,39 +58,37 @@ export default class NumberList extends InlineComponent {
     return attributes;
   }
 
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
-      componentType: "number"
-    });
+    let groupIntoNumbersSeparatedBySpaces =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "number",
+      });
 
     sugarInstructions.push({
       replacementFunction: function ({ matchedChildren }) {
         return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
-      }
+      },
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "numbers",
-      componentTypes: ["number"]
-    }, {
-      group: "numberLists",
-      componentTypes: ["numberList"]
-    }]
-
+    return [
+      {
+        group: "numbers",
+        componentTypes: ["number"],
+      },
+      {
+        group: "numberLists",
+        componentTypes: ["numberList"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // set overrideChildHide so that children are hidden
@@ -98,8 +96,8 @@ export default class NumberList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { overrideChildHide: true } })
-    }
+      definition: () => ({ setValue: { overrideChildHide: true } }),
+    };
 
     stateVariableDefinitions.displayDigits = {
       public: true,
@@ -112,26 +110,30 @@ export default class NumberList extends InlineComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.displayDigitsAttr !== null) {
-
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -142,23 +144,24 @@ export default class NumberList extends InlineComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         }
 
-        return { useEssentialOrDefaultValue: { displayDigits: true } }
-
-      }
-    }
+        return { useEssentialOrDefaultValue: { displayDigits: true } };
+      },
+    };
 
     stateVariableDefinitions.numbersShadow = {
       defaultValue: null,
@@ -166,10 +169,10 @@ export default class NumberList extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          numbersShadow: true
-        }
+          numbersShadow: true,
+        },
       }),
-    }
+    };
 
     stateVariableDefinitions.nComponents = {
       public: true,
@@ -195,27 +198,35 @@ export default class NumberList extends InlineComponent {
         numbersShadow: {
           dependencyType: "stateVariable",
           variableName: "numbersShadow",
-        }
+        },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-
         let nComponents = 0;
         let childIndexByArrayKey = [];
 
         let nNumberLists = 0;
         if (dependencyValues.numberAndNumberListChildren.length > 0) {
-          for (let [childInd, child] of dependencyValues.numberAndNumberListChildren.entries()) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "numberList"
-            })) {
-              let numberListChild = dependencyValues.numberListChildren[nNumberLists];
+          for (let [
+            childInd,
+            child,
+          ] of dependencyValues.numberAndNumberListChildren.entries()) {
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "numberList",
+              })
+            ) {
+              let numberListChild =
+                dependencyValues.numberListChildren[nNumberLists];
               nNumberLists++;
-              for (let i = 0; i < numberListChild.stateValues.nComponents; i++) {
+              for (
+                let i = 0;
+                i < numberListChild.stateValues.nComponents;
+                i++
+              ) {
                 childIndexByArrayKey[nComponents + i] = [childInd, i];
               }
               nComponents += numberListChild.stateValues.nComponents;
-
             } else {
               childIndexByArrayKey[nComponents] = [childInd, 0];
               nComponents += 1;
@@ -233,17 +244,21 @@ export default class NumberList extends InlineComponent {
 
         return {
           setValue: { nComponents, childIndexByArrayKey },
-          checkForActualChange: { nComponents: true }
-        }
-      }
-    }
-
+          checkForActualChange: { nComponents: true },
+        };
+      },
+    };
 
     stateVariableDefinitions.numbers = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+          "padZeros",
+        ],
       },
       isArray: true,
       entryPrefixes: ["number"],
@@ -259,16 +274,16 @@ export default class NumberList extends InlineComponent {
       },
 
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
-        let dependenciesByKey = {}
+        let dependenciesByKey = {};
         let globalDependencies = {
           childIndexByArrayKey: {
             dependencyType: "stateVariable",
-            variableName: "childIndexByArrayKey"
+            variableName: "childIndexByArrayKey",
           },
           numbersShadow: {
             dependencyType: "stateVariable",
             variableName: "numbersShadow",
-          }
+          },
         };
 
         for (let arrayKey of arrayKeys) {
@@ -286,119 +301,121 @@ export default class NumberList extends InlineComponent {
               variablesOptional: true,
               childIndices,
             },
-          }
+          };
         }
-        return { globalDependencies, dependenciesByKey }
-
+        return { globalDependencies, dependenciesByKey };
       },
       arrayDefinitionByKey({
-        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
       }) {
-
         let numbers = {};
 
         for (let arrayKey of arrayKeys) {
-          let child = dependencyValuesByKey[arrayKey].numberAndNumberListChildren[0];
+          let child =
+            dependencyValuesByKey[arrayKey].numberAndNumberListChildren[0];
 
           if (child) {
             if (child.stateValues.value !== undefined) {
               numbers[arrayKey] = child.stateValues.value;
             } else {
-              let numberIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              let numberIndex =
+                globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
               numbers[arrayKey] = child.stateValues["number" + numberIndex];
-
             }
-
           } else if (globalDependencyValues.numbersShadow !== null) {
             numbers[arrayKey] = globalDependencyValues.numbersShadow[arrayKey];
           }
-
         }
 
-        return { setValue: { numbers } }
-
+        return { setValue: { numbers } };
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        arraySize,
       }) {
-
         let instructions = [];
 
         for (let arrayKey in desiredStateVariableValues.numbers) {
-
           if (!dependencyValuesByKey[arrayKey]) {
             continue;
           }
 
-          let child = dependencyValuesByKey[arrayKey].numberAndNumberListChildren[0];
+          let child =
+            dependencyValuesByKey[arrayKey].numberAndNumberListChildren[0];
 
           if (child) {
             if (child.stateValues.value !== undefined) {
               instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].numberAndNumberListChildren,
+                setDependency:
+                  dependencyNamesByKey[arrayKey].numberAndNumberListChildren,
                 desiredValue: desiredStateVariableValues.numbers[arrayKey],
                 childIndex: 0,
                 variableIndex: 0,
               });
-
             } else {
               instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].numberAndNumberListChildren,
+                setDependency:
+                  dependencyNamesByKey[arrayKey].numberAndNumberListChildren,
                 desiredValue: desiredStateVariableValues.numbers[arrayKey],
                 childIndex: 0,
                 variableIndex: 1,
               });
-
             }
           }
         }
 
         return {
           success: true,
-          instructions
-        }
-
-
-      }
-    }
+          instructions,
+        };
+      },
+    };
 
     stateVariableDefinitions.nValues = {
       isAlias: true,
-      targetVariableName: "nComponents"
+      targetVariableName: "nComponents",
     };
 
     stateVariableDefinitions.values = {
       isAlias: true,
-      targetVariableName: "numbers"
+      targetVariableName: "numbers",
     };
-
 
     stateVariableDefinitions.math = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+          "padZeros",
+        ],
       },
       returnDependencies: () => ({
         numbers: {
           dependencyType: "stateVariable",
-          variableName: "numbers"
-        }
+          variableName: "numbers",
+        },
       }),
       definition({ dependencyValues }) {
         let math;
         if (dependencyValues.numbers.length === 0) {
           math = me.fromAst("\uff3f");
         } else if (dependencyValues.numbers.length === 1) {
-          math = me.fromAst(dependencyValues.numbers[0])
+          math = me.fromAst(dependencyValues.numbers[0]);
         } else {
           math = me.fromAst(["list", ...dependencyValues.numbers]);
         }
 
-        return { setValue: { math } }
-
-      }
-    }
+        return { setValue: { math } };
+      },
+    };
 
     stateVariableDefinitions.text = {
       public: true,
@@ -424,23 +441,22 @@ export default class NumberList extends InlineComponent {
         },
         displayDigits: {
           dependencyType: "stateVariable",
-          variableName: "displayDigits"
+          variableName: "displayDigits",
         },
         displayDecimals: {
           dependencyType: "stateVariable",
-          variableName: "displayDecimals"
+          variableName: "displayDecimals",
         },
         displaySmallAsZero: {
           dependencyType: "stateVariable",
-          variableName: "displaySmallAsZero"
+          variableName: "displaySmallAsZero",
         },
         padZeros: {
           dependencyType: "stateVariable",
-          variableName: "padZeros"
+          variableName: "padZeros",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
-
         let texts = [];
         let params = {};
         if (dependencyValues.padZeros) {
@@ -453,9 +469,7 @@ export default class NumberList extends InlineComponent {
           }
         }
         if (dependencyValues.numberAndNumberListChildren.length > 0) {
-
           for (let child of dependencyValues.numberAndNumberListChildren) {
-
             if (child.stateValues.valueForDisplay !== undefined) {
               texts.push(child.stateValues.text);
             } else {
@@ -463,27 +477,26 @@ export default class NumberList extends InlineComponent {
             }
           }
         } else if (dependencyValues.numbersShadow !== null) {
-          texts = dependencyValues.numbersShadow.map(x =>
+          texts = dependencyValues.numbersShadow.map((x) =>
             roundForDisplay({
               value: me.fromAst(x),
-              dependencyValues, usedDefault
-            }).toString(params))
-
+              dependencyValues,
+              usedDefault,
+            }).toString(params),
+          );
         }
 
         let maxNum = dependencyValues.maximumNumber;
         if (maxNum !== null && texts.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
-          texts = texts.slice(0, maxNum)
+          texts = texts.slice(0, maxNum);
         }
 
-        let text = texts.join(', ');
+        let text = texts.join(", ");
 
-        return { setValue: { text, texts } }
-
-      }
-    }
-
+        return { setValue: { text, texts } };
+      },
+    };
 
     stateVariableDefinitions.componentNamesInList = {
       returnDependencies: () => ({
@@ -502,11 +515,15 @@ export default class NumberList extends InlineComponent {
         let componentNamesInList = [];
 
         for (let child of dependencyValues.numberAndNumberListChildren) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "numberList"
-          })) {
-            componentNamesInList.push(...child.stateValues.componentNamesInList);
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "numberList",
+            })
+          ) {
+            componentNamesInList.push(
+              ...child.stateValues.componentNamesInList,
+            );
           } else {
             componentNamesInList.push(child.componentName);
           }
@@ -515,13 +532,12 @@ export default class NumberList extends InlineComponent {
         let maxNum = dependencyValues.maximumNumber;
         if (maxNum !== null && componentNamesInList.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
-          componentNamesInList = componentNamesInList.slice(0, maxNum)
+          componentNamesInList = componentNamesInList.slice(0, maxNum);
         }
 
-        return { setValue: { componentNamesInList } }
-
-      }
-    }
+        return { setValue: { componentNamesInList } };
+      },
+    };
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
       additionalStateVariablesDefined: ["nChildrenToRender"],
@@ -543,17 +559,21 @@ export default class NumberList extends InlineComponent {
         parentNComponentsToDisplayByChild: {
           dependencyType: "parentStateVariable",
           parentComponentType: "numberList",
-          variableName: "nComponentsToDisplayByChild"
-        }
+          variableName: "nComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues, componentInfoObjects, componentName }) {
-
+      definition: function ({
+        dependencyValues,
+        componentInfoObjects,
+        componentName,
+      }) {
         let nComponentsToDisplay = dependencyValues.nComponents;
 
         if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
           // have a parent numberList, which could have limited
           // number of components to display
-          nComponentsToDisplay = dependencyValues.parentNComponentsToDisplayByChild[componentName]
+          nComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
         }
 
         let nComponentsToDisplayByChild = {};
@@ -563,25 +583,31 @@ export default class NumberList extends InlineComponent {
 
         let nNumberLists = 0;
         for (let child of dependencyValues.numberAndNumberListChildren) {
-          let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
+          let nComponentsLeft = Math.max(
+            0,
+            nComponentsToDisplay - nComponentsSoFar,
+          );
           if (nComponentsLeft > 0) {
             nChildrenToRender++;
           }
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "numberList"
-          })) {
-            let numberListChild = dependencyValues.numberListChildren[nNumberLists];
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "numberList",
+            })
+          ) {
+            let numberListChild =
+              dependencyValues.numberListChildren[nNumberLists];
             nNumberLists++;
 
             let nComponentsForNumberListChild = Math.min(
               nComponentsLeft,
-              numberListChild.stateValues.nComponents
-            )
+              numberListChild.stateValues.nComponents,
+            );
 
-            nComponentsToDisplayByChild[numberListChild.componentName] = nComponentsForNumberListChild;
+            nComponentsToDisplayByChild[numberListChild.componentName] =
+              nComponentsForNumberListChild;
             nComponentsSoFar += nComponentsForNumberListChild;
-
           } else {
             nComponentsSoFar += 1;
           }
@@ -589,10 +615,10 @@ export default class NumberList extends InlineComponent {
 
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
-        }
+        };
       },
       markStale: () => ({ updateRenderedChildren: true }),
-    }
+    };
 
     return stateVariableDefinitions;
   }
@@ -600,9 +626,13 @@ export default class NumberList extends InlineComponent {
   static adapters = [
     {
       stateVariable: "math",
-      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+      stateVariablesToShadow: [
+        "displayDigits",
+        "displayDecimals",
+        "displaySmallAsZero",
+        "padZeros",
+      ],
     },
-    "text"
+    "text",
   ];
-
 }

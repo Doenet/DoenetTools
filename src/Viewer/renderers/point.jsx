@@ -1,12 +1,23 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import useDoenetRender from './useDoenetRenderer';
-import { BoardContext } from './graph';
-import { MathJax } from 'better-react-mathjax';
+import React, { useContext, useEffect, useState, useRef } from "react";
+import useDoenetRender from "../useDoenetRenderer";
+import { BoardContext, POINT_LAYER_OFFSET } from "./graph";
+import { MathJax } from "better-react-mathjax";
+import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { useRecoilValue } from "recoil";
+import { textRendererStyle } from "../../Core/utils/style";
+import { characterizeOffGraphPoint } from "./utils/offGraphIndicators";
+import {
+  adjustPointLabelPosition,
+  calculatePointLabelAnchor,
+  normalizePointSize,
+  normalizePointStyle,
+} from "./utils/graph";
 
 export default React.memo(function Point(props) {
-  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } =
+    useDoenetRender(props);
 
-  Point.ignoreActionsWithoutCore = true;
+  Point.ignoreActionsWithoutCore = () => true;
 
   // console.log(`for point ${name}, SVs: `, SVs)
 
@@ -15,8 +26,10 @@ export default React.memo(function Point(props) {
   let pointJXG = useRef(null);
   let shadowPointJXG = useRef(null);
 
-  let pointerAtDown = useRef(false);
-  let pointAtDown = useRef(false);
+  let pointerAtDown = useRef(null);
+  let pointAtDown = useRef(null);
+  let pointerIsDown = useRef(false);
+  let pointerMovedSinceDown = useRef(false);
   let dragged = useRef(false);
   let previousWithLabel = useRef(null);
   let previousLabelPosition = useRef(null);
@@ -25,90 +38,96 @@ export default React.memo(function Point(props) {
 
   let lastPositionFromCore = useRef(null);
 
-  lastPositionFromCore.current = SVs.numericalXs;
+  // for each coordinate, will be -1 or 1 if moved off graph in that direction
+  let offGraphIndicator = useRef([0, 0]);
 
-  const useOpenSymbol = SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
+  // for each coordinate, will be -1 or 1 if near edge of graph (or off graph) in that direction
+  let nearEdgeOfGraph = useRef([0, 0]);
 
+  let fixed = useRef(false);
+  let fixLocation = useRef(false);
+  let switchable = useRef(false);
+
+  fixed.current = SVs.fixed;
+  fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
+  switchable.current = SVs.switchable && !SVs.fixed;
+
+  const darkMode = useRecoilValue(darkModeAtom);
+
+  const useOpenSymbol =
+    SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph
 
   useEffect(() => {
     //On unmount
     return () => {
       // if point is defined
       if (pointJXG.current !== null) {
-        shadowPointJXG.current.off('drag');
-        shadowPointJXG.current.off('down');
-        shadowPointJXG.current.off('up');
+        shadowPointJXG.current.off("drag");
+        shadowPointJXG.current.off("down");
+        shadowPointJXG.current.off("hit");
+        shadowPointJXG.current.off("up");
+        shadowPointJXG.current.off("keyfocusout");
+        shadowPointJXG.current.off("keydown");
         board.removeObject(pointJXG.current);
         board.removeObject(shadowPointJXG.current);
         pointJXG.current = null;
         shadowPointJXG.current = null;
       }
 
+      if (board) {
+        board.off("move", boardMoveHandler);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (board) {
+      board.on("move", boardMoveHandler);
     }
-  }, [])
+  }, [board]);
 
   function createPointJXG() {
-    let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-    let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
+    let markerColor =
+      darkMode === "dark"
+        ? SVs.selectedStyle.markerColorDarkMode
+        : SVs.selectedStyle.markerColor;
+    let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
+    let strokeColor = useOpenSymbol ? markerColor : "none";
 
-    let fixed = !SVs.draggable || SVs.fixed;
     let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
 
-    //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
       withlabel,
       fixed: true,
-      layer: 10 * SVs.layer + 9,
+      layer: 10 * SVs.layer + POINT_LAYER_OFFSET,
       fillColor: fillColor,
       strokeColor,
-      strokeOpacity: SVs.selectedStyle.lineOpacity,
-      fillOpacity: SVs.selectedStyle.lineOpacity,
-      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
-      highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
-      size: normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle),
-      face: normalizeStyle(SVs.selectedStyle.markerStyle),
-      highlight: !fixed
+      strokeOpacity: SVs.selectedStyle.markerOpacity,
+      fillOpacity: SVs.selectedStyle.markerOpacity,
+      highlightFillColor: "var(--mainGray)",
+      highlightStrokeColor: "var(--lightBlue)",
+      size: normalizePointSize(
+        SVs.selectedStyle.markerSize,
+        SVs.selectedStyle.markerStyle,
+      ),
+      face: normalizePointStyle(
+        SVs.selectedStyle.markerStyle,
+        offGraphIndicator.current,
+      ),
+      highlight: !fixLocation.current,
     };
 
-
     if (withlabel) {
-      let anchorx, anchory, offset;
-      if (SVs.labelPosition === "upperright") {
-        offset = [5, 5];
-        anchorx = "left";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "upperleft") {
-        offset = [-5, 5];
-        anchorx = "right";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "lowerright") {
-        offset = [5, -5];
-        anchorx = "left";
-        anchory = "top";
-      } else if (SVs.labelPosition === "lowerleft") {
-        offset = [-5, -5];
-        anchorx = "right";
-        anchory = "top";
-      } else if (SVs.labelPosition === "top") {
-        offset = [0, 10];
-        anchorx = "middle";
-        anchory = "bottom";
-      } else if (SVs.labelPosition === "bottom") {
-        offset = [0, -10];
-        anchorx = "middle";
-        anchory = "top";
-      } else if (SVs.labelPosition === "left") {
-        offset = [-10, 0];
-        anchorx = "right";
-        anchory = "middle";
-      } else {
-        // labelPosition === right
-        offset = [10, 0];
-        anchorx = "left";
-        anchory = "middle";
-      }
+      let labelPosition = adjustPointLabelPosition(
+        SVs.labelPosition,
+        nearEdgeOfGraph.current,
+      );
+      previousLabelPosition.current = labelPosition;
+
+      let { offset, anchorx, anchory } =
+        calculatePointLabelAnchor(labelPosition);
       jsxPointAttributes.label = {
         offset,
         anchorx,
@@ -121,110 +140,198 @@ export default React.memo(function Point(props) {
       }
 
       if (SVs.applyStyleToLabel) {
-        jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
+        jsxPointAttributes.label.strokeColor = markerColor;
       } else {
-        jsxPointAttributes.label.strokeColor = "#000000";
+        jsxPointAttributes.label.strokeColor = "var(--canvastext)";
       }
     } else {
       jsxPointAttributes.label = {
-        highlight: false
-      }
+        highlight: false,
+      };
       if (SVs.labelHasLatex) {
-        jsxPointAttributes.label.useMathJax = true
+        jsxPointAttributes.label.useMathJax = true;
       }
     }
 
-    if (fixed) {
+    if (fixLocation.current) {
       jsxPointAttributes.showInfoBox = false;
     } else {
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     }
 
-    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
+    let coords = [
+      lastPositionFromCore.current[0],
+      lastPositionFromCore.current[1],
+    ];
 
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
-      jsxPointAttributes['visible'] = false;
+      jsxPointAttributes["visible"] = false;
     }
     if (!Number.isFinite(coords[1])) {
       coords[1] = 0;
-      jsxPointAttributes['visible'] = false;
+      jsxPointAttributes["visible"] = false;
     }
 
-    let newPointJXG = board.create('point', coords, jsxPointAttributes);
-
     let shadowPointAttributes = { ...jsxPointAttributes };
-    shadowPointAttributes.layer--;
-    shadowPointAttributes.fixed = fixed;
+    shadowPointAttributes.fixed = fixed.current;
     shadowPointAttributes.showInfoBox = false;
     shadowPointAttributes.withlabel = false;
     shadowPointAttributes.fillOpacity = 0;
     shadowPointAttributes.strokeOpacity = 0;
+    shadowPointAttributes.highlightFillOpacity = 0;
+    shadowPointAttributes.highlightStrokeOpacity = 0;
 
-    let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
+    let newShadowPointJXG = board.create(
+      "point",
+      coords,
+      shadowPointAttributes,
+    );
+    newShadowPointJXG.isDraggable = !fixLocation.current;
 
+    let newPointJXG = board.create("point", coords, jsxPointAttributes);
 
-    newShadowPointJXG.on('down', function (e) {
+    newShadowPointJXG.on("down", function (e) {
       pointerAtDown.current = [e.x, e.y];
       pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
       dragged.current = false;
-      shadowPointJXG.current.visProp.fillopacity = pointJXG.current.visProp.fillopacity;
-      shadowPointJXG.current.visProp.strokeopacity = pointJXG.current.visProp.strokeopacity;
+      shadowPointJXG.current.visProp.highlightfillopacity =
+        pointJXG.current.visProp.fillopacity;
+      shadowPointJXG.current.visProp.highlightstrokeopacity =
+        pointJXG.current.visProp.strokeopacity;
 
+      pointerIsDown.current = true;
+      pointerMovedSinceDown.current = false;
+
+      if (!fixed.current) {
+        callAction({
+          action: actions.pointFocused,
+          args: { name }, // send name so get original name if adapted
+        });
+      }
     });
 
-    newShadowPointJXG.on('up', function (e) {
+    newShadowPointJXG.on("hit", function (e) {
+      dragged.current = false;
+      callAction({
+        action: actions.pointFocused,
+        args: { name }, // send name so get original name if adapted
+      });
+    });
+
+    newShadowPointJXG.on("up", function (e) {
       if (dragged.current) {
         callAction({
           action: actions.movePoint,
           args: {
             x: calculatedX.current,
             y: calculatedY.current,
-          }
+          },
         });
-      } else if (SVs.switchable && !SVs.fixed) {
-
-        // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
-        // as useEffect will not be rerun
-        callAction({
-          action: actions.switchPoint
-        });
-        callAction({
-          action: actions.pointClicked
-        });
-      } else {
-        callAction({
-          action: actions.pointClicked
-        });
+        dragged.current = false;
+      } else if (!pointerMovedSinceDown.current && !fixed.current) {
+        if (switchable.current) {
+          callAction({
+            action: actions.switchPoint,
+          });
+          callAction({
+            action: actions.pointClicked,
+            args: { name }, // send name so get original name if adapted
+          });
+        } else {
+          callAction({
+            action: actions.pointClicked,
+            args: { name }, // send name so get original name if adapted
+          });
+        }
       }
-      dragged.current = false;
+      pointerIsDown.current = false;
 
-      shadowPointJXG.current.visProp.fillopacity = 0;
-      shadowPointJXG.current.visProp.strokeopacity = 0;
+      shadowPointJXG.current.visProp.highlightfillopacity = 0;
+      shadowPointJXG.current.visProp.highlightstrokeopacity = 0;
     });
 
-    newShadowPointJXG.on('drag', function (e) {
-      // the reason we calculate point position with this algorithm,
-      // rather than using .X() and .Y() directly
-      // is that attributes .X() and .Y() are affected by the
-      // .setCoordinates function called in update().
-      // Due to this dependence, the location of .X() and .Y()
-      // can be affected by constraints of objects that the points depends on,
-      // leading to a different location on up than on drag
-      // (as dragging uses the mouse location)
-      // TODO: find an example where need this this additional complexity
-      var o = board.origin.scrCoords;
+    newShadowPointJXG.on("hit", function (e) {
+      board.updateInfobox(pointJXG.current);
+    });
+
+    newShadowPointJXG.on("keyfocusout", function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.movePoint,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current,
+          },
+        });
+        dragged.current = false;
+      }
+    });
+
+    newShadowPointJXG.on("drag", function (e) {
+      let viaPointer = e.type === "pointermove";
+
+      //Protect against very small unintended drags
+      if (
+        !viaPointer ||
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
+      ) {
+        dragged.current = true;
+      }
 
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
 
-      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0]
-        - o[1]) / board.unitX;
-      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
+      let xminAdjusted = xmin;
+      let xmaxAdjusted = xmax;
+      let yminAdjusted = ymin;
+      let ymaxAdjusted = ymax;
 
-      calculatedY.current = (o[2] -
-        (pointAtDown.current[2] + e.y - pointerAtDown.current[1]))
-        / board.unitY;
-      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      if (xmax < xmin) {
+        [xmaxAdjusted, xminAdjusted] = [xminAdjusted, xmaxAdjusted];
+      }
+      if (ymax < ymin) {
+        [ymaxAdjusted, yminAdjusted] = [yminAdjusted, ymaxAdjusted];
+      }
+
+      let xscale = xmaxAdjusted - xminAdjusted;
+      let yscale = ymaxAdjusted - yminAdjusted;
+
+      xmaxAdjusted -= xscale * 0.01;
+      xminAdjusted += xscale * 0.01;
+      ymaxAdjusted -= yscale * 0.01;
+      yminAdjusted += yscale * 0.01;
+
+      if (viaPointer) {
+        // the reason we calculate point position with this algorithm,
+        // rather than using .X() and .Y() directly
+        // is that attributes .X() and .Y() are affected by the
+        // .setCoordinates function called in update().
+        // Due to this dependence, the location of .X() and .Y()
+        // can be affected by constraints of objects that the points depends on,
+        // leading to a different location on up than on drag
+        // (as dragging uses the mouse location)
+        // TODO: find an example where need this this additional complexity
+        var o = board.origin.scrCoords;
+        calculatedX.current =
+          (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) /
+          board.unitX;
+        calculatedY.current =
+          (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) /
+          board.unitY;
+      } else {
+        calculatedX.current = newShadowPointJXG.X();
+        calculatedY.current = newShadowPointJXG.Y();
+      }
+
+      calculatedX.current = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, calculatedX.current),
+      );
+      calculatedY.current = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, calculatedY.current),
+      );
 
       callAction({
         action: actions.movePoint,
@@ -233,36 +340,140 @@ export default React.memo(function Point(props) {
           y: calculatedY.current,
           transient: true,
           skippable: true,
-        }
+        },
       });
 
-      newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
+      let shadowX = Math.min(
+        xmaxAdjusted,
+        Math.max(xminAdjusted, newShadowPointJXG.X()),
+      );
+      let shadowY = Math.min(
+        ymaxAdjusted,
+        Math.max(yminAdjusted, newShadowPointJXG.Y()),
+      );
+      newShadowPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [
+        shadowX,
+        shadowY,
+      ]);
+
+      newPointJXG.coords.setCoordinates(
+        JXG.COORDS_BY_USER,
+        lastPositionFromCore.current,
+      );
       board.updateInfobox(newPointJXG);
+    });
 
-      //Protect against very small unintended drags
-      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
-        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
-        dragged.current = true;
+    newShadowPointJXG.on("keydown", function (e) {
+      if (e.key === "Enter") {
+        if (dragged.current) {
+          callAction({
+            action: actions.movePoint,
+            args: {
+              x: calculatedX.current,
+              y: calculatedY.current,
+            },
+          });
+          dragged.current = false;
+        }
+
+        if (switchable.current) {
+          callAction({
+            action: actions.switchPoint,
+          });
+          callAction({
+            action: actions.pointClicked,
+            args: { name }, // send name so get original name if adapted
+          });
+        } else {
+          callAction({
+            action: actions.pointClicked,
+            args: { name }, // send name so get original name if adapted
+          });
+        }
       }
-
     });
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
-    previousLabelPosition.current = SVs.labelPosition;
     previousWithLabel.current = withlabel;
   }
 
-
+  function boardMoveHandler(e) {
+    if (pointerIsDown.current) {
+      //Protect against very small unintended move
+      if (
+        Math.abs(e.x - pointerAtDown.current[0]) > 0.1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > 0.1
+      ) {
+        pointerMovedSinceDown.current = true;
+      }
+    }
+  }
 
   if (board) {
+    lastPositionFromCore.current = [...SVs.numericalXs];
+    offGraphIndicator.current = [0, 0];
+
+    if (!SVs.hideOffGraphIndicator) {
+      let { needIndicator, indicatorCoords, indicatorSides } =
+        characterizeOffGraphPoint(lastPositionFromCore.current, board);
+
+      if (needIndicator) {
+        lastPositionFromCore.current = indicatorCoords;
+        offGraphIndicator.current = indicatorSides;
+      }
+    }
+
+    // determine if near edge of graph
+    // which will be used to alter label position so that it is visible
+    nearEdgeOfGraph.current = [0, 0];
+
+    let flippedX = false;
+    let flippedY = false;
+
+    let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+
+    if (xmax < xmin) {
+      flippedX = true;
+      [xmax, xmin] = [xmin, xmax];
+    }
+    if (ymax < ymin) {
+      flippedY = true;
+      [ymax, ymin] = [ymin, ymax];
+    }
+
+    let xscale = xmax - xmin;
+    let yscale = ymax - ymin;
+
+    // TODO: use a measure of label width rather than 0.05 for x
+    let xminAdjusted = xmin + xscale * 0.05;
+    let xmaxAdjusted = xmax - xscale * 0.05;
+    let yminAdjusted = ymin + yscale * 0.05;
+    let ymaxAdjusted = ymax - yscale * 0.05;
+
+    if (lastPositionFromCore.current[0] < xminAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
+    } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
+      nearEdgeOfGraph.current[0] = flippedX ? -1 : 1;
+    }
+
+    if (lastPositionFromCore.current[1] < yminAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? 1 : -1;
+    } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
+      nearEdgeOfGraph.current[1] = flippedY ? -1 : 1;
+    }
+
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
       //if values update
-      let fillColor = useOpenSymbol ? "var(--canvas)" : SVs.selectedStyle.markerColor;
-      let strokeColor = useOpenSymbol ? SVs.selectedStyle.markerColor : "none";
-      
+      let markerColor =
+        darkMode === "dark"
+          ? SVs.selectedStyle.markerColorDarkMode
+          : SVs.selectedStyle.markerColor;
+      let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
+      let strokeColor = useOpenSymbol ? markerColor : "none";
+
       if (pointJXG.current.visProp.fillcolor !== fillColor) {
         pointJXG.current.visProp.fillcolor = fillColor;
       }
@@ -276,18 +487,22 @@ export default React.memo(function Point(props) {
       // TODO: is this a problem for which we should find a general fix?
 
       //if coordinates update
-      let x = SVs.numericalXs?.[0];
-      let y = SVs.numericalXs?.[1];
+      let x = lastPositionFromCore.current?.[0];
+      let y = lastPositionFromCore.current?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
       if (!dragged.current) {
-        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [
+          x,
+          y,
+        ]);
       }
 
       let visible = !SVs.hidden;
 
       if (Number.isFinite(x) && Number.isFinite(y)) {
-        let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
+        let actuallyChangedVisibility =
+          pointJXG.current.visProp["visible"] !== visible;
         pointJXG.current.visProp["visible"] = visible;
         pointJXG.current.visPropCalc["visible"] = visible;
         shadowPointJXG.current.visProp["visible"] = visible;
@@ -296,8 +511,8 @@ export default React.memo(function Point(props) {
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
-          pointJXG.current.setAttribute({ visible: visible })
-          shadowPointJXG.current.setAttribute({ visible: visible })
+          pointJXG.current.setAttribute({ visible: visible });
+          shadowPointJXG.current.setAttribute({ visible: visible });
         }
       } else {
         pointJXG.current.visProp["visible"] = false;
@@ -307,18 +522,18 @@ export default React.memo(function Point(props) {
         // pointJXG.current.setAttribute({visible: false})
       }
 
-      let layer = 10 * SVs.layer + 9;
+      let layer = 10 * SVs.layer + POINT_LAYER_OFFSET;
       let layerChanged = pointJXG.current.visProp.layer !== layer;
 
       if (layerChanged) {
         pointJXG.current.setAttribute({ layer });
+        shadowPointJXG.current.setAttribute({ layer });
       }
 
-      let fixed = !SVs.draggable || SVs.fixed;
-
-      pointJXG.current.visProp.highlight = !fixed;
-      shadowPointJXG.current.visProp.highlight = !fixed;
-      shadowPointJXG.current.visProp.fixed = fixed;
+      pointJXG.current.visProp.highlight = !fixLocation.current;
+      shadowPointJXG.current.visProp.highlight = !fixLocation.current;
+      shadowPointJXG.current.visProp.fixed = fixed.current;
+      shadowPointJXG.current.isDraggable = !fixLocation.current;
 
       if (pointJXG.current.visProp.strokecolor !== strokeColor) {
         pointJXG.current.visProp.strokecolor = strokeColor;
@@ -326,32 +541,44 @@ export default React.memo(function Point(props) {
         pointJXG.current.visProp.fillColor = fillColor;
         shadowPointJXG.current.visProp.fillColor = fillColor;
       }
-      if (pointJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
-        pointJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
-        pointJXG.current.visProp.fillopacity = SVs.selectedStyle.lineOpacity;
+      if (
+        pointJXG.current.visProp.strokeopacity !==
+        SVs.selectedStyle.markerOpacity
+      ) {
+        pointJXG.current.visProp.strokeopacity =
+          SVs.selectedStyle.markerOpacity;
+        pointJXG.current.visProp.fillopacity = SVs.selectedStyle.markerOpacity;
       }
 
-      let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
+      let newFace = normalizePointStyle(
+        SVs.selectedStyle.markerStyle,
+        offGraphIndicator.current,
+      );
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({ face: newFace });
         shadowPointJXG.current.setAttribute({ face: newFace });
       }
-      let newSize = normalizeSize(SVs.selectedStyle.markerSize, SVs.selectedStyle.markerStyle);
+      let newSize = normalizePointSize(
+        SVs.selectedStyle.markerSize,
+        SVs.selectedStyle.markerStyle,
+      );
       if (pointJXG.current.visProp.size !== newSize) {
         pointJXG.current.setAttribute({ size: newSize });
         shadowPointJXG.current.setAttribute({ size: newSize });
       }
 
-      if (fixed) {
+      if (
+        fixLocation.current ||
+        offGraphIndicator.current[0] ||
+        offGraphIndicator.current[1]
+      ) {
         pointJXG.current.visProp.showinfobox = false;
+        board.displayInfobox(false);
       } else {
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
       }
 
-      //Update only when the change was initiated with this point
-      if (sourceOfUpdate.sourceInformation &&
-        name in sourceOfUpdate.sourceInformation
-      ) {
+      if (shadowPointJXG.current.highlighted) {
         board.updateInfobox(pointJXG.current);
       }
 
@@ -366,56 +593,28 @@ export default React.memo(function Point(props) {
       if (pointJXG.current.hasLabel) {
         pointJXG.current.label.needsUpdate = true;
         if (SVs.applyStyleToLabel) {
-          pointJXG.current.label.visProp.strokecolor = SVs.selectedStyle.markerColor;
+          pointJXG.current.label.visProp.strokecolor = markerColor;
         } else {
-          pointJXG.current.label.visProp.strokecolor = "#000000";
+          pointJXG.current.label.visProp.strokecolor = "var(--canvastext)";
         }
-        if (SVs.labelPosition !== previousLabelPosition.current) {
-          let anchorx, anchory, offset;
-          if (SVs.labelPosition === "upperright") {
-            offset = [5, 5];
-            anchorx = "left";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "upperleft") {
-            offset = [-5, 5];
-            anchorx = "right";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "lowerright") {
-            offset = [5, -5];
-            anchorx = "left";
-            anchory = "top";
-          } else if (SVs.labelPosition === "lowerleft") {
-            offset = [-5, -5];
-            anchorx = "right";
-            anchory = "top";
-          } else if (SVs.labelPosition === "top") {
-            offset = [0, 10];
-            anchorx = "middle";
-            anchory = "bottom";
-          } else if (SVs.labelPosition === "bottom") {
-            offset = [0, -10];
-            anchorx = "middle";
-            anchory = "top";
-          } else if (SVs.labelPosition === "left") {
-            offset = [-10, 0];
-            anchorx = "right";
-            anchory = "middle";
-          } else {
-            // labelPosition === right
-            offset = [10, 0];
-            anchorx = "left";
-            anchory = "middle";
-          }
+
+        let labelPosition = adjustPointLabelPosition(
+          SVs.labelPosition,
+          nearEdgeOfGraph.current,
+        );
+
+        if (labelPosition !== previousLabelPosition.current) {
+          let { offset, anchorx, anchory } =
+            calculatePointLabelAnchor(labelPosition);
           pointJXG.current.label.visProp.anchorx = anchorx;
           pointJXG.current.label.visProp.anchory = anchory;
           pointJXG.current.label.visProp.offset = offset;
-          previousLabelPosition.current = SVs.labelPosition;
+          previousLabelPosition.current = labelPosition;
           pointJXG.current.label.fullUpdate();
         } else {
           pointJXG.current.label.update();
         }
       }
-
 
       pointJXG.current.needsUpdate = true;
       pointJXG.current.update();
@@ -424,7 +623,7 @@ export default React.memo(function Point(props) {
       board.updateRenderer();
     }
 
-    return <a name={id} />
+    return <a name={id} />;
   }
 
   // not in board
@@ -436,26 +635,15 @@ export default React.memo(function Point(props) {
   //Render text coordinates when outside of graph
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-
-
-})
-
-function normalizeSize(size, style) {
-  if (style === "diamond") {
-    return size * 1.4;
-  } else if (style === "plus") {
-    return size * 1.2;
-  } else if (style === "square") {
-      return size * 1.1;
-  } else if (style.substring(0,8) === "triangle") {
-    return size * 1.5;
-  } else return size;
-}
-function normalizeStyle(style) {
-  if (style === "triangle") {
-    return "triangleup";
-  } else {
-    return style;
-  }
-}
+  let style = textRendererStyle(darkMode, SVs.selectedStyle);
+  return (
+    <>
+      <a name={id} />
+      <span id={id} style={style}>
+        <MathJax hideUntilTypeset={"first"} inline dynamic>
+          {mathJaxify}
+        </MathJax>
+      </span>
+    </>
+  );
+});

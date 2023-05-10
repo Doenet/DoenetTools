@@ -1,9 +1,8 @@
-import ConstraintComponent from './abstract/ConstraintComponent';
-import { findFiniteNumericalValue } from '../utils/math';
+import ConstraintComponent from "./abstract/ConstraintComponent";
+import { findFiniteNumericalValue } from "../utils/math";
 
 export default class ConstrainToGraph extends ConstraintComponent {
   static componentType = "constrainToGraph";
-
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -16,19 +15,18 @@ export default class ConstrainToGraph extends ConstraintComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { independentComponentConstraints: true } })
-    }
-
+      definition: () => ({
+        setValue: { independentComponentConstraints: true },
+      }),
+    };
 
     // Since state variable independentComponentConstraints is true,
-    // expect function applyComponentConstraint to be called with 
+    // expect function applyComponentConstraint to be called with
     // a single component value as the object, for example,  {x1: 13}
 
     // use the convention of x1, x2, and x3 for variable names
@@ -40,31 +38,20 @@ export default class ConstrainToGraph extends ConstraintComponent {
         constraintAncestor: {
           dependencyType: "ancestor",
           componentType: "constraints",
-          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"],
         },
         buffer: {
           dependencyType: "stateVariable",
-          variableName: "buffer"
+          variableName: "buffer",
         },
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
-        }
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyComponentConstraint: function ({ variables, scales }) {
-
-            let ancestor;
-            if (dependencyValues.constraintAncestor !== null &&
-              dependencyValues.constraintAncestor.stateValues.graphXmin !== null) {
-              ancestor = "constraints";
-            } else if (dependencyValues.graphAncestor !== null &&
-              dependencyValues.graphAncestor.stateValues.xmin !== null) {
-              ancestor = "graph";
-            }
-            if (!ancestor) {
+          applyComponentConstraint: function (variables) {
+            if (
+              dependencyValues.constraintAncestor === null ||
+              dependencyValues.constraintAncestor.stateValues.graphXmin === null
+            ) {
               return {};
             }
 
@@ -78,15 +65,10 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let xmin, xmax;
-
-              if (ancestor === "constraints") {
-                xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
-                xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
-              } else {
-                xmin = dependencyValues.graphAncestor.stateValues.xmin;
-                xmax = dependencyValues.graphAncestor.stateValues.xmax;
-              }
+              let xmin =
+                dependencyValues.constraintAncestor.stateValues.graphXmin;
+              let xmax =
+                dependencyValues.constraintAncestor.stateValues.graphXmax;
 
               if (!(Number.isFinite(xmin) && Number.isFinite(xmax))) {
                 return {};
@@ -101,13 +83,15 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 upperBound -= bufferAdjust;
               }
 
-              let x1constrained = Math.max(lowerBound, Math.min(upperBound, x1))
+              let x1constrained = Math.max(
+                lowerBound,
+                Math.min(upperBound, x1),
+              );
               return {
                 constrained: true,
-                variables: { x1: x1constrained }
-              }
+                variables: { x1: x1constrained },
+              };
             }
-
 
             // if given the value of x2, apply to constraint to x2
             // and ignore any other arguments (which shouldn't be given)
@@ -118,15 +102,10 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let ymin, ymax;
-
-              if (ancestor === "constraints") {
-                ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
-                ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
-              } else {
-                ymin = dependencyValues.graphAncestor.stateValues.ymin;
-                ymax = dependencyValues.graphAncestor.stateValues.ymax;
-              }
+              let ymin =
+                dependencyValues.constraintAncestor.stateValues.graphYmin;
+              let ymax =
+                dependencyValues.constraintAncestor.stateValues.graphYmax;
 
               if (!(Number.isFinite(ymin) && Number.isFinite(ymax))) {
                 return {};
@@ -141,24 +120,23 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 upperBound -= bufferAdjust;
               }
 
-              let x2constrained = Math.max(lowerBound, Math.min(upperBound, x2))
+              let x2constrained = Math.max(
+                lowerBound,
+                Math.min(upperBound, x2),
+              );
               return {
                 constrained: true,
-                variables: { x2: x2constrained }
-              }
+                variables: { x2: x2constrained },
+              };
             }
 
             // if didn't get x1, or x2 as argument, don't constrain anything
             return {};
-
-          }
-        }
-      })
-    }
-
+          },
+        },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
-
-
 }

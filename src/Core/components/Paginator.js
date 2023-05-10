@@ -1,6 +1,14 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export class Paginator extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      setPage: this.setPage.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "paginator";
   static rendererType = "containerBlock";
   static renderChildren = true;
@@ -12,25 +20,21 @@ export class Paginator extends BlockComponent {
       createComponentOfType: "integer",
       createStateVariable: "initialPage",
       defaultValue: 1,
-    }
+    };
     return attributes;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-  
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
 
     stateVariableDefinitions.nPages = {
       public: true,
@@ -40,16 +44,15 @@ export class Paginator extends BlockComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childGroups: ["anything"]
-        }
+          childGroups: ["anything"],
+        },
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { nPages: dependencyValues.children.length }
-        }
-      }
-
-    }
+          setValue: { nPages: dependencyValues.children.length },
+        };
+      },
+    };
 
     stateVariableDefinitions.currentPage = {
       public: true,
@@ -60,15 +63,14 @@ export class Paginator extends BlockComponent {
       returnDependencies: () => ({
         initialPage: {
           dependencyType: "stateVariable",
-          variableName: "initialPage"
+          variableName: "initialPage",
         },
         nPages: {
           dependencyType: "stateVariable",
-          variableName: "nPages"
-        }
+          variableName: "nPages",
+        },
       }),
       definition({ dependencyValues }) {
-
         return {
           useEssentialOrDefaultValue: {
             currentPage: {
@@ -77,78 +79,99 @@ export class Paginator extends BlockComponent {
                 if (!Number.isInteger(initialPageNumber)) {
                   return 1;
                 } else {
-                  return Math.max(1, Math.min(dependencyValues.nPages, initialPageNumber));
+                  return Math.max(
+                    1,
+                    Math.min(dependencyValues.nPages, initialPageNumber),
+                  );
                 }
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        };
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues, sourceInformation = {} }) {
-
+      async inverseDefinition({
+        desiredStateVariableValues,
+        stateValues,
+        sourceDetails = {},
+      }) {
         // allow change only from setPage action
-        if (!sourceInformation.fromSetPage) {
-          return { success: false }
+        if (!sourceDetails.fromSetPage) {
+          return { success: false };
         }
 
         let desiredPageNumber = Number(desiredStateVariableValues.currentPage);
         if (!Number.isInteger(desiredPageNumber)) {
-          return { success: false }
+          return { success: false };
         }
 
-        desiredPageNumber = Math.max(1, Math.min(await stateValues.nPages, desiredPageNumber))
+        desiredPageNumber = Math.max(
+          1,
+          Math.min(await stateValues.nPages, desiredPageNumber),
+        );
 
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "currentPage",
-            value: desiredPageNumber
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "currentPage",
+              value: desiredPageNumber,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.childIndicesToRender = {
       returnDependencies: () => ({
         currentPage: {
           dependencyType: "stateVariable",
-          variableName: "currentPage"
-        }
+          variableName: "currentPage",
+        },
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { childIndicesToRender: [dependencyValues.currentPage - 1] }
-        }
+          setValue: {
+            childIndicesToRender: [dependencyValues.currentPage - 1],
+          },
+        };
       },
       markStale: () => ({ updateRenderedChildren: true }),
-    }
+    };
 
     return stateVariableDefinitions;
   }
 
-
-
-  async setPage({ number, actionId }) {
-
+  async setPage({
+    number,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     if (!Number.isInteger(number)) {
       this.coreFunctions.resolveAction({ actionId });
       return;
     }
 
-    let pageNumber = Math.max(1, Math.min(await this.stateValues.nPages, number));
+    let pageNumber = Math.max(
+      1,
+      Math.min(await this.stateValues.nPages, number),
+    );
 
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "currentPage",
-      value: pageNumber,
-      sourceInformation: { fromSetPage: true }
-    }];
-
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "currentPage",
+        value: pageNumber,
+        sourceDetails: { fromSetPage: true },
+      },
+    ];
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "selected",
         object: {
@@ -158,13 +181,10 @@ export class Paginator extends BlockComponent {
         result: {
           response: pageNumber,
           responseText: pageNumber.toString(),
-        }
+        },
       },
     });
-
-
   }
-
 
   recordVisibilityChange({ isVisible, actionId }) {
     this.coreFunctions.requestRecordEvent({
@@ -173,16 +193,10 @@ export class Paginator extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    setPage: this.setPage.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  };
-
 }
 
 export class PaginatorControls extends BlockComponent {
@@ -192,21 +206,21 @@ export class PaginatorControls extends BlockComponent {
     this.externalActions = {};
 
     //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.externalActions, 'setPage', {
+    Object.defineProperty(this.externalActions, "setPage", {
       enumerable: true,
       get: async function () {
-        let paginatorComponentName = await this.stateValues.paginatorComponentName;
+        let paginatorComponentName = await this.stateValues
+          .paginatorComponentName;
         if (paginatorComponentName) {
           return {
             componentName: paginatorComponentName,
             actionName: "setPage",
-          }
+          };
         } else {
           return;
         }
-      }.bind(this)
+      }.bind(this),
     });
-
   }
   static componentType = "paginatorControls";
   static renderChildren = true;
@@ -220,114 +234,105 @@ export class PaginatorControls extends BlockComponent {
       defaultValue: "Previous",
       forRenderer: true,
       public: true,
-    }
+    };
     attributes.nextLabel = {
       createComponentOfType: "text",
       createStateVariable: "nextLabel",
       defaultValue: "Next",
       forRenderer: true,
       public: true,
-    }
+    };
     attributes.pageLabel = {
       createComponentOfType: "text",
       createStateVariable: "pageLabel",
       defaultValue: "Page",
       forRenderer: true,
       public: true,
-    }
+    };
     attributes.paginator = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "paginator",
-      defaultValue: null,
-    }
+      createTargetComponentNames: true,
+    };
 
     return attributes;
-
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
     stateVariableDefinitions.paginatorComponentName = {
-      stateVariablesDeterminingDependencies: ["paginator"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.paginator) {
-          return {
-            paginatorComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.paginator
-            }
-          }
-        } else {
-          return {}
-        }
-      },
+      returnDependencies: () => ({
+        paginator: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "paginator",
+        },
+      }),
       definition({ dependencyValues }) {
-        return { setValue: { paginatorComponentName: dependencyValues.paginatorComponentName } }
-      }
-    }
+        let paginatorComponentName;
+
+        if (dependencyValues.paginator?.length === 1) {
+          paginatorComponentName = dependencyValues.paginator[0].absoluteName;
+        } else {
+          paginatorComponentName = null;
+        }
+
+        return { setValue: { paginatorComponentName } };
+      },
+    };
 
     stateVariableDefinitions.currentPage = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
         if (!stateValues.paginatorComponentName) {
-          return {}
+          return {};
         } else {
           return {
             paginatorPage: {
               dependencyType: "stateVariable",
               componentName: stateValues.paginatorComponentName,
-              variableName: "currentPage"
-            }
-          }
+              variableName: "currentPage",
+            },
+          };
         }
       },
       definition({ dependencyValues }) {
         if ("paginatorPage" in dependencyValues) {
           return {
-            setValue: { currentPage: dependencyValues.paginatorPage }
-          }
+            setValue: { currentPage: dependencyValues.paginatorPage },
+          };
         } else {
-          return { setValue: { currentPage: 1 } }
+          return { setValue: { currentPage: 1 } };
         }
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.nPages = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
         if (!stateValues.paginatorComponentName) {
-          return {}
+          return {};
         } else {
           return {
             paginatorNPages: {
               dependencyType: "stateVariable",
               componentName: stateValues.paginatorComponentName,
-              variableName: "nPages"
-            }
-          }
+              variableName: "nPages",
+            },
+          };
         }
       },
       definition({ dependencyValues }) {
         if ("paginatorNPages" in dependencyValues) {
           return {
-            setValue: { nPages: dependencyValues.paginatorNPages }
-          }
+            setValue: { nPages: dependencyValues.paginatorNPages },
+          };
         } else {
-          return { setValue: { nPages: 1 } }
+          return { setValue: { nPages: 1 } };
         }
-      }
-    }
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
-
-
 }

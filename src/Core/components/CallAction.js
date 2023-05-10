@@ -1,9 +1,30 @@
-import { deepClone } from '../utils/deepFunctions';
-import { returnLabelStateVariableDefinitions } from '../utils/label';
-import InlineComponent from './abstract/InlineComponent';
+import { deepClone } from "../utils/deepFunctions";
+import {
+  moveGraphicalObjectWithAnchorAction,
+  returnAnchorAttributes,
+  returnAnchorStateVariableDefinition,
+} from "../utils/graphical";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
+import {
+  addStandardTriggeringStateVariableDefinitions,
+  returnStandardTriggeringAttributes,
+} from "../utils/triggering";
+import InlineComponent from "./abstract/InlineComponent";
+import me from "math-expressions";
 
 export default class CallAction extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      callAction: this.callAction.bind(this),
+      callActionIfTriggerNewlyTrue:
+        this.callActionIfTriggerNewlyTrue.bind(this),
+      moveButton: this.moveButton.bind(this),
+    });
+  }
   static componentType = "callAction";
+  static rendererType = "button";
 
   static acceptTarget = true;
 
@@ -11,18 +32,16 @@ export default class CallAction extends InlineComponent {
     if (serializedComponent.children === undefined) {
       return [];
     } else {
-
       let keepSerializedInds = [];
       for (let [ind, child] of serializedComponent.children.entries()) {
         if (!componentInfoObjects.componentIsSpecifiedType(child, "label")) {
-          keepSerializedInds.push(ind)
+          keepSerializedInds.push(ind);
         }
       }
 
       return keepSerializedInds;
     }
   }
-
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -43,20 +62,21 @@ export default class CallAction extends InlineComponent {
       public: true,
     };
 
-    attributes.triggerWhen = {
+    attributes.draggable = {
       createComponentOfType: "boolean",
-      createStateVariable: "triggerWhen",
-      defaultValue: false,
-      triggerActionOnChange: "callActionIfTriggerNewlyTrue"
-    }
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
 
-    attributes.triggerWith = {
-      createPrimitiveOfType: "string"
-    }
+    Object.assign(attributes, returnAnchorAttributes());
 
-    attributes.triggerWhenObjectsClicked = {
-      createPrimitiveOfType: "string"
-    }
+    let triggerAttributes = returnStandardTriggeringAttributes(
+      "callActionIfTriggerNewlyTrue",
+    );
+
+    Object.assign(attributes, triggerAttributes);
 
     attributes.numbers = {
       createComponentOfType: "numberList",
@@ -66,237 +86,98 @@ export default class CallAction extends InlineComponent {
       createComponentOfType: "number",
     };
 
-
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "labels",
-      componentTypes: ["label"]
-    }]
-
+    return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let labelDefinitions = returnLabelStateVariableDefinitions();
+    addStandardTriggeringStateVariableDefinitions(
+      stateVariableDefinitions,
+      "callAction",
+    );
 
+    let labelDefinitions = returnLabelStateVariableDefinitions();
     Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    let anchorDefinition = returnAnchorStateVariableDefinition();
+    Object.assign(stateVariableDefinitions, anchorDefinition);
+
+    stateVariableDefinitions.clickAction = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { clickAction: "callAction" } }),
+    };
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
         target: {
           dependencyType: "doenetAttribute",
-          attributeName: "target"
-        }
+          attributeName: "target",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { target: dependencyValues.target }
-      })
-    }
+        setValue: { target: dependencyValues.target },
+      }),
+    };
 
     stateVariableDefinitions.targetComponent = {
       returnDependencies() {
         return {
           targetComponent: {
             dependencyType: "targetComponent",
-          }
-        }
+          },
+        };
       },
       definition: function ({ dependencyValues }) {
-
         let targetComponent = null;
         if (dependencyValues.targetComponent) {
-          targetComponent = dependencyValues.targetComponent
+          targetComponent = dependencyValues.targetComponent;
         }
 
         return {
-          setValue: { targetComponent }
-        }
+          setValue: { targetComponent },
+        };
       },
     };
-
-
 
     stateVariableDefinitions.targetName = {
       returnDependencies: () => ({
         targetComponent: {
           dependencyType: "stateVariable",
-          variableName: "targetComponent"
-        }
+          variableName: "targetComponent",
+        },
       }),
       definition({ dependencyValues }) {
-
         let targetName = null;
         if (dependencyValues.targetComponent) {
-          targetName = dependencyValues.targetComponent.componentName
+          targetName = dependencyValues.targetComponent.componentName;
         }
         return { setValue: { targetName } };
       },
-    }
-
-
-    stateVariableDefinitions.insideTriggerSet = {
-      returnDependencies: () => ({
-        parentTriggerSet: {
-          dependencyType: "parentStateVariable",
-          parentComponentType: "triggerSet",
-          variableName: "updateValueAndActionsToTrigger"
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            insideTriggerSet: dependencyValues.parentTriggerSet !== null
-          }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWith = {
-      returnDependencies: () => ({
-        triggerWith: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWith"
-        },
-        triggerWhenObjectsClicked: {
-          dependencyType: "attributePrimitive",
-          attributeName: "triggerWhenObjectsClicked"
-        },
-        triggerWhen: {
-          dependencyType: "attributeComponent",
-          attributeName: "triggerWhen"
-        },
-        insideTriggerSet: {
-          dependencyType: "stateVariable",
-          variableName: "insideTriggerSet"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
-          return { setValue: { triggerWith: null } }
-        } else {
-
-          let triggerWith = [];
-          if (dependencyValues.triggerWith !== null) {
-            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target })
-            }
-          }
-          if (dependencyValues.triggerWhenObjectsClicked !== null) {
-            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
-              triggerWith.push({ target, triggeringAction: "click" })
-            }
-          }
-
-          if (triggerWith.length === 0) {
-            triggerWith = null;
-          }
-
-          return { setValue: { triggerWith } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithTargetIds = {
-      chainActionOnActionOfStateVariableTargets: {
-        triggeredAction: "callAction"
-      },
-      stateVariablesDeterminingDependencies: ["triggerWith"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          triggerWith: {
-            dependencyType: "stateVariable",
-            variableName: "triggerWith"
-          }
-        };
-        if (stateValues.triggerWith) {
-          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
-
-            dependencies[`triggerWithTargetComponentName${ind}`] = {
-              dependencyType: "expandTargetName",
-              target: targetObj.target
-            }
-          }
-        }
-        return dependencies;
-      },
-      definition({ dependencyValues }) {
-        let triggerWithTargetIds = [];
-
-        if (dependencyValues.triggerWith) {
-          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
-
-            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
-
-            if (targetObj.triggeringAction) {
-              id += "|" + targetObj.triggeringAction;
-            };
-
-            if (!triggerWithTargetIds.includes(id)) {
-              triggerWithTargetIds.push(id);
-            }
-
-          }
-        }
-
-        return { setValue: { triggerWithTargetIds } }
-      },
-      markStale() {
-        return { updateActionChaining: true }
-      }
-    }
-
-
-    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
-    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
-
-    stateVariableDefinitions.hidden.returnDependencies = function (args) {
-      let dependencies = originalHiddenReturnDependencies(args);
-      dependencies.triggerWhen = {
-        dependencyType: "attributeComponent",
-        attributeName: "triggerWhen"
-      };
-      dependencies.triggerWith = {
-        dependencyType: "stateVariable",
-        variableName: "triggerWith"
-      }
-      dependencies.insideTriggerSet = {
-        dependencyType: "stateVariable",
-        variableName: "insideTriggerSet"
-      }
-      return dependencies;
-    }
-
-    stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen ||
-        args.dependencyValues.triggerWith ||
-        args.dependencyValues.insideTriggerSet
-      ) {
-        return { setValue: { hidden: true } }
-      } else {
-        return originalHiddenDefinition(args);
-      }
-    }
+    };
 
     return stateVariableDefinitions;
-
   }
 
-
-  async callAction({ actionId }) {
-
+  async callAction({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let targetName = await this.stateValues.targetName;
     let actionName = await this.stateValues.actionName;
     if (targetName !== null && actionName !== null) {
-
-      let args = {};
+      let args = { sourceInformation, skipRendererUpdate: true };
       if (this.serializedChildren.length > 0) {
         args.serializedComponents = deepClone(this.serializedChildren);
       }
@@ -304,7 +185,8 @@ export default class CallAction extends InlineComponent {
         args.number = await this.attributes.number.component.stateValues.value;
       }
       if (this.attributes.numbers) {
-        args.numbers = await this.attributes.numbers.component.stateValues.numbers;
+        args.numbers = await this.attributes.numbers.component.stateValues
+          .numbers;
       }
 
       if (actionId) {
@@ -323,24 +205,30 @@ export default class CallAction extends InlineComponent {
           },
         },
         caseInsensitiveMatch: true,
-      })
+      });
 
       await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
       });
-
-
     } else {
       this.coreFunctions.resolveAction({ actionId });
     }
-
   }
 
-  async callActionIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
+  async callActionIfTriggerNewlyTrue({
+    stateValues,
+    previousValues,
+    actionId,
+  }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
-    if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
-      !await this.stateValues.insideTriggerSet
+    if (
+      stateValues.triggerWhen &&
+      previousValues.triggerWhen === false &&
+      !(await this.stateValues.insideTriggerSet)
     ) {
       return await this.callAction({ actionId });
     } else {
@@ -348,8 +236,26 @@ export default class CallAction extends InlineComponent {
     }
   }
 
-  actions = {
-    callAction: this.callAction.bind(this),
-    callActionIfTriggerNewlyTrue: this.callActionIfTriggerNewlyTrue.bind(this),
-  };
+  async moveButton({
+    x,
+    y,
+    z,
+    transient,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    return await moveGraphicalObjectWithAnchorAction({
+      x,
+      y,
+      z,
+      transient,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+      componentName: this.componentName,
+      componentType: this.componentType,
+      coreFunctions: this.coreFunctions,
+    });
+  }
 }

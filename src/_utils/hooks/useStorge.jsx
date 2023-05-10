@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from "react";
 
 export function useLocalStorage(key, defaultValue) {
   return useStorage(key, defaultValue, window.localStorage);
@@ -13,7 +13,7 @@ function useStorage(key, defaultValue, storageObject) {
     const jsonValue = storageObject.getItem(key);
     if (jsonValue != null) return JSON.parse(jsonValue);
 
-    if (typeof defaultValue === 'function') {
+    if (typeof defaultValue === "function") {
       return defaultValue();
     } else {
       return defaultValue;

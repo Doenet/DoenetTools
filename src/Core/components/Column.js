@@ -1,4 +1,4 @@
-import BaseComponent from './abstract/BaseComponent';
+import BaseComponent from "./abstract/BaseComponent";
 
 export default class Column extends BaseComponent {
   static componentType = "column";
@@ -17,14 +17,13 @@ export default class Column extends BaseComponent {
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "cells",
-      componentTypes: ["cell"]
-    }]
-
+    return [
+      {
+        group: "cells",
+        componentTypes: ["cell"],
+      },
+    ];
   }
-
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -34,17 +33,17 @@ export default class Column extends BaseComponent {
         cellChildren: {
           dependencyType: "child",
           childGroups: ["cells"],
-          variableNames: ["rowNum"]
-        }
+          variableNames: ["rowNum"],
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            prescribedCellsWithRowNum: dependencyValues.cellChildren
-          }
-        }
-      }
-    }
+            prescribedCellsWithRowNum: dependencyValues.cellChildren,
+          },
+        };
+      },
+    };
 
     // stateVariableDefinitions.cellMaths = {
     //   isArray: true,
@@ -104,7 +103,7 @@ export default class Column extends BaseComponent {
     //         return { fresh: { cellMaths: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellMaths has, 
+    //         // (we don't know here how many elements cellMaths has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellMaths: true } }
     //       }
@@ -290,7 +289,7 @@ export default class Column extends BaseComponent {
     //         return { fresh: { cellNumbers: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellNumbers has, 
+    //         // (we don't know here how many elements cellNumbers has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellNumbers: true } }
     //       }
@@ -476,7 +475,7 @@ export default class Column extends BaseComponent {
     //         return { fresh: { cellTexts: false } }
     //       } else {
     //         // asked for entire array, but it has some fresh elements
-    //         // (we don't know here how many elements cellTexts has, 
+    //         // (we don't know here how many elements cellTexts has,
     //         // so can't determine if completely fresh)
     //         return { partiallyFresh: { cellTexts: true } }
     //       }
@@ -606,5 +605,4 @@ export default class Column extends BaseComponent {
 
     return stateVariableDefinitions;
   }
-
 }

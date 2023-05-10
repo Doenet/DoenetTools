@@ -1,50 +1,55 @@
-import BlockComponent from './abstract/BlockComponent';
-import me from 'math-expressions';
-import { roundForDisplay } from '../utils/math';
+import BlockComponent from "./abstract/BlockComponent";
+import me from "math-expressions";
+import { roundForDisplay } from "../utils/math";
 
 export default class SummaryStatistics extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "summaryStatistics";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
     attributes.source = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "source",
-      defaultValue: null,
-    }
+      createTargetComponentNames: true,
+    };
 
     attributes.column = {
       createComponentOfType: "text",
       createStateVariable: "desiredColumn",
       defaultValue: null,
-    }
+    };
 
     attributes.statisticsToDisplay = {
       createComponentOfType: "textList",
       createStateVariable: "statisticsToDisplayPrelim",
       defaultValue: ["default"],
-    }
+    };
 
     // TODO: enable feature where compute summary statistics for each value of a column
     attributes.byCategoryColumn = {
       createComponentOfType: "text",
       createStateVariable: "byCategoryColumn",
       defaultValue: null,
-      public: true
-    }
+      public: true,
+    };
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-    }
+    };
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
+      valueForTrue: 1e-14,
       valueForFalse: 0,
       defaultValue: 0,
       public: true,
-    }
+    };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
       createStateVariable: "displayDecimals",
@@ -55,9 +60,7 @@ export default class SummaryStatistics extends BlockComponent {
     return attributes;
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.displayDigits = {
@@ -71,26 +74,30 @@ export default class SummaryStatistics extends BlockComponent {
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-
         if (dependencyValues.displayDigitsAttr !== null) {
-
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault =
+            dependencyValues.displayDecimalsAttr === null ||
+            usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          if (
+            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
+          ) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+            let shadowDepthDisplayDigits =
+              dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals =
+              dependencyValues.displayDecimalsAttr.shadowDepth;
 
             if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
               displayDigitsAttrUsedDefault = true;
@@ -101,23 +108,24 @@ export default class SummaryStatistics extends BlockComponent {
             return {
               useEssentialOrDefaultValue: {
                 displayDigits: {
-                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
-                }
-              }
-            }
+                  defaultValue:
+                    dependencyValues.displayDigitsAttr.stateValues.value,
+                },
+              },
+            };
           } else {
             return {
               setValue: {
-                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
-              }
-            }
+                displayDigits:
+                  dependencyValues.displayDigitsAttr.stateValues.value,
+              },
+            };
           }
         }
 
-        return { useEssentialOrDefaultValue: { displayDigits: true } }
-
-      }
-    }
+        return { useEssentialOrDefaultValue: { displayDigits: true } };
+      },
+    };
 
     stateVariableDefinitions.statisticsToDisplay = {
       public: true,
@@ -131,15 +139,38 @@ export default class SummaryStatistics extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-
-        let options = ["mean", "stdev", "variance", "stderr", "count", "minimum", "quartile1", "median", "quartile3", "maximum", "range", "sum"];
+        let options = [
+          "mean",
+          "stdev",
+          "variance",
+          "stderr",
+          "count",
+          "minimum",
+          "quartile1",
+          "median",
+          "quartile3",
+          "maximum",
+          "range",
+          "sum",
+        ];
 
         let statisticsToDisplay = [];
 
-        let desiredStats = dependencyValues.statisticsToDisplayPrelim.map(x => x.toLowerCase());
+        let desiredStats = dependencyValues.statisticsToDisplayPrelim.map((x) =>
+          x.toLowerCase(),
+        );
 
         if (desiredStats.includes("default")) {
-          statisticsToDisplay = ["mean", "stdev", "count", "minimum", "quartile1", "median", "quartile3", "maximum"];
+          statisticsToDisplay = [
+            "mean",
+            "stdev",
+            "count",
+            "minimum",
+            "quartile1",
+            "median",
+            "quartile3",
+            "maximum",
+          ];
         } else if (desiredStats.includes("all")) {
           statisticsToDisplay = [...options];
         } else {
@@ -155,54 +186,58 @@ export default class SummaryStatistics extends BlockComponent {
     };
 
     stateVariableDefinitions.sourceName = {
-      stateVariablesDeterminingDependencies: ["source"],
-      returnDependencies: ({stateValues}) => ({
-        sourceName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.source
-        }
+      returnDependencies: () => ({
+        source: {
+          dependencyType: "attributeTargetComponentNames",
+          attributeName: "source",
+        },
       }),
       definition({ dependencyValues }) {
-        let sourceName = null;
-        if (dependencyValues.sourceName) {
-          sourceName = dependencyValues.sourceName
-        }
-        return { setValue: { sourceName } }
-      }
+        let sourceName;
 
-    }
+        if (dependencyValues.source?.length === 1) {
+          sourceName = dependencyValues.source[0].absoluteName;
+        } else {
+          sourceName = null;
+        }
+        return { setValue: { sourceName } };
+      },
+    };
 
     stateVariableDefinitions.dataColumn = {
       stateVariablesDeterminingDependencies: ["sourceName"],
-      additionalStateVariablesDefined: [{
-        variableName: "columnName",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "text",
+      additionalStateVariablesDefined: [
+        {
+          variableName: "columnName",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "text",
+          },
+          forRenderer: true,
         },
-        forRenderer: true,
-      }],
-      returnDependencies({stateValues}) {
+      ],
+      returnDependencies({ stateValues }) {
         return {
           dataFrame: {
             dependencyType: "stateVariable",
             componentName: stateValues.sourceName,
             variableName: "dataFrame",
-            variableOptional: true
+            variableOptional: true,
           },
           desiredColumn: {
             dependencyType: "stateVariable",
-            variableName: "desiredColumn"
-          }
-
-        }
+            variableName: "desiredColumn",
+          },
+        };
       },
       definition({ dependencyValues }) {
-
-        let dataColumn = null, columnName = null;
+        let dataColumn = null,
+          columnName = null;
         if (dependencyValues.dataFrame) {
           let dataFrame = dependencyValues.dataFrame;
-          let colInd = dataFrame.columnNames.indexOf(dependencyValues.desiredColumn);
+          let colInd = dataFrame.columnNames.indexOf(
+            dependencyValues.desiredColumn,
+          );
           if (colInd !== -1) {
             columnName = dependencyValues.desiredColumn;
             dataColumn = [];
@@ -215,8 +250,8 @@ export default class SummaryStatistics extends BlockComponent {
         }
 
         return {
-          setValue: { dataColumn, columnName }
-        }
+          setValue: { dataColumn, columnName },
+        };
       },
     };
 
@@ -228,32 +263,34 @@ export default class SummaryStatistics extends BlockComponent {
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
-        }
+          variableName: "dataColumn",
+        },
       }),
       definition({ dependencyValues }) {
-
         let count = null;
         if (dependencyValues.dataColumn) {
           count = dependencyValues.dataColumn.length;
         }
 
-        return { setValue: { count } }
-
-      }
-    }
+        return { setValue: { count } };
+      },
+    };
 
     stateVariableDefinitions.sum = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
-        }
+          variableName: "dataColumn",
+        },
       }),
       definition({ dependencyValues }) {
         let sum = null;
@@ -261,90 +298,105 @@ export default class SummaryStatistics extends BlockComponent {
           sum = dependencyValues.dataColumn.reduce((a, c) => a + c);
         }
 
-        return { setValue: { sum } }
-      }
-    }
+        return { setValue: { sum } };
+      },
+    };
 
     stateVariableDefinitions.mean = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
-        }
+          variableName: "dataColumn",
+        },
       }),
       definition({ dependencyValues }) {
         let mean = null;
         if (dependencyValues.dataColumn !== null) {
-          mean = me.math.mean(dependencyValues.dataColumn)
+          mean = me.math.mean(dependencyValues.dataColumn);
         }
-        return { setValue: { mean } }
-      }
-    }
-
+        return { setValue: { mean } };
+      },
+    };
 
     stateVariableDefinitions.stdev = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
         let stdev = null;
         if (dependencyValues.dataColumn) {
-          stdev = me.math.std(dependencyValues.dataColumn)
+          stdev = me.math.std(dependencyValues.dataColumn);
         }
 
         return { setValue: { stdev } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.variance = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
         let variance = null;
         if (dependencyValues.dataColumn) {
-          variance = me.math.variance(dependencyValues.dataColumn)
+          variance = me.math.variance(dependencyValues.dataColumn);
         }
 
         return { setValue: { variance } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.stderr = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         stdev: {
           dependencyType: "stateVariable",
-          variableName: "stdev"
+          variableName: "stdev",
         },
         count: {
           dependencyType: "stateVariable",
-          variableName: "count"
+          variableName: "count",
         },
       }),
       definition({ dependencyValues }) {
@@ -354,19 +406,23 @@ export default class SummaryStatistics extends BlockComponent {
         }
 
         return { setValue: { stderr } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.minimum = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
@@ -375,19 +431,23 @@ export default class SummaryStatistics extends BlockComponent {
           minimum = Math.min(...dependencyValues.dataColumn);
         }
         return { setValue: { minimum } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.maximum = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
@@ -396,19 +456,23 @@ export default class SummaryStatistics extends BlockComponent {
           maximum = Math.max(...dependencyValues.dataColumn);
         }
         return { setValue: { maximum } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.median = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
@@ -417,19 +481,23 @@ export default class SummaryStatistics extends BlockComponent {
           median = me.math.median(dependencyValues.dataColumn);
         }
         return { setValue: { median } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.quartile1 = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
@@ -438,19 +506,23 @@ export default class SummaryStatistics extends BlockComponent {
           quartile1 = me.math.quantileSeq(dependencyValues.dataColumn, 0.25);
         }
         return { setValue: { quartile1 } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.quartile3 = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
-          variableName: "dataColumn"
+          variableName: "dataColumn",
         },
       }),
       definition({ dependencyValues }) {
@@ -459,23 +531,27 @@ export default class SummaryStatistics extends BlockComponent {
           quartile3 = me.math.quantileSeq(dependencyValues.dataColumn, 0.75);
         }
         return { setValue: { quartile3 } };
-      }
-    }
+      },
+    };
 
     stateVariableDefinitions.range = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: [
+          "displayDigits",
+          "displayDecimals",
+          "displaySmallAsZero",
+        ],
       },
       returnDependencies: () => ({
         minimum: {
           dependencyType: "stateVariable",
-          variableName: "minimum"
+          variableName: "minimum",
         },
         maximum: {
           dependencyType: "stateVariable",
-          variableName: "maximum"
+          variableName: "maximum",
         },
       }),
       definition({ dependencyValues }) {
@@ -485,106 +561,102 @@ export default class SummaryStatistics extends BlockComponent {
         }
 
         return { setValue: { range } };
-      }
-    }
-
-
+      },
+    };
 
     stateVariableDefinitions.summaryStatistics = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["statisticsToDisplay"],
       returnDependencies({ stateValues }) {
-
         let dependencies = {
           displayDigits: {
             dependencyType: "stateVariable",
-            variableName: "displayDigits"
+            variableName: "displayDigits",
           },
           displayDecimals: {
             dependencyType: "stateVariable",
-            variableName: "displayDecimals"
+            variableName: "displayDecimals",
           },
           displaySmallAsZero: {
             dependencyType: "stateVariable",
-            variableName: "displaySmallAsZero"
+            variableName: "displaySmallAsZero",
           },
         };
 
         if (stateValues.statisticsToDisplay.includes("mean")) {
           dependencies.mean = {
             dependencyType: "stateVariable",
-            variableName: "mean"
-          }
+            variableName: "mean",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("stdev")) {
           dependencies.stdev = {
             dependencyType: "stateVariable",
-            variableName: "stdev"
-          }
+            variableName: "stdev",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("variance")) {
           dependencies.variance = {
             dependencyType: "stateVariable",
-            variableName: "variance"
-          }
+            variableName: "variance",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("stderr")) {
           dependencies.stderr = {
             dependencyType: "stateVariable",
-            variableName: "stderr"
-          }
+            variableName: "stderr",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("count")) {
           dependencies.count = {
             dependencyType: "stateVariable",
-            variableName: "count"
-          }
+            variableName: "count",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("minimum")) {
           dependencies.minimum = {
             dependencyType: "stateVariable",
-            variableName: "minimum"
-          }
+            variableName: "minimum",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("quartile1")) {
           dependencies.quartile1 = {
             dependencyType: "stateVariable",
-            variableName: "quartile1"
-          }
+            variableName: "quartile1",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("median")) {
           dependencies.median = {
             dependencyType: "stateVariable",
-            variableName: "median"
-          }
+            variableName: "median",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("quartile3")) {
           dependencies.quartile3 = {
             dependencyType: "stateVariable",
-            variableName: "quartile3"
-          }
+            variableName: "quartile3",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("maximum")) {
           dependencies.maximum = {
             dependencyType: "stateVariable",
-            variableName: "maximum"
-          }
+            variableName: "maximum",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("range")) {
           dependencies.range = {
             dependencyType: "stateVariable",
-            variableName: "range"
-          }
+            variableName: "range",
+          };
         }
         if (stateValues.statisticsToDisplay.includes("sum")) {
           dependencies.sum = {
             dependencyType: "stateVariable",
-            variableName: "sum"
-          }
+            variableName: "sum",
+          };
         }
 
         return dependencies;
-
       },
       definition({ dependencyValues, usedDefault }) {
         let summaryStatistics = {};
@@ -592,87 +664,94 @@ export default class SummaryStatistics extends BlockComponent {
         if (dependencyValues.mean !== undefined) {
           summaryStatistics.mean = roundForDisplay({
             value: dependencyValues.mean,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.stdev !== undefined) {
           summaryStatistics.stdev = roundForDisplay({
             value: dependencyValues.stdev,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.variance !== undefined) {
           summaryStatistics.variance = roundForDisplay({
             value: dependencyValues.variance,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.stderr !== undefined) {
           summaryStatistics.stderr = roundForDisplay({
             value: dependencyValues.stderr,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.count !== undefined) {
           summaryStatistics.count = roundForDisplay({
             value: dependencyValues.count,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.minimum !== undefined) {
           summaryStatistics.minimum = roundForDisplay({
             value: dependencyValues.minimum,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.quartile1 !== undefined) {
           summaryStatistics.quartile1 = roundForDisplay({
             value: dependencyValues.quartile1,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.median !== undefined) {
           summaryStatistics.median = roundForDisplay({
             value: dependencyValues.median,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.quartile3 !== undefined) {
           summaryStatistics.quartile3 = roundForDisplay({
             value: dependencyValues.quartile3,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.maximum !== undefined) {
           summaryStatistics.maximum = roundForDisplay({
             value: dependencyValues.maximum,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.range !== undefined) {
           summaryStatistics.range = roundForDisplay({
             value: dependencyValues.range,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
         if (dependencyValues.sum !== undefined) {
           summaryStatistics.sum = roundForDisplay({
             value: dependencyValues.sum,
-            dependencyValues, usedDefault
+            dependencyValues,
+            usedDefault,
           });
         }
 
         return { setValue: { summaryStatistics } };
-
-      }
-
-    }
-
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 
   recordVisibilityChange({ isVisible, actionId }) {
     this.coreFunctions.requestRecordEvent({
@@ -681,13 +760,8 @@ export default class SummaryStatistics extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
 }

@@ -1,25 +1,25 @@
-import InlineComponent from './InlineComponent';
+import InlineComponent from "./InlineComponent";
 
 export default class InlineRenderInlineChildren extends InlineComponent {
   static componentType = "_inlineRenderInlineChildren";
   static renderChildren = true;
   static includeBlankStringChildren = true;
 
+  // Note: these atributes are used just for the text state variable, below.
+  // They are ignored in the renderers themselves.
   static beginTextDelimiter = "";
   static endTextDelimiter = "";
 
   static returnChildGroups() {
-
-    return [{
-      group: "inlines",
-      componentTypes: ["_inline"]
-    }]
-
+    return [
+      {
+        group: "inlines",
+        componentTypes: ["_inline"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let componentClass = this;
@@ -35,11 +35,10 @@ export default class InlineRenderInlineChildren extends InlineComponent {
           childGroups: ["inlines"],
           variableNames: ["text"],
           variablesOptional: true,
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
-
-        let text = ""
+        let text = "";
         for (let child of dependencyValues.inlineChildren) {
           if (typeof child !== "object") {
             text += child.toString();
@@ -50,14 +49,15 @@ export default class InlineRenderInlineChildren extends InlineComponent {
           }
         }
 
-        text = componentClass.beginTextDelimiter + text + componentClass.endTextDelimiter;
+        text =
+          componentClass.beginTextDelimiter +
+          text +
+          componentClass.endTextDelimiter;
 
         return { setValue: { text } };
-      }
-    }
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
-
 }

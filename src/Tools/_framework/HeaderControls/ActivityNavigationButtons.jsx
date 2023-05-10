@@ -1,26 +1,26 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { selectorFamily, useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { useState, useLayoutEffect } from "react";
+import { selectorFamily, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   authorCourseItemOrderByCourseId,
   courseIdAtom,
   findFirstPageOfActivity,
   itemByDoenetId,
   studentCourseItemOrderByCourseId,
-} from '../../../_reactComponents/Course/CourseActions';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+} from "../../../_reactComponents/Course/CourseActions";
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
 
 const itemOrderByCourseId = selectorFamily({
-  key: 'itemOrderbyCourseId',
+  key: "itemOrderbyCourseId",
   get:
     (courseId) =>
     ({ get }) => {
       const { canViewUnassignedContent } = get(
         effectivePermissionsByCourseId(courseId),
       );
-      if (canViewUnassignedContent === '1') {
+      if (canViewUnassignedContent === "1") {
         return get(authorCourseItemOrderByCourseId(courseId));
       } else {
         return get(studentCourseItemOrderByCourseId(courseId));
@@ -29,14 +29,14 @@ const itemOrderByCourseId = selectorFamily({
 });
 
 const activityOrderByCourseId = selectorFamily({
-  key: 'activityOrderByCourseId',
+  key: "activityOrderByCourseId",
   get:
     (courseId) =>
     ({ get, getCallback }) => {
       const itemOrder = get(itemOrderByCourseId(courseId));
       const activityOrder = itemOrder.filter((doenetId) => {
         const item = get(itemByDoenetId(doenetId));
-        return item?.type === 'activity' && !item.proctorMakesAvailable;
+        return item?.type === "activity" && !item.proctorMakesAvailable;
       });
 
       const getInfoFromIndex = getCallback(({ snapshot }) => (idx) => {
@@ -68,7 +68,7 @@ export default function ActivityNavigationbuttons() {
     next: null,
   });
   const courseId = useRecoilValue(courseIdAtom);
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const navigate = useSetRecoilState(pageToolViewAtom);
   const { value: activityOrder, getFirstPageFromIndex } = useRecoilValue(
     activityOrderByCourseId(courseId),

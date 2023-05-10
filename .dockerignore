@@ -1,8 +1,10 @@
+./.cache/
+./.devcontainer/
+.env
 ./.git/
-./node_modeules/
-./.snowpack/
-./dist_local/
-./dist/
+./.github/
 ./cypress/
 ./cypress_php/
-./.devcontainer/
+./dist/
+./dist_local/
+./node_modules/

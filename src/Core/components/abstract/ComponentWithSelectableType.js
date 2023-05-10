@@ -1,8 +1,8 @@
-import BaseComponent from './BaseComponent';
-import me from 'math-expressions';
-import { convertValueToMathExpression, textToAst } from '../../utils/math';
-import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
-import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from '../commonsugar/lists';
+import BaseComponent from "./BaseComponent";
+import me from "math-expressions";
+import { convertValueToMathExpression, textToAst } from "../../utils/math";
+import { breakEmbeddedStringsIntoParensPieces } from "../commonsugar/breakstrings";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "../commonsugar/lists";
 
 export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentWithSelectableType";
@@ -13,22 +13,28 @@ export class ComponentWithSelectableType extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.type = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
     return attributes;
   }
 
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    function addType({ matchedChildren, componentAttributes, parentAttributes }) {
+    function addType({
+      matchedChildren,
+      componentAttributes,
+      parentAttributes,
+    }) {
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
       }
       if (!type) {
         type = "number";
-      } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+      } else if (
+        !["number", "letters", "math", "text", "boolean"].includes(type)
+      ) {
         console.warn(`Invalid type ${type}, setting type to number`);
         type = "number";
       }
@@ -37,40 +43,39 @@ export class ComponentWithSelectableType extends BaseComponent {
 
       // remove blank string if componentType isn't text
       if (componentType !== "text") {
-        matchedChildren = matchedChildren.filter(x =>
-          typeof x !== "string" || x.trim() !== ""
-        )
+        matchedChildren = matchedChildren.filter(
+          (x) => typeof x !== "string" || x.trim() !== "",
+        );
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType,
-          children: matchedChildren
-        }]
-      }
+        newChildren: [
+          {
+            componentType,
+            children: matchedChildren,
+          },
+        ],
+      };
     }
 
     sugarInstructions.push({
-      replacementFunction: addType
+      replacementFunction: addType,
     });
 
     return sugarInstructions;
-
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.type = {
@@ -82,8 +87,8 @@ export class ComponentWithSelectableType extends BaseComponent {
         },
         parentType: {
           dependencyType: "parentStateVariable",
-          variableName: "type"
-        }
+          variableName: "type",
+        },
       }),
       definition: function ({ dependencyValues, componentName }) {
         let type = dependencyValues.type;
@@ -92,16 +97,16 @@ export class ComponentWithSelectableType extends BaseComponent {
         }
         if (!type) {
           type = "number";
-        } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+        } else if (
+          !["number", "letters", "math", "text", "boolean"].includes(type)
+        ) {
           console.warn(`Invalid type ${type}, setting type to number`);
           type = "number";
         }
 
         return { setValue: { type } };
-
       },
     };
-
 
     stateVariableDefinitions.value = {
       public: true,
@@ -131,14 +136,17 @@ export class ComponentWithSelectableType extends BaseComponent {
           value = dependencyValues.atMostOneChild[0].stateValues.value;
         } else {
           // use the behavior of the different types
-          if (dependencyValues.type === "text" || dependencyValues.type === "letters") {
-            value = ""
+          if (
+            dependencyValues.type === "text" ||
+            dependencyValues.type === "letters"
+          ) {
+            value = "";
           } else if (dependencyValues.type === "boolean") {
             value = false;
           } else if (dependencyValues.type === "number") {
             value = NaN;
           } else {
-            value = me.fromAst('\uff3f');
+            value = me.fromAst("\uff3f");
           }
         }
 
@@ -151,24 +159,24 @@ export class ComponentWithSelectableType extends BaseComponent {
         if (dependencyValues.atMostOneChild.length > 0) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "atMostOneChild",
-              desiredValue: desiredStateVariableValues.value,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
+            instructions: [
+              {
+                setDependency: "atMostOneChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0,
+              },
+            ],
           };
         } else {
-          return { success: false }
+          return { success: false };
         }
-      }
-    }
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }
-
 
 export class ComponentListWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListWithSelectableType";
@@ -179,8 +187,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.type = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
     return attributes;
   }
 
@@ -188,10 +196,13 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     let sugarInstructions = [];
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren,
-        componentAttributes, parentAttributes,
-        isAttributeComponent = false, createdFromMacro = false,
-        componentInfoObjects
+      replacementFunction: function ({
+        matchedChildren,
+        componentAttributes,
+        parentAttributes,
+        isAttributeComponent = false,
+        createdFromMacro = false,
+        componentInfoObjects,
       }) {
         let type = componentAttributes.type;
         if (!type) {
@@ -199,29 +210,28 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         }
         if (!type) {
           type = "number";
-        } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+        } else if (
+          !["number", "letters", "math", "text", "boolean"].includes(type)
+        ) {
           console.warn(`Invalid type ${type}, setting type to number`);
           type = "number";
         }
 
         let componentType = type === "letters" ? "text" : type;
 
-        let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
-          componentType
-        });
+        let groupIntoComponentTypesSeparatedBySpaces =
+          returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+            componentType,
+          });
 
         return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
-      }
+      },
     });
 
-
     return sugarInstructions;
-
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.value;
@@ -239,18 +249,23 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       definition({ dependencyValues }) {
         let nValues = 0;
         let childForValue = [];
-        for (let [ind, child] of dependencyValues.anythingForSelectedType.entries()) {
-          let n = Number.isInteger(child.stateValues.nValues) ? child.stateValues.nValues : 1;
+        for (let [
+          ind,
+          child,
+        ] of dependencyValues.anythingForSelectedType.entries()) {
+          let n = Number.isInteger(child.stateValues.nValues)
+            ? child.stateValues.nValues
+            : 1;
           nValues += n;
           for (let i = 0; i < n; i++) {
-            childForValue.push({ child: ind, valueIndex: i })
+            childForValue.push({ child: ind, valueIndex: i });
           }
         }
         return {
           setValue: { nValues, childForValue },
-        }
-      }
-    }
+        };
+      },
+    };
 
     stateVariableDefinitions.values = {
       public: true,
@@ -273,13 +288,13 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         let globalDependencies = {
           type: {
             dependencyType: "stateVariable",
-            variableName: "type"
-          }
-        }
+            variableName: "type",
+          },
+        };
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let childInfo = stateValues.childForValue[arrayKey]
+          let childInfo = stateValues.childForValue[arrayKey];
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
               dependencyType: "child",
@@ -290,16 +305,19 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
             },
             valueIndex: {
               dependencyType: "value",
-              value: childInfo.valueIndex
-            }
-          }
+              value: childInfo.valueIndex,
+            },
+          };
         }
 
-        return { globalDependencies, dependenciesByKey }
-
+        return { globalDependencies, dependenciesByKey };
       },
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, componentName }) {
-
+      arrayDefinitionByKey({
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
+        componentName,
+      }) {
         // console.log(`array definition for value of component list with selectable type, ${componentName}`)
         // console.log(globalDependencyValues)
         // console.log(dependencyValuesByKey);
@@ -308,20 +326,25 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         let values = {};
 
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].anythingForSelectedType &&
+          if (
+            dependencyValuesByKey[arrayKey].anythingForSelectedType &&
             dependencyValuesByKey[arrayKey].anythingForSelectedType.length === 1
           ) {
-            let child = dependencyValuesByKey[arrayKey].anythingForSelectedType[0];
+            let child =
+              dependencyValuesByKey[arrayKey].anythingForSelectedType[0];
             let value;
             if (child.stateValues.values) {
-              value = child.stateValues.values[dependencyValuesByKey[arrayKey].valueIndex]
+              value =
+                child.stateValues.values[
+                  dependencyValuesByKey[arrayKey].valueIndex
+                ];
             } else {
               value = child.stateValues.value;
             }
             values[arrayKey] = convertValueToType(
               value,
-              globalDependencyValues.type
-            )
+              globalDependencyValues.type,
+            );
           }
         }
 
@@ -329,15 +352,12 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           setValue: { values },
           setCreateComponentOfType: { values: globalDependencyValues.type },
         };
-      }
-    }
-
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }
-
 
 export class ComponentListOfListsWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListOfListsWithSelectableType";
@@ -345,23 +365,26 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.type = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
     return attributes;
   }
 
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    let breakIntoListsByParensAndAddType = function ({ matchedChildren, componentAttributes, parentAttributes }) {
-
+    let breakIntoListsByParensAndAddType = function ({
+      matchedChildren,
+      componentAttributes,
+      parentAttributes,
+    }) {
       let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
         removeParens: true,
       });
 
       if (results.success !== true) {
-        return { success: false }
+        return { success: false };
       }
 
       let type = componentAttributes.type;
@@ -370,45 +393,40 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       }
       if (!type) {
         type = "number";
-      } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+      } else if (
+        !["number", "letters", "math", "text", "boolean"].includes(type)
+      ) {
         console.warn(`Invalid type ${type}, setting type to number`);
         type = "number";
       }
 
-
       return {
         success: true,
-        newChildren: results.pieces.map(x => ({
+        newChildren: results.pieces.map((x) => ({
           componentType: "_componentListWithSelectableType",
           attributes: { type: { primitive: type } },
           children: x,
-        }))
-      }
-
-    }
+        })),
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: breakIntoListsByParensAndAddType
-    })
-
+      replacementFunction: breakIntoListsByParensAndAddType,
+    });
 
     return sugarInstructions;
-
   }
-
 
   static returnChildGroups() {
-
-    return [{
-      group: "lists",
-      componentTypes: ["_componentListWithSelectableType"]
-    }]
-
+    return [
+      {
+        group: "lists",
+        componentTypes: ["_componentListWithSelectableType"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     delete stateVariableDefinitions.value;
@@ -421,9 +439,9 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nLists: dependencyValues.listChildren.length } }
-      }
-    }
+        return { setValue: { nLists: dependencyValues.listChildren.length } };
+      },
+    };
 
     stateVariableDefinitions.lists = {
       isArray: true,
@@ -441,9 +459,9 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         let globalDependencies = {
           type: {
             dependencyType: "stateVariable",
-            variableName: "type"
-          }
-        }
+            variableName: "type",
+          },
+        };
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
@@ -452,29 +470,33 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
               dependencyType: "child",
               childGroups: ["lists"],
               variableNames: ["values", "type"],
-              childIndices: [arrayKey]
+              childIndices: [arrayKey],
             },
-          }
+          };
         }
 
-        return { globalDependencies, dependenciesByKey }
-
+        return { globalDependencies, dependenciesByKey };
       },
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
-
+      arrayDefinitionByKey({
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
+      }) {
         let lists = {};
 
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].listChildren &&
+          if (
+            dependencyValuesByKey[arrayKey].listChildren &&
             dependencyValuesByKey[arrayKey].listChildren.length === 1
           ) {
             let listChild = dependencyValuesByKey[arrayKey].listChildren[0];
             if (listChild.stateValues.type === globalDependencyValues.type) {
-              lists[arrayKey] = listChild.stateValues.values
+              lists[arrayKey] = listChild.stateValues.values;
             } else {
               // have a list child of the wrong type, attempt to convert
-              lists[arrayKey] = listChild.stateValues.values.map(
-                x => convertValueToType(x, globalDependencyValues.type))
+              lists[arrayKey] = listChild.stateValues.values.map((x) =>
+                convertValueToType(x, globalDependencyValues.type),
+              );
             }
           }
         }
@@ -482,15 +504,12 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         return {
           setValue: { lists },
         };
-      }
-    }
-
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }
-
 
 function convertValueToType(value, type) {
   if (Array.isArray(value)) {
@@ -499,9 +518,6 @@ function convertValueToType(value, type) {
   if (type === "number") {
     if (value instanceof me.class) {
       let num = value.evaluate_to_constant();
-      if (!Number.isFinite(num)) {
-        num = NaN;
-      }
       return num;
     }
     return Number(value);
@@ -509,8 +525,7 @@ function convertValueToType(value, type) {
     if (typeof value === "string") {
       try {
         return me.fromAst(textToAst.convert(value));
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     return convertValueToMathExpression(value);
   } else if (type === "boolean") {

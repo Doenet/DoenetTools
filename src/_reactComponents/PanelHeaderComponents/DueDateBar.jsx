@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
+import ProgressBar from "../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx";
 
 const Container = styled.div`
   display: flex;
@@ -33,16 +33,15 @@ const CompletedBar = styled.div`
   background: var(--mainGray);
 `;
 
-const Text =  styled.span`
+const Text = styled.span`
   font-size: 14px;
 `;
 
-
-export default function DueDateBar({ startDate, endDate, isCompleted}) {
+export default function DueDateBar({ startDate, endDate, isCompleted }) {
   const TODAY = new Date();
   const STARTDATE = startDate;
   const ENDDATE = endDate;
-  const [timeLeft, setTimeLeft] = useState({unit: "days", value: 0});
+  const [timeLeft, setTimeLeft] = useState({ unit: "days", value: 0 });
   const [progress, setProgress] = useState(0);
   const [isOverdue, setIsOverdue] = useState(false);
 
@@ -55,90 +54,119 @@ export default function DueDateBar({ startDate, endDate, isCompleted}) {
       if (total.inDays.value - difference.inDays.value > 0) {
         setTimeLeft({
           unit: total.inDays.unit,
-          value: total.inDays.value - difference.inDays.value
-        })
-        setProgress(difference.inDays.value * 1.0 / total.inDays.value)
+          value: total.inDays.value - difference.inDays.value,
+        });
+        setProgress((difference.inDays.value * 1.0) / total.inDays.value);
       } else if (total.inHours.value - difference.inHours.value > 0) {
         setTimeLeft({
           unit: total.inHours.unit,
-          value: total.inHours.value - difference.inHours.value
-        })
-        setProgress(difference.inHours.value * 1.0 / total.inHours.value)
+          value: total.inHours.value - difference.inHours.value,
+        });
+        setProgress((difference.inHours.value * 1.0) / total.inHours.value);
       } else {
         setTimeLeft({
           unit: total.inMinutes.unit,
-          value: total.inMinutes.value - difference.inMinutes.value
-        })
-        setProgress(difference.inMinutes.value * 1.0 / total.inMinutes.value)
+          value: total.inMinutes.value - difference.inMinutes.value,
+        });
+        setProgress((difference.inMinutes.value * 1.0) / total.inMinutes.value);
       }
     }
-  }, [])
+  }, []);
 
   const dateDiff = (a, b) => {
     const _MS_PER_MINUTE = 1000 * 60;
     const _MS_PER_HOUR = 1000 * 60 * 60;
     const _MS_PER_DAY = 1000 * 60 * 60 * 24;
     // Discard the time and time-zone information.
-    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate(), a.getHours(), a.getMinutes());
-    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate(), b.getHours(), b.getMinutes());
-  
+    const utc1 = Date.UTC(
+      a.getFullYear(),
+      a.getMonth(),
+      a.getDate(),
+      a.getHours(),
+      a.getMinutes(),
+    );
+    const utc2 = Date.UTC(
+      b.getFullYear(),
+      b.getMonth(),
+      b.getDate(),
+      b.getHours(),
+      b.getMinutes(),
+    );
+
     return {
       inDays: {
         unit: "days",
-        value: Math.floor((utc2 - utc1) / _MS_PER_DAY)
+        value: Math.floor((utc2 - utc1) / _MS_PER_DAY),
       },
       inHours: {
         unit: "hours",
-        value: Math.floor((utc2 - utc1) / _MS_PER_HOUR)
+        value: Math.floor((utc2 - utc1) / _MS_PER_HOUR),
       },
       inMinutes: {
         unit: "minutes",
-        value: Math.floor((utc2 - utc1) / _MS_PER_MINUTE)
-      }
+        value: Math.floor((utc2 - utc1) / _MS_PER_MINUTE),
+      },
     };
-  }
-  
-  const formatDate = date => {
-    const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return `${DAYS[date.getDay()]}, ${MONTHS[date.getMonth()]} ${date.getDate()}`
-  }
-  
+  };
+
+  const formatDate = (date) => {
+    const DAYS = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const MONTHS = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${DAYS[date.getDay()]}, ${
+      MONTHS[date.getMonth()]
+    } ${date.getDate()}`;
+  };
+
   return (
     <Container>
       {
-        
         <RemainingTimeContainer>
           <Text>
-            {
-              isOverdue ? 
-                `Assignment Overdue`  
-              :
-              !isCompleted ? 
-                `${timeLeft.value} ${timeLeft.unit} remaining` 
-              :
-              null
-            }
+            {isOverdue
+              ? `Assignment Overdue`
+              : !isCompleted
+              ? `${timeLeft.value} ${timeLeft.unit} remaining`
+              : null}
           </Text>
         </RemainingTimeContainer>
       }
-      
+
       <BarWrapper>
-        {
-          isCompleted ? 
+        {isCompleted ? (
           <CompletedBar>
             <Text>Completed!</Text>
           </CompletedBar>
-          :
-          <ProgressBar 
-            progress={isOverdue ? 1 : 1 - progress} 
-            rotated 
-            width="330" 
-            height="30px" 
-            radius="15px" 
-            color={isOverdue ? "#121212" : "var(--mainBlue)"} 
+        ) : (
+          <ProgressBar
+            progress={isOverdue ? 1 : 1 - progress}
+            rotated
+            width="330"
+            height="30px"
+            radius="15px"
+            color={isOverdue ? "#121212" : "var(--mainBlue)"}
           />
-        }
+        )}
       </BarWrapper>
       <DateContainer>
         <Text>{formatDate(STARTDATE)}</Text>
@@ -146,5 +174,4 @@ export default function DueDateBar({ startDate, endDate, isCompleted}) {
       </DateContainer>
     </Container>
   );
-};
-  
+}

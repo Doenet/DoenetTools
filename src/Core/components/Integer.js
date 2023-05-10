@@ -1,19 +1,19 @@
-import NumberComponent from './Number';
-import me from 'math-expressions';
-import { renameStateVariable } from '../utils/stateVariables';
+import NumberComponent from "./Number";
+import me from "math-expressions";
+import { renameStateVariable } from "../utils/stateVariables";
+import { textToAst } from "../utils/math";
 
 export default class Integer extends NumberComponent {
   static componentType = "integer";
   static rendererType = "number";
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     renameStateVariable({
       stateVariableDefinitions,
       oldName: "value",
-      newName: "valuePreRound"
+      newName: "valuePreRound",
     });
 
     stateVariableDefinitions.value = {
@@ -24,8 +24,8 @@ export default class Integer extends NumberComponent {
       returnDependencies: () => ({
         valuePreRound: {
           dependencyType: "stateVariable",
-          variableName: "valuePreRound"
-        }
+          variableName: "valuePreRound",
+        },
       }),
       set: function (value) {
         // this function is called when
@@ -38,7 +38,9 @@ export default class Integer extends NumberComponent {
         let number = Number(value);
         if (Number.isNaN(number)) {
           try {
-            number = me.fromAst(textToAst.convert(value)).evaluate_to_constant();
+            number = me
+              .fromAst(textToAst.convert(value))
+              .evaluate_to_constant();
             if (number === null) {
               number = NaN;
             }
@@ -49,15 +51,14 @@ export default class Integer extends NumberComponent {
         return Math.round(number);
       },
       definition({ dependencyValues }) {
-        return { setValue: { value: Math.round(dependencyValues.valuePreRound) } }
+        return {
+          setValue: { value: Math.round(dependencyValues.valuePreRound) },
+        };
       },
-      inverseDefinition({desiredStateVariableValues}) {
+      inverseDefinition({ desiredStateVariableValues }) {
         let desiredValue = desiredStateVariableValues.value;
         if (desiredValue instanceof me.class) {
           desiredValue = desiredValue.evaluate_to_constant();
-          if (!Number.isFinite(desiredValue)) {
-            desiredValue = NaN;
-          }
         } else {
           desiredValue = Number(desiredValue);
         }
@@ -65,16 +66,16 @@ export default class Integer extends NumberComponent {
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "valuePreRound",
-            desiredValue
-          }]
-        }
-
-      }
-    }
+          instructions: [
+            {
+              setDependency: "valuePreRound",
+              desiredValue,
+            },
+          ],
+        };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 }

@@ -1,54 +1,54 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { animated, useSpring } from '@react-spring/web';
-import { createUseGesture, dragAction } from '@use-gesture/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { animated, useSpring } from "@react-spring/web";
+import { createUseGesture, dragAction } from "@use-gesture/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGripLinesVertical,
   faGripLines,
   faKeyboard,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 export const handleDirection = {
   LEFT: {
-    flexDir: 'row-reverse',
+    flexDir: "row-reverse",
     vertical: true,
-    rounding: '10px 0px 0px 10px',
-    drag: ['x', -1],
+    rounding: "10px 0px 0px 10px",
+    drag: ["x", -1],
   },
   RIGHT: {
-    flexDir: 'row',
+    flexDir: "row",
     vertical: true,
-    rounding: '0px 10px 10px 0px',
-    drag: ['x', 1],
+    rounding: "0px 10px 10px 0px",
+    drag: ["x", 1],
   },
   UP: {
-    flexDir: 'column-reverse',
+    flexDir: "column-reverse",
     vertical: false,
-    rounding: '10px 10px 0px 0px',
-    drag: ['y', -1],
+    rounding: "10px 10px 0px 0px",
+    drag: ["y", -1],
   },
   DOWN: {
-    flexDir: 'column',
+    flexDir: "column",
     vertical: false,
-    rounding: '0px 0px 10px 10px',
-    drag: ['y', 1],
+    rounding: "0px 0px 10px 10px",
+    drag: ["y", 1],
   },
 };
 
 const Wrapper = styled(animated.div)`
-  grid-area: ${({ $gridArea }) => $gridArea ?? ''};
+  grid-area: ${({ $gridArea }) => $gridArea ?? ""};
   display: flex;
   flex-direction: ${({ $flexDir }) => $flexDir};
   align-items: center;
-  // overflow: ${(props) => (props.id === 'keyboard' ? 'visible' : 'hidden')};
+  // overflow: ${(props) => (props.id === "keyboard" ? "visible" : "hidden")};
 `;
 
 const Background = styled.div`
   flex: 1 1 auto;
   overflow: hidden;
-  height: ${({ $vertical }) => ($vertical ? '100%' : '')};
-  width: ${({ $vertical }) => ($vertical ? '' : '100%')};
+  height: ${({ $vertical }) => ($vertical ? "100%" : "")};
+  width: ${({ $vertical }) => ($vertical ? "" : "100%")};
   border-radius: 4px;
   background-color: var(--canvas);
 `;
@@ -72,12 +72,12 @@ const DragHandle = styled.div`
   display: flex;
   justify-content: center;
   color: white;
-  font-size: ${(props) => (props.id === 'keyboard' ? 16 : 12)};
+  font-size: ${(props) => (props.id === "keyboard" ? 16 : 12)};
   padding: 0;
-  cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'pointer')}; 
+  cursor: ${({ $vertical }) => ($vertical ? "ew-resize" : "pointer")};
   background-color: var(--mainBlue);
-  height: ${({ $vertical }) => ($vertical ? '23%' : '')};
-  width: ${({ $vertical }) => ($vertical ? '' : '25%')};
+  height: ${({ $vertical }) => ($vertical ? "23%" : "")};
+  width: ${({ $vertical }) => ($vertical ? "" : "25%")};
   box-sizing: border-box;
   touch-action: none;
 `;
@@ -86,7 +86,7 @@ export default function DragPanel({
   children,
   direction,
   id,
-  gridArea = 'auto',
+  gridArea = "auto",
   handleSize = 12,
   panelSize = 240,
   isInitOpen = false,
@@ -104,7 +104,7 @@ export default function DragPanel({
   const bind = useGesture(
     {
       onClick: () => {
-        setOpen(!open)
+        setOpen(!open);
       },
       // onDrag: ({ tap, movement: [mx, my] }) => {
       //   let movDir = (direction.drag[0] === 'x' ? mx : my) * direction.drag[1];
@@ -156,7 +156,7 @@ export default function DragPanel({
         }),
         rubberband: true,
         axis: direction.drag[0],
-        initial: () => [
+        from: () => [
           dir.get() * direction.drag[1],
           dir.get() * direction.drag[1],
         ],
@@ -167,7 +167,7 @@ export default function DragPanel({
     <Wrapper
       $gridArea={gridArea}
       $flexDir={direction.flexDir}
-      style={direction.drag[0] === 'x' ? { width: dir } : { height: dir }}
+      style={direction.drag[0] === "x" ? { width: dir } : { height: dir }}
       id={id}
     >
       <Background $vertical={direction.vertical}>{children}</Background>
@@ -182,10 +182,10 @@ export default function DragPanel({
         // onClick={() => {
         //   setOpen(!open)
         // }}
-        >
+      >
         <FontAwesomeIcon
           icon={
-            id === 'keyboard'
+            id === "keyboard"
               ? faKeyboard
               : direction.vertical
               ? faGripLinesVertical

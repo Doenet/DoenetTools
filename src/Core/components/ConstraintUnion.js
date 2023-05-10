@@ -1,21 +1,20 @@
-import ConstraintComponent from './abstract/ConstraintComponent';
-import { findFiniteNumericalValue } from '../utils/math';
-import { applyConstraintFromComponentConstraints } from '../utils/constraints';
+import ConstraintComponent from "./abstract/ConstraintComponent";
+import { findFiniteNumericalValue } from "../utils/math";
+import { applyConstraintFromComponentConstraints } from "../utils/constraints";
 
 export default class ConstraintUnion extends ConstraintComponent {
   static componentType = "constraintUnion";
 
   static returnChildGroups() {
-
-    return [{
-      group: "constraints",
-      componentTypes: ["_constraint"]
-    }]
-
+    return [
+      {
+        group: "constraints",
+        componentTypes: ["_constraint"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.applyConstraint = {
@@ -29,39 +28,40 @@ export default class ConstraintUnion extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyConstraint: function ({ variables, scales }) {
-
+          applyConstraint: function (variables) {
             let constraintResult;
 
             if (dependencyValues.constraintChildren.length === 1) {
               let constraintChild = dependencyValues.constraintChildren[0];
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
+                constraintResult =
+                  constraintChild.stateValues.applyConstraint(variables);
               } else {
-                constraintResult = applyConstraintFromComponentConstraints({
+                constraintResult = applyConstraintFromComponentConstraints(
                   variables,
-                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
-                  scales
-                })
+                  constraintChild.stateValues.applyComponentConstraint,
+                );
               }
               return constraintResult;
             }
 
             let closestDistance2 = Infinity;
-            let closestResult = {}
+            let closestResult = {};
 
             let closestInd;
 
-            for (let [ind, constraintChild] of dependencyValues.constraintChildren.entries()) {
-
+            for (let [
+              ind,
+              constraintChild,
+            ] of dependencyValues.constraintChildren.entries()) {
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
+                constraintResult =
+                  constraintChild.stateValues.applyConstraint(variables);
               } else {
-                constraintResult = applyConstraintFromComponentConstraints({
+                constraintResult = applyConstraintFromComponentConstraints(
                   variables,
-                  applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
-                  scales
-                })
+                  constraintChild.stateValues.applyComponentConstraint,
+                );
               }
 
               if (!constraintResult.constrained) {
@@ -74,9 +74,14 @@ export default class ConstraintUnion extends ConstraintComponent {
                 // since, for now, have a distance function only for numerical values,
                 // skip any constraints where don't have numerical values
                 let originalVar = findFiniteNumericalValue(variables[varname]);
-                let constrainedVar = findFiniteNumericalValue(constraintResult.variables[varname]);
+                let constrainedVar = findFiniteNumericalValue(
+                  constraintResult.variables[varname],
+                );
 
-                if (!Number.isFinite(originalVar) || !Number.isFinite(constrainedVar)) {
+                if (
+                  !Number.isFinite(originalVar) ||
+                  !Number.isFinite(constrainedVar)
+                ) {
                   distance2 = Infinity;
                   break;
                 }
@@ -89,7 +94,6 @@ export default class ConstraintUnion extends ConstraintComponent {
                 closestInd = ind + 1;
                 closestDistance2 = distance2;
               }
-
             }
 
             if (closestInd === undefined) {
@@ -100,15 +104,16 @@ export default class ConstraintUnion extends ConstraintComponent {
             if (closestResult.constraintIndices === undefined) {
               closestResult.constraintIndices = [closestInd];
             } else {
-              closestResult.constraintIndices = [closestInd, ...closestResult.constraintIndices];
+              closestResult.constraintIndices = [
+                closestInd,
+                ...closestResult.constraintIndices,
+              ];
             }
             return closestResult;
-          }
-
-        }
-      })
-    }
+          },
+        },
+      }),
+    };
     return stateVariableDefinitions;
   }
-
 }

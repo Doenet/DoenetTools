@@ -1,26 +1,51 @@
 {
-  "contentSeeds" :{
-      "doenetId": ["a1doenetid", "a2doenetid", "a3doenetid", "b3doenetid", "b2doenetid"],
-      "contentId": ["a1contentid", "a2contentid", "a3contentid", "b3contentid", "b2contentid"],
-      "title": ["a1content", "a2content", "a3content", "b3content", "b2content"],
-      "doenetML": [
-        "<title>Assignment A1</title>",
-        "<title>Assignment A2</title>",
-        "<title>Assignment A3</title>",
-        "<title>Assignment B3</title>",
-        "<title>Assignment B2</title>"
-      ]
+  "contentSeeds": {
+    "doenetId": [
+      "a1doenetid",
+      "a2doenetid",
+      "a3doenetid",
+      "b3doenetid",
+      "b2doenetid"
+    ],
+    "contentId": [
+      "a1contentid",
+      "a2contentid",
+      "a3contentid",
+      "b3contentid",
+      "b2contentid"
+    ],
+    "title": ["a1content", "a2content", "a3content", "b3content", "b2content"],
+    "doenetML": [
+      "<title>Assignment A1</title>",
+      "<title>Assignment A2</title>",
+      "<title>Assignment A3</title>",
+      "<title>Assignment B3</title>",
+      "<title>Assignment B2</title>"
+    ]
   },
-  "assignmentSeeds" : [{
+  "assignmentSeeds": [
+    {
       "headingText": "Heading A",
       "courseHeadingId": "heading_a_id",
       "headingLevel": 1,
       "courseId": "aI8sK4vmEhC5sdeSP3vNW",
-      "documentName" : [ "Assignment A1", "Assignment A2", "Assignment A3"],
-      "assignmentId" : [ 12246, 12247, 12248],
-      "creationDate": ["2019-08-20 13:42:56", "2019-08-19 13:42:56", "2019-08-18 13:42:56"],
-      "assignedDate": ["2019-08-21 13:42:56", "2019-08-22 13:42:56", "2019-08-23 13:42:56"],
-      "dueDate": ["2019-08-24 13:42:56", "2019-08-23 13:42:56", "2019-08-22 13:42:56"],
+      "documentName": ["Assignment A1", "Assignment A2", "Assignment A3"],
+      "assignmentId": [12246, 12247, 12248],
+      "creationDate": [
+        "2019-08-20 13:42:56",
+        "2019-08-19 13:42:56",
+        "2019-08-18 13:42:56"
+      ],
+      "assignedDate": [
+        "2019-08-21 13:42:56",
+        "2019-08-22 13:42:56",
+        "2019-08-23 13:42:56"
+      ],
+      "dueDate": [
+        "2019-08-24 13:42:56",
+        "2019-08-23 13:42:56",
+        "2019-08-22 13:42:56"
+      ],
       "headingId": "heading_a_id",
       "doenetId": ["a1doenetid", "a2doenetid", "a3doenetid"],
       "contentId": ["a1contentid", "a2contentid", "a3contentid"]
@@ -30,13 +55,14 @@
       "courseHeadingId": "heading_b_id",
       "headingLevel": 1,
       "courseId": "aI8sK4vmEhC5sdeSP3vNW",
-      "documentName" : [ "Assignment B3", "Assignment B2"],
-      "assignmentId" : [ 13248, 13247],
+      "documentName": ["Assignment B3", "Assignment B2"],
+      "assignmentId": [13248, 13247],
       "creationDate": ["2019-08-25 13:42:56", "2019-08-26 13:42:56"],
       "assignedDate": ["2019-08-27 13:42:56", "2019-08-28 13:42:56"],
       "dueDate": ["2019-08-29 13:42:56", "2019-08-30 13:42:56"],
       "headingId": "heading_b_id",
       "doenetId": ["b3doenetid", "b2doenetid"],
       "contentId": ["b3contentid", "b2contentid"]
-    }]
+    }
+  ]
 }

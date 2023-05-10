@@ -1,6 +1,14 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class Chart extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      changeAxisLimits: this.changeAxisLimits.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "chart";
 
   static acceptTarget = true;
@@ -15,13 +23,13 @@ export default class Chart extends BlockComponent {
       toLowerCase: true,
       validValues: ["histogram", "dotplot", "frequencytable", "box", "bar"],
       forRenderer: true,
-    }
+    };
 
     attributes.column = {
       createComponentOfType: "text",
       createStateVariable: "desiredColumn",
       defaultValue: null,
-    }
+    };
 
     attributes.xmin = {
       createComponentOfType: "number",
@@ -69,35 +77,35 @@ export default class Chart extends BlockComponent {
       createStateVariable: "displayXAxis",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.displayYAxis = {
       createComponentOfType: "boolean",
       createStateVariable: "displayYAxis",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.displayXAxisTickLabels = {
       createComponentOfType: "boolean",
       createStateVariable: "displayXAxisTickLabels",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.displayYAxisTickLabels = {
       createComponentOfType: "boolean",
       createStateVariable: "displayYAxisTickLabels",
       defaultValue: true,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.xlabel = {
       createComponentOfType: "text",
       createStateVariable: "xlabel",
       defaultValue: "",
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.xlabelPosition = {
       createComponentOfType: "text",
@@ -106,14 +114,14 @@ export default class Chart extends BlockComponent {
       public: true,
       forRenderer: true,
       toLowerCase: true,
-      validValues: ["right", "left"]
+      validValues: ["right", "left"],
     };
     attributes.ylabel = {
       createComponentOfType: "text",
       createStateVariable: "ylabel",
       defaultValue: "",
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.ylabelPosition = {
       createComponentOfType: "text",
@@ -122,7 +130,7 @@ export default class Chart extends BlockComponent {
       public: true,
       forRenderer: true,
       toLowerCase: true,
-      validValues: ["top", "bottom"]
+      validValues: ["top", "bottom"],
     };
     attributes.ylabelAlignment = {
       createComponentOfType: "text",
@@ -131,16 +139,13 @@ export default class Chart extends BlockComponent {
       public: true,
       forRenderer: true,
       toLowerCase: true,
-      validValues: ["left", "right"]
+      validValues: ["left", "right"],
     };
 
     return attributes;
   }
 
-
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.dataFrame = {
@@ -150,14 +155,12 @@ export default class Chart extends BlockComponent {
           targetComponent: {
             dependencyType: "targetComponent",
             variableNames: ["dataFrame"],
-            variablesOptional: true
+            variablesOptional: true,
           },
-        }
-
+        };
       },
       definition({ dependencyValues }) {
-
-        console.log('definition of dataFrame', dependencyValues)
+        console.log("definition of dataFrame", dependencyValues);
 
         let dataFrame = null;
         if (dependencyValues.targetComponent?.stateValues.dataFrame) {
@@ -165,40 +168,41 @@ export default class Chart extends BlockComponent {
         }
 
         return {
-          setValue: { dataFrame }
-        }
+          setValue: { dataFrame },
+        };
       },
     };
-
 
     stateVariableDefinitions.columnName = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
-      additionalStateVariablesDefined: [{
-        variableName: "colInd",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "colInd",
+          forRenderer: true,
+        },
+      ],
       returnDependencies() {
         return {
           desiredColumn: {
             dependencyType: "stateVariable",
-            variableName: "desiredColumn"
+            variableName: "desiredColumn",
           },
           dataFrame: {
             dependencyType: "stateVariable",
-            variableName: "dataFrame"
+            variableName: "dataFrame",
           },
-        }
-
+        };
       },
       definition({ dependencyValues }) {
-
-
-        let columnName = null, colInd = null;
+        let columnName = null,
+          colInd = null;
         if (dependencyValues.dataFrame) {
-          colInd = dependencyValues.dataFrame.columnNames.indexOf(dependencyValues.desiredColumn);
+          colInd = dependencyValues.dataFrame.columnNames.indexOf(
+            dependencyValues.desiredColumn,
+          );
           if (colInd !== -1) {
             columnName = dependencyValues.desiredColumn;
           } else {
@@ -207,12 +211,10 @@ export default class Chart extends BlockComponent {
         }
 
         return {
-          setValue: { columnName, colInd }
-        }
+          setValue: { columnName, colInd },
+        };
       },
     };
-
-
 
     stateVariableDefinitions.xmin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
@@ -226,48 +228,48 @@ export default class Chart extends BlockComponent {
         let dependencies = {
           identicalAxisScales: {
             dependencyType: "stateVariable",
-            variableName: "identicalAxisScales"
+            variableName: "identicalAxisScales",
           },
           xminPrelim: {
             dependencyType: "stateVariable",
-            variableName: "xminPrelim"
-          }
-        }
+            variableName: "xminPrelim",
+          },
+        };
 
         if (stateValues.identicalAxisScales) {
           dependencies.xmaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xmaxPrelim"
-          }
+            variableName: "xmaxPrelim",
+          };
           dependencies.yminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "yminPrelim"
-          }
+            variableName: "yminPrelim",
+          };
           dependencies.ymaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "ymaxPrelim"
-          }
+            variableName: "ymaxPrelim",
+          };
           dependencies.width = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
+            variableName: "width",
+          };
           dependencies.height = {
             dependencyType: "stateVariable",
-            variableName: "height"
-          }
+            variableName: "height",
+          };
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { setValue: { xmin: dependencyValues.xminPrelim } }
+          return { setValue: { xmin: dependencyValues.xminPrelim } };
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
 
         // always use xmin if specified
         if (xminSpecified) {
-          return { setValue: { xmin: dependencyValues.xminPrelim } }
+          return { setValue: { xmin: dependencyValues.xminPrelim } };
         }
 
         let xmaxSpecified = !usedDefault.xmaxPrelim;
@@ -277,10 +279,15 @@ export default class Chart extends BlockComponent {
         let yscaleSpecified = yminSpecified && ymaxSpecified;
 
         if (yscaleSpecified) {
-          let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
-          let yscaleAdjusted = (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) * aspectRatio;
+          let aspectRatio =
+            dependencyValues.width.size / dependencyValues.height.size;
+          let yscaleAdjusted =
+            (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) *
+            aspectRatio;
           if (xmaxSpecified) {
-            return { setValue: { xmin: dependencyValues.xmaxPrelim - yscaleAdjusted } };
+            return {
+              setValue: { xmin: dependencyValues.xmaxPrelim - yscaleAdjusted },
+            };
           } else {
             return { setValue: { xmin: -yscaleAdjusted / 2 } };
           }
@@ -290,24 +297,25 @@ export default class Chart extends BlockComponent {
             return { setValue: { xmin: dependencyValues.xmaxPrelim - 20 } };
           } else {
             // use the default value of xmin
-            return { setValue: { xmin: -10 } }
+            return { setValue: { xmin: -10 } };
           }
         }
-
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         if (await stateValues.fixAxes) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setDependency: "xminPrelim",
-            desiredValue: desiredStateVariableValues.xmin
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setDependency: "xminPrelim",
+              desiredValue: desiredStateVariableValues.xmin,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.xmax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
@@ -321,41 +329,41 @@ export default class Chart extends BlockComponent {
         let dependencies = {
           identicalAxisScales: {
             dependencyType: "stateVariable",
-            variableName: "identicalAxisScales"
+            variableName: "identicalAxisScales",
           },
           xmaxPrelim: {
             dependencyType: "stateVariable",
-            variableName: "xmaxPrelim"
-          }
-        }
+            variableName: "xmaxPrelim",
+          },
+        };
 
         if (stateValues.identicalAxisScales) {
           dependencies.xminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xminPrelim"
-          }
+            variableName: "xminPrelim",
+          };
           dependencies.yminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "yminPrelim"
-          }
+            variableName: "yminPrelim",
+          };
           dependencies.ymaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "ymaxPrelim"
-          }
+            variableName: "ymaxPrelim",
+          };
           dependencies.width = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
+            variableName: "width",
+          };
           dependencies.height = {
             dependencyType: "stateVariable",
-            variableName: "height"
-          }
+            variableName: "height",
+          };
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { setValue: { xmax: dependencyValues.xmaxPrelim } }
+          return { setValue: { xmax: dependencyValues.xmaxPrelim } };
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
@@ -369,8 +377,11 @@ export default class Chart extends BlockComponent {
         let xmin = dependencyValues.xminPrelim;
 
         if (yscaleSpecified) {
-          let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
-          let yscaleAdjusted = (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) * aspectRatio;
+          let aspectRatio =
+            dependencyValues.width.size / dependencyValues.height.size;
+          let yscaleAdjusted =
+            (dependencyValues.ymaxPrelim - dependencyValues.yminPrelim) *
+            aspectRatio;
 
           if (xscaleSpecified) {
             let xscale = dependencyValues.xmaxPrelim - xmin;
@@ -379,42 +390,41 @@ export default class Chart extends BlockComponent {
             return { setValue: { xmax: xmin + maxScale } };
           } else {
             if (xminSpecified) {
-              return { setValue: { xmax: xmin + yscaleAdjusted } }
+              return { setValue: { xmax: xmin + yscaleAdjusted } };
             } else if (xmaxSpecified) {
-              return { setValue: { xmax: dependencyValues.xmaxPrelim } }
+              return { setValue: { xmax: dependencyValues.xmaxPrelim } };
             } else {
               return { setValue: { xmax: yscaleAdjusted / 2 } };
             }
-
           }
         } else {
           // no yscale specified
           if (xmaxSpecified) {
-            return { setValue: { xmax: dependencyValues.xmaxPrelim } }
+            return { setValue: { xmax: dependencyValues.xmaxPrelim } };
           } else if (xminSpecified) {
             // use the default xscale of 20
-            return { setValue: { xmax: xmin + 20 } }
+            return { setValue: { xmax: xmin + 20 } };
           } else {
             // use the default xmax
-            return { setValue: { xmax: 10 } }
+            return { setValue: { xmax: 10 } };
           }
         }
-
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         if (await stateValues.fixAxes) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setDependency: "xmaxPrelim",
-            desiredValue: desiredStateVariableValues.xmax
-          }]
-        }
-      }
-    }
-
+          instructions: [
+            {
+              setDependency: "xmaxPrelim",
+              desiredValue: desiredStateVariableValues.xmax,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.ymin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
@@ -428,48 +438,48 @@ export default class Chart extends BlockComponent {
         let dependencies = {
           identicalAxisScales: {
             dependencyType: "stateVariable",
-            variableName: "identicalAxisScales"
+            variableName: "identicalAxisScales",
           },
           yminPrelim: {
             dependencyType: "stateVariable",
-            variableName: "yminPrelim"
-          }
-        }
+            variableName: "yminPrelim",
+          },
+        };
 
         if (stateValues.identicalAxisScales) {
           dependencies.xmaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xmaxPrelim"
-          }
+            variableName: "xmaxPrelim",
+          };
           dependencies.xminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xminPrelim"
-          }
+            variableName: "xminPrelim",
+          };
           dependencies.ymaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "ymaxPrelim"
-          }
+            variableName: "ymaxPrelim",
+          };
           dependencies.width = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
+            variableName: "width",
+          };
           dependencies.height = {
             dependencyType: "stateVariable",
-            variableName: "height"
-          }
+            variableName: "height",
+          };
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { setValue: { ymin: dependencyValues.yminPrelim } }
+          return { setValue: { ymin: dependencyValues.yminPrelim } };
         }
 
         let yminSpecified = !usedDefault.yminPrelim;
 
         // always use ymin if specified
         if (yminSpecified) {
-          return { setValue: { ymin: dependencyValues.yminPrelim } }
+          return { setValue: { ymin: dependencyValues.yminPrelim } };
         }
 
         let ymaxSpecified = !usedDefault.ymaxPrelim;
@@ -477,39 +487,49 @@ export default class Chart extends BlockComponent {
         let xmaxSpecified = !usedDefault.xmaxPrelim;
 
         let xscaleSpecified = xminSpecified && xmaxSpecified;
-        let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+        let aspectRatio =
+          dependencyValues.width.size / dependencyValues.height.size;
 
         if (xscaleSpecified) {
-          let xscaleAdjusted = (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) / aspectRatio;
+          let xscaleAdjusted =
+            (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) /
+            aspectRatio;
           if (ymaxSpecified) {
-            return { setValue: { ymin: dependencyValues.ymaxPrelim - xscaleAdjusted } };
+            return {
+              setValue: { ymin: dependencyValues.ymaxPrelim - xscaleAdjusted },
+            };
           } else {
             return { setValue: { ymin: -xscaleAdjusted / 2 } };
           }
         } else {
           if (ymaxSpecified) {
             // use the default xscale of 20, adjusted for aspect ratio
-            return { setValue: { ymin: dependencyValues.ymaxPrelim - 20 / aspectRatio } };
+            return {
+              setValue: {
+                ymin: dependencyValues.ymaxPrelim - 20 / aspectRatio,
+              },
+            };
           } else {
             // use the default value of ymin, adjusted for aspect ration
-            return { setValue: { ymin: -10 / aspectRatio } }
+            return { setValue: { ymin: -10 / aspectRatio } };
           }
         }
-
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         if (await stateValues.fixAxes) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setDependency: "yminPrelim",
-            desiredValue: desiredStateVariableValues.ymin
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setDependency: "yminPrelim",
+              desiredValue: desiredStateVariableValues.ymin,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.ymax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
@@ -523,41 +543,41 @@ export default class Chart extends BlockComponent {
         let dependencies = {
           identicalAxisScales: {
             dependencyType: "stateVariable",
-            variableName: "identicalAxisScales"
+            variableName: "identicalAxisScales",
           },
           ymaxPrelim: {
             dependencyType: "stateVariable",
-            variableName: "ymaxPrelim"
-          }
-        }
+            variableName: "ymaxPrelim",
+          },
+        };
 
         if (stateValues.identicalAxisScales) {
           dependencies.xminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xminPrelim"
-          }
+            variableName: "xminPrelim",
+          };
           dependencies.yminPrelim = {
             dependencyType: "stateVariable",
-            variableName: "yminPrelim"
-          }
+            variableName: "yminPrelim",
+          };
           dependencies.xmaxPrelim = {
             dependencyType: "stateVariable",
-            variableName: "xmaxPrelim"
-          }
+            variableName: "xmaxPrelim",
+          };
           dependencies.width = {
             dependencyType: "stateVariable",
-            variableName: "width"
-          }
+            variableName: "width",
+          };
           dependencies.height = {
             dependencyType: "stateVariable",
-            variableName: "height"
-          }
+            variableName: "height",
+          };
         }
         return dependencies;
       },
       definition({ dependencyValues, usedDefault }) {
         if (!dependencyValues.identicalAxisScales) {
-          return { setValue: { ymax: dependencyValues.ymaxPrelim } }
+          return { setValue: { ymax: dependencyValues.ymaxPrelim } };
         }
 
         let xminSpecified = !usedDefault.xminPrelim;
@@ -570,10 +590,13 @@ export default class Chart extends BlockComponent {
 
         let ymin = dependencyValues.yminPrelim;
 
-        let aspectRatio = dependencyValues.width.size / dependencyValues.height.size;
+        let aspectRatio =
+          dependencyValues.width.size / dependencyValues.height.size;
 
         if (xscaleSpecified) {
-          let xscaleAdjusted = (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) / aspectRatio;
+          let xscaleAdjusted =
+            (dependencyValues.xmaxPrelim - dependencyValues.xminPrelim) /
+            aspectRatio;
 
           if (yscaleSpecified) {
             let yscale = dependencyValues.ymaxPrelim - ymin;
@@ -581,44 +604,42 @@ export default class Chart extends BlockComponent {
 
             return { setValue: { ymax: ymin + maxScale } };
           } else {
-
             if (yminSpecified) {
-              return { setValue: { ymax: ymin + xscaleAdjusted } }
+              return { setValue: { ymax: ymin + xscaleAdjusted } };
             } else if (ymaxSpecified) {
-              return { setValue: { ymax: dependencyValues.ymaxPrelim } }
+              return { setValue: { ymax: dependencyValues.ymaxPrelim } };
             } else {
               return { setValue: { ymax: xscaleAdjusted / 2 } };
             }
-
           }
         } else {
           // no xscale specified
           if (ymaxSpecified) {
-            return { setValue: { ymax: dependencyValues.ymaxPrelim } }
+            return { setValue: { ymax: dependencyValues.ymaxPrelim } };
           } else if (yminSpecified) {
             // use the default yscale of 20, adjusted for aspect ratio
-            return { setValue: { ymax: ymin + 20 / aspectRatio } }
+            return { setValue: { ymax: ymin + 20 / aspectRatio } };
           } else {
             // use the default ymax, adjusted for aspect ratio
-            return { setValue: { ymax: 10 / aspectRatio } }
+            return { setValue: { ymax: 10 / aspectRatio } };
           }
         }
-
-
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         if (await stateValues.fixAxes) {
-          return { success: false }
+          return { success: false };
         }
         return {
           success: true,
-          instructions: [{
-            setDependency: "ymaxPrelim",
-            desiredValue: desiredStateVariableValues.ymax
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setDependency: "ymaxPrelim",
+              desiredValue: desiredStateVariableValues.ymax,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.xscale = {
       public: true,
@@ -628,21 +649,21 @@ export default class Chart extends BlockComponent {
       returnDependencies: () => ({
         xmin: {
           dependencyType: "stateVariable",
-          variableName: "xmin"
+          variableName: "xmin",
         },
         xmax: {
           dependencyType: "stateVariable",
-          variableName: "xmax"
-        }
+          variableName: "xmax",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            xscale: dependencyValues.xmax - dependencyValues.xmin
-          }
-        }
-      }
-    }
+            xscale: dependencyValues.xmax - dependencyValues.xmin,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.yscale = {
       public: true,
@@ -652,27 +673,34 @@ export default class Chart extends BlockComponent {
       returnDependencies: () => ({
         ymin: {
           dependencyType: "stateVariable",
-          variableName: "ymin"
+          variableName: "ymin",
         },
         ymax: {
           dependencyType: "stateVariable",
-          variableName: "ymax"
-        }
+          variableName: "ymax",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            yscale: dependencyValues.ymax - dependencyValues.ymin
-          }
-        }
-      }
-    }
+            yscale: dependencyValues.ymax - dependencyValues.ymin,
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
-
+  async changeAxisLimits({
+    xmin,
+    xmax,
+    ymin,
+    ymax,
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     let updateInstructions = [];
 
     if (xmin !== undefined) {
@@ -680,37 +708,39 @@ export default class Chart extends BlockComponent {
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "xmin",
-        value: xmin
-      })
+        value: xmin,
+      });
     }
     if (xmax !== undefined) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "xmax",
-        value: xmax
-      })
+        value: xmax,
+      });
     }
     if (ymin !== undefined) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "ymin",
-        value: ymin
-      })
+        value: ymin,
+      });
     }
     if (ymax !== undefined) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "ymax",
-        value: ymax
-      })
+        value: ymax,
+      });
     }
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
       actionId,
+      sourceInformation,
+      skipRendererUpdate,
       event: {
         verb: "interacted",
         object: {
@@ -718,11 +748,13 @@ export default class Chart extends BlockComponent {
           componentType: this.componentType,
         },
         result: {
-          xmin, xmax, ymin, ymax
-        }
-      }
+          xmin,
+          xmax,
+          ymin,
+          ymax,
+        },
+      },
     });
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -732,27 +764,8 @@ export default class Chart extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  recordVisibilityChange({ isVisible, actionId }) {
-    this.coreFunctions.requestRecordEvent({
-      verb: "visibilityChanged",
-      object: {
-        componentName: this.componentName,
-        componentType: this.componentType,
-      },
-      result: { isVisible }
-    })
-    this.coreFunctions.resolveAction({ actionId });
-  }
-
-  actions = {
-    changeAxisLimits: this.changeAxisLimits.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
 }

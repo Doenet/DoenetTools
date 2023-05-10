@@ -1,42 +1,38 @@
-import me from 'math-expressions';
-import cssesc from 'cssesc';
+import me from "math-expressions";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-function cesc(s) {
-  s = cssesc(s, { isIdentifier: true });
-  if (s.slice(0, 2) === '\\#') {
-    s = s.slice(1);
-  }
-  return s;
-}
-
-describe('Select Tag Tests', function () {
-
+describe("Select Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
-    cy.visit('/cypressTest')
-  })
+    cy.visit("/src/Tools/cypressTest/");
+  });
 
   it("no parameters, select doesn't do anything", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p><select/></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_p1'].activeChildren.length).eq(0);
+      expect(stateVariables["/_p1"].activeChildren.length).eq(0);
     });
   });
 
-  it('select single math', () => {
+  it("select single math", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select assignnames="(x1)">
@@ -120,25 +116,28 @@ describe('Select Tag Tests', function () {
       <option><math>z</math></option>
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 10; ind++) {
-        let x = stateVariables['/x' + ind].stateValues.value;
+        let x = stateVariables["/x" + ind].stateValues.value;
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
       }
-    })
+    });
   });
 
-  it('select multiple maths', () => {
+  it("select multiple maths", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="3">
@@ -182,17 +181,20 @@ describe('Select Tag Tests', function () {
       <option><math>z</math></option>
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 5; ind++) {
-        let x = stateVariables['/x' + ind].stateValues.value;
-        let y = stateVariables['/y' + ind].stateValues.value;
-        let z = stateVariables['/z' + ind].stateValues.value;
+        let x = stateVariables["/x" + ind].stateValues.value;
+        let y = stateVariables["/y" + ind].stateValues.value;
+        let z = stateVariables["/z" + ind].stateValues.value;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -201,13 +203,14 @@ describe('Select Tag Tests', function () {
         expect(x).not.eq(z);
         expect(y).not.eq(z);
       }
-    })
+    });
   });
 
-  it('select multiple maths, initially unresolved', () => {
+  it("select multiple maths, initially unresolved", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="$n" >
@@ -258,21 +261,27 @@ describe('Select Tag Tests', function () {
     <math name="num2" simplify><copy target="n3" />+<copy target="num3" /></math>
     <copy name="n3" target="num3" />
     <number name="num3">1</number>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/num1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 5; ind++) {
-        let x = stateVariables['/x' + ind].stateValues.value;
-        let y = stateVariables['/y' + ind].stateValues.value;
-        let z = stateVariables['/z' + ind].stateValues.value;
+        let x = stateVariables["/x" + ind].stateValues.value;
+        let y = stateVariables["/y" + ind].stateValues.value;
+        let z = stateVariables["/z" + ind].stateValues.value;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -281,13 +290,14 @@ describe('Select Tag Tests', function () {
         expect(x).not.eq(z);
         expect(y).not.eq(z);
       }
-    })
+    });
   });
 
-  it('select multiple maths with namespace', () => {
+  it("select multiple maths with namespace", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="3" newNameSpace>
@@ -331,18 +341,20 @@ describe('Select Tag Tests', function () {
       <option><math>z</math></option>
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 5; ind++) {
-        let x = stateVariables['/s' + ind + '/x' + ind].stateValues.value;
-        let y = stateVariables['/s' + ind + '/y' + ind].stateValues.value;
-        let z = stateVariables['/s' + ind + '/z' + ind].stateValues.value;
+        let x = stateVariables["/s" + ind + "/x" + ind].stateValues.value;
+        let y = stateVariables["/s" + ind + "/y" + ind].stateValues.value;
+        let z = stateVariables["/s" + ind + "/z" + ind].stateValues.value;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -351,13 +363,14 @@ describe('Select Tag Tests', function () {
         expect(x).not.eq(z);
         expect(y).not.eq(z);
       }
-    })
+    });
   });
 
-  it('select multiple maths, with replacement', () => {
+  it("select multiple maths, with replacement", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="(x1)  (y1)  (z1)" numberToSelect="5" withReplacement>
@@ -386,35 +399,46 @@ describe('Select Tag Tests', function () {
       <option><math>z</math></option>
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 5; ind++) {
-        let x = stateVariables['/x' + ind].stateValues.value;
-        let y = stateVariables['/y' + ind].stateValues.value;
-        let z = stateVariables['/z' + ind].stateValues.value;
+        let x = stateVariables["/x" + ind].stateValues.value;
+        let y = stateVariables["/y" + ind].stateValues.value;
+        let z = stateVariables["/z" + ind].stateValues.value;
 
         expect(["x", "y", "z"].includes(x)).eq(true);
         expect(["x", "y", "z"].includes(y)).eq(true);
         expect(["x", "y", "z"].includes(z)).eq(true);
 
-        let s = stateVariables['/s' + ind];
+        let s = stateVariables["/s" + ind];
 
         for (let i = 3; i < 5; i++) {
-          expect(["x", "y", "z"].includes(stateVariables[stateVariables[s.replacements[i].componentName].replacements[0].componentName].stateValues.value)).eq(true);
+          expect(
+            ["x", "y", "z"].includes(
+              stateVariables[
+                stateVariables[s.replacements[i].componentName].replacements[0]
+                  .componentName
+              ].stateValues.value,
+            ),
+          ).eq(true);
         }
       }
-    })
+    });
   });
 
   it("copies don't resample", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>
     <aslist>
@@ -457,40 +481,131 @@ describe('Select Tag Tests', function () {
     <copy name="noresamplep" target="_p1" />
     <copy name="noreresamplep" target="noresamplep" />
     
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x1 = stateVariables[stateVariables[stateVariables['/s1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
-      let x2 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+      let x1 =
+        stateVariables[
+          stateVariables[stateVariables["/s1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
+      let x2 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
       expect(["u", "v", "w", "x", "y", "z"].includes(x1)).eq(true);
       expect(["u", "v", "w", "x", "y", "z"].includes(x2)).eq(true);
 
-      expect(stateVariables[stateVariables[stateVariables['/noresample1'].replacements[0].componentName].replacements[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables['/noresample2'].replacements[0].componentName].replacements[0].componentName].stateValues.value).eq(x2);
-      expect(stateVariables[stateVariables[stateVariables['/noreresample1'].replacements[0].componentName].replacements[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables['/noreresample2'].replacements[0].componentName].replacements[0].componentName].stateValues.value).eq(x2);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noresample1"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noresample2"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value,
+      ).eq(x2);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noreresample1"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noreresample2"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value,
+      ).eq(x2);
 
-      expect(stateVariables[stateVariables[stateVariables['/noresamplelist'].replacements[0].componentName].activeChildren[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables['/noresamplelist'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(x2);
-      expect(stateVariables[stateVariables[stateVariables['/noreresamplelist'].replacements[0].componentName].activeChildren[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables['/noreresamplelist'].replacements[0].componentName].activeChildren[1].componentName].stateValues.value).eq(x2);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noresamplelist"].replacements[0].componentName
+          ].activeChildren[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noresamplelist"].replacements[0].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      ).eq(x2);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noreresamplelist"].replacements[0].componentName
+          ].activeChildren[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables["/noreresamplelist"].replacements[0].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      ).eq(x2);
 
-      expect(stateVariables[stateVariables[stateVariables[stateVariables['/noresamplep'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables[stateVariables['/noresamplep'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[1].componentName].stateValues.value).eq(x2);
-      expect(stateVariables[stateVariables[stateVariables[stateVariables['/noreresamplep'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[0].componentName].stateValues.value).eq(x1);
-      expect(stateVariables[stateVariables[stateVariables[stateVariables['/noreresamplep'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[1].componentName].stateValues.value).eq(x2);
-
-    })
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables[
+              stateVariables["/noresamplep"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].activeChildren[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables[
+              stateVariables["/noresamplep"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      ).eq(x2);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables[
+              stateVariables["/noreresamplep"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].activeChildren[0].componentName
+        ].stateValues.value,
+      ).eq(x1);
+      expect(
+        stateVariables[
+          stateVariables[
+            stateVariables[
+              stateVariables["/noreresamplep"].replacements[0].componentName
+            ].activeChildren[1].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      ).eq(x2);
+    });
   });
 
   it("select doesn't change dynamically", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p>Number to select: <mathinput prefill="5" name="numbertoselect"/></p>
     <p>First option: <mathinput prefill="a" name="x"/></p>
@@ -512,10 +627,13 @@ describe('Select Tag Tests', function () {
 
     <p><copy prop="value" target="z" assignNames="z2" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     let samplemaths;
     let sampleIndices;
@@ -523,9 +641,16 @@ describe('Select Tag Tests', function () {
     let names2 = ["/w1", "/w2", "/w3", "/w4", "/w5", "/w6", "/w7"];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let samplereplacements = stateVariables['/sample1'].replacements;
+      let samplereplacements = stateVariables["/sample1"].replacements;
       expect(samplereplacements.length).eq(5);
-      samplemaths = samplereplacements.map(x => stateVariables[stateVariables[stateVariables[x.componentName].replacements[0].componentName].replacements[0].componentName].stateValues.value);
+      samplemaths = samplereplacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[
+              stateVariables[x.componentName].replacements[0].componentName
+            ].replacements[0].componentName
+          ].stateValues.value,
+      );
       for (let val of samplemaths) {
         expect(["a", "b", "c"].includes(val)).eq(true);
       }
@@ -536,26 +661,41 @@ describe('Select Tag Tests', function () {
       // expect(choices3.length).eq(5);
 
       for (let ind = 0; ind < 5; ind++) {
-        expect(stateVariables[names1[ind]].stateValues.value).eq(samplemaths[ind]);
-        expect(stateVariables[names2[ind]].stateValues.value).eq(samplemaths[ind]);
+        expect(stateVariables[names1[ind]].stateValues.value).eq(
+          samplemaths[ind],
+        );
+        expect(stateVariables[names2[ind]].stateValues.value).eq(
+          samplemaths[ind],
+        );
       }
-      expect(stateVariables[names1[5]]).eq(undefined)
-      expect(stateVariables[names2[5]]).eq(undefined)
+      expect(stateVariables[names1[5]]).eq(undefined);
+      expect(stateVariables[names2[5]]).eq(undefined);
 
-      sampleIndices = samplemaths.map(x => ["a", "b", "c"].indexOf(x) + 1);
-      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      sampleIndices = samplemaths.map((x) => ["a", "b", "c"].indexOf(x) + 1);
+      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(
+        sampleIndices,
+      );
       // expect(stateVariables["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       // expect(stateVariables['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
     });
 
-
     cy.log("Nothing changes when change number to select");
-    cy.get('#\\/numbertoselect textarea').type(`{end}{backspace}7{enter}`, { force: true });
+    cy.get(cesc("#\\/numbertoselect") + " textarea").type(
+      `{end}{backspace}7{enter}`,
+      { force: true },
+    );
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let samplereplacements = stateVariables['/sample1'].replacements;
-      let samplemaths2 = samplereplacements.map(x => stateVariables[stateVariables[stateVariables[x.componentName].replacements[0].componentName].replacements[0].componentName].stateValues.value);
+      let samplereplacements = stateVariables["/sample1"].replacements;
+      let samplemaths2 = samplereplacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[
+              stateVariables[x.componentName].replacements[0].componentName
+            ].replacements[0].componentName
+          ].stateValues.value,
+      );
 
       // let choices2 = stateVariables['/pchoices2'].activeChildren[1].activeChildren;
       // let choices3 = stateVariables['/pchoices3'].replacements[0].activeChildren[1].activeChildren;
@@ -563,59 +703,84 @@ describe('Select Tag Tests', function () {
       expect(samplereplacements.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
         expect(samplemaths2).eqls(samplemaths);
-        expect(stateVariables[names1[ind]].stateValues.value).eq(samplemaths[ind]);
-        expect(stateVariables[names2[ind]].stateValues.value).eq(samplemaths[ind]);
+        expect(stateVariables[names1[ind]].stateValues.value).eq(
+          samplemaths[ind],
+        );
+        expect(stateVariables[names2[ind]].stateValues.value).eq(
+          samplemaths[ind],
+        );
       }
-      expect(stateVariables[names1[5]]).eq(undefined)
-      expect(stateVariables[names2[5]]).eq(undefined)
+      expect(stateVariables[names1[5]]).eq(undefined);
+      expect(stateVariables[names2[5]]).eq(undefined);
 
-      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(
+        sampleIndices,
+      );
       // expect(stateVariables["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       // expect(stateVariables['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
-
-    })
+    });
 
     cy.log("Values change to reflect copy sources");
 
     let newvalues = {
       a: "q",
       b: "r",
-      c: "s"
-    }
-    cy.get('#\\/x textarea').type("{end}{backspace}" + newvalues.a + `{enter}`, { force: true });
-    cy.get('#\\/y textarea').type("{end}{backspace}" + newvalues.b + `{enter}`, { force: true });
-    cy.get('#\\/z textarea').type("{end}{backspace}" + newvalues.c + `{enter}`, { force: true });
-    cy.get('#\\/z2').should('contain.text', newvalues.c);
+      c: "s",
+    };
+    cy.get(cesc("#\\/x") + " textarea").type(
+      "{end}{backspace}" + newvalues.a + `{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/y") + " textarea").type(
+      "{end}{backspace}" + newvalues.b + `{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/z") + " textarea").type(
+      "{end}{backspace}" + newvalues.c + `{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/z2")).should("contain.text", newvalues.c);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let samplereplacements = stateVariables['/sample1'].replacements;
-      let samplemaths3 = samplereplacements.map(x => stateVariables[stateVariables[stateVariables[x.componentName].replacements[0].componentName].replacements[0].componentName].stateValues.value);
+      let samplereplacements = stateVariables["/sample1"].replacements;
+      let samplemaths3 = samplereplacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[
+              stateVariables[x.componentName].replacements[0].componentName
+            ].replacements[0].componentName
+          ].stateValues.value,
+      );
 
       expect(samplereplacements.length).eq(5);
       // expect(choices2.length).eq(5);
       // expect(choices3.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
         expect(samplemaths3[ind]).eq(newvalues[samplemaths[ind]]);
-        expect(stateVariables[names1[ind]].stateValues.value).eq(newvalues[samplemaths[ind]]);
-        expect(stateVariables[names2[ind]].stateValues.value).eq(newvalues[samplemaths[ind]]);
+        expect(stateVariables[names1[ind]].stateValues.value).eq(
+          newvalues[samplemaths[ind]],
+        );
+        expect(stateVariables[names2[ind]].stateValues.value).eq(
+          newvalues[samplemaths[ind]],
+        );
       }
-      expect(stateVariables[names1[5]]).eq(undefined)
-      expect(stateVariables[names2[5]]).eq(undefined)
+      expect(stateVariables[names1[5]]).eq(undefined);
+      expect(stateVariables[names2[5]]).eq(undefined);
 
-      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(stateVariables["/sample1"].stateValues.selectedIndices).eqls(
+        sampleIndices,
+      );
       // expect(stateVariables["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       // expect(stateVariables['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
-
-    })
-
-
+    });
   });
 
   it("select doesn't resample in dynamic map", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     How many variables do you want? <mathinput />
     <p name="p1"><aslist>
@@ -652,285 +817,1099 @@ describe('Select Tag Tests', function () {
     <copy name="p8" target="p5" />
     <copy name="p9" target="p6" />
     <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     let sampledvariables = [];
 
-    cy.log("initially nothing")
+    cy.log("initially nothing");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
     });
 
     cy.log("sample one variable");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '1')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}1{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "1");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
       sampledvariables.push(n1);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
       for (let ind = 0; ind < 1; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
+    });
 
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
+    cy.log("go back to nothing");
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}0{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "0");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
     });
 
     cy.log("get same number back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '1')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}1{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "1");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
       expect(n1).eq(sampledvariables[0]);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(1);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
+    });
 
     cy.log("get two more samples");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '3')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}3{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "3");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
-      let n2 = stateVariables['/b/n'].stateValues.value;
-      let n3 = stateVariables['/c/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
+      let n2 = stateVariables["/b/n"].stateValues.value;
+      let n3 = stateVariables["/c/n"].stateValues.value;
       expect(n1).eq(sampledvariables[0]);
       sampledvariables.push(n2);
       sampledvariables.push(n3);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(3);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(3);
       for (let ind = 0; ind < 3; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
-
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
     });
 
+    cy.log("go back to nothing");
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}0{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "0");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+    });
 
     cy.log("get first two numbers back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '2')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}2{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "2");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
-      let n2 = stateVariables['/b/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
+      let n2 = stateVariables["/b/n"].stateValues.value;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(2);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
+    });
 
     cy.log("get six total samples");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '6')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}6{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "6");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
-      let n2 = stateVariables['/b/n'].stateValues.value;
-      let n3 = stateVariables['/c/n'].stateValues.value;
-      let n4 = stateVariables['/d/n'].stateValues.value;
-      let n5 = stateVariables['/e/n'].stateValues.value;
-      let n6 = stateVariables['/f/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
+      let n2 = stateVariables["/b/n"].stateValues.value;
+      let n3 = stateVariables["/c/n"].stateValues.value;
+      let n4 = stateVariables["/d/n"].stateValues.value;
+      let n5 = stateVariables["/e/n"].stateValues.value;
+      let n6 = stateVariables["/f/n"].stateValues.value;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
       expect(n3).eq(sampledvariables[2]);
       sampledvariables.push(n4);
       sampledvariables.push(n5);
       sampledvariables.push(n6);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
+    });
 
-    cy.log("go back to nothing")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '0')
+    cy.log("go back to nothing");
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}0{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "0");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(0);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(0);
     });
 
     cy.log("get all six back");
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/m1').should('contain.text', '6')
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      `{end}{backspace}6{enter}`,
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "6");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/a/n'].stateValues.value;
-      let n2 = stateVariables['/b/n'].stateValues.value;
-      let n3 = stateVariables['/c/n'].stateValues.value;
-      let n4 = stateVariables['/d/n'].stateValues.value;
-      let n5 = stateVariables['/e/n'].stateValues.value;
-      let n6 = stateVariables['/f/n'].stateValues.value;
+      let n1 = stateVariables["/a/n"].stateValues.value;
+      let n2 = stateVariables["/b/n"].stateValues.value;
+      let n3 = stateVariables["/c/n"].stateValues.value;
+      let n4 = stateVariables["/d/n"].stateValues.value;
+      let n5 = stateVariables["/e/n"].stateValues.value;
+      let n6 = stateVariables["/f/n"].stateValues.value;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
       expect(n3).eq(sampledvariables[2]);
       expect(n4).eq(sampledvariables[3]);
       expect(n5).eq(sampledvariables[4]);
       expect(n6).eq(sampledvariables[5]);
-      expect(stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
-      expect(stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren.length).eq(6);
+      expect(
+        stateVariables[stateVariables["/p1"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[stateVariables["/p2"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[stateVariables["/p3"].activeChildren[0].componentName]
+          .activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p4"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p5"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p6"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p7"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p8"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
+      expect(
+        stateVariables[
+          stateVariables[stateVariables["/p9"].replacements[0].componentName]
+            .activeChildren[0].componentName
+        ].activeChildren.length,
+      ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(stateVariables[stateVariables[stateVariables['/p1'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p2'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables['/p3'].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p4'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p5'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p6'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p7'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p8'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
-        expect(stateVariables[stateVariables[stateVariables[stateVariables['/p9'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[ind].componentName].stateValues.value).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p1"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p2"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables["/p3"].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p4"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p5"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p6"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p7"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p8"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
+        expect(
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables["/p9"].replacements[0].componentName
+              ].activeChildren[0].componentName
+            ].activeChildren[ind].componentName
+          ].stateValues.value,
+        ).eq(sampledvariables[ind]);
       }
-    })
-
-
+    });
   });
 
-  it('select single group of maths, assign names to grandchildren', () => {
+  it("select single group of maths, assign names to grandchildren", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x1 y1 z1)">
       <option><math>u</math><math>v</math><math>w</math></option>
@@ -953,32 +1932,38 @@ describe('Select Tag Tests', function () {
     <p name="q1"><aslist><copy target="x1" /><copy target="y1" /><copy target="z1" /></aslist></p>
     <p name="q2"><aslist><copy target="x2" /><copy target="y2" /><copy target="z2" /></aslist></p>
     <p name="q3"><aslist><copy target="x3" /><copy target="y3" /><copy target="z3" /></aslist></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     let lists = {
       x: ["x", "y", "z"],
       u: ["u", "v", "w"],
       a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
+      q: ["q", "r", "s"],
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x1 = stateVariables['/x1'].stateValues.value;
-      let y1 = stateVariables['/y1'].stateValues.value;
-      let z1 = stateVariables['/z1'].stateValues.value;
-      let x2 = stateVariables['/x2'].stateValues.value;
-      let y2 = stateVariables['/y2'].stateValues.value;
-      let z2 = stateVariables['/z2'].stateValues.value;
-      let x3 = stateVariables['/x3'].stateValues.value;
-      let y3 = stateVariables['/y3'].stateValues.value;
-      let z3 = stateVariables['/z3'].stateValues.value;
+      let x1 = stateVariables["/x1"].stateValues.value;
+      let y1 = stateVariables["/y1"].stateValues.value;
+      let z1 = stateVariables["/z1"].stateValues.value;
+      let x2 = stateVariables["/x2"].stateValues.value;
+      let y2 = stateVariables["/y2"].stateValues.value;
+      let z2 = stateVariables["/z2"].stateValues.value;
+      let x3 = stateVariables["/x3"].stateValues.value;
+      let y3 = stateVariables["/y3"].stateValues.value;
+      let z3 = stateVariables["/z3"].stateValues.value;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -992,32 +1977,37 @@ describe('Select Tag Tests', function () {
       expect(z3).eq(list3[2]);
 
       for (let name of ["/p1", "/q1"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list1[ind]);
         }
       }
       for (let name of ["/p2", "/q2"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list2[ind]);
         }
       }
       for (let name of ["/p3", "/q3"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list3[ind]);
         }
       }
-
-
-    })
+    });
   });
 
-  it('select single group of maths, assign names with namespace to grandchildren', () => {
+  it("select single group of maths, assign names with namespace to grandchildren", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x y z)" name="s1" newnamespace>
       <option><math>u</math><math>v</math><math>w</math></option>
@@ -1041,32 +2031,38 @@ describe('Select Tag Tests', function () {
     <p name="q2"><aslist><copy target="s2/x" /><copy target="s2/y" /><copy target="s2/z" /></aslist></p>
     <p name="q3"><aslist><copy target="s3/x" /><copy target="s3/y" /><copy target="s3/z" /></aslist></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     let lists = {
       x: ["x", "y", "z"],
       u: ["u", "v", "w"],
       a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
+      q: ["q", "r", "s"],
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x1 = stateVariables['/s1/x'].stateValues.value;
-      let y1 = stateVariables['/s1/y'].stateValues.value;
-      let z1 = stateVariables['/s1/z'].stateValues.value;
-      let x2 = stateVariables['/s2/x'].stateValues.value;
-      let y2 = stateVariables['/s2/y'].stateValues.value;
-      let z2 = stateVariables['/s2/z'].stateValues.value;
-      let x3 = stateVariables['/s3/x'].stateValues.value;
-      let y3 = stateVariables['/s3/y'].stateValues.value;
-      let z3 = stateVariables['/s3/z'].stateValues.value;
+      let x1 = stateVariables["/s1/x"].stateValues.value;
+      let y1 = stateVariables["/s1/y"].stateValues.value;
+      let z1 = stateVariables["/s1/z"].stateValues.value;
+      let x2 = stateVariables["/s2/x"].stateValues.value;
+      let y2 = stateVariables["/s2/y"].stateValues.value;
+      let z2 = stateVariables["/s2/z"].stateValues.value;
+      let x3 = stateVariables["/s3/x"].stateValues.value;
+      let y3 = stateVariables["/s3/y"].stateValues.value;
+      let z3 = stateVariables["/s3/z"].stateValues.value;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -1080,32 +2076,37 @@ describe('Select Tag Tests', function () {
       expect(z3).eq(list3[2]);
 
       for (let name of ["/p1", "/q1"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list1[ind]);
         }
       }
       for (let name of ["/p2", "/q2"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list2[ind]);
         }
       }
       for (let name of ["/p3", "/q3"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind = 0; ind < 3; ind++) {
           expect(aslistChildren[ind].stateValues.value).eq(list3[ind]);
         }
       }
-
-
-    })
+    });
   });
 
-  it('select multiple group of maths, assign names to grandchildren', () => {
+  it("select multiple group of maths, assign names to grandchildren", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <p name="p1"><aslist>
       <select assignnames="(x1 y1 z1) (x2 y2 z2) (x3 y3 z3)" numbertoselect="3">
@@ -1120,32 +2121,38 @@ describe('Select Tag Tests', function () {
       <copy target="x2" /><copy target="y2" /><copy target="z2" />
       <copy target="x3" /><copy target="y3" /><copy target="z3" />
     </aslist></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     let lists = {
       x: ["x", "y", "z"],
       u: ["u", "v", "w"],
       a: ["a", "b", "c"],
-      q: ["q", "r", "s"]
-    }
+      q: ["q", "r", "s"],
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let x1 = stateVariables['/x1'].stateValues.value;
-      let y1 = stateVariables['/y1'].stateValues.value;
-      let z1 = stateVariables['/z1'].stateValues.value;
-      let x2 = stateVariables['/x2'].stateValues.value;
-      let y2 = stateVariables['/y2'].stateValues.value;
-      let z2 = stateVariables['/z2'].stateValues.value;
-      let x3 = stateVariables['/x3'].stateValues.value;
-      let y3 = stateVariables['/y3'].stateValues.value;
-      let z3 = stateVariables['/z3'].stateValues.value;
+      let x1 = stateVariables["/x1"].stateValues.value;
+      let y1 = stateVariables["/y1"].stateValues.value;
+      let z1 = stateVariables["/z1"].stateValues.value;
+      let x2 = stateVariables["/x2"].stateValues.value;
+      let y2 = stateVariables["/y2"].stateValues.value;
+      let z2 = stateVariables["/z2"].stateValues.value;
+      let x3 = stateVariables["/x3"].stateValues.value;
+      let y3 = stateVariables["/y3"].stateValues.value;
+      let z3 = stateVariables["/z3"].stateValues.value;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -1165,21 +2172,25 @@ describe('Select Tag Tests', function () {
       expect(z3).eq(list3[2]);
 
       for (let name of ["/p1", "/q1"]) {
-        let aslistChildren = stateVariables[stateVariables[name].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName]);
+        let aslistChildren = stateVariables[
+          stateVariables[name].activeChildren[0].componentName
+        ].activeChildren.map((x) => stateVariables[x.componentName]);
         for (let ind1 = 0; ind1 < 3; ind1++) {
           for (let ind2 = 0; ind2 < 3; ind2++) {
-            expect(aslistChildren[ind1 * 3 + ind2].stateValues.value).eq(listsByInd[ind1][ind2]);
+            expect(aslistChildren[ind1 * 3 + ind2].stateValues.value).eq(
+              listsByInd[ind1][ind2],
+            );
           }
         }
       }
-
-    })
+    });
   });
 
-  it('references to outside components', () => {
+  it("references to outside components", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <math hide name="x1">x</math>
     <math hide name="x2">y</math>
@@ -1202,55 +2213,91 @@ describe('Select Tag Tests', function () {
     <copy name="t2" target="t" />
     <copy name="u2" target="u" />
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     let option = {
       "Option 1: ": me.fromText("3xa"),
       "Option 2: ": me.fromText("4yb"),
-      "Option 3: ": me.fromText('5zc')
-    }
+      "Option 3: ": me.fromText("5zc"),
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let q2 = stateVariables[stateVariables[stateVariables['/q2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let q2 =
+        stateVariables[
+          stateVariables[stateVariables["/q2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let q2string = q2[0];
-      let q2math = me.fromAst(stateVariables[q2[1].componentName].stateValues.value);
+      let q2math = me.fromAst(
+        stateVariables[q2[1].componentName].stateValues.value,
+      );
       expect(q2math.equals(option[q2string])).eq(true);
 
-      let r2 = stateVariables[stateVariables[stateVariables['/r2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let r2 =
+        stateVariables[
+          stateVariables[stateVariables["/r2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let r2string = r2[0];
-      let r2math = me.fromAst(stateVariables[r2[1].componentName].stateValues.value);
+      let r2math = me.fromAst(
+        stateVariables[r2[1].componentName].stateValues.value,
+      );
       expect(r2math.equals(option[r2string])).eq(true);
 
-      let s2 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let s2 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let s2string = s2[0];
-      let s2math = me.fromAst(stateVariables[s2[1].componentName].stateValues.value);
+      let s2math = me.fromAst(
+        stateVariables[s2[1].componentName].stateValues.value,
+      );
       expect(s2math.equals(option[s2string])).eq(true);
 
-      let t2 = stateVariables[stateVariables[stateVariables['/t2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let t2 =
+        stateVariables[
+          stateVariables[stateVariables["/t2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let t2string = t2[0];
-      let t2math = me.fromAst(stateVariables[t2[1].componentName].stateValues.value);
+      let t2math = me.fromAst(
+        stateVariables[t2[1].componentName].stateValues.value,
+      );
       expect(t2math.equals(option[t2string])).eq(true);
 
-      let u2 = stateVariables[stateVariables[stateVariables['/u2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let u2 =
+        stateVariables[
+          stateVariables[stateVariables["/u2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let u2string = u2[0];
-      let u2math = me.fromAst(stateVariables[u2[1].componentName].stateValues.value);
+      let u2math = me.fromAst(
+        stateVariables[u2[1].componentName].stateValues.value,
+      );
       expect(u2math.equals(option[u2string])).eq(true);
-
-    })
+    });
   });
 
-  it('references to outside components, no new namespace', () => {
+  it("references to outside components, no new namespace", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <math hide name="x1">x</math>
     <math hide name="x2">y</math>
@@ -1273,55 +2320,91 @@ describe('Select Tag Tests', function () {
     <copy name="t2" target="t" />
     <copy name="u2" target="u" />
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     let option = {
       "Option 1: ": me.fromText("3xa"),
       "Option 2: ": me.fromText("4yb"),
-      "Option 3: ": me.fromText('5zc')
-    }
+      "Option 3: ": me.fromText("5zc"),
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let q2 = stateVariables[stateVariables[stateVariables['/q2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let q2 =
+        stateVariables[
+          stateVariables[stateVariables["/q2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let q2string = q2[0];
-      let q2math = me.fromAst(stateVariables[q2[1].componentName].stateValues.value);
+      let q2math = me.fromAst(
+        stateVariables[q2[1].componentName].stateValues.value,
+      );
       expect(q2math.equals(option[q2string])).eq(true);
 
-      let r2 = stateVariables[stateVariables[stateVariables['/r2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let r2 =
+        stateVariables[
+          stateVariables[stateVariables["/r2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let r2string = r2[0];
-      let r2math = me.fromAst(stateVariables[r2[1].componentName].stateValues.value);
+      let r2math = me.fromAst(
+        stateVariables[r2[1].componentName].stateValues.value,
+      );
       expect(r2math.equals(option[r2string])).eq(true);
 
-      let s2 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let s2 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let s2string = s2[0];
-      let s2math = me.fromAst(stateVariables[s2[1].componentName].stateValues.value);
+      let s2math = me.fromAst(
+        stateVariables[s2[1].componentName].stateValues.value,
+      );
       expect(s2math.equals(option[s2string])).eq(true);
 
-      let t2 = stateVariables[stateVariables[stateVariables['/t2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let t2 =
+        stateVariables[
+          stateVariables[stateVariables["/t2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let t2string = t2[0];
-      let t2math = me.fromAst(stateVariables[t2[1].componentName].stateValues.value);
+      let t2math = me.fromAst(
+        stateVariables[t2[1].componentName].stateValues.value,
+      );
       expect(t2math.equals(option[t2string])).eq(true);
 
-      let u2 = stateVariables[stateVariables[stateVariables['/u2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let u2 =
+        stateVariables[
+          stateVariables[stateVariables["/u2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let u2string = u2[0];
-      let u2math = me.fromAst(stateVariables[u2[1].componentName].stateValues.value);
+      let u2math = me.fromAst(
+        stateVariables[u2[1].componentName].stateValues.value,
+      );
       expect(u2math.equals(option[u2string])).eq(true);
-
-    })
+    });
   });
 
-  it('internal references', () => {
+  it("internal references", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
@@ -1347,80 +2430,152 @@ describe('Select Tag Tests', function () {
     <p>Copy select itself</p>
     <section name="repeat"><copy target="_select1" /></section>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     let option = {
       "Option 1: ": me.fromText("3x+a+x^2a^3"),
       "Option 2: ": me.fromText("4y+b+y^2b^3"),
-      "Option 3: ": me.fromText('5z+c+z^2c^3')
-    }
+      "Option 3: ": me.fromText("5z+c+z^2c^3"),
+    };
 
     let xoption = {
       "Option 1: ": "x",
       "Option 2: ": "y",
-      "Option 3: ": "z"
-    }
-
+      "Option 3: ": "z",
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let q2 = stateVariables[stateVariables[stateVariables['/q2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let q2 =
+        stateVariables[
+          stateVariables[stateVariables["/q2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let q2string = q2[0];
-      let q2math = me.fromAst(stateVariables[q2[1].componentName].stateValues.value);
+      let q2math = me.fromAst(
+        stateVariables[q2[1].componentName].stateValues.value,
+      );
       expect(q2math.equals(option[q2string])).eq(true);
-      let qx = stateVariables[stateVariables['/qx'].replacements[0].componentName].stateValues.value;
+      let qx =
+        stateVariables[stateVariables["/qx"].replacements[0].componentName]
+          .stateValues.value;
       expect(qx).eq(xoption[q2string]);
-      let repeatqmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[0].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatqmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[0].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
-      let r2 = stateVariables[stateVariables[stateVariables['/r2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let r2 =
+        stateVariables[
+          stateVariables[stateVariables["/r2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let r2string = r2[0];
-      let r2math = me.fromAst(stateVariables[r2[1].componentName].stateValues.value);
+      let r2math = me.fromAst(
+        stateVariables[r2[1].componentName].stateValues.value,
+      );
       expect(r2math.equals(option[r2string])).eq(true);
-      let rx = stateVariables[stateVariables['/rx'].replacements[0].componentName].stateValues.value;
+      let rx =
+        stateVariables[stateVariables["/rx"].replacements[0].componentName]
+          .stateValues.value;
       expect(rx).eq(xoption[r2string]);
-      let repeatrmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[1].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatrmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[1].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
-      let s2 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let s2 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let s2string = s2[0];
-      let s2math = me.fromAst(stateVariables[s2[1].componentName].stateValues.value);
+      let s2math = me.fromAst(
+        stateVariables[s2[1].componentName].stateValues.value,
+      );
       expect(s2math.equals(option[s2string])).eq(true);
-      let sx = stateVariables[stateVariables['/sx'].replacements[0].componentName].stateValues.value;
+      let sx =
+        stateVariables[stateVariables["/sx"].replacements[0].componentName]
+          .stateValues.value;
       expect(sx).eq(xoption[s2string]);
-      let repeatsmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[2].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatsmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[2].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
-      let t2 = stateVariables[stateVariables[stateVariables['/t2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let t2 =
+        stateVariables[
+          stateVariables[stateVariables["/t2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let t2string = t2[0];
-      let t2math = me.fromAst(stateVariables[t2[1].componentName].stateValues.value);
+      let t2math = me.fromAst(
+        stateVariables[t2[1].componentName].stateValues.value,
+      );
       expect(t2math.equals(option[t2string])).eq(true);
-      let tx = stateVariables[stateVariables['/tx'].replacements[0].componentName].stateValues.value;
+      let tx =
+        stateVariables[stateVariables["/tx"].replacements[0].componentName]
+          .stateValues.value;
       expect(tx).eq(xoption[t2string]);
-      let repeattmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[3].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeattmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[3].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeattmath.equals(option[t2string])).eq(true);
 
-      let u2 = stateVariables[stateVariables[stateVariables['/u2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let u2 =
+        stateVariables[
+          stateVariables[stateVariables["/u2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let u2string = u2[0];
-      let u2math = me.fromAst(stateVariables[u2[1].componentName].stateValues.value);
+      let u2math = me.fromAst(
+        stateVariables[u2[1].componentName].stateValues.value,
+      );
       expect(u2math.equals(option[u2string])).eq(true);
-      let ux = stateVariables[stateVariables['/ux'].replacements[0].componentName].stateValues.value;
+      let ux =
+        stateVariables[stateVariables["/ux"].replacements[0].componentName]
+          .stateValues.value;
       expect(ux).eq(xoption[u2string]);
-      let repeatumath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[4].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatumath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[4].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatumath.equals(option[u2string])).eq(true);
-
-    })
+    });
   });
 
-  it('internal references with no new namespace', () => {
+  it("internal references with no new namespace", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <select assignnames="q r s t u" numbertoselect="5" withreplacement>
@@ -1439,70 +2594,132 @@ describe('Select Tag Tests', function () {
     <p>Copy select itself</p>
     <section name="repeat"><copy target="_select1" /></section>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     let option = {
       "Option 1: ": me.fromText("3x+a+x^2a^3"),
       "Option 2: ": me.fromText("4y+b+y^2b^3"),
-      "Option 3: ": me.fromText('5z+c+z^2c^3')
-    }
+      "Option 3: ": me.fromText("5z+c+z^2c^3"),
+    };
 
     let xoption = {
       "Option 1: ": "x",
       "Option 2: ": "y",
-      "Option 3: ": "z"
-    }
-
+      "Option 3: ": "z",
+    };
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let q2 = stateVariables[stateVariables[stateVariables['/q2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let q2 =
+        stateVariables[
+          stateVariables[stateVariables["/q2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let q2string = q2[0];
-      let q2math = me.fromAst(stateVariables[q2[1].componentName].stateValues.value);
+      let q2math = me.fromAst(
+        stateVariables[q2[1].componentName].stateValues.value,
+      );
       expect(q2math.equals(option[q2string])).eq(true);
-      let repeatqmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[0].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatqmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[0].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
-      let r2 = stateVariables[stateVariables[stateVariables['/r2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let r2 =
+        stateVariables[
+          stateVariables[stateVariables["/r2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let r2string = r2[0];
-      let r2math = me.fromAst(stateVariables[r2[1].componentName].stateValues.value);
+      let r2math = me.fromAst(
+        stateVariables[r2[1].componentName].stateValues.value,
+      );
       expect(r2math.equals(option[r2string])).eq(true);
-      let repeatrmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[1].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatrmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[1].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
-      let s2 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let s2 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let s2string = s2[0];
-      let s2math = me.fromAst(stateVariables[s2[1].componentName].stateValues.value);
+      let s2math = me.fromAst(
+        stateVariables[s2[1].componentName].stateValues.value,
+      );
       expect(s2math.equals(option[s2string])).eq(true);
-      let repeatsmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[2].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatsmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[2].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
-      let t2 = stateVariables[stateVariables[stateVariables['/t2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let t2 =
+        stateVariables[
+          stateVariables[stateVariables["/t2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let t2string = t2[0];
-      let t2math = me.fromAst(stateVariables[t2[1].componentName].stateValues.value);
+      let t2math = me.fromAst(
+        stateVariables[t2[1].componentName].stateValues.value,
+      );
       expect(t2math.equals(option[t2string])).eq(true);
-      let repeattmath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[3].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeattmath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[3].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeattmath.equals(option[t2string])).eq(true);
 
-      let u2 = stateVariables[stateVariables[stateVariables['/u2'].replacements[0].componentName].replacements[0].componentName].activeChildren;
+      let u2 =
+        stateVariables[
+          stateVariables[stateVariables["/u2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].activeChildren;
       let u2string = u2[0];
-      let u2math = me.fromAst(stateVariables[u2[1].componentName].stateValues.value);
+      let u2math = me.fromAst(
+        stateVariables[u2[1].componentName].stateValues.value,
+      );
       expect(u2math.equals(option[u2string])).eq(true);
-      let repeatumath = me.fromAst(stateVariables[stateVariables[stateVariables["/repeat"].activeChildren[4].componentName].activeChildren[1].componentName].stateValues.value);
+      let repeatumath = me.fromAst(
+        stateVariables[
+          stateVariables[
+            stateVariables["/repeat"].activeChildren[4].componentName
+          ].activeChildren[1].componentName
+        ].stateValues.value,
+      );
       expect(repeatumath.equals(option[u2string])).eq(true);
-
-    })
+    });
   });
 
-  it('variant names specified, select single', () => {
+  it("variant names specified, select single", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <variantControl nvariants="5" variantNames="aVocado  broCColi   carrot  Dill eggplanT"/>
 
@@ -1519,12 +2736,14 @@ describe('Select Tag Tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariantIndex: 2
-      }, "*");
+          requestedVariantIndex: 2,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1533,26 +2752,37 @@ describe('Select Tag Tests', function () {
       // let expectedx = variantName.substring(0, 1);
       let expectedx = "b";
 
-      let x = stateVariables['/x'].stateValues.value;
+      let x = stateVariables["/x"].stateValues.value;
 
       expect(x).eq(expectedx);
 
-      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+      let xorig =
+        stateVariables[
+          stateVariables[
+            stateVariables["/_select1"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value;
       expect(xorig).eq(expectedx);
 
-      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+      let x2 =
+        stateVariables[stateVariables["/x2"].replacements[0].componentName]
+          .stateValues.value;
       expect(x2).eq(expectedx);
 
-      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+      let x3 =
+        stateVariables[
+          stateVariables[stateVariables["/x3"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
       expect(x3).eq(expectedx);
-
-    })
+    });
   });
 
-  it('variant names specified, select multiple', () => {
+  it("variant names specified, select multiple", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <variantControl nvariants="5" variantNames="avocado  brOccoli   carrot  dill    eggPlant  "/>
 
@@ -1574,12 +2804,14 @@ describe('Select Tag Tests', function () {
     <p>Selected variables repeated: <aslist><copy name="s2" target="_select1" /></aslist></p>
 
     `,
-        requestedVariantIndex: 3
-      }, "*");
+          requestedVariantIndex: 3,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1589,115 +2821,158 @@ describe('Select Tag Tests', function () {
         broccoli: ["e", "a", "b"],
         carrot: ["d", "c", "b"],
         dill: ["d", "e", "b"],
-        eggplant: ["c", "c", "e"]
-      }
+        eggplant: ["c", "c", "e"],
+      };
 
       // let variantName = stateVariables['/x'].sharedParameters.variantName;
-      let variantName = 'carrot';
+      let variantName = "carrot";
       let variantVars = variantMap[variantName];
 
-      let x = stateVariables['/x'].stateValues.value;
+      let x = stateVariables["/x"].stateValues.value;
 
       expect(variantVars.includes(x)).eq(true);
       variantVars.splice(variantVars.indexOf(x), 1);
 
-      let y = stateVariables['/y'].stateValues.value;
+      let y = stateVariables["/y"].stateValues.value;
       expect(variantVars.includes(y)).eq(true);
       variantVars.splice(variantVars.indexOf(y), 1);
 
-      let z = stateVariables['/z'].stateValues.value;
+      let z = stateVariables["/z"].stateValues.value;
       expect(z).eq(variantVars[0]);
 
-      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+      let xorig =
+        stateVariables[
+          stateVariables[
+            stateVariables["/_select1"].replacements[0].componentName
+          ].replacements[0].componentName
+        ].stateValues.value;
       expect(xorig).eq(x);
-      let yorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[1].componentName].replacements[0].componentName].stateValues.value;
+      let yorig =
+        stateVariables[
+          stateVariables[
+            stateVariables["/_select1"].replacements[1].componentName
+          ].replacements[0].componentName
+        ].stateValues.value;
       expect(yorig).eq(y);
-      let zorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[2].componentName].replacements[0].componentName].stateValues.value;
+      let zorig =
+        stateVariables[
+          stateVariables[
+            stateVariables["/_select1"].replacements[2].componentName
+          ].replacements[0].componentName
+        ].stateValues.value;
       expect(zorig).eq(z);
 
-      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+      let x2 =
+        stateVariables[stateVariables["/x2"].replacements[0].componentName]
+          .stateValues.value;
       expect(x2).eq(x);
-      let y2 = stateVariables[stateVariables['/y2'].replacements[0].componentName].stateValues.value;
+      let y2 =
+        stateVariables[stateVariables["/y2"].replacements[0].componentName]
+          .stateValues.value;
       expect(y2).eq(y);
-      let z2 = stateVariables[stateVariables['/z2'].replacements[0].componentName].stateValues.value;
+      let z2 =
+        stateVariables[stateVariables["/z2"].replacements[0].componentName]
+          .stateValues.value;
       expect(z2).eq(z);
 
-      let x3 = stateVariables[stateVariables[stateVariables['/s2'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+      let x3 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
       expect(x3).eq(x);
-      let y3 = stateVariables[stateVariables[stateVariables['/s2'].replacements[1].componentName].replacements[0].componentName].stateValues.value;
+      let y3 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[1].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
       expect(y3).eq(y);
-      let z3 = stateVariables[stateVariables[stateVariables['/s2'].replacements[2].componentName].replacements[0].componentName].stateValues.value;
+      let z3 =
+        stateVariables[
+          stateVariables[stateVariables["/s2"].replacements[2].componentName]
+            .replacements[0].componentName
+        ].stateValues.value;
       expect(z3).eq(z);
-
-    })
+    });
   });
 
-  it('select math as sugared string', () => {
+  it("select math as sugared string", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select type="math" assignnames="m1 m2 m3 m4 m5" numbertoselect="5">
       x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
-      .map(x => me.fromText(x))
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"].map((x) =>
+      me.fromText(x),
+    );
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathsSoFar = [];
       for (let ind = 1; ind <= 5; ind++) {
-        let math = me.fromAst(stateVariables['/m' + ind].stateValues.value);
-        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
-        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        let math = me.fromAst(stateVariables["/m" + ind].stateValues.value);
+        expect(options.some((x) => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some((x) => x.equalsViaSyntax(math))).eq(false);
         mathsSoFar.push(math);
       }
-    })
+    });
   });
 
-  it('select math as sugared string, no type specified', () => {
+  it("select math as sugared string, no type specified", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select assignnames="m1 m2 m3 m4 m5" numbertoselect="5">
       x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"]
-      .map(x => me.fromText(x))
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"].map((x) =>
+      me.fromText(x),
+    );
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathsSoFar = [];
       for (let ind = 1; ind <= 5; ind++) {
-        let math = me.fromAst(stateVariables['/m' + ind].stateValues.value);
-        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
-        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        let math = me.fromAst(stateVariables["/m" + ind].stateValues.value);
+        expect(options.some((x) => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some((x) => x.equalsViaSyntax(math))).eq(false);
         mathsSoFar.push(math);
       }
-    })
+    });
   });
 
-  it('select math as sugared strings and macros', () => {
+  it("select math as sugared strings and macros", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <setup>
       <math name="var1">x</math>
@@ -1710,65 +2985,88 @@ describe('Select Tag Tests', function () {
       $a$var1^2  $b$var1/$var2  u-$b  $a  $var1-c $(var2{createComponentOfType="math"})
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    let options = ["7x^2", "(-3)x/y", "u-(-3)", "7", "x-c", "y"]
-      .map(x => me.fromText(x))
+    let options = ["7x^2", "(-3)x/y", "u-(-3)", "7", "x-c", "y"].map((x) =>
+      me.fromText(x),
+    );
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let mathsSoFar = [];
       for (let ind = 1; ind <= 6; ind++) {
-        let comp = stateVariables['/m' + ind];
+        let comp = stateVariables["/m" + ind];
         let math;
         if (comp.componentType === "math") {
-          math = me.fromAst(comp.stateValues.value)
+          math = me.fromAst(comp.stateValues.value);
         } else {
-          math = me.fromAst(stateVariables[comp.replacements[0].componentName].stateValues.value);
+          math = me.fromAst(
+            stateVariables[comp.replacements[0].componentName].stateValues
+              .value,
+          );
         }
-        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
-        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        expect(options.some((x) => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some((x) => x.equalsViaSyntax(math))).eq(false);
         mathsSoFar.push(math);
       }
-    })
+    });
   });
 
-  it('select text as sugared string', () => {
+  it("select text as sugared string", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select type="text" assignnames="w1 w2 w3 w4 w5" numbertoselect="5">
       Lorem  ipsum  dolor  sit  amet  consectetur  adipiscing  elit
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let wordsSoFar = [];
       for (let ind = 1; ind <= 5; ind++) {
-        let word = stateVariables['/w' + ind].stateValues.value;
-        expect(["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit"].includes(word)).eq(true);
+        let word = stateVariables["/w" + ind].stateValues.value;
+        expect(
+          [
+            "Lorem",
+            "ipsum",
+            "dolor",
+            "sit",
+            "amet",
+            "consectetur",
+            "adipiscing",
+            "elit",
+          ].includes(word),
+        ).eq(true);
         expect(wordsSoFar.includes(word)).eq(false);
         wordsSoFar.push(word);
       }
-    })
+    });
   });
 
-  it('select text as sugared strings and macros', () => {
+  it("select text as sugared strings and macros", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <setup>
       <text name="a">amet</text>
@@ -1780,60 +3078,78 @@ describe('Select Tag Tests', function () {
       Lorem  ipsum$spaceD  sit  $(a{createComponentOfType="text"})  $(cSpace)adipiscing
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let wordsSoFar = [];
       for (let ind = 1; ind <= 5; ind++) {
-        let comp = stateVariables['/w' + ind]
+        let comp = stateVariables["/w" + ind];
         let word;
         if (comp.componentType === "text") {
-          word = comp.stateValues.value
+          word = comp.stateValues.value;
         } else {
-          word = stateVariables[comp.replacements[0].componentName].stateValues.value;
+          word =
+            stateVariables[comp.replacements[0].componentName].stateValues
+              .value;
         }
 
-        expect(["Lorem", "ipsum dolor", "sit", "amet", "consectetur adipiscing"].includes(word)).eq(true);
+        expect(
+          [
+            "Lorem",
+            "ipsum dolor",
+            "sit",
+            "amet",
+            "consectetur adipiscing",
+          ].includes(word),
+        ).eq(true);
         expect(wordsSoFar.includes(word)).eq(false);
         wordsSoFar.push(word);
       }
-    })
+    });
   });
 
-  it('select number as sugared string', () => {
+  it("select number as sugared string", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select type="number" assignnames="n1 n2 n3 n4 n5 n6 n7 n8 n9 n10" numbertoselect="10" withReplacement>
       2 3 5 7 11 13 17 19
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 10; ind++) {
-        let num = stateVariables['/n' + ind].stateValues.value;
+        let num = stateVariables["/n" + ind].stateValues.value;
         expect([2, 3, 5, 7, 11, 13, 17, 19].includes(num)).eq(true);
       }
-    })
+    });
   });
 
-  it('select number as sugared strings and macros', () => {
+  it("select number as sugared strings and macros", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <setup>
       <number name="a">5</number>
@@ -1845,48 +3161,58 @@ describe('Select Tag Tests', function () {
       2 $a+$b 3-$c $(a{createComponentOfType="number"}) $b-1 $c
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 6; ind++) {
-        let comp = stateVariables['/n' + ind];
+        let comp = stateVariables["/n" + ind];
         let num;
         if (comp.componentType === "number") {
           num = comp.stateValues.value;
         } else {
-          num = stateVariables[comp.replacements[0].componentName].stateValues.value;
+          num =
+            stateVariables[comp.replacements[0].componentName].stateValues
+              .value;
         }
         expect([2, -2, -5, 5, -8, 8].includes(num)).eq(true);
       }
-    })
+    });
   });
 
-  it('select boolean as sugared string', () => {
+  it("select boolean as sugared string", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select type="boolean" assignnames="b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20" numbertoselect="20" withReplacement>
       true false
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let foundTrue = false, foundFalse = false;
+      let foundTrue = false,
+        foundFalse = false;
       for (let ind = 1; ind <= 20; ind++) {
-        let bool = stateVariables['/b' + ind].stateValues.value;
+        let bool = stateVariables["/b" + ind].stateValues.value;
         expect([true, false].includes(bool)).eq(true);
         if (bool === true) {
           foundTrue = true;
@@ -1896,13 +3222,14 @@ describe('Select Tag Tests', function () {
       }
       expect(foundTrue).be.true;
       expect(foundFalse).be.true;
-    })
+    });
   });
 
-  it('select boolean as sugared strings and macros', () => {
+  it("select boolean as sugared strings and macros", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <setup>
       <boolean name="t">true</boolean>
@@ -1913,22 +3240,28 @@ describe('Select Tag Tests', function () {
       true false $t $f $(t{createComponentOfType="boolean"}) $(f{createComponentOfType="boolean"})
     </select>
     </aslist>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let foundTrue = false, foundFalse = false;
+      let foundTrue = false,
+        foundFalse = false;
       for (let ind = 1; ind <= 20; ind++) {
-        let comp = stateVariables['/b' + ind];
+        let comp = stateVariables["/b" + ind];
         let bool;
         if (comp.componentType === "boolean") {
           bool = comp.stateValues.value;
         } else {
-          bool = stateVariables[comp.replacements[0].componentName].stateValues.value;
+          bool =
+            stateVariables[comp.replacements[0].componentName].stateValues
+              .value;
         }
         expect([true, false].includes(bool)).eq(true);
         if (bool === true) {
@@ -1939,18 +3272,18 @@ describe('Select Tag Tests', function () {
       }
       expect(foundTrue).be.true;
       expect(foundFalse).be.true;
-    })
+    });
   });
 
-  it('select weighted', () => {
-
+  it("select weighted", () => {
     // TODO: this test seems to fail with num Y < 17 once in awhile
     // even though it should fail less than 0.1% of the time
     // Is there a flaw?
 
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
         <text>a</text>
         <aslist>
         <map>
@@ -1965,19 +3298,31 @@ describe('Select Tag Tests', function () {
         </map>
         </aslist>
         `,
-      }, "*");
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
+    cy.get(cesc("#\\/_text1")).should("have.text", `a`);
 
-    let numX = 0, numY = 0, numZ = 0;
+    let numX = 0,
+      numY = 0,
+      numZ = 0;
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 200; ind++) {
-
-        let theText = stateVariables[stateVariables[stateVariables[stateVariables[stateVariables["/_map1"].replacements[ind].componentName].replacements[1].componentName].replacements[0].componentName].replacements[0].componentName];
+        let theText =
+          stateVariables[
+            stateVariables[
+              stateVariables[
+                stateVariables[
+                  stateVariables["/_map1"].replacements[ind].componentName
+                ].replacements[1].componentName
+              ].replacements[0].componentName
+            ].replacements[0].componentName
+          ];
         let x = theText.stateValues.value;
         if (x === "z") {
           numZ++;
@@ -1986,25 +3331,23 @@ describe('Select Tag Tests', function () {
         } else {
           numX++;
         }
-
       }
     });
 
     cy.window().then(async (win) => {
-
       expect(numX).greaterThan(0);
       expect(numX).lessThan(15);
       expect(numY).greaterThan(17);
       expect(numY).lessThan(50);
       expect(numZ).greaterThan(140);
-
-    })
+    });
   });
 
-  it('select weighted with replacement', () => {
+  it("select weighted with replacement", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <aslist>
     <select numbertoselect="200" withreplacement>
@@ -2014,20 +3357,27 @@ describe('Select Tag Tests', function () {
     </select>
     </aslist>
     `,
-        requestedVariantIndex: 0
-      }, "*");
+          requestedVariantIndex: 0,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
-
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numX = 0, numY = 0, numZ = 0;
-      let selectReplacements = stateVariables['/_select1'].replacements;
+      let numX = 0,
+        numY = 0,
+        numZ = 0;
+      let selectReplacements = stateVariables["/_select1"].replacements;
       for (let ind = 0; ind < 200; ind++) {
-        let x = stateVariables[stateVariables[selectReplacements[ind].componentName].replacements[0].componentName].stateValues.value;
+        let x =
+          stateVariables[
+            stateVariables[selectReplacements[ind].componentName]
+              .replacements[0].componentName
+          ].stateValues.value;
         if (x === "x") {
           numX++;
         } else if (x === "y") {
@@ -2041,15 +3391,14 @@ describe('Select Tag Tests', function () {
       expect(numY).greaterThan(20);
       expect(numY).lessThan(50);
       expect(numZ).greaterThan(150);
-
-    })
+    });
   });
 
-  it('select weighted without replacement', () => {
-
+  it("select weighted without replacement", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
         <text>a</text>
         <aslist>
         <map>
@@ -2067,22 +3416,34 @@ describe('Select Tag Tests', function () {
         </map>
         </aslist>
         `,
-      }, "*");
+        },
+        "*",
+      );
     });
 
-
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`);
+    cy.get(cesc("#\\/_text1")).should("have.text", `a`);
 
-    let numX = 0, numY = 0, numZ = 0, numUVW = 0;
+    let numX = 0,
+      numY = 0,
+      numZ = 0,
+      numUVW = 0;
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
       for (let ind = 0; ind < 200; ind++) {
-
-        let theSelect = stateVariables[stateVariables[stateVariables["/_map1"].replacements[ind].componentName].replacements[1].componentName]
-        let theText1 = stateVariables[stateVariables[theSelect.replacements[0].componentName].replacements[0].componentName];
+        let theSelect =
+          stateVariables[
+            stateVariables[
+              stateVariables["/_map1"].replacements[ind].componentName
+            ].replacements[1].componentName
+          ];
+        let theText1 =
+          stateVariables[
+            stateVariables[theSelect.replacements[0].componentName]
+              .replacements[0].componentName
+          ];
         let x = theText1.stateValues.value;
 
         if (x === "z") {
@@ -2094,7 +3455,11 @@ describe('Select Tag Tests', function () {
         } else {
           numUVW++;
         }
-        let theText2 = stateVariables[stateVariables[theSelect.replacements[1].componentName].replacements[0].componentName];
+        let theText2 =
+          stateVariables[
+            stateVariables[theSelect.replacements[1].componentName]
+              .replacements[0].componentName
+          ];
         let y = theText2.stateValues.value;
         if (y === "z") {
           numZ++;
@@ -2108,7 +3473,6 @@ describe('Select Tag Tests', function () {
       }
     });
 
-
     cy.window().then(async (win) => {
       expect(numUVW).greaterThan(0);
       expect(numUVW).lessThan(15);
@@ -2116,14 +3480,14 @@ describe('Select Tag Tests', function () {
       expect(numY).greaterThan(10);
       expect(numY).lessThan(50);
       expect(numZ).greaterThan(170);
-
-    })
+    });
   });
 
-  it('references to internal assignnames', () => {
+  it("references to internal assignnames", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
@@ -2151,29 +3515,74 @@ describe('Select Tag Tests', function () {
     <p><copy name="vq" target="v/q" /><copy name="vr" target="v/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
     <p><copy name="wq" target="w/q" /><copy name="wr" target="w/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = stateVariables['/q'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let rs = stateVariables['/r'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ss = stateVariables['/s'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ts = stateVariables['/t'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let us = stateVariables['/u'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let vs = stateVariables['/v'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ws = stateVariables['/w'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
+      let qs = stateVariables["/q"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let rs = stateVariables["/r"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ss = stateVariables["/s"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ts = stateVariables["/t"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let us = stateVariables["/u"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let vs = stateVariables["/v"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ws = stateVariables["/w"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
 
-      let q2s = stateVariables[stateVariables['/q2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let r2s = stateVariables[stateVariables['/r2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let s2s = stateVariables[stateVariables['/s2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let t2s = stateVariables[stateVariables['/t2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let u2s = stateVariables[stateVariables['/u2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let v2s = stateVariables[stateVariables['/v2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let w2s = stateVariables[stateVariables['/w2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
+      let q2s = stateVariables[
+        stateVariables["/q2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let r2s = stateVariables[
+        stateVariables["/r2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let s2s = stateVariables[
+        stateVariables["/s2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let t2s = stateVariables[
+        stateVariables["/t2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let u2s = stateVariables[
+        stateVariables["/u2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let v2s = stateVariables[
+        stateVariables["/v2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let w2s = stateVariables[
+        stateVariables["/w2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2184,48 +3593,75 @@ describe('Select Tag Tests', function () {
       expect(w2s).eqls(ws);
 
       let q3s = [
-        stateVariables[stateVariables['/qq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/qq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let r3s = [
-        stateVariables[stateVariables['/rq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/rq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let s3s = [
-        stateVariables[stateVariables['/sq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/sq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let t3s = [
-        stateVariables[stateVariables['/tq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/tq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let u3s = [
-        stateVariables[stateVariables['/uq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/uq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/uq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let v3s = [
-        stateVariables[stateVariables['/vq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/vq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let w3s = [
-        stateVariables[stateVariables['/wq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wr2'].replacements[0].componentName].stateValues.value,
-      ]
-
+        stateVariables[stateVariables["/wq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);
@@ -2234,14 +3670,14 @@ describe('Select Tag Tests', function () {
       expect(u3s).eqls(us);
       expect(v3s).eqls(vs);
       expect(w3s).eqls(ws);
-
-    })
+    });
   });
 
-  it('references to internal assignnames, newnamespaces', () => {
+  it("references to internal assignnames, newnamespaces", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
       <option><p newNamespace><select name="s" newnamespace assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
@@ -2276,29 +3712,74 @@ describe('Select Tag Tests', function () {
     <p><copy name="vq" target="v/s/q" /><copy name="vr" target="v/s/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
     <p><copy name="wq" target="w/s/q" /><copy name="wr" target="w/s/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = stateVariables['/q'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let rs = stateVariables['/r'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ss = stateVariables['/s'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ts = stateVariables['/t'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let us = stateVariables['/u'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let vs = stateVariables['/v'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
-      let ws = stateVariables['/w'].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)
+      let qs = stateVariables["/q"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let rs = stateVariables["/r"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ss = stateVariables["/s"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ts = stateVariables["/t"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let us = stateVariables["/u"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let vs = stateVariables["/v"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let ws = stateVariables["/w"].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
 
-      let q2s = stateVariables[stateVariables['/q2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let r2s = stateVariables[stateVariables['/r2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let s2s = stateVariables[stateVariables['/s2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let t2s = stateVariables[stateVariables['/t2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let u2s = stateVariables[stateVariables['/u2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let v2s = stateVariables[stateVariables['/v2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
-      let w2s = stateVariables[stateVariables['/w2'].replacements[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value);
+      let q2s = stateVariables[
+        stateVariables["/q2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let r2s = stateVariables[
+        stateVariables["/r2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let s2s = stateVariables[
+        stateVariables["/s2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let t2s = stateVariables[
+        stateVariables["/t2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let u2s = stateVariables[
+        stateVariables["/u2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let v2s = stateVariables[
+        stateVariables["/v2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      let w2s = stateVariables[
+        stateVariables["/w2"].replacements[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2308,13 +3789,55 @@ describe('Select Tag Tests', function () {
       expect(v2s).eqls(vs);
       expect(w2s).eqls(ws);
 
-      let q3s = stateVariables['/q3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let r3s = stateVariables['/r3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let s3s = stateVariables['/s3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let t3s = stateVariables['/t3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let u3s = stateVariables['/u3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let v3s = stateVariables['/v3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let w3s = stateVariables['/w3'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
+      let q3s = stateVariables["/q3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let r3s = stateVariables["/r3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let s3s = stateVariables["/s3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let t3s = stateVariables["/t3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let u3s = stateVariables["/u3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let v3s = stateVariables["/v3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let w3s = stateVariables["/w3"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
 
       expect(q3s).eqls(qs.slice(0, 2));
       expect(r3s).eqls(rs.slice(0, 2));
@@ -2325,47 +3848,75 @@ describe('Select Tag Tests', function () {
       expect(w3s).eqls(ws.slice(0, 2));
 
       let q4s = [
-        stateVariables[stateVariables['/qq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/qq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let r4s = [
-        stateVariables[stateVariables['/rq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/rq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let s4s = [
-        stateVariables[stateVariables['/sq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/sq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let t4s = [
-        stateVariables[stateVariables['/tq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/tq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let u4s = [
-        stateVariables[stateVariables['/uq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/uq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/uq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let v4s = [
-        stateVariables[stateVariables['/vq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/vr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/vq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let w4s = [
-        stateVariables[stateVariables['/wq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wr'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/wr2'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/wq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wr"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
+          .stateValues.value,
+      ];
 
       expect(q4s).eqls(qs);
       expect(r4s).eqls(rs);
@@ -2374,15 +3925,15 @@ describe('Select Tag Tests', function () {
       expect(u4s).eqls(us);
       expect(v4s).eqls(vs);
       expect(w4s).eqls(ws);
-
-    })
+    });
   });
 
   // can no longer reference between named grandchildren using their original names
-  it.skip('references to internal assignnames, named grandchildren', () => {
+  it.skip("references to internal assignnames, named grandchildren", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
     <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
       <p><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" target="q" /><copy name="r2" target="r" /></p>
@@ -2403,30 +3954,58 @@ describe('Select Tag Tests', function () {
     <p><copy name="tq2" target="t/q" /><copy name="tr2" target="t/r" /><copy name="tq3" target="tq" /><copy name="tr3" target="tr" /></p>
     <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/u\\/r"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.length).equal(1);
+      });
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = stateVariables['/q'].replacements.map(x => x.stateValues.value)
-      let rs = stateVariables['/r'].replacements.map(x => x.stateValues.value)
-      let ss = stateVariables['/s'].replacements.map(x => x.stateValues.value)
-      let ts = stateVariables['/t'].replacements.map(x => x.stateValues.value)
-      let us = stateVariables['/u'].replacements.map(x => x.stateValues.value)
+      let qs = stateVariables["/q"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let rs = stateVariables["/r"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let ss = stateVariables["/s"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let ts = stateVariables["/t"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let us = stateVariables["/u"].replacements.map(
+        (x) => x.stateValues.value,
+      );
 
-      let q2s = stateVariables['/q2'].replacements.map(x => x.stateValues.value);
-      let r2s = stateVariables['/r2'].replacements.map(x => x.stateValues.value);
-      let s2s = stateVariables['/s2'].replacements.map(x => x.stateValues.value);
-      let t2s = stateVariables['/t2'].replacements.map(x => x.stateValues.value);
-      let u2s = stateVariables['/u2'].replacements.map(x => x.stateValues.value);
+      let q2s = stateVariables["/q2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let r2s = stateVariables["/r2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let s2s = stateVariables["/s2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let t2s = stateVariables["/t2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let u2s = stateVariables["/u2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2435,46 +4014,65 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        stateVariables[stateVariables['/qq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let q4s = [
-        stateVariables[stateVariables['/qq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/qq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let r3s = [
-        stateVariables[stateVariables['/rq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let r4s = [
-        stateVariables[stateVariables['/rq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/rq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let s3s = [
-        stateVariables[stateVariables['/sq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let s4s = [
-        stateVariables[stateVariables['/sq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/sq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let t3s = [
-        stateVariables[stateVariables['/tq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let t4s = [
-        stateVariables[stateVariables['/tq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/tq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let u3s = [
-        stateVariables[stateVariables['/uq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let u4s = [
-        stateVariables[stateVariables['/uq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/uq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur3"].replacements[0].componentName]
+          .stateValues.value,
       ];
-
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);
@@ -2487,15 +4085,15 @@ describe('Select Tag Tests', function () {
       expect(s4s).eqls(ss);
       expect(t4s).eqls(ts);
       expect(u4s).eqls(us);
-
-    })
+    });
   });
 
   // can no longer reference between named grandchildren using their original names
-  it.skip('references to internal assignnames, newnamespaces, named grandchildren', () => {
+  it.skip("references to internal assignnames, newnamespaces, named grandchildren", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <math>1</math>
         <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numbertoselect="5" withreplacement>
       <p><select name="a" assignnames="q r" numbertoselect="2" newnamespace>a e i o u</select><copy name="q2" target="a/q" /><copy name="r2" target="a/r" /></p>
@@ -2517,30 +4115,58 @@ describe('Select Tag Tests', function () {
     <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
 
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/u\\/r').invoke('text').then((text) => {
-      expect(text.length).equal(1);
-    })
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get(cesc("#\\/u\\/r"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.length).equal(1);
+      });
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = stateVariables['/q'].replacements.map(x => x.stateValues.value)
-      let rs = stateVariables['/r'].replacements.map(x => x.stateValues.value)
-      let ss = stateVariables['/s'].replacements.map(x => x.stateValues.value)
-      let ts = stateVariables['/t'].replacements.map(x => x.stateValues.value)
-      let us = stateVariables['/u'].replacements.map(x => x.stateValues.value)
+      let qs = stateVariables["/q"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let rs = stateVariables["/r"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let ss = stateVariables["/s"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let ts = stateVariables["/t"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let us = stateVariables["/u"].replacements.map(
+        (x) => x.stateValues.value,
+      );
 
-      let q2s = stateVariables['/q2'].replacements.map(x => x.stateValues.value);
-      let r2s = stateVariables['/r2'].replacements.map(x => x.stateValues.value);
-      let s2s = stateVariables['/s2'].replacements.map(x => x.stateValues.value);
-      let t2s = stateVariables['/t2'].replacements.map(x => x.stateValues.value);
-      let u2s = stateVariables['/u2'].replacements.map(x => x.stateValues.value);
+      let q2s = stateVariables["/q2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let r2s = stateVariables["/r2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let s2s = stateVariables["/s2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let t2s = stateVariables["/t2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
+      let u2s = stateVariables["/u2"].replacements.map(
+        (x) => x.stateValues.value,
+      );
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2549,46 +4175,65 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        stateVariables[stateVariables['/qq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let q4s = [
-        stateVariables[stateVariables['/qq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/qq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let r3s = [
-        stateVariables[stateVariables['/rq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let r4s = [
-        stateVariables[stateVariables['/rq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/rq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let s3s = [
-        stateVariables[stateVariables['/sq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let s4s = [
-        stateVariables[stateVariables['/sq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/sq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let t3s = [
-        stateVariables[stateVariables['/tq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let t4s = [
-        stateVariables[stateVariables['/tq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/tq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr3"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let u3s = [
-        stateVariables[stateVariables['/uq2'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur2'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+          .stateValues.value,
       ];
       let u4s = [
-        stateVariables[stateVariables['/uq3'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur3'].replacements[0].componentName].stateValues.value,
+        stateVariables[stateVariables["/uq3"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur3"].replacements[0].componentName]
+          .stateValues.value,
       ];
-
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);
@@ -2601,14 +4246,14 @@ describe('Select Tag Tests', function () {
       expect(s4s).eqls(ss);
       expect(t4s).eqls(ts);
       expect(u4s).eqls(us);
-
-    })
+    });
   });
 
-  it('references to select of selects', () => {
+  it("references to select of selects", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u)" numbertoselect="5" withreplacement>
       <option><select newNamespace assignnames="q r" numbertoselect="2">a e i o u</select></option>
@@ -2629,25 +4274,88 @@ describe('Select Tag Tests', function () {
     <p><copy name="tq" target="t/q" /><copy name="tr" target="t/r" /></p>
     <p><copy name="uq" target="u/q" /><copy name="ur" target="u/r" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = stateVariables['/q'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value)
-      let rs = stateVariables['/r'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value)
-      let ss = stateVariables['/s'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value)
-      let ts = stateVariables['/t'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value)
-      let us = stateVariables['/u'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value)
+      let qs = stateVariables["/q"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let rs = stateVariables["/r"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let ss = stateVariables["/s"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let ts = stateVariables["/t"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let us = stateVariables["/u"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
 
-      let q2s = stateVariables['/q2'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let r2s = stateVariables['/r2'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let s2s = stateVariables['/s2'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let t2s = stateVariables['/t2'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
-      let u2s = stateVariables['/u2'].replacements.map(x => stateVariables[x.componentName]).map(x => x.replacements ? stateVariables[x.replacements[0].componentName].stateValues.value : x.stateValues.value);
+      let q2s = stateVariables["/q2"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let r2s = stateVariables["/r2"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let s2s = stateVariables["/s2"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let t2s = stateVariables["/t2"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
+      let u2s = stateVariables["/u2"].replacements
+        .map((x) => stateVariables[x.componentName])
+        .map((x) =>
+          x.replacements
+            ? stateVariables[x.replacements[0].componentName].stateValues.value
+            : x.stateValues.value,
+        );
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2656,39 +4364,49 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        stateVariables[stateVariables['/qq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/qr'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/qq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/qr"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let r3s = [
-        stateVariables[stateVariables['/rq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/rr'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/rq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/rr"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let s3s = [
-        stateVariables[stateVariables['/sq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/sr'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/sq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/sr"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let t3s = [
-        stateVariables[stateVariables['/tq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/tr'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/tq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/tr"].replacements[0].componentName]
+          .stateValues.value,
+      ];
       let u3s = [
-        stateVariables[stateVariables['/uq'].replacements[0].componentName].stateValues.value,
-        stateVariables[stateVariables['/ur'].replacements[0].componentName].stateValues.value,
-      ]
+        stateVariables[stateVariables["/uq"].replacements[0].componentName]
+          .stateValues.value,
+        stateVariables[stateVariables["/ur"].replacements[0].componentName]
+          .stateValues.value,
+      ];
 
       expect(q3s).eqls(qs);
       expect(r3s).eqls(rs);
       expect(s3s).eqls(ss);
       expect(t3s).eqls(ts);
       expect(u3s).eqls(us);
-
-    })
+    });
   });
 
-  it('references to select of selects of selects', () => {
+  it("references to select of selects of selects", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <select assignnames="q r s" numbertoselect="3" withreplacement>
@@ -2719,37 +4437,58 @@ describe('Select Tag Tests', function () {
     <p name="pr4"><copy name="rqq" target="r/q/q" /><copy name="rqr" target="r/q/r" /><copy name="rrq" target="r/r/q" /><copy name="rrr" target="r/r/r" /><copy name="rsq" target="r/s/q" /><copy name="rsr" target="r/s/r" /></p>
     <p name="ps4"><copy name="sqq" target="s/q/q" /><copy name="sqr" target="s/q/r" /><copy name="srq" target="s/r/q" /><copy name="srr" target="s/r/r" /><copy name="ssq" target="s/s/q" /><copy name="ssr" target="s/s/r" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = ['/q/q/q', '/q/q/r', '/q/r/q', '/q/r/r', '/q/s/q', '/q/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
-      let rs = ['/r/q/q', '/r/q/r', '/r/r/q', '/r/r/r', '/r/s/q', '/r/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
-      let ss = ['/s/q/q', '/s/q/r', '/s/r/q', '/s/r/r', '/s/s/q', '/s/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
+      let qs = ["/q/q/q", "/q/q/r", "/q/r/q", "/q/r/r", "/q/s/q", "/q/s/r"].map(
+        (x) =>
+          stateVariables[x].replacements
+            ? stateVariables[stateVariables[x].replacements[0].componentName]
+                .stateValues.value
+            : stateVariables[x].stateValues.value,
+      );
+      let rs = ["/r/q/q", "/r/q/r", "/r/r/q", "/r/r/r", "/r/s/q", "/r/s/r"].map(
+        (x) =>
+          stateVariables[x].replacements
+            ? stateVariables[stateVariables[x].replacements[0].componentName]
+                .stateValues.value
+            : stateVariables[x].stateValues.value,
+      );
+      let ss = ["/s/q/q", "/s/q/r", "/s/r/q", "/s/r/r", "/s/s/q", "/s/s/r"].map(
+        (x) =>
+          stateVariables[x].replacements
+            ? stateVariables[stateVariables[x].replacements[0].componentName]
+                .stateValues.value
+            : stateVariables[x].stateValues.value,
+      );
 
-      cy.get('#\\/pq2').should('have.text', qs.join(""))
-      cy.get('#\\/pr2').should('have.text', rs.join(""))
-      cy.get('#\\/ps2').should('have.text', ss.join(""))
+      cy.get(cesc("#\\/pq2")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr2")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps2")).should("have.text", ss.join(""));
 
-      cy.get('#\\/pq3').should('have.text', qs.join(""))
-      cy.get('#\\/pr3').should('have.text', rs.join(""))
-      cy.get('#\\/ps3').should('have.text', ss.join(""))
+      cy.get(cesc("#\\/pq3")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr3")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps3")).should("have.text", ss.join(""));
 
-      cy.get('#\\/pq4').should('have.text', qs.join(""))
-      cy.get('#\\/pr4').should('have.text', rs.join(""))
-      cy.get('#\\/ps4').should('have.text', ss.join(""))
-
-    })
+      cy.get(cesc("#\\/pq4")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr4")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps4")).should("have.text", ss.join(""));
+    });
   });
 
-  it('references to select of selects of selects, newnamespaces', () => {
+  it("references to select of selects of selects, newnamespaces", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <select name="a" newnamespace assignnames="(q) (r) (s)" numbertoselect="3" withreplacement>
@@ -2780,38 +4519,76 @@ describe('Select Tag Tests', function () {
     <p name="pr4"><copy name="rqq" target="a/r/q/q" /><copy name="rqr" target="a/r/q/r" /><copy name="rrq" target="a/r/r/q" /><copy name="rrr" target="a/r/r/r" /><copy name="rsq" target="a/r/s/q" /><copy name="rsr" target="a/r/s/r" /></p>
     <p name="ps4"><copy name="sqq" target="a/s/q/q" /><copy name="sqr" target="a/s/q/r" /><copy name="srq" target="a/s/r/q" /><copy name="srr" target="a/s/r/r" /><copy name="ssq" target="a/s/s/q" /><copy name="ssr" target="a/s/s/r" /></p>
 
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a')
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let qs = ['/a/q/q/q', '/a/q/q/r', '/a/q/r/q', '/a/q/r/r', '/a/q/s/q', '/a/q/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
-      let rs = ['/a/r/q/q', '/a/r/q/r', '/a/r/r/q', '/a/r/r/r', '/a/r/s/q', '/a/r/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
-      let ss = ['/a/s/q/q', '/a/s/q/r', '/a/s/r/q', '/a/s/r/r', '/a/s/s/q', '/a/s/s/r'].map(x => stateVariables[x].replacements ? stateVariables[stateVariables[x].replacements[0].componentName].stateValues.value : stateVariables[x].stateValues.value)
+      let qs = [
+        "/a/q/q/q",
+        "/a/q/q/r",
+        "/a/q/r/q",
+        "/a/q/r/r",
+        "/a/q/s/q",
+        "/a/q/s/r",
+      ].map((x) =>
+        stateVariables[x].replacements
+          ? stateVariables[stateVariables[x].replacements[0].componentName]
+              .stateValues.value
+          : stateVariables[x].stateValues.value,
+      );
+      let rs = [
+        "/a/r/q/q",
+        "/a/r/q/r",
+        "/a/r/r/q",
+        "/a/r/r/r",
+        "/a/r/s/q",
+        "/a/r/s/r",
+      ].map((x) =>
+        stateVariables[x].replacements
+          ? stateVariables[stateVariables[x].replacements[0].componentName]
+              .stateValues.value
+          : stateVariables[x].stateValues.value,
+      );
+      let ss = [
+        "/a/s/q/q",
+        "/a/s/q/r",
+        "/a/s/r/q",
+        "/a/s/r/r",
+        "/a/s/s/q",
+        "/a/s/s/r",
+      ].map((x) =>
+        stateVariables[x].replacements
+          ? stateVariables[stateVariables[x].replacements[0].componentName]
+              .stateValues.value
+          : stateVariables[x].stateValues.value,
+      );
 
-      cy.get('#\\/pq2').should('have.text', qs.join(""))
-      cy.get('#\\/pr2').should('have.text', rs.join(""))
-      cy.get('#\\/ps2').should('have.text', ss.join(""))
+      cy.get(cesc("#\\/pq2")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr2")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps2")).should("have.text", ss.join(""));
 
-      cy.get('#\\/pq3').should('have.text', qs.join(""))
-      cy.get('#\\/pr3').should('have.text', rs.join(""))
-      cy.get('#\\/ps3').should('have.text', ss.join(""))
+      cy.get(cesc("#\\/pq3")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr3")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps3")).should("have.text", ss.join(""));
 
-      cy.get('#\\/pq4').should('have.text', qs.join(""))
-      cy.get('#\\/pr4').should('have.text', rs.join(""))
-      cy.get('#\\/ps4').should('have.text', ss.join(""))
-
-
-    })
+      cy.get(cesc("#\\/pq4")).should("have.text", qs.join(""));
+      cy.get(cesc("#\\/pr4")).should("have.text", rs.join(""));
+      cy.get(cesc("#\\/ps4")).should("have.text", ss.join(""));
+    });
   });
 
   it("references to named grandchildren's children", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <select assignnames="(a b c d)">
     <option>
@@ -2838,50 +4615,96 @@ describe('Select Tag Tests', function () {
     <p><copy name="w2" target="a/w" /></p>
     <p><copy name="v2" target="b/v" /></p>
     
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    let options = [{
-      a: "x y",
-      b: "3 z",
-      c: "x",
-      d: "z",
-      v: "z",
-      w: "x",
-    },
-    {
-      a: "u v",
-      b: "3 t",
-      c: "u",
-      d: "t",
-      v: "t",
-      w: "u",
-    }];
+    let options = [
+      {
+        a: "x y",
+        b: "3 z",
+        c: "x",
+        d: "z",
+        v: "z",
+        w: "x",
+      },
+      {
+        a: "u v",
+        b: "3 t",
+        c: "u",
+        d: "t",
+        v: "t",
+        w: "u",
+      },
+    ];
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let chosenChildren = stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements
-        .filter(x => typeof x !== "string")
-        .map(x => stateVariables[x.componentName])
-        .map((v, i) => i < 2 ? v : stateVariables[v.replacements[0].componentName])
-      let option = options[stateVariables['/_select1'].stateValues.selectedIndices[0] - 1];
+      let chosenChildren = stateVariables[
+        stateVariables["/_select1"].replacements[0].componentName
+      ].replacements
+        .filter((x) => typeof x !== "string")
+        .map((x) => stateVariables[x.componentName])
+        .map((v, i) =>
+          i < 2 ? v : stateVariables[v.replacements[0].componentName],
+        );
+      let option =
+        options[stateVariables["/_select1"].stateValues.selectedIndices[0] - 1];
 
-      expect(me.fromAst(chosenChildren[0].stateValues.value).toString()).eq(option.a)
-      expect(me.fromAst(chosenChildren[1].stateValues.value).toString()).eq(option.b)
-      expect(me.fromAst(chosenChildren[2].stateValues.value).toString()).eq(option.c)
-      expect(me.fromAst(chosenChildren[3].stateValues.value).toString()).eq(option.d)
+      expect(me.fromAst(chosenChildren[0].stateValues.value).toString()).eq(
+        option.a,
+      );
+      expect(me.fromAst(chosenChildren[1].stateValues.value).toString()).eq(
+        option.b,
+      );
+      expect(me.fromAst(chosenChildren[2].stateValues.value).toString()).eq(
+        option.c,
+      );
+      expect(me.fromAst(chosenChildren[3].stateValues.value).toString()).eq(
+        option.d,
+      );
 
-
-      let a2 = me.fromAst(stateVariables[stateVariables['/a2'].replacements[0].componentName].stateValues.value).toString();
-      let b2 = me.fromAst(stateVariables[stateVariables['/b2'].replacements[0].componentName].stateValues.value).toString();
-      let c2 = me.fromAst(stateVariables[stateVariables['/c2'].replacements[0].componentName].stateValues.value).toString();
-      let d2 = me.fromAst(stateVariables[stateVariables['/d2'].replacements[0].componentName].stateValues.value).toString();
-      let v2 = me.fromAst(stateVariables[stateVariables['/v2'].replacements[0].componentName].stateValues.value).toString();
-      let w2 = me.fromAst(stateVariables[stateVariables['/w2'].replacements[0].componentName].stateValues.value).toString();
+      let a2 = me
+        .fromAst(
+          stateVariables[stateVariables["/a2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
+      let b2 = me
+        .fromAst(
+          stateVariables[stateVariables["/b2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
+      let c2 = me
+        .fromAst(
+          stateVariables[stateVariables["/c2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
+      let d2 = me
+        .fromAst(
+          stateVariables[stateVariables["/d2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
+      let v2 = me
+        .fromAst(
+          stateVariables[stateVariables["/v2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
+      let w2 = me
+        .fromAst(
+          stateVariables[stateVariables["/w2"].replacements[0].componentName]
+            .stateValues.value,
+        )
+        .toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
@@ -2889,14 +4712,14 @@ describe('Select Tag Tests', function () {
       expect(d2).eq(option.d);
       expect(v2).eq(option.v);
       expect(w2).eq(option.w);
-
-    })
+    });
   });
 
   it("select of a map of a select, with references", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p><aslist name="list1">
     <select assignnames="(j) (k) (l)" numbertoselect="3" withreplacement>
@@ -2945,33 +4768,55 @@ describe('Select Tag Tests', function () {
     <copy name="p9" target="k/a/p" /><copy name="p10" target="k/a/q" /><copy name="p11" target="k/a/r" /><copy name="p12" target="k/a/s" /><copy name="p13" target="k/b/p" /><copy name="p14" target="k/b/q" /><copy name="p15" target="k/b/r" /><copy name="p16" target="k/b/s" />
     <copy name="p17" target="l/a/p" /><copy name="p18" target="l/a/q" /><copy name="p19" target="l/a/r" /><copy name="p20" target="l/a/s" /><copy name="p21" target="l/b/p" /><copy name="p22" target="l/b/q" /><copy name="p23" target="l/b/r" /><copy name="p24" target="l/b/s" />
     </aslist></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let theList1 = stateVariables['/list1'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
-      let theList2 = stateVariables['/list2'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
-      let theList3 = stateVariables['/list3'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
+      let theList1 = stateVariables["/list1"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
+      let theList2 = stateVariables["/list2"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
+      let theList3 = stateVariables["/list3"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
 
       expect(theList2).eqls(theList1);
       expect(theList3).eqls(theList1);
 
-      let theList4 = [...Array(24).keys()].map(i => me.fromAst(stateVariables[stateVariables['/p' + (i + 1)].replacements[0].componentName].stateValues.value).toString());
+      let theList4 = [...Array(24).keys()].map((i) =>
+        me
+          .fromAst(
+            stateVariables[
+              stateVariables["/p" + (i + 1)].replacements[0].componentName
+            ].stateValues.value,
+          )
+          .toString(),
+      );
 
       expect(theList4).eqls(theList1);
-
-    })
+    });
   });
 
   it("select of a map of a select, new namespaces", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p><aslist name="list1">
     <select name="s" newnamespace assignnames="(j) (k) (l)" numbertoselect="3" withreplacement>
@@ -3020,33 +4865,55 @@ describe('Select Tag Tests', function () {
     <copy name="p9" target="s/k/a/v/p" /><copy name="p10" target="s/k/a/v/q" /><copy name="p11" target="s/k/a/v/r" /><copy name="p12" target="s/k/a/v/s" /><copy name="p13" target="s/k/b/v/p" /><copy name="p14" target="s/k/b/v/q" /><copy name="p15" target="s/k/b/v/r" /><copy name="p16" target="s/k/b/v/s" />
     <copy name="p17" target="s/l/a/v/p" /><copy name="p18" target="s/l/a/v/q" /><copy name="p19" target="s/l/a/v/r" /><copy name="p20" target="s/l/a/v/s" /><copy name="p21" target="s/l/b/v/p" /><copy name="p22" target="s/l/b/v/q" /><copy name="p23" target="s/l/b/v/r" /><copy name="p24" target="s/l/b/v/s" />
     </aslist></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let theList1 = stateVariables['/list1'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
-      let theList2 = stateVariables['/list2'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
-      let theList3 = stateVariables['/list3'].activeChildren.map(x => me.fromAst(stateVariables[x.componentName].stateValues.value).toString())
+      let theList1 = stateVariables["/list1"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
+      let theList2 = stateVariables["/list2"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
+      let theList3 = stateVariables["/list3"].activeChildren.map((x) =>
+        me
+          .fromAst(stateVariables[x.componentName].stateValues.value)
+          .toString(),
+      );
 
       expect(theList2).eqls(theList1);
       expect(theList3).eqls(theList1);
 
-      let theList4 = [...Array(24).keys()].map(i => me.fromAst(stateVariables[stateVariables['/p' + (i + 1)].replacements[0].componentName].stateValues.value).toString());
+      let theList4 = [...Array(24).keys()].map((i) =>
+        me
+          .fromAst(
+            stateVariables[
+              stateVariables["/p" + (i + 1)].replacements[0].componentName
+            ].stateValues.value,
+          )
+          .toString(),
+      );
 
       expect(theList4).eqls(theList1);
-
-    })
+    });
   });
 
-  it('select with hide will hide replacements but not copies', () => {
+  it("select with hide will hide replacements but not copies", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <p>Selects and hide</p>
       <p><select assignnames="(c)">
         <option><text>a</text></option>
@@ -3062,29 +4929,32 @@ describe('Select Tag Tests', function () {
         <option><text>e</text></option>
       </select></p>
       <p><copy target="c" />, <copy target="d" /></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_p1').should('have.text', "Selects and hide");
+    cy.get(cesc("#\\/_p1")).should("have.text", "Selects and hide");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let c = await stateVariables['/c'].stateValues.value;
-      let d = await stateVariables['/d'].stateValues.value;
+      let c = await stateVariables["/c"].stateValues.value;
+      let d = await stateVariables["/d"].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
-      cy.get(`#\\/_p2`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p3`).should('have.text', `${c}, ${d}`)
-
-    })
+      cy.get(cesc(`#\\/_p2`)).should("have.text", `${c}, `);
+      cy.get(cesc(`#\\/_p3`)).should("have.text", `${c}, ${d}`);
+    });
   });
 
-  it('select with hide will hide named grandchildren replacements but not copies', () => {
+  it("select with hide will hide named grandchildren replacements but not copies", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
       <p>Selects and hide</p>
       <p><aslist><select assignnames="(a b c)">
         <option>
@@ -3112,35 +4982,38 @@ describe('Select Tag Tests', function () {
         </option>
       </select></aslist></p>
       <p><copy target="a" />, <copy hide="true" target="b" />, <copy target="c" />, <copy hide="false" target="d" />, <copy target="e" /></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
     // to wait for page to load
-    cy.get('#\\/_p1').should('have.text', "Selects and hide");
+    cy.get(cesc("#\\/_p1")).should("have.text", "Selects and hide");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let a = stateVariables['/a'].stateValues.value;
-      let b = stateVariables['/b'].stateValues.value;
-      let c = stateVariables['/c'].stateValues.value;
-      let d = stateVariables['/d'].stateValues.value;
-      let e = stateVariables['/e'].stateValues.value;
+      let a = stateVariables["/a"].stateValues.value;
+      let b = stateVariables["/b"].stateValues.value;
+      let c = stateVariables["/c"].stateValues.value;
+      let d = stateVariables["/d"].stateValues.value;
+      let e = stateVariables["/e"].stateValues.value;
       expect(["a", "d"].includes(a)).eq(true);
       expect(["b", "e"].includes(b)).eq(true);
       expect(["c", "f"].includes(c)).eq(true);
       expect(["a", "c", "e"].includes(d)).eq(true);
       expect(["b", "d", "f"].includes(e)).eq(true);
 
-      cy.get(`#\\/_p2`).should('have.text', `${a}, ${b}, ${c}`)
-      cy.get(`#\\/_p3`).should('have.text', `${a}, , ${c}, ${d}, ${e}`)
-
-    })
+      cy.get(cesc(`#\\/_p2`)).should("have.text", `${a}, ${b}, ${c}`);
+      cy.get(cesc(`#\\/_p3`)).should("have.text", `${a}, , ${c}, ${d}, ${e}`);
+    });
   });
 
-  it('selects hide dynamically', () => {
+  it("selects hide dynamically", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <booleaninput name='h1' prefill="false" >
@@ -3163,40 +5036,43 @@ describe('Select Tag Tests', function () {
       <option><text>e</text></option>
     </select></p>
     <p><copy target="c" />, <copy target="d" /></p>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let c = await stateVariables['/c'].stateValues.value;
-      let d = await stateVariables['/d'].stateValues.value;
+      let c = await stateVariables["/c"].stateValues.value;
+      let d = await stateVariables["/d"].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
-      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p1`)).should("have.text", `${c}, `);
+      cy.get(cesc(`#\\/_p2`)).should("have.text", `${c}, ${d}`);
 
-      cy.get('#\\/h1').click();
-      cy.get('#\\/h2').click();
+      cy.get(cesc("#\\/h1")).click();
+      cy.get(cesc("#\\/h2")).click();
 
-      cy.get(`#\\/_p1`).should('have.text', `, ${d}`)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+      cy.get(cesc(`#\\/_p1`)).should("have.text", `, ${d}`);
+      cy.get(cesc(`#\\/_p2`)).should("have.text", `${c}, ${d}`);
 
-      cy.get('#\\/h1').click();
-      cy.get('#\\/h2').click();
+      cy.get(cesc("#\\/h1")).click();
+      cy.get(cesc("#\\/h2")).click();
 
-      cy.get(`#\\/_p1`).should('have.text', `${c}, `)
-      cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
-
-    })
+      cy.get(cesc(`#\\/_p1`)).should("have.text", `${c}, `);
+      cy.get(cesc(`#\\/_p2`)).should("have.text", `${c}, ${d}`);
+    });
   });
 
   it("string and blank strings in options", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <text name="animal1" hide>fox</text><text name="verb1" hide>jumps</text>
@@ -3215,48 +5091,58 @@ describe('Select Tag Tests', function () {
     <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
   
     
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
-
-    let options = [{
-      animal: "fox",
-      verb: "jumps"
-    },
-    {
-      animal: "elephant",
-      verb: "trumpets"
-    }];
+    let options = [
+      {
+        animal: "fox",
+        verb: "jumps",
+      },
+      {
+        animal: "elephant",
+        verb: "trumpets",
+      },
+    ];
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let option = options[stateVariables['/_select1'].stateValues.selectedIndices[0] - 1];
+      let option =
+        options[stateVariables["/_select1"].stateValues.selectedIndices[0] - 1];
 
+      cy.get(cesc("#\\/pa")).should(
+        "have.text",
+        `a: The ${option.animal} ${option.verb}.`,
+      );
+      cy.get(cesc("#\\/pa1")).should(
+        "have.text",
+        `a1: The ${option.animal} ${option.verb}.`,
+      );
+      cy.get(cesc("#\\/ppieces")).should(
+        "have.text",
+        `pieces: The ${option.animal} ${option.verb}.`,
+      );
+      cy.get(cesc("#\\/pb1")).should("have.text", `b1: ${option.animal}`);
+      cy.get(cesc("#\\/pc1")).should("have.text", `c1: ${option.verb}`);
 
-      cy.get('#\\/pa').should('have.text', `a: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/pa1').should('have.text', `a1: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/ppieces').should('have.text', `pieces: The ${option.animal} ${option.verb}.`);
-      cy.get('#\\/pb1').should('have.text', `b1: ${option.animal}`);
-      cy.get('#\\/pc1').should('have.text', `c1: ${option.verb}`);
-
-      cy.get('#\\/a11').should('have.text', `${option.animal}`);
-      cy.get('#\\/a12').should('have.text', `${option.verb}`);
-      cy.get('#\\/b1').should('have.text', `${option.animal}`);
-      cy.get('#\\/c1').should('have.text', `${option.verb}`);
-
-
-
-
-    })
+      cy.get(cesc("#\\/a11")).should("have.text", `${option.animal}`);
+      cy.get(cesc("#\\/a12")).should("have.text", `${option.verb}`);
+      cy.get(cesc("#\\/b1")).should("have.text", `${option.animal}`);
+      cy.get(cesc("#\\/c1")).should("have.text", `${option.verb}`);
+    });
   });
 
   it("correctly rename assignNames of multiple levels", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <select>
       <option>
@@ -3271,33 +5157,37 @@ describe('Select Tag Tests', function () {
       </option>
     </select>
     
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let replacements = stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements;
+      let replacements =
+        stateVariables[
+          stateVariables["/_select1"].replacements[0].componentName
+        ].replacements;
 
       let p1 = replacements[1].componentName;
       let p2 = replacements[3].componentName;
       let p3 = replacements[5].componentName;
 
-      cy.get(cesc('#' + p1)).should('have.text', `q,r = ab`)
-      cy.get(cesc('#' + p2)).should('have.text', `q2 = a`)
-      cy.get(cesc('#' + p3)).should('have.text', `r2 = b`)
-
-
-    })
+      cy.get(cesc2("#" + p1)).should("have.text", `q,r = ab`);
+      cy.get(cesc2("#" + p2)).should("have.text", `q2 = a`);
+      cy.get(cesc2("#" + p3)).should("have.text", `r2 = b`);
+    });
   });
 
-  it('numberToSelect from selectfromsequence', () => {
+  it("numberToSelect from selectfromsequence", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
 
     <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
@@ -3319,24 +5209,52 @@ describe('Select Tag Tests', function () {
     <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
     <p>vars = <aslist><select type="text" name="vars5" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" >u v w x y z</select></aslist></p>
     <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
-      `}, "*");
+      `,
+        },
+        "*",
+      );
     });
 
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let n1 = stateVariables['/n1'].stateValues.value;
-      let n2 = stateVariables['/n2'].stateValues.value;
-      let n3 = stateVariables['/n3'].stateValues.value;
-      let n4 = stateVariables['/n4'].stateValues.value;
-      let n5 = stateVariables['/n5'].stateValues.value;
+      let n1 = stateVariables["/n1"].stateValues.value;
+      let n2 = stateVariables["/n2"].stateValues.value;
+      let n3 = stateVariables["/n3"].stateValues.value;
+      let n4 = stateVariables["/n4"].stateValues.value;
+      let n5 = stateVariables["/n5"].stateValues.value;
 
-      let vars1 = stateVariables['/vars1'].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
-      let vars2 = stateVariables['/vars2'].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
-      let vars3 = stateVariables['/vars3'].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
-      let vars4 = stateVariables['/vars4'].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
-      let vars5 = stateVariables['/vars5'].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+      let vars1 = stateVariables["/vars1"].replacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[x.componentName].replacements[0].componentName
+          ].stateValues.value,
+      );
+      let vars2 = stateVariables["/vars2"].replacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[x.componentName].replacements[0].componentName
+          ].stateValues.value,
+      );
+      let vars3 = stateVariables["/vars3"].replacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[x.componentName].replacements[0].componentName
+          ].stateValues.value,
+      );
+      let vars4 = stateVariables["/vars4"].replacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[x.componentName].replacements[0].componentName
+          ].stateValues.value,
+      );
+      let vars5 = stateVariables["/vars5"].replacements.map(
+        (x) =>
+          stateVariables[
+            stateVariables[x.componentName].replacements[0].componentName
+          ].stateValues.value,
+      );
 
       expect(vars1.length).eq(n1);
       expect(vars2.length).eq(n2);
@@ -3350,36 +5268,52 @@ describe('Select Tag Tests', function () {
       vars4.length = 5;
       vars5.length = 5;
 
-      vars1.fill('', n1)
-      vars2.fill('', n2)
-      vars3.fill('', n3)
-      vars4.fill('', n4)
-      vars5.fill('', n5)
+      vars1.fill("", n1);
+      vars2.fill("", n2);
+      vars3.fill("", n3);
+      vars4.fill("", n4);
+      vars5.fill("", n5);
 
+      let l = ["a", "b", "c", "d", "e"];
 
-      let l = ["a", "b", "c", "d", "e"]
-
-      cy.get('#\\/p1').should('have.text', vars1.map((v, i) => `${l[i]}1=${v}`).join(', '))
-      cy.get('#\\/p2').should('have.text', vars2.map((v, i) => `${l[i]}2=${v}`).join(', '))
-      cy.get('#\\/p3').should('have.text', vars3.map((v, i) => `${l[i]}3=${v}`).join(', '))
-      cy.get('#\\/p4').should('have.text', vars4.map((v, i) => `${l[i]}4=${v}`).join(', '))
-      cy.get('#\\/p5').should('have.text', vars5.map((v, i) => `${l[i]}5=${v}`).join(', '))
-
-    })
+      cy.get(cesc("#\\/p1")).should(
+        "have.text",
+        vars1.map((v, i) => `${l[i]}1=${v}`).join(", "),
+      );
+      cy.get(cesc("#\\/p2")).should(
+        "have.text",
+        vars2.map((v, i) => `${l[i]}2=${v}`).join(", "),
+      );
+      cy.get(cesc("#\\/p3")).should(
+        "have.text",
+        vars3.map((v, i) => `${l[i]}3=${v}`).join(", "),
+      );
+      cy.get(cesc("#\\/p4")).should(
+        "have.text",
+        vars4.map((v, i) => `${l[i]}4=${v}`).join(", "),
+      );
+      cy.get(cesc("#\\/p5")).should(
+        "have.text",
+        vars5.map((v, i) => `${l[i]}5=${v}`).join(", "),
+      );
+    });
   });
 
   it("add level to assign names even in shadow", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <p><select name="s" assignnames="q">a b</select></p>
     <copy target="_p1" name="c" newNamespace />
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3387,15 +5321,14 @@ describe('Select Tag Tests', function () {
       let q = stateVariables["/q"].stateValues.value;
 
       expect(stateVariables["/c/q"].stateValues.value).eq(q);
-
-
-    })
+    });
   });
 
   it("ensure unique names", () => {
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
+      win.postMessage(
+        {
+          doenetML: `
     <text>a</text>
     <select numberToSelect="3" withReplacement>
       <option><p>What is <text>this</text>?</p></option>
@@ -3408,32 +5341,34 @@ describe('Select Tag Tests', function () {
     <select numberToSelect="3" withReplacement assignNames="(D) (E) (F)">
       <option><p>What is <text>this</text>?</p></option>
     </select>
-    `}, "*");
+    `,
+        },
+        "*",
+      );
     });
 
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let pNames1 = stateVariables["/_select1"].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName)
+      let pNames1 = stateVariables["/_select1"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
       for (let pn of pNames1) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2("#" + pn)).should("have.text", "What is this?");
       }
 
-      let pNames2 = ["/A", "/B", "/C"].map(x => stateVariables[x].replacements[0].componentName);
+      let pNames2 = ["/A", "/B", "/C"].map(
+        (x) => stateVariables[x].replacements[0].componentName,
+      );
       for (let pn of pNames2) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2("#" + pn)).should("have.text", "What is this?");
       }
 
       for (let pn of ["/D", "/E", "/F"]) {
-        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+        cy.get(cesc2("#" + pn)).should("have.text", "What is this?");
       }
-
-
-    })
+    });
   });
-
-
 });

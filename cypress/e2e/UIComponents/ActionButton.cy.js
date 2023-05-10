@@ -1,27 +1,20 @@
+describe("ActionButton Tests", function () {
+  before(() => {
+    cy.visit("/uiDocs");
+    cy.get('[data-test="componentLinkactionbutton"] > a').click();
+  });
 
-describe('ActionButton Tests', function () {
+  // it('Button Width CSS Test',()=>{
+  //   cy.get('[data-test="ActionButton width example"]').contains('Action Button');
+  // })
 
-before(() => {
-  cy.visit("http://localhost/uiDocs");
-  cy.get('[data-test="componentLinkactionbutton"] > a').click();
-})
+  it("Button value has Edit", () => {
+    cy.get('[data-test="ActionButton Edit Value example"]').contains("Edit");
+  });
 
-
- 
-// it('Button Width CSS Test',()=>{
-//   cy.get('[data-test="ActionButton width example"]').contains('Action Button');
-// })
-
-it('Button value has Edit',()=>{
-  cy.get('[data-test="ActionButton Edit Value example"]').contains('Edit');
-})
-
-it('Test onClick',()=>{
-  cy.get('[data-test="ActionButton click example"]').click();
-  cy.get('[data-test="action result"]').contains('ActionButton clicked');
-  cy.get('[data-test="clear action result"]').click();
-})
-
-
-
-})
+  it("Test onClick", () => {
+    cy.get('[data-test="ActionButton click example"]').click();
+    cy.get('[data-test="action result"]').contains("ActionButton clicked");
+    cy.get('[data-test="clear action result"]').click();
+  });
+});

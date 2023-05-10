@@ -1,8 +1,9 @@
-
-export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ componentType, forceComponentType = false, includeNonMacros = false }) {
-
+export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+  componentType,
+  forceComponentType = false,
+  includeNonMacros = false,
+}) {
   return function ({ matchedChildren, componentInfoObjects }) {
-
     // Split strings and interleaving children by spaces in the strings that are outside parens.
     // The resulting groups are wrapped by a componentType unless the group is either
     // - a single non-string component (when forceComponentType is false), or
@@ -15,14 +16,15 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
     let pieces = [];
 
     function createNewChild() {
-
       let addedSingleMatch = false;
       if (pieces.length === 1) {
         let comp = pieces[0];
         if (forceComponentType) {
           // if have a component of the matching componentType
           // then add that component directly
-          if (componentInfoObjects.componentIsSpecifiedType(comp, componentType)) {
+          if (
+            componentInfoObjects.componentIsSpecifiedType(comp, componentType)
+          ) {
             newChildren.push(comp);
             addedSingleMatch = true;
           }
@@ -39,8 +41,8 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
         // wrap anything else in componentType
         newChildren.push({
           componentType,
-          children: pieces
-        })
+          children: pieces,
+        });
       }
 
       pieces = [];
@@ -59,7 +61,6 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
           pieces.push(child);
         }
       } else {
-
         let s = child;
 
         let beginInd = 0;
@@ -74,7 +75,7 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
               // parens didn't match, so just make a child out of what have so far
               createNewChild();
             } else {
-              Nparens--
+              Nparens--;
             }
           } else if (Nparens === 0 && char.match(/\s/)) {
             // found a space outside parens
@@ -86,14 +87,12 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
             createNewChild();
 
             beginInd = ind + 1;
-
           }
         }
 
         if (s.length > beginInd) {
           pieces.push(s.substring(beginInd, s.length));
         }
-
       }
     }
 
@@ -102,16 +101,14 @@ export function returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({ com
     return {
       success: true,
       newChildren,
-    }
-  }
+    };
+  };
 }
 
-
-
-export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({ componentType }) {
-
+export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({
+  componentType,
+}) {
   return function ({ matchedChildren }) {
-
     // break any string by white space that is outside parens and wrap pieces with componentType
 
     let newChildren = [];
@@ -120,7 +117,6 @@ export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({
       if (typeof child !== "string") {
         newChildren.push(child);
       } else {
-
         let Nparens = 0;
         let s = child;
 
@@ -140,19 +136,18 @@ export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({
               Nparens = -1;
               break;
             }
-            Nparens--
+            Nparens--;
           } else if (Nparens === 0 && char.match(/\s/)) {
             // found a space outside parens
 
             if (ind > beginInd) {
               childrenFromString.push({
                 componentType,
-                children: [s.substring(beginInd, ind)]
+                children: [s.substring(beginInd, ind)],
               });
             }
 
             beginInd = ind + 1;
-
           }
         }
 
@@ -160,26 +155,23 @@ export function returnBreakStringsMacrosIntoComponentTypeBySpacesOutsideParens({
         if (Nparens !== 0) {
           newChildren.push({
             componentType,
-            children: [child]
-          })
+            children: [child],
+          });
         } else {
           if (s.length > beginInd) {
             childrenFromString.push({
               componentType,
-              children: [s.substring(beginInd, s.length)]
+              children: [s.substring(beginInd, s.length)],
             });
           }
-          newChildren.push(...childrenFromString)
+          newChildren.push(...childrenFromString);
         }
-
-
       }
     }
-
 
     return {
       success: true,
       newChildren: newChildren,
-    }
-  }
+    };
+  };
 }

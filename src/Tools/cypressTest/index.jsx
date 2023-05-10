@@ -1,11 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import CypressTest from './CypressTest.jsx';
-import axios from 'axios';
-import { RecoilRoot } from 'recoil';
-import { MathJaxContext } from 'better-react-mathjax';
-import { mathjaxConfig } from '../../Core/utils/math.js';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import CypressTest from "./CypressTest.jsx";
+import axios from "axios";
+import { RecoilRoot } from "recoil";
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from "../../Core/utils/math.js";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import DarkmodeController from "../_framework/DarkmodeController.jsx";
 
 // function CypressTest(props){
 
@@ -14,25 +15,28 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //   return <p>test</p>
 // }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <RecoilRoot>
     <Router>
       <Routes>
         <Route
           path="*"
           element={
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <CypressTest />
-            </MathJaxContext>
-          } />
+            <DarkmodeController>
+              <MathJaxContext
+                version={2}
+                config={mathjaxConfig}
+                onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+              >
+                <CypressTest />
+              </MathJaxContext>
+            </DarkmodeController>
+          }
+        />
       </Routes>
     </Router>
   </RecoilRoot>,
-  document.getElementById('root'),
 );
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
@@ -44,4 +48,4 @@ if (import.meta.hot) {
   // }
   // );
   import.meta.hot.accept();
-}  
+}

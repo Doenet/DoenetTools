@@ -1,9 +1,20 @@
-import BaseComponent from './abstract/BaseComponent';
-import { determineVariantsForSection, getVariantsForDescendantsForUniqueVariants } from '../utils/variants';
-import { returnStyleDefinitionStateVariables } from '../utils/style';
-import { returnFeedbackDefinitionStateVariables } from '../utils/feedback';
+import BaseComponent from "./abstract/BaseComponent";
+import {
+  determineVariantsForSection,
+  getVariantsForDescendantsForUniqueVariants,
+} from "../utils/variants";
+import { returnStyleDefinitionStateVariables } from "../utils/style";
+import { returnFeedbackDefinitionStateVariables } from "../utils/feedback";
 
 export default class Document extends BaseComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      submitAllAnswers: this.submitAllAnswers.bind(this),
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "document";
   static rendererType = "section";
   static renderChildren = true;
@@ -32,67 +43,71 @@ export default class Document extends BaseComponent {
       defaultValue: "Check Work",
       public: true,
       forRenderer: true,
-    }
+    };
     attributes.submitLabelNoCorrectness = {
       createComponentOfType: "text",
       createStateVariable: "submitLabelNoCorrectness",
       defaultValue: "Submit Response",
       public: true,
       forRenderer: true,
-    }
+    };
 
     attributes.displayDigitsForCreditAchieved = {
       createComponentOfType: "integer",
       createStateVariable: "displayDigitsForCreditAchieved",
       defaultValue: 3,
-      public: true
-    }
+      public: true,
+    };
 
     // at this point, we are creating these attributes
     // so that having them in the doenetML is valid
     // Do we want to do something with these attributes?
     attributes.xmlns = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
     attributes.type = {
-      createPrimitiveOfType: "string"
-    }
+      createPrimitiveOfType: "string",
+    };
 
     return attributes;
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "variantControl",
-      componentTypes: ["variantControl"]
-    }, {
-      group: "title",
-      componentTypes: ["title"]
-    }, {
-      group: "description",
-      componentTypes: ["description"]
-    }, {
-      group: "setups",
-      componentTypes: ["setup"],
-    }, {
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "variantControl",
+        componentTypes: ["variantControl"],
+      },
+      {
+        group: "title",
+        componentTypes: ["title"],
+      },
+      {
+        group: "description",
+        componentTypes: ["description"],
+      },
+      {
+        group: "setups",
+        componentTypes: ["setup"],
+      },
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // Note: style definition state variables allow one to redefine the style
+    // via styledefinitions inside a setup in the document
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
 
-    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    let feedbackDefinitionStateVariables =
+      returnFeedbackDefinitionStateVariables();
     Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
-
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -105,14 +120,13 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         let titleChildName = null;
         if (dependencyValues.titleChild.length > 0) {
-          titleChildName = dependencyValues.titleChild[0].componentName
+          titleChildName = dependencyValues.titleChild[0].componentName;
         }
         return {
-          setValue: { titleChildName }
-        }
-      }
-    }
-
+          setValue: { titleChildName },
+        };
+      },
+    };
 
     stateVariableDefinitions.title = {
       public: true,
@@ -125,17 +139,20 @@ export default class Document extends BaseComponent {
           dependencyType: "child",
           childGroups: ["title"],
           variableNames: ["text"],
-        }
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
           return { setValue: { title: "" } };
         } else {
-          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return {
+            setValue: {
+              title: dependencyValues.titleChild[0].stateValues.text,
+            },
+          };
         }
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.description = {
       public: true,
@@ -147,22 +164,76 @@ export default class Document extends BaseComponent {
           dependencyType: "child",
           childGroups: ["description"],
           variableNames: ["text"],
-        }
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.descriptionChild.length === 0) {
           return { setValue: { description: "" } };
         } else {
-          return { setValue: { description: dependencyValues.descriptionChild[0].stateValues.text } };
+          return {
+            setValue: {
+              description:
+                dependencyValues.descriptionChild[0].stateValues.text,
+            },
+          };
         }
-      }
-    }
+      },
+    };
+
+    // Theme is used to by styleDescriptions to use the dark mode words if theme is dark.
+    // It is set to be either "light" or "dark" via an action sent by the viewer.
+    stateVariableDefinitions.theme = {
+      hasEssential: true,
+      defaultValue: "light",
+      returnDependencies: () => ({
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["theme"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          // this document is inside another document so use the ancestor's value
+          return {
+            setValue: {
+              theme: dependencyValues.documentAncestor.stateValues.theme,
+            },
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { theme: true } };
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          return {
+            success: true,
+            instructions: [
+              {
+                setDependency: "documentAncestor",
+                desiredValue: desiredStateVariableValues.theme,
+              },
+            ],
+          };
+        } else {
+          return {
+            success: true,
+            instructions: [
+              {
+                setEssentialValue: "theme",
+                value: desiredStateVariableValues.theme,
+              },
+            ],
+          };
+        }
+      },
+    };
 
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { level: 0 } })
-    }
+      definition: () => ({ setValue: { level: 0 } }),
+    };
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
@@ -170,33 +241,31 @@ export default class Document extends BaseComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: true
-        }
+          viewedSolution: true,
+        },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
-          instructions: [{
-            setEssentialValue: "viewedSolution",
-            value: desiredStateVariableValues.viewedSolution
-          }]
-        }
-      }
-    }
+          instructions: [
+            {
+              setEssentialValue: "viewedSolution",
+              value: desiredStateVariableValues.viewedSolution,
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
           componentTypes: ["_sectioningComponent", "answer", "setup"],
-          variableNames: [
-            "scoredDescendants",
-            "aggregateScores",
-            "weight"
-          ],
+          variableNames: ["scoredDescendants", "aggregateScores", "weight"],
           recurseToMatchedChildren: false,
-          variablesOptional: true
-        }
+          variablesOptional: true,
+        },
       }),
       definition({ dependencyValues }) {
         let scoredDescendants = [];
@@ -205,47 +274,43 @@ export default class Document extends BaseComponent {
           if (descendant.componentType === "setup") {
             continue;
           }
-          if (descendant.stateValues.aggregateScores ||
+          if (
+            descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
-            scoredDescendants.push(descendant)
+            scoredDescendants.push(descendant);
           } else {
-            scoredDescendants.push(...descendant.stateValues.scoredDescendants)
+            scoredDescendants.push(...descendant.stateValues.scoredDescendants);
           }
         }
 
-        return { setValue: { scoredDescendants } }
-
-      }
-
-    }
+        return { setValue: { scoredDescendants } };
+      },
+    };
 
     stateVariableDefinitions.nScoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "scoredDescendants"
-        }
+          variableName: "scoredDescendants",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nScoredDescendants: dependencyValues.scoredDescendants.length
-          }
-        }
-
-      }
-
-    }
-
+            nScoredDescendants: dependencyValues.scoredDescendants.length,
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.itemCreditAchieved = {
       isArray: true,
       returnArraySizeDependencies: () => ({
         nScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants"
-        }
+          variableName: "nScoredDescendants",
+        },
       }),
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nScoredDescendants];
@@ -260,26 +325,25 @@ export default class Document extends BaseComponent {
               creditAchieved: {
                 dependencyType: "stateVariable",
                 componentName: descendant.componentName,
-                variableName: "creditAchieved"
-              }
-            }
+                variableName: "creditAchieved",
+              },
+            };
           }
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let itemCreditAchieved = {};
 
         for (let arrayKey of arrayKeys) {
-          itemCreditAchieved[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
+          itemCreditAchieved[arrayKey] =
+            dependencyValuesByKey[arrayKey].creditAchieved;
         }
 
-        return { setValue: { itemCreditAchieved } }
-
-      }
-
-    }
+        return { setValue: { itemCreditAchieved } };
+      },
+    };
 
     stateVariableDefinitions.itemNumberByAnswerName = {
       stateVariablesDeterminingDependencies: ["scoredDescendants"],
@@ -287,8 +351,8 @@ export default class Document extends BaseComponent {
         let dependencies = {
           scoredDescendants: {
             dependencyType: "stateVariable",
-            variableName: "scoredDescendants"
-          }
+            variableName: "scoredDescendants",
+          },
         };
         for (let ind in stateValues.scoredDescendants) {
           let descendant = stateValues.scoredDescendants[ind];
@@ -297,7 +361,7 @@ export default class Document extends BaseComponent {
             ancestorName: descendant.componentName,
             componentTypes: ["answer"],
             recurseToMatchedChildren: false,
-          }
+          };
         }
 
         return dependencies;
@@ -305,33 +369,37 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues, componentInfoObjects }) {
         let itemNumberByAnswerName = {};
 
-        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+        for (let [
+          ind,
+          component,
+        ] of dependencyValues.scoredDescendants.entries()) {
           let itemNumber = ind + 1;
-          for (let answerDescendant of dependencyValues[`descendantsOf${ind}`]) {
+          for (let answerDescendant of dependencyValues[
+            `descendantsOf${ind}`
+          ]) {
             itemNumberByAnswerName[answerDescendant.componentName] = itemNumber;
           }
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: component.componentType,
-            baseComponentType: "answer"
-          })) {
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: component.componentType,
+              baseComponentType: "answer",
+            })
+          ) {
             itemNumberByAnswerName[component.componentName] = itemNumber;
           }
         }
 
-        return { setValue: { itemNumberByAnswerName } }
-
-      }
-
-    }
-
+        return { setValue: { itemNumberByAnswerName } };
+      },
+    };
 
     stateVariableDefinitions.itemVariantInfo = {
       isArray: true,
       returnArraySizeDependencies: () => ({
         nScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants"
-        }
+          variableName: "nScoredDescendants",
+        },
       }),
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nScoredDescendants];
@@ -348,25 +416,24 @@ export default class Document extends BaseComponent {
                 componentName: descendant.componentName,
                 variableName: "generatedVariantInfo",
                 variablesOptional: true,
-              }
-            }
+              },
+            };
           }
         }
 
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let itemVariantInfo = {};
 
         for (let arrayKey of arrayKeys) {
-          itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
+          itemVariantInfo[arrayKey] =
+            dependencyValuesByKey[arrayKey].generatedVariantInfo;
         }
 
-        return { setValue: { itemVariantInfo } }
-
-      }
-
-    }
+        return { setValue: { itemVariantInfo } };
+      },
+    };
 
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
@@ -375,45 +442,47 @@ export default class Document extends BaseComponent {
           componentTypes: ["answer"],
           variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
-        }
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
-      }
-    }
+        return {
+          setValue: { answerDescendants: dependencyValues.answerDescendants },
+        };
+      },
+    };
 
     stateVariableDefinitions.justSubmitted = {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
-          variableName: "answerDescendants"
-        }
+          variableName: "answerDescendants",
+        },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            justSubmitted:
-              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
-          }
-        }
-      }
-    }
+            justSubmitted: dependencyValues.answerDescendants.every(
+              (x) => x.stateValues.justSubmitted,
+            ),
+          },
+        };
+      },
+    };
 
     stateVariableDefinitions.showCorrectness = {
       forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
-          flagName: "showCorrectness"
-        }
+          flagName: "showCorrectness",
+        },
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { setValue: { showCorrectness } }
-      }
-    }
-
+        return { setValue: { showCorrectness } };
+      },
+    };
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
@@ -424,37 +493,41 @@ export default class Document extends BaseComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
-          }
+          },
         },
       },
-      additionalStateVariablesDefined: [{
-        variableName: "percentCreditAchieved",
-        public: true,
-        shadowingInstructions: {
-          createComponentOfType: "number",
-          addAttributeComponentsShadowingStateVariables: {
-            displayDigits: {
-              stateVariableToShadow: "displayDigitsForCreditAchieved",
-            }
-          }
-        }
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "percentCreditAchieved",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables: {
+              displayDigits: {
+                stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+            },
+          },
+        },
+      ],
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "scoredDescendants"
+          variableName: "scoredDescendants",
         },
         itemCreditAchieved: {
           dependencyType: "stateVariable",
-          variableName: "itemCreditAchieved"
-        }
+          variableName: "itemCreditAchieved",
+        },
       }),
       definition({ dependencyValues }) {
-
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+        for (let [
+          ind,
+          component,
+        ] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
           creditSum += dependencyValues.itemCreditAchieved[ind] * weight;
           totalWeight += weight;
@@ -470,10 +543,9 @@ export default class Document extends BaseComponent {
 
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { setValue: { creditAchieved, percentCreditAchieved } }
-
-      }
-    }
+        return { setValue: { creditAchieved, percentCreditAchieved } };
+      },
+    };
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
       defaultValue: 0,
@@ -482,37 +554,37 @@ export default class Document extends BaseComponent {
         let dependencies = {
           scoredDescendants: {
             dependencyType: "stateVariable",
-            variableName: "scoredDescendants"
-          }
-        }
+            variableName: "scoredDescendants",
+          },
+        };
         for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
           dependencies["creditAchievedIfSubmit" + ind] = {
             dependencyType: "stateVariable",
             componentName: descendant.componentName,
-            variableName: "creditAchievedIfSubmit"
-          }
+            variableName: "creditAchievedIfSubmit",
+          };
         }
 
         return dependencies;
       },
       definition({ dependencyValues }) {
-
-
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+        for (let [
+          ind,
+          component,
+        ] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
-          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          creditSum +=
+            dependencyValues["creditAchievedIfSubmit" + ind] * weight;
           totalWeight += weight;
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { setValue: { creditAchievedIfSubmit } }
-
-      }
-    }
-
+        return { setValue: { creditAchievedIfSubmit } };
+      },
+    };
 
     stateVariableDefinitions.generatedVariantInfo = {
       providePreviousValuesInDefinition: true,
@@ -527,11 +599,10 @@ export default class Document extends BaseComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
-          variableNames: [
-            "isVariantComponent",
-            "generatedVariantInfo",
-          ],
+          componentTypes: Object.keys(
+            componentInfoObjects.componentTypesCreatingVariants,
+          ),
+          variableNames: ["isVariantComponent", "generatedVariantInfo"],
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
@@ -539,111 +610,126 @@ export default class Document extends BaseComponent {
         },
       }),
       definition({ dependencyValues, componentName, previousValues }) {
-
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
           },
-        }
+        };
 
-
-        let subvariants = generatedVariantInfo.subvariants = [];
+        let subvariants = (generatedVariantInfo.subvariants = []);
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo)
+            subvariants.push(descendant.stateValues.generatedVariantInfo);
           } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+            subvariants.push(
+              ...descendant.stateValues.generatedVariantInfo.subvariants,
+            );
           }
         }
 
         for (let [ind, subvar] of subvariants.entries()) {
           if (!subvar.subvariants && previousValues.generatedVariantInfo) {
             // check if previously had subvariants
-            let previousSubvariants = previousValues.generatedVariantInfo.subvariants;
+            let previousSubvariants =
+              previousValues.generatedVariantInfo.subvariants;
             if (previousSubvariants[ind]?.subvariants) {
               subvariants[ind] = Object.assign({}, subvariants[ind]);
-              subvariants[ind].subvariants = previousSubvariants[ind].subvariants;
+              subvariants[ind].subvariants =
+                previousSubvariants[ind].subvariants;
             }
           }
         }
 
-        return { setValue: { generatedVariantInfo } }
-
-      }
-    }
+        return { setValue: { generatedVariantInfo } };
+      },
+    };
 
     stateVariableDefinitions.createSubmitAllButton = {
       forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "suppressAnswerSubmitButtons",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "suppressAnswerSubmitButtons",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         documentWideCheckWork: {
           dependencyType: "stateVariable",
-          variableName: "documentWideCheckWork"
+          variableName: "documentWideCheckWork",
         },
       }),
       definition({ dependencyValues, componentName }) {
-
         let createSubmitAllButton = false;
         let suppressAnswerSubmitButtons = false;
 
         if (dependencyValues.documentWideCheckWork) {
           createSubmitAllButton = true;
-          suppressAnswerSubmitButtons = true
+          suppressAnswerSubmitButtons = true;
         }
 
-        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
-      }
-    }
+        return {
+          setValue: { createSubmitAllButton, suppressAnswerSubmitButtons },
+        };
+      },
+    };
 
     stateVariableDefinitions.suppressCheckwork = {
       forRenderer: true,
       returnDependencies: () => ({
         autoSubmit: {
           dependencyType: "flag",
-          flagName: "autoSubmit"
-        }
+          flagName: "autoSubmit",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } }
-      }
-    }
+        return { setValue: { suppressCheckwork: dependencyValues.autoSubmit } };
+      },
+    };
+
+    stateVariableDefinitions.containerTag = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { containerTag: "div" } }),
+    };
 
     return stateVariableDefinitions;
   }
 
-  actions = {
-    submitAllAnswers: this.submitAllAnswers.bind(this),
-    recordVisibilityChange: this.recordVisibilityChange.bind(this)
-  }
-
-  async submitAllAnswers({ actionId }) {
-
+  async submitAllAnswers({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
       object: {
         componentName: this.componentName,
         componentType: this.componentType,
-      }
+      },
     });
 
-
-    for (let answer of await this.stateValues.answerDescendants) {
-      if (!await answer.stateValues.justSubmitted) {
+    let nAnswers = await this.stateValues.answerDescendants;
+    for (let [
+      ind,
+      answer,
+    ] of await this.stateValues.answerDescendants.entries()) {
+      if (!(await answer.stateValues.justSubmitted)) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
-          actionName: "submitAnswer"
-        })
+          actionName: "submitAnswer",
+          args: {
+            actionId,
+            sourceInformation,
+            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1,
+          },
+        });
       }
     }
 
     this.coreFunctions.resolveAction({ actionId });
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -653,14 +739,16 @@ export default class Document extends BaseComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
 
-  static setUpVariant({ serializedComponent, sharedParameters,
-    descendantVariantComponents }) {
-
+  static setUpVariant({
+    serializedComponent,
+    sharedParameters,
+    descendantVariantComponents,
+  }) {
     // console.log("****Variant for document*****")
 
     let nVariants = serializedComponent.variants.numberOfVariants;
@@ -672,11 +760,15 @@ export default class Document extends BaseComponent {
       if (desiredVariant.index !== undefined) {
         let desiredVariantIndex = Number(desiredVariant.index);
         if (!Number.isFinite(desiredVariantIndex)) {
-          console.warn("Variant index " + desiredVariant.index + " must be a number");
+          console.warn(
+            "Variant index " + desiredVariant.index + " must be a number",
+          );
           variantIndex = 1;
         } else {
           if (!Number.isInteger(desiredVariantIndex)) {
-            console.warn("Variant index " + desiredVariant.index + " must be an integer");
+            console.warn(
+              "Variant index " + desiredVariant.index + " must be an integer",
+            );
             desiredVariantIndex = Math.round(desiredVariantIndex);
           }
           let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
@@ -693,16 +785,27 @@ export default class Document extends BaseComponent {
       variantIndex = 1;
     }
 
-    sharedParameters.allPossibleVariants = serializedComponent.variants.allPossibleVariants;
-    sharedParameters.allVariantNames = serializedComponent.variants.allVariantNames;
+    sharedParameters.allPossibleVariants =
+      serializedComponent.variants.allPossibleVariants;
+    sharedParameters.allVariantNames =
+      serializedComponent.variants.allVariantNames;
 
-    sharedParameters.variantSeed = serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
+    sharedParameters.variantSeed =
+      serializedComponent.variants.allPossibleVariantSeeds[variantIndex - 1];
     sharedParameters.variantIndex = variantIndex;
-    sharedParameters.variantName = serializedComponent.variants.allPossibleVariants[variantIndex - 1];
-    sharedParameters.uniqueIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+    sharedParameters.variantName =
+      serializedComponent.variants.allPossibleVariants[variantIndex - 1];
+    sharedParameters.uniqueIndex =
+      serializedComponent.variants.allPossibleVariantUniqueIndices[
+        variantIndex - 1
+      ];
 
-    sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
-
+    sharedParameters.variantRng = new sharedParameters.rngClass(
+      sharedParameters.variantSeed,
+    );
+    sharedParameters.subpartVariantRng = new sharedParameters.rngClass(
+      sharedParameters.variantSeed + "s",
+    );
 
     // console.log("Document variant name: " + sharedParameters.variantName);
 
@@ -720,50 +823,53 @@ export default class Document extends BaseComponent {
 
     // console.log("Desired variant for document");
     // console.log(desiredVariant);
-
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
-
+  static determineNumberOfUniqueVariants({
+    serializedComponent,
+    componentInfoObjects,
+  }) {
     return determineVariantsForSection({
-      serializedComponent, componentInfoObjects, isDocument: true,
-    })
-
+      serializedComponent,
+      componentInfoObjects,
+      isDocument: true,
+    });
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
-
-    let originalVariantIndex = serializedComponent.variants.allPossibleVariantUniqueIndices[variantIndex - 1];
+  static getUniqueVariant({
+    serializedComponent,
+    variantIndex,
+    componentInfoObjects,
+  }) {
+    let originalVariantIndex =
+      serializedComponent.variants.allPossibleVariantUniqueIndices[
+        variantIndex - 1
+      ];
 
     if (originalVariantIndex === undefined) {
-      return { success: false }
+      return { success: false };
     }
-
 
     let result = getVariantsForDescendantsForUniqueVariants({
       variantIndex: originalVariantIndex,
       serializedComponent,
-      componentInfoObjects
-    })
+      componentInfoObjects,
+    });
 
     if (!result.success) {
       console.log("Failed to get unique variant for document.");
 
-      return { success: false }
+      return { success: false };
     }
 
     return {
       success: true,
       desiredVariant: {
         index: variantIndex,
-        subvariants: result.desiredVariants
-      }
-    }
+        subvariants: result.desiredVariants,
+      },
+    };
   }
 
   static includeBlankStringChildren = true;
-
-
 }
-
-

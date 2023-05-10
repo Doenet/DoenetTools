@@ -1,34 +1,41 @@
-import Polygon from './Polygon';
-import me from 'math-expressions';
+import Polygon from "./Polygon";
+import me from "math-expressions";
 
 export default class Triangle extends Polygon {
   static componentType = "triangle";
   static rendererType = "polygon";
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let styleDescriptionWithNounDef = stateVariableDefinitions.styleDescriptionWithNoun.definition;
+    let styleDescriptionWithNounDef =
+      stateVariableDefinitions.styleDescriptionWithNoun.definition;
 
-    stateVariableDefinitions.styleDescriptionWithNoun.definition = function ({ dependencyValues }) {
-      let styleDescriptionWithNoun = styleDescriptionWithNounDef({ dependencyValues }).setValue.styleDescriptionWithNoun;
-      styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll("polygon", "triangle");
+    stateVariableDefinitions.styleDescriptionWithNoun.definition = function ({
+      dependencyValues,
+    }) {
+      let styleDescriptionWithNoun = styleDescriptionWithNounDef({
+        dependencyValues,
+      }).setValue.styleDescriptionWithNoun;
+      styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll(
+        "polygon",
+        "triangle",
+      );
 
-      return { setValue: { styleDescriptionWithNoun } }
-    }
-
+      return { setValue: { styleDescriptionWithNoun } };
+    };
 
     stateVariableDefinitions.vertices.hasEssential = true;
 
-    stateVariableDefinitions.vertices.defaultValueByArrayKey = function (arrayKey) {
+    stateVariableDefinitions.vertices.defaultValueByArrayKey = function (
+      arrayKey,
+    ) {
       if (["0,1", "1,0"].includes(arrayKey)) {
-        return me.fromAst(1)
+        return me.fromAst(1);
       } else {
-        return me.fromAst(0)
+        return me.fromAst(0);
       }
-    }
+    };
 
     stateVariableDefinitions.vertices.returnArraySizeDependencies = () => ({
       nDimensions: {
@@ -36,13 +43,16 @@ export default class Triangle extends Polygon {
         variableName: "nDimensions",
       },
     });
-    stateVariableDefinitions.vertices.returnArraySize = function ({ dependencyValues }) {
+    stateVariableDefinitions.vertices.returnArraySize = function ({
+      dependencyValues,
+    }) {
       return [3, dependencyValues.nDimensions];
     };
 
-
-    stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({ dependencyValuesByKey, arrayKeys }) {
-
+    stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({
+      dependencyValuesByKey,
+      arrayKeys,
+    }) {
       // console.log('array definition of triangle vertices');
       // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
       // console.log(arrayKeys);
@@ -51,18 +61,17 @@ export default class Triangle extends Polygon {
       let useEssential = {};
 
       for (let arrayKey of arrayKeys) {
-
         let [pointInd, dim] = arrayKey.split(",");
-        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
+        let varEnding = Number(pointInd) + 1 + "_" + (Number(dim) + 1);
 
         let verticesAttr = dependencyValuesByKey[arrayKey].vertices;
-        if (verticesAttr !== null
-          && verticesAttr.stateValues["pointX" + varEnding]
+        if (
+          verticesAttr !== null &&
+          verticesAttr.stateValues["pointX" + varEnding]
         ) {
           vertices[arrayKey] = verticesAttr.stateValues["pointX" + varEnding];
         } else {
-
-          useEssential[arrayKey] = true
+          useEssential[arrayKey] = true;
         }
       }
 
@@ -74,59 +83,60 @@ export default class Triangle extends Polygon {
 
       return {
         setValue: { vertices },
-        useEssentialOrDefaultValue: { vertices: useEssential }
+        useEssentialOrDefaultValue: { vertices: useEssential },
+      };
+    };
 
-      }
+    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey =
+      async function ({
+        desiredStateVariableValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        initialChange,
+        stateValues,
+      }) {
+        // console.log(`inverseArrayDefinition of vertices of triangle`);
+        // console.log(desiredStateVariableValues)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(dependencyValuesByKey);
 
-    }
-
-    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = async function ({
-      desiredStateVariableValues,
-      dependencyValuesByKey, dependencyNamesByKey,
-      initialChange, stateValues,
-    }) {
-
-      // console.log(`inverseArrayDefinition of vertices of triangle`);
-      // console.log(desiredStateVariableValues)
-      // console.log(JSON.parse(JSON.stringify(stateValues)))
-      // console.log(dependencyValuesByKey);
-
-
-      // if not draggable, then disallow initial change 
-      if (initialChange && !await stateValues.draggable) {
-        return { success: false };
-      }
-
-      let instructions = [];
-      for (let arrayKey in desiredStateVariableValues.vertices) {
-        let [pointInd, dim] = arrayKey.split(",");
-        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
-
-        if (dependencyValuesByKey[arrayKey].vertices !== null
-          && dependencyValuesByKey[arrayKey].vertices.stateValues["pointX" + varEnding]
-        ) {
-          instructions.push({
-            setDependency: dependencyNamesByKey[arrayKey].vertices,
-            desiredValue: desiredStateVariableValues.vertices[arrayKey],
-            variableIndex: 0,
-          })
-
-        } else {
-
-          instructions.push({
-            setEssentialValue: "vertices",
-            value: { [arrayKey]: desiredStateVariableValues.vertices[arrayKey].simplify() },
-          })
+        // if not draggable, then disallow initial change
+        if (initialChange && !(await stateValues.draggable)) {
+          return { success: false };
         }
 
-      }
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.vertices) {
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = Number(pointInd) + 1 + "_" + (Number(dim) + 1);
 
-      return {
-        success: true,
-        instructions
-      }
+          if (
+            dependencyValuesByKey[arrayKey].vertices !== null &&
+            dependencyValuesByKey[arrayKey].vertices.stateValues[
+              "pointX" + varEnding
+            ]
+          ) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].vertices,
+              desiredValue: desiredStateVariableValues.vertices[arrayKey],
+              variableIndex: 0,
+            });
+          } else {
+            instructions.push({
+              setEssentialValue: "vertices",
+              value: {
+                [arrayKey]:
+                  desiredStateVariableValues.vertices[arrayKey].simplify(),
+              },
+            });
+          }
+        }
 
-    }
+        return {
+          success: true,
+          instructions,
+        };
+      };
     // stateVariableDefinitions.vertices.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues,
     //   stateValues, initialChange, arrayKeys, workspace,
     // }) {
@@ -137,7 +147,7 @@ export default class Triangle extends Polygon {
     //   // console.log(arrayKeys);
     //   // console.log(dependencyValues);
 
-    //   // if not draggable, then disallow initial change 
+    //   // if not draggable, then disallow initial change
     //   if (initialChange && !stateValues.draggable) {
     //     return { success: false };
     //   }
@@ -233,7 +243,6 @@ export default class Triangle extends Polygon {
     //       }
     //     }
 
-
     //     // Since we don't have a vertex child that will do the merge,
     //     // we must manually merge here.
     //     let desiredVertex = mergeVertex({
@@ -256,7 +265,6 @@ export default class Triangle extends Polygon {
 
     // }
 
-
     stateVariableDefinitions.nVertices = {
       public: true,
       shadowingInstructions: {
@@ -264,37 +272,9 @@ export default class Triangle extends Polygon {
       },
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nVertices: 3 } })
-    }
-
+      definition: () => ({ setValue: { nVertices: 3 } }),
+    };
 
     return stateVariableDefinitions;
   }
-
-}
-
-function mergeVertex({
-  workspaceVertices,
-  currentVertexValue,
-  desiredVertex,
-}) {
-
-  // If have any empty values in desired value,
-  // merge with current values, or value from workspace
-
-  let vertexAst;
-  if (workspaceVertices) {
-    // if have desired expresson from workspace, use that instead of currentValue
-    vertexAst = workspaceVertices.slice(0);
-  }
-  else {
-    vertexAst = currentVertexValue.tree.slice(0);
-  }
-  for (let [ind, value] of desiredVertex.tree.entries()) {
-    if (value !== undefined) {
-      vertexAst[ind] = value;
-    }
-  }
-
-  return me.fromAst(vertexAst);
 }

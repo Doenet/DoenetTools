@@ -1,31 +1,36 @@
-import { findFiniteNumericalValue } from '../utils/math';
-import ConstraintComponent from './abstract/ConstraintComponent';
+import { findFiniteNumericalValue } from "../utils/math";
+import ConstraintComponent from "./abstract/ConstraintComponent";
 
 export default class AttractTo extends ConstraintComponent {
   static componentType = "attractTo";
 
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
+
+    attributes.relativeToGraphScales = {
+      createComponentOfType: "boolean",
+      createStateVariable: "relativeToGraphScales",
+      defaultValue: false,
+      public: true,
+    };
+
     attributes.threshold = {
       createComponentOfType: "number",
+    };
 
-    }
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "graphical",
-      componentTypes: ["_graphical"]
-    }]
-
+    return [
+      {
+        group: "graphical",
+        componentTypes: ["_graphical"],
+      },
+    ];
   }
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.threshold = {
@@ -38,52 +43,67 @@ export default class AttractTo extends ConstraintComponent {
         thresholdAttr: {
           dependencyType: "attributeComponent",
           attributeName: "threshold",
-          variableNames: ["value"]
+          variableNames: ["value"],
         },
         constraintsAncestor: {
           dependencyType: "ancestor",
           componentType: "constraints",
-          variableNames: ["graphXmin"]
-        }
+          variableNames: ["graphXmin"],
+        },
+        relativeToGraphScales: {
+          dependencyType: "stateVariable",
+          variableName: "relativeToGraphScales",
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.thresholdAttr) {
           return {
-            setValue: { threshold: dependencyValues.thresholdAttr.stateValues.value }
-          }
+            setValue: {
+              threshold: dependencyValues.thresholdAttr.stateValues.value,
+            },
+          };
         } else {
+          return {
+            useEssentialOrDefaultValue: {
+              threshold: {
+                get defaultValue() {
+                  let useRelative =
+                    dependencyValues.relativeToGraphScales &&
+                    dependencyValues.constraintsAncestor !== null &&
+                    dependencyValues.constraintsAncestor.stateValues
+                      .graphXmin !== null;
 
-          let defaultValue = 0.02;
-          if (dependencyValues.constraintsAncestor === null ||
-            dependencyValues.constraintsAncestor.stateValues.graphXmin === null
-          ) {
-            defaultValue = 0.5;
-          }
-
-          return { useEssentialOrDefaultValue: { threshold: { defaultValue } } }
-
+                  return useRelative ? 0.02 : 0.5;
+                },
+              },
+            },
+          };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.thresholdAttr) {
           return {
             success: true,
-            instructions: [{
-              setDependency: "thresholdAttr",
-              desiredValue: desiredStateVariableValues.threshold
-            }]
-          }
+            instructions: [
+              {
+                setDependency: "thresholdAttr",
+                desiredValue: desiredStateVariableValues.threshold,
+              },
+            ],
+          };
         } else {
           return {
             success: true,
-            instructions: [{
-              setEssentialValue: "threshold",
-              value: desiredStateVariableValues.threshold
-            }]
-          }
+            instructions: [
+              {
+                setEssentialValue: "threshold",
+                value: desiredStateVariableValues.threshold,
+              },
+            ],
+          };
         }
       },
-    }
+    };
 
     stateVariableDefinitions.nearestPointFunctions = {
       returnDependencies: () => ({
@@ -91,98 +111,75 @@ export default class AttractTo extends ConstraintComponent {
           dependencyType: "child",
           childGroups: ["graphical"],
           variableNames: ["nearestPoint"],
-          variablesOptional: true
-        }
+          variablesOptional: true,
+        },
       }),
       definition: function ({ dependencyValues }) {
         let nearestPointFunctions = [];
 
         for (let child of dependencyValues.graphicalChildren) {
           if (!child.stateValues.nearestPoint) {
-            console.warn(`cannot attract to ${child.componentName} as it doesn't have a nearestPoint state variable`);
+            console.warn(
+              `cannot attract to ${child.componentName} as it doesn't have a nearestPoint state variable`,
+            );
             continue;
           }
           nearestPointFunctions.push(child.stateValues.nearestPoint);
         }
 
         return { setValue: { nearestPointFunctions } };
-
-      }
-    }
-
-    stateVariableDefinitions.graphXscale = {
-      additionalStateVariablesDefined: ["graphYscale"],
-      returnDependencies: () => ({
-        graphAncestor: {
-          dependencyType: "ancestor",
-          componentType: "constraints",
-          variableNames: ["scales"]
-        },
-      }),
-      definition({ dependencyValues }) {
-        if (!dependencyValues.graphAncestor) {
-          return {
-            setValue: {
-              graphXscale: null, graphYscale: null
-            }
-          }
-        }
-        let graphXscale = dependencyValues.graphAncestor.stateValues.xscale;
-        let graphYscale = dependencyValues.graphAncestor.stateValues.yscale;
-
-        return {
-          setValue: {
-            graphXscale, graphYscale
-          }
-        }
-      }
-    }
-
+      },
+    };
 
     stateVariableDefinitions.applyConstraint = {
       returnDependencies() {
         let dependencies = {
           nearestPointFunctions: {
             dependencyType: "stateVariable",
-            variableName: "nearestPointFunctions"
+            variableName: "nearestPointFunctions",
           },
           threshold: {
             dependencyType: "stateVariable",
-            variableName: "threshold"
+            variableName: "threshold",
+          },
+          relativeToGraphScales: {
+            dependencyType: "stateVariable",
+            variableName: "relativeToGraphScales",
           },
           constraintsAncestor: {
             dependencyType: "ancestor",
             componentType: "constraints",
-            variableNames: ["scales"]
+            variableNames: ["scales"],
           },
-        }
+        };
 
         return dependencies;
-
       },
       definition({ dependencyValues }) {
+        let scales;
 
-        let xscale = 1, yscale = 1;
-
-        if (dependencyValues.constraintsAncestor) {
-          [xscale, yscale] = dependencyValues.constraintsAncestor.stateValues.scales;
+        if (dependencyValues.relativeToGraphScales) {
+          scales = dependencyValues.constraintsAncestor?.stateValues.scales || [
+            1, 1, 1,
+          ];
+        } else {
+          scales = [1, 1, 1];
         }
 
         return {
           setValue: {
-            applyConstraint: function ({ variables, scales }) {
-
-
+            applyConstraint: function (variables) {
               let closestDistance2 = Infinity;
-              let closestPoint = {}
+              let closestPoint = {};
 
               let numericalVariables = {};
               for (let varName in variables) {
-                numericalVariables[varName] = findFiniteNumericalValue(variables[varName]);
+                numericalVariables[varName] = findFiniteNumericalValue(
+                  variables[varName],
+                );
               }
 
               for (let nearestPointFunction of dependencyValues.nearestPointFunctions) {
-
                 let nearestPoint = nearestPointFunction({ variables, scales });
 
                 if (nearestPoint === undefined) {
@@ -197,43 +194,52 @@ export default class AttractTo extends ConstraintComponent {
                     continue;
                   }
                   constrainedVariables.x1 = nearestPoint.x1;
-                  distance2 += Math.pow((numericalVariables.x1 - nearestPoint.x1) / xscale, 2);
+                  distance2 += Math.pow(
+                    (numericalVariables.x1 - nearestPoint.x1) / scales[0],
+                    2,
+                  );
                 }
                 if (numericalVariables.x2 !== undefined) {
                   if (nearestPoint.x2 === undefined) {
                     continue;
                   }
                   constrainedVariables.x2 = nearestPoint.x2;
-                  distance2 += Math.pow((numericalVariables.x2 - nearestPoint.x2) / yscale, 2);
+                  distance2 += Math.pow(
+                    (numericalVariables.x2 - nearestPoint.x2) / scales[1],
+                    2,
+                  );
                 }
                 if (numericalVariables.x3 !== undefined) {
                   if (nearestPoint.x3 === undefined) {
                     continue;
                   }
                   constrainedVariables.x3 = nearestPoint.x3;
-                  distance2 += Math.pow(numericalVariables.x3 - nearestPoint.x3, 2);
+                  distance2 += Math.pow(
+                    numericalVariables.x3 - nearestPoint.x3,
+                    2,
+                  );
                 }
 
                 if (distance2 < closestDistance2) {
                   closestPoint = constrainedVariables;
                   closestDistance2 = distance2;
                 }
-
               }
 
-              if (closestDistance2 > dependencyValues.threshold * dependencyValues.threshold) {
+              if (
+                closestDistance2 >
+                dependencyValues.threshold * dependencyValues.threshold
+              ) {
                 return {};
               }
 
               return { constrained: true, variables: closestPoint };
-
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
 }

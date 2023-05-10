@@ -1,6 +1,13 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from "./abstract/InlineComponent";
 
 export default class Ref extends InlineComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      navigateToTarget: this.navigateToTarget.bind(this),
+    });
+  }
   static componentType = "ref";
   static renderChildren = true;
 
@@ -19,14 +26,14 @@ export default class Ref extends InlineComponent {
       createStateVariable: "uri",
       defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.page = {
       createPrimitiveOfType: "integer",
       createStateVariable: "page",
       defaultValue: null,
       public: true,
-      forRenderer: true
+      forRenderer: true,
     };
     attributes.createButton = {
       createComponentOfType: "boolean",
@@ -38,17 +45,15 @@ export default class Ref extends InlineComponent {
   }
 
   static returnChildGroups() {
-
-    return [{
-      group: "anything",
-      componentTypes: ["_base"]
-    }]
-
+    return [
+      {
+        group: "anything",
+        componentTypes: ["_base"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.targetComponent = {
@@ -60,12 +65,11 @@ export default class Ref extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            targetComponent: dependencyValues.targetComponent
-          }
-        }
+            targetComponent: dependencyValues.targetComponent,
+          },
+        };
       },
     };
-
 
     stateVariableDefinitions.targetInactive = {
       stateVariablesDeterminingDependencies: ["targetComponent"],
@@ -75,22 +79,23 @@ export default class Ref extends InlineComponent {
             targetIsInactiveCompositeReplacement: {
               dependencyType: "stateVariable",
               componentName: stateValues.targetComponent.componentName,
-              variableName: "isInactiveCompositeReplacement"
-            }
-          }
+              variableName: "isInactiveCompositeReplacement",
+            },
+          };
         } else {
-          return {}
+          return {};
         }
       },
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
-          }
-        }
+            targetInactive: Boolean(
+              dependencyValues.targetIsInactiveCompositeReplacement,
+            ),
+          },
+        };
       },
     };
-
 
     stateVariableDefinitions.targetName = {
       forRenderer: true,
@@ -101,20 +106,20 @@ export default class Ref extends InlineComponent {
         },
         uri: {
           dependencyType: "stateVariable",
-          variableName: "uri"
+          variableName: "uri",
         },
         page: {
           dependencyType: "stateVariable",
-          variableName: "page"
+          variableName: "page",
         },
         targetInactive: {
           dependencyType: "stateVariable",
-          variableName: "targetInactive"
+          variableName: "targetInactive",
         },
         targetAttribute: {
           dependencyType: "doenetAttribute",
-          attributeName: "target"
-        }
+          attributeName: "target",
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.uri || dependencyValues.page) {
@@ -123,36 +128,49 @@ export default class Ref extends InlineComponent {
             if (targetName[0] !== "/") {
               targetName = "/" + targetName;
             }
-            return { setValue: { targetName } }
+            return { setValue: { targetName } };
           } else {
-            return { setValue: { targetName: "" } }
+            return { setValue: { targetName: "" } };
           }
-        } else if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
-          return { setValue: { targetName: "" } }
+        } else if (
+          dependencyValues.targetComponent === null ||
+          dependencyValues.targetInactive
+        ) {
+          return { setValue: { targetName: "" } };
         } else {
-          return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
+          return {
+            setValue: {
+              targetName: dependencyValues.targetComponent.componentName,
+            },
+          };
         }
       },
     };
 
     stateVariableDefinitions.cid = {
       forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: "doenetId",
-        forRenderer: true,
-      }, {
-        variableName: "variantIndex",
-        forRenderer: true,
-      }, {
-        variableName: "edit",
-        forRenderer: true,
-      }, {
-        variableName: "draft",
-        forRenderer: true,
-      }, {
-        variableName: "hash",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "doenetId",
+          forRenderer: true,
+        },
+        {
+          variableName: "variantIndex",
+          forRenderer: true,
+        },
+        {
+          variableName: "edit",
+          forRenderer: true,
+        },
+        {
+          variableName: "draft",
+          forRenderer: true,
+        },
+        {
+          variableName: "hash",
+          forRenderer: true,
+        },
+      ],
       returnDependencies: () => ({
         uri: {
           dependencyType: "stateVariable",
@@ -160,19 +178,28 @@ export default class Ref extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.uri ||
+        if (
+          !dependencyValues.uri ||
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
             setValue: {
-              cid: null, doenetId: null,
-              variantIndex: null, edit: null, draft: null, hash: null
-            }
-          }
+              cid: null,
+              doenetId: null,
+              variantIndex: null,
+              edit: null,
+              draft: null,
+              hash: null,
+            },
+          };
         }
 
-        let cid = null, doenetId = null, variantIndex = null;
-        let draft = null, edit = null, hash = null;
+        let cid = null,
+          doenetId = null,
+          variantIndex = null;
+        let draft = null,
+          edit = null,
+          hash = null;
 
         let result = dependencyValues.uri.match(/[:&]cid=([^&^#]+)/i);
         if (result) {
@@ -229,16 +256,16 @@ export default class Ref extends InlineComponent {
             dependencyType: "child",
             childGroups: ["anything"],
             variableNames: ["text"],
-            variablesOptional: true
+            variablesOptional: true,
           },
           uri: {
             dependencyType: "stateVariable",
-            variableName: "uri"
+            variableName: "uri",
           },
           targetInactive: {
             dependencyType: "stateVariable",
-            variableName: "targetInactive"
-          }
+            variableName: "targetInactive",
+          },
         };
 
         if (stateValues.targetName) {
@@ -247,15 +274,14 @@ export default class Ref extends InlineComponent {
             componentName: stateValues.targetName,
             variableName: "equationTag",
             variablesOptional: true,
-          }
+          };
           dependencies.title = {
             dependencyType: "stateVariable",
             componentName: stateValues.targetName,
             variableName: "title",
             variablesOptional: true,
-          }
+          };
         }
-
 
         return dependencies;
       },
@@ -268,7 +294,7 @@ export default class Ref extends InlineComponent {
             if (dependencyValues.title !== null) {
               linkText = dependencyValues.title;
             } else if (dependencyValues.equationTag !== null) {
-              linkText = '(' + dependencyValues.equationTag + ')';
+              linkText = "(" + dependencyValues.equationTag + ")";
             }
           }
         } else {
@@ -284,12 +310,41 @@ export default class Ref extends InlineComponent {
         if (!linkText) {
           linkText = "???";
         }
-        return { setValue: { linkText } }
-      }
-    }
+        return { setValue: { linkText } };
+      },
+    };
 
     return stateVariableDefinitions;
-
   }
 
+  async navigateToTarget({ actionId }) {
+    if (await this.stateValues.disabled) {
+      this.coreFunctions.resolveAction({ actionId });
+    } else {
+      let cid = await this.stateValues.cid;
+      let doenetId = await this.stateValues.doenetId;
+      let variantIndex = await this.stateValues.variantIndex;
+      let edit = await this.stateValues.edit;
+      let hash = await this.stateValues.hash;
+      let page = await this.stateValues.page;
+      let uri = await this.stateValues.uri;
+      let targetName = await this.stateValues.targetName;
+
+      let effectiveName = this.componentOrAdaptedName;
+
+      this.coreFunctions.navigateToTarget({
+        cid,
+        doenetId,
+        variantIndex,
+        edit,
+        hash,
+        page,
+        uri,
+        targetName,
+        actionId,
+        componentName: this.componentName,
+        effectiveName,
+      });
+    }
+  }
 }

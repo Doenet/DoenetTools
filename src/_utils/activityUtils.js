@@ -2,19 +2,26 @@ import { prng_alea } from "esm-seedrandom";
 import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
 import { returnAllPossibleVariants } from "../Core/utils/returnAllPossibleVariants";
 import { parseAndCompile } from "../Parser/parser";
-import { enumerateCombinations } from '../Core/utils/enumeration';
-import createComponentInfoObjects from '../Core/utils/componentInfoObjects';
-import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents } from '../Core/utils/serializedStateProcessing';
+import { enumerateCombinations } from "../Core/utils/enumeration";
+import createComponentInfoObjects from "../Core/utils/componentInfoObjects";
+import {
+  addDocumentIfItsMissing,
+  countComponentTypes,
+  expandDoenetMLsToFullSerializedComponents,
+} from "../Core/utils/serializedStateProcessing";
 
 let rngClass = prng_alea;
 
 export function parseActivityDefinition(activityDefDoenetML) {
+  let serializedDefinition = parseAndCompile(activityDefDoenetML).filter(
+    (x) => typeof x !== "string" || /\S/.test(x),
+  );
 
-  let serializedDefinition = parseAndCompile(activityDefDoenetML)
-    .filter(x => typeof x !== "string" || /\S/.test(x))
-
-  if (serializedDefinition.length !== 1 || serializedDefinition[0].componentType !== "document") {
-    return { success: false, message: `Invalid activity definition` }
+  if (
+    serializedDefinition.length !== 1 ||
+    serializedDefinition[0].componentType !== "document"
+  ) {
+    return { success: false, message: `Invalid activity definition` };
   }
 
   serializedDefinition = serializedDefinition[0];
@@ -24,7 +31,10 @@ export function parseActivityDefinition(activityDefDoenetML) {
   for (let prop in serializedDefinition.props) {
     let lowerProp = prop.toLowerCase();
     if (lowerProp in documentProps) {
-      return { success: false, message: `Invalid activity definition: duplicate attribute ${lowerProp}` };
+      return {
+        success: false,
+        message: `Invalid activity definition: duplicate attribute ${lowerProp}`,
+      };
     }
     documentProps[prop.toLowerCase()] = serializedDefinition.props[prop];
   }
@@ -39,11 +49,14 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     if (documentProps.itemweights) {
       if (typeof documentProps.itemweights !== "string") {
-        return { success: false, message: `Invalid activity definition: invalid itemWeights` };
+        return {
+          success: false,
+          message: `Invalid activity definition: invalid itemWeights`,
+        };
       }
       jsonDefinition.itemWeights = documentProps.itemweights
         .split(/\s+/)
-        .filter(s => s)
+        .filter((s) => s)
         .map(Number);
 
       delete documentProps.itemweights;
@@ -52,30 +65,33 @@ export function parseActivityDefinition(activityDefDoenetML) {
     jsonDefinition.shuffleItemWeights =
       documentProps.shuffleitemweights !== undefined &&
       (documentProps.shuffleitemweights === true ||
-        documentProps.shuffleitemweights.toLowerCase() === "true"
-      );
+        documentProps.shuffleitemweights.toLowerCase() === "true");
 
     delete documentProps.shuffleitemweights;
 
     jsonDefinition.isSinglePage =
       documentProps.issinglepage !== undefined &&
       (documentProps.issinglepage === true ||
-        documentProps.issinglepage.toLowerCase() === "true"
-      );
+        documentProps.issinglepage.toLowerCase() === "true");
 
     delete documentProps.issinglepage;
 
-
     if (documentProps.xmlns) {
-      if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
+      if (
+        documentProps.xmlns.slice(0, 34) ===
+        "https://doenet.org/spec/doenetml/v"
+      ) {
         jsonDefinition.version = documentProps.xmlns.slice(34);
         xmlns = documentProps.xmlns;
         delete documentProps.xmlns;
       } else {
-        return { success: false, message: `Invalid activity definition: unrecognized xmlns` };
+        return {
+          success: false,
+          message: `Invalid activity definition: unrecognized xmlns`,
+        };
       }
     } else {
-      console.warn('no xmlns of activity!');
+      console.warn("no xmlns of activity!");
     }
 
     if (documentProps.numberofvariants) {
@@ -84,22 +100,32 @@ export function parseActivityDefinition(activityDefDoenetML) {
     }
 
     if (Object.keys(documentProps).length > 0) {
-      return { success: false, message: `Invalid activity definition: invalid document attributes: ${Object.keys(documentProps).join(", ")}` };
+      return {
+        success: false,
+        message: `Invalid activity definition: invalid document attributes: ${Object.keys(
+          documentProps,
+        ).join(", ")}`,
+      };
     }
 
-    let fakeOrder = { type: "order", behavior: "sequence", children: serializedDefinition.children };
+    let fakeOrder = {
+      type: "order",
+      behavior: "sequence",
+      children: serializedDefinition.children,
+    };
     let result = validateOrder(fakeOrder);
 
     if (!result.success) {
-      return { success: false, message: `Invalid activity definition: ${result.message}` };
+      return {
+        success: false,
+        message: `Invalid activity definition: ${result.message}`,
+      };
     }
 
     jsonDefinition.order = result.order;
 
-    return { success: true, activityJSON: jsonDefinition }
-
+    return { success: true, activityJSON: jsonDefinition };
   } else if (documentProps.type.toLowerCase() === "page") {
-
     let page = { type: "page", doenetML: activityDefDoenetML };
 
     let jsonDefinition = {
@@ -107,34 +133,36 @@ export function parseActivityDefinition(activityDefDoenetML) {
       order: {
         type: "order",
         behavior: "sequence",
-        content: [page]
-      }
-    }
-
+        content: [page],
+      },
+    };
 
     if (documentProps.xmlns) {
-      if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
+      if (
+        documentProps.xmlns.slice(0, 34) ===
+        "https://doenet.org/spec/doenetml/v"
+      ) {
         jsonDefinition.version = documentProps.xmlns.slice(34);
         delete documentProps.xmlns;
       } else {
-        return { success: false, message: `Invalid activity definition: unrecognized xmlns` };
+        return {
+          success: false,
+          message: `Invalid activity definition: unrecognized xmlns`,
+        };
       }
     } else {
-      console.warn('no xmlns of activity!');
+      console.warn("no xmlns of activity!");
     }
-
 
     // TODO: what to do about variant control?
     // It'd be great to have a way to map activity variants
     // directly to page variants
     // That way, we could preserve the exact variants specified in the page definition
 
-    return { success: true, activityJSON: jsonDefinition }
-
+    return { success: true, activityJSON: jsonDefinition };
   } else {
     return { success: false, message: `Invalid activity definition` };
   }
-
 
   function validateOrder(order) {
     let newOrder = { type: "order" };
@@ -145,8 +173,8 @@ export function parseActivityDefinition(activityDefDoenetML) {
       if (lowerProp in orderProps) {
         return {
           success: false,
-          message: `duplicate attribute of order ${lowerProp}`
-        }
+          message: `duplicate attribute of order ${lowerProp}`,
+        };
       }
       orderProps[prop.toLowerCase()] = order.props[prop];
     }
@@ -160,20 +188,19 @@ export function parseActivityDefinition(activityDefDoenetML) {
         newOrder.withReplacement =
           orderProps.withreplacement !== undefined &&
           (orderProps.withreplacement === true ||
-            orderProps.withreplacement.toLowerCase() === "true"
-          );
+            orderProps.withreplacement.toLowerCase() === "true");
       } else {
         return {
           success: false,
-          message: `invalid order attribute: ${prop}`
-        }
+          message: `invalid order attribute: ${prop}`,
+        };
       }
     }
 
-
     // remove blank string children
-    let orderChildren = order.children
-      .filter(x => typeof x !== "string" || /\S/.test(x));
+    let orderChildren = order.children.filter(
+      (x) => typeof x !== "string" || /\S/.test(x),
+    );
 
     let content = [];
     for (let child of orderChildren) {
@@ -187,15 +214,15 @@ export function parseActivityDefinition(activityDefDoenetML) {
       } else if (child.componentType.toLowerCase() == "page") {
         let result = validatePage(child);
         if (result.success) {
-          content.push(result.page)
+          content.push(result.page);
         } else {
           return result;
         }
       } else {
         return {
           success: false,
-          message: `invalid child of order, found type: ${child.componentType}`
-        }
+          message: `invalid child of order, found type: ${child.componentType}`,
+        };
       }
     }
 
@@ -203,11 +230,9 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     return {
       success: true,
-      order: newOrder
-    }
-
+      order: newOrder,
+    };
   }
-
 
   function validatePage(page) {
     let newPage = { type: "page" };
@@ -218,33 +243,37 @@ export function parseActivityDefinition(activityDefDoenetML) {
       if (lowerProp in pageProps) {
         return {
           success: false,
-          message: `duplicate attribute of page ${lowerProp}`
-        }
+          message: `duplicate attribute of page ${lowerProp}`,
+        };
       }
       pageProps[prop.toLowerCase()] = page.props[prop];
     }
-
 
     for (let prop in pageProps) {
       if (prop === "cid") {
         newPage.cid = pageProps.cid;
         delete pageProps.cid;
+      } else if (prop == "label") {
+        // we ignore label, at least for now
       } else {
         return {
           success: false,
-          message: `invalid page attribute: ${prop}`
-        }
+          message: `invalid page attribute: ${prop}`,
+        };
       }
     }
 
     if (page.children.length > 0) {
-      let pageDoenetML = activityDefDoenetML.slice(page.range.openEnd + 1, page.range.closeBegin);
+      let pageDoenetML = activityDefDoenetML.slice(
+        page.range.openEnd,
+        page.range.closeBegin,
+      );
 
       if (page.children[0].componentType?.toLowerCase() !== "document") {
         // add <docoument> around page
-        let xmlnsprop = '';
+        let xmlnsprop = "";
         if (xmlns) {
-          xmlnsprop = ` xmlns="${xmlns}"`
+          xmlnsprop = ` xmlns="${xmlns}"`;
         }
         pageDoenetML = `<document type="page" ${xmlnsprop}>${pageDoenetML}</document>`;
       }
@@ -254,25 +283,27 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     return {
       success: true,
-      page: newPage
-    }
+      page: newPage,
+    };
   }
-
-
 }
 
+export async function calculateOrderAndVariants({
+  activityDefinition,
+  requestedVariantIndex,
+}) {
+  let activityVariantResult = await determineNumberOfActivityVariants(
+    activityDefinition,
+  );
 
-export async function calculateOrderAndVariants({ activityDefinition, requestedVariantIndex }) {
-
-  let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
-
-  let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
+  let variantIndex =
+    ((requestedVariantIndex - 1) % activityVariantResult.numberOfVariants) + 1;
   if (variantIndex < 1) {
     variantIndex += activityVariantResult.numberOfVariants;
   }
 
   if (!Number.isFinite(variantIndex)) {
-    return { success: false, message: "Invalid requested variant index" }
+    return { success: false, message: "Invalid requested variant index" };
   }
 
   let rng = new rngClass(variantIndex.toString());
@@ -283,13 +314,11 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
     return orderResult;
   }
 
-
   let originalOrder = orderResult.pages;
-
 
   let itemWeights = activityDefinition.itemWeights || [];
 
-  if (!Array.isArray(itemWeights) || !itemWeights.every(x => x >= 0)) {
+  if (!Array.isArray(itemWeights) || !itemWeights.every((x) => x >= 0)) {
     return { success: false, message: "Invalid itemWeights" };
   }
 
@@ -304,30 +333,33 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
   // normalize itemWeights to sum to 1
   let totalWeight = itemWeights.reduce((a, c) => a + c);
   if (totalWeight > 0) {
-    itemWeights = itemWeights.map(x => x / totalWeight);
+    itemWeights = itemWeights.map((x) => x / totalWeight);
   }
-
 
   let pageVariantsResult;
 
   if (activityVariantResult.pageVariants) {
-    pageVariantsResult = [activityVariantResult.pageVariants]
+    pageVariantsResult = [activityVariantResult.pageVariants];
   } else {
-
     let promises = [];
     for (let page of originalOrder) {
-      promises.push(returnAllPossibleVariants({
-        cid: page.cid, doenetML: page.doenetML
-      }));
+      promises.push(
+        returnAllPossibleVariants({
+          cid: page.cid,
+          doenetML: page.doenetML,
+        }),
+      );
     }
 
     try {
       pageVariantsResult = await Promise.all(promises);
     } catch (e) {
-      return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+      return {
+        success: false,
+        message: `Error retrieving content for activity. ${e.message}`,
+      };
     }
   }
-
 
   let variantForEachPage;
 
@@ -339,28 +371,32 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
     numberOfVariantsPerPage.push(pageResult.allPossibleVariants.length);
   }
 
-  let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
+  let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce(
+    (a, c) => a * c,
+    1,
+  );
 
-  if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
-
-    let pageVariantCombinationIndex = (variantIndex - 1) % numberOfPageVariantCombinations + 1;
+  if (
+    numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants
+  ) {
+    let pageVariantCombinationIndex =
+      ((variantIndex - 1) % numberOfPageVariantCombinations) + 1;
 
     variantForEachPage = enumerateCombinations({
       numberOfOptionsByIndex: numberOfVariantsPerPage,
       maxNumber: pageVariantCombinationIndex,
-    })[pageVariantCombinationIndex - 1].map(x => x + 1);
-
+    })[pageVariantCombinationIndex - 1].map((x) => x + 1);
   } else {
-    variantForEachPage = [...Array(nPages).keys()].map(i => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1)
+    variantForEachPage = [...Array(nPages).keys()].map(
+      (i) => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1,
+    );
   }
 
   let variantsByPage = [];
 
   let newOrder = [];
   for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
-
     let pageVariantIndex = variantForEachPage[ind];
-
 
     variantsByPage.push(pageVariantIndex);
 
@@ -376,20 +412,21 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
       page.cid = possibleVariants.cid;
     }
     newOrder.push(page);
-
   }
 
   let orderWithCids = [...originalOrder];
-  newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
+  newOrder.forEach((v, i) => (orderWithCids[i].cid = v.cid));
 
-  let previousComponentTypeCounts = await initializeComponentTypeCounts(newOrder);
+  let previousComponentTypeCounts = await initializeComponentTypeCounts(
+    newOrder,
+  );
 
   let activityInfo = {
     orderWithCids,
     variantsByPage,
     itemWeights,
     numberOfVariants: activityVariantResult.numberOfVariants,
-    previousComponentTypeCounts
+    previousComponentTypeCounts,
   };
 
   return {
@@ -401,7 +438,6 @@ export async function calculateOrderAndVariants({ activityDefinition, requestedV
     activityInfo,
     previousComponentTypeCounts,
   };
-
 }
 
 export async function determineNumberOfActivityVariants(activityDefinition) {
@@ -413,35 +449,37 @@ export async function determineNumberOfActivityVariants(activityDefinition) {
     if (!(Number.isInteger(numberOfVariants) && numberOfVariants >= 1)) {
       numberOfVariants = 1000;
     }
-
-  } else if ((activityDefinition.order.behavior === undefined || activityDefinition.order.behavior === "sequence") &&
-    activityDefinition.order.content.every(x => x.type === "page")
+  } else if (
+    (activityDefinition.order.behavior === undefined ||
+      activityDefinition.order.behavior === "sequence") &&
+    activityDefinition.order.content.every((x) => x.type === "page")
   ) {
-
     // determine number of variants from the pages
 
     let promises = [];
     for (let page of activityDefinition.order.content) {
-      promises.push(returnAllPossibleVariants({
-        cid: page.cid, doenetML: page.doenetML
-      }));
+      promises.push(
+        returnAllPossibleVariants({
+          cid: page.cid,
+          doenetML: page.doenetML,
+        }),
+      );
     }
 
     pageVariantsResult = await Promise.all(promises);
 
-    numberOfVariants = pageVariantsResult.reduce((a, c) => a * c.allPossibleVariants.length, 1)
+    numberOfVariants = pageVariantsResult.reduce(
+      (a, c) => a * c.allPossibleVariants.length,
+      1,
+    );
 
     numberOfVariants = Math.min(1000, numberOfVariants);
-
   }
 
-
   return { numberOfVariants, pageVariantsResult };
-
 }
 
 export async function returnNumberOfActivityVariantsForCid(cid) {
-
   let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
@@ -456,28 +494,29 @@ export async function returnNumberOfActivityVariantsForCid(cid) {
 }
 
 function determineOrder(order, rng) {
-
   if (order?.type?.toLowerCase() !== "order") {
-    return { success: false, message: "invalid order" }
+    return { success: false, message: "invalid order" };
   }
 
   let behavior = order.behavior?.toLowerCase();
 
   if (behavior === undefined) {
-    behavior = 'sequence';
+    behavior = "sequence";
   }
 
   switch (behavior) {
-    case 'sequence':
+    case "sequence":
       return processSequenceOrder(order, rng);
-    case 'select':
+    case "select":
       return processSelectOrder(order, rng);
-    case 'shuffle':
+    case "shuffle":
       return processShuffleOrder(order, rng);
     default:
-      return { success: false, message: `Have not implemented behavior: ${behavior}` }
+      return {
+        success: false,
+        message: `Have not implemented behavior: ${behavior}`,
+      };
   }
-
 }
 
 function processSequenceOrder(order, rng) {
@@ -486,24 +525,23 @@ function processSequenceOrder(order, rng) {
   for (let item of order.content) {
     let type = item.type.toLowerCase();
     if (type === "page") {
-      pages.push(item)
+      pages.push(item);
     } else if (type === "order") {
       let orderResult = determineOrder(item, rng);
       if (orderResult.success) {
-        pages.push(...orderResult.pages)
+        pages.push(...orderResult.pages);
       } else {
         return orderResult;
       }
     } else {
-      return { success: false, message: "Unrecognized item in order." }
+      return { success: false, message: "Unrecognized item in order." };
     }
   }
 
-  return { success: true, pages }
+  return { success: true, pages };
 }
 
 function processSelectOrder(order, rng) {
-
   let numberToSelect = order.numberToSelect;
   let nItems = order.content.length;
 
@@ -519,14 +557,17 @@ function processSelectOrder(order, rng) {
   if (numberUniqueRequired > nItems) {
     return {
       success: false,
-      message: "Cannot select " + numberUniqueRequired +
-        " components from only " + nItems
+      message:
+        "Cannot select " +
+        numberUniqueRequired +
+        " components from only " +
+        nItems,
     };
   }
 
   let selectWeights = order.selectWeights || [];
 
-  if (!Array.isArray(selectWeights) || !selectWeights.every(x => x >= 0)) {
+  if (!Array.isArray(selectWeights) || !selectWeights.every((x) => x >= 0)) {
     return { success: false, message: "Invalid selectWeights" };
   }
 
@@ -538,23 +579,25 @@ function processSelectOrder(order, rng) {
 
   // normalize selectWeights to sum to 1
   let totalWeight = selectWeights.reduce((a, c) => a + c);
-  selectWeights = selectWeights.map(x => x / totalWeight);
-
+  selectWeights = selectWeights.map((x) => x / totalWeight);
 
   //https://stackoverflow.com/a/44081700
-  let cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
+  let cumulativeWeights = selectWeights.reduce(
+    (a, x, i) => [...a, x + (a[i - 1] || 0)],
+    [],
+  );
   let indsRemaining = [...Array(cumulativeWeights.length).keys()];
 
   let selectedItems = [];
 
   for (let ind = 0; ind < numberToSelect; ind++) {
-
     // random number in [0, 1)
     let rand = rng();
 
     // find largest index where cumulativeWeight is larger than rand
     // using binary search
-    let start = -1, end = cumulativeWeights.length - 1;
+    let start = -1,
+      end = cumulativeWeights.length - 1;
     while (start < end - 1) {
       let mid = Math.floor((start + end) / 2); // mid point
       if (cumulativeWeights[mid] > rand) {
@@ -564,44 +607,43 @@ function processSelectOrder(order, rng) {
       }
     }
 
-    selectedItems.push(order.content[indsRemaining[end]])
+    selectedItems.push(order.content[indsRemaining[end]]);
 
     if (!order.withReplacement && ind < numberToSelect - 1) {
       // remove selected index and renormalize weights
       selectWeights.splice(end, 1);
       indsRemaining.splice(end, 1);
       totalWeight = selectWeights.reduce((a, c) => a + c);
-      selectWeights = selectWeights.map(x => x / totalWeight);
-      cumulativeWeights = selectWeights.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-
+      selectWeights = selectWeights.map((x) => x / totalWeight);
+      cumulativeWeights = selectWeights.reduce(
+        (a, x, i) => [...a, x + (a[i - 1] || 0)],
+        [],
+      );
     }
   }
 
-
   let pages = [];
-
 
   for (let item of selectedItems) {
     let type = item.type.toLowerCase();
     if (type === "page") {
-      pages.push(item)
+      pages.push(item);
     } else if (type === "order") {
       let orderResult = determineOrder(item);
       if (orderResult.success) {
-        pages.push(...orderResult.pages)
+        pages.push(...orderResult.pages);
       } else {
         return orderResult;
       }
     } else {
-      return { success: false, message: "Unrecognized item in order." }
+      return { success: false, message: "Unrecognized item in order." };
     }
   }
 
-  return { success: true, pages }
+  return { success: true, pages };
 }
 
 function processShuffleOrder(order, rng) {
-
   let newOrder = [...order.content];
 
   // shuffle the order
@@ -617,35 +659,34 @@ function processShuffleOrder(order, rng) {
   for (let item of newOrder) {
     let type = item.type.toLowerCase();
     if (type === "page") {
-      pages.push(item)
+      pages.push(item);
     } else if (type === "order") {
       let orderResult = determineOrder(item, rng);
       if (orderResult.success) {
-        pages.push(...orderResult.pages)
+        pages.push(...orderResult.pages);
       } else {
         return orderResult;
       }
     } else {
-      return { success: false, message: "Unrecognized item in order." }
+      return { success: false, message: "Unrecognized item in order." };
     }
   }
 
-  return { success: true, pages }
+  return { success: true, pages };
 }
 
 async function initializeComponentTypeCounts(order) {
-
   let previousComponentTypeCountsByPage = [{}];
 
   let componentInfoObjects = createComponentInfoObjects();
 
   for (let [ind, page] of order.slice(0, order.length - 1).entries()) {
-
-    let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
-      contentIds: [page.cid],
-      doenetMLs: [page.doenetML],
-      componentInfoObjects,
-    });
+    let { fullSerializedComponents } =
+      await expandDoenetMLsToFullSerializedComponents({
+        contentIds: [page.cid],
+        doenetMLs: [page.doenetML],
+        componentInfoObjects,
+      });
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -665,7 +706,6 @@ async function initializeComponentTypeCounts(order) {
     }
 
     previousComponentTypeCountsByPage.push(componentTypeCounts);
-
   }
 
   return previousComponentTypeCountsByPage;

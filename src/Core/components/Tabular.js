@@ -1,6 +1,13 @@
-import BlockComponent from './abstract/BlockComponent';
+import BlockComponent from "./abstract/BlockComponent";
 
 export default class Tabular extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    Object.assign(this.actions, {
+      recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    });
+  }
   static componentType = "tabular";
   static rendererType = "tabular";
   static renderChildren = true;
@@ -41,14 +48,14 @@ export default class Tabular extends BlockComponent {
       defaultValue: "left",
       public: true,
       validValues: ["left", "center", "right", "justify"],
-    }
+    };
     attributes.valign = {
       createComponentOfType: "text",
       createStateVariable: "valign",
       defaultValue: "middle",
       public: true,
       validValues: ["top", "middle", "bottom"],
-    }
+    };
     attributes.top = {
       createComponentOfType: "text",
       createStateVariable: "top",
@@ -56,41 +63,39 @@ export default class Tabular extends BlockComponent {
       public: true,
       validValues: ["none", "minor", "medium", "major"],
       forRenderer: true,
-    }
+    };
     attributes.left = {
       createComponentOfType: "text",
       createStateVariable: "left",
       defaultValue: "none",
       public: true,
       validValues: ["none", "minor", "medium", "major"],
-    }
+    };
     attributes.bottom = {
       createComponentOfType: "text",
       createStateVariable: "bottom",
       defaultValue: "none",
       public: true,
       validValues: ["none", "minor", "medium", "major"],
-    }
+    };
     attributes.right = {
       createComponentOfType: "text",
       createStateVariable: "right",
       defaultValue: "none",
       public: true,
       validValues: ["none", "minor", "medium", "major"],
-    }
+    };
     return attributes;
   }
 
-
   static returnChildGroups() {
-
-    return [{
-      group: "rows",
-      componentTypes: ["row"]
-    }]
-
+    return [
+      {
+        group: "rows",
+        componentTypes: ["row"],
+      },
+    ];
   }
-
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -144,7 +149,6 @@ export default class Tabular extends BlockComponent {
     //     return { setValue: { numColumns } }
     //   }
     // }
-
 
     // stateVariableDefinitions.height = {
     //   public: true,
@@ -308,7 +312,6 @@ export default class Tabular extends BlockComponent {
     //         }
     //       }
 
-
     //       if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
     //         // invalid range
     //         return [];
@@ -364,9 +367,7 @@ export default class Tabular extends BlockComponent {
     //   }
     // }
 
-
     return stateVariableDefinitions;
-
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -376,16 +377,8 @@ export default class Tabular extends BlockComponent {
         componentName: this.componentName,
         componentType: this.componentType,
       },
-      result: { isVisible }
-    })
+      result: { isVisible },
+    });
     this.coreFunctions.resolveAction({ actionId });
   }
-
-  actions = {
-    recordVisibilityChange: this.recordVisibilityChange.bind(this),
-  }
-
-
 }
-
-

@@ -1,40 +1,41 @@
-import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import React from "react";
+import styled, { ThemeProvider } from "styled-components";
 
 const Container = styled.div`
-  display: ${(props) => props.vertical ? 'static' : 'flex'};
-  width: ${props => (props.width == 'menu' ? 'var(--menuWidth)' : '')};
+  display: ${(props) => (props.vertical ? "static" : "flex")};
+  width: ${(props) => (props.width == "menu" ? "var(--menuWidth)" : "")};
   /* flex-wrap: wrap; */
   // margin: 2px 0px 2px 0px
   /* overflow: clip; */
 `;
 
 export default function ButtonGroup(props) {
-    const buttonGroup = {
-        margin: '0px 2px 0px 2px',
-        borderRadius: '0',
-        padding: '0px 12px 0px 10px'
-    }; 
-
-    const verticalButtonGroup = {
-      margin: '4px 4px 4px 4px',
-      borderRadius: '0',
-      padding: '0px 10px 0px 10px'
-    }; 
-
-    let elem = React.Children.toArray(props.children);
-    // if (elem.length > 1) {
-    //   elem = [React.cloneElement(elem[0], {num: 'first'})]
-    //     .concat(elem.slice(1,-1))
-    //     .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
-    // }
-    return (
-      <Container vertical={props.vertical} width={props.width}>
-        <ThemeProvider theme={props.vertical ? verticalButtonGroup : buttonGroup}>{elem}</ThemeProvider>
-      </Container>
-      
-    )
+  const buttonGroup = {
+    margin: "0px 2px 0px 2px",
+    borderRadius: "0",
+    padding: "0px 12px 0px 10px",
   };
+
+  const verticalButtonGroup = {
+    margin: "4px 4px 4px 4px",
+    borderRadius: "0",
+    padding: "0px 10px 0px 10px",
+  };
+
+  let elem = React.Children.toArray(props.children);
+  // if (elem.length > 1) {
+  //   elem = [React.cloneElement(elem[0], {num: 'first'})]
+  //     .concat(elem.slice(1,-1))
+  //     .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
+  // }
+  return (
+    <Container vertical={props.vertical} width={props.width}>
+      <ThemeProvider theme={props.vertical ? verticalButtonGroup : buttonGroup}>
+        {elem}
+      </ThemeProvider>
+    </Container>
+  );
+}
 // export default function ButtonGroup(props) {
 //     const defaultValue = props.data.filter(d => d.default)[0].value;
 //     let [currentValue, setCurrentValue] = useState(defaultValue);

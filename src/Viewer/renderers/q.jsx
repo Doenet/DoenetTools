@@ -1,5 +1,5 @@
-import React from 'react';
-import useDoenetRender from './useDoenetRenderer';
+import React from "react";
+import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function Q(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
@@ -8,7 +8,10 @@ export default React.memo(function Q(props) {
     return null;
   }
 
-  return <><a name={id} />&ldquo;{children}&rdquo;</>
-
-})
-
+  return (
+    <>
+      <a name={id} />
+      &ldquo;{children}&rdquo;
+    </>
+  );
+});

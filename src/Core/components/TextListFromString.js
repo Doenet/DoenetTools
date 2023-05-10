@@ -1,4 +1,4 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from "./abstract/InlineComponent";
 
 export default class TextListFromString extends InlineComponent {
   static componentType = "textListFromString";
@@ -7,52 +7,43 @@ export default class TextListFromString extends InlineComponent {
 
   static stateVariableForAttributeValue = "texts";
 
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakStringsBySpaces = function ({ matchedChildren }) {
-
       // break any string by white space
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (typeof c === "string") {
-          return [
-            ...a,
-            ...c.split(/\s+/)
-              .filter(s => s)
-          ]
+          return [...a, ...c.split(/\s+/).filter((s) => s)];
         } else {
-          return [...a, c]
+          return [...a, c];
         }
       }, []);
 
       return {
         success: true,
         newChildren: newChildren,
-      }
-    }
+      };
+    };
 
     sugarInstructions.push({
-      replacementFunction: breakStringsBySpaces
+      replacementFunction: breakStringsBySpaces,
     });
 
     return sugarInstructions;
-
   }
-
 
   static returnChildGroups() {
-
-    return [{
-      group: "strings",
-      componentTypes: ["string"]
-    }]
+    return [
+      {
+        group: "strings",
+        componentTypes: ["string"],
+      },
+    ];
   }
 
-
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nComponents = {
@@ -64,12 +55,14 @@ export default class TextListFromString extends InlineComponent {
         stringChildren: {
           dependencyType: "child",
           childGroups: ["strings"],
-        }
+        },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nComponents: dependencyValues.stringChildren.length } }
-      }
-    }
+        return {
+          setValue: { nComponents: dependencyValues.stringChildren.length },
+        };
+      },
+    };
 
     stateVariableDefinitions.texts = {
       public: true,
@@ -95,11 +88,11 @@ export default class TextListFromString extends InlineComponent {
               dependencyType: "child",
               childGroups: ["strings"],
               variableNames: ["value"],
-              childIndices: [arrayKey]
-            }
-          }
+              childIndices: [arrayKey],
+            },
+          };
         }
-        return { dependenciesByKey }
+        return { dependenciesByKey };
       },
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
         let texts = {};
@@ -108,19 +101,18 @@ export default class TextListFromString extends InlineComponent {
             texts[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0];
           }
         }
-        return { setValue: { texts } }
-      }
-    }
-
+        return { setValue: { texts } };
+      },
+    };
 
     stateVariableDefinitions.nValues = {
       isAlias: true,
-      targetVariableName: "nComponents"
+      targetVariableName: "nComponents",
     };
 
     stateVariableDefinitions.values = {
       isAlias: true,
-      targetVariableName: "texts"
+      targetVariableName: "texts",
     };
 
     stateVariableDefinitions.text = {
@@ -132,15 +124,14 @@ export default class TextListFromString extends InlineComponent {
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",
-          variableName: "texts"
-        }
+          variableName: "texts",
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { text: dependencyValues.texts.join(", ") }
-      })
-    }
+        setValue: { text: dependencyValues.texts.join(", ") },
+      }),
+    };
 
     return stateVariableDefinitions;
   }
-
 }

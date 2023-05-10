@@ -1,31 +1,29 @@
-import React, { useState, lazy, useRef, Suspense } from 'react';
+import React, { useState, lazy, useRef, Suspense } from "react";
 import {
   atom,
   useRecoilValue,
   useSetRecoilState,
   useRecoilState,
-} from 'recoil';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "recoil";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faCog,
   // faHome,
   faSun,
   faMoon,
-} from '@fortawesome/free-solid-svg-icons';
-import Logo from '../Logo';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-import { darkModeAtom } from '../DarkmodeController';
+} from "@fortawesome/free-solid-svg-icons";
+import Logo from "../Logo";
+import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
+import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
+import { darkModeAtom } from "../DarkmodeController";
 // import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
-  key: 'selectedMenuPanelAtom',
+  key: "selectedMenuPanelAtom",
   default: null,
 });
-
-
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -36,18 +34,18 @@ const MenuPanelsWrapper = styled.div`
   background: var(--mainGray);
   height: 100%;
   overflow-x: hidden;
-  width: ${({ hide }) => (hide ? '0px' : '240px')};
+  width: ${({ hide }) => (hide ? "0px" : "240px")};
 `;
 
 const MenuPanelsCap = styled.div`
   width: 240px;
   height: 35px;
-  color:var(--canvastext);
+  color: var(--canvastext);
   background: var(--canvas);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: ${(props) => (props.fix ? 'static' : 'sticky')};
+  position: ${(props) => (props.fix ? "static" : "sticky")};
   border-bottom: 2px solid var(--mainGray);
   margin-bottom: -2px;
   top: 0;
@@ -86,45 +84,45 @@ const Branding = styled.div`
 // `;
 
 const MenuPanelsCapComponent = styled.div`
-width: 240px;
-background-color: var(--canvas);
-color: var(--canvastext);
-border-top: 1px solid #e2e2e2;
-border-top: 1px solid #e2e2e2;
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-position: sticky;
-top: 35;
-z-index: 1;
+  width: 240px;
+  background-color: var(--canvas);
+  color: var(--canvastext);
+  border-top: 1px solid #e2e2e2;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 2px solid #e2e2e2;
+  margin-bottom: -2px;
+  position: sticky;
+  top: 35;
+  z-index: 1;
 `;
 
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
-    linkedPanel === activePanel ? '8px solid var(--mainBlue)' : 'none'};
+    linkedPanel === activePanel ? "8px solid var(--mainBlue)" : "none"};
   background-color: white;
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
-      linkedPanel === activePanel ? 'var(--canvas)' : 'var(--canvastext)'};
+      linkedPanel === activePanel ? "var(--canvas)" : "var(--canvastext)"};
   width: 100%;
   height: 100%;
 `;
 
 const CloseButton = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 20px;
-color: white;
-border: none;
-// display: inline-block;
-position:  static;
-left: 220px;
-cursor: pointer;
-z-index: 2;
-&:focus {
-  outline: 2px solid var(--mainBlue);
-  outline-offset: 2px;
-}
+  background-color: #1a5a99;
+  height: 35px;
+  width: 20px;
+  color: white;
+  border: none;
+  // display: inline-block;
+  position: static;
+  left: 220px;
+  cursor: pointer;
+  z-index: 2;
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
 `;
 
 const EditMenuPanels = styled.button`
@@ -140,7 +138,7 @@ const EditMenuPanels = styled.button`
 const MenuPanelTitle = styled.button`
   width: 240px;
   height: 35px;
-  color:var(--canvastext);
+  color: var(--canvastext);
   background: var(--canvas);
   display: flex;
   justify-content: center;
@@ -148,7 +146,9 @@ const MenuPanelTitle = styled.button`
   border: 0px solid var(--canvas);
   // border-top: 1px solid var(--canvastext);
   border-bottom: ${(props) =>
-    props.isOpen ? '2px solid var(--canvastext)' : '0px solid var(--canvastext)'};
+    props.isOpen
+      ? "2px solid var(--canvastext)"
+      : "0px solid var(--canvastext)"};
   margin-top: 2px;
   &:focus {
     outline: 2px solid var(--canvastext);
@@ -176,29 +176,30 @@ const HomeButton = styled.button`
   font-size: 20px;
 `;
 
-function SelectionMenu(props){
+function SelectionMenu(props) {
   // console.log("child", props.children);
-  return <>
-    <div 
-    style={{
-      // paddingTop: "4px", 
-      // marginTop: "2px",
-      paddingBottom: "8px", 
-      paddingLeft: "4px",
-      paddingRight: "4px",
-      // backgroundColor:"hsl(209,54%,90%)"
-      backgroundColor: 'var(--canvas)',
-      color:'var(--canvastext)',
-      borderLeft:"8px solid var(--mainBlue)"
-      }}
-      data-test="Menu Panel"
+  return (
+    <>
+      <div
+        style={{
+          // paddingTop: "4px",
+          // marginTop: "2px",
+          paddingBottom: "8px",
+          paddingLeft: "4px",
+          paddingRight: "4px",
+          // backgroundColor:"hsl(209,54%,90%)"
+          backgroundColor: "var(--canvas)",
+          color: "var(--canvastext)",
+          borderLeft: "8px solid var(--mainBlue)",
+        }}
+        data-test="Menu Panel"
       >
         {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
  fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
         {props.children}
       </div>
     </>
-  ;
+  );
 }
 
 function Menu(props) {
@@ -210,15 +211,15 @@ function Menu(props) {
 
   let hideShowStyle = null;
   if (!isOpen) {
-    hideShowStyle = 'none';
+    hideShowStyle = "none";
   }
 
   return (
     <>
-      <MenuPanelTitle 
-        isOpen={isOpen} 
-        aria-expanded={isOpen} 
-        aria-controls="menu" 
+      <MenuPanelTitle
+        isOpen={isOpen}
+        aria-expanded={isOpen}
+        aria-controls="menu"
         onClick={() => setIsOpen((was) => !was)}
         id="menu-title"
         data-test={`${props.type} Menu`}
@@ -227,14 +228,14 @@ function Menu(props) {
       </MenuPanelTitle>
       <div
         id="menu"
-        aria-labelledby='menu-title'
+        aria-labelledby="menu-title"
         style={{
           display: hideShowStyle,
-          paddingTop: '4px',
-          paddingBottom: '4px',
-          paddingLeft: '4px',
-          paddingRight: '4px',
-          backgroundColor: 'var(--canvas)',
+          paddingTop: "4px",
+          paddingBottom: "4px",
+          paddingLeft: "4px",
+          paddingRight: "4px",
+          backgroundColor: "var(--canvas)",
         }}
       >
         {props.children}
@@ -254,12 +255,19 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, displayProfile }) {
-// console.log(">>>===MenuPanel", hide)
-// console.log(">>>menuPanelCap",menuPanelCap)
-// console.log(">>>currentMenus",currentMenus)
-const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
-
+export default function MenuPanel({
+  hide,
+  menuPanelCap = "",
+  menusTitles = [],
+  currentMenus = [],
+  initOpen = [],
+  setMenusOpen,
+  displayProfile,
+}) {
+  // console.log(">>>===MenuPanel", hide)
+  // console.log(">>>menuPanelCap",menuPanelCap)
+  // console.log(">>>currentMenus",currentMenus)
+  const hideLinks = useRecoilValue(searchParamAtomFamily("hideLinks"));
 
   //These maintain the panels' state
   const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
@@ -269,51 +277,59 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
 
   // const profilePicName = profile.profilePicture;
   const LazyMenuPanelCapObj = useRef({
-    DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
-    DataCap:lazy(() => import('../MenuPanelCaps/DataCap')),
-    EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
-    AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
-    DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
-    ContentInfoCap:lazy(() => import('../MenuPanelCaps/ContentInfoCap')),
-    
+    DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap")),
+    DataCap: lazy(() => import("../MenuPanelCaps/DataCap")),
+    EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap")),
+    PortfolioEditorInfoCap: lazy(() =>
+      import("../MenuPanelCaps/PortfolioEditorInfoCap"),
+    ),
+    PublicEditorInfoCap: lazy(() =>
+      import("../MenuPanelCaps/PublicEditorInfoCap"),
+    ),
+    AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap")),
+    DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap")),
+    ContentInfoCap: lazy(() => import("../MenuPanelCaps/ContentInfoCap")),
   }).current;
 
   const LazyMenuObj = useRef({
-    SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
-    GradeSettings:lazy(() => import('../Menus/GradeSettings')),
-    SelectedSection:lazy(() => import('../Menus/SelectedSection')),
-    SelectedBank:lazy(() => import('../Menus/SelectedBank')),
-    SelectedDataSources:lazy(() => import('../Menus/SelectedDataSources')),
-    SelectedActivity:lazy(() => import('../Menus/SelectedActivity')),
-    SelectedOrder:lazy(() => import('../Menus/SelectedOrder')),
-    SelectedPage:lazy(() => import('../Menus/SelectedPage')),
-    SelectedPageLink:lazy(() => import('../Menus/SelectedPageLink')),
-    SelectedCollectionLink:lazy(() => import('../Menus/SelectedCollectionLink')),
-    CreateCourse:lazy(() => import('../Menus/CreateCourse')),
-    CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
-    AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
-    CutCopyPasteMenu:lazy(() => import('../Menus/CutCopyPasteMenu')),
-    EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
-    DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
-    VersionHistory:lazy(() => import('../Menus/VersionHistory')),
-    PageVariant:lazy(() => import('../Menus/PageVariant')),
-    PageLink:lazy(() => import('../Menus/PageLink')),
-    ActivityVariant:lazy(() => import('../Menus/ActivityVariant')),
-    AutoSaves:lazy(() => import('../Menus/AutoSaves')),
-    LoadPeople:lazy(() => import('../Menus/LoadPeople')),
-    GradeUpload:lazy(() => import('../Menus/GradeUpload')),
-    GradeDownload:lazy(() => import('../Menus/GradeDownload')),
-    ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
-    AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
-    SupportingFilesMenu:lazy(() => import('../Menus/SupportingFilesMenu')),
-    GroupSettings:lazy(() => import('../Menus/GroupSettings')),
-    TimerMenu:lazy(() => import('../Menus/TimerMenu')),
-    CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
-    ActivityDates:lazy(() => import('../Menus/ActivityDates')),
-    ClassTimes:lazy(() => import('../Menus/ClassTimes')),
-    CurrentContent:lazy(() => import('../Menus/CurrentContent')),
-    ManageUsersMenu:lazy(() => import('../Menus/ManageUsersMenu'))
-    
+    SelectedCourse: lazy(() => import("../Menus/SelectedCourse")),
+    GradeSettings: lazy(() => import("../Menus/GradeSettings")),
+    SelectedSection: lazy(() => import("../Menus/SelectedSection")),
+    SelectedBank: lazy(() => import("../Menus/SelectedBank")),
+    SelectedDataSources: lazy(() => import("../Menus/SelectedDataSources")),
+    SelectedActivity: lazy(() => import("../Menus/SelectedActivity")),
+    SelectedOrder: lazy(() => import("../Menus/SelectedOrder")),
+    SelectedPage: lazy(() => import("../Menus/SelectedPage")),
+    SelectedPageLink: lazy(() => import("../Menus/SelectedPageLink")),
+    SelectedCollectionLink: lazy(() =>
+      import("../Menus/SelectedCollectionLink"),
+    ),
+    CreateCourse: lazy(() => import("../Menus/CreateCourse")),
+    CourseEnroll: lazy(() => import("../Menus/CourseEnroll")),
+    AddDriveItems: lazy(() => import("../Menus/AddDriveItems")),
+    CutCopyPasteMenu: lazy(() => import("../Menus/CutCopyPasteMenu")),
+    EnrollStudents: lazy(() => import("../Menus/EnrollStudents")),
+    DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings")),
+    VersionHistory: lazy(() => import("../Menus/VersionHistory")),
+    PageVariant: lazy(() => import("../Menus/PageVariant")),
+    PageLink: lazy(() => import("../Menus/PageLink")),
+    ActivityVariant: lazy(() => import("../Menus/ActivityVariant")),
+    AutoSaves: lazy(() => import("../Menus/AutoSaves")),
+    LoadPeople: lazy(() => import("../Menus/LoadPeople")),
+    GradeUpload: lazy(() => import("../Menus/GradeUpload")),
+    GradeDownload: lazy(() => import("../Menus/GradeDownload")),
+    ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment")),
+    AssignmentSettingsMenu: lazy(() =>
+      import("../Menus/AssignmentSettingsMenu"),
+    ),
+    SupportingFilesMenu: lazy(() => import("../Menus/SupportingFilesMenu")),
+    GroupSettings: lazy(() => import("../Menus/GroupSettings")),
+    TimerMenu: lazy(() => import("../Menus/TimerMenu")),
+    CreditAchieved: lazy(() => import("../Menus/CreditAchieved")),
+    ActivityDates: lazy(() => import("../Menus/ActivityDates")),
+    ClassTimes: lazy(() => import("../Menus/ClassTimes")),
+    CurrentContent: lazy(() => import("../Menus/CurrentContent")),
+    ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu")),
   }).current;
 
   let selectionPanel = null;
@@ -323,7 +339,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
     if (panelToUse) {
       const key = `SelectionMenu${currentSelectionMenu}`;
       selectionPanel = (
-        <SelectionMenu key={key} >
+        <SelectionMenu key={key}>
           <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
             {React.createElement(panelToUse, { key })}
           </Suspense>
@@ -333,7 +349,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
   }
 
   let menuPanelCapComponent = null;
-  if (menuPanelCap !== '') {
+  if (menuPanelCap !== "") {
     menuPanelCapComponent = (
       <MenuPanelsCapComponent>
         <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
@@ -349,7 +365,7 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
   // toolMenus.current = []
 
   //Show menus
-  for (let [i,type] of Object.entries(currentMenus)){
+  for (let [i, type] of Object.entries(currentMenus)) {
     // console.log(">>>menu",type)
     const mKey = `${type}`;
     const title = menusTitles[i];
@@ -366,23 +382,25 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
 
   let settingsButton = null;
 
-  if (hideLinks != 'true'){
-    settingsButton = <SettingsButton
-    onClick={() =>
-      setPageToolView({ page: 'settings', tool: '', view: '' })
-    }
-  >
-    <FontAwesomeIcon icon={faCog} />
-  </SettingsButton>
+  if (hideLinks != "true") {
+    settingsButton = (
+      <SettingsButton
+        onClick={() =>
+          setPageToolView({ page: "settings", tool: "", view: "" })
+        }
+      >
+        <FontAwesomeIcon icon={faCog} />
+      </SettingsButton>
+    );
   }
 
   return (
     <MenuPanelsWrapper hide={hide} aria-label="menus">
       <MenuPanelsCap fix={hide} role="banner">
-        <Branding style={{ marginLeft: '5px' }}>
+        <Branding style={{ marginLeft: "5px" }}>
           {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
           {/* "/> */}
-          <Logo hasLink={hideLinks != 'true'} />
+          <Logo hasLink={hideLinks != "true"} />
           <p>Doenet</p>
         </Branding>
         <IconsGroup>
@@ -392,8 +410,10 @@ const hideLinks = useRecoilValue(searchParamAtomFamily('hideLinks'));
           </HomeButton>  */}
 
           <Checkbox
-            checked={darkModeToggle === 'dark'}
-            onClick={() => setDarkModeToggle(darkModeToggle === 'dark' ? 'light' : 'dark')}
+            checked={darkModeToggle === "dark"}
+            onClick={() =>
+              setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark")
+            }
             checkedIcon={<FontAwesomeIcon icon={faSun} />}
             uncheckedIcon={<FontAwesomeIcon icon={faMoon} />}
           />

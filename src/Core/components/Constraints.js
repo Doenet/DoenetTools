@@ -1,35 +1,21 @@
-import BaseComponent from './abstract/BaseComponent';
-import { convertValueToMathExpression } from '../utils/math';
-import { applyConstraintFromComponentConstraints } from '../utils/constraints';
+import BaseComponent from "./abstract/BaseComponent";
+import { convertValueToMathExpression } from "../utils/math";
+import { applyConstraintFromComponentConstraints } from "../utils/constraints";
 
 export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-
-    attributes.baseOnGraph = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "baseOnGraph",
-      defaultValue: null,
-    }
-
-    return attributes
-  }
-
   static returnChildGroups() {
-
-    return [{
-      group: "constraints",
-      componentTypes: ["_constraint"]
-    }]
-
+    return [
+      {
+        group: "constraints",
+        componentTypes: ["_constraint"],
+      },
+    ];
   }
-
 
   static returnStateVariableDefinitions() {
-
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.independentComponentConstraints = {
@@ -37,171 +23,182 @@ export default class Constraints extends BaseComponent {
         constraintChildren: {
           dependencyType: "child",
           childGroups: ["constraints"],
-          variableNames: ["independentComponentConstraints"]
-        }
+          variableNames: ["independentComponentConstraints"],
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          independentComponentConstraints: dependencyValues.constraintChildren.every(
-            x => x.stateValues.independentComponentConstraints
-          )
-        }
-      })
-    }
+          independentComponentConstraints:
+            dependencyValues.constraintChildren.every(
+              (x) => x.stateValues.independentComponentConstraints,
+            ),
+        },
+      }),
+    };
 
     stateVariableDefinitions.arrayEntryPrefixForConstraints = {
       returnDependencies: () => ({
         arrayEntryPrefixForConstraints: {
           dependencyType: "parentStateVariable",
-          variableName: "arrayEntryPrefixForConstraints"
-        }
+          variableName: "arrayEntryPrefixForConstraints",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           arrayEntryPrefixForConstraints:
-            dependencyValues.arrayEntryPrefixForConstraints
-        }
-      })
-    }
+            dependencyValues.arrayEntryPrefixForConstraints,
+        },
+      }),
+    };
 
     stateVariableDefinitions.arrayVariableForConstraints = {
       returnDependencies: () => ({
         arrayVariableForConstraints: {
           dependencyType: "parentStateVariable",
-          variableName: "arrayVariableForConstraints"
-        }
+          variableName: "arrayVariableForConstraints",
+        },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
           arrayVariableForConstraints:
-            dependencyValues.arrayVariableForConstraints
-        }
-      })
-    }
+            dependencyValues.arrayVariableForConstraints,
+        },
+      }),
+    };
 
     stateVariableDefinitions.nDimensions = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "parentStateVariable",
-          variableName: "nDimensionsForConstraints"
-        }
+          variableName: "nDimensionsForConstraints",
+        },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nDimensions: dependencyValues.nDimensions } }
-      }
-    }
-
-    stateVariableDefinitions.graphComponentName = {
-      stateVariablesDeterminingDependencies: ["baseOnGraph"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.baseOnGraph) {
-          return {
-            graphComponentName: {
-              dependencyType: "expandTargetName",
-              target: stateValues.baseOnGraph
-            }
-          }
-        } else {
-          return {}
-        }
+        return { setValue: { nDimensions: dependencyValues.nDimensions } };
       },
-      definition({ dependencyValues }) {
-        if (dependencyValues.graphComponentName) {
-          return { setValue: { graphComponentName: dependencyValues.graphComponentName } }
-        } else {
-          return { setValue: { graphComponentName: null } }
-        }
-      }
-    }
+    };
 
     stateVariableDefinitions.scales = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
-      stateVariablesDeterminingDependencies: ["graphComponentName"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.graphComponentName) {
-          return {
-            graph: {
-              dependencyType: "multipleStateVariables",
-              componentName: stateValues.graphComponentName,
-              variableNames: ["xscale", "yscale"],
-              variablesOptional: true,
-            }
-          }
-        } else {
-          return {};
-        }
-      },
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xscale", "yscale"],
+        },
+        shadowedConstraints: {
+          dependencyType: "shadowSource",
+          variableNames: ["scales"],
+        },
+      }),
       definition({ dependencyValues }) {
-
-        if (dependencyValues.graph) {
-          let SVs = dependencyValues.graph.stateValues;
+        if (dependencyValues.graphAncestor) {
+          let SVs = dependencyValues.graphAncestor.stateValues;
           let scales = [SVs.xscale, SVs.yscale, 1];
 
-          if (scales.every(x => Number.isFinite(x) && x > 0)) {
-            return { setValue: { scales } }
+          if (scales.every((x) => Number.isFinite(x) && x > 0)) {
+            return { setValue: { scales } };
           }
+        } else if (dependencyValues.shadowedConstraints) {
+          // if we are shadowing a constraints and not in a graph
+          // use the scales from the shadow
+          // Rationale: if we copy a component to a location outside a graph
+          // (e.g. to display the coordinates of a point)
+          // we don't intend to remove the constraints imposed by the graph.
+          return {
+            setValue: {
+              scales: dependencyValues.shadowedConstraints.stateValues.scales,
+            },
+          };
         }
 
-        return { setValue: { scales: [1, 1, 1] } }
-      }
-    }
+        return { setValue: { scales: [1, 1, 1] } };
+      },
+    };
 
     stateVariableDefinitions.graphXmin = {
       additionalStateVariablesDefined: ["graphXmax", "graphYmin", "graphYmax"],
-      stateVariablesDeterminingDependencies: ["graphComponentName"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.graphComponentName) {
-          return {
-            graph: {
-              dependencyType: "multipleStateVariables",
-              componentName: stateValues.graphComponentName,
-              variableNames: ["xmin", "xmax", "ymin", "ymax"],
-              variablesOptional: true,
-            }
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"],
+        },
+        shadowedConstraints: {
+          dependencyType: "shadowSource",
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (!dependencyValues.graphAncestor) {
+          if (dependencyValues.shadowedConstraints) {
+            // if we are shadowing a constraints and not in a graph
+            // use the limits from the shadow
+            // Rationale: if we copy a component to a location outside a graph
+            // (e.g. to display the coordinates of a point)
+            // we don't intend to remove the constraints imposed by the graph.
+            let { graphXmin, graphXmax, graphYmin, graphYmax } =
+              dependencyValues.shadowedConstraints.stateValues;
+            return {
+              setValue: {
+                graphXmin,
+                graphXmax,
+                graphYmin,
+                graphYmax,
+              },
+            };
+          } else {
+            return {
+              setValue: {
+                graphXmin: null,
+                graphXmax: null,
+                graphYmin: null,
+                graphYmax: null,
+              },
+            };
           }
+        }
+
+        let graphXmin = dependencyValues.graphAncestor.stateValues.xmin;
+        let graphXmax = dependencyValues.graphAncestor.stateValues.xmax;
+        let graphYmin = dependencyValues.graphAncestor.stateValues.ymin;
+        let graphYmax = dependencyValues.graphAncestor.stateValues.ymax;
+
+        if (
+          [graphXmin, graphXmax, graphYmin, graphYmax].every(Number.isFinite)
+        ) {
+          return {
+            setValue: {
+              graphXmin,
+              graphXmax,
+              graphYmin,
+              graphYmax,
+            },
+          };
         } else {
-          return {};
+          return {
+            setValue: {
+              graphXmin: null,
+              graphXmax: null,
+              graphYmin: null,
+              graphYmax: null,
+            },
+          };
         }
       },
-      definition({ dependencyValues }) {
-        if (!dependencyValues.graph) {
-          return {
-            setValue: {
-              graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
-            }
-          }
-        }
-        let graphXmin = dependencyValues.graph.stateValues.xmin;
-        let graphXmax = dependencyValues.graph.stateValues.xmax;
-        let graphYmin = dependencyValues.graph.stateValues.ymin;
-        let graphYmax = dependencyValues.graph.stateValues.ymax;
-
-        if ([graphXmin, graphXmax, graphYmin, graphYmax].every(Number.isFinite)) {
-          return {
-            setValue: {
-              graphXmin, graphXmax, graphYmin, graphYmax
-            }
-          }
-        } else {
-          return {
-            setValue: {
-              graphXmin: null, graphXmax: null, graphYmin: null, graphYmax: null
-            }
-          }
-        }
-      }
-    }
-
+    };
 
     stateVariableDefinitions.constraintResults = {
-      additionalStateVariablesDefined: [{
-        variableName: "constraintUsedByComponent",
-        isArray: true,
-        entryPrefixes: ["constraintUsedByComponent"]
-      }],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "constraintUsedByComponent",
+          isArray: true,
+          entryPrefixes: ["constraintUsedByComponent"],
+        },
+      ],
       isArray: true,
       entryPrefixes: ["constraintResult"],
       stateVariablesDeterminingDependencies: [
@@ -232,14 +229,9 @@ export default class Constraints extends BaseComponent {
           },
           independentComponentConstraints: {
             dependencyType: "stateVariable",
-            variableName: "independentComponentConstraints"
+            variableName: "independentComponentConstraints",
           },
-          scales: {
-            dependencyType: "stateVariable",
-            variableName: "scales"
-          },
-
-        }
+        };
 
         let arrayEntryPrefix = stateValues.arrayEntryPrefixForConstraints;
 
@@ -250,27 +242,29 @@ export default class Constraints extends BaseComponent {
               x: {
                 dependencyType: "parentStateVariable",
                 variableName: arrayEntryPrefix + (Number(arrayKey) + 1),
-              }
-            }
+              },
+            };
           }
         } else {
           // convert variableName to "__null" on null
           // as variableName must be defined
           // (an invalid variable name is OK)
-          let variableName = stateValues.arrayVariableForConstraints ? stateValues.arrayVariableForConstraints : "__null";
+          let variableName = stateValues.arrayVariableForConstraints
+            ? stateValues.arrayVariableForConstraints
+            : "__null";
           globalDependencies.xs = {
             dependencyType: "parentStateVariable",
-            variableName
-          }
+            variableName,
+          };
         }
 
         return { globalDependencies, dependenciesByKey };
-
       },
       arrayDefinitionByKey({
-        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        arrayKeys,
       }) {
-
         // console.log("array constraintResult definition")
         // console.log(globalDependencyValues);
         // console.log(dependencyValuesByKey);
@@ -282,63 +276,59 @@ export default class Constraints extends BaseComponent {
           for (let arrayKey of arrayKeys) {
             let varEnding = Number(arrayKey) + 1;
             let variables = {
-              ['x' + varEnding]: dependencyValuesByKey[arrayKey].x
-            }
+              ["x" + varEnding]: dependencyValuesByKey[arrayKey].x,
+            };
             let constraintUsed = false;
 
             for (let constraintChild of globalDependencyValues.constraintChildren) {
-              let result = constraintChild.stateValues.applyComponentConstraint({
-                variables,
-                scales: globalDependencyValues.scales
-              });
+              let result =
+                constraintChild.stateValues.applyComponentConstraint(variables);
 
               if (result.constrained) {
-                variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
+                variables["x" + varEnding] = convertValueToMathExpression(
+                  result.variables["x" + varEnding],
+                );
                 constraintUsed = true;
               }
-
             }
 
-            constraintResults[arrayKey] = variables['x' + varEnding]
+            constraintResults[arrayKey] = variables["x" + varEnding];
             constraintUsedByComponent[arrayKey] = constraintUsed;
-
           }
 
           return {
             setValue: {
               constraintResults,
-              constraintUsedByComponent
-            }
-          }
-
+              constraintUsedByComponent,
+            },
+          };
         } else {
-
           // apply constraint to whole array (even if just one array key requested)
           let variables = {};
           let constraintUsed = false;
 
           for (let arrayKey in globalDependencyValues.xs) {
-            variables[`x${Number(arrayKey) + 1}`] = globalDependencyValues.xs[arrayKey];
+            variables[`x${Number(arrayKey) + 1}`] =
+              globalDependencyValues.xs[arrayKey];
           }
 
           for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint({
-                variables,
-                scales: globalDependencyValues.scales
-              });
+              constraintResult =
+                constraintChild.stateValues.applyConstraint(variables);
             } else {
-              constraintResult = applyConstraintFromComponentConstraints({
+              constraintResult = applyConstraintFromComponentConstraints(
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
-                scales: globalDependencyValues.scales,
-              })
+                constraintChild.stateValues.applyComponentConstraint,
+              );
             }
 
             if (constraintResult.constrained) {
               for (let varName in constraintResult.variables) {
-                variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
+                variables[varName] = convertValueToMathExpression(
+                  constraintResult.variables[varName],
+                );
               }
               constraintUsed = true;
             }
@@ -348,21 +338,22 @@ export default class Constraints extends BaseComponent {
           let constraintUsedByComponent = {};
 
           for (let arrayKey in globalDependencyValues.xs) {
-            constraintResults[arrayKey] = variables[`x${Number(arrayKey) + 1}`]
+            constraintResults[arrayKey] = variables[`x${Number(arrayKey) + 1}`];
             constraintUsedByComponent[arrayKey] = constraintUsed;
           }
 
-          return { setValue: { constraintResults, constraintUsedByComponent } }
-
-
+          return { setValue: { constraintResults, constraintUsedByComponent } };
         }
-
       },
 
       inverseArrayDefinitionByKey: async function ({
-        desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, stateValues, workspace }) {
-
+        desiredStateVariableValues,
+        globalDependencyValues,
+        dependencyValuesByKey,
+        dependencyNamesByKey,
+        stateValues,
+        workspace,
+      }) {
         // console.log('inverse definition of constraints')
         // console.log(desiredStateVariableValues);
         // console.log(globalDependencyValues)
@@ -375,44 +366,41 @@ export default class Constraints extends BaseComponent {
         // and will send the constraint result to the xs (or xs arrayKey) dependency
 
         if (globalDependencyValues.independentComponentConstraints) {
-
           // we applied constraint to each component separately
 
           let instructions = [];
 
           for (let arrayKey in desiredStateVariableValues.constraintResults) {
-
             let varEnding = Number(arrayKey) + 1;
 
             let variables = {
-              ['x' + varEnding]: convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey])
-            }
-
+              ["x" + varEnding]: convertValueToMathExpression(
+                desiredStateVariableValues.constraintResults[arrayKey],
+              ),
+            };
 
             for (let constraintChild of globalDependencyValues.constraintChildren) {
-              let result = constraintChild.stateValues.applyComponentConstraint({
-                variables,
-                scales: globalDependencyValues.scales
-              });
+              let result =
+                constraintChild.stateValues.applyComponentConstraint(variables);
 
               if (result.constrained) {
-                variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
+                variables["x" + varEnding] = convertValueToMathExpression(
+                  result.variables["x" + varEnding],
+                );
               }
-
             }
 
             instructions.push({
               setDependency: dependencyNamesByKey[arrayKey].x,
-              desiredValue: variables['x' + varEnding],
-            })
+              desiredValue: variables["x" + varEnding],
+            });
           }
 
           return {
             success: true,
-            instructions
-          }
+            instructions,
+          };
         } else {
-
           // we applied constraint to whole array
           let variables = {};
 
@@ -426,36 +414,42 @@ export default class Constraints extends BaseComponent {
           if (!workspace.desiredConstraintResults) {
             workspace.desiredConstraintResults = {};
           }
-          Object.assign(workspace.desiredConstraintResults, desiredStateVariableValues.constraintResults);
+          Object.assign(
+            workspace.desiredConstraintResults,
+            desiredStateVariableValues.constraintResults,
+          );
 
           let SVconstraintResults = await stateValues.constraintResults;
           for (let arrayKey in SVconstraintResults) {
             let varEnding = Number(arrayKey) + 1;
             if (arrayKey in workspace.desiredConstraintResults) {
-              variables['x' + varEnding] = convertValueToMathExpression(workspace.desiredConstraintResults[arrayKey]);
+              variables["x" + varEnding] = convertValueToMathExpression(
+                workspace.desiredConstraintResults[arrayKey],
+              );
             } else {
-              variables['x' + varEnding] = convertValueToMathExpression(SVconstraintResults[arrayKey]);
+              variables["x" + varEnding] = convertValueToMathExpression(
+                SVconstraintResults[arrayKey],
+              );
             }
           }
 
           for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint({
-                variables,
-                scales: globalDependencyValues.scales
-              });
+              constraintResult =
+                constraintChild.stateValues.applyConstraint(variables);
             } else {
-              constraintResult = applyConstraintFromComponentConstraints({
+              constraintResult = applyConstraintFromComponentConstraints(
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
-                scales: globalDependencyValues.scales
-              })
+                constraintChild.stateValues.applyComponentConstraint,
+              );
             }
 
             if (constraintResult.constrained) {
               for (let varName in constraintResult.variables) {
-                variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
+                variables[varName] = convertValueToMathExpression(
+                  constraintResult.variables[varName],
+                );
               }
             }
           }
@@ -467,16 +461,16 @@ export default class Constraints extends BaseComponent {
 
           return {
             success: true,
-            instructions: [{
-              setDependency: "xs",
-              desiredValue: constraintResults,
-            }]
-          }
-
+            instructions: [
+              {
+                setDependency: "xs",
+                desiredValue: constraintResults,
+              },
+            ],
+          };
         }
-      }
-
-    }
+      },
+    };
 
     stateVariableDefinitions.constraintUsed = {
       public: true,
@@ -486,20 +480,18 @@ export default class Constraints extends BaseComponent {
       returnDependencies: () => ({
         constraintUsedByComponent: {
           dependencyType: "stateVariable",
-          variableName: "constraintUsedByComponent"
-        }
+          variableName: "constraintUsedByComponent",
+        },
       }),
       definition: function ({ dependencyValues }) {
-        let constraintUsed = Object.values(dependencyValues.constraintUsedByComponent)
-          .some(x => x)
+        let constraintUsed = Object.values(
+          dependencyValues.constraintUsedByComponent,
+        ).some((x) => x);
 
-        return { setValue: { constraintUsed } }
-
-      }
-    }
+        return { setValue: { constraintUsed } };
+      },
+    };
 
     return stateVariableDefinitions;
   }
-
-
 }
