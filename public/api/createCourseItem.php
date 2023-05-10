@@ -230,7 +230,7 @@ if ($success){
 
         /* If code reaches this point without errors then commit the data in the database */
         // $conn->commit();
-    } catch (mysqli_sql_exception $exception) {
+    } catch (\mysqli_sql_exception $exception) {
         // $conn->rollback();
 
         $success = FALSE;
