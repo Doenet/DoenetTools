@@ -87,7 +87,7 @@ if ($success){
   $prev = $row['sortOrder'] ?: "";
   $row = $result->fetch_assoc();
   $next = $row['sortOrder'] ?: "";
-  $sortOrder = SortOrder\getSortOrder($prev, $next);
+  $sortOrder = \SortOrder\getSortOrder($prev, $next);
 
   //Defaults for each item type
   if ($itemType == 'section'){

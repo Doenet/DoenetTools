@@ -19,7 +19,6 @@ namespace Tests {
             
             $response = $this->runScriptExpectJson('public/api/createCourseItem.php');
 
-            print_r($response);
             $this->assertTrue($response['success']);
         }
     }

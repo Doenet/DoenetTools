@@ -57,9 +57,8 @@ namespace Tests {
         function createUser() {
             $email = "user1@test.com";
             $_REQUEST["emailaddress"] = $email;
-            //$response = $this->runScriptExpectJson("public/api/sendSignInEmail.php");
-            //$this->assertTrue($response['success']);
-            include "public/api/sendSignInEmail.php";
+            $response = $this->runScriptExpectJson("public/api/sendSignInEmail.php");
+            $this->assertTrue($response['success']);
 
             $rows = \Base_Model::queryFetchAssoc($this->testDbConn,
                 "SELECT userId
@@ -70,16 +69,10 @@ namespace Tests {
         }
 
         function createCourse() {
-            //$response = $this->runScriptExpectJson("public/api/createCourse.php");
-            //$this->assertTrue($response['success']);
-            include "public/api/createCourse.php";
+            $response = $this->runScriptExpectJson("public/api/createCourse.php");
+            $this->assertTrue($response['success']);
 
-            // FIXME - this is bad
-            $rows = \Base_Model::queryFetchAssoc($this->testDbConn,
-                "SELECT max(courseId) as courseId 
-                FROM course");
-
-            $this->course1 = $rows[0]['courseId'];
+            $this->course1 = $response['courseId'];
         }
 
         function signIn() {
