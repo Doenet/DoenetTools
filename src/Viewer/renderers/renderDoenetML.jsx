@@ -34,7 +34,6 @@ export default React.memo(function Container(props) {
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <PageViewer
-        key={`pageViewer${SVs.refreshNumber}`}
         doenetML={SVs.doenetML}
         flags={{
           showCorrectness: true,
