@@ -2249,8 +2249,12 @@ function checkForScalarLinearExpression(
     }
   }
   if (operator === "*") {
-    if (me.variables(operands[0]).every((v) => !variables.includes(v))) {
-      // if none of the variables appear in the first operand, divide inverseTree by operand
+    if (
+      me.variables(operands[0]).every((v) => !variables.includes(v)) &&
+      !exprContainsVector(operands[0])
+    ) {
+      // if none of the variables appear in the first operand and it doesn't contain a vector,
+      // divide inverseTree by operand
       inverseTree = ["/", inverseTree, operands[0]];
       return checkForScalarLinearExpression(
         operands[1],
@@ -2258,8 +2262,12 @@ function checkForScalarLinearExpression(
         inverseTree,
         components,
       );
-    } else if (me.variables(operands[1]).every((v) => !variables.includes(v))) {
-      // if none of the variables appear in the second operand, divide inverseTree by operand
+    } else if (
+      me.variables(operands[1]).every((v) => !variables.includes(v)) &&
+      !exprContainsVector(operands[1])
+    ) {
+      // if none of the variables appear in the second operand and it doesn't contain a vector,
+      // divide inverseTree by operand
       inverseTree = ["/", inverseTree, operands[1]];
       return checkForScalarLinearExpression(
         operands[0],
@@ -2434,17 +2442,16 @@ async function invertMath({
     // i.e., that that vector component in expressionWithCodes
     // does not have any Codes in it.
 
-    function mathComponentIsCode(tree) {
-      return typeof tree === "string" && tree.substring(0, nCP) === codePre;
-    }
+    let mathComponentIsCode = (tree) =>
+      typeof tree === "string" && tree.substring(0, nCP) === codePre;
 
-    function mathComponentContainsCode(tree) {
+    let mathComponentContainsCode = (tree) => {
       if (Array.isArray(tree)) {
         return flattenDeep(tree.slice(1)).some(mathComponentIsCode);
       } else {
         return mathComponentIsCode(tree);
       }
-    }
+    };
 
     if (
       vectorAndListOperators.includes(newExpressionWithCodes.tree[0]) &&
@@ -2527,4 +2534,19 @@ async function getExpressionPieces({ expression, stateValues }) {
     }
   }
   return pieces;
+}
+
+function exprContainsVector(tree) {
+  if (!Array.isArray(tree)) {
+    return false;
+  }
+
+  let operator = tree[0];
+  let operands = tree.slice(1);
+
+  if (vectorOperators.includes(operator)) {
+    return true;
+  }
+
+  return operands.any(exprContainsVector);
 }

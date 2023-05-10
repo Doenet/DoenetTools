@@ -10941,4 +10941,50 @@ describe("Math Tag Tests", function () {
       ]);
     });
   });
+
+  it("Don't divide by vectors when inverting math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <number name="n">3</number>
+  <math name="m" simplify>$n(3,4)</math>
+  <mathinput name="mi" bindValueTo="$m" />
+
+  <number name="n2">3</number>
+  <math name="m2" simplify>$n2*4</math>
+  <mathinput name="mi2" bindValueTo="$m2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/n")).should("have.text", "3");
+    cy.get(cesc2("#/n2")).should("have.text", "3");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,12)");
+    cy.get(cesc2("#/m2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "12");
+
+    cy.get(cesc2("#/mi") + " textarea").type(
+      "{end}{shift+home}{backspace}(6,8){enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{shift+home}{backspace}8{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/n")).should("have.text", "3");
+    cy.get(cesc2("#/n2")).should("have.text", "2");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,12)");
+    cy.get(cesc2("#/m2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+  });
 });

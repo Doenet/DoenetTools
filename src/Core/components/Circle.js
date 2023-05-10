@@ -2734,10 +2734,14 @@ export default class Circle extends Curve {
     } else if (nThroughPoints >= 2) {
       let throughPointsChanged = [];
       let nThroughPointsChanged = 0;
+      let tol = 1e-6;
 
       for (let [ind, pt] of numericalThroughPoints.entries()) {
         if (
-          !pt.every((v, i) => v === resultingNumericalThroughPoints[ind][i])
+          !pt.every(
+            (v, i) =>
+              Math.abs(v, resultingNumericalThroughPoints[ind][i]) < tol,
+          )
         ) {
           throughPointsChanged.push(ind);
           nThroughPointsChanged++;
@@ -2754,7 +2758,6 @@ export default class Circle extends Curve {
         if (nThroughPointsChanged > 1) {
           let orig1 = numericalThroughPoints[changedInd1];
           let changed1 = resultingNumericalThroughPoints[changedInd1];
-          let tol = 1e-6;
 
           let changevec1 = orig1.map((v, i) => v - changed1[i]);
 
