@@ -137,6 +137,9 @@ export default class Function extends InlineComponent {
     attributes.variables = {
       createComponentOfType: "_variableNameList",
     };
+    attributes.variable = {
+      createComponentOfType: "_variableName",
+    };
     attributes.symbolic = {
       createComponentOfType: "boolean",
     };
@@ -364,6 +367,7 @@ export default class Function extends InlineComponent {
           dependencyType: "attributeComponent",
           attributeName: "variables",
           variableNames: ["nComponents"],
+          dontRecurseToShadowsIfHaveAttribute: "variable",
         },
         isInterpolatedFunction: {
           dependencyType: "stateVariable",
@@ -726,6 +730,13 @@ export default class Function extends InlineComponent {
             dependencyType: "attributeComponent",
             attributeName: "variables",
             variableNames: ["variables"],
+            dontRecurseToShadowsIfHaveAttribute: "variable",
+          },
+          variableAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "variable",
+            variableNames: ["value"],
+            dontRecurseToShadowsIfHaveAttribute: "variables",
           },
           parentVariableForChild: {
             dependencyType: "parentStateVariable",
@@ -757,9 +768,17 @@ export default class Function extends InlineComponent {
         arrayKeys,
         usedDefault,
       }) {
-        if (globalDependencyValues.variablesAttr !== null) {
+        if (
+          globalDependencyValues.variablesAttr !== null ||
+          globalDependencyValues.variableAttr !== null
+        ) {
           let variablesSpecified =
-            globalDependencyValues.variablesAttr.stateValues.variables;
+            globalDependencyValues.variablesAttr?.stateValues.variables;
+          if (!variablesSpecified) {
+            variablesSpecified = [
+              globalDependencyValues.variableAttr.stateValues.value,
+            ];
+          }
           return {
             setValue: {
               variables: returnNVariables(arraySize[0], variablesSpecified),

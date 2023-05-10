@@ -296,7 +296,6 @@ export default class Circle extends Curve {
     stateVariableDefinitions.hideOffGraphIndicator = {
       public: true,
       forRenderer: true,
-      defaultValue: false,
       shadowingInstructions: {
         createComponentOfType: "boolean",
       },
@@ -330,7 +329,7 @@ export default class Circle extends Curve {
           };
         } else {
           return {
-            useEssentialOrDefaultValue: { hideOffGraphIndicator: true },
+            setValue: { hideOffGraphIndicator: false },
           };
         }
       },

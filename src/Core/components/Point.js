@@ -315,7 +315,6 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.hideOffGraphIndicator = {
       public: true,
       forRenderer: true,
-      defaultValue: false,
       shadowingInstructions: {
         createComponentOfType: "boolean",
       },
@@ -349,7 +348,7 @@ export default class Point extends GraphicalComponent {
           };
         } else {
           return {
-            useEssentialOrDefaultValue: { hideOffGraphIndicator: true },
+            setValue: { hideOffGraphIndicator: false },
           };
         }
       },

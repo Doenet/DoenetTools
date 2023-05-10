@@ -10183,6 +10183,5 @@ describe("Point Tag Tests 2", function () {
     cy.get(cesc2("#/P3h")).should("have.text", "false");
     cy.get(cesc2("#/Q3h")).should("have.text", "true");
     cy.get(cesc2("#/R3h")).should("have.text", "false");
-
   });
 });

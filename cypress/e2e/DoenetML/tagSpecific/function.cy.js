@@ -2465,7 +2465,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="$var">
+    <function variable="$var">
       $var^$c sin(pi $var/$c)/$d
     </function>
 
@@ -2581,7 +2581,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
+    <function variable="q"><math>q^2 sin(pi q/2)/100</math></function>
     <graph>
       <function>
         $_function1
@@ -2660,7 +2660,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="u">
+    <function variable="u">
       log(2u)
     </function>
     <point x="-3" y="5">
@@ -2817,7 +2817,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="u" domain="[0.1, 6)" >
+    <function variable="u" domain="[0.1, 6)" >
       log(2u)
     </function>
     <point x="-3" y="5">
@@ -6868,7 +6868,7 @@ describe("Function Tag Tests", function () {
     <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
     <function name="f2" symbolic simplify="false"><copy target="f"/></function>
-    <function name="f3" variables="s" symbolic simplify="false"><copy target="f.formula"/></function>
+    <function name="f3" variable="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
     <copy assignNames="f4" target="f"/>
     <copy assignNames="f5" target="f2"/>
@@ -7726,7 +7726,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="t">(t^2, t^3)</function>
+    <function variable="t">(t^2, t^3)</function>
     `,
         },
         "*",
@@ -7888,7 +7888,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="t">(t^2, t^3, t^4)</function>
+    <function variable="t">(t^2, t^3, t^4)</function>
     `,
         },
         "*",
@@ -8221,12 +8221,14 @@ describe("Function Tag Tests", function () {
     <copy target="f2" variables="x y z" assignNames="f3" />
     <copy target="f3" variables="z y" assignNames="f4" />
     <copy target="f4" variables="y" assignNames="f5" />
+    <copy target="f4" variable="y" assignNames="f5a" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
     <p name="p3">$$f3(a,b,c)</p>
     <p name="p4">$$f4(a,b)</p>
     <p name="p5">$$f5(a)</p>
+    <p name="p5a">$$f5a(a)</p>
     `,
         },
         "*",
@@ -8266,6 +8268,12 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text).eq("xaz");
       });
+    cy.get(cesc("#\\/p5a") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("xaz");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8275,6 +8283,7 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/f3"].stateValues.nInputs).eq(3);
       expect(stateVariables["/f4"].stateValues.nInputs).eq(2);
       expect(stateVariables["/f5"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/f5a"].stateValues.nInputs).eq(1);
       expect(stateVariables["/f1"].stateValues.variables.map((x) => x)).eqls([
         "x",
       ]);
@@ -8292,6 +8301,9 @@ describe("Function Tag Tests", function () {
         "y",
       ]);
       expect(stateVariables["/f5"].stateValues.variables.map((x) => x)).eqls([
+        "y",
+      ]);
+      expect(stateVariables["/f5a"].stateValues.variables.map((x) => x)).eqls([
         "y",
       ]);
     });
