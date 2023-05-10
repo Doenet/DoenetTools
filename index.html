@@ -25,61 +25,61 @@
     <style>
       /* Light fonts */
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: normal;
         font-weight: 300;
-        src: url('/fonts/files/open-sans-v18-latin-light.woff2') format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-light.woff') format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-light.woff2") format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-light.woff") format("woff");
       }
 
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: italic;
         font-weight: 300;
-        src: url('/fonts/files/open-sans-v18-latin-light-italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-light-italic.woff')
-            format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-light-italic.woff2")
+            format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-light-italic.woff")
+            format("woff");
       }
 
       /* Regular fonts */
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: normal;
         font-weight: normal;
-        src: url('/fonts/files/open-sans-v18-latin-regular.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-regular.woff') format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-regular.woff2")
+            format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-regular.woff") format("woff");
       }
 
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: italic;
         font-weight: normal;
-        src: url('/fonts/files/open-sans-v18-latin-italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-italic.woff') format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-italic.woff2")
+            format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-italic.woff") format("woff");
       }
 
       /* Bold fonts */
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: normal;
         font-weight: 700;
-        src: url('/fonts/files/open-sans-v18-latin-700.woff2') format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-700.woff') format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-700.woff2") format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-700.woff") format("woff");
       }
 
       @font-face {
-        font-family: 'Open Sans';
+        font-family: "Open Sans";
         font-style: italic;
         font-weight: 700;
-        src: url('/fonts/files/open-sans-v18-latin-700italic.woff2')
-            format('woff2'),
-          url('/fonts/files/open-sans-v18-latin-700italic.woff') format('woff');
+        src: url("/fonts/files/open-sans-v18-latin-700italic.woff2")
+            format("woff2"),
+          url("/fonts/files/open-sans-v18-latin-700italic.woff") format("woff");
       }
       html {
-        font-family: 'Open Sans' !important;
+        font-family: "Open Sans" !important;
         --menuWidth: 220px;
         --mainBlue: #1a5a99;
         --lightBlue: hsl(209, 54%, 82%);
@@ -101,8 +101,8 @@
         --mainPurple: #4a03d9;
       }
 
-      [data-theme='dark'] {
-        font-family: 'Open Sans' !important;
+      [data-theme="dark"] {
+        font-family: "Open Sans" !important;
         --menuWidth: 220px;
         --mainBlue: #1a5a99;
         --lightBlue: hsl(209, 54%, 82%);
@@ -128,7 +128,7 @@
         margin: 0;
       }
       .doenet-viewer {
-        font-family: 'Open Sans' !important;
+        font-family: "Open Sans" !important;
         color: var(--canvastext);
       }
       .doenet-viewer h1 {
@@ -166,6 +166,12 @@
         box-sizing: content-box;
         padding: 2px 1px;
       }
+      .doenet-viewer div {
+        box-sizing: content-box;
+      }
+      .doenet-viewer a {
+        box-sizing: content-box;
+      }
       .doenet-viewer ul,
       .doenet-viewer ol {
         padding-inline-start: 40px;
@@ -188,7 +194,7 @@
         color: black;
         border-color: var(--lightBlue);
       }
-      div.jxgbox input[type='checkbox'] {
+      div.jxgbox input[type="checkbox"] {
         margin: 3px 3px 3px 4px;
         height: 18px;
         width: 18px;

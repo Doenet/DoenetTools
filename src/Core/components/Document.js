@@ -21,6 +21,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
+  static includeBlankStringChildren = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -870,6 +872,4 @@ export default class Document extends BaseComponent {
       },
     };
   }
-
-  static includeBlankStringChildren = true;
 }
