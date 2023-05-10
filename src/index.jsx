@@ -82,18 +82,6 @@ const theme = extendTheme({
     },
   },
   components: {
-    Flex: {
-      variants: {
-        keyboardSection: {
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "no-wrap",
-          /* flex-basis: 27%; */
-          flexGrow: "1",
-          width: "600px",
-        },
-      },
-    },
     Button: {
       baseStyle: {
         fontWeight: "normal",
@@ -131,28 +119,6 @@ const theme = extendTheme({
         },
         link: {
           color: "solidLightBlue",
-        },
-        // Math keyboard button variants:
-        letterButton: {
-          borderColor: "#2D5994",
-          flexBasis: "9.5%",
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        transition: {
-          bg: "doenet.mainBlue",
-          color: "white",
-        },
-        letterTransition: {
-          flexBasis: "15%",
-          bg: "doenet.mainBlue",
-          color: "white",
-        },
-        letterTransition2: {
-          flexBasis: "9.5%",
-          bg: "doenet.mainBlue",
-          color: "white",
         },
       },
     },
