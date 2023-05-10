@@ -3784,7 +3784,7 @@ describe("Evaluate Tag Tests", function () {
   </p>
   <p>Evaluate 5b:  <m name="result5b">$$f(($input4a,$input4b))</m></p>
   <p>Evaluate 5c:  <m name="result5c">$$f(($input4a, $input4b))</m></p>
-  <p>Evaluate 5d (bad): 
+  <p>Evaluate 5d: 
     <evaluate name="result5d" function="$f" input="($input4a, $input4b)" />
   </p>
 
@@ -3799,7 +3799,7 @@ describe("Evaluate Tag Tests", function () {
   </p>
   <p>Evaluate 7b:  <m name="result7b">$$f((2,3))</m></p>
   <p>Evaluate 7c:  <m name="result7c">$$f((2, 3))</m></p>
-  <p>Evaluate 7d (bad): 
+  <p>Evaluate 7d: 
     <evaluate name="result7d" function="$f" input="(2, 3)" />
   </p>
 
@@ -3901,7 +3901,7 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("＿2＿3");
+        expect(text.trim()).equal("427");
       });
     cy.get(cesc("#\\/result6a"))
       .find(".mjx-mrow")
@@ -3950,7 +3950,7 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("＿2＿3");
+        expect(text.trim()).equal("427");
       });
 
     cy.window().then(async (win) => {
@@ -3995,11 +3995,7 @@ describe("Evaluate Tag Tests", function () {
           stateVariables["/result5c"].activeChildren[0].componentName
         ].stateValues.value,
       ).eqls(["/", 4, 27]);
-      expect(stateVariables["/result5d"].stateValues.value).eqls([
-        "/",
-        ["^", "＿", 2],
-        ["^", "＿", 3],
-      ]);
+      expect(stateVariables["/result5d"].stateValues.value).eqls(["/", 4, 27]);
       expect(stateVariables["/result6a"].stateValues.value).eqls(["/", 4, 27]);
       expect(
         stateVariables[
@@ -4022,11 +4018,7 @@ describe("Evaluate Tag Tests", function () {
           stateVariables["/result7c"].activeChildren[0].componentName
         ].stateValues.value,
       ).eqls(["/", 4, 27]);
-      expect(stateVariables["/result7d"].stateValues.value).eqls([
-        "/",
-        ["^", "＿", 2],
-        ["^", "＿", 3],
-      ]);
+      expect(stateVariables["/result7d"].stateValues.value).eqls(["/", 4, 27]);
     });
 
     cy.log(`change inputs, use altvector`);
@@ -4146,7 +4138,7 @@ describe("Evaluate Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("＿2＿3");
+          expect(text.trim()).equal("9125");
         });
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4212,8 +4204,8 @@ describe("Evaluate Tag Tests", function () {
         ).eqls(["/", 9, 125]);
         expect(stateVariables["/result5d"].stateValues.value).eqls([
           "/",
-          ["^", "＿", 2],
-          ["^", "＿", 3],
+          9,
+          125,
         ]);
       });
     });

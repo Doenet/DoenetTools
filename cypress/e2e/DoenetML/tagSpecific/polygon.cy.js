@@ -235,7 +235,7 @@ describe("Polygon Tag Tests", function () {
   <text>a</text>
   <math>-1</math>
   <graph name="g1" newNamespace>
-    <polygon vertices="(3,5) (-4,$(../_math1))(5,2)(-3,4)" name="pg" />
+    <polygon vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
@@ -448,7 +448,7 @@ describe("Polygon Tag Tests", function () {
   <mathinput/>
 
   <graph name="g1" newNamespace>
-    <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7)(3,-5)(-4,-3)" name="pg" />
+    <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
@@ -740,7 +740,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(-3,-1)(1,2)(3,4)(6,-2)" />
+  <polygon vertices="(-3,-1) (1,2) (3,4) (6,-2)" />
   </graph>
   <graph>
   <copy assignNames="v1" prop="vertex1" target="_polygon1" />
@@ -855,7 +855,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph name="g1" newNamespace>
-  <polygon vertices="(-9,6)(-3,7)(4,0)(8,5)" name="pg" />
+  <polygon vertices="(-9,6) (-3,7) (4,0) (8,5)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <polygon vertices="$(../g1/pg.vertices)" name="pg" />
@@ -1308,7 +1308,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices="(-9,6)(-3,7)(4,0)(8,5)" />
+    <polygon vertices="(-9,6) (-3,7) (4,0) (8,5)" />
   </graph>
   <graph>
     <polygon vertices="$(_polygon1.vertex1) ($(_polygon1.vertexX2_2), $(_polygon1.vertexX2_1)) $(_polygon1.vertex3) ($(_polygon1.vertexX4_2), $(_polygon1.vertexX4_1))" />
@@ -1610,7 +1610,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1.vertex1{createComponentOfType='point'})" />
+  <polygon vertices="(1,2) (3,4) (-5,6) $(_polygon1.vertex1{createComponentOfType='point'})" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
   `,
@@ -1890,7 +1890,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1.vertex4{createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polygon1.vertexX1_1)+1,2)" />
+  <polygon vertices="$(_polygon1.vertex4{createComponentOfType='point'}) (3,4) (-5,6) (1,2) ($(_polygon1.vertexX1_1)+1,2)" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
   
@@ -2813,7 +2813,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices=" (3,5) (-4,-1)(5,2)" />
+    <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <attractTo><copy target="_polygon1" /></attractTo>
@@ -3149,7 +3149,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices=" (3,5) (-4,-1)(5,2)" />
+    <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <constrainTo><copy target="_polygon1" /></constrainTo>
@@ -3836,6 +3836,100 @@ describe("Polygon Tag Tests", function () {
     cy.get(cesc("#\\/P3") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/x") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/xa") + " .mjx-mrow").should("not.exist");
+  });
+
+  it("polygon from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polygon vertices="2(2,-3)+(3,4) 3$P $P+2$m" name="polygon" />
+    </graph>
+ 
+    <p><copy source="polygon.vertices" assignNames="P1 P2 P3" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [7, -2],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 0: [3, 5] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [3, 5],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 1: [-9, -6] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 2: [-3, 1] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
   });
 
   it("changing styles", () => {

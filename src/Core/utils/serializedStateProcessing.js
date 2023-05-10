@@ -1879,6 +1879,7 @@ function createEvaluateIfFindMatchedClosingParens({
           componentType: "mathList",
           doenetAttributes: { createdFromMacro: true },
           children: inputArray,
+          skipSugar: true,
         },
       },
     },

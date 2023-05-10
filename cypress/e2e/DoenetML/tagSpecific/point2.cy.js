@@ -9655,6 +9655,78 @@ describe("Point Tag Tests 2", function () {
     });
   });
 
+  it("points from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" fixed>(6,3)</math>
+    <graph>
+      <point name="P">(3,4) + 2(1,-1)</point>
+      <point name="Q">2$m - 3$P</point>
+    </graph>
+
+    <math copySource="P" name="P2" />
+    <math copySource="Q" name="Q2" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,0)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/P"].stateValues.xs).eqls([5, 2]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([-3, 0]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 4 },
+      });
+    });
+
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(1,4)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(9,−6)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([1, 4]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([9, -6]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: -9, y: 9 },
+      });
+    });
+
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(7,−1)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(−9,9)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([7, -1]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([-9, 9]);
+    });
+  });
+
   it("handle invalid layer", () => {
     cy.window().then(async (win) => {
       win.postMessage(

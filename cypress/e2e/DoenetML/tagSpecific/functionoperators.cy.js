@@ -2856,7 +2856,7 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <graph>
-        <function minima="(3,4)" through="(-1,5)(4,2)" maxima="(1,0)" />
+        <function minima="(3,4)" through="(-1,5) (4,2)" maxima="(1,0)" />
         <derivative stylenumber="2"><copy target="_function1"/></derivative>
         <derivative stylenumber="3"><copy target="_derivative1"/></derivative>
         <derivative stylenumber="4"><copy target="_derivative2"/></derivative>

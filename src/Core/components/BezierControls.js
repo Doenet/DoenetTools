@@ -1,10 +1,13 @@
 import InlineComponent from "./abstract/InlineComponent";
-import { breakEmbeddedStringsIntoParensPieces } from "./commonsugar/breakstrings";
 import me from "math-expressions";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 
 export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
   static rendererType = "containerInline";
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -22,37 +25,44 @@ export default class BezierControls extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let createControlVectorsList = function ({ matchedChildren }) {
-      let results = breakEmbeddedStringsIntoParensPieces({
-        componentList: matchedChildren,
+    let groupIntoVectorsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "vector",
       });
 
-      if (results.success !== true) {
+    let createControlVectorsList = function ({
+      matchedChildren,
+      componentInfoObjects,
+    }) {
+      let results = groupIntoVectorsSeparatedBySpacesOutsideParens({
+        matchedChildren,
+      });
+
+      if (!results.success) {
         return { success: false };
       }
 
       return {
         success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || typeof piece[0] === "string") {
+        newChildren: results.newChildren.map(function (child) {
+          if (
+            !componentInfoObjects.componentIsSpecifiedType(
+              child,
+              "controlVectors",
+            )
+          ) {
             return {
               componentType: "controlVectors",
-              children: [
-                {
-                  componentType: "vector",
-                  children: piece,
-                },
-              ],
+              children: [child],
             };
           } else {
-            return piece[0];
+            return child;
           }
         }),
       };
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createControlVectorsList,
     });
 

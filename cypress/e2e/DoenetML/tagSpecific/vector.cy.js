@@ -18765,6 +18765,78 @@ describe("Vector Tag Tests", function () {
     });
   });
 
+  it("vector from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" fixed>(6,3)</math>
+    <graph>
+      <vector name="v">(3,4) + 2(1,-1)</vector>
+      <vector name="w">2$m - 3$v</vector>
+    </graph>
+
+    <math copySource="v" name="v2" />
+    <math copySource="w" name="w2" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/v2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,0)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/v"].stateValues.displacement).eqls([5, 2]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([-3, 0]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v",
+        args: { headcoords: [1, 4] },
+      });
+    });
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow").should("contain.text", "(1,4)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow").should("contain.text", "(9,−6)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.displacement).eqls([1, 4]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([9, -6]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/w",
+        args: { headcoords: [-9, 9] },
+      });
+    });
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow").should("contain.text", "(7,−1)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow").should("contain.text", "(−9,9)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.displacement).eqls([7, -1]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([-9, 9]);
+    });
+  });
+
   it("vector magnitude", () => {
     cy.window().then(async (win) => {
       win.postMessage(

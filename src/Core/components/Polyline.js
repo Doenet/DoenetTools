@@ -688,9 +688,14 @@ export default class Polyline extends GraphicalComponent {
 
       let verticesChanged = [];
       let nVerticesChanged = 0;
+      let tol = 1e-6;
 
       for (let [ind, vrtx] of numericalVertices.entries()) {
-        if (!vrtx.every((v, i) => v === resultingNumericalVertices[ind][i])) {
+        if (
+          !vrtx.every(
+            (v, i) => Math.abs(v - resultingNumericalVertices[ind][i]) < tol,
+          )
+        ) {
           verticesChanged.push(ind);
           nVerticesChanged++;
         }
@@ -708,8 +713,6 @@ export default class Polyline extends GraphicalComponent {
         let changevec1 = orig1.map((v, i) => v - changed1[i]);
 
         if (nVerticesChanged > 1) {
-          let tol = 1e-6;
-
           for (let ind of verticesChanged.slice(1)) {
             let orig2 = numericalVertices[ind];
             let changed2 = resultingNumericalVertices[ind];
