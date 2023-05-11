@@ -17,7 +17,7 @@ describe("TextList Tag Tests", function () {
 
     <p><textlist>
       <text>hello</text>
-      <copy target="_textlist1" />
+      <copy target="_textlist1" hide="false" />
       <text>bye</text>
       <copy target="_copy1" />
     </textlist></p>

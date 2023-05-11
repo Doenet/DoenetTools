@@ -2674,6 +2674,7 @@ export default class Circle extends Curve {
     let resultingCenter = await this.stateValues.numericalCenter;
     let resultingNumericalThroughPoints = await this.stateValues
       .numericalThroughPoints;
+    let tol = 1e-6;
 
     if (numericalPrescribedCenter.length > 0 && nThroughPoints === 1) {
       // center and one through point
@@ -2734,13 +2735,12 @@ export default class Circle extends Curve {
     } else if (nThroughPoints >= 2) {
       let throughPointsChanged = [];
       let nThroughPointsChanged = 0;
-      let tol = 1e-6;
 
       for (let [ind, pt] of numericalThroughPoints.entries()) {
         if (
           !pt.every(
             (v, i) =>
-              Math.abs(v, resultingNumericalThroughPoints[ind][i]) < tol,
+              Math.abs(v - resultingNumericalThroughPoints[ind][i]) < tol,
           )
         ) {
           throughPointsChanged.push(ind);

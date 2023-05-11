@@ -28,6 +28,7 @@ export default class Collect extends CompositeComponent {
     delete attributes.fixed;
     delete attributes.styleNumber;
     delete attributes.isResponse;
+    delete attributes.hide;
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",

@@ -2684,7 +2684,7 @@ describe("MathList Tag Tests", function () {
 
     <p><mathlist>
       <math>x</math>
-      <copy target="_mathlist1" />
+      <copy target="_mathlist1" hide="false" />
       <math hide>y</math>
       <copy target="mathlist1a" />
     </mathlist></p>
