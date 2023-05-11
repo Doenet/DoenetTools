@@ -28,6 +28,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
+import axios from "axios";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -166,11 +167,11 @@ export function PortfolioActivityViewer() {
                 <VStack mt="10px" alignItems="flex-start">
                   <Text
                     fontSize="1.4em"
-                    font-weight="bold"
-                    max-width="500px"
+                    fontWeight="bold"
+                    maxWidth="500px"
                     overflow="hidden"
-                    text-overflow="ellipsis"
-                    white-space="nowrap"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
                   >
                     {label}
                   </Text>
@@ -210,26 +211,15 @@ export function PortfolioActivityViewer() {
                       <Button
                         size="xs"
                         onClick={async () => {
-                          let response = await fetch(
+                          let resp = await axios.get(
                             `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
                           );
+                          const { nextActivityDoenetId, nextPageDoenetId } =
+                            resp.data;
 
-                          if (response.ok) {
-                            let { nextActivityDoenetId, nextPageDoenetId } =
-                              await response.json();
-                            navigateTo.current = `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`;
-                            setRecoilPageToolView({
-                              page: "portfolioeditor",
-                              tool: "editor",
-                              view: "",
-                              params: {
-                                doenetId: nextActivityDoenetId,
-                                pageId: nextPageDoenetId,
-                              },
-                            });
-                          } else {
-                            throw Error(response.message);
-                          }
+                          navigate(
+                            `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
+                          );
                         }}
                       >
                         Remix

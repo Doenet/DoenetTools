@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { Navigate, redirect, useLoaderData, useNavigate } from "react-router";
 import CodeMirror from "../CodeMirror";
 
 // import styled from "styled-components";
@@ -1236,6 +1236,8 @@ export function PublicEditor() {
     onClose: controlsOnClose,
   } = useDisclosure();
 
+  const navigate = useNavigate();
+
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -1333,7 +1335,7 @@ export function PublicEditor() {
         templateAreas={`"header header header"
       "leftGutter centerContent rightGutter"
       `}
-        templateRows="40px auto"
+        templateRows="70px auto"
         templateColumns=".06fr 1fr .06fr"
         position="relative"
       >
@@ -1342,131 +1344,138 @@ export function PublicEditor() {
         <GridItem
           area="header"
           position="fixed"
-          height="40px"
+          height="70px"
           background="doenet.canvas"
           width="100%"
           zIndex="500"
         >
-          <Grid
-            templateAreas={`"leftControls label rightControls"`}
-            templateColumns="1fr 400px 1fr"
-            width="100%"
-          >
-            <GridItem area="leftControls">
-              <HStack ml="10px" mt="4px">
-                {variants.allPossibleVariants.length > 1 && (
-                  <Tooltip hasArrow label="Variant">
-                    <Select
+          <>
+            <Grid
+              templateAreas={`"leftControls label rightControls"`}
+              templateColumns="1fr 400px 1fr"
+              width="100%"
+              height="40px"
+            >
+              <GridItem area="leftControls">
+                <HStack ml="10px" mt="4px">
+                  {variants.allPossibleVariants.length > 1 && (
+                    <Tooltip hasArrow label="Variant">
+                      <Select
+                        size="sm"
+                        maxWidth="120px"
+                        border="1px"
+                        borderColor="#2D5A94"
+                        onChange={(e) => {
+                          let index = variants.allPossibleVariants.indexOf(
+                            e.target.value,
+                          );
+                          index++;
+                          setVariants((prev) => {
+                            let next = { ...prev };
+                            next.index = index;
+                            return next;
+                          });
+                        }}
+                      >
+                        {variants.allPossibleVariants.map((item, i) => {
+                          return (
+                            <option key={`option${i}`} name={item}>
+                              {item}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    </Tooltip>
+                  )}
+
+                  <Tooltip hasArrow label="Updates Viewer cmd+s">
+                    <Button
+                      ml="10px"
                       size="sm"
-                      maxWidth="120px"
-                      border="1px"
-                      borderColor="#2D5A94"
-                      onChange={(e) => {
-                        let index = variants.allPossibleVariants.indexOf(
-                          e.target.value,
-                        );
-                        index++;
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index;
-                          return next;
-                        });
+                      variant="outline"
+                      leftIcon={<RxUpdate />}
+                      onClick={() => {
+                        setViewerDoenetML(textEditorDoenetML.current);
                       }}
                     >
-                      {variants.allPossibleVariants.map((item, i) => {
-                        return (
-                          <option key={`option${i}`} name={item}>
-                            {item}
-                          </option>
-                        );
-                      })}
-                    </Select>
+                      Update
+                    </Button>
                   </Tooltip>
-                )}
-
-                <Tooltip hasArrow label="Updates Viewer cmd+s">
-                  <Button
-                    ml="10px"
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<RxUpdate />}
-                    onClick={() => {
-                      setViewerDoenetML(textEditorDoenetML.current);
-                    }}
+                </HStack>
+              </GridItem>
+              <GridItem area="label">
+                <EditableLabel />
+              </GridItem>
+              <GridItem
+                area="rightControls"
+                display="flex"
+                justifyContent="flex-end"
+              >
+                <HStack mr="10px">
+                  {/* <Button colorScheme="orange">Orange</Button> */}
+                  <Link
+                    href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
+                    isExternal
                   >
-                    Update
-                  </Button>
-                </Tooltip>
-              </HStack>
-            </GridItem>
-            <GridItem area="label">
-              <EditableLabel />
-            </GridItem>
-            <GridItem
-              area="rightControls"
-              display="flex"
-              justifyContent="flex-end"
-            >
-              <HStack mr="10px">
-                {/* <Button colorScheme="orange">Orange</Button> */}
-                <Link
-                  href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
-                  isExternal
+                    Documentation <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </HStack>
+              </GridItem>
+            </Grid>
+            <Center mt="2px" h="30px" background="doenet.mainGray">
+              <HStack>
+                <Text>
+                  This is a public editor. Remix to save changes to your
+                  account.
+                </Text>
+                <Button
+                  size="xs"
+                  onClick={async () => {
+                    let resp = await axios.get(
+                      `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
+                    );
+                    const { nextActivityDoenetId, nextPageDoenetId } =
+                      resp.data;
+
+                    navigate(
+                      `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
+                    );
+                  }}
                 >
-                  Documentation <ExternalLinkIcon mx="2px" />
-                </Link>
+                  Remix
+                </Button>
               </HStack>
-            </GridItem>
-          </Grid>
+            </Center>
+          </>
         </GridItem>
 
-        {/* <GridItem
-          area="remixHeader"
-          position="fixed"
-          height="30px"
-          background="doenet.mainGray"
-          width="100%"
-          zIndex="500"
-        >
-          <Center mt="2px">
-            <HStack>
-              <Text>
-                This is a public editor. Remix to save changes to your account.
-              </Text>
-              <Button
-                size="xs"
-                onClick={() => {
-                  console.log("remix");
-                }}
-              >
-                Remix
-              </Button>
-            </HStack>
-          </Center>
-        </GridItem> */}
         <GridItem area="centerContent">
           <ResizeableSideBySide
+            headerHeight={110}
             left={
-              <PageViewer
-                doenetML={viewerDoenetML}
-                flags={{
-                  showCorrectness: true,
-                  solutionDisplayMode: true,
-                  showFeedback: true,
-                  showHints: true,
-                  autoSubmit: false,
-                  allowLoadState: false,
-                  allowSaveState: false,
-                  allowLocalState: false,
-                  allowSaveSubmissions: false,
-                  allowSaveEvents: false,
-                }}
-                attemptNumber={1}
-                generatedVariantCallback={variantCallback} //TODO:Replace
-                requestedVariantIndex={variants.index}
-                // setIsInErrorState={setIsInErrorState}
-                pageIsActive={true}
-              />
+              <>
+                <PageViewer
+                  doenetML={viewerDoenetML}
+                  flags={{
+                    showCorrectness: true,
+                    solutionDisplayMode: true,
+                    showFeedback: true,
+                    showHints: true,
+                    autoSubmit: false,
+                    allowLoadState: false,
+                    allowSaveState: false,
+                    allowLocalState: false,
+                    allowSaveSubmissions: false,
+                    allowSaveEvents: false,
+                  }}
+                  attemptNumber={1}
+                  generatedVariantCallback={variantCallback} //TODO:Replace
+                  requestedVariantIndex={variants.index}
+                  // setIsInErrorState={setIsInErrorState}
+                  pageIsActive={true}
+                />
+                <Box marginBottom="50vh" />
+              </>
             }
             right={
               <CodeMirror
@@ -1512,7 +1521,12 @@ const clamp = (
   return Math.min(Math.max(value, min), max);
 };
 
-const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
+const ResizeableSideBySide = ({
+  left,
+  right,
+  centerWidth = "10px",
+  headerHeight = 80,
+}) => {
   const wrapperRef = useRef();
 
   useEffect(() => {
@@ -1558,7 +1572,7 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
   return (
     <Grid
       width="100%"
-      minHeight="calc(100vh - 40px)" //40px header height
+      height={`calc(100vh - ${headerHeight}px)`}
       templateAreas={`"viewer middleGutter textEditor"`}
       templateColumns={`.5fr ${centerWidth} .5fr`}
       overflow="hidden"
@@ -1571,13 +1585,12 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         area="viewer"
         width="100%"
         placeSelf="center"
-        minHeight="100%"
+        height="100%"
         maxWidth="850px"
-        // background="doenet.lightBlue"
         overflow="hidden"
       >
         <Box
-          minHeight="calc(100vh - 100px)"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           background="var(--canvas)"
           borderWidth="1px"
           borderStyle="solid"
@@ -1586,7 +1599,6 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
           padding="20px 5px 20px 5px"
           flexGrow={1}
           overflow="scroll"
-          marginBottom="50vh"
         >
           {left}
         </Box>
@@ -1595,26 +1607,21 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         area="middleGutter"
         background="doenet.lightBlue"
         width="100%"
+        height="100%"
         paddingTop="10px"
         alignSelf="start"
-        position="relative"
       >
         <Center
           cursor="col-resize"
           background="doenet.mainGray"
-          h="calc(100vh - 100px)"
-          top="90px"
           borderLeft="solid 1px"
           borderTop="solid 1px"
           borderBottom="solid 1px"
           borderColor="doenet.mediumGray"
-          // h="calc(100vh - 100px)"
-          // top="90px"
-          position="fixed"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           width="10px"
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
-          // marginLeft="1px"
           paddingLeft="1px"
         >
           <Icon ml="0" as={BsGripVertical} />
@@ -1626,19 +1633,13 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         background="doenet.lightBlue"
         alignSelf="start"
         paddingTop="10px"
-        position="sticky"
-        // position="relative"
       >
         <Box
           top="50px"
-          // position="fixed"
           boxSizing="border-box"
           background="doenet.canvas"
-          height="calc(100vh - 100px)"
-          // width="100%"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           overflowY="scroll"
-          // borderWidth="1px"
-          // borderStyle="solid"
           borderRight="solid 1px"
           borderTop="solid 1px"
           borderBottom="solid 1px"
