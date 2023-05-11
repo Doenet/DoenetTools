@@ -101,9 +101,9 @@ export default class Answer extends InlineComponent {
       defaultValue: 1,
       public: true,
     };
-    attributes.maximumNumberOfAttempts = {
+    attributes.maxNumAttempts = {
       createComponentOfType: "integer",
-      createStateVariable: "maximumNumberOfAttempts",
+      createStateVariable: "maxNumAttempts",
       defaultValue: Infinity,
       public: true,
     };
@@ -1707,7 +1707,7 @@ export default class Answer extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberFeedbacks = {
+    stateVariableDefinitions.numFeedbacks = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1720,8 +1720,8 @@ export default class Answer extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
-          checkForActualChange: { numberFeedbacks: true },
+          setValue: { numFeedbacks: dependencyValues.allFeedbacks.length },
+          checkForActualChange: { numFeedbacks: true },
         };
       },
     };
@@ -1734,13 +1734,13 @@ export default class Answer extends InlineComponent {
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
-        numberFeedbacks: {
+        numFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "numberFeedbacks",
+          variableName: "numFeedbacks",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberFeedbacks];
+        return [dependencyValues.numFeedbacks];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -1794,7 +1794,7 @@ export default class Answer extends InlineComponent {
       }),
     };
 
-    stateVariableDefinitions.numberOfAttemptsLeft = {
+    stateVariableDefinitions.numAttemptsLeft = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -1805,17 +1805,16 @@ export default class Answer extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "nSubmissions",
         },
-        maximumNumberOfAttempts: {
+        maxNumAttempts: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumberOfAttempts",
+          variableName: "maxNumAttempts",
         },
       }),
       definition({ dependencyValues }) {
         return {
           setValue: {
-            numberOfAttemptsLeft:
-              dependencyValues.maximumNumberOfAttempts -
-              dependencyValues.nSubmissions,
+            numAttemptsLeft:
+              dependencyValues.maxNumAttempts - dependencyValues.nSubmissions,
           },
         };
       },
@@ -1860,9 +1859,9 @@ export default class Answer extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "disabledOriginal",
           },
-          numberOfAttemptsLeft: {
+          numAttemptsLeft: {
             dependencyType: "stateVariable",
-            variableName: "numberOfAttemptsLeft",
+            variableName: "numAttemptsLeft",
           },
           disableAfterCorrect: {
             dependencyType: "stateVariable",
@@ -1882,7 +1881,7 @@ export default class Answer extends InlineComponent {
       definition({ dependencyValues }) {
         let disabled =
           dependencyValues.disabledOriginal ||
-          dependencyValues.numberOfAttemptsLeft < 1 ||
+          dependencyValues.numAttemptsLeft < 1 ||
           (dependencyValues.disableAfterCorrect &&
             dependencyValues.hasBeenCorrect);
 
@@ -1917,10 +1916,10 @@ export default class Answer extends InlineComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
-    if (numberOfAttemptsLeft < 1) {
+    let numAttemptsLeft = await this.stateValues.numAttemptsLeft;
+    if (numAttemptsLeft < 1) {
       console.warn(
-        `Cannot submit answer for ${this.componentName} as number of attempts left is ${numberOfAttemptsLeft}`,
+        `Cannot submit answer for ${this.componentName} as number of attempts left is ${numAttemptsLeft}`,
       );
       return;
     }

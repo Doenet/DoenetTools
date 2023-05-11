@@ -26152,14 +26152,14 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer>x</answer></p>
-  <p><answer maximumNumberOfAttempts="2">x</answer></p>
+  <p><answer maxNumAttempts="2">x</answer></p>
   <p><answer forceFullCheckworkButton>x</answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">x</answer></p>
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">x</answer></p>
   
   <p><answer type="text">hello</answer></p>
-  <p><answer type="text" maximumNumberOfAttempts="2">hello</answer></p>
+  <p><answer type="text" maxNumAttempts="2">hello</answer></p>
   <p><answer type="text" forceFullCheckworkButton>hello</answer></p>
-  <p><answer type="text" forceFullCheckworkButton maximumNumberOfAttempts="2">hello</answer></p>
+  <p><answer type="text" forceFullCheckworkButton maxNumAttempts="2">hello</answer></p>
     
   <p><answer>
     <choiceinput>
@@ -26167,7 +26167,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer maximumNumberOfAttempts="2">
+  <p><answer maxNumAttempts="2">
     <choiceinput>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26179,7 +26179,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">
     <choiceinput>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26192,7 +26192,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer maximumNumberOfAttempts="2">
+  <p><answer maxNumAttempts="2">
     <choiceinput inline>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26204,7 +26204,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">
     <choiceinput inline>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26212,9 +26212,9 @@ describe("Answer Tag Tests", function () {
   </answer></p>
 
   <p><answer type="boolean">true</answer></p>
-  <p><answer type="boolean" maximumNumberOfAttempts="2">true</answer></p>
+  <p><answer type="boolean" maxNumAttempts="2">true</answer></p>
   <p><answer type="boolean" forceFullCheckworkButton>true</answer></p>
-  <p><answer type="boolean" forceFullCheckworkButton maximumNumberOfAttempts="2">true</answer></p>
+  <p><answer type="boolean" forceFullCheckworkButton maxNumAttempts="2">true</answer></p>
    `,
         },
         "*",
