@@ -214,13 +214,14 @@ export function PortfolioActivityViewer() {
                 <Button
                   value="See Inside"
                   onClick={() => {
-                    navigateTo.current = `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-                    setRecoilPageToolView({
-                      page: "public",
-                      tool: "",
-                      view: "",
-                      params: { doenetId, pageId: pageDoenetId },
-                    });
+                    navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
+                    // navigateTo.current = `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
+                    // setRecoilPageToolView({
+                    //   page: "public",
+                    //   tool: "",
+                    //   view: "",
+                    //   params: { doenetId, pageId: pageDoenetId },
+                    // });
                   }}
                 />
               </HeaderSectionRight>

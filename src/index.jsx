@@ -50,6 +50,11 @@ import {
   loader as portfolioEditorLoader,
   action as portfolioEditorAction,
 } from "./Tools/_framework/Paths/PortfolioActivityEditor";
+import {
+  PublicEditor,
+  loader as publicEditorLoader,
+  action as publicEditorAction,
+} from "./Tools/_framework/Paths/PublicEditor";
 // import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 
 const theme = extendTheme({
@@ -249,6 +254,34 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <PortfolioActivityEditor />
+            {/* <ToolRoot /> */}
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "publiceditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
+
+          //Redirect as an activity can have no pageids
+          return redirect(`/publiceditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: "publiceditor/:doenetId/:pageId",
+        loader: publicEditorLoader,
+        action: publicEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PublicEditor />
             {/* <ToolRoot /> */}
           </MathJaxContext>
         ),
