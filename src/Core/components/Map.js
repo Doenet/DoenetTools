@@ -92,12 +92,12 @@ export default class Map extends CompositeComponent {
         sourcesChildren: {
           dependencyType: "child",
           childGroups: ["sources"],
-          variableNames: ["numberOfChildren", "childComponentNames"],
+          variableNames: ["numChildren", "childComponentNames"],
         },
       }),
       definition: function ({ dependencyValues }) {
         let nIterates = dependencyValues.sourcesChildren.map(
-          (x) => x.stateValues.numberOfChildren,
+          (x) => x.stateValues.numChildren,
         );
 
         // calculate scalar minNIterates, a scalar holding the minimum value

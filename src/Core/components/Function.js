@@ -2894,7 +2894,7 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberMinima = {
+    stateVariableDefinitions.numMinima = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -2907,8 +2907,8 @@ export default class Function extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberMinima: dependencyValues.allMinima.length },
-          checkForActualChange: { numberMinima: true },
+          setValue: { numMinima: dependencyValues.allMinima.length },
+          checkForActualChange: { numMinima: true },
         };
       },
     };
@@ -3045,13 +3045,13 @@ export default class Function extends InlineComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        numberMinima: {
+        numMinima: {
           dependencyType: "stateVariable",
-          variableName: "numberMinima",
+          variableName: "numMinima",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberMinima, 2];
+        return [dependencyValues.numMinima, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -3626,7 +3626,7 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberMaxima = {
+    stateVariableDefinitions.numMaxima = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -3639,8 +3639,8 @@ export default class Function extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberMaxima: dependencyValues.allMaxima.length },
-          checkForActualChange: { numberMaxima: true },
+          setValue: { numMaxima: dependencyValues.allMaxima.length },
+          checkForActualChange: { numMaxima: true },
         };
       },
     };
@@ -3777,13 +3777,13 @@ export default class Function extends InlineComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        numberMaxima: {
+        numMaxima: {
           dependencyType: "stateVariable",
-          variableName: "numberMaxima",
+          variableName: "numMaxima",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberMaxima, 2];
+        return [dependencyValues.numMaxima, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -3817,28 +3817,27 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberExtrema = {
+    stateVariableDefinitions.numExtrema = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({
-        numberMinima: {
+        numMinima: {
           dependencyType: "stateVariable",
-          variableName: "numberMinima",
+          variableName: "numMinima",
         },
-        numberMaxima: {
+        numMaxima: {
           dependencyType: "stateVariable",
-          variableName: "numberMaxima",
+          variableName: "numMaxima",
         },
       }),
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            numberExtrema:
-              dependencyValues.numberMinima + dependencyValues.numberMaxima,
+            numExtrema: dependencyValues.numMinima + dependencyValues.numMaxima,
           },
-          checkForActualChange: { numberExtrema: true },
+          checkForActualChange: { numExtrema: true },
         };
       },
     };
@@ -3998,13 +3997,13 @@ export default class Function extends InlineComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        numberExtrema: {
+        numExtrema: {
           dependencyType: "stateVariable",
-          variableName: "numberExtrema",
+          variableName: "numExtrema",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberExtrema, 2];
+        return [dependencyValues.numExtrema, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {

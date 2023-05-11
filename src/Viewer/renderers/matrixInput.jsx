@@ -74,7 +74,7 @@ export default React.memo(function MatrixInput(props) {
 
   function updateValidationState() {
     validationState.current = "unvalidated";
-    if (SVs.valueHasBeenValidated || SVs.numberOfAttemptsLeft < 1) {
+    if (SVs.valueHasBeenValidated || SVs.numAttemptsLeft < 1) {
       if (SVs.creditAchieved === 1) {
         validationState.current = "correct";
       } else if (SVs.creditAchieved === 0) {
@@ -185,25 +185,25 @@ export default React.memo(function MatrixInput(props) {
       }
     }
 
-    if (SVs.numberOfAttemptsLeft < 0) {
+    if (SVs.numAttemptsLeft < 0) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(no attempts remaining)</span>
         </>
       );
-    } else if (SVs.numberOfAttemptsLeft == 1) {
+    } else if (SVs.numAttemptsLeft == 1) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(1 attempt remaining)</span>
         </>
       );
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+    } else if (SVs.numAttemptsLeft < Infinity) {
       checkWorkButton = (
         <>
           {checkWorkButton}
-          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+          <span>({SVs.numAttemptsLeft} attempts remaining)</span>
         </>
       );
     }

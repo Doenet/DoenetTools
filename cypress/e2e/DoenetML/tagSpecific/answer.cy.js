@@ -25942,7 +25942,7 @@ describe("Answer Tag Tests", function () {
     cy.get(cesc("#\\/ca")).should("have.text", "1");
   });
 
-  it("nSubmissions", () => {
+  it("numSubmissions", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -25952,8 +25952,8 @@ describe("Answer Tag Tests", function () {
     <award><math>x+y</math></award>
   </answer></p>
   <p><answer type="text">hello</answer></p>
-  <p>Number of submissions 1: <copy target="_answer1" prop="nSubmissions" assignNames="nsubs1" /></p>
-  <p>Number of submissions 2: <copy target="_answer2" prop="nSubmissions" assignNames="nsubs2" /></p>
+  <p>Number of submissions 1: <copy target="_answer1" prop="numSubmissions" assignNames="nsubs1" /></p>
+  <p>Number of submissions 2: <copy target="_answer2" prop="numSubmissions" assignNames="nsubs2" /></p>
   `,
         },
         "*",
@@ -25967,9 +25967,9 @@ describe("Answer Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(0);
+      expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(0);
       expect(stateVariables["/nsubs1"].stateValues.value).eq(0);
-      expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+      expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
       expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
 
       let mathinputName =
@@ -25988,9 +25988,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26002,9 +26002,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26013,9 +26013,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26025,9 +26025,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26038,9 +26038,9 @@ describe("Answer Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26051,9 +26051,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 1);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26062,9 +26062,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 1);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26073,9 +26073,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 2);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(2);
       });
     });

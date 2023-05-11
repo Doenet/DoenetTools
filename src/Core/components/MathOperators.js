@@ -266,15 +266,15 @@ export class Round extends MathBaseOperatorOneInput {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.numberDecimals = {
+    attributes.numDecimals = {
       createComponentOfType: "number",
-      createStateVariable: "numberDecimals",
+      createStateVariable: "numDecimals",
       defaultValue: 0,
       public: true,
     };
-    attributes.numberDigits = {
+    attributes.numDigits = {
       createComponentOfType: "number",
-      createStateVariable: "numberDigits",
+      createStateVariable: "numDigits",
       defaultValue: null,
       public: true,
     };
@@ -296,13 +296,13 @@ export class Round extends MathBaseOperatorOneInput {
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({
-        numberDecimals: {
+        numDecimals: {
           dependencyType: "stateVariable",
-          variableName: "numberDecimals",
+          variableName: "numDecimals",
         },
-        numberDigits: {
+        numDigits: {
           dependencyType: "stateVariable",
-          variableName: "numberDigits",
+          variableName: "numDigits",
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -314,13 +314,13 @@ export class Round extends MathBaseOperatorOneInput {
               evaluate_functions: true,
             });
 
-            if (dependencyValues.numberDigits !== null) {
+            if (dependencyValues.numDigits !== null) {
               return valueWithNumbers.round_numbers_to_precision(
-                dependencyValues.numberDigits,
+                dependencyValues.numDigits,
               );
             } else {
               return valueWithNumbers.round_numbers_to_decimals(
-                dependencyValues.numberDecimals,
+                dependencyValues.numDecimals,
               );
             }
           },

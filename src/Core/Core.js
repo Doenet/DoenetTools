@@ -76,6 +76,19 @@ export default class Core {
 
     this.previousComponentTypeCounts = previousComponentTypeCounts;
 
+    // Note: this changes the stateVariableChanges passed into core as an argument
+    for (let cName in stateVariableChanges) {
+      let componentSVChanges = stateVariableChanges[cName];
+      for (let varName in componentSVChanges) {
+        if (varName in serializeFunctions.deprecatedPropertySubstitutions) {
+          componentSVChanges[
+            serializeFunctions.deprecatedPropertySubstitutions[varName]
+          ] = componentSVChanges[varName];
+          delete componentSVChanges[varName];
+        }
+      }
+    }
+
     this.coreFunctions = {
       requestUpdate: this.requestUpdate.bind(this),
       performUpdate: this.performUpdate.bind(this),

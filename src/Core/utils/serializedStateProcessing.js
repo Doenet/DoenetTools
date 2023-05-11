@@ -335,6 +335,8 @@ function substituteAttributeDeprecations(serializedComponents) {
     updatewithtarget: "updateWith",
     targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
     selectforvariantnames: "selectForVariants",
+    numberdecimals: "numDecimals",
+    numberdigits: "numDigits",
   };
 
   // Note: use lower case
@@ -451,17 +453,31 @@ function substituteAttributeDeprecations(serializedComponents) {
   }
 }
 
+export const deprecatedPropertySubstitutions = {
+  maximumNumberOfAttempts: "maxNumAttempts",
+  numberFeedbacks: "numFeedbacks",
+  numberOfAttemptsLeft: "numAttemptsLeft",
+  nSubmissions: "numSubmissions",
+  nSubmittedResponses: "numSubmittedResponses",
+  numberChoices: "numChoices",
+  numberMinima: "numMinima",
+  numberMaxima: "numMaxima",
+  numberExtrema: "numExtrema",
+  numberDecimals: "numDecimals",
+  numberDigits: "numDigits",
+};
+
+const deprecatedPropertySubstitutionsLowerCase = {};
+Object.keys(deprecatedPropertySubstitutions).forEach(
+  (key) =>
+    (deprecatedPropertySubstitutionsLowerCase[key.toLowerCase()] =
+      deprecatedPropertySubstitutions[key]),
+);
+
 function substitutePropertyDeprecations(serializedComponents) {
   // Note: properties are public state variables that are referenced
   // either using dot notation in a source/copysource or in a prop/copyprop
   // but will be exclusively in prop by this point
-
-  // Note: use lower case for keys
-  const deprecatedPropertySubstitutions = {
-    maximumnumberofattempts: "maxNumAttempts",
-    numberfeedbacks: "numFeedbacks",
-    numberofattemptsleft: "numAttemptsLeft",
-  };
 
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
@@ -473,9 +489,9 @@ function substitutePropertyDeprecations(serializedComponents) {
     if (propName) {
       let propNameLower = propName.toLowerCase();
 
-      if (propNameLower in deprecatedPropertySubstitutions) {
+      if (propNameLower in deprecatedPropertySubstitutionsLowerCase) {
         component.attributes.prop.primitive =
-          deprecatedPropertySubstitutions[propNameLower];
+          deprecatedPropertySubstitutionsLowerCase[propNameLower];
       }
     }
 

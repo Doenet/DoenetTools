@@ -712,7 +712,7 @@ export default class Award extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.numberFeedbacks = {
+    stateVariableDefinitions.numFeedbacks = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -725,8 +725,8 @@ export default class Award extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
-          checkForActualChange: { numberFeedbacks: true },
+          setValue: { numFeedbacks: dependencyValues.allFeedbacks.length },
+          checkForActualChange: { numFeedbacks: true },
         };
       },
     };
@@ -739,13 +739,13 @@ export default class Award extends BaseComponent {
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
-        numberFeedbacks: {
+        numFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "numberFeedbacks",
+          variableName: "numFeedbacks",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberFeedbacks];
+        return [dependencyValues.numFeedbacks];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {

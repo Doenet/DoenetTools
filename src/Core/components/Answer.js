@@ -1135,7 +1135,7 @@ export default class Answer extends InlineComponent {
       targetVariableName: "currentResponse1",
     };
 
-    stateVariableDefinitions.nSubmittedResponses = {
+    stateVariableDefinitions.numSubmittedResponses = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1145,7 +1145,7 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          nSubmittedResponses: true,
+          numSubmittedResponses: true,
         },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
@@ -1153,8 +1153,8 @@ export default class Answer extends InlineComponent {
           success: true,
           instructions: [
             {
-              setEssentialValue: "nSubmittedResponses",
-              value: desiredStateVariableValues.nSubmittedResponses,
+              setEssentialValue: "numSubmittedResponses",
+              value: desiredStateVariableValues.numSubmittedResponses,
             },
           ],
         };
@@ -1214,13 +1214,13 @@ export default class Answer extends InlineComponent {
       inverseShadowToSetEntireArray: true,
       doNotCombineInverseArrayInstructions: true,
       returnArraySizeDependencies: () => ({
-        nSubmittedResponses: {
+        numSubmittedResponses: {
           dependencyType: "stateVariable",
-          variableName: "nSubmittedResponses",
+          variableName: "numSubmittedResponses",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSubmittedResponses];
+        return [dependencyValues.numSubmittedResponses];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -1228,9 +1228,9 @@ export default class Answer extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "submittedResponsesComponentType",
           },
-          nSubmittedResponses: {
+          numSubmittedResponses: {
             dependencyType: "stateVariable",
-            variableName: "nSubmittedResponses",
+            variableName: "numSubmittedResponses",
           },
         };
         return { globalDependencies };
@@ -1242,7 +1242,7 @@ export default class Answer extends InlineComponent {
           componentType.push(
             ...globalDependencyValues.submittedResponsesComponentType.slice(
               0,
-              globalDependencyValues.nSubmittedResponses,
+              globalDependencyValues.numSubmittedResponses,
             ),
           );
         }
@@ -1251,7 +1251,7 @@ export default class Answer extends InlineComponent {
 
         for (
           let ind = 0;
-          ind < globalDependencyValues.nSubmittedResponses;
+          ind < globalDependencyValues.numSubmittedResponses;
           ind++
         ) {
           // this function doesn't change the values once they set for the first time
@@ -1282,7 +1282,7 @@ export default class Answer extends InlineComponent {
           success: true,
           instructions: [
             {
-              setDependency: "nSubmittedResponses",
+              setDependency: "numSubmittedResponses",
               desiredValue:
                 desiredStateVariableValues.submittedResponses.length,
             },
@@ -1770,7 +1770,7 @@ export default class Answer extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nSubmissions = {
+    stateVariableDefinitions.numSubmissions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -1780,15 +1780,15 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          nSubmissions: true,
+          numSubmissions: true,
         },
       }),
       inverseDefinition: ({ desiredStateVariableValues }) => ({
         success: true,
         instructions: [
           {
-            setEssentialValue: "nSubmissions",
-            value: desiredStateVariableValues.nSubmissions,
+            setEssentialValue: "numSubmissions",
+            value: desiredStateVariableValues.numSubmissions,
           },
         ],
       }),
@@ -1801,9 +1801,9 @@ export default class Answer extends InlineComponent {
       },
       forRenderer: true,
       returnDependencies: () => ({
-        nSubmissions: {
+        numSubmissions: {
           dependencyType: "stateVariable",
-          variableName: "nSubmissions",
+          variableName: "numSubmissions",
         },
         maxNumAttempts: {
           dependencyType: "stateVariable",
@@ -1814,7 +1814,7 @@ export default class Answer extends InlineComponent {
         return {
           setValue: {
             numAttemptsLeft:
-              dependencyValues.maxNumAttempts - dependencyValues.nSubmissions,
+              dependencyValues.maxNumAttempts - dependencyValues.numSubmissions,
           },
         };
       },
@@ -2006,8 +2006,8 @@ export default class Answer extends InlineComponent {
     instructions.push({
       updateType: "updateValue",
       componentName: this.componentName,
-      stateVariable: "nSubmissions",
-      value: (await this.stateValues.nSubmissions) + 1,
+      stateVariable: "numSubmissions",
+      value: (await this.stateValues.numSubmissions) + 1,
     });
 
     for (let child of await this.stateValues.awardChildren) {

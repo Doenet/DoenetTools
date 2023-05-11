@@ -740,9 +740,9 @@ export default class Select extends CompositeComponent {
       );
       numberOfVariants = Math.pow(numberOfOptionsPerSelection, numberToSelect);
     } else {
-      let numberOfChildren = numberOfVariantsByChild.length;
+      let numChildren = numberOfVariantsByChild.length;
 
-      if (numberToSelect > numberOfChildren) {
+      if (numberToSelect > numChildren) {
         return { success: false };
       }
 
@@ -752,12 +752,8 @@ export default class Select extends CompositeComponent {
         .every((x) => x === firstNumber);
 
       if (allSameNumber) {
-        let numberOfPermutations = numberOfChildren;
-        for (
-          let n = numberOfChildren - 1;
-          n > numberOfChildren - numberToSelect;
-          n--
-        ) {
+        let numberOfPermutations = numChildren;
+        for (let n = numChildren - 1; n > numChildren - numberToSelect; n--) {
           numberOfPermutations *= n;
         }
         numberOfVariants =
@@ -803,7 +799,7 @@ export default class Select extends CompositeComponent {
     let numberOfVariantsByChild = uniqueVariantData.numberOfVariantsByChild;
     let numberToSelect = uniqueVariantData.numberToSelect;
     let withReplacement = uniqueVariantData.withReplacement;
-    let numberOfChildren = serializedComponent.children.length;
+    let numChildren = serializedComponent.children.length;
     let childrenToSelect = serializedComponent.children;
 
     if (numberOfVariantsByChild.length === 0) {
@@ -813,11 +809,11 @@ export default class Select extends CompositeComponent {
     let combinations;
 
     if (numberToSelect === 1) {
-      combinations = [...Array(numberOfChildren).keys()].map((x) => [x]);
+      combinations = [...Array(numChildren).keys()].map((x) => [x]);
     } else {
       combinations = enumerateSelectionCombinations({
         numberOfIndices: numberToSelect,
-        numberOfOptions: numberOfChildren,
+        numberOfOptions: numChildren,
         // maxNumber: variantIndex,
         withReplacement: withReplacement,
       });
