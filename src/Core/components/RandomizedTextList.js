@@ -10,7 +10,7 @@ export default class TextList extends InlineComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.unordered = { default: false };
-    attributes.maximumNumber = { default: null };
+    attributes.maxNumber = { default: null };
     return attributes;
   }
 
@@ -93,9 +93,9 @@ export default class TextList extends InlineComponent {
           variableNames: ["value", "texts"],
           variablesOptional: true,
         },
-        maximumNumber: {
+        maxNumber: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
+          variableName: "maxNumber",
         },
         childrenToRender: {
           dependencyType: "stateVariable",
@@ -162,9 +162,9 @@ export default class TextList extends InlineComponent {
           variableNames: ["childrenToRender"],
           variablesOptional: true,
         },
-        maximumNumber: {
+        maxNumber: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
+          variableName: "maxNumber",
         },
         selectRng: {
           dependencyType: "value",
@@ -183,7 +183,7 @@ export default class TextList extends InlineComponent {
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
+        let maxNum = dependencyValues.maxNumber;
         if (maxNum !== null && childrenToRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           childrenToRender = childrenToRender.slice(0, maxNum);

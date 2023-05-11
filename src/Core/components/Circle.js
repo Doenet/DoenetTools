@@ -376,14 +376,15 @@ export default class Circle extends Curve {
         throughAttr: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr !== null) {
           return {
             setValue: {
-              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints,
+              nThroughPoints:
+                dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
         } else {

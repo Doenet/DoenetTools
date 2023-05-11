@@ -134,7 +134,7 @@ export default class Parabola extends Curve {
         throughAttr: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -145,7 +145,8 @@ export default class Parabola extends Curve {
         } else {
           return {
             setValue: {
-              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints,
+              nThroughPoints:
+                dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
         }

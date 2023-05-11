@@ -622,12 +622,12 @@ describe("Numberlist Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><numberlist maximumnumber="7">
+    <p><numberlist maxNumber="7">
       <number>1</number>
-      <numberlist maximumnumber="2">2 3 4 5</numberlist>
+      <numberlist maxNumber="2">2 3 4 5</numberlist>
       <number>6</number>
-      <numberlist maximumnumber="4">
-        <numberlist maximumnumber="2">
+      <numberlist maxNumber="4">
+        <numberlist maxNumber="2">
           <number>7</number>
           <numberlist>8 9</numberlist>
         </numberlist>
@@ -683,8 +683,8 @@ describe("Numberlist Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <p><numberlist name="nl1" maximumNumber="$mn1">1 2 3 4 5</numberlist></p>
-      <p><copy target="nl1" maximumNumber="$mn2" assignNames="nl2" /></p>
+      <p><numberlist name="nl1" maxNumber="$mn1">1 2 3 4 5</numberlist></p>
+      <p><copy target="nl1" maxNumber="$mn2" assignNames="nl2" /></p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 
@@ -775,7 +775,7 @@ describe("Numberlist Tag Tests", function () {
       <copy target="numberlist1a" />
     </numberlist></p>
 
-    <p><copy name="numberlist3" maximumnumber="6" target="_numberlist2" /></p>
+    <p><copy name="numberlist3" maxNumber="6" target="_numberlist2" /></p>
 
     `,
         },

@@ -43,13 +43,13 @@ async function testPolylineCopiedTwice({
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
     expect(
-      stateVariables[graph1Name + polylineName].stateValues.nVertices,
+      stateVariables[graph1Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
     expect(
-      stateVariables[graph2Name + polylineName].stateValues.nVertices,
+      stateVariables[graph2Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
     expect(
-      stateVariables[graph3Name + polylineName].stateValues.nVertices,
+      stateVariables[graph3Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
 
     for (let i in vertices) {
@@ -998,10 +998,10 @@ describe("Polyline Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1346,10 +1346,10 @@ describe("Polyline Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1632,7 +1632,7 @@ describe("Polyline Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polyline1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polyline1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polyline1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polyline1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polyline1"].stateValues.vertices[2]).eqls(C);
@@ -1772,7 +1772,7 @@ describe("Polyline Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polyline1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polyline1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polyline1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polyline1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polyline1"].stateValues.vertices[2]).eqls(C);

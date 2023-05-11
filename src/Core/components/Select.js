@@ -27,9 +27,9 @@ export default class Select extends CompositeComponent {
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.numberToSelect = {
+    attributes.numToSelect = {
       createComponentOfType: "integer",
-      createStateVariable: "numberToSelect",
+      createStateVariable: "numToSelect",
       defaultValue: 1,
       public: true,
     };
@@ -194,9 +194,9 @@ export default class Select extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "optionChildren",
         },
-        numberToSelect: {
+        numToSelect: {
           dependencyType: "stateVariable",
-          variableName: "numberToSelect",
+          variableName: "numToSelect",
         },
         allVariantNames: {
           dependencyType: "stateVariable",
@@ -221,7 +221,7 @@ export default class Select extends CompositeComponent {
         for (let variantName in availableVariants) {
           if (
             availableVariants[variantName].length !==
-            dependencyValues.numberToSelect
+            dependencyValues.numToSelect
           ) {
             throw Error(
               "Invalid variant name for select.  Variant name " +
@@ -229,7 +229,7 @@ export default class Select extends CompositeComponent {
                 " appears in " +
                 availableVariants[variantName].length +
                 " options but number to select is " +
-                numberToSelect,
+                numToSelect,
             );
           }
         }
@@ -267,9 +267,9 @@ export default class Select extends CompositeComponent {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        numberToSelect: {
+        numToSelect: {
           dependencyType: "stateVariable",
-          variableName: "numberToSelect",
+          variableName: "numToSelect",
         },
         withReplacement: {
           dependencyType: "stateVariable",
@@ -306,7 +306,7 @@ export default class Select extends CompositeComponent {
         // console.log(dependencyValues);
 
         if (
-          !(dependencyValues.numberToSelect >= 1) ||
+          !(dependencyValues.numToSelect >= 1) ||
           dependencyValues.nOptions === 0
         ) {
           return {
@@ -322,7 +322,7 @@ export default class Select extends CompositeComponent {
         ) {
           let desiredIndices = dependencyValues.variants.desiredVariant.indices;
           if (desiredIndices !== undefined) {
-            if (desiredIndices.length !== dependencyValues.numberToSelect) {
+            if (desiredIndices.length !== dependencyValues.numToSelect) {
               throw Error(
                 "Number of indices specified for select must match number to select",
               );
@@ -350,13 +350,13 @@ export default class Select extends CompositeComponent {
           ];
 
         if (variantOptions !== undefined) {
-          if (dependencyValues.numberToSelect > 1) {
+          if (dependencyValues.numToSelect > 1) {
             // shallow copy to remove proxy so can shuffle
             variantOptions = [...variantOptions];
 
             // first shuffle the array of indices
             // https://stackoverflow.com/a/12646864
-            for (let i = dependencyValues.numberToSelect - 1; i > 0; i--) {
+            for (let i = dependencyValues.numToSelect - 1; i > 0; i--) {
               const rand = dependencyValues.variantRng();
               const j = Math.floor(rand * (i + 1));
               [variantOptions[i], variantOptions[j]] = [
@@ -375,7 +375,7 @@ export default class Select extends CompositeComponent {
 
         let numberUniqueRequired = 1;
         if (!dependencyValues.withReplacement) {
-          numberUniqueRequired = dependencyValues.numberToSelect;
+          numberUniqueRequired = dependencyValues.numToSelect;
         }
 
         if (numberUniqueRequired > dependencyValues.nOptions) {
@@ -403,7 +403,7 @@ export default class Select extends CompositeComponent {
           (x) => x + 1,
         );
 
-        for (let ind = 0; ind < dependencyValues.numberToSelect; ind++) {
+        for (let ind = 0; ind < dependencyValues.numToSelect; ind++) {
           // random number in [0, 1)
           let rand = dependencyValues.variantRng();
 
@@ -425,7 +425,7 @@ export default class Select extends CompositeComponent {
 
           if (
             !dependencyValues.withReplacement &&
-            ind < dependencyValues.numberToSelect - 1
+            ind < dependencyValues.numToSelect - 1
           ) {
             // remove selected index and renormalize weights
             selectWeightByChild.splice(end, 1);
@@ -628,29 +628,29 @@ export default class Select extends CompositeComponent {
       return { success: true, numberOfVariants };
     }
 
-    let numberToSelect = 1,
+    let numToSelect = 1,
       withReplacement = false;
 
-    let numberToSelectComponent =
-      serializedComponent.attributes.numberToSelect?.component;
-    if (numberToSelectComponent) {
+    let numToSelectComponent =
+      serializedComponent.attributes.numToSelect?.component;
+    if (numToSelectComponent) {
       // only implemented if have an integer with a single string child
       if (
-        numberToSelectComponent.componentType === "integer" &&
-        numberToSelectComponent.children?.length === 1 &&
-        typeof numberToSelectComponent.children[0] === "string"
+        numToSelectComponent.componentType === "integer" &&
+        numToSelectComponent.children?.length === 1 &&
+        typeof numToSelectComponent.children[0] === "string"
       ) {
-        numberToSelect = Number(numberToSelectComponent.children[0]);
+        numToSelect = Number(numToSelectComponent.children[0]);
 
-        if (!(Number.isInteger(numberToSelect) && numberToSelect >= 0)) {
+        if (!(Number.isInteger(numToSelect) && numToSelect >= 0)) {
           console.log(
-            `cannot determine unique variants of selectFromSequence as numberToSelect isn't a non-negative integer.`,
+            `cannot determine unique variants of selectFromSequence as numToSelect isn't a non-negative integer.`,
           );
           return { success: false };
         }
       } else {
         console.log(
-          `cannot determine unique variants of selectFromSequence as numberToSelect isn't constant number.`,
+          `cannot determine unique variants of selectFromSequence as numToSelect isn't constant number.`,
         );
         return { success: false };
       }
@@ -728,21 +728,21 @@ export default class Select extends CompositeComponent {
 
     let uniqueVariantData = {
       numberOfVariantsByChild,
-      numberToSelect,
+      numToSelect,
       withReplacement,
     };
 
     if (numberOfVariantsByChild.length === 0) {
       numberOfVariants = 1;
-    } else if (withReplacement || numberToSelect === 1) {
+    } else if (withReplacement || numToSelect === 1) {
       let numberOfOptionsPerSelection = numberOfVariantsByChild.reduce(
         (a, c) => a + c,
       );
-      numberOfVariants = Math.pow(numberOfOptionsPerSelection, numberToSelect);
+      numberOfVariants = Math.pow(numberOfOptionsPerSelection, numToSelect);
     } else {
       let numChildren = numberOfVariantsByChild.length;
 
-      if (numberToSelect > numChildren) {
+      if (numToSelect > numChildren) {
         return { success: false };
       }
 
@@ -753,17 +753,14 @@ export default class Select extends CompositeComponent {
 
       if (allSameNumber) {
         let numberOfPermutations = numChildren;
-        for (let n = numChildren - 1; n > numChildren - numberToSelect; n--) {
+        for (let n = numChildren - 1; n > numChildren - numToSelect; n--) {
           numberOfPermutations *= n;
         }
         numberOfVariants =
-          numberOfPermutations * Math.pow(firstNumber, numberToSelect);
+          numberOfPermutations * Math.pow(firstNumber, numToSelect);
       } else {
         // have select without replacement where options have different numbers of variants
-        numberOfVariants = countOptions(
-          numberOfVariantsByChild,
-          numberToSelect,
-        );
+        numberOfVariants = countOptions(numberOfVariantsByChild, numToSelect);
       }
     }
 
@@ -797,7 +794,7 @@ export default class Select extends CompositeComponent {
 
     let uniqueVariantData = serializedComponent.variants.uniqueVariantData;
     let numberOfVariantsByChild = uniqueVariantData.numberOfVariantsByChild;
-    let numberToSelect = uniqueVariantData.numberToSelect;
+    let numToSelect = uniqueVariantData.numToSelect;
     let withReplacement = uniqueVariantData.withReplacement;
     let numChildren = serializedComponent.children.length;
     let childrenToSelect = serializedComponent.children;
@@ -808,11 +805,11 @@ export default class Select extends CompositeComponent {
 
     let combinations;
 
-    if (numberToSelect === 1) {
+    if (numToSelect === 1) {
       combinations = [...Array(numChildren).keys()].map((x) => [x]);
     } else {
       combinations = enumerateSelectionCombinations({
-        numberOfIndices: numberToSelect,
+        numberOfIndices: numToSelect,
         numberOfOptions: numChildren,
         // maxNumber: variantIndex,
         withReplacement: withReplacement,

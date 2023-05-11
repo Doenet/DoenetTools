@@ -262,22 +262,22 @@ export default class Line extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nPointsPrescribed = {
+    stateVariableDefinitions.numPointsPrescribed = {
       returnDependencies: () => ({
         throughAttr: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr === null) {
-          return { setValue: { nPointsPrescribed: 0 } };
+          return { setValue: { numPointsPrescribed: 0 } };
         } else {
           return {
             setValue: {
-              nPointsPrescribed:
-                dependencyValues.throughAttr.stateValues.nPoints,
+              numPointsPrescribed:
+                dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
         }
@@ -290,9 +290,9 @@ export default class Line extends GraphicalComponent {
           dependencyType: "attributeComponent",
           attributeName: "slope",
         },
-        nPointsPrescribed: {
+        numPointsPrescribed: {
           dependencyType: "stateVariable",
-          variableName: "nPointsPrescribed",
+          variableName: "numPointsPrescribed",
         },
         nDimensions: {
           dependencyType: "stateVariable",
@@ -303,7 +303,7 @@ export default class Line extends GraphicalComponent {
         return {
           setValue: {
             basedOnSlope:
-              dependencyValues.nPointsPrescribed < 2 &&
+              dependencyValues.numPointsPrescribed < 2 &&
               dependencyValues.slopeAttr !== null &&
               dependencyValues.nDimensions === 2,
           },
@@ -583,7 +583,7 @@ export default class Line extends GraphicalComponent {
       },
       stateVariablesDeterminingDependencies: [
         "equationIdentity",
-        "nPointsPrescribed",
+        "numPointsPrescribed",
         "basedOnSlope",
       ],
       returnArraySizeDependencies: () => ({
@@ -611,7 +611,7 @@ export default class Line extends GraphicalComponent {
             };
             if (stateValues.basedOnSlope) {
               if (pointInd === "1") {
-                if (stateValues.nPointsPrescribed === 1) {
+                if (stateValues.numPointsPrescribed === 1) {
                   // need that first prescribed point to calculate second point
                   dependenciesByKey[arrayKey].through.variableNames.push(
                     "pointX1_" + (Number(dim) + 1),
@@ -627,7 +627,7 @@ export default class Line extends GraphicalComponent {
                   variableNames: ["value"],
                 };
               }
-              if (stateValues.nPointsPrescribed === 0) {
+              if (stateValues.numPointsPrescribed === 0) {
                 // use second essential point so defaults to (0,0)
                 dependenciesByKey[arrayKey].essentialPoint = {
                   dependencyType: "stateVariable",
@@ -643,9 +643,9 @@ export default class Line extends GraphicalComponent {
             }
           }
           let globalDependencies = {
-            nPointsPrescribed: {
+            numPointsPrescribed: {
               dependencyType: "stateVariable",
-              variableName: "nPointsPrescribed",
+              variableName: "numPointsPrescribed",
             },
             nDimensions: {
               dependencyType: "stateVariable",
@@ -730,7 +730,7 @@ export default class Line extends GraphicalComponent {
             } else {
               if (globalDependencyValues.basedOnSlope) {
                 let point1;
-                if (globalDependencyValues.nPointsPrescribed === 1) {
+                if (globalDependencyValues.numPointsPrescribed === 1) {
                   point1 =
                     dependencyValuesByKey[arrayKey].through.stateValues[
                       "pointX1_" + (Number(dim) + 1)
@@ -740,7 +740,7 @@ export default class Line extends GraphicalComponent {
                 }
 
                 if (pointInd === "0") {
-                  // will get here only if nPointsPrescribed === 0
+                  // will get here only if numPointsPrescribed === 0
                   points[arrayKey] = point1;
                 } else {
                   // 0 or 1 points prescribed, slope prescribed, and on second point, in 2D
@@ -1727,16 +1727,16 @@ export default class Line extends GraphicalComponent {
       let resultingNumericalPoints = await this.stateValues.numericalPoints;
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // One point was altered from the requested location
         // while the other point stayed at the requested location.
         // We interpret this as one point being constrained and the second one being free

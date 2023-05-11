@@ -148,7 +148,7 @@ export default class Polyline extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -158,18 +158,18 @@ export default class Polyline extends GraphicalComponent {
         vertices: {
           dependencyType: "attributeComponent",
           attributeName: "vertices",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.vertices !== null) {
           return {
             setValue: {
-              nVertices: dependencyValues.vertices.stateValues.nPoints,
+              numVertices: dependencyValues.vertices.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nVertices: 0 } };
+          return { setValue: { numVertices: 0 } };
         }
       },
     };
@@ -329,9 +329,9 @@ export default class Polyline extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
         nDimensions: {
           dependencyType: "stateVariable",
@@ -339,7 +339,7 @@ export default class Polyline extends GraphicalComponent {
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices, dependencyValues.nDimensions];
+        return [dependencyValues.numVertices, dependencyValues.nDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -426,13 +426,13 @@ export default class Polyline extends GraphicalComponent {
       entryPrefixes: ["numericalVertex"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices];
+        return [dependencyValues.numVertices];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -475,14 +475,14 @@ export default class Polyline extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numericalVertices",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
         let nDimensions = dependencyValues.nDimensions;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
         let vals = [];
@@ -490,7 +490,7 @@ export default class Polyline extends GraphicalComponent {
         let nxPtx = numericalVertices[0]?.[0];
         let nxPty = numericalVertices[0]?.[1];
 
-        for (let i = 1; i < nVertices; i++) {
+        for (let i = 1; i < numVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
@@ -526,7 +526,7 @@ export default class Polyline extends GraphicalComponent {
               let yscale = scales[1];
 
               // only implemented in 2D for now
-              if (nDimensions !== 2 || nVertices === 0) {
+              if (nDimensions !== 2 || numVertices === 0) {
                 return {};
               }
 
@@ -540,7 +540,7 @@ export default class Polyline extends GraphicalComponent {
               let nextPtx = numericalVertices[0][0];
               let nextPty = numericalVertices[0][1];
 
-              for (let i = 1; i < nVertices; i++) {
+              for (let i = 1; i < numVertices; i++) {
                 prevPtx = nextPtx;
                 prevPty = nextPty;
 
@@ -609,9 +609,9 @@ export default class Polyline extends GraphicalComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    let nVerticesMoved = Object.keys(pointCoords).length;
+    let numVerticesMoved = Object.keys(pointCoords).length;
 
-    if (nVerticesMoved === 1) {
+    if (numVerticesMoved === 1) {
       // single vertex dragged
       if (!(await this.stateValues.verticesDraggable)) {
         return await this.coreFunctions.resolveAction({ actionId });
@@ -679,15 +679,15 @@ export default class Polyline extends GraphicalComponent {
     // when the whole polyline is moved.
     // This procedure may preserve the rigid translation
     // even if a subset of the vertices are constrained.
-    if (nVerticesMoved > 1) {
+    if (numVerticesMoved > 1) {
       // whole polyline dragged
 
       let numericalVertices = pointCoords;
       let resultingNumericalVertices = await this.stateValues.numericalVertices;
-      let nVertices = await this.stateValues.nVertices;
+      let numVertices = await this.stateValues.numVertices;
 
       let verticesChanged = [];
-      let nVerticesChanged = 0;
+      let numVerticesChanged = 0;
       let tol = 1e-6;
 
       for (let [ind, vrtx] of numericalVertices.entries()) {
@@ -697,11 +697,11 @@ export default class Polyline extends GraphicalComponent {
           )
         ) {
           verticesChanged.push(ind);
-          nVerticesChanged++;
+          numVerticesChanged++;
         }
       }
 
-      if (nVerticesChanged > 0 && nVerticesChanged < nVertices) {
+      if (numVerticesChanged > 0 && numVerticesChanged < numVertices) {
         // A subset of points were altered from the requested location.
         // Check to see if the relationship among them is preserved
 
@@ -712,7 +712,7 @@ export default class Polyline extends GraphicalComponent {
         let changed1 = resultingNumericalVertices[changedInd1];
         let changevec1 = orig1.map((v, i) => v - changed1[i]);
 
-        if (nVerticesChanged > 1) {
+        if (numVerticesChanged > 1) {
           for (let ind of verticesChanged.slice(1)) {
             let orig2 = numericalVertices[ind];
             let changed2 = resultingNumericalVertices[ind];
@@ -734,7 +734,7 @@ export default class Polyline extends GraphicalComponent {
           // of the whole polyline.
           let newNumericalVertices = [];
 
-          for (let i = 0; i < nVertices; i++) {
+          for (let i = 0; i < numVertices; i++) {
             if (verticesChanged.includes(i)) {
               newNumericalVertices.push(resultingNumericalVertices[i]);
             } else {

@@ -1308,12 +1308,12 @@ describe("MathList Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <mathlist maximumnumber="7">
+    <mathlist maxNumber="7">
       <math>a</math>
-      <mathlist maximumnumber="2">q r l k</mathlist>
+      <mathlist maxNumber="2">q r l k</mathlist>
       <math>h</math>
-      <mathlist maximumnumber="4">
-        <mathlist maximumnumber="2">
+      <mathlist maxNumber="4">
+        <mathlist maxNumber="2">
           <math>b</math>
           <mathlist>u v</mathlist>
         </mathlist>
@@ -1456,12 +1456,12 @@ describe("MathList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><mathlist name="ml1">a b c d e</mathlist></p>
-      <p><copy target="ml1" maximumNumber="3" assignNames="ml2" /></p>
-      <p><copy target="ml2" maximumNumber="" assignNames="ml3" /></p>
+      <p><copy target="ml1" maxNumber="3" assignNames="ml2" /></p>
+      <p><copy target="ml2" maxNumber="" assignNames="ml3" /></p>
 
-      <p><mathlist name="ml4" maximumNumber="3">a b c d e</mathlist></p>
-      <p><copy target="ml4" maximumNumber="4" assignNames="ml5" /></p>
-      <p><copy target="ml5" maximumNumber="" assignNames="ml6" /></p>
+      <p><mathlist name="ml4" maxNumber="3">a b c d e</mathlist></p>
+      <p><copy target="ml4" maxNumber="4" assignNames="ml5" /></p>
+      <p><copy target="ml5" maxNumber="" assignNames="ml6" /></p>
 
       `,
         },
@@ -1701,8 +1701,8 @@ describe("MathList Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <p><mathlist name="ml1" maximumNumber="$mn1" >x y z u v</mathlist></p>
-      <p><copy target="ml1" maximumNumber="$mn2" assignNames="ml2" /></p>
+      <p><mathlist name="ml1" maxNumber="$mn1" >x y z u v</mathlist></p>
+      <p><copy target="ml1" maxNumber="$mn2" assignNames="ml2" /></p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 
@@ -2689,7 +2689,7 @@ describe("MathList Tag Tests", function () {
       <copy target="mathlist1a" />
     </mathlist></p>
 
-    <p><copy name="mathlist3" maximumnumber="6" target="_mathlist2" /></p>
+    <p><copy name="mathlist3" maxNumber="6" target="_mathlist2" /></p>
 
     `,
         },

@@ -20,9 +20,9 @@ export default class CobwebPolyline extends Polyline {
       public: true,
     };
 
-    attributes.nPoints = {
+    attributes.numPoints = {
       createComponentOfType: "number",
-      createStateVariable: "nPoints",
+      createStateVariable: "numPoints",
       defaultValue: 1,
       public: true,
       clamp: [0, Infinity],
@@ -213,22 +213,22 @@ export default class CobwebPolyline extends Polyline {
       },
     };
 
-    // since inherit from polyline, should have nVertices be number of vertices
-    stateVariableDefinitions.nVertices = {
+    // since inherit from polyline, should have numVertices be number of vertices
+    stateVariableDefinitions.numVertices = {
       isAlias: true,
-      targetVariableName: "nPoints",
+      targetVariableName: "numPoints",
     };
 
     stateVariableDefinitions.nOriginalVertices = {
       providePreviousValuesInDefinition: true,
       returnDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues, previousValues }) {
-        let nOriginalVertices = dependencyValues.nVertices;
+        let nOriginalVertices = dependencyValues.numVertices;
 
         if (previousValues.nOriginalVertices > nOriginalVertices) {
           nOriginalVertices = previousValues.nOriginalVertices;
@@ -653,13 +653,13 @@ export default class CobwebPolyline extends Polyline {
       },
       entryPrefixes: ["correctVertex"],
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices - 1];
+        return [dependencyValues.numVertices - 1];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -770,14 +770,14 @@ export default class CobwebPolyline extends Polyline {
         },
       }),
       definition({ dependencyValues }) {
-        let nVerticesRequired = 0;
+        let numVerticesRequired = 0;
         if (dependencyValues.nIterationsRequired > 0) {
-          nVerticesRequired = 2 * dependencyValues.nIterationsRequired - 1;
+          numVerticesRequired = 2 * dependencyValues.nIterationsRequired - 1;
         }
 
         let nGradedVerticesAdjusted = Math.max(
           dependencyValues.nGradedVertices,
-          nVerticesRequired,
+          numVerticesRequired,
         );
 
         let fractionCorrectVerticesAdjusted;
@@ -804,14 +804,14 @@ export default class CobwebPolyline extends Polyline {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          nIterateValues: Math.ceil((dependencyValues.nVertices + 1) / 2),
+          nIterateValues: Math.ceil((dependencyValues.numVertices + 1) / 2),
         },
       }),
     };
@@ -868,7 +868,7 @@ export default class CobwebPolyline extends Polyline {
     };
 
     // stateVariableDefinitions.lastVertex = {
-    //   stateVariablesDeterminingDependencies: ["nPoints"],
+    //   stateVariablesDeterminingDependencies: ["numPoints"],
     //   isArray: true,
     //   public: true,
     //   shadowingInstructions: {
@@ -893,7 +893,7 @@ export default class CobwebPolyline extends Polyline {
     //       dependenciesByKey[arrayKey] = {
     //         lastVertex: {
     //           dependencyType: "stateVariable",
-    //           variableName: `vertexX${stateValues.nPoints}_${Number(arrayKey) + 1}`
+    //           variableName: `vertexX${stateValues.numPoints}_${Number(arrayKey) + 1}`
     //         }
     //       }
     //     }

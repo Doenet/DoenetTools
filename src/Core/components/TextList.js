@@ -27,9 +27,9 @@ export default class TextList extends InlineComponent {
       public: true,
     };
 
-    attributes.maximumNumber = {
+    attributes.maxNumber = {
       createComponentOfType: "number",
-      createStateVariable: "maximumNumber",
+      createStateVariable: "maxNumber",
       defaultValue: null,
       public: true,
     };
@@ -97,9 +97,9 @@ export default class TextList extends InlineComponent {
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
-          maximumNumber: {
+          maxNumber: {
             dependencyType: "stateVariable",
-            variableName: "maximumNumber",
+            variableName: "maxNumber",
           },
           textListChildren: {
             dependencyType: "child",
@@ -148,7 +148,7 @@ export default class TextList extends InlineComponent {
           nComponents = dependencyValues.textsShadow.length;
         }
 
-        let maxNum = dependencyValues.maximumNumber;
+        let maxNum = dependencyValues.maxNumber;
         if (maxNum !== null && nComponents > maxNum) {
           nComponents = maxNum;
           childIndexByArrayKey = childIndexByArrayKey.slice(0, maxNum);
@@ -318,9 +318,9 @@ export default class TextList extends InlineComponent {
           variableNames: ["componentNamesInList"],
           variablesOptional: true,
         },
-        maximumNumber: {
+        maxNumber: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
+          variableName: "maxNumber",
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
@@ -341,7 +341,7 @@ export default class TextList extends InlineComponent {
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
+        let maxNum = dependencyValues.maxNumber;
         if (maxNum !== null && componentNamesInList.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           componentNamesInList = componentNamesInList.slice(0, maxNum);

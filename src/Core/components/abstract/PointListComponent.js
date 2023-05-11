@@ -40,7 +40,7 @@ export default class PointListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nPoints = {
+    stateVariableDefinitions.numPoints = {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "child",
@@ -50,8 +50,8 @@ export default class PointListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nPoints: dependencyValues.pointChildren.length },
-          checkForActualChange: { nPoints: true },
+          setValue: { numPoints: dependencyValues.pointChildren.length },
+          checkForActualChange: { numPoints: true },
         };
       },
     };
@@ -159,9 +159,9 @@ export default class PointListComponent extends BaseComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nPoints: {
+        numPoints: {
           dependencyType: "stateVariable",
-          variableName: "nPoints",
+          variableName: "numPoints",
         },
         nDimensions: {
           dependencyType: "stateVariable",
@@ -169,7 +169,7 @@ export default class PointListComponent extends BaseComponent {
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nPoints, dependencyValues.nDimensions];
+        return [dependencyValues.numPoints, dependencyValues.nDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

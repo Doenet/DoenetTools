@@ -2362,16 +2362,16 @@ export default class Vector extends GraphicalComponent {
       let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // one point was altered from the requested location.
 
         let changedInd = pointsChanged[0];

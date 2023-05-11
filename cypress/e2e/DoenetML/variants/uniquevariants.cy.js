@@ -284,7 +284,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x y z" numbertoselect="3">w x y z</select>
+          <select assignnames="x y z" numToSelect="3">w x y z</select>
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -330,7 +330,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x y z" numbertoselect="3">w x y z</select>
+          <select assignnames="x y z" numToSelect="3">w x y z</select>
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -385,7 +385,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
+          <select assignnames="x y z" numToSelect="3" withreplacement>x y z</select>
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -431,7 +431,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
+          <select assignnames="x y z" numToSelect="3" withreplacement>x y z</select>
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -492,7 +492,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
+          <selectfromsequence type="letters" assignnames="x y z" numToSelect="3" from="w" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -538,7 +538,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
+          <selectfromsequence type="letters" assignnames="x y z" numToSelect="3" from="w" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -593,7 +593,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
+          <selectfromsequence type="letters" assignnames="x y z" numToSelect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -639,7 +639,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
+          <selectfromsequence type="letters" assignnames="x y z" numToSelect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -697,7 +697,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
-          <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
+          <selectfromsequence type="letters" assignnames="w x y z" numToSelect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -752,7 +752,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
-          <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
+          <selectfromsequence type="letters" assignnames="w x y z" numToSelect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
             requestedVariantIndex: ind,
@@ -1215,7 +1215,7 @@ describe("Specifying unique variant tests", function () {
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
-        <select assignnames="((x)) ((y))" numberToSelect="2">
+        <select assignnames="((x)) ((y))" numToSelect="2">
           <option>
             <select>1 2</select>
           </option>
@@ -1257,7 +1257,7 @@ describe("Specifying unique variant tests", function () {
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
-        <select assignnames="((x)) ((y))" numberToSelect="2">
+        <select assignnames="((x)) ((y))" numToSelect="2">
           <option>
             <select>1 2</select>
           </option>
@@ -1305,7 +1305,7 @@ describe("Specifying unique variant tests", function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="((x)) ((y))" numberToSelect="2">
+          <select assignnames="((x)) ((y))" numToSelect="2">
             <option>
               <select>1 2</select>
             </option>

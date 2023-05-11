@@ -3422,7 +3422,7 @@ describe("Specifying single variant document tests", function () {
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
     
-        <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+        <select assignnames="(problem1)  (problem2)  (problem3)" numToSelect="3" withReplacement>
           <option><problem newNamespace><title>A word problem</title>
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
@@ -3576,7 +3576,7 @@ describe("Specifying single variant document tests", function () {
     // <text>repeat</text>
     // <variantControl nvariants="100"/>
 
-    // <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+    // <select assignnames="(problem1)  (problem2)  (problem3)" numToSelect="3" withReplacement>
     //   <option><problem newNamespace><title>A word problem</title>
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
@@ -3747,7 +3747,7 @@ describe("Specifying single variant document tests", function () {
           <variantControl nvariants="4" />
           <p>Number: <selectfromsequence to="10"/></p>
         </problem>
-        <select assignnames="(problem2)  (problem3)" numbertoselect="2" withReplacement>
+        <select assignnames="(problem2)  (problem3)" numToSelect="2" withReplacement>
           <option><problem newNamespace><title>A word problem</title>
             <variantControl nvariants="3" variantNames="a b c" />
             <p>Word:
@@ -3915,7 +3915,7 @@ describe("Specifying single variant document tests", function () {
     //   <variantControl nvariants="6" />
     //   <p>Number: <selectfromsequence to="10"/></p>
     // </problem>
-    // <select assignnames="(problem2)  (problem3)" numbertoselect="2" withReplacement>
+    // <select assignnames="(problem2)  (problem3)" numToSelect="2" withReplacement>
     //   <option><problem newNamespace><title>A word problem</title>
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
@@ -4098,7 +4098,7 @@ describe("Specifying single variant document tests", function () {
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
     
-        <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+        <select assignnames="(problem1)  (problem2)  (problem3)" numToSelect="3" withReplacement>
           <option><problem newNamespace><title>A word problem</title>
             <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
@@ -4252,7 +4252,7 @@ describe("Specifying single variant document tests", function () {
     // <text>repeat</text>
     // <variantControl nvariants="100"/>
 
-    // <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+    // <select assignnames="(problem1)  (problem2)  (problem3)" numToSelect="3" withReplacement>
     //   <option><problem newNamespace><title>A word problem</title>
     //     <variantControl nvariants="5" variantNames="a b c d e" />
     //     <p>Word:
@@ -4408,8 +4408,8 @@ describe("Specifying single variant document tests", function () {
         <variantControl nvariants="100"/>
         <p><selectRandomNumbers name="s1" assignNames="m" /></p>
         <p><sampleRandomNumbers name="s2" assignNames="n" variantDeterminesSeed /></p>
-        <p><selectRandomNumbers name="s3" type="gaussian" numberToSelect="3" assignNames="x1 x2 x3" /></p>
-        <p><sampleRandomNumbers name="s4" type="gaussian" numberOfSamples="3" assignNames="y1 y2 y3" variantDeterminesSeed /></p>
+        <p><selectRandomNumbers name="s3" type="gaussian" numToSelect="3" assignNames="x1 x2 x3" /></p>
+        <p><sampleRandomNumbers name="s4" type="gaussian" numSamples="3" assignNames="y1 y2 y3" variantDeterminesSeed /></p>
         `,
               requestedVariantIndex: ind,
             },
@@ -4469,8 +4469,8 @@ describe("Specifying single variant document tests", function () {
     // <variantControl nvariants="100"/>
     // <p><selectRandomNumbers name="s1" assignNames="m" /></p>
     // <p><sampleRandomNumbers name="s2" assignNames="n" /></p>
-    // <p><selectRandomNumbers name="s3" type="gaussian" numberToSelect="3" assignNames="x1 x2 x3" /></p>
-    // <p><sampleRandomNumbers name="s4" type="gaussian" numberOfSamples="3" assignNames="y1 y2 y3" /></p>
+    // <p><selectRandomNumbers name="s3" type="gaussian" numToSelect="3" assignNames="x1 x2 x3" /></p>
+    // <p><sampleRandomNumbers name="s4" type="gaussian" numSamples="3" assignNames="y1 y2 y3" /></p>
     // `,
     //     requestedVariant: generatedVariantInfo,
     //   }, "*");
@@ -4798,9 +4798,9 @@ describe("Specifying single variant document tests", function () {
       let doenetML = `
       <text>${ind}</text>
       <variantControl nvariants="100"/>
-      <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numberToSelect="2" />
-      <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numberToSelect="2" />
-      <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numberToSelect="2" />
+      <selectFromSequence from="1" to="20" exclude="2 3 4 5 6 8 9 11 12 13 14 15 16 17 19" excludeCombinations="(1 7) (1 10) (1 18) (7 10) (7 18) (7 20) (10 1) (10 7) (10 20) (18 1) (18 7) (18 20) (20 1) (20 10)" assignNames="m n" numToSelect="2" />
+      <selectFromSequence type="math" from="x" step="h" length="7" exclude="x+h x+2h x+3h x+5h" excludeCombinations="(x x+4h) (x+4h x+6h) (x+6h x)" assignNames="x1 x2" numToSelect="2" />
+      <selectFromSequence type="letters" from="a" to="i" exclude="b c d e f h" excludeCombinations="(a i) (g a) (i g)" assignNames="l1 l2" numToSelect="2" />
       <p>Enter $m: <answer><mathinput/><award><math>$m</math></award></answer></p>
       <p>Enter $x2: <answer><mathinput/><award><math>$x2</math></award></answer></p>
       <p>Enter $l1: <answer><textinput/><award><text>$l1</text></award></answer></p>

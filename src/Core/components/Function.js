@@ -878,13 +878,13 @@ export default class Function extends InlineComponent {
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
         let nPrescribedPoints = 0;
         if (dependencyValues.through !== null) {
-          nPrescribedPoints = dependencyValues.through.stateValues.nPoints;
+          nPrescribedPoints = dependencyValues.through.stateValues.numPoints;
         }
         return {
           setValue: { nPrescribedPoints },

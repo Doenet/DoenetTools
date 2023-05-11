@@ -465,6 +465,12 @@ export const deprecatedPropertySubstitutions = {
   numberExtrema: "numExtrema",
   numberDecimals: "numDecimals",
   numberDigits: "numDigits",
+  numSamples: "numSamples",
+  numberToSelect: "numToSelect",
+  numberSolutions: "numSolutions",
+  maximumNumber: "maxNumber",
+  nVertices: "numVertices",
+  nPoints: "numPoints",
 };
 
 const deprecatedPropertySubstitutionsLowerCase = {};
@@ -490,8 +496,12 @@ function substitutePropertyDeprecations(serializedComponents) {
       let propNameLower = propName.toLowerCase();
 
       if (propNameLower in deprecatedPropertySubstitutionsLowerCase) {
-        component.attributes.prop.primitive =
-          deprecatedPropertySubstitutionsLowerCase[propNameLower];
+        let newProp = deprecatedPropertySubstitutionsLowerCase[propNameLower];
+        console.warn(
+          `Property ${propName} is deprecated.  Use ${newProp} instead.`,
+        );
+
+        component.attributes.prop.primitive = newProp;
       }
     }
 

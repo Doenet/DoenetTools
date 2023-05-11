@@ -12,17 +12,17 @@ describe("Regular Polygon Tag Tests 2", function () {
   it("specify radius for square", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "4",
+        numVertices: "4",
         radius: "7",
         center: "(-6,-2)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 4,
+      numVertices: 4,
       vertex1: [-6 + 7, -2],
       center: [-6, -2],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -30,44 +30,44 @@ describe("Regular Polygon Tag Tests 2", function () {
   it("specify center for pentagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "5",
+        numVertices: "5",
         center: "(-5,-3)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 5,
+      numVertices: 5,
       vertex1: [-5 + 1, -3],
       center: [-5, -3],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
     });
   });
 
   it("specify one vertex for square", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: 4,
+        numVertices: 4,
         vertices: "(2,-5)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 4,
+      numVertices: 4,
       vertex1: [2, -5],
       center: [1, -5],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
     });
   });
 
   it("specify two vertices for pentagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "5",
+        numVertices: "5",
         vertices: "(2,-5) (5,1)",
       },
     });
 
-    let nVertices = 5;
+    let numVertices = 5;
 
     let vertex1 = [2, -5];
     let vertex2 = [5, 1];
@@ -78,7 +78,7 @@ describe("Regular Polygon Tag Tests 2", function () {
       (vertex1[1] + vertex2[1]) / 2,
     ];
     let sideLength = Math.sqrt(sideVector[0] ** 2 + sideVector[1] ** 2);
-    let inradius = sideLength / (2 * Math.tan(Math.PI / nVertices));
+    let inradius = sideLength / (2 * Math.tan(Math.PI / numVertices));
 
     let inradiusDirection = [
       -sideVector[1] / sideLength,
@@ -91,10 +91,10 @@ describe("Regular Polygon Tag Tests 2", function () {
     ];
 
     runRegularPolygonTests({
-      nVertices,
+      numVertices,
       vertex1,
       center,
-      conservedWhenChangeNvertices: "twoVertices",
+      conservedWhenChangenumVertices: "twoVertices",
     });
   });
 });

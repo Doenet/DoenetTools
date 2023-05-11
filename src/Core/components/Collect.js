@@ -36,9 +36,9 @@ export default class Collect extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
-    attributes.maximumNumber = {
+    attributes.maxNumber = {
       createComponentOfType: "number",
-      createStateVariable: "maximumNumber",
+      createStateVariable: "maxNumber",
       defaultValue: null,
       public: true,
     };
@@ -246,9 +246,9 @@ export default class Collect extends CompositeComponent {
 
         return {
           descendants,
-          maximumNumber: {
+          maxNumber: {
             dependencyType: "stateVariable",
-            variableName: "maximumNumber",
+            variableName: "maxNumber",
           },
           propName: {
             dependencyType: "stateVariable",
@@ -266,10 +266,10 @@ export default class Collect extends CompositeComponent {
         }
 
         if (
-          dependencyValues.maximumNumber !== null &&
-          collectedComponents.length > dependencyValues.maximumNumber
+          dependencyValues.maxNumber !== null &&
+          collectedComponents.length > dependencyValues.maxNumber
         ) {
-          let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumber));
+          let maxnum = Math.max(0, Math.floor(dependencyValues.maxNumber));
           collectedComponents = collectedComponents.slice(0, maxnum);
         }
 

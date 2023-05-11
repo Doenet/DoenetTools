@@ -159,23 +159,24 @@ export default class Angle extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nPointsSpecified = {
+    stateVariableDefinitions.numPointsSpecified = {
       returnDependencies: () => ({
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.through !== null) {
           return {
             setValue: {
-              nPointsSpecified: dependencyValues.through.stateValues.nPoints,
+              numPointsSpecified:
+                dependencyValues.through.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nPointsSpecified: 0 } };
+          return { setValue: { numPointsSpecified: 0 } };
         }
       },
     };
@@ -238,9 +239,9 @@ export default class Angle extends GraphicalComponent {
       },
       returnArrayDependenciesByKey({ stateValues }) {
         let globalDependencies = {
-          nPointsSpecified: {
+          numPointsSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nPointsSpecified",
+            variableName: "numPointsSpecified",
           },
           throughAttr: {
             dependencyType: "attributeComponent",
@@ -411,7 +412,7 @@ export default class Angle extends GraphicalComponent {
           }
         }
 
-        let nPointsSpecified = globalDependencyValues.nPointsSpecified;
+        let numPointsSpecified = globalDependencyValues.numPointsSpecified;
         let prescribedPoints;
         if (globalDependencyValues.throughAttr) {
           prescribedPoints =
@@ -427,17 +428,17 @@ export default class Angle extends GraphicalComponent {
           points[ind + ",1"] = prescribedPoint[1];
         }
 
-        if (nPointsSpecified === 0) {
+        if (numPointsSpecified === 0) {
           points["0,0"] = me.fromAst(1);
           points["0,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 2) {
+        if (numPointsSpecified < 2) {
           points["1,0"] = me.fromAst(0);
           points["1,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 3) {
+        if (numPointsSpecified < 3) {
           let radians = null;
           if (globalDependencyValues.radiansAttr) {
             radians =

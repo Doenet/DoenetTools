@@ -17,7 +17,7 @@ describe("selects assignName Tests", function () {
     <text name="h">hop</text>
   </setup>
 
-  <select numberToSelect="6" assignNames="(a) (b) (c) (d) (e) (f)">
+  <select numToSelect="6" assignNames="(a) (b) (c) (d) (e) (f)">
     <option>
       <text>hi</text>
     </option>

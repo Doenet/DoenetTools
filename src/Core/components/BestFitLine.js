@@ -46,7 +46,7 @@ export default class BestFitLine extends Line {
       definition: () => ({ setValue: { nDimensions: 2 } }),
     };
 
-    delete stateVariableDefinitions.nPointsPrescribed;
+    delete stateVariableDefinitions.numPointsPrescribed;
     delete stateVariableDefinitions.basedOnSlope;
     delete stateVariableDefinitions.dForSlope;
     delete stateVariableDefinitions.essentialPoint1x;

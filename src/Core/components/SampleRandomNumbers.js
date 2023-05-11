@@ -27,9 +27,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.numberOfSamples = {
+    attributes.numSamples = {
       createComponentOfType: "number",
-      createStateVariable: "numberOfSamples",
+      createStateVariable: "numSamples",
       defaultValue: 1,
       public: true,
     };
@@ -349,9 +349,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
       stateVariablesDeterminingDependencies: ["variantDeterminesSeed"],
       returnDependencies({ stateValues, sharedParameters }) {
         let dependencies = {
-          numberOfSamples: {
+          numSamples: {
             dependencyType: "stateVariable",
-            variableName: "numberOfSamples",
+            variableName: "numSamples",
           },
           type: {
             dependencyType: "stateVariable",
@@ -398,7 +398,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
         return dependencies;
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.numberOfSamples < 1) {
+        if (dependencyValues.numSamples < 1) {
           return {
             setEssentialValue: { sampledValues: [] },
             setValue: { sampledValues: [] },
@@ -622,7 +622,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }) {
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
-      numberOfSamples: await this.stateValues.numberOfSamples,
+      numSamples: await this.stateValues.numSamples,
       standardDeviation: await this.stateValues.standardDeviation,
       mean: await this.stateValues.mean,
       to: await this.stateValues.to,

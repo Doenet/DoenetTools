@@ -653,13 +653,13 @@ export default class Curve extends GraphicalComponent {
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
         let nThroughPoints = 0;
         if (dependencyValues.through !== null) {
-          nThroughPoints = dependencyValues.through.stateValues.nPoints;
+          nThroughPoints = dependencyValues.through.stateValues.numPoints;
         }
         return { setValue: { nThroughPoints } };
       },

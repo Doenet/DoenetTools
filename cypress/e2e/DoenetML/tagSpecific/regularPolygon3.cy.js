@@ -13,34 +13,34 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify center and one vertex for triangle", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         vertices: "(2,-5)",
         center: "(-1,-3)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
     });
   });
 
   it("specify center and two vertices for triangle, ignore second vertex", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         vertices: "(2,-5) (10,12)",
         center: "(-1,-3)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -48,7 +48,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify center and vertex for triangle, ignore all size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         vertices: "(2,-5)",
         center: "(-1,-3)",
         circumradius: "11",
@@ -60,10 +60,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -71,7 +71,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify center and circumradius for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         center: "(-1,-3)",
         circumradius: "11",
         inradius: "3",
@@ -82,10 +82,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [10, -3],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -93,7 +93,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify vertex and circumradius for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         vertices: "(2,-5)",
         circumradius: "11",
         inradius: "3",
@@ -104,10 +104,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [2, -5],
       center: [-9, -5],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -115,7 +115,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify two vertices for triangle, ingnore all size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         vertices: "(2,-5) (5,1)",
         circumradius: "11",
         inradius: "3",
@@ -125,7 +125,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       },
     });
 
-    let nVertices = 3;
+    let numVertices = 3;
 
     let vertex1 = [2, -5];
     let vertex2 = [5, 1];
@@ -136,7 +136,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       (vertex1[1] + vertex2[1]) / 2,
     ];
     let sideLength = Math.sqrt(sideVector[0] ** 2 + sideVector[1] ** 2);
-    let inradius = sideLength / (2 * Math.tan(Math.PI / nVertices));
+    let inradius = sideLength / (2 * Math.tan(Math.PI / numVertices));
 
     let inradiusDirection = [
       -sideVector[1] / sideLength,
@@ -149,10 +149,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     ];
 
     runRegularPolygonTests({
-      nVertices,
+      numVertices,
       vertex1,
       center,
-      conservedWhenChangeNvertices: "twoVertices",
+      conservedWhenChangenumVertices: "twoVertices",
       abbreviated: true,
     });
   });
@@ -160,7 +160,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify circumradius for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         circumradius: "11",
         inradius: "3",
         sideLength: "5",
@@ -170,10 +170,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -181,7 +181,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify radius for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         radius: "11",
         inradius: "3",
         sideLength: "5",
@@ -191,10 +191,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -202,7 +202,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify inradius for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         inradius: "3",
         sideLength: "5",
         perimeter: "10",
@@ -211,10 +211,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [3 / Math.cos(Math.PI / 3), 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "inradius",
+      conservedWhenChangenumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -222,7 +222,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify center and apothem for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         center: "(-1,-3)",
         apothem: "3",
         sideLength: "5",
@@ -232,10 +232,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [-1 + 3 / Math.cos(Math.PI / 3), -3],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "inradius",
+      conservedWhenChangenumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -243,7 +243,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify sideLength for triangle, ignore all other size attributes", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         sideLength: "5",
         perimeter: "10",
         area: "99",
@@ -251,10 +251,10 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [5 / (2 * Math.sin(Math.PI / 3)), 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "sideLength",
+      conservedWhenChangenumVertices: "sideLength",
       abbreviated: true,
     });
   });
@@ -262,7 +262,7 @@ describe("Regular Polygon Tag Tests 3", function () {
   it("specify center and perimeter for triangle, ignore area", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "3",
+        numVertices: "3",
         center: "(-1,-3)",
         perimeter: "10",
         area: "99",
@@ -270,28 +270,28 @@ describe("Regular Polygon Tag Tests 3", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [-1 + 10 / (3 * 2 * Math.sin(Math.PI / 3)), -3],
       center: [-1, -3],
-      conservedWhenChangeNvertices: "perimeter",
+      conservedWhenChangenumVertices: "perimeter",
       abbreviated: true,
     });
   });
 
-  it("specify nVertices, ignore nSides", () => {
+  it("specify numVertices, ignore nSides", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "4",
+        numVertices: "4",
         nSides: "6",
         center: "(4,1)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 4,
+      numVertices: 4,
       vertex1: [5, 1],
       center: [4, 1],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangenumVertices: "circumradius",
       abbreviated: true,
     });
   });

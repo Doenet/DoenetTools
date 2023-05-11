@@ -772,16 +772,16 @@ export default class LineSegment extends GraphicalComponent {
       let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // One endpoint was altered from the requested location
         // while the other endpoint stayed at the requested location.
         // We interpret this as one endpoint being constrained and the second one being free

@@ -25,9 +25,9 @@ export default class BooleanList extends InlineComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.maximumNumber = {
+    attributes.maxNumber = {
       createComponentOfType: "number",
-      createStateVariable: "maximumNumber",
+      createStateVariable: "maxNumber",
       defaultValue: null,
       public: true,
     };
@@ -82,9 +82,9 @@ export default class BooleanList extends InlineComponent {
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
-          maximumNumber: {
+          maxNumber: {
             dependencyType: "stateVariable",
-            variableName: "maximumNumber",
+            variableName: "maxNumber",
           },
           booleanListChildren: {
             dependencyType: "child",
@@ -126,7 +126,7 @@ export default class BooleanList extends InlineComponent {
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
+        let maxNum = dependencyValues.maxNumber;
         if (maxNum !== null && nComponents > maxNum) {
           nComponents = maxNum;
           childIndexByArrayKey = childIndexByArrayKey.slice(0, maxNum);
@@ -273,9 +273,9 @@ export default class BooleanList extends InlineComponent {
           variableNames: ["componentNamesInList"],
           variablesOptional: true,
         },
-        maximumNumber: {
+        maxNumber: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
+          variableName: "maxNumber",
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
@@ -296,7 +296,7 @@ export default class BooleanList extends InlineComponent {
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
+        let maxNum = dependencyValues.maxNumber;
         if (maxNum !== null && componentNamesInList.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           componentNamesInList = componentNamesInList.slice(0, maxNum);

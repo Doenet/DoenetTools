@@ -1624,16 +1624,16 @@ export default class Ray extends GraphicalComponent {
       ];
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // One point was altered from the requested location
         // while the other point stayed at the requested location.
         // We interpret this as one point being constrained and the second one being free

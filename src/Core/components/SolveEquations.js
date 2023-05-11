@@ -508,7 +508,7 @@ export default class SolveEquations extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberSolutions = {
+    stateVariableDefinitions.numSolutions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -521,7 +521,7 @@ export default class SolveEquations extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberSolutions: dependencyValues.allSolutions.length },
+          setValue: { numSolutions: dependencyValues.allSolutions.length },
         };
       },
     };
@@ -534,13 +534,13 @@ export default class SolveEquations extends InlineComponent {
       isArray: true,
       entryPrefixes: ["solution"],
       returnArraySizeDependencies: () => ({
-        numberSolutions: {
+        numSolutions: {
           dependencyType: "stateVariable",
-          variableName: "numberSolutions",
+          variableName: "numSolutions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberSolutions];
+        return [dependencyValues.numSolutions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {

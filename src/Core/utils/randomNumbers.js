@@ -1,6 +1,6 @@
 export function sampleFromRandomNumbers({
   type,
-  numberOfSamples,
+  numSamples,
   standardDeviation,
   mean,
   to,
@@ -19,12 +19,12 @@ export function sampleFromRandomNumbers({
         ") for a gaussian random variable.";
       console.warn(message);
 
-      return Array(numberOfSamples).fill(NaN);
+      return Array(numSamples).fill(NaN);
     }
 
     let sampledValues = [];
 
-    for (let i = 0; i < numberOfSamples; i++) {
+    for (let i = 0; i < numSamples; i++) {
       // Standard Normal variate using Box-Muller transform.
       let u = 0,
         v = 0;
@@ -47,7 +47,7 @@ export function sampleFromRandomNumbers({
 
     let diff = to - from;
 
-    for (let i = 0; i < numberOfSamples; i++) {
+    for (let i = 0; i < numSamples; i++) {
       sampledValues.push(from + rng() * diff);
     }
 
@@ -57,7 +57,7 @@ export function sampleFromRandomNumbers({
     let sampledValues = [];
 
     if (nDiscreteValues > 0) {
-      for (let i = 0; i < numberOfSamples; i++) {
+      for (let i = 0; i < numSamples; i++) {
         // random integer from 0 to nDiscreteValues-1
         let ind = Math.floor(rng() * nDiscreteValues);
 
