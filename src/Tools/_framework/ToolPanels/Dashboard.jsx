@@ -9,11 +9,12 @@ import {
   pageToolViewAtom,
   searchParamAtomFamily,
   profileAtom,
-} from "../NewToolRoot";
-import Next7Days from "../Widgets/Next7Days";
-import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
-import { suppressMenusAtom } from "../NewToolRoot";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from '../NewToolRoot';
+// import Next7Days from '../Widgets/Next7Days';
+import ContentByWeek from '../Widgets/ContentByWeek';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { suppressMenusAtom } from '../NewToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCode,
   faUser,
@@ -47,15 +48,18 @@ export default function Dashboard(props) {
 
   return (
     <div style={props?.style ?? {}}>
-      <div style={{ marginLeft: "10px", marginRight: "10px" }}>
+      <div style={{ margin:"1rem" }}>
         <h1>Welcome!</h1>
         <div
           style={{
-            display: "grid",
-            gridAutoFlow: "column dense",
-            gridAutoColumns: "min-content",
-            gap: "30px",
-            width: "850px",
+            display: 'flex',
+            // gridAutoFlow: 'column dense',
+            // gridAutoColumns: 'min-content',
+            // gap: '30px',
+            alignItems: 'center',
+            gap: '30px',
+            maxWidth: '850px',
+            margin:"1rem"
           }}
         >
           <Card
@@ -139,8 +143,8 @@ export default function Dashboard(props) {
           )}
         </div>
       </div>
-      <div style={{ marginTop: "10px", margin: "10px" }}>
-        <Next7Days courseId={courseId} />
+      <div style={{ margin: '2rem'}}>
+        <ContentByWeek courseId={courseId}/>
       </div>
     </div>
   );

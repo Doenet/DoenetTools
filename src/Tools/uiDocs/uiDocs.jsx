@@ -888,29 +888,56 @@ export default function Attempt() {
           description: "Sets the progress of the bar",
         },
         {
-          name: "Width",
-          propPreview: "<ProgressBar width=400 />",
-          propCode: { width: 400, progress: 0.4 },
+          name: 'Rotate',
+          propPreview: '<ProgressBar progress={0.4} rotated />',
+          propCode: { progress: 0.4, rotated: true },
+          description: 'Rotates the bar',
+        },
+        {
+          name: 'Rotate + Donut Icon',
+          propPreview: '<ProgressBar progress={0.4} rotated donutIcon/>',
+          propCode: { progress: 0.4, rotated: true, donutIcon },
+          description: 'Rotates the bar (with donut icon)',
+        },
+        {
+          name: 'Width',
+          propPreview: '<ProgressBar width="400px" />',
+          propCode: { width: "400px", progress: 0.4 },
           description:
-            "Changes the width of the component in px; pass in the number without any units; default width is var(--menuWidth)=200px which must be updated manually",
+            'Changes the width of the component',
+        },
+        {
+          name: 'Height',
+          propPreview: '<ProgressBar height="20px" />',
+          propCode: { height: "20px", progress: 0.4 },
+          description:
+            'Changes the height of the component',
+        },
+        {
+          name: 'Radius',
+          propPreview: '<ProgressBar height="20px" radius="10px" />',
+          propCode: { height: "20px", radius: "10px", progress: 0.4 },
+          description:
+            'Changes the radius of the component',
+        },
+        {
+          name: 'Color',
+          propPreview: '<ProgressBar color="black" />',
+          propCode: { color: "black", progress: 0.4 },
+          description:
+            'Changes the color of the component',
         },
         {
           name: "Progress Label",
           propPreview: '<ProgressBar showProgress"/>',
           propCode: { showProgress, progress: 0.4 },
-          description: "Adds progress label to componenet",
+          description: 'Adds progress label to component',
         },
         {
           name: "Label",
           propPreview: '<ProgressBar label="What: "/>',
-          propCode: { label: "What: ", progress: 0.4 },
-          description: "Adds label to componenet",
-        },
-        {
-          name: "Vertical Label",
-          propPreview: '<ProgressBar label="What: " vertical/>',
-          propCode: { label: "What: ", vertical, progress: 0.4 },
-          description: "Adds label to component on top",
+          propCode: { label: 'What: ', progress: 0.4 },
+          description: 'Adds label to component',
         },
       ],
     },
