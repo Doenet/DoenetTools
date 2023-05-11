@@ -82,6 +82,7 @@ import {
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import VirtualKeyboard from "../Footers/VirtualKeyboard";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1329,6 +1330,8 @@ export function PublicEditor() {
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
       />
+      <VirtualKeyboard />
+
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height

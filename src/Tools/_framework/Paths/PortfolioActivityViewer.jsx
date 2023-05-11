@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
+import VirtualKeyboard from "../Footers/VirtualKeyboard";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -129,6 +130,7 @@ export function PortfolioActivityViewer() {
 
   return (
     <>
+      <VirtualKeyboard />
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height

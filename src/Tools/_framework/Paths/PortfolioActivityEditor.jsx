@@ -82,6 +82,7 @@ import {
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import VirtualKeyboard from "../Footers/VirtualKeyboard";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1155,75 +1156,6 @@ function EditableLabel() {
   );
 }
 
-export function PortfolioActivityEditor2() {
-  return (
-    <Box w="672px" p="10px">
-      <GeneralActivityControls />
-    </Box>
-  );
-}
-
-function MathKeyboard() {
-  const keyboardBtnRef = useRef(null);
-
-  const {
-    isOpen: keyboardIsOpen,
-    // onOpen: keyboardOnOpen,
-    onClose: keyboardOnClose,
-    onToggle: keyboardOnToggle,
-  } = useDisclosure();
-
-  return (
-    <Slide direction="bottom" in={keyboardIsOpen} style={{ zIndex: 1000 }}>
-      <Box
-        p="4px"
-        mt="4"
-        bg="doenet.canvas"
-        borderTop="1px"
-        borderTopColor="doenet.mediumGray"
-      >
-        <Tooltip hasArrow label="Open Keyboard">
-          <IconButton
-            position="absolute"
-            left="10px"
-            size="md"
-            roundedBottom="0px"
-            height="24px"
-            width="50px"
-            top={keyboardIsOpen ? "-8px" : "-24px"}
-            variant="ghost"
-            // variant="outline"
-            icon={<FaKeyboard />}
-            onClick={keyboardOnToggle}
-            ref={keyboardBtnRef}
-            background="doenet.canvas"
-          />
-        </Tooltip>
-
-        <IconButton
-          position="absolute"
-          top="20px"
-          right="6px"
-          size="sm"
-          icon={<CloseIcon />}
-          variant="ghost"
-          onClick={keyboardOnClose}
-        />
-
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-        <Text>Keyboard HERE</Text>
-      </Box>
-    </Slide>
-  );
-}
-
 export function PortfolioActivityEditor() {
   const { doenetId, doenetML, pageId, courseId, activityData, lastKnownCid } =
     useLoaderData();
@@ -1327,6 +1259,8 @@ export function PortfolioActivityEditor() {
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
       />
+      <VirtualKeyboard />
+
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -1492,7 +1426,6 @@ export function PortfolioActivityEditor() {
 
         {mode == "Edit" && (
           <>
-            <MathKeyboard />
             <GridItem area="centerContent">
               <ResizeableSideBySide
                 left={
@@ -1556,7 +1489,6 @@ export function PortfolioActivityEditor() {
 
         {mode == "View" && (
           <>
-            <MathKeyboard />
             <GridItem area="centerContent">
               <Grid
                 width="100%"
