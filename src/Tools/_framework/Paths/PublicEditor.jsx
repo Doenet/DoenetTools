@@ -1331,10 +1331,9 @@ export function PublicEditor() {
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
         templateAreas={`"header header header"
-        "remixHeader remixHeader remixHeader"
       "leftGutter centerContent rightGutter"
       `}
-        templateRows="40px 30px auto"
+        templateRows="40px auto"
         templateColumns=".06fr 1fr .06fr"
         position="relative"
       >
@@ -1421,7 +1420,7 @@ export function PublicEditor() {
           </Grid>
         </GridItem>
 
-        <GridItem
+        {/* <GridItem
           area="remixHeader"
           position="fixed"
           height="30px"
@@ -1444,7 +1443,7 @@ export function PublicEditor() {
               </Button>
             </HStack>
           </Center>
-        </GridItem>
+        </GridItem> */}
         <GridItem area="centerContent">
           <ResizeableSideBySide
             left={
