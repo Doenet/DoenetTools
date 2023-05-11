@@ -1495,26 +1495,29 @@ export function PortfolioActivityEditor() {
           <GridItem area="centerContent">
             <ResizeableSideBySide
               left={
-                <PageViewer
-                  doenetML={viewerDoenetML}
-                  flags={{
-                    showCorrectness: true,
-                    solutionDisplayMode: true,
-                    showFeedback: true,
-                    showHints: true,
-                    autoSubmit: false,
-                    allowLoadState: false,
-                    allowSaveState: false,
-                    allowLocalState: false,
-                    allowSaveSubmissions: false,
-                    allowSaveEvents: false,
-                  }}
-                  attemptNumber={1}
-                  generatedVariantCallback={variantCallback} //TODO:Replace
-                  requestedVariantIndex={variants.index}
-                  // setIsInErrorState={setIsInErrorState}
-                  pageIsActive={true}
-                />
+                <>
+                  <PageViewer
+                    doenetML={viewerDoenetML}
+                    flags={{
+                      showCorrectness: true,
+                      solutionDisplayMode: true,
+                      showFeedback: true,
+                      showHints: true,
+                      autoSubmit: false,
+                      allowLoadState: false,
+                      allowSaveState: false,
+                      allowLocalState: false,
+                      allowSaveSubmissions: false,
+                      allowSaveEvents: false,
+                    }}
+                    attemptNumber={1}
+                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    requestedVariantIndex={variants.index}
+                    // setIsInErrorState={setIsInErrorState}
+                    pageIsActive={true}
+                  />
+                  <Box marginBottom="50vh" />
+                </>
               }
               right={
                 <CodeMirror
@@ -1633,7 +1636,12 @@ const clamp = (
   return Math.min(Math.max(value, min), max);
 };
 
-const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
+const ResizeableSideBySide = ({
+  left,
+  right,
+  centerWidth = "10px",
+  headerHeight = 80,
+}) => {
   const wrapperRef = useRef();
 
   useEffect(() => {
@@ -1679,7 +1687,7 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
   return (
     <Grid
       width="100%"
-      minHeight="calc(100vh - 40px)" //40px header height
+      height={`calc(100vh - ${headerHeight}px)`}
       templateAreas={`"viewer middleGutter textEditor"`}
       templateColumns={`.5fr ${centerWidth} .5fr`}
       overflow="hidden"
@@ -1692,13 +1700,12 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         area="viewer"
         width="100%"
         placeSelf="center"
-        minHeight="100%"
+        height="100%"
         maxWidth="850px"
-        // background="doenet.lightBlue"
         overflow="hidden"
       >
         <Box
-          minHeight="calc(100vh - 100px)"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           background="var(--canvas)"
           borderWidth="1px"
           borderStyle="solid"
@@ -1707,7 +1714,6 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
           padding="20px 5px 20px 5px"
           flexGrow={1}
           overflow="scroll"
-          marginBottom="50vh"
         >
           {left}
         </Box>
@@ -1716,26 +1722,21 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         area="middleGutter"
         background="doenet.lightBlue"
         width="100%"
+        height="100%"
         paddingTop="10px"
         alignSelf="start"
-        position="relative"
       >
         <Center
           cursor="col-resize"
           background="doenet.mainGray"
-          h="calc(100vh - 100px)"
-          top="90px"
           borderLeft="solid 1px"
           borderTop="solid 1px"
           borderBottom="solid 1px"
           borderColor="doenet.mediumGray"
-          // h="calc(100vh - 100px)"
-          // top="90px"
-          position="fixed"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           width="10px"
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
-          // marginLeft="1px"
           paddingLeft="1px"
         >
           <Icon ml="0" as={BsGripVertical} />
@@ -1747,19 +1748,13 @@ const ResizeableSideBySide = ({ left, right, centerWidth = "10px" }) => {
         background="doenet.lightBlue"
         alignSelf="start"
         paddingTop="10px"
-        position="sticky"
-        // position="relative"
       >
         <Box
           top="50px"
-          // position="fixed"
           boxSizing="border-box"
           background="doenet.canvas"
-          height="calc(100vh - 100px)"
-          // width="100%"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
           overflowY="scroll"
-          // borderWidth="1px"
-          // borderStyle="solid"
           borderRight="solid 1px"
           borderTop="solid 1px"
           borderBottom="solid 1px"
