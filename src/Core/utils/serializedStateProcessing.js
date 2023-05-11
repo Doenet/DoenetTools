@@ -337,6 +337,12 @@ function substituteAttributeDeprecations(serializedComponents) {
     selectforvariantnames: "selectForVariants",
     numberdecimals: "numDecimals",
     numberdigits: "numDigits",
+    nDimensions: "numDimensions",
+    nInputs: "numInputs",
+    nOutputs: "numOutputs",
+    nIterates: "numIterates",
+    nRows: "numRows",
+    nColumns: "numColumns",
   };
 
   // Note: use lower case
@@ -459,6 +465,7 @@ export const deprecatedPropertySubstitutions = {
   numberOfAttemptsLeft: "numAttemptsLeft",
   nSubmissions: "numSubmissions",
   nSubmittedResponses: "numSubmittedResponses",
+  nAwardsCredited: "numAwardsCredited",
   numberChoices: "numChoices",
   numberMinima: "numMinima",
   numberMaxima: "numMaxima",
@@ -471,6 +478,32 @@ export const deprecatedPropertySubstitutions = {
   maximumNumber: "maxNumber",
   nVertices: "numVertices",
   nPoints: "numPoints",
+  nSignErrorsMatched: "numSignErrorsMatched",
+  nPeriodicSetMatchesRequired: "numPeriodicSetMatchesRequired",
+  nValues: "numValues",
+  nResponses: "numResponses",
+  nControls: "numControls",
+  nThroughPoints: "numThroughPoints",
+  nComponents: "numComponents",
+  nChildrenToRender: "numChildrenToRender",
+  nSelectedIndices: "numSelectedIndices",
+  nDimensions: "numDimensions",
+  nCases: "numCases",
+  nDiscretizationPoints: "numDiscretizationPoints",
+  nXCriticalPoints: "numXCriticalPoints",
+  nYCriticalPoints: "numYCriticalPoints",
+  numCurvatureChangePoints: "numCurvatureChangePoints",
+  nScoredDescendants: "numScoredDescendants",
+  nInputs: "numInputs",
+  nOutputs: "numOutputs",
+  nIterates: "numIterates",
+  nDerivatives: "numDerivatives",
+  nSources: "numSources",
+  nMatches: "numMatches",
+  nRows: "numRows",
+  nColumns: "numColumns",
+  nPages: "numPages",
+  nOffsets: "numOffsets",
 };
 
 const deprecatedPropertySubstitutionsLowerCase = {};
@@ -1343,7 +1376,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
         componentsFromMacro = [newComponent];
 
-        let nComponentsToRemove = 1;
+        let numComponentsToRemove = 1;
         let stringToAddAtEnd = str.substring(firstIndMatched + matchLength);
 
         if (nDollarSigns === 2) {
@@ -1395,9 +1428,9 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
           componentsFromMacro = evaluateResult.componentsFromMacro;
 
-          nComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
+          numComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
           if (!includeFirstInRemaining) {
-            nComponentsToRemove++;
+            numComponentsToRemove++;
           }
 
           // leftover string already included in componentsFromMacro
@@ -1420,7 +1453,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         // splice new replacements into serializedComponents
         serializedComponents.splice(
           componentInd,
-          nComponentsToRemove,
+          numComponentsToRemove,
           ...replacements,
         );
 
@@ -3180,7 +3213,7 @@ export function processAssignNames({
   // console.log(deepClone(serializedComponents));
   // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`)
 
-  let nComponents = serializedComponents.length;
+  let numComponents = serializedComponents.length;
 
   // normalize form so all names are originalNames,
   // independent of whether the components originated from a copy
@@ -3193,7 +3226,7 @@ export function processAssignNames({
 
   if (originalNamesAreConsistent) {
     // need to use a component for original name, as parentName is the new name
-    if (nComponents > 0) {
+    if (numComponents > 0) {
       // find a component with an original name, i.e., not a string
       let component = serializedComponents.filter(
         (x) => typeof x === "object",
@@ -3214,7 +3247,7 @@ export function processAssignNames({
       }
     }
   } else {
-    for (let ind = 0; ind < nComponents; ind++) {
+    for (let ind = 0; ind < numComponents; ind++) {
       let component = serializedComponents[ind];
 
       if (typeof component !== "object") {
@@ -3223,7 +3256,7 @@ export function processAssignNames({
 
       originalNamespace = null;
       // need to use a component for original name, as parentName is the new name
-      if (nComponents > 0 && component.originalName) {
+      if (numComponents > 0 && component.originalName) {
         let lastSlash = component.originalName.lastIndexOf("/");
         originalNamespace = component.originalName.substring(0, lastSlash);
       }
@@ -3243,7 +3276,7 @@ export function processAssignNames({
   // don't name strings or primitive numbers
   let numPrimitives = 0;
 
-  for (let ind = 0; ind < nComponents; ind++) {
+  for (let ind = 0; ind < numComponents; ind++) {
     let indForNames = ind + indOffset;
 
     let component = serializedComponents[ind];
@@ -3265,7 +3298,7 @@ export function processAssignNames({
 
       originalNamespace = null;
       // need to use a component for original name, as parentName is the new name
-      if (nComponents > 0 && component.originalName) {
+      if (numComponents > 0 && component.originalName) {
         let lastSlash = component.originalName.lastIndexOf("/");
         originalNamespace = component.originalName.substring(0, lastSlash);
       }
@@ -3970,18 +4003,18 @@ export function countComponentTypes(serializedComponents) {
   for (let component of serializedComponents) {
     if (typeof component === "object") {
       let cType = component.componentType;
-      let nComponents = 1;
+      let numComponents = 1;
       if (component.attributes?.createComponentOfType?.primitive) {
         cType = component.attributes.createComponentOfType.primitive;
-        nComponents = component.attributes.nComponents?.primitive;
-        if (!(Number.isInteger(nComponents) && nComponents > 0)) {
-          nComponents = 1;
+        numComponents = component.attributes.numComponents?.primitive;
+        if (!(Number.isInteger(numComponents) && numComponents > 0)) {
+          numComponents = 1;
         }
       }
       if (cType in componentTypeCounts) {
-        componentTypeCounts[cType] += nComponents;
+        componentTypeCounts[cType] += numComponents;
       } else {
-        componentTypeCounts[cType] = nComponents;
+        componentTypeCounts[cType] = numComponents;
       }
     }
   }

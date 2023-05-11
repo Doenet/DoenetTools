@@ -18,9 +18,9 @@ export default class Input extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // how many values an input returns
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nValues: 1 } }),
+      definition: () => ({ setValue: { numValues: 1 } }),
     };
 
     stateVariableDefinitions.answerAncestor = {

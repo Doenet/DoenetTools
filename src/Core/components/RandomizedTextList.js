@@ -138,7 +138,7 @@ export default class TextList extends InlineComponent {
       }),
     };
 
-    stateVariableDefinitions.nComponents = {
+    stateVariableDefinitions.numComponents = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -150,7 +150,7 @@ export default class TextList extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nComponents: dependencyValues.texts.length } };
+        return { setValue: { numComponents: dependencyValues.texts.length } };
       },
     };
 

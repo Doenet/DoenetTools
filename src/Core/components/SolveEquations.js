@@ -17,9 +17,9 @@ export default class SolveEquations extends InlineComponent {
       createComponentOfType: "_variableNameList",
     };
 
-    attributes.nDiscretizationPoints = {
+    attributes.numDiscretizationPoints = {
       createComponentOfType: "number",
-      createStateVariable: "nDiscretizationPoints",
+      createStateVariable: "numDiscretizationPoints",
       defaultValue: 100,
       public: true,
     };
@@ -106,9 +106,9 @@ export default class SolveEquations extends InlineComponent {
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
-        // nInputs: {
+        // numInputs: {
         //   dependencyType: "stateVariable",
-        //   variableName: "nInputs",
+        //   variableName: "numInputs",
         // },
       }),
       returnArraySize({ dependencyValues }) {
@@ -168,9 +168,9 @@ export default class SolveEquations extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "maxVar",
         },
-        nDiscretizationPoints: {
+        numDiscretizationPoints: {
           dependencyType: "stateVariable",
-          variableName: "nDiscretizationPoints",
+          variableName: "numDiscretizationPoints",
         },
       }),
       definition({ dependencyValues }) {
@@ -314,7 +314,7 @@ export default class SolveEquations extends InlineComponent {
           let bot = boundaryPoints[ind];
           let top = boundaryPoints[ind + 1];
 
-          let Nsteps = dependencyValues.nDiscretizationPoints;
+          let Nsteps = dependencyValues.numDiscretizationPoints;
           let delta = (top - bot) / Nsteps;
 
           for (let step = 1; step < Nsteps; step++) {

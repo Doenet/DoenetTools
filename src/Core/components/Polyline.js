@@ -174,7 +174,7 @@ export default class Polyline extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -184,20 +184,21 @@ export default class Polyline extends GraphicalComponent {
           vertices: {
             dependencyType: "attributeComponent",
             attributeName: "vertices",
-            variableNames: ["nDimensions"],
+            variableNames: ["numDimensions"],
           },
         };
       },
       definition: function ({ dependencyValues }) {
         if (dependencyValues.vertices !== null) {
-          let nDimensions = dependencyValues.vertices.stateValues.nDimensions;
+          let numDimensions =
+            dependencyValues.vertices.stateValues.numDimensions;
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         } else {
           // polyline through zero vertices
-          return { setValue: { nDimensions: 2 } };
+          return { setValue: { numDimensions: 2 } };
         }
       },
     };
@@ -223,7 +224,7 @@ export default class Polyline extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
@@ -333,13 +334,13 @@ export default class Polyline extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numVertices",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numVertices, dependencyValues.nDimensions];
+        return [dependencyValues.numVertices, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -467,9 +468,9 @@ export default class Polyline extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
@@ -481,7 +482,7 @@ export default class Polyline extends GraphicalComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let nDimensions = dependencyValues.nDimensions;
+        let numDimensions = dependencyValues.numDimensions;
         let numVertices = dependencyValues.numVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
@@ -526,7 +527,7 @@ export default class Polyline extends GraphicalComponent {
               let yscale = scales[1];
 
               // only implemented in 2D for now
-              if (nDimensions !== 2 || numVertices === 0) {
+              if (numDimensions !== 2 || numVertices === 0) {
                 return {};
               }
 

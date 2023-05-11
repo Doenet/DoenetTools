@@ -1988,7 +1988,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2029,7 +2029,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2068,7 +2068,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2108,7 +2108,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2150,7 +2150,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2188,7 +2188,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2229,7 +2229,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2268,7 +2268,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7387,7 +7387,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function nInputs="1">3/(1+e^(-x/2))</function>
+    <function numInputs="1">3/(1+e^(-x/2))</function>
     </graph>
     `,
         },
@@ -7400,7 +7400,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7424,7 +7424,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2">3/(y+e^(-x/2))</function>
+    <function numInputs="2">3/(y+e^(-x/2))</function>
     `,
         },
         "*",
@@ -7436,7 +7436,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7460,7 +7460,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2" variables="q r">3/(r+e^(-q/2))</function>
+    <function numInputs="2" variables="q r">3/(r+e^(-q/2))</function>
     `,
         },
         "*",
@@ -7472,7 +7472,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7490,7 +7490,7 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("function of two variables determined by formula, specify variables, no nInputs specified", () => {
+  it("function of two variables determined by formula, specify variables, no numInputs specified", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -7508,7 +7508,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7532,7 +7532,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="3">z/(y+e^(-x/2))</function>
+    <function numInputs="3">z/(y+e^(-x/2))</function>
     `,
         },
         "*",
@@ -7544,7 +7544,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7580,7 +7580,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7604,7 +7604,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
+    <function numInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
     `,
         },
         "*",
@@ -7616,7 +7616,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7640,7 +7640,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
+    <function numInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
     `,
         },
         "*",
@@ -7652,7 +7652,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7688,8 +7688,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       // let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
       let f1 = createFunctionFromDefinition(
@@ -7738,8 +7738,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7772,13 +7772,13 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("2D vector-valued function of a single variable, specify nOutputs", () => {
+  it("2D vector-valued function of a single variable, specify numOutputs", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <function variables="t" nOutputs="2">(t^2, t^3)</function>
+    <function variables="t" numOutputs="2">(t^2, t^3)</function>
     `,
         },
         "*",
@@ -7790,8 +7790,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7839,8 +7839,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7900,8 +7900,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7949,7 +7949,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2">(x^2y^3, x^3y^2)</function>
+    <function numInputs="2">(x^2y^3, x^3y^2)</function>
     `,
         },
         "*",
@@ -7961,8 +7961,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -8010,8 +8010,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -8071,8 +8071,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -8148,15 +8148,15 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("copy function and overwrite nInputs", () => {
+  it("copy function and overwrite numInputs", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <function name="f1" symbolic>xyz</function>
-    <copy target="f1" nInputs="2" assignNames="f2" />
-    <copy target="f2" nInputs="3" assignNames="f3" />
+    <copy target="f1" numInputs="2" assignNames="f2" />
+    <copy target="f2" numInputs="3" assignNames="f3" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
@@ -8192,9 +8192,9 @@ describe("Function Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/f1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/f2"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f3"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f2"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f3"].stateValues.numInputs).eq(3);
       expect(stateVariables["/f1"].stateValues.variables.map((x) => x)).eqls([
         "x",
       ]);
@@ -8278,12 +8278,12 @@ describe("Function Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/f1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/f2"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f3"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f4"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f5"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/f5a"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/f1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f2"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f3"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f4"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f5"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f5a"].stateValues.numInputs).eq(1);
       expect(stateVariables["/f1"].stateValues.variables.map((x) => x)).eqls([
         "x",
       ]);

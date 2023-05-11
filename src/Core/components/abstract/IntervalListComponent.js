@@ -69,7 +69,7 @@ export default class IntervalListComponent extends BaseComponent {
 
     stateVariableDefinitions.intervals = {
       isArray: true,
-      nDimensions: 1,
+      numDimensions: 1,
       entryPrefixes: ["interval"],
       returnArraySizeDependencies: () => ({
         nIntervals: {

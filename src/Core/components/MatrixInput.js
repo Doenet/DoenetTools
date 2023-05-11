@@ -725,7 +725,7 @@ export class MatrixInput extends Input {
     stateVariableDefinitions.componentValues = {
       isArray: true,
       entryPrefixes: ["componentValue"],
-      nDimensions: 2,
+      numDimensions: 2,
       returnArraySizeDependencies: () => ({
         numRows: {
           dependencyType: "stateVariable",
@@ -859,13 +859,13 @@ export class MatrixInput extends Input {
 
             let operands = originalTree.slice(1);
 
-            let nRowsFound = operands.length;
+            let numRowsFound = operands.length;
 
             let componentValues = {};
 
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
               let minCol = 0;
-              if (rowInd < nRowsFound) {
+              if (rowInd < numRowsFound) {
                 let arrayKey = `${rowInd},${0}`;
                 componentValues[arrayKey] = me.fromAst(operands[rowInd]);
                 minCol = 1;
@@ -1155,7 +1155,7 @@ export class MatrixInput extends Input {
     stateVariableDefinitions.componentImmediateValues = {
       isArray: true,
       entryPrefixes: ["componentImmediateValue"],
-      nDimensions: 2,
+      numDimensions: 2,
       returnArraySizeDependencies: () => ({
         numRows: {
           dependencyType: "stateVariable",
@@ -1289,13 +1289,13 @@ export class MatrixInput extends Input {
 
             let operands = originalTree.slice(1);
 
-            let nRowsFound = operands.length;
+            let numRowsFound = operands.length;
 
             let componentImmediateValues = {};
 
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
               let minCol = 0;
-              if (rowInd < nRowsFound) {
+              if (rowInd < numRowsFound) {
                 let arrayKey = `${rowInd},${0}`;
                 componentImmediateValues[arrayKey] = me.fromAst(
                   operands[rowInd],
@@ -1609,7 +1609,7 @@ export class MatrixInput extends Input {
     stateVariableDefinitions.componentValuesForDisplay = {
       isArray: true,
       entryPrefixes: ["componentValueForDisplay"],
-      nDimensions: 2,
+      numDimensions: 2,
       forRenderer: true,
       returnArraySizeDependencies: () => ({
         numRows: {

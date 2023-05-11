@@ -129,7 +129,7 @@ export default class Parabola extends Curve {
       },
     };
 
-    stateVariableDefinitions.nThroughPoints = {
+    stateVariableDefinitions.numThroughPoints = {
       returnDependencies: () => ({
         throughAttr: {
           dependencyType: "attributeComponent",
@@ -140,12 +140,12 @@ export default class Parabola extends Curve {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr === null) {
           return {
-            setValue: { nThroughPoints: 0 },
+            setValue: { numThroughPoints: 0 },
           };
         } else {
           return {
             setValue: {
-              nThroughPoints:
+              numThroughPoints:
                 dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
@@ -174,7 +174,7 @@ export default class Parabola extends Curve {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
@@ -243,13 +243,13 @@ export default class Parabola extends Curve {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, 2];
+        return [dependencyValues.numThroughPoints, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -350,13 +350,13 @@ export default class Parabola extends Curve {
       isArray: true,
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints];
+        return [dependencyValues.numThroughPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1358,8 +1358,8 @@ export default class Parabola extends Curve {
                   globalDependencyValues.c,
                 ],
                 variables: ["x"],
-                nInputs: 1,
-                nOutputs: 1,
+                numInputs: 1,
+                numOutputs: 1,
                 domain: null,
               },
             ],

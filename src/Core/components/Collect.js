@@ -336,7 +336,7 @@ export default class Collect extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -377,7 +377,7 @@ export default class Collect extends CompositeComponent {
           uniqueIdentifiersUsed,
           componentInfoObjects,
           compositeAttributesObj,
-          nComponentsForSource,
+          numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
           flags,
         });
@@ -413,7 +413,7 @@ export default class Collect extends CompositeComponent {
     uniqueIdentifiersUsed,
     componentInfoObjects,
     compositeAttributesObj,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -451,7 +451,7 @@ export default class Collect extends CompositeComponent {
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
       });
 
@@ -512,7 +512,7 @@ export default class Collect extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -647,7 +647,7 @@ export default class Collect extends CompositeComponent {
           uniqueIdentifiersUsed,
           componentInfoObjects,
           compositeAttributesObj,
-          nComponentsForSource,
+          numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
           flags,
         });
@@ -718,7 +718,7 @@ export default class Collect extends CompositeComponent {
         uniqueIdentifiersUsed,
         componentInfoObjects,
         compositeAttributesObj,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
       });
@@ -810,7 +810,7 @@ export default class Collect extends CompositeComponent {
     components,
     componentInfoObjects,
     compositeAttributesObj,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -822,7 +822,7 @@ export default class Collect extends CompositeComponent {
       uniqueIdentifiersUsed,
       componentInfoObjects,
       compositeAttributesObj,
-      nComponentsForSource,
+      numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
       flags,
     });

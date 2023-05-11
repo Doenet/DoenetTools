@@ -38,15 +38,15 @@ export default class Triangle extends Polygon {
     };
 
     stateVariableDefinitions.vertices.returnArraySizeDependencies = () => ({
-      nDimensions: {
+      numDimensions: {
         dependencyType: "stateVariable",
-        variableName: "nDimensions",
+        variableName: "numDimensions",
       },
     });
     stateVariableDefinitions.vertices.returnArraySize = function ({
       dependencyValues,
     }) {
-      return [3, dependencyValues.nDimensions];
+      return [3, dependencyValues.numDimensions];
     };
 
     stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({

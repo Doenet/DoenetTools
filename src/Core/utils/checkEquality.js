@@ -17,8 +17,8 @@ export default function checkEquality({
   allowedErrorInNumbers = 0,
   includeErrorInNumberExponents = false,
   allowedErrorIsAbsolute = false,
-  nSignErrorsMatched = 0,
-  nPeriodicSetMatchesRequired = 3,
+  numSignErrorsMatched = 0,
+  numPeriodicSetMatchesRequired = 3,
   caseInsensitiveMatch = false,
   matchBlanks = false,
 }) {
@@ -132,7 +132,7 @@ export default function checkEquality({
           expr_b = me.fromAst(b);
         }
 
-        if (nSignErrorsMatched > 0) {
+        if (numSignErrorsMatched > 0) {
           // We have to make a deep copy
           // because equalSpecifiedSignErrors does in-place changes of ast
           // (and then undoes them)
@@ -162,7 +162,7 @@ export default function checkEquality({
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nSignErrorsMatched,
+            n_sign_errors: numSignErrorsMatched,
           });
           return { fraction_equal: equality ? 1 : 0 };
         } else {
@@ -227,7 +227,7 @@ export default function checkEquality({
 
         // }
 
-        if (nSignErrorsMatched > 0) {
+        if (numSignErrorsMatched > 0) {
           // We have to make a deep copy
           // because equalSpecifiedSignErrors does in-place changes of ast
           // (and then undoes them)
@@ -248,7 +248,7 @@ export default function checkEquality({
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nSignErrorsMatched,
+            n_sign_errors: numSignErrorsMatched,
           });
           return { fraction_equal: equality ? 1 : 0 };
         } else {
@@ -305,7 +305,7 @@ export default function checkEquality({
 
       let equality = periodicSetEquality(set1, set2, {
         match_partial: partialMatches,
-        min_elements_match: nPeriodicSetMatchesRequired,
+        min_elements_match: numPeriodicSetMatchesRequired,
       });
 
       if (equality === true) {
@@ -637,8 +637,8 @@ export default function checkEquality({
         expand,
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
-        nSignErrorsMatched,
-        nPeriodicSetMatchesRequired,
+        numSignErrorsMatched,
+        numPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
         matchBlanks,
       });
@@ -686,8 +686,8 @@ export default function checkEquality({
           expand,
           allowedErrorInNumbers,
           allowedErrorIsAbsolute,
-          nSignErrorsMatched,
-          nPeriodicSetMatchesRequired,
+          numSignErrorsMatched,
+          numPeriodicSetMatchesRequired,
           caseInsensitiveMatch,
           matchBlanks,
         });
@@ -733,8 +733,8 @@ export default function checkEquality({
         expand,
         allowedErrorInNumbers,
         allowedErrorIsAbsolute,
-        nSignErrorsMatched,
-        nPeriodicSetMatchesRequired,
+        numSignErrorsMatched,
+        numPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
         matchBlanks,
       });
@@ -791,15 +791,15 @@ function convertMatrixToArrayOfTuples(matrixOperands) {
   // remove any entries not within specified size
   // and pad with \uff3f for any missing entries
 
-  let nRows = matrixOperands[0][1];
+  let numRows = matrixOperands[0][1];
   let nCols = matrixOperands[0][2];
-  if (!(Number.isInteger(nRows) && Number.isInteger(nCols))) {
+  if (!(Number.isInteger(numRows) && Number.isInteger(nCols))) {
     return matrixOperands;
   }
 
   let result = [];
 
-  for (let rowInd = 0; rowInd < nRows; rowInd++) {
+  for (let rowInd = 0; rowInd < numRows; rowInd++) {
     let row = ["tuple"];
     let rowOperands = matrixOperands[1][rowInd + 1] || [];
 

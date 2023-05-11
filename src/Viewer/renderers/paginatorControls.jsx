@@ -23,7 +23,7 @@ export default React.memo(function PaginatorControls(props) {
       >
         {SVs.previousLabel}
       </button>
-      {" " + SVs.pageLabel} {SVs.currentPage} of {SVs.nPages + " "}
+      {" " + SVs.pageLabel} {SVs.currentPage} of {SVs.numPages + " "}
       <button
         id={id + "_next"}
         onClick={() => {
@@ -32,7 +32,7 @@ export default React.memo(function PaginatorControls(props) {
             args: { number: SVs.currentPage + 1 },
           });
         }}
-        disabled={SVs.disabled || !(SVs.currentPage < SVs.nPages)}
+        disabled={SVs.disabled || !(SVs.currentPage < SVs.numPages)}
       >
         {SVs.nextLabel}
       </button>

@@ -290,7 +290,7 @@ export default class Document extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.nScoredDescendants = {
+    stateVariableDefinitions.numScoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "stateVariable",
@@ -300,7 +300,7 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nScoredDescendants: dependencyValues.scoredDescendants.length,
+            numScoredDescendants: dependencyValues.scoredDescendants.length,
           },
         };
       },
@@ -309,13 +309,13 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.itemCreditAchieved = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        nScoredDescendants: {
+        numScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants",
+          variableName: "numScoredDescendants",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nScoredDescendants];
+        return [dependencyValues.numScoredDescendants];
       },
       stateVariablesDeterminingDependencies: ["scoredDescendants"],
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -398,13 +398,13 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.itemVariantInfo = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        nScoredDescendants: {
+        numScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants",
+          variableName: "numScoredDescendants",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nScoredDescendants];
+        return [dependencyValues.numScoredDescendants];
       },
       stateVariablesDeterminingDependencies: ["scoredDescendants"],
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {

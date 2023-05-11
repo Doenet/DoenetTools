@@ -66,15 +66,15 @@ export default class Constraints extends BaseComponent {
       }),
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "parentStateVariable",
-          variableName: "nDimensionsForConstraints",
+          variableName: "numDimensionsForConstraints",
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nDimensions: dependencyValues.nDimensions } };
+        return { setValue: { numDimensions: dependencyValues.numDimensions } };
       },
     };
 
@@ -207,13 +207,13 @@ export default class Constraints extends BaseComponent {
         "arrayVariableForConstraints",
       ],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         // console.log(`return array dependencies of constraintResults`)

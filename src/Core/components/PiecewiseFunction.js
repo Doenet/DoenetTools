@@ -12,8 +12,8 @@ export default class PiecewiseFunction extends Function {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    delete attributes.nInputs;
-    delete attributes.nOutputs;
+    delete attributes.numInputs;
+    delete attributes.numOutputs;
     delete attributes.minima;
     delete attributes.maxima;
     delete attributes.extrema;
@@ -47,18 +47,18 @@ export default class PiecewiseFunction extends Function {
 
     delete stateVariableDefinitions.isInterpolatedFunction;
 
-    stateVariableDefinitions.nInputs = {
+    stateVariableDefinitions.numInputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
       },
       returnDependencies: () => ({}),
       definition() {
-        return { setValue: { nInputs: 1 } };
+        return { setValue: { numInputs: 1 } };
       },
     };
 
-    stateVariableDefinitions.nOutputs = {
+    stateVariableDefinitions.numOutputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -67,19 +67,19 @@ export default class PiecewiseFunction extends Function {
         functionChildren: {
           dependencyType: "child",
           childGroups: ["functions"],
-          variableNames: ["nOutputs"],
+          variableNames: ["numOutputs"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.functionChildren.length > 0) {
           return {
             setValue: {
-              nOutputs:
-                dependencyValues.functionChildren[0].stateValues.nOutputs,
+              numOutputs:
+                dependencyValues.functionChildren[0].stateValues.numOutputs,
             },
           };
         } else {
-          return { setValue: { nOutputs: 1 } };
+          return { setValue: { numOutputs: 1 } };
         }
       },
     };
@@ -255,13 +255,13 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["symbolicf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey() {
         return {};
@@ -281,13 +281,13 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["numericalf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -385,13 +385,13 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["fDefinition"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey({ stateValues }) {
         return {

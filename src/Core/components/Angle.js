@@ -183,7 +183,7 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       stateVariablesDeterminingDependencies: ["betweenLinesName"],
       returnArraySizeDependencies: () => ({}),
@@ -267,7 +267,7 @@ export default class Angle extends GraphicalComponent {
             childGroups: ["lines"],
             variableNames: [
               "points",
-              "nDimensions",
+              "numDimensions",
               "coeff0",
               "coeffvar1",
               "coeffvar2",
@@ -294,7 +294,7 @@ export default class Angle extends GraphicalComponent {
             return { setValue: { points } };
           } else if (globalDependencyValues.lineChildren.length === 1) {
             let line1 = globalDependencyValues.lineChildren[0];
-            if (line1.stateValues.nDimensions !== 2) {
+            if (line1.stateValues.numDimensions !== 2) {
               let points = {};
               for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 2; j++) {
@@ -750,8 +750,8 @@ export default class Angle extends GraphicalComponent {
 
 function calculateLineIntersection(line1, line2) {
   if (
-    line1.stateValues.nDimensions !== 2 ||
-    line2.stateValues.nDimensions !== 2
+    line1.stateValues.numDimensions !== 2 ||
+    line2.stateValues.numDimensions !== 2
   ) {
     console.log("Calculating angle between two lines implemented only in 2D");
     return;

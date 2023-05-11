@@ -575,7 +575,7 @@ export default class Rectangle extends Polygon {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {

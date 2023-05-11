@@ -10,7 +10,7 @@ export default function createStateProxyHandler() {
             result.value,
             createArrayProxyHandler({
               variable: prop,
-              nDimensions: result.nDimensions,
+              numDimensions: result.numDimensions,
             }),
           );
         } else {
@@ -31,10 +31,14 @@ export default function createStateProxyHandler() {
   };
 }
 
-function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
+function createArrayProxyHandler({
+  variable,
+  numDimensions,
+  indicesSoFar = [],
+}) {
   return {
     variable: variable,
-    nDimensions: nDimensions,
+    numDimensions: numDimensions,
     indicesSoFar: indicesSoFar,
     get: function (obj, index) {
       if (index === "then" && obj instanceof Promise) {
@@ -52,7 +56,7 @@ function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
                     x,
                     createArrayProxyHandler({
                       variable: this.variable,
-                      nDimensions: this.nDimensions,
+                      numDimensions: this.numDimensions,
                       indicesSoFar: this.indicesSoFar,
                     }),
                   )
@@ -62,12 +66,12 @@ function createArrayProxyHandler({ variable, nDimensions, indicesSoFar = [] }) {
       }
 
       let result = obj[index];
-      if (result !== null && typeof result === "object" && nDimensions > 1) {
+      if (result !== null && typeof result === "object" && numDimensions > 1) {
         result = new Proxy(
           result,
           createArrayProxyHandler({
             variable: this.variable,
-            nDimensions: this.nDimensions - 1,
+            numDimensions: this.numDimensions - 1,
             indicesSoFar: [...this.indicesSoFar, index],
           }),
         );

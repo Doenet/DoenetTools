@@ -2174,7 +2174,7 @@ describe("Specifying unique variant tests", function () {
 
     <choiceinput name="ci" shuffleOrder>
       <choice copySource="red" />
-      <copy source="twoChoices" createComponentOfType="choice" nComponents="2" />
+      <copy source="twoChoices" createComponentOfType="choice" numComponents="2" />
     </choiceinput>
     <p>Selected value: <copy prop='selectedvalue' target="ci" assignNames="selectedValue" /></p>
 
@@ -2749,7 +2749,7 @@ describe("Specifying unique variant tests", function () {
     </group>
     <p name="pList"><aslist><shuffle name="sh">
       <text copySource="red" />
-      <copy source="twoColors" createComponentOfType="text" nComponents="2" />
+      <copy source="twoColors" createComponentOfType="text" numComponents="2" />
     </shuffle></aslist></p>
     <p><booleanInput name="bi" /><boolean name="b" copySource="bi" /></p>
 

@@ -1539,7 +1539,7 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><aslist>
-      <function name="f1" nInputs="3">sin(x+y^2)z</function>
+      <function name="f1" numInputs="3">sin(x+y^2)z</function>
       <function name="f2" variables="z y x">sin(x+y^2)z</function>
       <function name="f3" variables="x y">sin(x+y^2)z</function>
       <function name="f4" variables="x_1 x_2 x_3">sin(x_1+x_2^2)x_3</function>

@@ -273,9 +273,9 @@ export default class Polygon extends Polyline {
     // segement between first and last vertex
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
@@ -287,7 +287,7 @@ export default class Polygon extends Polyline {
         },
       }),
       definition({ dependencyValues }) {
-        let nDimensions = dependencyValues.nDimensions;
+        let numDimensions = dependencyValues.numDimensions;
         let numVertices = dependencyValues.numVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
@@ -332,7 +332,7 @@ export default class Polygon extends Polyline {
               let yscale = scales[1];
 
               // only implemented in 2D for now
-              if (nDimensions !== 2 || numVertices === 0) {
+              if (numDimensions !== 2 || numVertices === 0) {
                 return {};
               }
 

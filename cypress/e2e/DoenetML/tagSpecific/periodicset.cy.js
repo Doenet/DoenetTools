@@ -43,7 +43,7 @@ describe("PeriodicSet Tag Tests", function () {
       s2.push(["tuple", ["/", "pi", 4], "pi", -Infinity, Infinity]);
       s2.push(["tuple", ["/", ["*", 3, "pi"], 4], "pi", -Infinity, Infinity]);
       expect(stateVariables["/s2"].stateValues.value).eqls(s2);
-      expect(stateVariables["/s2"].stateValues.nOffsets).eq(2);
+      expect(stateVariables["/s2"].stateValues.numOffsets).eq(2);
       expect(stateVariables["/s2"].stateValues.offsets[0]).eqls(["/", "pi", 4]);
       expect(stateVariables["/s2"].stateValues.offsets[1]).eqls([
         "/",
@@ -89,7 +89,7 @@ describe("PeriodicSet Tag Tests", function () {
         Infinity,
       ]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -116,7 +116,7 @@ describe("PeriodicSet Tag Tests", function () {
       let s1 = ["periodic_set"];
       s1.push(["tuple", ["-", ["/", "pi", 4]], 1, -Infinity, Infinity]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -143,7 +143,7 @@ describe("PeriodicSet Tag Tests", function () {
       let s1 = ["periodic_set"];
       s1.push(["tuple", ["-", ["/", "pi", 4]], "pi", -Infinity, Infinity]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -170,7 +170,7 @@ describe("PeriodicSet Tag Tests", function () {
       s1.push(["tuple", ["-", ["/", "pi", 4]], "pi", -Infinity, Infinity]);
       s1.push(["tuple", ["/", ["*", 5, "pi"], 4], "pi", -Infinity, Infinity]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(2);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(2);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -203,7 +203,7 @@ describe("PeriodicSet Tag Tests", function () {
       s1.push(["tuple", ["/", ["*", 5, "pi"], 4], "pi", -Infinity, Infinity]);
       s1.push(["tuple", ["/", "pi", 4], "pi", -Infinity, Infinity]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(3);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(3);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -238,7 +238,7 @@ describe("PeriodicSet Tag Tests", function () {
       s1.push(["tuple", ["/", "pi", 4], "pi", -Infinity, Infinity]);
       s1.push(["tuple", ["/", "pi", 2], "pi", -Infinity, Infinity]);
       expect(stateVariables["/s1"].stateValues.value).eqls(s1);
-      expect(stateVariables["/s1"].stateValues.nOffsets).eq(4);
+      expect(stateVariables["/s1"].stateValues.numOffsets).eq(4);
       expect(stateVariables["/s1"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -383,7 +383,7 @@ describe("PeriodicSet Tag Tests", function () {
         Infinity,
       ]);
       expect(stateVariables["/a"].stateValues.value).eqls(a);
-      expect(stateVariables["/a"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/a"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/a"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -396,7 +396,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(a);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(1);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
@@ -420,7 +420,7 @@ describe("PeriodicSet Tag Tests", function () {
         Infinity,
       ]);
       expect(stateVariables["/b"].stateValues.value).eqls(b);
-      expect(stateVariables["/b"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/b"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/b"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -433,7 +433,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(b);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(1);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
@@ -478,7 +478,7 @@ describe("PeriodicSet Tag Tests", function () {
         Infinity,
       ]);
       expect(stateVariables["/a"].stateValues.value).eqls(a);
-      expect(stateVariables["/a"].stateValues.nOffsets).eq(1);
+      expect(stateVariables["/a"].stateValues.numOffsets).eq(1);
       expect(stateVariables["/a"].stateValues.offsets[0]).eqls([
         "-",
         ["/", "pi", 4],
@@ -491,7 +491,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(a);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(1);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
@@ -518,7 +518,7 @@ describe("PeriodicSet Tag Tests", function () {
       b.push(["tuple", offset2, ["*", 2, "pi"], -Infinity, Infinity]);
       b.push(["tuple", offset3, ["*", 2, "pi"], -Infinity, Infinity]);
       expect(stateVariables["/b"].stateValues.value).eqls(b);
-      expect(stateVariables["/b"].stateValues.nOffsets).eq(4);
+      expect(stateVariables["/b"].stateValues.numOffsets).eq(4);
       expect(stateVariables["/b"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/b"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/b"].stateValues.offsets[2]).eqls(offset2);
@@ -531,7 +531,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(b);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(4);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
@@ -585,7 +585,7 @@ describe("PeriodicSet Tag Tests", function () {
       a.push(["tuple", offset0, ["/", "pi", 2], -Infinity, Infinity]);
       a.push(["tuple", offset1, ["/", "pi", 2], -Infinity, Infinity]);
       expect(stateVariables["/a"].stateValues.value).eqls(a);
-      expect(stateVariables["/a"].stateValues.nOffsets).eq(2);
+      expect(stateVariables["/a"].stateValues.numOffsets).eq(2);
       expect(stateVariables["/a"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/a"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/a"].stateValues.period).eqls(["/", "pi", 2]);
@@ -596,7 +596,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(a);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(2);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
@@ -627,7 +627,7 @@ describe("PeriodicSet Tag Tests", function () {
       b.push(["tuple", offset2, ["*", 2, "pi"], -Infinity, Infinity]);
       b.push(["tuple", offset3, ["*", 2, "pi"], -Infinity, Infinity]);
       expect(stateVariables["/b"].stateValues.value).eqls(b);
-      expect(stateVariables["/b"].stateValues.nOffsets).eq(4);
+      expect(stateVariables["/b"].stateValues.numOffsets).eq(4);
       expect(stateVariables["/b"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/b"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/b"].stateValues.offsets[2]).eqls(offset2);
@@ -640,7 +640,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(b);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(4);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
@@ -695,7 +695,7 @@ describe("PeriodicSet Tag Tests", function () {
       a.push(["tuple", offset0, ["/", "pi", 2], -Infinity, Infinity]);
       a.push(["tuple", offset1, ["/", "pi", 2], -Infinity, Infinity]);
       expect(stateVariables["/a"].stateValues.value).eqls(a);
-      expect(stateVariables["/a"].stateValues.nOffsets).eq(2);
+      expect(stateVariables["/a"].stateValues.numOffsets).eq(2);
       expect(stateVariables["/a"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/a"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/a"].stateValues.period).eqls(["/", "pi", 2]);
@@ -706,7 +706,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(a);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(2);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
@@ -737,7 +737,7 @@ describe("PeriodicSet Tag Tests", function () {
       b.push(["tuple", offset2, "pi", -Infinity, Infinity]);
       b.push(["tuple", offset3, "pi", -Infinity, Infinity]);
       expect(stateVariables["/b"].stateValues.value).eqls(b);
-      expect(stateVariables["/b"].stateValues.nOffsets).eq(4);
+      expect(stateVariables["/b"].stateValues.numOffsets).eq(4);
       expect(stateVariables["/b"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/b"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/b"].stateValues.offsets[2]).eqls(offset2);
@@ -750,7 +750,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(b);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(4);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
@@ -804,7 +804,7 @@ describe("PeriodicSet Tag Tests", function () {
       a.push(["tuple", offset0, ["/", "pi", 2], -Infinity, Infinity]);
       a.push(["tuple", offset1, ["/", "pi", 2], -Infinity, Infinity]);
       expect(stateVariables["/a"].stateValues.value).eqls(a);
-      expect(stateVariables["/a"].stateValues.nOffsets).eq(2);
+      expect(stateVariables["/a"].stateValues.numOffsets).eq(2);
       expect(stateVariables["/a"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/a"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/a"].stateValues.period).eqls(["/", "pi", 2]);
@@ -815,7 +815,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(a);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(2);
       expect(
         stateVariables[stateVariables["/a2"].replacements[0].componentName]
@@ -848,7 +848,7 @@ describe("PeriodicSet Tag Tests", function () {
       b.push(["tuple", offset3, "pi", -Infinity, Infinity]);
       b.push(["tuple", offset4, "pi", -Infinity, Infinity]);
       expect(stateVariables["/b"].stateValues.value).eqls(b);
-      expect(stateVariables["/b"].stateValues.nOffsets).eq(5);
+      expect(stateVariables["/b"].stateValues.numOffsets).eq(5);
       expect(stateVariables["/b"].stateValues.offsets[0]).eqls(offset0);
       expect(stateVariables["/b"].stateValues.offsets[1]).eqls(offset1);
       expect(stateVariables["/b"].stateValues.offsets[2]).eqls(offset2);
@@ -862,7 +862,7 @@ describe("PeriodicSet Tag Tests", function () {
       ).eqls(b);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
-          .stateValues.nOffsets,
+          .stateValues.numOffsets,
       ).eq(5);
       expect(
         stateVariables[stateVariables["/b2"].replacements[0].componentName]
@@ -904,7 +904,7 @@ describe("PeriodicSet Tag Tests", function () {
           doenetML: `
     <setup>
       <mathlist name="correct_offsets" mergemathlists="true">30,150</mathlist>
-      <copy prop="nComponents" target="correct_offsets" assignNames="n_correct_offsets" />
+      <copy prop="numComponents" target="correct_offsets" assignNames="n_correct_offsets" />
       <math name="correct_period">180</math>
       <periodicSet name="correct"  offsets="$correct_offsets" period="$correct_period" />
     </setup>

@@ -54,15 +54,15 @@ export default class EigenDecomposition extends BaseComponent {
           return { setValue: { decomposition: null } };
         }
 
-        let nRows = mathTree[1][1];
+        let numRows = mathTree[1][1];
         let nCols = mathTree[1][2];
-        if (!(Number.isInteger(nRows) && nCols === nRows)) {
+        if (!(Number.isInteger(numRows) && nCols === numRows)) {
           return { setValue: { decomposition: null } };
         }
 
         let matrixArray = [];
 
-        for (let rowInd = 0; rowInd < nRows; rowInd++) {
+        for (let rowInd = 0; rowInd < numRows; rowInd++) {
           let row = [];
           let rowOperands = mathTree[2][rowInd + 1] || [];
 
@@ -156,7 +156,7 @@ export default class EigenDecomposition extends BaseComponent {
     stateVariableDefinitions.eigenvectors = {
       isArray: true,
       public: true,
-      nDimensions: 2,
+      numDimensions: 2,
       shadowingInstructions: {
         createComponentOfType: "number",
         addAttributeComponentsShadowingStateVariables:

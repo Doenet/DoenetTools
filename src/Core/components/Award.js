@@ -89,19 +89,19 @@ export default class Award extends BaseComponent {
       public: true,
       fallBackToParentStateVariable: "allowedErrorIsAbsolute",
     };
-    attributes.nSignErrorsMatched = {
+    attributes.numSignErrorsMatched = {
       createComponentOfType: "number",
-      createStateVariable: "nSignErrorsMatched",
+      createStateVariable: "numSignErrorsMatched",
       defaultValue: 0,
       public: true,
-      fallBackToParentStateVariable: "nSignErrorsMatched",
+      fallBackToParentStateVariable: "numSignErrorsMatched",
     };
-    attributes.nPeriodicSetMatchesRequired = {
+    attributes.numPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
-      createStateVariable: "nPeriodicSetMatchesRequired",
+      createStateVariable: "numPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
-      fallBackToParentStateVariable: "nPeriodicSetMatchesRequired",
+      fallBackToParentStateVariable: "numPeriodicSetMatchesRequired",
     };
     attributes.caseInsensitiveMatch = {
       createComponentOfType: "boolean",
@@ -218,13 +218,13 @@ export default class Award extends BaseComponent {
       ) {
         matchedChildren = matchedChildren.slice(1);
       }
-      let nChildren = matchedChildren.length;
+      let numChildren = matchedChildren.length;
       while (
-        typeof matchedChildren[nChildren - 1] === "string" &&
-        matchedChildren[nChildren - 1].trim() === ""
+        typeof matchedChildren[numChildren - 1] === "string" &&
+        matchedChildren[numChildren - 1].trim() === ""
       ) {
-        matchedChildren = matchedChildren.slice(0, nChildren - 1);
-        nChildren = matchedChildren.length;
+        matchedChildren = matchedChildren.slice(0, numChildren - 1);
+        numChildren = matchedChildren.length;
       }
 
       if (
@@ -504,13 +504,13 @@ export default class Award extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "allowedErrorIsAbsolute",
         },
-        nSignErrorsMatched: {
+        numSignErrorsMatched: {
           dependencyType: "stateVariable",
-          variableName: "nSignErrorsMatched",
+          variableName: "numSignErrorsMatched",
         },
-        nPeriodicSetMatchesRequired: {
+        numPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
-          variableName: "nPeriodicSetMatchesRequired",
+          variableName: "numPeriodicSetMatchesRequired",
         },
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",

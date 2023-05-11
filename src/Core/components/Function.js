@@ -58,10 +58,10 @@ export default class Function extends InlineComponent {
       defaultValue: 1,
       public: true,
     };
-    attributes.nInputs = {
+    attributes.numInputs = {
       createComponentOfType: "integer",
     };
-    attributes.nOutputs = {
+    attributes.numOutputs = {
       createComponentOfType: "integer",
     };
     attributes.domain = {
@@ -347,26 +347,26 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nInputs = {
+    stateVariableDefinitions.numInputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
       },
       returnDependencies: () => ({
-        nInputsAttr: {
+        numInputsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nInputs",
+          attributeName: "numInputs",
           variableNames: ["value"],
         },
         functionChild: {
           dependencyType: "child",
           childGroups: ["functions"],
-          variableNames: ["nInputs"],
+          variableNames: ["numInputs"],
         },
         variablesAttr: {
           dependencyType: "attributeComponent",
           attributeName: "variables",
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
           dontRecurseToShadowsIfHaveAttribute: "variable",
         },
         isInterpolatedFunction: {
@@ -376,35 +376,36 @@ export default class Function extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.isInterpolatedFunction) {
-          return { setValue: { nInputs: 1 } };
-        } else if (dependencyValues.nInputsAttr !== null) {
-          let nInputs = dependencyValues.nInputsAttr.stateValues.value;
-          if (!(nInputs >= 0)) {
-            nInputs = 1;
+          return { setValue: { numInputs: 1 } };
+        } else if (dependencyValues.numInputsAttr !== null) {
+          let numInputs = dependencyValues.numInputsAttr.stateValues.value;
+          if (!(numInputs >= 0)) {
+            numInputs = 1;
           }
-          return { setValue: { nInputs } };
+          return { setValue: { numInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
           return {
             setValue: {
-              nInputs: Math.max(
+              numInputs: Math.max(
                 1,
-                dependencyValues.variablesAttr.stateValues.nComponents,
+                dependencyValues.variablesAttr.stateValues.numComponents,
               ),
             },
           };
         } else if (dependencyValues.functionChild.length > 0) {
           return {
             setValue: {
-              nInputs: dependencyValues.functionChild[0].stateValues.nInputs,
+              numInputs:
+                dependencyValues.functionChild[0].stateValues.numInputs,
             },
           };
         } else {
-          return { setValue: { nInputs: 1 } };
+          return { setValue: { numInputs: 1 } };
         }
       },
     };
 
-    stateVariableDefinitions.nOutputs = {
+    stateVariableDefinitions.numOutputs = {
       defaultValue: 1,
       hasEssential: true,
       public: true,
@@ -412,15 +413,15 @@ export default class Function extends InlineComponent {
         createComponentOfType: "integer",
       },
       returnDependencies: () => ({
-        nOutputsAttr: {
+        numOutputsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nOutputs",
+          attributeName: "numOutputs",
           variableNames: ["value"],
         },
         functionChild: {
           dependencyType: "child",
           childGroups: ["functions"],
-          variableNames: ["nOutputs"],
+          variableNames: ["numOutputs"],
         },
         mathChild: {
           dependencyType: "child",
@@ -432,28 +433,29 @@ export default class Function extends InlineComponent {
         if (dependencyValues.functionChild.length > 0) {
           return {
             setValue: {
-              nOutputs: dependencyValues.functionChild[0].stateValues.nOutputs,
+              numOutputs:
+                dependencyValues.functionChild[0].stateValues.numOutputs,
             },
           };
-        } else if (dependencyValues.nOutputsAttr !== null) {
-          let nOutputs = dependencyValues.nOutputsAttr.stateValues.value;
-          if (!(nOutputs >= 0)) {
-            nOutputs = 1;
+        } else if (dependencyValues.numOutputsAttr !== null) {
+          let numOutputs = dependencyValues.numOutputsAttr.stateValues.value;
+          if (!(numOutputs >= 0)) {
+            numOutputs = 1;
           }
-          return { setValue: { nOutputs } };
+          return { setValue: { numOutputs } };
         } else if (dependencyValues.mathChild.length > 0) {
           let formula = dependencyValues.mathChild[0].stateValues.value;
           let formulaIsVectorValued =
             Array.isArray(formula.tree) &&
             vectorOperators.includes(formula.tree[0]);
 
-          let nOutputs = 1;
+          let numOutputs = 1;
           if (formulaIsVectorValued) {
-            nOutputs = formula.tree.length - 1;
+            numOutputs = formula.tree.length - 1;
           }
-          return { setValue: { nOutputs } };
+          return { setValue: { numOutputs } };
         } else {
-          return { useEssentialOrDefaultValue: { nOutputs: true } };
+          return { useEssentialOrDefaultValue: { numOutputs: true } };
         }
       },
     };
@@ -470,19 +472,19 @@ export default class Function extends InlineComponent {
           childGroups: ["functions"],
           variableNames: ["domain"],
         },
-        nInputs: {
+        numInputs: {
           dependencyType: "stateVariable",
-          variableName: "nInputs",
+          variableName: "numInputs",
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.domainAttr !== null) {
-          let nInputs = dependencyValues.nInputs;
+          let numInputs = dependencyValues.numInputs;
           let domain = dependencyValues.domainAttr.stateValues.intervals.slice(
             0,
-            nInputs,
+            numInputs,
           );
-          if (domain.length !== nInputs) {
+          if (domain.length !== numInputs) {
             return { setValue: { domain: null } };
           }
 
@@ -716,13 +718,13 @@ export default class Function extends InlineComponent {
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
-        nInputs: {
+        numInputs: {
           dependencyType: "stateVariable",
-          variableName: "nInputs",
+          variableName: "numInputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nInputs];
+        return [dependencyValues.numInputs];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
@@ -1128,13 +1130,13 @@ export default class Function extends InlineComponent {
         "mathChildCreatedBySugar",
       ],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -1172,9 +1174,9 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "variables",
             },
-            nInputs: {
+            numInputs: {
               dependencyType: "stateVariable",
-              variableName: "nInputs",
+              variableName: "numInputs",
             },
             functionChild: {
               dependencyType: "child",
@@ -1363,7 +1365,7 @@ export default class Function extends InlineComponent {
                     evaluateChildrenToReevaluate,
                     simplify: globalDependencyValues.simplify,
                     expand: globalDependencyValues.expand,
-                    nInputs: globalDependencyValues.nInputs,
+                    numInputs: globalDependencyValues.numInputs,
                     variables: globalDependencyValues.variables,
                     domain: globalDependencyValues.domain,
                     component: arrayKey,
@@ -1418,7 +1420,7 @@ export default class Function extends InlineComponent {
                     evaluateChildrenToReevaluate,
                     simplify: globalDependencyValues.simplify,
                     expand: globalDependencyValues.expand,
-                    nInputs: globalDependencyValues.nInputs,
+                    numInputs: globalDependencyValues.numInputs,
                     variables: globalDependencyValues.variables,
                     domain: globalDependencyValues.domain,
                     component: arrayKey,
@@ -1436,7 +1438,7 @@ export default class Function extends InlineComponent {
               formula: globalDependencyValues.formula,
               simplify: globalDependencyValues.simplify,
               expand: globalDependencyValues.expand,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -1481,7 +1483,7 @@ export default class Function extends InlineComponent {
               formula: globalDependencyValues.formula,
               simplify: globalDependencyValues.simplify,
               expand: globalDependencyValues.expand,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -1508,13 +1510,13 @@ export default class Function extends InlineComponent {
         "mathChildCreatedBySugar",
       ],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -1552,9 +1554,9 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "variables",
             },
-            nInputs: {
+            numInputs: {
               dependencyType: "stateVariable",
-              variableName: "nInputs",
+              variableName: "numInputs",
             },
             functionChild: {
               dependencyType: "child",
@@ -1729,7 +1731,7 @@ export default class Function extends InlineComponent {
                   returnNumericalFunctionFromReevaluatedFormula({
                     formulaExpressionWithCodes,
                     evaluateChildrenToReevaluate,
-                    nInputs: globalDependencyValues.nInputs,
+                    numInputs: globalDependencyValues.numInputs,
                     variables: globalDependencyValues.variables,
                     domain: globalDependencyValues.domain,
                     component: arrayKey,
@@ -1782,7 +1784,7 @@ export default class Function extends InlineComponent {
                   returnNumericalFunctionFromReevaluatedFormula({
                     formulaExpressionWithCodes,
                     evaluateChildrenToReevaluate,
-                    nInputs: globalDependencyValues.nInputs,
+                    numInputs: globalDependencyValues.numInputs,
                     variables: globalDependencyValues.variables,
                     domain: globalDependencyValues.domain,
                     component: arrayKey,
@@ -1798,7 +1800,7 @@ export default class Function extends InlineComponent {
           for (let arrayKey of arrayKeys) {
             numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
               formula: globalDependencyValues.formula,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -1841,7 +1843,7 @@ export default class Function extends InlineComponent {
           for (let arrayKey of arrayKeys) {
             numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
               formula: globalDependencyValues.formula,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -1877,13 +1879,13 @@ export default class Function extends InlineComponent {
         "mathChildCreatedBySugar",
       ],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -1921,9 +1923,9 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "variables",
             },
-            nInputs: {
+            numInputs: {
               dependencyType: "stateVariable",
-              variableName: "nInputs",
+              variableName: "numInputs",
             },
             functionChild: {
               dependencyType: "child",
@@ -2102,7 +2104,7 @@ export default class Function extends InlineComponent {
                   functionType: "reevaluatedFormula",
                   formulaExpressionWithCodes,
                   evaluateChildrenToReevaluate,
-                  nInputs: globalDependencyValues.nInputs,
+                  numInputs: globalDependencyValues.numInputs,
                   variables: globalDependencyValues.variables.map(
                     (x) => x.tree,
                   ),
@@ -2160,7 +2162,7 @@ export default class Function extends InlineComponent {
                   functionType: "reevaluatedFormula",
                   formulaExpressionWithCodes,
                   evaluateChildrenToReevaluate,
-                  nInputs: globalDependencyValues.nInputs,
+                  numInputs: globalDependencyValues.numInputs,
                   variables: globalDependencyValues.variables.map(
                     (x) => x.tree,
                   ),
@@ -2182,8 +2184,8 @@ export default class Function extends InlineComponent {
               functionType: "formula",
               formula: globalDependencyValues.formula.tree,
               variables: globalDependencyValues.variables.map((x) => x.tree),
-              nInputs: globalDependencyValues.nInputs,
-              nOutputs: globalDependencyValues.nOutputs,
+              numInputs: globalDependencyValues.numInputs,
+              numOutputs: globalDependencyValues.numOutputs,
               domain: globalDependencyValues.domain
                 ? globalDependencyValues.domain.map((x) => x.tree)
                 : null,
@@ -2218,8 +2220,8 @@ export default class Function extends InlineComponent {
               functionType: "formula",
               formula: globalDependencyValues.formula.tree,
               variables: globalDependencyValues.variables.map((x) => x.tree),
-              nInputs: globalDependencyValues.nInputs,
-              nOutputs: globalDependencyValues.nOutputs,
+              numInputs: globalDependencyValues.numInputs,
+              numOutputs: globalDependencyValues.numOutputs,
               domain: globalDependencyValues.domain
                 ? globalDependencyValues.domain.map((x) => x.tree)
                 : null,
@@ -2242,13 +2244,13 @@ export default class Function extends InlineComponent {
       isArray: true,
       entryPrefixes: ["f"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
@@ -2408,13 +2410,13 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction",
             },
-            nInputs: {
+            numInputs: {
               dependencyType: "stateVariable",
-              variableName: "nInputs",
+              variableName: "numInputs",
             },
-            nOutputs: {
+            numOutputs: {
               dependencyType: "stateVariable",
-              variableName: "nOutputs",
+              variableName: "numOutputs",
             },
             domain: {
               dependencyType: "stateVariable",
@@ -2726,7 +2728,10 @@ export default class Function extends InlineComponent {
 
           // calculate only for functions from R -> R
           if (
-            !(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)
+            !(
+              dependencyValues.numInputs === 1 &&
+              dependencyValues.numOutputs === 1
+            )
           ) {
             return {
               setValue: {
@@ -2935,7 +2940,7 @@ export default class Function extends InlineComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: [
         "minimum",
         "minimumLocations",
@@ -3134,13 +3139,13 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction",
             },
-            nInputs: {
+            numInputs: {
               dependencyType: "stateVariable",
-              variableName: "nInputs",
+              variableName: "numInputs",
             },
-            nOutputs: {
+            numOutputs: {
               dependencyType: "stateVariable",
-              variableName: "nOutputs",
+              variableName: "numOutputs",
             },
             domain: {
               dependencyType: "stateVariable",
@@ -3452,7 +3457,10 @@ export default class Function extends InlineComponent {
 
           // calculate only for functions from R -> R
           if (
-            !(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)
+            !(
+              dependencyValues.numInputs === 1 &&
+              dependencyValues.numOutputs === 1
+            )
           ) {
             return {
               setValue: {
@@ -3667,7 +3675,7 @@ export default class Function extends InlineComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: [
         "maximum",
         "maximumLocations",
@@ -3887,7 +3895,7 @@ export default class Function extends InlineComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: [
         "extremum",
         "extremumLocations",

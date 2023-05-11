@@ -737,7 +737,7 @@ export default class Choiceinput extends Input {
       },
     };
 
-    stateVariableDefinitions.nSelectedIndices = {
+    stateVariableDefinitions.numSelectedIndices = {
       returnDependencies: () => ({
         allSelectedIndices: {
           dependencyType: "stateVariable",
@@ -747,7 +747,7 @@ export default class Choiceinput extends Input {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nSelectedIndices: dependencyValues.allSelectedIndices.length,
+            numSelectedIndices: dependencyValues.allSelectedIndices.length,
           },
         };
       },
@@ -762,13 +762,13 @@ export default class Choiceinput extends Input {
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nSelectedIndices: {
+        numSelectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "nSelectedIndices",
+          variableName: "numSelectedIndices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSelectedIndices];
+        return [dependencyValues.numSelectedIndices];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -802,13 +802,13 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["selectedValue"],
       returnArraySizeDependencies: () => ({
-        nSelectedIndices: {
+        numSelectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "nSelectedIndices",
+          variableName: "numSelectedIndices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSelectedIndices];
+        return [dependencyValues.numSelectedIndices];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -867,9 +867,9 @@ export default class Choiceinput extends Input {
       targetVariableName: "selectedValues",
     };
 
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       isAlias: true,
-      targetVariableName: "nSelectedIndices",
+      targetVariableName: "numSelectedIndices",
     };
 
     stateVariableDefinitions.childIndicesSelected = {
@@ -1223,8 +1223,8 @@ export default class Choiceinput extends Input {
           }) &&
           child.attributes.createComponentOfType?.primitive === "choice"
         ) {
-          if (child.attributes.nComponents?.primitive !== undefined) {
-            let newChoices = Number(child.attributes.nComponents?.primitive);
+          if (child.attributes.numComponents?.primitive !== undefined) {
+            let newChoices = Number(child.attributes.numComponents?.primitive);
             if (Number.isInteger(newChoices) && newChoices >= 0) {
               numChoices += newChoices;
             } else {

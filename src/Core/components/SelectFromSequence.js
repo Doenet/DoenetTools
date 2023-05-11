@@ -749,15 +749,15 @@ function makeSelection({ dependencyValues }) {
     // account for fact that an excluded combination with a NaN is a wildcard
     // this could be an overestimate, as different combinations could match the same value
     numberCombinationsExcluded = 0;
-    let nValues = dependencyValues.length - dependencyValues.exclude.length;
+    let numValues = dependencyValues.length - dependencyValues.exclude.length;
     for (let comb of dependencyValues.excludedCombinations) {
       let numNans = comb.reduce((a, c) => a + (Number.isNaN(c) ? 1 : 0), 0);
 
       if (numNans > 0) {
         if (dependencyValues.withReplacement) {
-          numberCombinationsExcluded += Math.pow(nValues, numNans);
+          numberCombinationsExcluded += Math.pow(numValues, numNans);
         } else {
-          let n = nValues - dependencyValues.numToSelect + numNans;
+          let n = numValues - dependencyValues.numToSelect + numNans;
           let nExcl = n;
           for (let i = 1; i < numNans; i++) {
             nExcl *= n - i;
@@ -1145,7 +1145,7 @@ function mergeContainingCombinations(combinations) {
 
 function estimateNumberOfDuplicateCombinations(
   combinations,
-  nValues,
+  numValues,
   withReplacement,
 ) {
   // if have wildcards, get better estimate of number excluded
@@ -1217,9 +1217,9 @@ function estimateNumberOfDuplicateCombinations(
 
       if (numNans > 0) {
         if (withReplacement) {
-          numberDuplicated += Math.pow(nValues, numNans);
+          numberDuplicated += Math.pow(numValues, numNans);
         } else {
-          let n = nValues - comb.length + numNans;
+          let n = numValues - comb.length + numNans;
           let nDup = n;
           for (let i = 1; i < numNans; i++) {
             nDup *= n - i;
@@ -1234,7 +1234,7 @@ function estimateNumberOfDuplicateCombinations(
 
   numberDuplicated -= estimateNumberOfDuplicateCombinations(
     duplicateCombinations,
-    nValues,
+    numValues,
     withReplacement,
   );
 

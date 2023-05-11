@@ -129,7 +129,7 @@ export default class ODESystem extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
         rhsChildren: {
           dependencyType: "child",
@@ -139,8 +139,8 @@ export default class ODESystem extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nDimensions: dependencyValues.rhsChildren.length },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions: dependencyValues.rhsChildren.length },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
@@ -160,19 +160,19 @@ export default class ODESystem extends InlineComponent {
       },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           variables: {
             dependencyType: "attributeComponent",
@@ -190,16 +190,16 @@ export default class ODESystem extends InlineComponent {
       arrayDefinitionByKey({ globalDependencyValues }) {
         let variablesSpecified = [];
         let validVariables = [];
-        let nDims = globalDependencyValues.nDimensions;
+        let numDims = globalDependencyValues.numDimensions;
         if (globalDependencyValues.variables !== null) {
           variablesSpecified =
             globalDependencyValues.variables.stateValues.variables;
           validVariables = [
             ...globalDependencyValues.variables.stateValues.validVariables,
-          ].slice(0, nDims);
+          ].slice(0, numDims);
         }
 
-        let variables = returnNVariables(nDims, variablesSpecified);
+        let variables = returnNVariables(numDims, variablesSpecified);
 
         if (
           variables.some((x) =>
@@ -211,9 +211,9 @@ export default class ODESystem extends InlineComponent {
           );
         }
 
-        if (validVariables.length < nDims) {
+        if (validVariables.length < numDims) {
           validVariables.push(
-            ...Array(nDims - validVariables.length).fill(true),
+            ...Array(numDims - validVariables.length).fill(true),
           );
         }
 
@@ -233,13 +233,13 @@ export default class ODESystem extends InlineComponent {
       },
       entryPrefixes: ["rhs", "righthandside"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -295,13 +295,13 @@ export default class ODESystem extends InlineComponent {
       entryPrefixes: ["initialCondition"],
       defaultValueByArrayKey: () => me.fromAst(0),
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -398,9 +398,9 @@ export default class ODESystem extends InlineComponent {
       forRenderer: true,
       returnDependencies() {
         return {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           variables: {
             dependencyType: "stateVariable",
@@ -465,7 +465,7 @@ export default class ODESystem extends InlineComponent {
 
         let systemDisplay = [];
         let indVar = dependencyValues.independentVariable.toLatex();
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           let variable = dependencyValues.variables[dim].toLatex();
 
           let rhs = roundForDisplay({
@@ -487,7 +487,7 @@ export default class ODESystem extends InlineComponent {
         if (!dependencyValues.hideInitialCondition) {
           let indVarVal0 = dependencyValues.initialIndependentVariableValue;
 
-          for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
             let variable = dependencyValues.variables[dim].toLatex();
             let ic = roundForDisplay({
               value: dependencyValues.initialConditions[dim],
@@ -617,7 +617,7 @@ export default class ODESystem extends InlineComponent {
             numericalRHSfDefinitions: dependencyValues.rhss.map((x) => ({
               functionType: "formula",
               formula: x,
-              nInputs: varNames.length + 1,
+              numInputs: varNames.length + 1,
               variables: [indVarName, ...varNames],
             })),
           },
@@ -669,19 +669,19 @@ export default class ODESystem extends InlineComponent {
       },
       createWorkspace: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
@@ -743,7 +743,7 @@ export default class ODESystem extends InlineComponent {
         workspace.maxPossibleTime = undefined;
 
         if (!globalDependencyValues.haveNumericalInitialConditions) {
-          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
             numericalSolutions[ind] = (_) => NaN;
           }
           return { setValue: { numericalSolutions } };
@@ -756,7 +756,7 @@ export default class ODESystem extends InlineComponent {
         let numericalRHSf = globalDependencyValues.numericalRHSf;
         let maxIterations = globalDependencyValues.maxIterations;
 
-        for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+        for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
           numericalSolutions[ind] = function f(t) {
             if (!Number.isFinite(t)) {
               return NaN;
@@ -845,19 +845,19 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       entryPrefixes: ["numericalSolutionFDefinition"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
@@ -911,7 +911,7 @@ export default class ODESystem extends InlineComponent {
           return {
             setValue: {
               numericalSolutionFDefinitions: Array(
-                globalDependencyValues.nDimensions,
+                globalDependencyValues.numDimensions,
               ).fill({}),
             },
           };
@@ -920,10 +920,10 @@ export default class ODESystem extends InlineComponent {
         return {
           setValue: {
             numericalSolutionFDefinitions: [
-              ...Array(globalDependencyValues.nDimensions).keys(),
+              ...Array(globalDependencyValues.numDimensions).keys(),
             ].map((ind) => ({
               functionType: "ODESolution",
-              nDimensions: globalDependencyValues.nDimensions,
+              numDimensions: globalDependencyValues.numDimensions,
               t0: globalDependencyValues.t0,
               x0s: globalDependencyValues.x0s,
               chunkSize: globalDependencyValues.chunkSize,

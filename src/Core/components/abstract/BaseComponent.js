@@ -867,7 +867,7 @@ export default class BaseComponent {
       "stateVariablesDeterminingDependencies",
       "stateVariablesDeterminingArraySizeDependencies",
       "isArray",
-      "nDimensions",
+      "numDimensions",
       "returnArraySizeDependencies",
       "returnArraySize",
       "returnArrayDependenciesByKey",
@@ -1002,8 +1002,10 @@ export default class BaseComponent {
         }
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
-          stateVariableDescriptions[varName].nDimensions =
-            theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
+          stateVariableDescriptions[varName].numDimensions =
+            theStateDef.numDimensions === undefined
+              ? 1
+              : theStateDef.numDimensions;
           stateVariableDescriptions[varName].wrappingComponents = theStateDef
             .shadowingInstructions?.returnWrappingComponents
             ? theStateDef.shadowingInstructions.returnWrappingComponents()
@@ -1017,7 +1019,7 @@ export default class BaseComponent {
           for (let prefix of entryPrefixes) {
             arrayEntryPrefixes[prefix] = {
               arrayVariableName: varName,
-              nDimensions: theStateDef.returnEntryDimensions
+              numDimensions: theStateDef.returnEntryDimensions
                 ? theStateDef.returnEntryDimensions(prefix)
                 : 1,
               wrappingComponents: theStateDef.shadowingInstructions
@@ -1034,7 +1036,7 @@ export default class BaseComponent {
           } else {
             stateVariableDescriptions[varName].getArrayKeysFromVarName =
               returnDefaultGetArrayKeysFromVarName(
-                stateVariableDescriptions[varName].nDimensions,
+                stateVariableDescriptions[varName].numDimensions,
               );
           }
         }

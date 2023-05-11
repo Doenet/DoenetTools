@@ -81,16 +81,21 @@ export function renameStateVariable({
   }
 }
 
-export function returnDefaultGetArrayKeysFromVarName(nDim) {
+export function returnDefaultGetArrayKeysFromVarName(numDim) {
   // the default function for getArrayKeysFromVarName ignores the
   // array entry prefix, but is just based on the variable ending.
   // A component class's function could use arrayEntryPrefix
 
-  if (nDim > 1) {
-    return function ({ arrayEntryPrefix, varEnding, arraySize, nDimensions }) {
+  if (numDim > 1) {
+    return function ({
+      arrayEntryPrefix,
+      varEnding,
+      arraySize,
+      numDimensions,
+    }) {
       let indices = varEnding.split("_").map((x) => Number(x) - 1);
       if (
-        indices.length === nDimensions &&
+        indices.length === numDimensions &&
         indices.every((x, i) => Number.isInteger(x) && x >= 0)
       ) {
         if (arraySize) {

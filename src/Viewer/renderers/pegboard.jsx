@@ -145,12 +145,12 @@ export default React.memo(function Pegboard(props) {
 
     let [prevXmin, prevXmax, prevYmin, prevYmax] = previousBounds.current;
 
-    let nRows = maxYind - minYind + 1;
+    let numRows = maxYind - minYind + 1;
     let prevNrows = prevYmax - prevYmin + 1;
     let nCols = maxXind - minXind + 1;
     let prevNcols = prevXmax - prevXmin + 1;
 
-    for (let i = 0; i < Math.min(nRows, prevNrows); i++) {
+    for (let i = 0; i < Math.min(numRows, prevNrows); i++) {
       let row = pegboardJXG.current[i];
       let y = (i + minYind) * dy.current + yoffset.current;
 
@@ -175,16 +175,16 @@ export default React.memo(function Pegboard(props) {
       }
     }
 
-    if (prevNrows > nRows) {
-      for (let i = nRows; i < prevNrows; i++) {
+    if (prevNrows > numRows) {
+      for (let i = numRows; i < prevNrows; i++) {
         let row = pegboardJXG.current.pop();
         for (let j = 0; j < prevNcols; j++) {
           let point = row.pop();
           board.removeObject(point);
         }
       }
-    } else if (prevNrows < nRows) {
-      for (let i = prevNrows; i < nRows; i++) {
+    } else if (prevNrows < numRows) {
+      for (let i = prevNrows; i < numRows; i++) {
         let row = [];
         let y = (i + minYind) * dy.current + yoffset.current;
         for (let j = 0; j < nCols; j++) {

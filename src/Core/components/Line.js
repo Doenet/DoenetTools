@@ -207,7 +207,7 @@ export default class Line extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -219,7 +219,7 @@ export default class Line extends GraphicalComponent {
             through: {
               dependencyType: "attributeComponent",
               attributeName: "through",
-              variableNames: ["nDimensions"],
+              variableNames: ["numDimensions"],
             },
           };
         } else {
@@ -232,7 +232,7 @@ export default class Line extends GraphicalComponent {
         }
       },
       definition: function ({ dependencyValues, changes }) {
-        // console.log(`definition of nDimensions of ${componentName}`)
+        // console.log(`definition of numDimensions of ${componentName}`)
         // console.log(dependencyValues)
         // console.log(changes)
 
@@ -241,22 +241,23 @@ export default class Line extends GraphicalComponent {
         if (dependencyValues.equation) {
           if (changes.equation && changes.equation.componentIdentitiesChanged) {
             return {
-              setValue: { nDimensions: 2 },
-              checkForActualChange: { nDimensions: true },
+              setValue: { numDimensions: 2 },
+              checkForActualChange: { numDimensions: true },
             };
           } else {
-            return { noChanges: ["nDimensions"] };
+            return { noChanges: ["numDimensions"] };
           }
         } else {
           if (dependencyValues.through) {
-            let nDimensions = dependencyValues.through.stateValues.nDimensions;
+            let numDimensions =
+              dependencyValues.through.stateValues.numDimensions;
             return {
-              setValue: { nDimensions },
-              checkForActualChange: { nDimensions: true },
+              setValue: { numDimensions },
+              checkForActualChange: { numDimensions: true },
             };
           } else {
             // line through zero points
-            return { setValue: { nDimensions: 2 } };
+            return { setValue: { numDimensions: 2 } };
           }
         }
       },
@@ -294,9 +295,9 @@ export default class Line extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numPointsPrescribed",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       definition({ dependencyValues }) {
@@ -305,7 +306,7 @@ export default class Line extends GraphicalComponent {
             basedOnSlope:
               dependencyValues.numPointsPrescribed < 2 &&
               dependencyValues.slopeAttr !== null &&
-              dependencyValues.nDimensions === 2,
+              dependencyValues.numDimensions === 2,
           },
         };
       },
@@ -341,13 +342,13 @@ export default class Line extends GraphicalComponent {
       },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -399,7 +400,7 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.essentialPoints = {
       isArray: true,
-      nDimensions: "2",
+      numDimensions: "2",
       isLocation: true,
       hasEssential: true,
       entryPrefixes: ["essentialPointX", "essentialPoint"],
@@ -454,13 +455,13 @@ export default class Line extends GraphicalComponent {
         }
       },
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [2, dependencyValues.nDimensions];
+        return [2, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey: () => ({}),
       arrayDefinitionByKey({ arrayKeys }) {
@@ -513,7 +514,7 @@ export default class Line extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
@@ -587,13 +588,13 @@ export default class Line extends GraphicalComponent {
         "basedOnSlope",
       ],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [2, dependencyValues.nDimensions];
+        return [2, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ stateValues, arrayKeys }) {
         if (stateValues.equationIdentity === null) {
@@ -647,9 +648,9 @@ export default class Line extends GraphicalComponent {
               dependencyType: "stateVariable",
               variableName: "numPointsPrescribed",
             },
-            nDimensions: {
+            numDimensions: {
               dependencyType: "stateVariable",
-              variableName: "nDimensions",
+              variableName: "numDimensions",
             },
             basedOnSlope: {
               dependencyType: "stateVariable",
@@ -1075,9 +1076,9 @@ export default class Line extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "points",
           };
-          dependencies.nDimensions = {
+          dependencies.numDimensions = {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           };
         } else {
           dependencies.equation = {
@@ -1124,9 +1125,9 @@ export default class Line extends GraphicalComponent {
         }
 
         // have two points
-        let nDimens = dependencyValues.nDimensions;
+        let numDimens = dependencyValues.numDimensions;
 
-        if (Number.isNaN(nDimens)) {
+        if (Number.isNaN(numDimens)) {
           console.warn("Line through points of undetermined dimensions");
           return {
             setValue: {
@@ -1138,7 +1139,7 @@ export default class Line extends GraphicalComponent {
           };
         }
 
-        if (nDimens < 2) {
+        if (numDimens < 2) {
           console.warn(
             "Line must be through points of at least two dimensions",
           );
@@ -1159,7 +1160,7 @@ export default class Line extends GraphicalComponent {
 
         let varStrings = [...variables.map((x) => x.toString())];
 
-        for (let i = 0; i < nDimens; i++) {
+        for (let i = 0; i < numDimens; i++) {
           if (
             point1x.variables().indexOf(varStrings[i]) !== -1 ||
             point1y.variables().indexOf(varStrings[i]) !== -1 ||
@@ -1181,7 +1182,7 @@ export default class Line extends GraphicalComponent {
           }
         }
 
-        if (nDimens !== 2) {
+        if (numDimens !== 2) {
           // no equation if not in 2D
           return {
             setValue: {
@@ -1307,22 +1308,22 @@ export default class Line extends GraphicalComponent {
       entryPrefixes: ["numericalPoint"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.nDimensions)) {
+        if (Number.isNaN(dependencyValues.numDimensions)) {
           return [0];
         }
         return [2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
         };
         let dependenciesByKey = {};
@@ -1351,7 +1352,7 @@ export default class Line extends GraphicalComponent {
         // console.log(dependencyValuesByKey)
         // console.log(arrayKeys);
 
-        if (Number.isNaN(globalDependencyValues.nDimensions)) {
+        if (Number.isNaN(globalDependencyValues.numDimensions)) {
           return {};
         }
 
@@ -1364,7 +1365,7 @@ export default class Line extends GraphicalComponent {
             point = [point];
           }
           let numericalP = [];
-          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
             let val = point[ind].evaluate_to_constant();
             numericalP.push(val);
           }
@@ -1569,9 +1570,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalCoeff0: {
           dependencyType: "stateVariable",
@@ -1598,7 +1599,7 @@ export default class Line extends GraphicalComponent {
         // - constant coefficients and
         // - non-degenerate parameters
         let skip =
-          dependencyValues.nDimensions !== 2 ||
+          dependencyValues.numDimensions !== 2 ||
           !constantCoeffs ||
           (a0 === 0 && b0 === 0);
 

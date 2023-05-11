@@ -95,9 +95,9 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.nAwardsCredited = {
+    attributes.numAwardsCredited = {
       createComponentOfType: "integer",
-      createStateVariable: "nAwardsCredited",
+      createStateVariable: "numAwardsCredited",
       defaultValue: 1,
       public: true,
     };
@@ -125,15 +125,15 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.nSignErrorsMatched = {
+    attributes.numSignErrorsMatched = {
       createComponentOfType: "number",
-      createStateVariable: "nSignErrorsMatched",
+      createStateVariable: "numSignErrorsMatched",
       defaultValue: 0,
       public: true,
     };
-    attributes.nPeriodicSetMatchesRequired = {
+    attributes.numPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
-      createStateVariable: "nPeriodicSetMatchesRequired",
+      createStateVariable: "numPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
     };
@@ -826,7 +826,7 @@ export default class Answer extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nResponses = {
+    stateVariableDefinitions.numResponses = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -856,7 +856,7 @@ export default class Answer extends InlineComponent {
               dependencyType: "descendant",
               ancestorName: child.componentName,
               componentTypes: ["_base"],
-              variableNames: ["isResponse", "nValues"],
+              variableNames: ["isResponse", "numValues"],
               variablesOptional: true,
               recurseToMatchedChildren: true,
               includeNonActiveChildren: true,
@@ -871,7 +871,7 @@ export default class Answer extends InlineComponent {
             dependencies["childNValues" + ind] = {
               dependencyType: "stateVariable",
               componentName: child.componentName,
-              variableName: "nValues",
+              variableName: "numValues",
               variablesOptional: true,
             };
           } else {
@@ -887,7 +887,7 @@ export default class Answer extends InlineComponent {
         return dependencies;
       },
       definition({ dependencyValues, componentInfoObjects }) {
-        let nResponses = 0;
+        let numResponses = 0;
 
         for (let [ind, childType] of dependencyValues.childTypes.entries()) {
           if (
@@ -907,10 +907,10 @@ export default class Answer extends InlineComponent {
                 continue;
               }
 
-              if (descendant.stateValues.nValues === undefined) {
-                nResponses += 1;
+              if (descendant.stateValues.numValues === undefined) {
+                numResponses += 1;
               } else {
-                nResponses += descendant.stateValues.nValues;
+                numResponses += descendant.stateValues.numValues;
               }
             }
           } else if (
@@ -919,26 +919,26 @@ export default class Answer extends InlineComponent {
               baseComponentType: "_input",
             })
           ) {
-            let nValues = dependencyValues["childNValues" + ind];
-            if (nValues === undefined) {
-              nResponses += 1;
+            let numValues = dependencyValues["childNValues" + ind];
+            if (numValues === undefined) {
+              numResponses += 1;
             } else {
-              nResponses += nValues;
+              numResponses += numValues;
             }
           } else {
             // considerAsResponses
 
             for (let child of dependencyValues["child" + ind]) {
-              if (child.stateValues.nValues === undefined) {
-                nResponses += 1;
+              if (child.stateValues.numValues === undefined) {
+                numResponses += 1;
               } else {
-                nResponses += child.stateValues.nValues;
+                numResponses += child.stateValues.numValues;
               }
             }
           }
         }
 
-        return { setValue: { nResponses } };
+        return { setValue: { numResponses } };
       },
     };
 
@@ -956,13 +956,13 @@ export default class Answer extends InlineComponent {
       entryPrefixes: ["currentResponse"],
       stateVariablesDeterminingDependencies: ["awardInputResponseChildren"],
       returnArraySizeDependencies: () => ({
-        nResponses: {
+        numResponses: {
           dependencyType: "stateVariable",
-          variableName: "nResponses",
+          variableName: "numResponses",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nResponses];
+        return [dependencyValues.numResponses];
       },
       returnArrayDependenciesByKey({ stateValues, componentInfoObjects }) {
         let globalDependencies = {
@@ -1394,15 +1394,15 @@ export default class Answer extends InlineComponent {
           childIndices: stateValues.inputChildIndices,
           variablesOptional: true,
         },
-        nAwardsCredited: {
+        numAwardsCredited: {
           dependencyType: "stateVariable",
-          variableName: "nAwardsCredited",
+          variableName: "numAwardsCredited",
         },
       }),
       definition: function ({ dependencyValues }) {
         let creditAchieved = 0;
 
-        let n = dependencyValues.nAwardsCredited;
+        let n = dependencyValues.numAwardsCredited;
         let awardsUsed = Array(n).fill(null);
         let inputUsed = null;
 
@@ -1420,7 +1420,7 @@ export default class Answer extends InlineComponent {
           }
         } else {
           // awardsUsed will be component names of first awards
-          // (up to nAwardsCredited)
+          // (up to numAwardsCredited)
           // that give the maximum credit (which will be creditAchieved)
           // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback

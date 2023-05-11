@@ -573,7 +573,7 @@ export default class MathOperator extends MathComponent {
         mathNumberListChildren: {
           dependencyType: "child",
           childGroups: ["mathLists", "numberLists"],
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         isNumericOperator: {
           dependencyType: "stateVariable",
@@ -612,7 +612,7 @@ export default class MathOperator extends MathComponent {
                 (x) => x.stateValues.canBeModified,
               ).length +
               dependencyValues.mathNumberListChildren.reduce(
-                (a, c) => a + c.stateValues.nComponents,
+                (a, c) => a + c.stateValues.numComponents,
                 0,
               );
 

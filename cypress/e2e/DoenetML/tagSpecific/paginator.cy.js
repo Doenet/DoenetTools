@@ -35,8 +35,8 @@ describe("Paginator Tag Tests", function () {
       <label>prev</label>
     </callAction>
     Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
-    of <copy prop="nPages" target="pgn" assignNames="nPages" />
-    <callAction name="nextPage" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
+    of <copy prop="numPages" target="pgn" assignNames="numPages" />
+    <callAction name="nextPage" disabled="$pageNum = $numPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
       <label>next</label>
     </callAction>
     

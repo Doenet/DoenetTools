@@ -1638,9 +1638,9 @@ export default class Graph extends BlockComponent {
     );
 
     if (numberToDelete > 0) {
-      let nChildren = this.definingChildren.length;
+      let numChildren = this.definingChildren.length;
       let componentNamesToDelete = this.definingChildren
-        .slice(nChildren - numberToDelete, nChildren)
+        .slice(numChildren - numberToDelete, numChildren)
         .map((x) => x.componentName);
 
       return await this.coreFunctions.performUpdate({

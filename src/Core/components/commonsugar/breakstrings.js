@@ -34,7 +34,7 @@ export function returnBreakStringsSugarFunction({
     let currentPiece = [];
     let strippedParens = false;
 
-    let nChildren = matchedChildren.length;
+    let numChildren = matchedChildren.length;
 
     if (mustStripOffOuterParentheses) {
       let firstComponent = matchedChildren[0];
@@ -56,7 +56,7 @@ export function returnBreakStringsSugarFunction({
 
       if (compInd === 0 && mustStripOffOuterParentheses && s[0] === "(") {
         // found beginning paren, now check if there is an ending parens
-        let lastChild = matchedChildren[nChildren - 1];
+        let lastChild = matchedChildren[numChildren - 1];
         if (typeof lastChild === "string") {
           let sLast = lastChild.trimRight();
           if (sLast[sLast.length - 1] === ")") {
@@ -81,7 +81,7 @@ export function returnBreakStringsSugarFunction({
             // check if stripped off initial paren and we're at the end
             if (
               strippedParens &&
-              compInd === nChildren - 1 &&
+              compInd === numChildren - 1 &&
               ind === s.length - 1
             ) {
               // strip off last parens

@@ -75,9 +75,9 @@ export default class CobwebPolyline extends Polyline {
       returnRoundingStateVariableDefinitions(),
     );
 
-    stateVariableDefinitions.nDimensions.returnDependencies = () => ({});
-    stateVariableDefinitions.nDimensions.definition = () => ({
-      setValue: { nDimensions: 2 },
+    stateVariableDefinitions.numDimensions.returnDependencies = () => ({});
+    stateVariableDefinitions.numDimensions.definition = () => ({
+      setValue: { numDimensions: 2 },
     });
 
     stateVariableDefinitions.initialPoint = {
@@ -240,7 +240,7 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.originalVertices = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       hasEssential: true,
       entryPrefixes: ["originalVertexX", "originalVertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -314,15 +314,15 @@ export default class CobwebPolyline extends Polyline {
           dependencyType: "stateVariable",
           variableName: "nOriginalVertices",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
         return [
           dependencyValues.nOriginalVertices - 1,
-          dependencyValues.nDimensions,
+          dependencyValues.numDimensions,
         ];
       },
       returnArrayDependenciesByKey: () => ({

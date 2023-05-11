@@ -56,41 +56,41 @@ export default class PointListComponent extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "child",
           childGroups: ["points"],
-          variableNames: ["nDimensions"],
+          variableNames: ["numDimensions"],
           skipPlaceholders: true,
         },
       }),
       definition: function ({ dependencyValues }) {
-        let nDimensions;
+        let numDimensions;
 
         if (dependencyValues.pointChildren.length === 0) {
-          nDimensions = 2;
+          numDimensions = 2;
         } else {
-          nDimensions = 1;
+          numDimensions = 1;
           for (let point of dependencyValues.pointChildren) {
-            if (Number.isFinite(point.stateValues.nDimensions)) {
-              nDimensions = Math.max(
-                nDimensions,
-                point.stateValues.nDimensions,
+            if (Number.isFinite(point.stateValues.numDimensions)) {
+              numDimensions = Math.max(
+                numDimensions,
+                point.stateValues.numDimensions,
               );
             }
           }
         }
         return {
-          setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
 
     stateVariableDefinitions.points = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
@@ -163,13 +163,13 @@ export default class PointListComponent extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "numPoints",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numPoints, dependencyValues.nDimensions];
+        return [dependencyValues.numPoints, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

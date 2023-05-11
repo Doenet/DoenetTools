@@ -55,14 +55,14 @@ export default class CollaborateGroups extends BaseComponent {
         pointChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
-          variableNames: ["xs", "coords", "nDimensions"],
+          variableNames: ["xs", "coords", "numDimensions"],
         },
       }),
       definition: function ({ dependencyValues }) {
         let groups = {};
 
         for (let point of dependencyValues.pointChildren) {
-          if (point.stateValues.nDimensions !== 2) {
+          if (point.stateValues.numDimensions !== 2) {
             console.warn(
               `invalid collaborate group: ${point.stateValues.coords.toString()}`,
             );

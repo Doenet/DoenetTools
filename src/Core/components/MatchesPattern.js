@@ -277,7 +277,7 @@ export default class MatchesPattern extends BooleanComponent {
       },
     };
 
-    stateVariableDefinitions.nMatches = {
+    stateVariableDefinitions.numMatches = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -290,8 +290,8 @@ export default class MatchesPattern extends BooleanComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { nMatches: dependencyValues.allPatternMatches.length },
-          checkForActualChange: { nMatches: true },
+          setValue: { numMatches: dependencyValues.allPatternMatches.length },
+          checkForActualChange: { numMatches: true },
         };
       },
     };
@@ -302,16 +302,16 @@ export default class MatchesPattern extends BooleanComponent {
         createComponentOfType: "math",
       },
       isArray: true,
-      nDimensions: 1,
+      numDimensions: 1,
       entryPrefixes: ["patternMatch"],
       returnArraySizeDependencies: () => ({
-        nMatches: {
+        numMatches: {
           dependencyType: "stateVariable",
-          variableName: "nMatches",
+          variableName: "numMatches",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nMatches];
+        return [dependencyValues.numMatches];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
