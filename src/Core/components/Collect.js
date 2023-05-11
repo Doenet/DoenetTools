@@ -58,13 +58,6 @@ export default class Collect extends CompositeComponent {
     attributes.sourceAttributesToIgnore = {
       createPrimitiveOfType: "stringArray",
       createStateVariable: "sourceAttributesToIgnore",
-      defaultValue: [],
-      public: true,
-    };
-
-    attributes.sourceAttributesToIgnoreRecursively = {
-      createPrimitiveOfType: "stringArray",
-      createStateVariable: "sourceAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -467,13 +460,10 @@ export default class Collect extends CompositeComponent {
     } else {
       let sourceAttributesToIgnore = await component.stateValues
         .sourceAttributesToIgnore;
-      let sourceAttributesToIgnoreRecursively = await component.stateValues
-        .sourceAttributesToIgnoreRecursively;
 
       let serializedCopy = [
         await collectedComponent.serialize({
           sourceAttributesToIgnore,
-          sourceAttributesToIgnoreRecursively,
         }),
       ];
 

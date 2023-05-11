@@ -3813,7 +3813,7 @@ describe("Collect Tag Tests", function () {
     });
   });
 
-  it("collect does not ignore hide by default", () => {
+  it("collect does not ignore hide", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -3824,7 +3824,7 @@ describe("Collect Tag Tests", function () {
       <text>public</text>
     </section>
     <p>Hidden by default: <collect componentTypes="text" source="_section1" /></p>
-    <p>Force to reveal: <collect componentTypes="text" source="_section1" sourceAttributesToIgnore="hide" /></p>
+    <p>Force to reveal: <collect componentTypes="text" source="_section1" hide="false' /></p>
 
     `,
         },
@@ -3857,7 +3857,7 @@ describe("Collect Tag Tests", function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
     `,
         },
         "*",
@@ -3905,7 +3905,7 @@ describe("Collect Tag Tests", function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
     `,
         },
         "*",

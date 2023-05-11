@@ -109,7 +109,7 @@ describe("Math Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy source="_math1" sourceAttributesToIgnore="" /> + 5</math>
+    <math>3<copy source="_math1" /> + 5</math>
     `,
         },
         "*",

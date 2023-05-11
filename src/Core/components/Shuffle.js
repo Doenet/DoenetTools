@@ -241,7 +241,7 @@ export default class Shuffle extends CompositeComponent {
 
         replacements.push(
           await replacementSource.serialize({
-            sourceAttributesToIgnoreRecursively: ["isResponse"],
+            sourceAttributesToIgnore: ["isResponse"],
           }),
         );
       }
