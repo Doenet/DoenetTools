@@ -3813,7 +3813,7 @@ describe("Collect Tag Tests", function () {
     });
   });
 
-  it("collect does not ignore hide by default", () => {
+  it("collect does not ignore hide", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -3824,7 +3824,7 @@ describe("Collect Tag Tests", function () {
       <text>public</text>
     </section>
     <p>Hidden by default: <collect componentTypes="text" source="_section1" /></p>
-    <p>Force to reveal: <collect componentTypes="text" source="_section1" sourceAttributesToIgnore="hide" /></p>
+    <p>Force to reveal: <collect componentTypes="text" source="_section1" hide="false" /></p>
 
     `,
         },
@@ -3857,7 +3857,7 @@ describe("Collect Tag Tests", function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
     `,
         },
         "*",
@@ -3869,17 +3869,11 @@ describe("Collect Tag Tests", function () {
     cy.get(cesc("#\\/theP1")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/theP2")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/theP3")).should("not.exist");
-    cy.get(cesc("#\\/theP4")).should(
-      "have.text",
-      "Hidden paragraph with hidden text: ",
-    );
+    cy.get(cesc("#\\/theP4")).should("not.exist");
     cy.get(cesc("#\\/cp1")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp2")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp3")).should("not.exist");
-    cy.get(cesc("#\\/cp4")).should(
-      "have.text",
-      "Hidden paragraph with hidden text: ",
-    );
+    cy.get(cesc("#\\/cp4")).should("not.exist");
     cy.get(cesc("#\\/cp5")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp6")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp7")).should(
@@ -3905,7 +3899,7 @@ describe("Collect Tag Tests", function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
     `,
         },
         "*",
@@ -3921,10 +3915,7 @@ describe("Collect Tag Tests", function () {
     cy.get(cesc("#\\/cp1")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp2")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp3")).should("not.exist");
-    cy.get(cesc("#\\/cp4")).should(
-      "have.text",
-      "Hidden paragraph with hidden text: ",
-    );
+    cy.get(cesc("#\\/cp4")).should("not.exist");
     cy.get(cesc("#\\/cp5")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp6")).should("have.text", "Hidden text: ");
     cy.get(cesc("#\\/cp7")).should(

@@ -770,7 +770,7 @@ describe("Numberlist Tag Tests", function () {
 
     <p><numberlist>
       <number>4</number>
-      <copy target="_numberlist1" />
+      <copy target="_numberlist1" hide="false" />
       <number hide>5</number>
       <copy target="numberlist1a" />
     </numberlist></p>

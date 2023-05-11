@@ -466,7 +466,9 @@ describe("Conditional Content Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <text name="animal" hide>fox</text><text name="verb" hide>jumps</text>
+  <setup>
+    <text name="animal">fox</text><text name="verb">jumps</text>
+  </setup>
   <booleaninput name="b" >
     <label>animal phrase</label>
   </booleaninput>
@@ -3479,8 +3481,10 @@ describe("Conditional Content Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <text name="animal1" hide>fox</text><text name="verb1" hide>jumps</text>
-  <text name="animal2" hide>elephant</text><text name="verb2" hide>trumpets</text>
+  <setup>
+  <text name="animal1">fox</text><text name="verb1">jumps</text>
+  <text name="animal2">elephant</text><text name="verb2">trumpets</text>
+  </setup>
 
   <mathinput name="n" />
   <p name="pa">a: <conditionalContent assignNames="a" maximumNumberToShow="1">

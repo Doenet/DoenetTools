@@ -2315,15 +2315,12 @@ export default class Core {
     let serializedReplacements = [];
     let sourceAttributesToIgnore = await component.stateValues
       .sourceAttributesToIgnore;
-    let sourceAttributesToIgnoreRecursively = await component.stateValues
-      .sourceAttributesToIgnoreRecursively;
 
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
         serializedReplacements.push(
           await repl.serialize({
             sourceAttributesToIgnore,
-            sourceAttributesToIgnoreRecursively,
           }),
         );
       } else {
@@ -7725,8 +7722,6 @@ export default class Core {
         let composite = this._components[shadowingParent.shadows.compositeName];
         let sourceAttributesToIgnore = await composite.stateValues
           .sourceAttributesToIgnore;
-        let sourceAttributesToIgnoreRecursively = await composite.stateValues
-          .sourceAttributesToIgnoreRecursively;
 
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
@@ -7734,7 +7729,6 @@ export default class Core {
             shadowingSerializeChildren.push(
               await child.serialize({
                 sourceAttributesToIgnore,
-                sourceAttributesToIgnoreRecursively,
               }),
             );
           } else {
@@ -8732,15 +8726,12 @@ export default class Core {
           this._components[shadowingComponent.shadows.compositeName];
         let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues
           .sourceAttributesToIgnore;
-        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow
-          .stateValues.sourceAttributesToIgnoreRecursively;
 
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
             newSerializedReplacements.push(
               await repl.serialize({
                 sourceAttributesToIgnore,
-                sourceAttributesToIgnoreRecursively,
               }),
             );
           } else {

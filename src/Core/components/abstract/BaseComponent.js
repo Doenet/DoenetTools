@@ -1108,16 +1108,10 @@ export default class BaseComponent {
     let parametersForChildren = { ...parameters };
 
     let sourceAttributesToIgnore;
-    if (parameters.sourceAttributesToIgnoreRecursively) {
-      sourceAttributesToIgnore = [
-        ...parameters.sourceAttributesToIgnoreRecursively,
-      ];
+    if (parameters.sourceAttributesToIgnore) {
+      sourceAttributesToIgnore = parameters.sourceAttributesToIgnore;
     } else {
       sourceAttributesToIgnore = [];
-    }
-    if (parameters.sourceAttributesToIgnore) {
-      sourceAttributesToIgnore.push(...parameters.sourceAttributesToIgnore);
-      delete parametersForChildren.sourceAttributesToIgnore;
     }
 
     if (includeDefiningChildren) {

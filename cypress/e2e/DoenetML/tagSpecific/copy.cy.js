@@ -2497,15 +2497,16 @@ describe("Copy Tag Tests", function () {
     );
   });
 
-  it("copy ignores hide by default", () => {
+  it("copy does not ignore hide by default", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p>Revealed by default: $hidden</p>
-    <p>Force to stay hidden: <copy source="hidden" sourceAttributesToIgnore="" /></p>
+    <p>Hidden by default: $hidden</p>
+    <p>Force to reveal: <copy source="hidden" hide="false" /></p>
+    <p>Force to reveal 2: <copy source="hidden" sourceAttributesToIgnore="hide" /></p>
 
     `,
         },
@@ -2517,19 +2518,21 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.get(cesc("#\\/_p1")).should("have.text", "Hidden text: ");
-    cy.get(cesc("#\\/_p2")).should("have.text", "Revealed by default: secret");
-    cy.get(cesc("#\\/_p3")).should("have.text", "Force to stay hidden: ");
+    cy.get(cesc("#\\/_p2")).should("have.text", "Hidden by default: ");
+    cy.get(cesc("#\\/_p3")).should("have.text", "Force to reveal: secret");
+    cy.get(cesc("#\\/_p4")).should("have.text", "Force to reveal 2: secret");
   });
 
-  it("copy ignores hide by default, with copySource", () => {
+  it("copy does not ignore hide by default, with copySource", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p>Revealed by default: <text copySource="hidden" /></p>
-    <p>Force to stay hidden: <text copySource="hidden" sourceAttributesToIgnore="" /></p>
+    <p>Hidden by default: <text copySource="hidden" /></p>
+    <p>Force to reveal: <text copySource="hidden" hide="false" /></p>
+    <p>Force to reveal 2: <text copySource="hidden" sourceAttributesToIgnore="hide" /></p>
 
     `,
         },
@@ -2541,8 +2544,9 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.get(cesc("#\\/_p1")).should("have.text", "Hidden text: ");
-    cy.get(cesc("#\\/_p2")).should("have.text", "Revealed by default: secret");
-    cy.get(cesc("#\\/_p3")).should("have.text", "Force to stay hidden: ");
+    cy.get(cesc("#\\/_p2")).should("have.text", "Hidden by default: ");
+    cy.get(cesc("#\\/_p3")).should("have.text", "Force to reveal: secret");
+    cy.get(cesc("#\\/_p4")).should("have.text", "Force to reveal 2: secret");
   });
 
   it("copy keeps hidden children hidden", () => {
@@ -2552,10 +2556,16 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p name="pReveal">Revealed: $(theP/hidden)</p>
+    <p name="pHidden">Hidden: $(theP/hidden)</p>
+    <p name="pReveal">Revealed: $(theP/hidden{hide="false"})</p>
     <copy source="theP" assignNames="theP2" />
-    <p name="pReveal2">Revealed 2: $(theP2/hidden)</p>
-
+    <p name="pHidden2">Hidden 2: $(theP2/hidden)</p>
+    <p name="pReveal2">Revealed 2: $(theP2/hidden{hide="false"})</p>
+    <copy source="theP" sourceAttributesToIgnore="hide" assignNames="theP3" />
+    <p name="pReveal3">Revealed 3: $(theP3/hidden)</p>
+    <copy source="theP" hide="false" assignNames="theP4" />
+    <p name="pHidden4">Hidden 4: $(theP4/hidden)</p>
+    <p name="pReveal4">Revealed 4: $(theP4/hidden{hide="false"})</p>
 
     `,
         },
@@ -2567,9 +2577,16 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
     cy.get(cesc("#\\/theP")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden")).should("have.text", "Hidden: ");
     cy.get(cesc("#\\/pReveal")).should("have.text", "Revealed: secret");
     cy.get(cesc("#\\/theP2")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden2")).should("have.text", "Hidden 2: ");
     cy.get(cesc("#\\/pReveal2")).should("have.text", "Revealed 2: secret");
+    cy.get(cesc("#\\/theP3")).should("have.text", "Hidden text: secret");
+    cy.get(cesc("#\\/pReveal3")).should("have.text", "Revealed 3: secret");
+    cy.get(cesc("#\\/theP4")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden4")).should("have.text", "Hidden 4: ");
+    cy.get(cesc("#\\/pReveal4")).should("have.text", "Revealed 4: secret");
   });
 
   it("copy keeps hidden children hidden, with copySource", () => {
@@ -2579,10 +2596,16 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p name="pReveal">Revealed: <text copySource="theP/hidden" /></p>
+    <p name="pHidden">Hidden: <text copySource="theP/hidden" /></p>
+    <p name="pReveal">Revealed: <text copySource="theP/hidden" hide="false" /></p>
     <p copySource="theP" name="theP2" />
-    <p name="pReveal2">Revealed 2: <text copySource="theP2/hidden" /></p>
-
+    <p name="pHidden2">Hidden 2: <text copySource="theP2/hidden" /></p>
+    <p name="pReveal2">Revealed 2: <text copySource="theP2/hidden" hide="false" /></p>
+    <p copySource="theP" sourceAttributesToIgnore="hide" name="theP3" />
+    <p name="pReveal3">Revealed 3: <text copySource="theP3/hidden" /></p>
+    <p copySource="theP" name="theP4" hide="false" />
+    <p name="pHidden4">Hidden 4: <text copySource="theP4/hidden" /></p>
+    <p name="pReveal4">Revealed 4: <text copySource="theP4/hidden" hide="false" /></p>
 
     `,
         },
@@ -2593,10 +2616,16 @@ describe("Copy Tag Tests", function () {
     // to wait for page to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/theP")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden")).should("have.text", "Hidden: ");
     cy.get(cesc("#\\/pReveal")).should("have.text", "Revealed: secret");
     cy.get(cesc("#\\/theP2")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden2")).should("have.text", "Hidden 2: ");
     cy.get(cesc("#\\/pReveal2")).should("have.text", "Revealed 2: secret");
+    cy.get(cesc("#\\/theP3")).should("have.text", "Hidden text: secret");
+    cy.get(cesc("#\\/pReveal3")).should("have.text", "Revealed 3: secret");
+    cy.get(cesc("#\\/theP4")).should("have.text", "Hidden text: ");
+    cy.get(cesc("#\\/pHidden4")).should("have.text", "Hidden 4: ");
+    cy.get(cesc("#\\/pReveal4")).should("have.text", "Revealed 4: secret");
   });
 
   it("copies hide dynamically", () => {
@@ -3780,8 +3809,10 @@ describe("Copy Tag Tests", function () {
     <text>a</text>
     <booleaninput name="b" />
 
-    <text name="jump" hide>jump</text>
-    
+    <setup>
+      <text name="jump">jump</text>
+    </setup>
+
     <p name="forVerb"><conditionalContent assignNames="(verb)">
       <case condition="$b"><text>skip</text></case>
       <else>$jump</else>
@@ -3812,9 +3843,11 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <booleaninput name="b" />
-
-    <text name="jump" hide>jump</text>
     
+    <setup>
+      <text name="jump">jump</text>
+    </setup>
+
     <p name="forVerb"><conditionalContent assignNames="(verb)">
       <case condition="$b"><text>skip</text></case>
       <else>$jump</else>

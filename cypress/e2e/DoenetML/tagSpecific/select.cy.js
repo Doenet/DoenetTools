@@ -5075,9 +5075,11 @@ describe("Select Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <text name="animal1" hide>fox</text><text name="verb1" hide>jumps</text>
-    <text name="animal2" hide>elephant</text><text name="verb2" hide>trumpets</text>
-  
+    <setup>
+      <text name="animal1">fox</text><text name="verb1">jumps</text>
+      <text name="animal2">elephant</text><text name="verb2">trumpets</text>
+    </setup>
+
     <p name="pa">a: <select assignnames="a">
       <option>The $animal1 $verb1.</option>
       <option>The $animal2 $verb2.</option>

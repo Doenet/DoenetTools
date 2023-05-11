@@ -32,6 +32,7 @@ export default class Copy extends CompositeComponent {
     delete attributes.fixed;
     delete attributes.styleNumber;
     delete attributes.isResponse;
+    delete attributes.hide;
 
     attributes.assignNewNamespaces = {
       createPrimitiveOfType: "boolean",
@@ -87,12 +88,6 @@ export default class Copy extends CompositeComponent {
     attributes.sourceAttributesToIgnore = {
       createPrimitiveOfType: "stringArray",
       createStateVariable: "sourceAttributesToIgnore",
-      defaultValue: ["hide"],
-      public: true,
-    };
-    attributes.sourceAttributesToIgnoreRecursively = {
-      createPrimitiveOfType: "stringArray",
-      createStateVariable: "sourceAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -1515,15 +1510,12 @@ export default class Copy extends CompositeComponent {
 
     let sourceAttributesToIgnore = await component.stateValues
       .sourceAttributesToIgnore;
-    let sourceAttributesToIgnoreRecursively = await component.stateValues
-      .sourceAttributesToIgnoreRecursively;
 
     let serializedReplacements = [
       await replacementSourceComponent.serialize({
         copyAll: !link,
         copyVariants: !link,
         sourceAttributesToIgnore,
-        sourceAttributesToIgnoreRecursively,
       }),
     ];
 

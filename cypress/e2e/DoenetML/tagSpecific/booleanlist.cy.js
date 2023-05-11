@@ -18,7 +18,7 @@ describe("BooleanList Tag Tests", function () {
     <p><booleanlist>
       <boolean>true</boolean>
       <boolean hide>false</boolean>
-      <copy target="_booleanlist1" />
+      <copy target="_booleanlist1" hide="false" />
       <boolean>false</boolean>
       <copy target="_copy1" />
     </booleanlist></p>

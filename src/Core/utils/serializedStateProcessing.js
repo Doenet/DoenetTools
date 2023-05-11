@@ -335,6 +335,8 @@ function substituteDeprecations(serializedComponents) {
   let deprecatedPropertyDeletions = new Set([
     "suppressautoname",
     "suppressautonumber",
+    "targetattributestoignorerecursively",
+    "sourceattributestoignorerecursively",
   ]);
 
   // Note: use lower case for keys

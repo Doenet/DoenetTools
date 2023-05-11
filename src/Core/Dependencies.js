@@ -4233,19 +4233,7 @@ class AttributeComponentDependency extends Dependency {
       } else {
         let composite =
           this.dependencyHandler._components[shadows.compositeName];
-        if ("sourceAttributesToIgnoreRecursively" in composite.state) {
-          let sourceAttributesToIgnoreRecursively = await composite.stateValues
-            .sourceAttributesToIgnoreRecursively;
-          if (
-            sourceAttributesToIgnoreRecursively.includes(this.attributeName)
-          ) {
-            break;
-          }
-        }
-        if (
-          (shadows.firstLevelReplacement || fromPlainMacro) &&
-          "sourceAttributesToIgnore" in composite.state
-        ) {
+        if ("sourceAttributesToIgnore" in composite.state) {
           let sourceAttributesToIgnore = await composite.stateValues
             .sourceAttributesToIgnore;
           if (sourceAttributesToIgnore.includes(this.attributeName)) {

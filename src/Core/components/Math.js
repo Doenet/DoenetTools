@@ -2548,5 +2548,5 @@ function exprContainsVector(tree) {
     return true;
   }
 
-  return operands.any(exprContainsVector);
+  return operands.some(exprContainsVector);
 }
