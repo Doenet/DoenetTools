@@ -1241,8 +1241,8 @@ export function PortfolioActivityEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-  const [mode, setMode] = useState("View");
-  // const [mode, setMode] = useState("Edit");
+  // const [mode, setMode] = useState("View");
+  const [mode, setMode] = useState("Edit");
 
   let controlsTabsLastIndex = useRef(0);
 
