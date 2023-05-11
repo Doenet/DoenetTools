@@ -1174,7 +1174,7 @@ function MathKeyboard() {
   } = useDisclosure();
 
   return (
-    <Slide direction="bottom" in={keyboardIsOpen} style={{ zIndex: 10 }}>
+    <Slide direction="bottom" in={keyboardIsOpen} style={{ zIndex: 1000 }}>
       <Box
         p="4px"
         mt="4"
@@ -1241,8 +1241,8 @@ export function PortfolioActivityEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-  // const [mode, setMode] = useState("View");
-  const [mode, setMode] = useState("Edit");
+  const [mode, setMode] = useState("View");
+  // const [mode, setMode] = useState("Edit");
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1467,7 +1467,6 @@ export function PortfolioActivityEditor() {
                     Update Public Activity
                   </Button>
                 )}
-                {/* <Button colorScheme="orange">Orange</Button> */}
                 <Link
                   href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
                   isExternal
@@ -1492,64 +1491,67 @@ export function PortfolioActivityEditor() {
         </GridItem>
 
         {mode == "Edit" && (
-          <GridItem area="centerContent">
-            <ResizeableSideBySide
-              left={
-                <>
-                  <PageViewer
-                    doenetML={viewerDoenetML}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: true,
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    generatedVariantCallback={variantCallback} //TODO:Replace
-                    requestedVariantIndex={variants.index}
-                    // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
-                  />
-                  <Box marginBottom="50vh" />
-                </>
-              }
-              right={
-                <CodeMirror
-                  editorRef={editorRef}
-                  setInternalValueTo={textEditorDoenetML.current}
-                  onBeforeChange={(value) => {
-                    textEditorDoenetML.current = value;
-                    // Debounce save to server at 3 seconds
-                    clearTimeout(timeout.current);
-                    timeout.current = setTimeout(async function () {
-                      setEditorDoenetML(value);
-                      setLastKnownCid(lastKnownCidRef.current);
+          <>
+            <MathKeyboard />
+            <GridItem area="centerContent">
+              <ResizeableSideBySide
+                left={
+                  <>
+                    <PageViewer
+                      doenetML={viewerDoenetML}
+                      flags={{
+                        showCorrectness: true,
+                        solutionDisplayMode: true,
+                        showFeedback: true,
+                        showHints: true,
+                        autoSubmit: false,
+                        allowLoadState: false,
+                        allowSaveState: false,
+                        allowLocalState: false,
+                        allowSaveSubmissions: false,
+                        allowSaveEvents: false,
+                      }}
+                      attemptNumber={1}
+                      generatedVariantCallback={variantCallback} //TODO:Replace
+                      requestedVariantIndex={variants.index}
+                      // setIsInErrorState={setIsInErrorState}
+                      pageIsActive={true}
+                    />
+                    <Box marginBottom="50vh" />
+                  </>
+                }
+                right={
+                  <CodeMirror
+                    editorRef={editorRef}
+                    setInternalValueTo={textEditorDoenetML.current}
+                    onBeforeChange={(value) => {
+                      textEditorDoenetML.current = value;
+                      // Debounce save to server at 3 seconds
+                      clearTimeout(timeout.current);
+                      timeout.current = setTimeout(async function () {
+                        setEditorDoenetML(value);
+                        setLastKnownCid(lastKnownCidRef.current);
 
-                      saveDraft({
-                        pageId,
-                        courseId,
-                        backup: backupOldDraft.current,
-                      }).then(({ success }) => {
-                        if (success) {
-                          backupOldDraft.current = false;
-                          cidFromText(value).then((newlySavedCid) => {
-                            lastKnownCidRef.current = newlySavedCid;
-                          });
-                        }
-                      });
-                      timeout.current = null;
-                    }, 3000); //3 seconds
-                  }}
-                />
-              }
-            />
-          </GridItem>
+                        saveDraft({
+                          pageId,
+                          courseId,
+                          backup: backupOldDraft.current,
+                        }).then(({ success }) => {
+                          if (success) {
+                            backupOldDraft.current = false;
+                            cidFromText(value).then((newlySavedCid) => {
+                              lastKnownCidRef.current = newlySavedCid;
+                            });
+                          }
+                        });
+                        timeout.current = null;
+                      }, 3000); //3 seconds
+                    }}
+                  />
+                }
+              />
+            </GridItem>
+          </>
         )}
 
         {mode == "View" && (
@@ -1558,7 +1560,7 @@ export function PortfolioActivityEditor() {
             <GridItem area="centerContent">
               <Grid
                 width="100%"
-                minHeight="calc(100vh - 40px)" //40px header height
+                height="calc(100vh - 80px)"
                 templateAreas={`"leftGutter viewer rightGutter"`}
                 templateColumns={`1fr minmax(400px,850px) 1fr`}
                 overflow="hidden"
@@ -1586,7 +1588,8 @@ export function PortfolioActivityEditor() {
                   overflow="hidden"
                 >
                   <Box
-                    minHeight="calc(100vh - 100px)"
+                    // minHeight="calc(100vh - 100px)"
+                    height="calc(100vh - 100px)" //40px header height
                     background="var(--canvas)"
                     borderWidth="1px"
                     borderStyle="solid"
@@ -1595,28 +1598,30 @@ export function PortfolioActivityEditor() {
                     padding="20px 5px 20px 5px"
                     flexGrow={1}
                     overflow="scroll"
-                    marginBottom="50vh"
                   >
-                    <PageViewer
-                      doenetML={viewerDoenetML}
-                      flags={{
-                        showCorrectness: true,
-                        solutionDisplayMode: true,
-                        showFeedback: true,
-                        showHints: true,
-                        autoSubmit: false,
-                        allowLoadState: false,
-                        allowSaveState: false,
-                        allowLocalState: false,
-                        allowSaveSubmissions: false,
-                        allowSaveEvents: false,
-                      }}
-                      attemptNumber={1}
-                      generatedVariantCallback={variantCallback} //TODO:Replace
-                      requestedVariantIndex={variants.index}
-                      // setIsInErrorState={setIsInErrorState}
-                      pageIsActive={true}
-                    />
+                    <>
+                      <PageViewer
+                        doenetML={viewerDoenetML}
+                        flags={{
+                          showCorrectness: true,
+                          solutionDisplayMode: true,
+                          showFeedback: true,
+                          showHints: true,
+                          autoSubmit: false,
+                          allowLoadState: false,
+                          allowSaveState: false,
+                          allowLocalState: false,
+                          allowSaveSubmissions: false,
+                          allowSaveEvents: false,
+                        }}
+                        attemptNumber={1}
+                        generatedVariantCallback={variantCallback} //TODO:Replace
+                        requestedVariantIndex={variants.index}
+                        // setIsInErrorState={setIsInErrorState}
+                        pageIsActive={true}
+                      />
+                      <Box marginBottom="50vh" />
+                    </>
                   </Box>
                 </GridItem>
               </Grid>
