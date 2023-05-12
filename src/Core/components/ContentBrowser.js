@@ -335,49 +335,36 @@ export class ContentBrowser extends BlockComponent {
 
 export class ContentBrowserItem extends BlockComponent {
   static componentType = "contentBrowserItem";
+  static rendererType = "containerBlock";
 
   static renderChildren = true;
   static includeBlankStringChildren = true;
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.label = {
+      createComponentOfType: "text",
+      createStateVariable: "label",
+      defaultValue: "",
+      public: true,
+      forRenderer: true,
+    };
+
+    return attributes;
+  }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let addContentBrowserContent = function ({ matchedChildren }) {
-      let newChildren = [];
-
-      let numAddressedChildren = 0;
-      // keep any beginning setup, title children
-      // and remove any blank string children
-      for (let child of matchedChildren) {
-        if (
-          child.componentType === "setup" ||
-          child.componentType === "title"
-        ) {
-          newChildren.push(child);
-          numAddressedChildren++;
-        } else if (typeof child === "string" && child.trim() === "") {
-          numAddressedChildren++;
-        } else {
-          break;
-        }
-      }
-
-      let remainingChildren = matchedChildren.slice(numAddressedChildren);
-
-      if (remainingChildren.length > 0) {
-        // wrap next child in is own contentBrowserContent
-        newChildren.push({
+      // wrap all children in a contentBrowserContent
+      let newChildren = [
+        {
           componentType: "contentBrowserContent",
-          children: [remainingChildren[0]],
-        });
-      }
-      if (remainingChildren.length > 1) {
-        // wrap all remaining children in another contentBrowserContent
-        newChildren.push({
-          componentType: "contentBrowserContent",
-          children: remainingChildren.slice(1),
-        });
-      }
+          children: matchedChildren,
+        },
+      ];
 
       return {
         success: true,
@@ -393,14 +380,6 @@ export class ContentBrowserItem extends BlockComponent {
   static returnChildGroups() {
     return [
       {
-        group: "setups",
-        componentTypes: ["setup"],
-      },
-      {
-        group: "titles",
-        componentTypes: ["title"],
-      },
-      {
         group: "anything",
         componentTypes: ["_base"],
       },
@@ -409,88 +388,6 @@ export class ContentBrowserItem extends BlockComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.setupChildren = {
-      returnDependencies: () => ({
-        setupChildren: {
-          dependencyType: "child",
-          childGroups: ["setups"],
-          proceedIfAllChildrenNotMatched: true,
-        },
-      }),
-      definition({ dependencyValues }) {
-        return { setValue: { setupChildren: dependencyValues.setupChildren } };
-      },
-    };
-
-    stateVariableDefinitions.description = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "text",
-      },
-      stateVariablesDeterminingDependencies: ["setupChildren"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          setupChildren: {
-            dependencyType: "child",
-            childGroups: ["setups"],
-            proceedIfAllChildrenNotMatched: true,
-          },
-        };
-
-        let firstSetupChild = stateValues.setupChildren[0];
-
-        if (firstSetupChild) {
-          dependencies[`descriptions`] = {
-            dependencyType: "descendant",
-            ancestorName: firstSetupChild.componentName,
-            componentTypes: ["description"],
-            variableNames: ["value"],
-          };
-        }
-
-        return dependencies;
-      },
-      definition({ dependencyValues }) {
-        let description =
-          dependencyValues.descriptions?.[0]?.stateValues.value || "";
-        return { setValue: { description } };
-      },
-    };
-
-    stateVariableDefinitions.label = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "label",
-      },
-      stateVariablesDeterminingDependencies: ["setupChildren"],
-      returnDependencies({ stateValues }) {
-        let dependencies = {
-          setupChildren: {
-            dependencyType: "child",
-            childGroups: ["setups"],
-            proceedIfAllChildrenNotMatched: true,
-          },
-        };
-
-        let firstSetupChild = stateValues.setupChildren[0];
-
-        if (firstSetupChild) {
-          dependencies[`labels`] = {
-            dependencyType: "descendant",
-            ancestorName: firstSetupChild.componentName,
-            componentTypes: ["label"],
-            variableNames: ["value"],
-          };
-        }
-
-        return dependencies;
-      },
-      definition({ dependencyValues }) {
-        let label = dependencyValues.labels?.[0]?.stateValues.value || "";
-        return { setValue: { label } };
-      },
-    };
 
     stateVariableDefinitions.isSelected = {
       returnDependencies: () => ({
@@ -508,96 +405,6 @@ export class ContentBrowserItem extends BlockComponent {
         };
       },
     };
-
-    stateVariableDefinitions.itemInfoForInitial = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        parentItemInfoForInitial: {
-          dependencyType: "parentStateVariable",
-          variableName: "itemInfoForInitial",
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            itemInfoForInitial: dependencyValues.parentItemInfoForInitial || [],
-          },
-        };
-      },
-    };
-
-    stateVariableDefinitions.titleChildName = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        titleChild: {
-          dependencyType: "child",
-          childGroups: ["titles"],
-        },
-      }),
-      definition({ dependencyValues }) {
-        let titleChildName = null;
-        if (dependencyValues.titleChild.length > 0) {
-          titleChildName =
-            dependencyValues.titleChild[dependencyValues.titleChild.length - 1]
-              .componentName;
-        }
-        return {
-          setValue: { titleChildName },
-        };
-      },
-    };
-
-    stateVariableDefinitions.childIndicesToRender = {
-      additionalStateVariablesDefined: [
-        {
-          variableName: "titleChildIndex",
-          forRenderer: true,
-        },
-      ],
-      returnDependencies: () => ({
-        titleSetupChildren: {
-          dependencyType: "child",
-          childGroups: ["titles", "setups"],
-        },
-        allChildren: {
-          dependencyType: "child",
-          childGroups: ["anything", "titles", "setups"],
-        },
-        titleChildName: {
-          dependencyType: "stateVariable",
-          variableName: "titleChildName",
-        },
-      }),
-      definition({ dependencyValues }) {
-        let childIndicesToRender = [];
-        let titleChildIndex = null;
-
-        let allTitleSetupChildNames = dependencyValues.titleSetupChildren.map(
-          (x) => x.componentName,
-        );
-
-        for (let [ind, child] of dependencyValues.allChildren.entries()) {
-          if (child.componentName === dependencyValues.titleChildName) {
-            titleChildIndex = childIndicesToRender.length;
-            childIndicesToRender.push(ind);
-          } else if (
-            typeof child !== "object" ||
-            !allTitleSetupChildNames.includes(child.componentName)
-          ) {
-            childIndicesToRender.push(ind);
-          }
-        }
-
-        console.log({ titleChildIndex });
-
-        return { setValue: { childIndicesToRender, titleChildIndex } };
-      },
-    };
-
-    // stateVariableDefinitions.numTopChildren = {
-    //   forRenderer: true,
-    //   returnDependencies: () => ({}),
-    // };
 
     return stateVariableDefinitions;
   }
