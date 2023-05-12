@@ -421,10 +421,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (
-            cTypeLower !== "copy" &&
-            propLower in deprecatedAttributeSubstitutions
-          ) {
+          } else if (propLower in deprecatedAttributeSubstitutions) {
             let newProp = deprecatedAttributeSubstitutions[propLower];
 
             console.warn(
@@ -448,10 +445,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (
-            cTypeLower !== "copy" &&
-            deprecatedAttributeDeletions.has(propLower)
-          ) {
+          } else if (deprecatedAttributeDeletions.has(propLower)) {
             console.warn(`Attribute ${prop} is deprecated.  It is ignored.`);
             delete component.props[prop];
 
