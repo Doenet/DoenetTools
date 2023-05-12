@@ -382,6 +382,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     attracttogrid: ["ignoregraphbounds"],
     constraints: ["baseongraph"],
     graph: ["xlabel", "ylabel"],
+    conditionalcontent: ["maximumnumbertoshow"],
   };
 
   for (let component of serializedComponents) {

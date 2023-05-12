@@ -614,7 +614,7 @@ describe("Conditional Content Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p name="pa">a: <conditionalContent assignNames="a" maximumNumberToShow="1">
+    <p name="pa">a: <conditionalContent assignNames="a">
       <case condition="$n < 0"><text>dog</text></case>
       <case condition="$n <=1"><text>cat</text></case>
       <else><text>mouse</text></else>
@@ -708,7 +708,7 @@ describe("Conditional Content Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p name="pa">a: <conditionalContent assignNames="(a)" maximumNumberToShow="1">
+    <p name="pa">a: <conditionalContent assignNames="(a)">
       <case condition="$n < 0"><text>dog</text></case>
       <case condition="$n <=1"><text>cat</text></case>
       <else><text>mouse</text></else>
@@ -794,219 +794,6 @@ describe("Conditional Content Tag Tests", function () {
     cy.get(cesc("#\\/b1")).should("have.text", "mouse");
   });
 
-  it("case/else with single text with multiple matches, assign sub on copy", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-    <text>a</text>
-    <mathinput name="n" />
-    <p name="pa">a,aa: <conditionalContent assignNames="a aa">
-      <case condition="$n < 0"><text>dog</text></case>
-      <case condition="$n <=1"><text>cat</text></case>
-      <else><text>mouse</text></else>
-    </conditionalContent></p>
-
-    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
-    <p name="paa1">aa1: <copy target="aa" assignNames="(aa1)" /></p>
-
-    <p name="pb" >b,bb: <copy target="_conditionalcontent1" assignNames="(b) (bb)" /></p>
-
-    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
-    <p name="pbb1">bb1: <copy target="bb" assignNames="bb1" /></p>
-
-    `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a,aa: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/paa1")).should("have.text", "aa1: ");
-    cy.get(cesc("#\\/pb")).should("have.text", "b,bb: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-    cy.get(cesc("#\\/pbb1")).should("have.text", "bb1: ");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/aa1")).should("not.exist");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb")).should("not.exist");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb1")).should("not.exist");
-
-    cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a,aa: cat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/paa1")).should("have.text", "aa1: ");
-    cy.get(cesc("#\\/pb")).should("have.text", "b,bb: cat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
-    cy.get(cesc("#\\/pbb1")).should("have.text", "bb1: ");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/aa1")).should("not.exist");
-    cy.get(cesc("#\\/b")).should("have.text", "cat");
-    cy.get(cesc("#\\/bb")).should("not.exist");
-    cy.get(cesc("#\\/b1")).should("have.text", "cat");
-    cy.get(cesc("#\\/bb1")).should("not.exist");
-
-    cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}10{enter}", {
-      force: true,
-    });
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a,aa: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/paa1")).should("have.text", "aa1: ");
-    cy.get(cesc("#\\/pb")).should("have.text", "b,bb: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-    cy.get(cesc("#\\/pbb1")).should("have.text", "bb1: ");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/aa1")).should("not.exist");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb")).should("not.exist");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb1")).should("not.exist");
-
-    cy.log("enter -11");
-    cy.get(cesc("#\\/n") + " textarea").type(
-      "{end}{backspace}{backspace}-1{enter}",
-      { force: true },
-    );
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a,aa: dogcat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/paa1")).should("have.text", "aa1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b,bb: dogcat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
-    cy.get(cesc("#\\/pbb1")).should("have.text", "bb1: cat");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/aa1")).should("have.text", "cat");
-    cy.get(cesc("#\\/b")).should("have.text", "dog");
-    cy.get(cesc("#\\/bb")).should("have.text", "cat");
-    cy.get(cesc("#\\/b1")).should("have.text", "dog");
-    cy.get(cesc("#\\/bb1")).should("have.text", "cat");
-
-    cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
-      "{end}{backspace}{backspace}x{enter}",
-      { force: true },
-    );
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a,aa: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/paa1")).should("have.text", "aa1: ");
-    cy.get(cesc("#\\/pb")).should("have.text", "b,bb: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-    cy.get(cesc("#\\/pbb1")).should("have.text", "bb1: ");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/aa1")).should("not.exist");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb")).should("not.exist");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/bb1")).should("not.exist");
-  });
-
-  it("case/else with single text, assign sub on copy, copy condition to restrict to one", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-    <text>a</text>
-    <mathinput name="n" />
-    <p name="pa">a: <conditionalContent assignNames="a">
-      <case condition="$n < 0"><text>dog</text></case>
-      <case condition="not $_case1.conditionSatisfied and $n <=1"><text>cat</text></case>
-      <else><text>mouse</text></else>
-    </conditionalContent></p>
-
-    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
-
-    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
-
-    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
-
-    `,
-        },
-        "*",
-      );
-    });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-
-    cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a: cat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: cat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/b")).should("have.text", "cat");
-    cy.get(cesc("#\\/b1")).should("have.text", "cat");
-
-    cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}10{enter}", {
-      force: true,
-    });
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-
-    cy.log("enter -11");
-    cy.get(cesc("#\\/n") + " textarea").type(
-      "{end}{backspace}{backspace}-1{enter}",
-      { force: true },
-    );
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a: dog");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: dog");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/b")).should("have.text", "dog");
-    cy.get(cesc("#\\/b1")).should("have.text", "dog");
-
-    cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
-      "{end}{backspace}{backspace}x{enter}",
-      { force: true },
-    );
-
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
-
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
-  });
-
   it("case/else with text, math, and optional", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -1014,7 +801,7 @@ describe("Conditional Content Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="(a b c d)" maximumNumberToShow="1">
+    <p>original: <conditionalContent assignNames="(a b c d)">
       <case condition="$n<0" ><text>dog</text>  <math>x</math>
         <text>optional text!</text>
       </case>
@@ -1787,7 +1574,7 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="((a) (b) c)" maximumNumberToShow="1">
+    <p>original: <conditionalContent assignNames="((a) (b) c)">
       <case condition="$n<0" >
         <copy target="x1" />
         <copy target="y1" />
@@ -2011,7 +1798,7 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="a" maximumNumberToShow="1">
+    <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" newNamespace >
         <copy target="../x1" assignNames="animal" />
         <copy target="../y1" assignNames="plant" />
@@ -2360,7 +2147,7 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent name="s" assignNames="a" maximumNumberToShow="1" newNamespace>
+    <p>original: <conditionalContent name="s" assignNames="a" newNamespace>
       <case newNamespace condition="$(../n) < 0" >
         <copy target="../../x1" assignNames="animal" />
         <copy target="../../y1" assignNames="plant" />
@@ -2712,7 +2499,7 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="a" maximumNumberToShow="1">
+    <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" >
         <copy target="x1" assignNames="theanimal" />
         <copy target="y1" assignNames="theplant" />
@@ -3072,7 +2859,7 @@ describe("Conditional Content Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <mathinput name="n" prefill="1" />
-    <conditionalContent assignNames="a" maximumNumberToShow="1">
+    <conditionalContent assignNames="a">
       <case condition="$n<0" newNamespace>
         <p>What is your favorite animal? <textinput name="response" /></p>
         <p>I like <copy prop="value" target="response" />, too.</p>
@@ -3169,7 +2956,7 @@ describe("Conditional Content Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <mathinput name="n" prefill="1" />
-    <conditionalContent assignNames="(a b)" maximumNumberToShow="1">
+    <conditionalContent assignNames="(a b)">
       <case condition="$n<0" >
         <p newNamespace name="panimal">What is your favorite animal? <textinput name="response" /></p>
         <p newNamespace>I like <copy prop="value" target="../panimal/response" />, too.</p>
@@ -3415,12 +3202,12 @@ describe("Conditional Content Tag Tests", function () {
       <label>Hide second conditionalContent</label>
     </booleaninput>
     <mathinput name="n" />
-    <p name="pa">a: <conditionalContent assignNames="a" maximumNumberToShow="1" hide="$h1">
+    <p name="pa">a: <conditionalContent assignNames="a" hide="$h1">
       <case condition="$n<0"><text>dog</text></case>
       <case condition="$n<=1"><text>cat</text></case>
       <else><text>mouse</text></else>
     </conditionalContent></p>
-    <p name="pb">b: <conditionalContent assignNames="b" maximumNumberToShow="1" hide="$h2">
+    <p name="pb">b: <conditionalContent assignNames="b" hide="$h2">
       <case condition="$n<0"><text>dog</text></case>
       <case condition="$n<=1"><text>cat</text></case>
       <else><text>mouse</text></else>
@@ -3487,7 +3274,7 @@ describe("Conditional Content Tag Tests", function () {
   </setup>
 
   <mathinput name="n" />
-  <p name="pa">a: <conditionalContent assignNames="a" maximumNumberToShow="1">
+  <p name="pa">a: <conditionalContent assignNames="a">
     <case condition="$n > 0">The $animal1 $verb1.</case>
     <else>The $animal2 $verb2.</else>
   </conditionalContent></p>
@@ -3610,10 +3397,10 @@ describe("Conditional Content Tag Tests", function () {
   </conditionalContent>
   
   <conditionalContent>
-    <case condition="$n > 0">
+    <case condition="$n > 0 && $n<=1">
       <p>Just emphasizing that we have that <text name="winner1b">first winner</text>!</p>
     </case>
-    <case condition="$n > 1">
+    <case condition="$n > 1 && $n <= 2">
       <p>We have a <text name="winner2">second winner</text>!</p>
     </case>
     <case condition="$n > 2">
@@ -3666,11 +3453,8 @@ describe("Conditional Content Tag Tests", function () {
 
     cy.get(cesc("#\\/winner1")).should("have.text", "first winner");
     cy.get(cesc("#\\/_p1")).should("have.text", "We have a first winner!");
-    cy.get(cesc("#\\/winner1b")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p2")).should(
-      "have.text",
-      "Just emphasizing that we have that first winner!",
-    );
+    cy.get(cesc("#\\/winner1b")).should("not.exist");
+    cy.get(cesc("#\\/_p2")).should("not.exist");
     cy.get(cesc("#\\/winner2")).should("have.text", "second winner");
     cy.get(cesc("#\\/_p3")).should("have.text", "We have a second winner!");
     cy.get(cesc("#\\/winner3")).should("not.exist");
@@ -3684,13 +3468,10 @@ describe("Conditional Content Tag Tests", function () {
 
     cy.get(cesc("#\\/winner1")).should("have.text", "first winner");
     cy.get(cesc("#\\/_p1")).should("have.text", "We have a first winner!");
-    cy.get(cesc("#\\/winner1b")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p2")).should(
-      "have.text",
-      "Just emphasizing that we have that first winner!",
-    );
-    cy.get(cesc("#\\/winner2")).should("have.text", "second winner");
-    cy.get(cesc("#\\/_p3")).should("have.text", "We have a second winner!");
+    cy.get(cesc("#\\/winner1b")).should("not.exist");
+    cy.get(cesc("#\\/_p2")).should("not.exist");
+    cy.get(cesc("#\\/winner2")).should("not.exist");
+    cy.get(cesc("#\\/_p3")).should("not.exist");
     cy.get(cesc("#\\/winner3")).should("have.text", "third winner");
     cy.get(cesc("#\\/_p4")).should("have.text", "We have a third winner!");
     cy.get(cesc("#\\/winner0")).should("not.exist");
