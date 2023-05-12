@@ -2721,7 +2721,7 @@ describe("Select Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variantNames="aVocado  broCColi   carrot  Dill eggplanT"/>
+    <variantControl numVariants="5" variantNames="aVocado  broCColi   carrot  Dill eggplanT"/>
 
     <p>Selected variable:
     <select assignnames="(x)">
@@ -2784,7 +2784,7 @@ describe("Select Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variantNames="avocado  brOccoli   carrot  dill    eggPlant  "/>
+    <variantControl numVariants="5" variantNames="avocado  brOccoli   carrot  dill    eggPlant  "/>
 
     <p>Selected variables:
     <aslist>

@@ -239,7 +239,7 @@ export default class PiecewiseFunction extends Function {
       definition: () => ({ setValue: { formula: me.fromAst("\uff3f") } }),
     };
 
-    delete stateVariableDefinitions.nPrescribedPoints;
+    delete stateVariableDefinitions.numPrescribedPoints;
     delete stateVariableDefinitions.prescribedPoints;
     delete stateVariableDefinitions.prescribedMinima;
     delete stateVariableDefinitions.prescribedMaxima;

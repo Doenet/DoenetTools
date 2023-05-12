@@ -792,8 +792,8 @@ function convertMatrixToArrayOfTuples(matrixOperands) {
   // and pad with \uff3f for any missing entries
 
   let numRows = matrixOperands[0][1];
-  let nCols = matrixOperands[0][2];
-  if (!(Number.isInteger(numRows) && Number.isInteger(nCols))) {
+  let numColumns = matrixOperands[0][2];
+  if (!(Number.isInteger(numRows) && Number.isInteger(numColumns))) {
     return matrixOperands;
   }
 
@@ -803,7 +803,7 @@ function convertMatrixToArrayOfTuples(matrixOperands) {
     let row = ["tuple"];
     let rowOperands = matrixOperands[1][rowInd + 1] || [];
 
-    for (let colInd = 0; colInd < nCols; colInd++) {
+    for (let colInd = 0; colInd < numColumns; colInd++) {
       let val = rowOperands[colInd + 1];
       if (val === undefined || val === null) {
         val = "\uff3f";

@@ -91,8 +91,8 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       round_to_decimals(SVs.firstItem, roundDecimals),
       round_to_decimals(SVs.lastItem, roundDecimals),
     ];
-    let numToTest = Math.min(SVs.nItems, 100);
-    let dInd = Math.floor(SVs.nItems / numToTest);
+    let numToTest = Math.min(SVs.numItems, 100);
+    let dInd = Math.floor(SVs.numItems / numToTest);
     for (let i = 1; i < numToTest; i++) {
       pointsToTest.push(
         round_to_decimals(SVs.from + SVs.step * i * dInd, roundDecimals),
@@ -103,8 +103,8 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
     let pointsToTest = points.map((x) => round_to_decimals(x, roundDecimals));
     maxValueWidth = findMaxValueWidth(pointsToTest);
   }
-  const nItems = SVs.nItems;
-  if (SVs.width.size > maxValueWidth * nItems) {
+  const numItems = SVs.numItems;
+  if (SVs.width.size > maxValueWidth * numItems) {
     if (points.length === 0) {
       let ticks = [];
       let labels = [];
@@ -114,7 +114,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
         magnitudeOfMaxAbs = 1;
       }
       let roundDecimals = 5 - magnitudeOfMaxAbs;
-      for (let index = 0; index < SVs.nItems; index++) {
+      for (let index = 0; index < SVs.numItems; index++) {
         let point = round_to_decimals(
           SVs.from + SVs.step * index,
           roundDecimals,
@@ -142,7 +142,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
   } else if (SVs.width.size < maxValueWidth) {
     let pointsCopy = [...points];
     if (points.length === 0) {
-      for (let index = 0; index < Math.min(3, SVs.nItems); index++) {
+      for (let index = 0; index < Math.min(3, SVs.numItems); index++) {
         pointsCopy.push(SVs.from + SVs.step * index);
       }
     }
@@ -170,7 +170,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
         }
       }),
     ];
-  } else if (SVs.width.size < maxValueWidth * nItems) {
+  } else if (SVs.width.size < maxValueWidth * numItems) {
     let tickIndices, tickValues;
     if (points.length === 0) {
       let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
@@ -201,9 +201,9 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
         Math.floor(SVs.width.size / maxValueWidth),
       );
       let dIndex = Math.ceil(
-        (SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1e-10,
+        (SVs.numItems - 1) / (desiredNumberOfTicks - 1) - 1e-10,
       );
-      let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1e-10) + 1;
+      let numberOfTicks = Math.floor((SVs.numItems - 1) / dIndex + 1e-10) + 1;
 
       tickIndices = [...Array(numberOfTicks).keys()].map((i) =>
         Math.round(dIndex * i),
@@ -325,7 +325,7 @@ function xPositionToValue(ref, div_width, start_val) {
 function nearestValue(refval, points, SVs) {
   let index = Math.max(
     0,
-    Math.min(SVs.nItems - 1, Math.round(refval - SVs.firstItem)),
+    Math.min(SVs.numItems - 1, Math.round(refval - SVs.firstItem)),
   );
 
   let val;
@@ -360,7 +360,7 @@ export default React.memo(function Slider(props) {
   const [offsetLeft, setOffsetLeft] = useState(0);
   const startValue = SVs.type === "text" ? 0 : SVs.firstItem;
   // const endValue = (SVs.type === "text") ? 0 : SVs.lastItem;
-  let divisionWidth = SVs.width.size / (SVs.nItems - 1);
+  let divisionWidth = SVs.width.size / (SVs.numItems - 1);
 
   const [index, setIndex] = useState(0);
   // const width = (SVs.width.size);
@@ -377,7 +377,7 @@ export default React.memo(function Slider(props) {
       // setThumbValue(SVs.value);
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
-        setThumbXPos((SVs.index / (SVs.nItems - 1)) * SVs.width.size);
+        setThumbXPos((SVs.index / (SVs.numItems - 1)) * SVs.width.size);
         // setThumbXPos((SVs.value - startValue)*divisionWidth);
       } else {
         setThumbXPos(SVs.index * divisionWidth);
@@ -537,7 +537,7 @@ export default React.memo(function Slider(props) {
     if (!(SVs.type === "text")) {
       //Find the new index based on clientX and total width
       // const ratio = (e.clientX - offsetLeft) / SVs.width.size;
-      // const selectedIndex = Math.min(Math.max(Math.round(ratio * SVs.nItems), 0), SVs.nItems - 1)
+      // const selectedIndex = Math.min(Math.max(Math.round(ratio * SVs.numItems), 0), SVs.numItems - 1)
 
       let refval = xPositionToValue(
         e.clientX - offsetLeft,
@@ -568,7 +568,7 @@ export default React.memo(function Slider(props) {
       });
     } else {
       let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
-      i = Math.max(0, Math.min(SVs.nItems - 1, i));
+      i = Math.max(0, Math.min(SVs.numItems - 1, i));
 
       setIndex(i);
       // setThumbValue(SVs.items[i]);
@@ -634,7 +634,7 @@ export default React.memo(function Slider(props) {
   }
 
   function handleNext(e) {
-    if (index === SVs.nItems - 1) {
+    if (index === SVs.numItems - 1) {
       return;
     }
 

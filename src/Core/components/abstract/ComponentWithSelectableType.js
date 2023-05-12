@@ -431,7 +431,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
     delete stateVariableDefinitions.value;
 
-    stateVariableDefinitions.nLists = {
+    stateVariableDefinitions.numLists = {
       returnDependencies: () => ({
         listChildren: {
           dependencyType: "child",
@@ -439,7 +439,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nLists: dependencyValues.listChildren.length } };
+        return { setValue: { numLists: dependencyValues.listChildren.length } };
       },
     };
 
@@ -447,13 +447,13 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       isArray: true,
       entryPrefixes: ["list"],
       returnArraySizeDependencies: () => ({
-        nLists: {
+        numLists: {
           dependencyType: "stateVariable",
-          variableName: "nLists",
+          variableName: "numLists",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nLists];
+        return [dependencyValues.numLists];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {

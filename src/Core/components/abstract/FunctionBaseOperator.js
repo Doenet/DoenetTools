@@ -108,7 +108,7 @@ export default class FunctionOperator extends Function {
       definition: () => ({ setValue: { isInterpolatedFunction: false } }),
     };
 
-    delete stateVariableDefinitions.nPrescribedPoints;
+    delete stateVariableDefinitions.numPrescribedPoints;
     delete stateVariableDefinitions.prescribedPoints;
     delete stateVariableDefinitions.prescribedMinima;
     delete stateVariableDefinitions.prescribedMaxima;

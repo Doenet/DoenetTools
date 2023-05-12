@@ -1246,7 +1246,7 @@ export default class BaseComponent {
 
   static adapters = [];
 
-  static get nAdapters() {
+  static get numAdapters() {
     return this.adapters.length;
   }
 

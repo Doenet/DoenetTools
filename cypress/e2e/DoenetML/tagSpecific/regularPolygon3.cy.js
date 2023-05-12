@@ -23,7 +23,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 
@@ -40,7 +40,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -63,7 +63,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [2, -5],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -85,7 +85,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [10, -3],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -107,7 +107,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [2, -5],
       center: [-9, -5],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -152,7 +152,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices,
       vertex1,
       center,
-      conservedWhenChangenumVertices: "twoVertices",
+      conservedWhenChangeNumVertices: "twoVertices",
       abbreviated: true,
     });
   });
@@ -173,7 +173,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -194,7 +194,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [11, 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -214,7 +214,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [3 / Math.cos(Math.PI / 3), 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -235,7 +235,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [-1 + 3 / Math.cos(Math.PI / 3), -3],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -254,7 +254,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [5 / (2 * Math.sin(Math.PI / 3)), 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "sideLength",
+      conservedWhenChangeNumVertices: "sideLength",
       abbreviated: true,
     });
   });
@@ -273,16 +273,16 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 3,
       vertex1: [-1 + 10 / (3 * 2 * Math.sin(Math.PI / 3)), -3],
       center: [-1, -3],
-      conservedWhenChangenumVertices: "perimeter",
+      conservedWhenChangeNumVertices: "perimeter",
       abbreviated: true,
     });
   });
 
-  it("specify numVertices, ignore nSides", () => {
+  it("specify numVertices, ignore numSides", () => {
     setupRegularPolygonScene({
       attributes: {
         numVertices: "4",
-        nSides: "6",
+        numSides: "6",
         center: "(4,1)",
       },
     });
@@ -291,7 +291,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       numVertices: 4,
       vertex1: [5, 1],
       center: [4, 1],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -605,7 +605,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       </constraints>
     </point>
     <point name="Q">(6,5)</point>
-    <regularPolygon nSides="5" vertices="$P $Q" name="p" />
+    <regularPolygon numSides="5" vertices="$P $Q" name="p" />
   </graph>
   <p name="pvert">First two vertices: $p.vertex1{assignNames="v1"} $p.vertex2{assignNames="v2" displaySmallAsZero}</p>
   `,
@@ -665,7 +665,7 @@ describe("Regular Polygon Tag Tests 3", function () {
       </constraints>
     </point>
     <point name="Q">(6,5)</point>
-    <regularPolygon nSides="5" vertices="$P" center="$Q" name="p" />
+    <regularPolygon numSides="5" vertices="$P" center="$Q" name="p" />
   </graph>
   <p name="pvert">First two vertex: $p.vertex1{assignNames="v1"}</p>
   <p name="pcenter">Center: $p.center{assignNames="c"}</p>
@@ -726,7 +726,7 @@ describe("Regular Polygon Tag Tests 3", function () {
         <constrainToGrid dx="3" dy="2" />
       </constraints>
     </point>
-    <regularPolygon nSides="5" vertices="$P" center="$Q" name="p" />
+    <regularPolygon numSides="5" vertices="$P" center="$Q" name="p" />
   </graph>
   <p name="pvert">First vertex: $p.vertex1{assignNames="v1"}</p>
   <p name="pcenter">Center: $p.center{assignNames="c"}</p>

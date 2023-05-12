@@ -24535,7 +24535,7 @@ describe("Answer Tag Tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
+        <variantControl numVariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
           <option selectForVariants="cat">
@@ -24597,7 +24597,7 @@ describe("Answer Tag Tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
+        <variantControl numVariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
           <option selectForVariants="cat">

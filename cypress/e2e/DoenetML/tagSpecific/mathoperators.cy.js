@@ -13384,7 +13384,7 @@ describe("Math Operator Tag Tests", function () {
       <text>a</text>
       <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
       <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
-      <p>Number of operands: <extractMath type="numberOfOperands" name="numOperands">$expr</extractMath></p>
+      <p>Number of operands: <extractMath type="numOperands" name="numOperands">$expr</extractMath></p>
       <p>First operand: <extractMath type="Operand" name="operand1" operandNumber="1">$expr</extractMath></p>
       <p>Second operand: <extractMath type="Operand" name="operand2" operandNumber="2">$expr</extractMath></p>
       <p>Third operand: <extractMath type="Operand" name="operand3" operandNumber="3">$expr</extractMath></p>
@@ -13400,7 +13400,7 @@ describe("Math Operator Tag Tests", function () {
       <p>Second function argument from second operand: <extractMath type="functionArgument" argumentNumber="2" name="garg2">$operand2</extractMath></p>
       <p>No third function argument from second operand: <extractMath type="functionArgument" argumentNumber="3" name="blank4">$operand2</extractMath></p>
       <p>No function argument from third operand: <extractMath type="functionArgument" name="blank5">$operand3</extractMath></p>
-      <p>Number of operands from first operand: <extractMath type="numberofoperands" name="numOperands1">$operand1</extractMath></p>
+      <p>Number of operands from first operand: <extractMath type="numOperands" name="numOperands1">$operand1</extractMath></p>
       <p>First operand from first operand: <extractMath type="operand" operandNumber="1" name="operand11">$operand1</extractMath></p>
 
 

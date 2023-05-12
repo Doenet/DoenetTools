@@ -147,14 +147,14 @@ export default React.memo(function Pegboard(props) {
 
     let numRows = maxYind - minYind + 1;
     let prevNrows = prevYmax - prevYmin + 1;
-    let nCols = maxXind - minXind + 1;
+    let numColumns = maxXind - minXind + 1;
     let prevNcols = prevXmax - prevXmin + 1;
 
     for (let i = 0; i < Math.min(numRows, prevNrows); i++) {
       let row = pegboardJXG.current[i];
       let y = (i + minYind) * dy.current + yoffset.current;
 
-      for (let j = 0; j < Math.min(nCols, prevNcols); j++) {
+      for (let j = 0; j < Math.min(numColumns, prevNcols); j++) {
         let x = (j + minXind) * dx.current + xoffset.current;
 
         row[j].coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
@@ -162,13 +162,13 @@ export default React.memo(function Pegboard(props) {
         row[j].needsUpdate = true;
         row[j].update();
       }
-      if (prevNcols > nCols) {
-        for (let j = nCols; j < prevNcols; j++) {
+      if (prevNcols > numColumns) {
+        for (let j = numColumns; j < prevNcols; j++) {
           let point = row.pop();
           board.removeObject(point);
         }
-      } else if (prevNcols < nCols) {
-        for (let j = prevNcols; j < nCols; j++) {
+      } else if (prevNcols < numColumns) {
+        for (let j = prevNcols; j < numColumns; j++) {
           let x = (j + minXind) * dx.current + xoffset.current;
           row.push(board.create("point", [x, y], jsxPointAttributes.current));
         }
@@ -187,7 +187,7 @@ export default React.memo(function Pegboard(props) {
       for (let i = prevNrows; i < numRows; i++) {
         let row = [];
         let y = (i + minYind) * dy.current + yoffset.current;
-        for (let j = 0; j < nCols; j++) {
+        for (let j = 0; j < numColumns; j++) {
           let x = (j + minXind) * dx.current + xoffset.current;
           row.push(board.create("point", [x, y], jsxPointAttributes.current));
         }

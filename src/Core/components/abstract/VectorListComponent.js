@@ -40,7 +40,7 @@ export default class VectorListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nVectors = {
+    stateVariableDefinitions.numVectors = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
@@ -49,8 +49,8 @@ export default class VectorListComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { nVectors: dependencyValues.vectorChildren.length },
-        checkForActualChange: { nVectors: true },
+        setValue: { numVectors: dependencyValues.vectorChildren.length },
+        checkForActualChange: { numVectors: true },
       }),
     };
 
@@ -157,9 +157,9 @@ export default class VectorListComponent extends BaseComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nVectors: {
+        numVectors: {
           dependencyType: "stateVariable",
-          variableName: "nVectors",
+          variableName: "numVectors",
         },
         numDimensions: {
           dependencyType: "stateVariable",
@@ -167,7 +167,7 @@ export default class VectorListComponent extends BaseComponent {
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVectors, dependencyValues.numDimensions];
+        return [dependencyValues.numVectors, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

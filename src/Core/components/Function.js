@@ -875,7 +875,7 @@ export default class Function extends InlineComponent {
 
     // variables for interpolated function
 
-    stateVariableDefinitions.nPrescribedPoints = {
+    stateVariableDefinitions.numPrescribedPoints = {
       returnDependencies: () => ({
         through: {
           dependencyType: "attributeComponent",
@@ -884,12 +884,12 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let nPrescribedPoints = 0;
+        let numPrescribedPoints = 0;
         if (dependencyValues.through !== null) {
-          nPrescribedPoints = dependencyValues.through.stateValues.numPoints;
+          numPrescribedPoints = dependencyValues.through.stateValues.numPoints;
         }
         return {
-          setValue: { nPrescribedPoints },
+          setValue: { numPrescribedPoints },
         };
       },
     };
@@ -898,13 +898,13 @@ export default class Function extends InlineComponent {
       isArray: true,
       entryPrefixes: ["prescribedPoint"],
       returnArraySizeDependencies: () => ({
-        nPrescribedPoints: {
+        numPrescribedPoints: {
           dependencyType: "stateVariable",
-          variableName: "nPrescribedPoints",
+          variableName: "numPrescribedPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nPrescribedPoints];
+        return [dependencyValues.numPrescribedPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -2797,8 +2797,8 @@ export default class Function extends InlineComponent {
             }
           }
 
-          let nIntervals = 1000;
-          let dx = (maxx - minx) / nIntervals;
+          let numIntervals = 1000;
+          let dx = (maxx - minx) / numIntervals;
 
           let buffer = 1e-10 * Math.max(Math.abs(minx), Math.abs(maxx));
 
@@ -2807,7 +2807,7 @@ export default class Function extends InlineComponent {
           let addedAtPreviousRightViaDeriv = false;
           let fright = f(minx - dx);
           let dright = derivative(minx - dx);
-          for (let i = -1; i < nIntervals + 1; i++) {
+          for (let i = -1; i < numIntervals + 1; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;
@@ -3526,8 +3526,8 @@ export default class Function extends InlineComponent {
             }
           }
 
-          let nIntervals = 1000;
-          let dx = (maxx - minx) / nIntervals;
+          let numIntervals = 1000;
+          let dx = (maxx - minx) / numIntervals;
 
           let buffer = 1e-10 * Math.max(Math.abs(minx), Math.abs(maxx));
 
@@ -3537,7 +3537,7 @@ export default class Function extends InlineComponent {
           let fright = f(minx - dx);
           let dright = derivative(minx - dx);
 
-          for (let i = -1; i < nIntervals + 1; i++) {
+          for (let i = -1; i < numIntervals + 1; i++) {
             let xleft = minx + i * dx;
             let xright = minx + (i + 1) * dx;
             let fleft = fright;

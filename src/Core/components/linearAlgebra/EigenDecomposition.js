@@ -55,8 +55,8 @@ export default class EigenDecomposition extends BaseComponent {
         }
 
         let numRows = mathTree[1][1];
-        let nCols = mathTree[1][2];
-        if (!(Number.isInteger(numRows) && nCols === numRows)) {
+        let numColumns = mathTree[1][2];
+        if (!(Number.isInteger(numRows) && numColumns === numRows)) {
           return { setValue: { decomposition: null } };
         }
 
@@ -66,7 +66,7 @@ export default class EigenDecomposition extends BaseComponent {
           let row = [];
           let rowOperands = mathTree[2][rowInd + 1] || [];
 
-          for (let colInd = 0; colInd < nCols; colInd++) {
+          for (let colInd = 0; colInd < numColumns; colInd++) {
             let val = rowOperands[colInd + 1];
             if (val === undefined || val === null) {
               return { setValue: { decomposition: null } };

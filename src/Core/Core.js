@@ -1957,9 +1957,9 @@ export default class Core {
     let childClass = this.componentInfoObjects.allComponentClasses[childType];
 
     // if didn't match child, attempt to match with child's adapters
-    let nAdapters = childClass.nAdapters;
+    let numAdapters = childClass.numAdapters;
 
-    for (let n = 0; n < nAdapters; n++) {
+    for (let n = 0; n < numAdapters; n++) {
       let adapterComponentType = childClass.getAdapterComponentType(
         n,
         this.componentInfoObjects.publicStateVariableInfo,

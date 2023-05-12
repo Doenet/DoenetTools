@@ -13,7 +13,7 @@ export default class RegularPolygon extends Polygon {
       createComponentOfType: "integer",
     };
 
-    attributes.nSides = {
+    attributes.numSides = {
       createComponentOfType: "integer",
     };
 
@@ -68,9 +68,9 @@ export default class RegularPolygon extends Polygon {
 
     let styleDescriptionWithNounDeps =
       stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies();
-    styleDescriptionWithNounDeps.nSides = {
+    styleDescriptionWithNounDeps.numSides = {
       dependencyType: "stateVariable",
-      variableName: "nSides",
+      variableName: "numSides",
     };
 
     stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies = () =>
@@ -88,7 +88,7 @@ export default class RegularPolygon extends Polygon {
 
       styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll(
         "polygon",
-        `${dependencyValues.nSides}-sided regular polygon`,
+        `${dependencyValues.numSides}-sided regular polygon`,
       );
 
       return { setValue: { styleDescriptionWithNoun } };
@@ -109,9 +109,9 @@ export default class RegularPolygon extends Polygon {
           attributeName: "numVertices",
           variableNames: ["value"],
         },
-        nSidesAttr: {
+        numSidesAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nSides",
+          attributeName: "numSides",
           variableNames: ["value"],
         },
       }),
@@ -122,10 +122,10 @@ export default class RegularPolygon extends Polygon {
               numVertices: dependencyValues.numVerticesAttr.stateValues.value,
             },
           };
-        } else if (dependencyValues.nSidesAttr) {
+        } else if (dependencyValues.numSidesAttr) {
           return {
             setValue: {
-              numVertices: dependencyValues.nSidesAttr.stateValues.value,
+              numVertices: dependencyValues.numSidesAttr.stateValues.value,
             },
           };
         } else {
@@ -146,12 +146,12 @@ export default class RegularPolygon extends Polygon {
               },
             ],
           };
-        } else if (dependencyValues.nSidesAttr) {
+        } else if (dependencyValues.numSidesAttr) {
           return {
             success: true,
             instructions: [
               {
-                setDependency: "nSidesAttr",
+                setDependency: "numSidesAttr",
                 desiredValue: desiredStateVariableValues.numVertices,
                 variableIndex: 0,
               },
@@ -171,7 +171,7 @@ export default class RegularPolygon extends Polygon {
       },
     };
 
-    stateVariableDefinitions.nSides = {
+    stateVariableDefinitions.numSides = {
       isAlias: true,
       targetVariableName: "numVertices",
     };

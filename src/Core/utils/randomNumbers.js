@@ -6,7 +6,7 @@ export function sampleFromRandomNumbers({
   to,
   from,
   step,
-  nDiscreteValues,
+  numDiscreteValues,
   rng,
 }) {
   if (type === "gaussian") {
@@ -56,10 +56,10 @@ export function sampleFromRandomNumbers({
     // discreteuniform
     let sampledValues = [];
 
-    if (nDiscreteValues > 0) {
+    if (numDiscreteValues > 0) {
       for (let i = 0; i < numSamples; i++) {
-        // random integer from 0 to nDiscreteValues-1
-        let ind = Math.floor(rng() * nDiscreteValues);
+        // random integer from 0 to numDiscreteValues-1
+        let ind = Math.floor(rng() * numDiscreteValues);
 
         sampledValues.push(from + step * ind);
       }

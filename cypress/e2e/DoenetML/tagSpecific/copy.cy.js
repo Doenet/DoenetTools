@@ -3650,7 +3650,7 @@ describe("Copy Tag Tests", function () {
     const doenetML = `
     <title>Two variants from copied document</title>
     
-    <copy assignNames="thedoc" uri="doenet:cid=bafkreidlsgyexefli6dymalyij6se6hmjdky3lxag5jsgce3m7mazhsaja" />
+    <copy assignNames="thedoc" uri="doenet:cid=bafkreia7xqmfuhas6yrpr7hilr5khjxqsuqddgurnutqczyebj7lzw7zyy" />
     `;
 
     cy.window().then(async (win) => {

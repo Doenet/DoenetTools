@@ -22,7 +22,7 @@ describe("Regular Polygon Tag Tests 2", function () {
       numVertices: 4,
       vertex1: [-6 + 7, -2],
       center: [-6, -2],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
       abbreviated: true,
     });
   });
@@ -39,7 +39,7 @@ describe("Regular Polygon Tag Tests 2", function () {
       numVertices: 5,
       vertex1: [-5 + 1, -3],
       center: [-5, -3],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 
@@ -55,7 +55,7 @@ describe("Regular Polygon Tag Tests 2", function () {
       numVertices: 4,
       vertex1: [2, -5],
       center: [1, -5],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 
@@ -94,7 +94,7 @@ describe("Regular Polygon Tag Tests 2", function () {
       numVertices,
       vertex1,
       center,
-      conservedWhenChangenumVertices: "twoVertices",
+      conservedWhenChangeNumVertices: "twoVertices",
     });
   });
 });

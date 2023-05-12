@@ -1078,7 +1078,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
         "operand",
         "function",
         "functionargument",
-        "numberofoperands",
+        "numoperands",
       ],
     };
     attributes.operandNumber = {
@@ -1220,7 +1220,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
               },
             },
           };
-        } else if (dependencyValues.type === "numberofoperands") {
+        } else if (dependencyValues.type === "numoperands") {
           return {
             setValue: {
               mathOperator: function (value) {

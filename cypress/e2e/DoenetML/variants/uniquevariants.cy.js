@@ -695,7 +695,7 @@ describe("Specifying unique variant tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl uniquevariants nvariants="10" />
+        <variantControl uniquevariants numVariants="10" />
         <aslist>
           <selectfromsequence type="letters" assignnames="w x y z" numToSelect="4" withreplacement from="u" to="z" />
         </aslist>
@@ -750,7 +750,7 @@ describe("Specifying unique variant tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl uniquevariants nvariants="10" />
+        <variantControl uniquevariants numVariants="10" />
         <aslist>
           <selectfromsequence type="letters" assignnames="w x y z" numToSelect="4" withreplacement from="u" to="z" />
         </aslist>
@@ -1357,7 +1357,7 @@ describe("Specifying unique variant tests", function () {
 
   it("deeper nesting of selects/selectfromsequence", () => {
     let doenetML = `
-    <variantControl nvariants="24" uniquevariants/>
+    <variantControl numVariants="24" uniquevariants/>
     <select assignnames="(p)">
       <option>
         <p>Favorite color:
@@ -1571,7 +1571,7 @@ describe("Specifying unique variant tests", function () {
     cy.get("#testRunner_toggleControls").click();
 
     let doenetML = `
-    <variantControl nvariants="6" uniquevariants/>
+    <variantControl numVariants="6" uniquevariants/>
     <select assignnames="(problem)">
       <option>
         <problem newNamespace><title>Favorite color</title>
@@ -3583,7 +3583,7 @@ describe("Specifying unique variant tests", function () {
     cy.log("get two variants with no include/exclude");
 
     let baseDoenetMLa = `
-    <variantControl nVariants="10" variantNames="first second" />
+    <variantControl numVariants="10" variantNames="first second" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     `;
@@ -3653,7 +3653,7 @@ describe("Specifying unique variant tests", function () {
     cy.log("get same variants when add variantsToInclude");
 
     let baseDoenetMLb = `
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="second e" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     `;
@@ -3723,7 +3723,7 @@ describe("Specifying unique variant tests", function () {
     cy.log("get same variants when add variantsToExclude");
 
     let baseDoenetMLc = `
-    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToExclude="first d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     `;
@@ -3795,7 +3795,7 @@ describe("Specifying unique variant tests", function () {
     );
 
     let baseDoenetMLd = `
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     `;
@@ -3868,7 +3868,7 @@ describe("Specifying unique variant tests", function () {
 
     let baseDoenetMLa = `
     <problem>
-    <variantControl nVariants="10" variantNames="first second" />
+    <variantControl numVariants="10" variantNames="first second" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -3960,7 +3960,7 @@ describe("Specifying unique variant tests", function () {
 
     let baseDoenetMLb = `
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="second e" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4052,7 +4052,7 @@ describe("Specifying unique variant tests", function () {
 
     let baseDoenetMLc = `
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToExclude="first d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4146,7 +4146,7 @@ describe("Specifying unique variant tests", function () {
 
     let baseDoenetMLd = `
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4241,7 +4241,7 @@ describe("Specifying unique variant tests", function () {
     let baseDoenetMLa = `
     Hello!
     <problem>
-    <variantControl nVariants="10" variantNames="first second" />
+    <variantControl numVariants="10" variantNames="first second" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4437,7 +4437,7 @@ describe("Specifying unique variant tests", function () {
     let baseDoenetMLb = `
     Hello!
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="second e" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="second e" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4530,7 +4530,7 @@ describe("Specifying unique variant tests", function () {
     let baseDoenetMLc = `
     Hello!
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToExclude="first d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToExclude="first d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4625,7 +4625,7 @@ describe("Specifying unique variant tests", function () {
     let baseDoenetMLd = `
     Hello!
     <problem>
-    <variantControl nVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
+    <variantControl numVariants="10" variantNames="first second" variantsToInclude="first second d e g h" variantsToExclude="first c d h j" />
     Selected number: 
     <selectfromsequence assignnames="n" length="10" />
     </problem>
@@ -4714,11 +4714,11 @@ describe("Specifying unique variant tests", function () {
     });
   });
 
-  it("unique variants determined by nVariants specified, even with variantsToInclude and variantsToExclude", () => {
-    cy.log("unique variants when nVariants is 1000");
+  it("unique variants determined by numVariants specified, even with variantsToInclude and variantsToExclude", () => {
+    cy.log("unique variants when numVariants is 1000");
 
     let baseDoenetMLa = `
-    <variantControl nVariants="1000" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
+    <variantControl numVariants="1000" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
     Selected number: 
     <selectfromsequence assignnames="n" length="1000" />
     `;
@@ -4779,10 +4779,10 @@ describe("Specifying unique variant tests", function () {
       ).eqls(["t", "cv"]);
     });
 
-    cy.log("non-unique variants when nVariants is 100");
+    cy.log("non-unique variants when numVariants is 100");
 
     let baseDoenetMLb = `
-    <variantControl nVariants="100" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
+    <variantControl numVariants="100" variantsToInclude="b t ax cv" variantsToExclude="b ax" />
     Selected number: 
     <selectfromsequence assignnames="n" length="1000" />
     `;

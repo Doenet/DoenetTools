@@ -37,7 +37,7 @@ export function setupRegularPolygonScene({ attributes }) {
   <p>area: <mathinput name="miar" bindValueTo="$rp.area" /> <number copySource="rp.area" name="ar" /></p>
 
   <p>n vertices: <mathinput name="minv" bindValueTo="$rp.numVertices" /> <number copySource="rp.numVertices" name="nv" /></p>
-  <p>n sides: <mathinput name="mins" bindValueTo="$rp.nSides" /> <number copySource="rp.nSides" name="ns" /></p>
+  <p>n sides: <mathinput name="mins" bindValueTo="$rp.numSides" /> <number copySource="rp.numSides" name="ns" /></p>
 
 
   <graph name="g3">
@@ -56,7 +56,7 @@ export function runRegularPolygonTests({
   center,
   vertex1,
   numVertices,
-  conservedWhenChangenumVertices = "radius",
+  conservedWhenChangeNumVertices = "radius",
   abbreviated = false,
 }) {
   cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
@@ -654,7 +654,7 @@ export function runRegularPolygonTests({
         center,
         numVertices,
         numVertices + 2,
-        conservedWhenChangenumVertices,
+        conservedWhenChangeNumVertices,
       );
 
       vertex1 = result.vertex1;
@@ -691,7 +691,7 @@ export function runRegularPolygonTests({
           center,
           numVertices,
           numVertices - 1,
-          conservedWhenChangenumVertices,
+          conservedWhenChangeNumVertices,
         );
 
         vertex1 = result.vertex1;
@@ -728,27 +728,27 @@ function adjustVertex1CenterWhenChangenumVertices(
   center,
   numVerticesOld,
   numVerticesNew,
-  conservedWhenChangenumVertices,
+  conservedWhenChangeNumVertices,
 ) {
   let radiusRatio = 1;
 
-  if (conservedWhenChangenumVertices === "inradius") {
+  if (conservedWhenChangeNumVertices === "inradius") {
     radiusRatio =
       Math.cos(Math.PI / numVerticesOld) / Math.cos(Math.PI / numVerticesNew);
-  } else if (conservedWhenChangenumVertices === "sideLength") {
+  } else if (conservedWhenChangeNumVertices === "sideLength") {
     radiusRatio =
       (2 * Math.sin(Math.PI / numVerticesOld)) /
       (2 * Math.sin(Math.PI / numVerticesNew));
-  } else if (conservedWhenChangenumVertices === "perimeter") {
+  } else if (conservedWhenChangeNumVertices === "perimeter") {
     radiusRatio =
       (2 * numVerticesOld * Math.sin(Math.PI / numVerticesOld)) /
       (2 * numVerticesNew * Math.sin(Math.PI / numVerticesNew));
-  } else if (conservedWhenChangenumVertices === "area") {
+  } else if (conservedWhenChangeNumVertices === "area") {
     radiusRatio = Math.sqrt(
       ((numVerticesOld / 2) * Math.sin((2 * Math.PI) / numVerticesOld)) /
         ((numVerticesNew / 2) * Math.sin((2 * Math.PI) / numVerticesNew)),
     );
-  } else if (conservedWhenChangenumVertices === "twoVertices") {
+  } else if (conservedWhenChangeNumVertices === "twoVertices") {
     // calculate vertex2
     let directionWithRadius = [vertex1[0] - center[0], vertex1[1] - center[1]];
 
@@ -898,7 +898,7 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 3,
       vertex1: [1, 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 
@@ -914,14 +914,14 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 4,
       vertex1: [Math.sqrt(2) * 5, 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "area",
+      conservedWhenChangeNumVertices: "area",
     });
   });
 
   it("specify sidelength, center for pentegon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "5",
+        numSides: "5",
         sideLength: "2",
         center: "(4,2)",
       },
@@ -931,7 +931,7 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 5,
       vertex1: [4 + 2 / (2 * Math.sin(Math.PI / 5)), 2],
       center: [4, 2],
-      conservedWhenChangenumVertices: "sideLength",
+      conservedWhenChangeNumVertices: "sideLength",
     });
   });
 
@@ -948,14 +948,14 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 6,
       vertex1: [-2 + 3 / Math.cos(Math.PI / 6), 5],
       center: [-2, 5],
-      conservedWhenChangenumVertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
     });
   });
 
   it("specify apothem for heptagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "7",
+        numSides: "7",
         apothem: "4",
       },
     });
@@ -964,7 +964,7 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 7,
       vertex1: [0 + 4 / Math.cos(Math.PI / 7), 0],
       center: [0, 0],
-      conservedWhenChangenumVertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -982,7 +982,7 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 8,
       vertex1: [-4 + 20 / 8 / (2 * Math.sin(Math.PI / 8)), 7],
       center: [-4, 7],
-      conservedWhenChangenumVertices: "perimeter",
+      conservedWhenChangeNumVertices: "perimeter",
       abbreviated: true,
     });
   });
@@ -990,7 +990,7 @@ describe("Regular Polygon Tag Tests", function () {
   it("specify circumradius, center for triangle", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "3",
+        numSides: "3",
         circumradius: "6",
         center: "(-5,8)",
       },
@@ -1000,7 +1000,7 @@ describe("Regular Polygon Tag Tests", function () {
       numVertices: 3,
       vertex1: [-5 + 6, 8],
       center: [-5, 8],
-      conservedWhenChangenumVertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 });
