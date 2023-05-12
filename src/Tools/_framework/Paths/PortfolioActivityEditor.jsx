@@ -212,7 +212,17 @@ export async function loader({ params }) {
 
     let supportingFileData = supportingFileResp.data;
 
+    //Win, Mac or Linux
+    let platform = "Linux";
+    //navigator.userAgentData.platform.indexOf("linux") != -1
+    if (navigator.userAgentData.platform.indexOf("win") != -1) {
+      platform = "Win";
+    } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+      platform = "Mac";
+    }
+
     return {
+      platform,
       activityData,
       pageId,
       courseId,
@@ -1169,8 +1179,15 @@ function EditableLabel() {
 }
 
 export function PortfolioActivityEditor() {
-  const { doenetId, doenetML, pageId, courseId, activityData, lastKnownCid } =
-    useLoaderData();
+  const {
+    platform,
+    doenetId,
+    doenetML,
+    pageId,
+    courseId,
+    activityData,
+    lastKnownCid,
+  } = useLoaderData();
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
@@ -1180,16 +1197,6 @@ export function PortfolioActivityEditor() {
     onClose: controlsOnClose,
   } = useDisclosure();
 
-  //Win, Mac or Linux
-  let platform = "Linux";
-  //navigator.userAgentData.platform.indexOf("linux") != -1
-  if (navigator.userAgentData.platform.indexOf("win") != -1) {
-    platform = "Win";
-  } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
-    platform = "Mac";
-  }
-
-  console.log("platform", platform);
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);

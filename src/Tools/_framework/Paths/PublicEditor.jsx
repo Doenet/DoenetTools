@@ -208,7 +208,17 @@ export async function loader({ params }) {
 
   let supportingFileData = supportingFileResp.data;
 
+  //Win, Mac or Linux
+  let platform = "Linux";
+  //navigator.userAgentData.platform.indexOf("linux") != -1
+  if (navigator.userAgentData.platform.indexOf("win") != -1) {
+    platform = "Win";
+  } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+    platform = "Mac";
+  }
+
   return {
+    platform,
     activityData,
     pageId,
     courseId,
@@ -1226,8 +1236,15 @@ function MathKeyboard() {
 }
 
 export function PublicEditor() {
-  const { doenetId, doenetML, pageId, courseId, activityData, lastKnownCid } =
-    useLoaderData();
+  const {
+    platform,
+    doenetId,
+    doenetML,
+    pageId,
+    courseId,
+    activityData,
+    lastKnownCid,
+  } = useLoaderData();
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
@@ -1244,8 +1261,6 @@ export function PublicEditor() {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-  // const [mode, setMode] = useState("View");
-  const [mode, setMode] = useState("Edit");
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1255,13 +1270,13 @@ export function PublicEditor() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.metaKey && event.code === "KeyS") {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
+      ) {
         event.preventDefault();
+        event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
-      }
-      if (event.metaKey && event.code === "KeyU") {
-        event.preventDefault();
-        controlsOnOpen();
       }
     };
 
@@ -1391,7 +1406,14 @@ export function PublicEditor() {
                     </Tooltip>
                   )}
 
-                  <Tooltip hasArrow label="Updates Viewer cmd+s">
+                  <Tooltip
+                    hasArrow
+                    label={
+                      platform == "Mac"
+                        ? "Updates Viewer cmd+s"
+                        : "Updates Viewer ctrl+s"
+                    }
+                  >
                     <Button
                       ml="10px"
                       size="sm"
