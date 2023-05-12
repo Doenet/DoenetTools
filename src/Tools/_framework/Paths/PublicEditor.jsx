@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useNavigate } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import CodeMirror from "../CodeMirror";
 
 // import styled from "styled-components";
@@ -29,6 +34,8 @@ import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { cidFromText } from "../../../Core/utils/cid";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useRecoilState } from "recoil";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -225,7 +232,19 @@ export function PublicEditor() {
     lastKnownCid,
   } = useLoaderData();
 
+  const { signedIn } = useOutletContext();
   const navigate = useNavigate();
+
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef("");
+
+  if (navigateTo.current != "") {
+    const newHref = navigateTo.current;
+    navigateTo.current = "";
+    location.href = newHref;
+  }
 
   let textEditorDoenetML = useRef(doenetML);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
@@ -396,22 +415,40 @@ export function PublicEditor() {
                   This is a public editor. Remix to save changes to your
                   account.
                 </Text>
-                <Button
-                  size="xs"
-                  onClick={async () => {
-                    let resp = await axios.get(
-                      `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
-                    );
-                    const { nextActivityDoenetId, nextPageDoenetId } =
-                      resp.data;
+                {signedIn ? (
+                  <Button
+                    size="xs"
+                    onClick={async () => {
+                      let resp = await axios.get(
+                        `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
+                      );
+                      const { nextActivityDoenetId, nextPageDoenetId } =
+                        resp.data;
 
-                    navigate(
-                      `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
-                    );
-                  }}
-                >
-                  Remix
-                </Button>
+                      navigate(
+                        `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
+                      );
+                    }}
+                  >
+                    Remix
+                  </Button>
+                ) : (
+                  <Button
+                    dataTest="Nav to signin"
+                    size="xs"
+                    onClick={() => {
+                      navigateTo.current = "/signin";
+                      setRecoilPageToolView({
+                        page: "signin",
+                        tool: "",
+                        view: "",
+                        params: {},
+                      });
+                    }}
+                  >
+                    Sign In To Remix
+                  </Button>
+                )}
               </HStack>
             </Center>
           </>
