@@ -176,7 +176,7 @@ function findFirstPageIdInContent(content) {
 
 export async function loader({ params }) {
   const response = await axios.get("/api/getPortfolioEditorData.php", {
-    params: { doenetId: params.doenetId },
+    params: { doenetId: params.doenetId, publicEditor: true },
   });
   let data = response.data;
   const activityData = { ...data.activity };

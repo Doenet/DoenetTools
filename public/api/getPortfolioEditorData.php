@@ -11,11 +11,41 @@ $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+$publicEditor = mysqli_real_escape_string($conn, $_REQUEST['publicEditor']);
 
 $response_arr;
+
 try {
 
-    //TODO: Check if they have permission to edit it
+    //Check if it's in there portfolio
+
+    $sql = "SELECT 
+    cc.isPublic,
+    cc.courseId,
+    c.portfolioCourseForUserId
+    FROM course_content AS cc
+    LEFT JOIN course AS c
+    ON c.courseId = cc.courseId
+    WHERE cc.doenetId = '$doenetId'
+    ";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $portfolioCourseForUserId = $row['portfolioCourseForUserId'];
+    $isPublic = $row['isPublic'];
+
+    if ($userId != $portfolioCourseForUserId ){
+        if ($isPublic == '1' && !$publicEditor){
+            throw new Exception("Redirect to public activity.");
+        }else if ($isPublic != '1'){
+            throw new Exception("Activity not public.");
+        }
+    }
+
+}else{
+    throw new Exception("Activity not found.");
+}
 
     $sql = "
     SELECT 

@@ -175,48 +175,60 @@ function findFirstPageIdInContent(content) {
 }
 
 export async function loader({ params }) {
-  const response = await axios.get("/api/getPortfolioEditorData.php", {
-    params: { doenetId: params.doenetId },
-  });
-  let data = response.data;
-  const activityData = { ...data.activity };
-  const courseId = data.courseId;
-
-  let pageId = params.pageId;
-  if (params.pageId == "_") {
-    //find pageId in data.content
-    let pageId = findFirstPageIdInContent(activityData.content);
-
-    //If we found a pageId then redirect there
-    //TODO: test what happens when there are only orders and no pageIds
-    if (pageId != "_") {
-      return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
-    }
-  }
-
-  //Get the doenetML of the pageId.
-  const doenetMLResponse = await axios.get(`/media/byPageId/${pageId}.doenet`);
-  let doenetML = doenetMLResponse.data;
-  const lastKnownCid = await cidFromText(doenetML);
-
-  const supportingFileResp = await axios.get(
-    "/api/loadSupportingFileInfo.php",
-    {
+  try {
+    const response = await axios.get("/api/getPortfolioEditorData.php", {
       params: { doenetId: params.doenetId },
-    },
-  );
+    });
 
-  let supportingFileData = supportingFileResp.data;
+    let data = response.data;
+    const activityData = { ...data.activity };
+    const courseId = data.courseId;
 
-  return {
-    activityData,
-    pageId,
-    courseId,
-    lastKnownCid,
-    doenetML,
-    doenetId: params.doenetId,
-    supportingFileData,
-  };
+    let pageId = params.pageId;
+    if (params.pageId == "_") {
+      //find pageId in data.content
+      let pageId = findFirstPageIdInContent(activityData.content);
+
+      //If we found a pageId then redirect there
+      //TODO: test what happens when there are only orders and no pageIds
+      if (pageId != "_") {
+        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
+      }
+    }
+
+    //Get the doenetML of the pageId.
+    const doenetMLResponse = await axios.get(
+      `/media/byPageId/${pageId}.doenet`,
+    );
+    let doenetML = doenetMLResponse.data;
+    const lastKnownCid = await cidFromText(doenetML);
+
+    const supportingFileResp = await axios.get(
+      "/api/loadSupportingFileInfo.php",
+      {
+        params: { doenetId: params.doenetId },
+      },
+    );
+
+    let supportingFileData = supportingFileResp.data;
+
+    return {
+      activityData,
+      pageId,
+      courseId,
+      lastKnownCid,
+      doenetML,
+      doenetId: params.doenetId,
+      supportingFileData,
+    };
+  } catch (e) {
+    if (e.response.data.message == "Redirect to public activity.") {
+      return redirect(`/publiceditor/${params.doenetId}/${params.pageId}`);
+    } else {
+      throw new Error(e);
+    }
+    // console.log("response", response);
+  }
 }
 
 function formatBytes(bytes) {
