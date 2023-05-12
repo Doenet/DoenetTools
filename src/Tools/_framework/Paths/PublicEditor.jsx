@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   redirect,
   useLoaderData,
@@ -28,7 +34,11 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import {
+  ExternalLinkIcon,
+  WarningIcon,
+  WarningTwoIcon,
+} from "@chakra-ui/icons";
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -250,6 +260,7 @@ export function PublicEditor() {
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
 
   let editorRef = useRef(null);
+  let [codeChanged, setCodeChanged] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -260,6 +271,7 @@ export function PublicEditor() {
         event.preventDefault();
         event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
+        setCodeChanged(false);
       }
     };
 
@@ -378,9 +390,19 @@ export function PublicEditor() {
                       ml="10px"
                       size="sm"
                       variant="outline"
+                      // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
                       leftIcon={<RxUpdate />}
+                      rightIcon={
+                        codeChanged ? (
+                          <WarningTwoIcon
+                            color="doenet.mainBlue"
+                            fontSize="18px"
+                          />
+                        ) : null
+                      }
                       onClick={() => {
                         setViewerDoenetML(textEditorDoenetML.current);
+                        setCodeChanged(false);
                       }}
                     >
                       Update
@@ -411,10 +433,17 @@ export function PublicEditor() {
             </Grid>
             <Center mt="2px" h="30px" background="doenet.mainGray">
               <HStack>
-                <Text>
+                <Center background="orange.100" pl="10px" pr="6px">
+                  <WarningIcon color="orange.500" mr="6px" />
+
+                  <Text size="xs" pl="4px" pr="4px">
+                    This is a public editor. Remix to save changes.
+                  </Text>
+                </Center>
+                {/* <Text>
                   This is a public editor. Remix to save changes to your
                   account.
-                </Text>
+                </Text> */}
                 {signedIn ? (
                   <Button
                     size="xs"
@@ -434,7 +463,7 @@ export function PublicEditor() {
                   </Button>
                 ) : (
                   <Button
-                    dataTest="Nav to signin"
+                    data-test="Nav to signin"
                     size="xs"
                     onClick={() => {
                       navigateTo.current = "/signin";
@@ -488,6 +517,9 @@ export function PublicEditor() {
                 setInternalValueTo={textEditorDoenetML.current}
                 onBeforeChange={(value) => {
                   textEditorDoenetML.current = value;
+                  if (!codeChanged) {
+                    setCodeChanged(true);
+                  }
                 }}
               />
             }
