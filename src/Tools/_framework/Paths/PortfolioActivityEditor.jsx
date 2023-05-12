@@ -1180,6 +1180,16 @@ export function PortfolioActivityEditor() {
     onClose: controlsOnClose,
   } = useDisclosure();
 
+  //Win, Mac or Linux
+  let platform = "Linux";
+  //navigator.userAgentData.platform.indexOf("linux") != -1
+  if (navigator.userAgentData.platform.indexOf("win") != -1) {
+    platform = "Win";
+  } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+    platform = "Mac";
+  }
+
+  console.log("platform", platform);
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -1198,10 +1208,12 @@ export function PortfolioActivityEditor() {
     const handleKeyDown = (event) => {
       if (event.metaKey && event.code === "KeyS") {
         event.preventDefault();
+        event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
       }
       if (event.metaKey && event.code === "KeyU") {
         event.preventDefault();
+        event.stopPropagation();
         controlsOnOpen();
       }
     };
