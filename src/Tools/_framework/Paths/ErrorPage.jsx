@@ -6,7 +6,6 @@ import {
   Heading,
   Text,
 } from "@chakra-ui/react";
-import { animated, useSpring } from "react-spring";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -33,24 +32,7 @@ const eyeColours = ["black", "black", "black"];
 
 function ErrorPage() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [interpolators, setInterpolators] = useState({
-    mouth: () => mouths[activeIndex],
-    leftEye: () => leftEyes[activeIndex],
-    rightEye: () => rightEyes[activeIndex],
-  });
-
   let navigate = useNavigate();
-  const animationProps = useSpring({
-    from: { x: 0 },
-    to: {
-      x: 1,
-      eyeColour: eyeColours[activeIndex], // this stays the same as it doesn't need a custom interpolator
-    },
-    config: {
-      clamp: true, // interpolation function can't go above 1
-    },
-    reset: true,
-  });
 
   return (
     <Container padding="70px 0" textAlign="center" maxWidth="800px">
@@ -72,18 +54,9 @@ function ErrorPage() {
           <circle cx="18" cy="18" r="18" fill="#eea177" />
           <circle cx="18" cy="18" r="15" fill="#6d4445" />
           <circle cx="18" cy="18" r="6" fill="white" />
-          <animated.path
-            d={animationProps.x.to(interpolators.rightEye)}
-            fill={animationProps.eyeColour}
-          />
-          <animated.path
-            d={animationProps.x.to(interpolators.leftEye)}
-            fill={animationProps.eyeColour}
-          />
-          <animated.path
-            d={animationProps.x.to(interpolators.mouth)}
-            fill="black"
-          />
+          <path d={rightEyes[0]} fill={eyeColours[activeIndex]} />
+          <path d={leftEyes[0]} fill={eyeColours[activeIndex]} />
+          <path d={mouths[0]} fill={eyeColours[activeIndex]} />
         </svg>
       </Container>
       <Button
