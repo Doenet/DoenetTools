@@ -1,9 +1,8 @@
 import { cesc } from "../../_utils/url";
 import Template from "./Template";
-import Video from "./Video";
 import BlockComponent from "./abstract/BlockComponent";
 
-export class ExampleBrowser extends BlockComponent {
+export class ContentBrowser extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -13,42 +12,15 @@ export class ExampleBrowser extends BlockComponent {
     });
   }
 
-  static componentType = "exampleBrowser";
+  static componentType = "contentBrowser";
 
   static renderChildren = true;
-
-  static returnSugarInstructions() {
-    let sugarInstructions = super.returnSugarInstructions();
-
-    let addExampleBrowserVideo = function ({ matchedChildren }) {
-      // add exampleBrowserVideo at the beginning
-
-      let exampleBrowserVideo = {
-        componentType: "exampleBrowserVideo",
-      };
-
-      let newChildren = [exampleBrowserVideo, ...matchedChildren];
-
-      return {
-        success: true,
-        newChildren,
-      };
-    };
-    sugarInstructions.push({
-      replacementFunction: addExampleBrowserVideo,
-    });
-    return sugarInstructions;
-  }
 
   static returnChildGroups() {
     return [
       {
-        group: "exampleBrowserVideos",
-        componentTypes: ["exampleBrowserVideo"],
-      },
-      {
-        group: "exampleBrowserItems",
-        componentTypes: ["exampleBrowserItem"],
+        group: "contentBrowserItems",
+        componentTypes: ["contentBrowserItem"],
       },
     ];
   }
@@ -64,9 +36,9 @@ export class ExampleBrowser extends BlockComponent {
         { variableName: "indByEscapedComponentName", forRenderer: true },
       ],
       returnDependencies: () => ({
-        exampleBrowserItems: {
+        contentBrowserItems: {
           dependencyType: "child",
-          childGroups: ["exampleBrowserItems"],
+          childGroups: ["contentBrowserItems"],
           variableNames: ["label"],
         },
       }),
@@ -78,7 +50,7 @@ export class ExampleBrowser extends BlockComponent {
         for (let [
           ind,
           item,
-        ] of dependencyValues.exampleBrowserItems.entries()) {
+        ] of dependencyValues.contentBrowserItems.entries()) {
           items.push({
             ind,
             componentName: item.componentName,
@@ -250,61 +222,12 @@ export class ExampleBrowser extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.selectedItemDescription = {
-      forRenderer: true,
-      stateVariablesDeterminingDependencies: ["selectedItemInd"],
-      returnDependencies: ({ stateValues }) => ({
-        exampleBrowserItems: {
-          dependencyType: "child",
-          childGroups: ["exampleBrowserItems"],
-          variableNames: ["description"],
-          childIndices:
-            stateValues.selectedItemInd === null
-              ? []
-              : [stateValues.selectedItemInd],
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            selectedItemDescription:
-              dependencyValues.exampleBrowserItems[0]?.stateValues
-                .description || "",
-          },
-        };
-      },
-    };
-
-    stateVariableDefinitions.selectedItemYoutubeCode = {
-      stateVariablesDeterminingDependencies: ["selectedItemInd"],
-      returnDependencies: ({ stateValues }) => ({
-        exampleBrowserItems: {
-          dependencyType: "child",
-          childGroups: ["exampleBrowserItems"],
-          variableNames: ["youtubeCode"],
-          childIndices:
-            stateValues.selectedItemInd === null
-              ? []
-              : [stateValues.selectedItemInd],
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            selectedItemYoutubeCode:
-              dependencyValues.exampleBrowserItems[0]?.stateValues
-                .youtubeCode || "",
-          },
-        };
-      },
-    };
-
     stateVariableDefinitions.selectedItemComponentName = {
       stateVariablesDeterminingDependencies: ["selectedItemInd"],
       returnDependencies: ({ stateValues }) => ({
-        exampleBrowserItems: {
+        contentBrowserItems: {
           dependencyType: "child",
-          childGroups: ["exampleBrowserItems"],
+          childGroups: ["contentBrowserItems"],
           childIndices:
             stateValues.selectedItemInd === null
               ? []
@@ -315,7 +238,7 @@ export class ExampleBrowser extends BlockComponent {
         return {
           setValue: {
             selectedItemComponentName:
-              dependencyValues.exampleBrowserItems[0]?.componentName || "",
+              dependencyValues.contentBrowserItems[0]?.componentName || "",
           },
         };
       },
@@ -329,9 +252,9 @@ export class ExampleBrowser extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let childIndicesToRender = [0];
+        let childIndicesToRender = [];
         if (dependencyValues.selectedItemInd >= 0) {
-          childIndicesToRender.push(dependencyValues.selectedItemInd + 1);
+          childIndicesToRender.push(dependencyValues.selectedItemInd);
         }
         return { setValue: { childIndicesToRender } };
       },
@@ -410,50 +333,51 @@ export class ExampleBrowser extends BlockComponent {
   }
 }
 
-export class ExampleBrowserItem extends BlockComponent {
-  static componentType = "exampleBrowserItem";
-  static rendererType = "containerBlock";
+export class ContentBrowserItem extends BlockComponent {
+  static componentType = "contentBrowserItem";
 
   static renderChildren = true;
   static includeBlankStringChildren = true;
 
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-    attributes.youtubeCode = {
-      createComponentOfType: "text",
-      createStateVariable: "youtubeCode",
-      defaultValue: "",
-    };
-    return attributes;
-  }
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let addExampleBrowserContent = function ({ matchedChildren }) {
+    let addContentBrowserContent = function ({ matchedChildren }) {
       let newChildren = [];
 
-      // remove first child if it is a blank string
-      // so that doesn't prevent next setup from being first
-      if (
-        typeof matchedChildren[0] === "string" &&
-        matchedChildren[0].trim() === ""
-      ) {
-        matchedChildren = matchedChildren.slice(1);
+      let numAddressedChildren = 0;
+      // keep any beginning setup, title children
+      // and remove any blank string children
+      for (let child of matchedChildren) {
+        if (
+          child.componentType === "setup" ||
+          child.componentType === "title"
+        ) {
+          newChildren.push(child);
+          numAddressedChildren++;
+        } else if (typeof child === "string" && child.trim() === "") {
+          numAddressedChildren++;
+        } else {
+          break;
+        }
       }
 
-      // if first child is a setup, leave it unaltered
-      if (matchedChildren[0].componentType === "setup") {
-        newChildren.push(matchedChildren[0]);
-        matchedChildren = matchedChildren.slice(1);
-      }
+      let remainingChildren = matchedChildren.slice(numAddressedChildren);
 
-      // wrap all remaining children except in exampleBrowserContent
-      let exampleBrowserContent = {
-        componentType: "exampleBrowserContent",
-        children: matchedChildren,
-      };
-      newChildren.push(exampleBrowserContent);
+      if (remainingChildren.length > 0) {
+        // wrap next child in is own contentBrowserContent
+        newChildren.push({
+          componentType: "contentBrowserContent",
+          children: [remainingChildren[0]],
+        });
+      }
+      if (remainingChildren.length > 1) {
+        // wrap all remaining children in another contentBrowserContent
+        newChildren.push({
+          componentType: "contentBrowserContent",
+          children: remainingChildren.slice(1),
+        });
+      }
 
       return {
         success: true,
@@ -461,7 +385,7 @@ export class ExampleBrowserItem extends BlockComponent {
       };
     };
     sugarInstructions.push({
-      replacementFunction: addExampleBrowserContent,
+      replacementFunction: addContentBrowserContent,
     });
     return sugarInstructions;
   }
@@ -471,6 +395,10 @@ export class ExampleBrowserItem extends BlockComponent {
       {
         group: "setups",
         componentTypes: ["setup"],
+      },
+      {
+        group: "titles",
+        componentTypes: ["title"],
       },
       {
         group: "anything",
@@ -581,45 +509,102 @@ export class ExampleBrowserItem extends BlockComponent {
       },
     };
 
-    return stateVariableDefinitions;
-  }
-}
-
-export class ExampleBrowserVideo extends Video {
-  static componentType = "exampleBrowserVideo";
-  static rendererType = "video";
-
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-
-    delete attributes.youtube;
-
-    return attributes;
-  }
-
-  static returnStateVariableDefinitions() {
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.youtube = {
+    stateVariableDefinitions.itemInfoForInitial = {
       forRenderer: true,
       returnDependencies: () => ({
-        youtubeCode: {
+        parentItemInfoForInitial: {
           dependencyType: "parentStateVariable",
-          parentComponentType: "exampleBrowser",
-          variableName: "selectedItemYoutubeCode",
+          variableName: "itemInfoForInitial",
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { youtube: dependencyValues.youtubeCode || "" } };
+        return {
+          setValue: {
+            itemInfoForInitial: dependencyValues.parentItemInfoForInitial || [],
+          },
+        };
       },
     };
+
+    stateVariableDefinitions.titleChildName = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "child",
+          childGroups: ["titles"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        let titleChildName = null;
+        if (dependencyValues.titleChild.length > 0) {
+          titleChildName =
+            dependencyValues.titleChild[dependencyValues.titleChild.length - 1]
+              .componentName;
+        }
+        return {
+          setValue: { titleChildName },
+        };
+      },
+    };
+
+    stateVariableDefinitions.childIndicesToRender = {
+      additionalStateVariablesDefined: [
+        {
+          variableName: "titleChildIndex",
+          forRenderer: true,
+        },
+      ],
+      returnDependencies: () => ({
+        titleSetupChildren: {
+          dependencyType: "child",
+          childGroups: ["titles", "setups"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["anything", "titles", "setups"],
+        },
+        titleChildName: {
+          dependencyType: "stateVariable",
+          variableName: "titleChildName",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+        let titleChildIndex = null;
+
+        let allTitleSetupChildNames = dependencyValues.titleSetupChildren.map(
+          (x) => x.componentName,
+        );
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (child.componentName === dependencyValues.titleChildName) {
+            titleChildIndex = childIndicesToRender.length;
+            childIndicesToRender.push(ind);
+          } else if (
+            typeof child !== "object" ||
+            !allTitleSetupChildNames.includes(child.componentName)
+          ) {
+            childIndicesToRender.push(ind);
+          }
+        }
+
+        console.log({ titleChildIndex });
+
+        return { setValue: { childIndicesToRender, titleChildIndex } };
+      },
+    };
+
+    // stateVariableDefinitions.numTopChildren = {
+    //   forRenderer: true,
+    //   returnDependencies: () => ({}),
+    // };
 
     return stateVariableDefinitions;
   }
 }
 
-export class ExampleBrowserContent extends Template {
-  static componentType = "exampleBrowserContent";
+export class ContentBrowserContent extends Template {
+  static componentType = "contentBrowserContent";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

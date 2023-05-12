@@ -5,11 +5,11 @@ import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { cesc } from "../../_utils/url";
 
-export default React.memo(function ExampleBrowser(props) {
+export default React.memo(function ContentBrowser(props) {
   let { name, id, SVs, children, actions, callAction } =
     useDoenetRenderer(props);
 
-  let { hash, search } = useLocation();
+  let { search } = useLocation();
 
   let onChangeVisibility = (isVisible) => {
     if (actions.recordVisibilityChange) {
@@ -18,13 +18,6 @@ export default React.memo(function ExampleBrowser(props) {
         args: { isVisible },
       });
     }
-  };
-
-  let setSelectedItemInd = (ind) => {
-    callAction({
-      action: actions.setSelectedItemInd,
-      args: { ind },
-    });
   };
 
   useEffect(() => {
@@ -38,44 +31,22 @@ export default React.memo(function ExampleBrowser(props) {
     };
   }, []);
 
-  useEffect(() => {
-    // Check to see if hash contains the component name of one of the items of the browser.
-    // If so, select that item
-    let hashFirstSlash = hash.indexOf("\\/");
-    if (hashFirstSlash !== -1) {
-      let hashTarget = hash.substring(hashFirstSlash);
-      let indFromHash = SVs.indByEscapedComponentName[hashTarget];
-
-      if (indFromHash !== undefined && indFromHash !== SVs.selectedItemInd) {
-        // have an item from the browser that isn't hte current selected one
-        setSelectedItemInd(indFromHash);
-      }
-    }
-  }, [hash]);
-
   if (SVs.hidden) {
     return null;
+  }
+
+  let title = null;
+  if (SVs.titleChildIndex !== null) {
+    title = <h3>{children[SVs.titleChildIndex]}</h3>;
+    children = [
+      ...children.slice(0, SVs.titleChildIndex),
+      ...children.slice(SVs.titleChildIndex + 1),
+    ];
   }
 
   let firstSlash = id.indexOf("\\/");
   let prefix = id.substring(0, firstSlash);
   let urlStart = search + "#" + prefix;
-
-  let initials = SVs.allInitials.map((initial) => (
-    <Link
-      key={initial}
-      style={{
-        padding: "0 5px",
-        width: "10px",
-        cursor: "pointer",
-        color: "var(--mainBlue)",
-        textDecoration: initial === SVs.initial ? "underline" : "none",
-      }}
-      to={urlStart + cesc(SVs.firstComponentNameByInitial[initial])}
-    >
-      {initial}
-    </Link>
-  ));
 
   let labels = SVs.itemInfoForInitial.map((itemInfo) => (
     <Link
@@ -125,10 +96,7 @@ export default React.memo(function ExampleBrowser(props) {
     </div>
   );
 
-  let videoChild = children[0];
-  children = children.slice(1);
-
-  let descriptionAndVideo = (
+  let titleAndFirstChild = (
     <div
       style={{
         width: "70%",
@@ -137,17 +105,10 @@ export default React.memo(function ExampleBrowser(props) {
         marginTop: "12px",
         marginLeft: "5%",
       }}
-      data-test="descriptionAndVideo"
+      data-test="titleAndFirstChild"
     >
-      <div>
-        <h4>
-          {SVs.selectedItemLabel
-            ? `The ${SVs.selectedItemLabel} component`
-            : null}
-        </h4>
-        {SVs.selectedItemDescription}
-      </div>
-      <div>{videoChild}</div>
+      <div>{title}</div>
+      <div>{children[0]}</div>
     </div>
   );
 
@@ -155,14 +116,11 @@ export default React.memo(function ExampleBrowser(props) {
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div id={id}>
         <a name={id} />
-        <div style={{ display: "flex" }} data-test="initials">
-          Filter by: {initials}
-        </div>
         <div style={{ display: "flex" }}>
           {labelPicker}
-          {descriptionAndVideo}
+          {titleAndFirstChild}
         </div>
-        {children}
+        {children.slice(1)}
       </div>
     </VisibilitySensor>
   );
