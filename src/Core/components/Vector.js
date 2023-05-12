@@ -2177,6 +2177,13 @@ export default class Vector extends GraphicalComponent {
         returnRoundingStateVariableDefinitions(),
       ),
     },
+    {
+      stateVariable: "displacementCoords",
+      componentType: "point",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
   ];
 
   async moveVector({
