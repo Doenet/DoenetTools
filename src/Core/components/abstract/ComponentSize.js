@@ -576,7 +576,7 @@ export class ComponentSizeList extends BaseComponent {
       definition: () => ({ setValue: { overrideChildHide: true } }),
     };
 
-    stateVariableDefinitions.nComponents = {
+    stateVariableDefinitions.numComponents = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -587,7 +587,7 @@ export class ComponentSizeList extends BaseComponent {
           componentSizeListChildren: {
             dependencyType: "child",
             childGroups: ["componentSizeLists"],
-            variableNames: ["nComponents"],
+            variableNames: ["numComponents"],
           },
           componentSizeAndComponentSizeListChildren: {
             dependencyType: "child",
@@ -597,7 +597,7 @@ export class ComponentSizeList extends BaseComponent {
         };
       },
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        let nComponents = 0;
+        let numComponents = 0;
         let childIndexByArrayKey = [];
 
         let nComponentSizeLists = 0;
@@ -616,21 +616,21 @@ export class ComponentSizeList extends BaseComponent {
             nComponentSizeLists++;
             for (
               let i = 0;
-              i < componentSizeListChild.stateValues.nComponents;
+              i < componentSizeListChild.stateValues.numComponents;
               i++
             ) {
-              childIndexByArrayKey[nComponents + i] = [childInd, i];
+              childIndexByArrayKey[numComponents + i] = [childInd, i];
             }
-            nComponents += componentSizeListChild.stateValues.nComponents;
+            numComponents += componentSizeListChild.stateValues.numComponents;
           } else {
-            childIndexByArrayKey[nComponents] = [childInd, 0];
-            nComponents += 1;
+            childIndexByArrayKey[numComponents] = [childInd, 0];
+            numComponents += 1;
           }
         }
 
         return {
-          setValue: { nComponents, childIndexByArrayKey },
-          checkForActualChange: { nComponents: true },
+          setValue: { numComponents, childIndexByArrayKey },
+          checkForActualChange: { numComponents: true },
         };
       },
     };
@@ -644,13 +644,13 @@ export class ComponentSizeList extends BaseComponent {
       entryPrefixes: ["componentSize"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
       returnArraySizeDependencies: () => ({
-        nComponents: {
+        numComponents: {
           dependencyType: "stateVariable",
-          variableName: "nComponents",
+          variableName: "numComponents",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nComponents];
+        return [dependencyValues.numComponents];
       },
 
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -774,9 +774,9 @@ export class ComponentSizeList extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       isAlias: true,
-      targetVariableName: "nComponents",
+      targetVariableName: "numComponents",
     };
 
     stateVariableDefinitions.values = {

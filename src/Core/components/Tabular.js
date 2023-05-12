@@ -189,7 +189,7 @@ export default class Tabular extends BlockComponent {
     //   componentType: "cell",
     //   isArray: true,
     //   entryPrefixes: ["cell", "row", "column", "range"],
-    //   nDimensions: 2,
+    //   numDimensions: 2,
     //   // stateVariablesDeterminingDependencies: ["numRows", "numColumns"],
     //   returnArraySizeDependencies: () => ({
     //     numRows: {

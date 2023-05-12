@@ -20,13 +20,13 @@ export default class VariableNameList extends MathList {
       isArray: true,
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
-        nComponents: {
+        numComponents: {
           dependencyType: "stateVariable",
-          variableName: "nComponents",
+          variableName: "numComponents",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nComponents];
+        return [dependencyValues.numComponents];
       },
 
       returnArrayDependenciesByKey({ arrayKeys }) {

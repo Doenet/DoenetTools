@@ -36,8 +36,8 @@ export function setupRegularPolygonScene({ attributes }) {
 
   <p>area: <mathinput name="miar" bindValueTo="$rp.area" /> <number copySource="rp.area" name="ar" /></p>
 
-  <p>n vertices: <mathinput name="minv" bindValueTo="$rp.nVertices" /> <number copySource="rp.nVertices" name="nv" /></p>
-  <p>n sides: <mathinput name="mins" bindValueTo="$rp.nSides" /> <number copySource="rp.nSides" name="ns" /></p>
+  <p>n vertices: <mathinput name="minv" bindValueTo="$rp.numVertices" /> <number copySource="rp.numVertices" name="nv" /></p>
+  <p>n sides: <mathinput name="mins" bindValueTo="$rp.numSides" /> <number copySource="rp.numSides" name="ns" /></p>
 
 
   <graph name="g3">
@@ -55,8 +55,8 @@ export function setupRegularPolygonScene({ attributes }) {
 export function runRegularPolygonTests({
   center,
   vertex1,
-  nVertices,
-  conservedWhenChangeNvertices = "radius",
+  numVertices,
+  conservedWhenChangeNumVertices = "radius",
   abbreviated = false,
 }) {
   cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
@@ -83,7 +83,7 @@ export function runRegularPolygonTests({
 
     let inputs = {
       polygonNames: [polygonName, polygonCopyName, polygonCopy2Name],
-      vertexNames: allVertexNames.slice(0, nVertices),
+      vertexNames: allVertexNames.slice(0, numVertices),
       centerPointName,
     };
 
@@ -91,7 +91,7 @@ export function runRegularPolygonTests({
       checkPolygonValues(
         inputs,
         {
-          nVertices,
+          numVertices,
           vertex1,
           center,
         },
@@ -102,7 +102,7 @@ export function runRegularPolygonTests({
     cy.log("move vertices individually");
 
     for (let i = 0; i < 3; i++) {
-      let index = (i * Math.round(nVertices / 3)) % nVertices;
+      let index = (i * Math.round(numVertices / 3)) % numVertices;
 
       cy.window().then(async (win) => {
         let vertex = [index, index + 1];
@@ -117,7 +117,7 @@ export function runRegularPolygonTests({
 
         stateVariables = await win.returnAllStateVariables1();
 
-        let angle = (-index * 2 * Math.PI) / nVertices;
+        let angle = (-index * 2 * Math.PI) / numVertices;
         let c = Math.cos(angle);
         let s = Math.sin(angle);
 
@@ -134,7 +134,7 @@ export function runRegularPolygonTests({
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -154,7 +154,7 @@ export function runRegularPolygonTests({
         let currentVertices = stateVariables[polygonName].stateValues.vertices;
         let pointCoords = {};
 
-        for (let i = 0; i < nVertices; i++) {
+        for (let i = 0; i < numVertices; i++) {
           pointCoords[i] = [
             currentVertices[i][0] + dx,
             currentVertices[i][1] + dy,
@@ -175,7 +175,7 @@ export function runRegularPolygonTests({
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -198,7 +198,7 @@ export function runRegularPolygonTests({
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -208,7 +208,7 @@ export function runRegularPolygonTests({
 
       cy.log("move copied vertices");
       for (let i = 0; i < 3; i++) {
-        let index = (i * Math.round(nVertices / 3) + 1) % nVertices;
+        let index = (i * Math.round(numVertices / 3) + 1) % numVertices;
         cy.window().then(async (win) => {
           let vertex = [index / 2 + 3, -1.5 * index];
 
@@ -220,7 +220,7 @@ export function runRegularPolygonTests({
 
           stateVariables = await win.returnAllStateVariables1();
 
-          let angle = (-index * 2 * Math.PI) / nVertices;
+          let angle = (-index * 2 * Math.PI) / numVertices;
           let c = Math.cos(angle);
           let s = Math.sin(angle);
 
@@ -237,7 +237,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -248,7 +248,7 @@ export function runRegularPolygonTests({
 
       cy.log("move polygonCopy vertices individually");
       for (let i = 0; i < 3; i++) {
-        let index = (i * Math.round(nVertices / 3) + 2) % nVertices;
+        let index = (i * Math.round(numVertices / 3) + 2) % numVertices;
 
         cy.window().then(async (win) => {
           let vertex = [-index - 1, 2 * index];
@@ -263,7 +263,7 @@ export function runRegularPolygonTests({
 
           stateVariables = await win.returnAllStateVariables1();
 
-          let angle = (-index * 2 * Math.PI) / nVertices;
+          let angle = (-index * 2 * Math.PI) / numVertices;
           let c = Math.cos(angle);
           let s = Math.sin(angle);
 
@@ -280,7 +280,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -301,7 +301,7 @@ export function runRegularPolygonTests({
         stateVariables[polygonCopyName].stateValues.vertices;
       let pointCoords = {};
 
-      for (let i = 0; i < nVertices; i++) {
+      for (let i = 0; i < numVertices; i++) {
         pointCoords[i] = [
           currentVertices[i][0] + dx,
           currentVertices[i][1] + dy,
@@ -322,7 +322,7 @@ export function runRegularPolygonTests({
       checkPolygonValues(
         inputs,
         {
-          nVertices,
+          numVertices,
           vertex1,
           center,
         },
@@ -333,7 +333,7 @@ export function runRegularPolygonTests({
     if (!abbreviated) {
       cy.log("move polygonCopy2 vertices individually");
       for (let i = 0; i < 3; i++) {
-        let index = (i * Math.round(nVertices / 3) + 3) % nVertices;
+        let index = (i * Math.round(numVertices / 3) + 3) % numVertices;
         cy.window().then(async (win) => {
           let vertex = [-2 * index - 1, index + 4];
 
@@ -347,7 +347,7 @@ export function runRegularPolygonTests({
 
           stateVariables = await win.returnAllStateVariables1();
 
-          let angle = (-index * 2 * Math.PI) / nVertices;
+          let angle = (-index * 2 * Math.PI) / numVertices;
           let c = Math.cos(angle);
           let s = Math.sin(angle);
 
@@ -364,7 +364,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -384,7 +384,7 @@ export function runRegularPolygonTests({
           stateVariables[polygonCopyName].stateValues.vertices;
         let pointCoords = {};
 
-        for (let i = 0; i < nVertices; i++) {
+        for (let i = 0; i < numVertices; i++) {
           pointCoords[i] = [
             currentVertices[i][0] + dx,
             currentVertices[i][1] + dy,
@@ -405,7 +405,7 @@ export function runRegularPolygonTests({
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -438,7 +438,7 @@ export function runRegularPolygonTests({
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -472,7 +472,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -505,7 +505,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -538,7 +538,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -571,7 +571,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -604,7 +604,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -637,7 +637,7 @@ export function runRegularPolygonTests({
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -649,32 +649,32 @@ export function runRegularPolygonTests({
 
     cy.log("Add two vertices");
     cy.window().then(async (win) => {
-      let result = adjustVertex1CenterWhenChangeNVertices(
+      let result = adjustVertex1CenterWhenChangenumVertices(
         vertex1,
         center,
-        nVertices,
-        nVertices + 2,
-        conservedWhenChangeNvertices,
+        numVertices,
+        numVertices + 2,
+        conservedWhenChangeNumVertices,
       );
 
       vertex1 = result.vertex1;
       center = result.center;
 
-      nVertices += 2;
+      numVertices += 2;
 
       cy.get(cesc("#\\/minv") + " textarea").type(`{end}+2{enter}`, {
         force: true,
       });
-      cy.get(cesc("#\\/nv")).should("have.text", `${nVertices}`);
+      cy.get(cesc("#\\/nv")).should("have.text", `${numVertices}`);
 
-      inputs.vertexNames = allVertexNames.slice(0, nVertices);
+      inputs.vertexNames = allVertexNames.slice(0, numVertices);
 
       cy.window().then(async (win) => {
         stateVariables = await win.returnAllStateVariables1();
         checkPolygonValues(
           inputs,
           {
-            nVertices,
+            numVertices,
             vertex1,
             center,
           },
@@ -686,32 +686,32 @@ export function runRegularPolygonTests({
     if (!abbreviated) {
       cy.log("Remove a side");
       cy.window().then(async (win) => {
-        let result = adjustVertex1CenterWhenChangeNVertices(
+        let result = adjustVertex1CenterWhenChangenumVertices(
           vertex1,
           center,
-          nVertices,
-          nVertices - 1,
-          conservedWhenChangeNvertices,
+          numVertices,
+          numVertices - 1,
+          conservedWhenChangeNumVertices,
         );
 
         vertex1 = result.vertex1;
         center = result.center;
 
-        nVertices -= 1;
+        numVertices -= 1;
 
         cy.get(cesc("#\\/mins") + " textarea").type(`{end}-1{enter}`, {
           force: true,
         });
-        cy.get(cesc("#\\/ns")).should("have.text", `${nVertices}`);
+        cy.get(cesc("#\\/ns")).should("have.text", `${numVertices}`);
 
-        inputs.vertexNames = allVertexNames.slice(0, nVertices);
+        inputs.vertexNames = allVertexNames.slice(0, numVertices);
 
         cy.window().then(async (win) => {
           stateVariables = await win.returnAllStateVariables1();
           checkPolygonValues(
             inputs,
             {
-              nVertices,
+              numVertices,
               vertex1,
               center,
             },
@@ -723,36 +723,36 @@ export function runRegularPolygonTests({
   });
 }
 
-function adjustVertex1CenterWhenChangeNVertices(
+function adjustVertex1CenterWhenChangenumVertices(
   vertex1,
   center,
-  nVerticesOld,
-  nVerticesNew,
-  conservedWhenChangeNvertices,
+  numVerticesOld,
+  numVerticesNew,
+  conservedWhenChangeNumVertices,
 ) {
   let radiusRatio = 1;
 
-  if (conservedWhenChangeNvertices === "inradius") {
+  if (conservedWhenChangeNumVertices === "inradius") {
     radiusRatio =
-      Math.cos(Math.PI / nVerticesOld) / Math.cos(Math.PI / nVerticesNew);
-  } else if (conservedWhenChangeNvertices === "sideLength") {
+      Math.cos(Math.PI / numVerticesOld) / Math.cos(Math.PI / numVerticesNew);
+  } else if (conservedWhenChangeNumVertices === "sideLength") {
     radiusRatio =
-      (2 * Math.sin(Math.PI / nVerticesOld)) /
-      (2 * Math.sin(Math.PI / nVerticesNew));
-  } else if (conservedWhenChangeNvertices === "perimeter") {
+      (2 * Math.sin(Math.PI / numVerticesOld)) /
+      (2 * Math.sin(Math.PI / numVerticesNew));
+  } else if (conservedWhenChangeNumVertices === "perimeter") {
     radiusRatio =
-      (2 * nVerticesOld * Math.sin(Math.PI / nVerticesOld)) /
-      (2 * nVerticesNew * Math.sin(Math.PI / nVerticesNew));
-  } else if (conservedWhenChangeNvertices === "area") {
+      (2 * numVerticesOld * Math.sin(Math.PI / numVerticesOld)) /
+      (2 * numVerticesNew * Math.sin(Math.PI / numVerticesNew));
+  } else if (conservedWhenChangeNumVertices === "area") {
     radiusRatio = Math.sqrt(
-      ((nVerticesOld / 2) * Math.sin((2 * Math.PI) / nVerticesOld)) /
-        ((nVerticesNew / 2) * Math.sin((2 * Math.PI) / nVerticesNew)),
+      ((numVerticesOld / 2) * Math.sin((2 * Math.PI) / numVerticesOld)) /
+        ((numVerticesNew / 2) * Math.sin((2 * Math.PI) / numVerticesNew)),
     );
-  } else if (conservedWhenChangeNvertices === "twoVertices") {
+  } else if (conservedWhenChangeNumVertices === "twoVertices") {
     // calculate vertex2
     let directionWithRadius = [vertex1[0] - center[0], vertex1[1] - center[1]];
 
-    let angleOld = (2 * Math.PI) / nVerticesOld;
+    let angleOld = (2 * Math.PI) / numVerticesOld;
     let c = Math.cos(angleOld);
     let s = Math.sin(angleOld);
 
@@ -761,14 +761,14 @@ function adjustVertex1CenterWhenChangeNVertices(
       directionWithRadius[0] * s + directionWithRadius[1] * c + center[1],
     ];
 
-    // calculate center based on this vertex 2 and new nVertices
+    // calculate center based on this vertex 2 and new numVertices
     let sideVector = [vertex2[0] - vertex1[0], vertex2[1] - vertex1[1]];
     let midpoint = [
       (vertex1[0] + vertex2[0]) / 2,
       (vertex1[1] + vertex2[1]) / 2,
     ];
     let sideLength = Math.sqrt(sideVector[0] ** 2 + sideVector[1] ** 2);
-    let inradius = sideLength / (2 * Math.tan(Math.PI / nVerticesNew));
+    let inradius = sideLength / (2 * Math.tan(Math.PI / numVerticesNew));
 
     let inradiusDirection = [
       -sideVector[1] / sideLength,
@@ -791,7 +791,7 @@ function adjustVertex1CenterWhenChangeNVertices(
 
 function checkPolygonValues(
   { polygonNames, vertexNames, centerPointName },
-  { nVertices, center, vertex1 },
+  { numVertices, center, vertex1 },
   stateVariables,
 ) {
   let vertexCoords = [vertex1];
@@ -801,15 +801,16 @@ function checkPolygonValues(
   let circumradius = Math.sqrt(
     directionWithRadius[0] ** 2 + directionWithRadius[1] ** 2,
   );
-  let inradius = circumradius * Math.cos(Math.PI / nVertices);
-  let sideLength = circumradius * (2 * Math.sin(Math.PI / nVertices));
+  let inradius = circumradius * Math.cos(Math.PI / numVertices);
+  let sideLength = circumradius * (2 * Math.sin(Math.PI / numVertices));
   let perimeter =
-    circumradius * (2 * nVertices * Math.sin(Math.PI / nVertices));
+    circumradius * (2 * numVertices * Math.sin(Math.PI / numVertices));
   let area =
-    circumradius ** 2 * ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices));
+    circumradius ** 2 *
+    ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices));
 
-  for (let i = 1; i < nVertices; i++) {
-    let angle = (i * 2 * Math.PI) / nVertices;
+  for (let i = 1; i < numVertices; i++) {
+    let angle = (i * 2 * Math.PI) / numVertices;
     let c = Math.cos(angle);
     let s = Math.sin(angle);
 
@@ -821,7 +822,7 @@ function checkPolygonValues(
 
   for (let polygonName of polygonNames) {
     let polygon = stateVariables[polygonName];
-    for (let i = 0; i < nVertices; i++) {
+    for (let i = 0; i < numVertices; i++) {
       expect(polygon.stateValues.vertices[i][0]).closeTo(
         vertexCoords[i][0],
         1e-14 * Math.abs(vertexCoords[i][0]) + 1e-14,
@@ -840,7 +841,7 @@ function checkPolygonValues(
       1e-14 * Math.abs(center[1]) + 1e-14,
     );
 
-    expect(polygon.stateValues.nVertices).eq(nVertices);
+    expect(polygon.stateValues.numVertices).eq(numVertices);
 
     expect(polygon.stateValues.circumradius).closeTo(
       circumradius,
@@ -894,76 +895,76 @@ describe("Regular Polygon Tag Tests", function () {
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [1, 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 
   it("specify area for square", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "4",
+        numVertices: "4",
         area: "100",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 4,
+      numVertices: 4,
       vertex1: [Math.sqrt(2) * 5, 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "area",
+      conservedWhenChangeNumVertices: "area",
     });
   });
 
   it("specify sidelength, center for pentegon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "5",
+        numSides: "5",
         sideLength: "2",
         center: "(4,2)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 5,
+      numVertices: 5,
       vertex1: [4 + 2 / (2 * Math.sin(Math.PI / 5)), 2],
       center: [4, 2],
-      conservedWhenChangeNvertices: "sideLength",
+      conservedWhenChangeNumVertices: "sideLength",
     });
   });
 
   it("specify inRadius, center for hexagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "6",
+        numVertices: "6",
         inRadius: "3",
         center: "(-2,5)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 6,
+      numVertices: 6,
       vertex1: [-2 + 3 / Math.cos(Math.PI / 6), 5],
       center: [-2, 5],
-      conservedWhenChangeNvertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
     });
   });
 
   it("specify apothem for heptagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "7",
+        numSides: "7",
         apothem: "4",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 7,
+      numVertices: 7,
       vertex1: [0 + 4 / Math.cos(Math.PI / 7), 0],
       center: [0, 0],
-      conservedWhenChangeNvertices: "inradius",
+      conservedWhenChangeNumVertices: "inradius",
       abbreviated: true,
     });
   });
@@ -971,17 +972,17 @@ describe("Regular Polygon Tag Tests", function () {
   it("specify perimeter, center for octagon", () => {
     setupRegularPolygonScene({
       attributes: {
-        nVertices: "8",
+        numVertices: "8",
         perimeter: "20",
         center: "(-4,7)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 8,
+      numVertices: 8,
       vertex1: [-4 + 20 / 8 / (2 * Math.sin(Math.PI / 8)), 7],
       center: [-4, 7],
-      conservedWhenChangeNvertices: "perimeter",
+      conservedWhenChangeNumVertices: "perimeter",
       abbreviated: true,
     });
   });
@@ -989,17 +990,17 @@ describe("Regular Polygon Tag Tests", function () {
   it("specify circumradius, center for triangle", () => {
     setupRegularPolygonScene({
       attributes: {
-        nSides: "3",
+        numSides: "3",
         circumradius: "6",
         center: "(-5,8)",
       },
     });
 
     runRegularPolygonTests({
-      nVertices: 3,
+      numVertices: 3,
       vertex1: [-5 + 6, 8],
       center: [-5, 8],
-      conservedWhenChangeNvertices: "circumradius",
+      conservedWhenChangeNumVertices: "circumradius",
     });
   });
 });

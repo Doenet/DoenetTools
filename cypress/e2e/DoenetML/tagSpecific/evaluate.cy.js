@@ -4756,8 +4756,8 @@ describe("Evaluate Tag Tests", function () {
     let result2Name;
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(2);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         0,
@@ -4806,8 +4806,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(2);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         10,
@@ -4854,8 +4854,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(2);
       expect(stateVariables["/result1"].stateValues.value).eqls("＿");
       expect(stateVariables[result2Name].stateValues.value).eqls("＿");
       expect(stateVariables["/result3"].stateValues.value).eqls("＿");
@@ -4890,8 +4890,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(2);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         10,
@@ -4939,8 +4939,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(2);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         17,
@@ -4987,8 +4987,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(3);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         17,
@@ -5038,8 +5038,8 @@ describe("Evaluate Tag Tests", function () {
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f"].stateValues.nOutputs).eq(4);
+      expect(stateVariables["/f"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.numOutputs).eq(4);
       expect(stateVariables["/result1"].stateValues.value).eqls([
         "vector",
         17,

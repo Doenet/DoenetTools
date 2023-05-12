@@ -83,7 +83,7 @@ export default class PeriodicSet extends MathComponent {
       definition: () => ({ setValue: { canBeModified: false } }),
     };
 
-    stateVariableDefinitions.nOffsets = {
+    stateVariableDefinitions.numOffsets = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -95,11 +95,11 @@ export default class PeriodicSet extends MathComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let nOffsets = 0;
+        let numOffsets = 0;
         if (dependencyValues.offsets !== null) {
-          nOffsets = dependencyValues.offsets.length;
+          numOffsets = dependencyValues.offsets.length;
         }
-        return { setValue: { nOffsets } };
+        return { setValue: { numOffsets } };
       },
     };
 
@@ -158,9 +158,9 @@ export default class PeriodicSet extends MathComponent {
         createComponentOfType: "boolean",
       },
       returnDependencies: () => ({
-        nOffsets: {
+        numOffsets: {
           dependencyType: "stateVariable",
-          variableName: "nOffsets",
+          variableName: "numOffsets",
         },
         offsets: {
           dependencyType: "stateVariable",
@@ -178,7 +178,7 @@ export default class PeriodicSet extends MathComponent {
         if (dependencyValues.period !== null) {
           let periodValue = dependencyValues.period.evaluate_to_constant();
           if (!Number.isNaN(periodValue)) {
-            for (let ind1 = 0; ind1 < dependencyValues.nOffsets; ind1++) {
+            for (let ind1 = 0; ind1 < dependencyValues.numOffsets; ind1++) {
               let isUnique = true;
               for (let ind2 = 0; ind2 < ind1; ind2++) {
                 let offsetDiff = dependencyValues.offsets[ind1]

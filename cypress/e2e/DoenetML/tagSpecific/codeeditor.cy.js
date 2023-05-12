@@ -1462,29 +1462,34 @@ describe("Code Editor Tag Tests", function () {
       cy.get(cesc2("#/_p1")).should("have.text", "");
 
       cy.log("type text in editor");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "<p>Hello!</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
+        delay: 0,
+      });
+
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>\n");
       cy.get(contentAnchor).should("contain.text", "Hello!");
 
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "{ctrl+end}<text name='ti'>$ti</text>{enter}",
+        "{ctrl+end}<text name='ti'>$ti</text>",
         {
           delay: 0,
         },
       );
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
+      cy.get(updateAnchor).click();
+
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should(
         "have.text",
         "<p>Hello!</p>\n<text name='ti'>$ti</text>\n",
       );
+
       cy.get(contentAnchor).should("contain.text", "Circular dependency");
 
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
@@ -1550,36 +1555,34 @@ describe("Code Editor Tag Tests", function () {
       let contentAnchor3 = "#" + cesc2(viewer3Name) + "_content";
 
       cy.log("type text in editor 1");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "<p>Apple</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Apple</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
+
       cy.get(updateAnchor1).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Apple</p>\n");
       cy.get(contentAnchor1).should("contain.text", "Apple");
 
       cy.log("type text in editor 2");
-      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type(
-        "<p>Banana</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type("<p>Banana</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor2).click();
 
       cy.get(cesc2("#/_p2")).should("have.text", "<p>Banana</p>\n");
       cy.get(contentAnchor2).should("contain.text", "Banana");
 
       cy.log("type text in editor 3");
-      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type(
-        "<p>Cherry</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type("<p>Cherry</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor3).click();
 
       cy.get(cesc2("#/_p3")).should("have.text", "<p>Cherry</p>\n");

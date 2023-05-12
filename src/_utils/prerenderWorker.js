@@ -121,7 +121,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
     }
   }
 
-  let totalNVariants = Object.values(variantsNeededByPage).reduce(
+  let totalnumVariants = Object.values(variantsNeededByPage).reduce(
     (a, c) => a + c.length,
     0,
   );
@@ -181,11 +181,11 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
       postMessage({
         messageType: "status",
         stage: "Rendering",
-        complete: nFinished / totalNVariants,
+        complete: nFinished / totalnumVariants,
       });
       console.log(
         `progress rendering: ${Math.round(
-          (nFinished / totalNVariants) * 100,
+          (nFinished / totalnumVariants) * 100,
         )}%`,
       );
     }

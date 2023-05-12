@@ -41,7 +41,7 @@ export default class Intersection extends CompositeComponent {
             "numericalCoeff0",
             "numericalCoeffvar1",
             "numericalCoeffvar2",
-            "nDimensions",
+            "numDimensions",
           ],
         },
       }),
@@ -84,7 +84,7 @@ export default class Intersection extends CompositeComponent {
     if (numberLineChildren === 1) {
       let childName = lineChildren[0].componentName;
       let serializedChild = await components[childName].serialize({
-        sourceAttributesToIgnoreRecursively: ["isResponse"],
+        sourceAttributesToIgnore: ["isResponse"],
       });
       if (!serializedChild.state) {
         serializedChild.state = {};
@@ -125,8 +125,8 @@ export default class Intersection extends CompositeComponent {
     let line2 = lineChildren[1];
 
     if (
-      line1.stateValues.nDimensions !== 2 ||
-      line2.stateValues.nDimensions !== 2
+      line1.stateValues.numDimensions !== 2 ||
+      line2.stateValues.numDimensions !== 2
     ) {
       console.log("Intersection of lines implemented only in 2D");
       return { replacements: [] };
@@ -172,7 +172,7 @@ export default class Intersection extends CompositeComponent {
         // two identical lines, return first line
         let childName = lineChildren[0].componentName;
         let serializedChild = await components[childName].serialize({
-          sourceAttributesToIgnoreRecursively: ["isResponse"],
+          sourceAttributesToIgnore: ["isResponse"],
         });
         if (!serializedChild.state) {
           serializedChild.state = {};

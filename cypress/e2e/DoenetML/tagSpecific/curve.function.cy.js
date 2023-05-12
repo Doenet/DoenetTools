@@ -649,7 +649,7 @@ describe("Function curve Tag Tests", function () {
     });
 
     // try a bunch of points at right to make sure stay on right branch
-    // which fails with nDiscretizationPoints too low (e.g., at 100)
+    // which fails with numDiscretizationPoints too low (e.g., at 100)
     for (let v = -5; v <= -1; v += 0.1) {
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -750,7 +750,7 @@ describe("Function curve Tag Tests", function () {
     });
 
     // try a bunch of points at right to make sure stay on right branch
-    // which fails with nDiscretizationPoints too low (e.g., at 100)
+    // which fails with numDiscretizationPoints too low (e.g., at 100)
     for (let v = -5; v <= -1; v += 0.1) {
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -854,7 +854,7 @@ describe("Function curve Tag Tests", function () {
     });
 
     // try a bunch of points at right to make sure stay on right branch
-    // which fails with nDiscretizationPoints too low (e.g., at 100)
+    // which fails with numDiscretizationPoints too low (e.g., at 100)
     for (let v = -5; v <= -1; v += 0.1) {
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -1171,7 +1171,7 @@ describe("Function curve Tag Tests", function () {
     });
 
     // try a bunch of points at top to make sure stay on top branch
-    // which fails with nDiscretizationPoints too low (e.g., at 100)
+    // which fails with numDiscretizationPoints too low (e.g., at 100)
     for (let v = -5; v <= -1; v += 0.1) {
       cy.window().then(async (win) => {
         await win.callAction1({
@@ -1275,7 +1275,7 @@ describe("Function curve Tag Tests", function () {
     });
 
     // try a bunch of points at top to make sure stay on top branch
-    // which fails with nDiscretizationPoints too low (e.g., at 100)
+    // which fails with numDiscretizationPoints too low (e.g., at 100)
     for (let v = -5; v <= -1; v += 0.1) {
       cy.window().then(async (win) => {
         await win.callAction1({

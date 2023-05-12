@@ -412,7 +412,7 @@ export async function verifyReplacementsMatchSpecifiedType({
   let requiredComponentType =
     component.attributes.createComponentOfType?.primitive;
 
-  let requiredLength = await component.stateValues.nComponentsSpecified;
+  let requiredLength = await component.stateValues.numComponentsSpecified;
 
   if (!requiredComponentType) {
     // must have be here due to composites needing a replacement
@@ -435,10 +435,10 @@ export async function verifyReplacementsMatchSpecifiedType({
     replacementTypes.length !== requiredLength ||
     !replacementTypes.every((x) => x === requiredComponentType)
   ) {
-    // console.warn(`Replacements from ${component.componentType} ${component.componentName} do not match the specified createComponentOfType and nComponents`);
+    // console.warn(`Replacements from ${component.componentType} ${component.componentName} do not match the specified createComponentOfType and numComponents`);
 
     // if only replacement is a template
-    // then give the template the createComponentOfType and nComponentsSpecified
+    // then give the template the createComponentOfType and numComponentsSpecified
     if (
       replacements?.length === 1 &&
       componentInfoObjects.isInheritedComponentType({
@@ -452,7 +452,7 @@ export async function verifyReplacementsMatchSpecifiedType({
       replacements[0].attributes.createComponentOfType = {
         primitive: requiredComponentType,
       };
-      replacements[0].attributes.nComponents = { primitive: requiredLength };
+      replacements[0].attributes.numComponents = { primitive: requiredLength };
       return { replacements, replacementChanges };
     }
 

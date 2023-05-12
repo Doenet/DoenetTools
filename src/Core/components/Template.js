@@ -42,7 +42,7 @@ export default class Template extends CompositeComponent {
     attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
-    attributes.nComponents = {
+    attributes.numComponents = {
       createPrimitiveOfType: "number",
     };
     return attributes;
@@ -154,11 +154,11 @@ export default class Template extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nComponentsSpecified = {
+    stateVariableDefinitions.numComponentsSpecified = {
       returnDependencies: () => ({
-        nComponentsAttr: {
+        numComponentsAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "nComponents",
+          attributeName: "numComponents",
         },
         typeAttr: {
           dependencyType: "attributePrimitive",
@@ -166,7 +166,7 @@ export default class Template extends CompositeComponent {
         },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
-        let nComponentsSpecified;
+        let numComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
           let componentType =
@@ -179,20 +179,20 @@ export default class Template extends CompositeComponent {
               `Invalid componentType ${dependencyValues.typeAttr} of copy.`,
             );
           }
-          if (dependencyValues.nComponentsAttr !== null) {
-            nComponentsSpecified = dependencyValues.nComponentsAttr;
+          if (dependencyValues.numComponentsAttr !== null) {
+            numComponentsSpecified = dependencyValues.numComponentsAttr;
           } else {
-            nComponentsSpecified = 1;
+            numComponentsSpecified = 1;
           }
-        } else if (dependencyValues.nComponentsAttr !== null) {
+        } else if (dependencyValues.numComponentsAttr !== null) {
           throw Error(
-            `You must specify createComponentOfType when specifying nComponents for a ${componentClass.componentType}.`,
+            `You must specify createComponentOfType when specifying numComponents for a ${componentClass.componentType}.`,
           );
         } else {
-          nComponentsSpecified = null;
+          numComponentsSpecified = null;
         }
 
-        return { setValue: { nComponentsSpecified } };
+        return { setValue: { numComponentsSpecified } };
       },
     };
 
@@ -204,8 +204,8 @@ export default class Template extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
-    // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
-    await component.stateValues.nComponentsSpecified;
+    // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
+    await component.stateValues.numComponentsSpecified;
 
     if (!(await component.stateValues.rendered)) {
       return { replacements: [] };

@@ -447,20 +447,20 @@ export default class Graph extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.nChildrenAdded = {
+    stateVariableDefinitions.numChildrenAdded = {
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
-        useEssentialOrDefaultValue: { nChildrenAdded: true },
+        useEssentialOrDefaultValue: { numChildrenAdded: true },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "nChildrenAdded",
-              value: desiredStateVariableValues.nChildrenAdded,
+              setEssentialValue: "numChildrenAdded",
+              value: desiredStateVariableValues.numChildrenAdded,
             },
           ],
         };
@@ -1597,7 +1597,7 @@ export default class Graph extends BlockComponent {
         parentName: this.componentName,
         parentCreatesNewNamespace: this.attributes.newNamespace?.primitive,
         componentInfoObjects: this.componentInfoObjects,
-        indOffset: await this.stateValues.nChildrenAdded,
+        indOffset: await this.stateValues.numChildrenAdded,
       });
 
       return await this.coreFunctions.performUpdate({
@@ -1606,14 +1606,14 @@ export default class Graph extends BlockComponent {
             updateType: "addComponents",
             serializedComponents: processResult.serializedComponents,
             parentName: this.componentName,
-            assignNamesOffset: await this.stateValues.nChildrenAdded,
+            assignNamesOffset: await this.stateValues.numChildrenAdded,
           },
           {
             updateType: "updateValue",
             componentName: this.componentName,
-            stateVariable: "nChildrenAdded",
+            stateVariable: "numChildrenAdded",
             value:
-              (await this.stateValues.nChildrenAdded) +
+              (await this.stateValues.numChildrenAdded) +
               processResult.serializedComponents.length,
           },
         ],
@@ -1634,13 +1634,13 @@ export default class Graph extends BlockComponent {
   }) {
     let numberToDelete = Math.min(
       number,
-      await this.stateValues.nChildrenAdded,
+      await this.stateValues.numChildrenAdded,
     );
 
     if (numberToDelete > 0) {
-      let nChildren = this.definingChildren.length;
+      let numChildren = this.definingChildren.length;
       let componentNamesToDelete = this.definingChildren
-        .slice(nChildren - numberToDelete, nChildren)
+        .slice(numChildren - numberToDelete, numChildren)
         .map((x) => x.componentName);
 
       return await this.coreFunctions.performUpdate({
@@ -1652,8 +1652,8 @@ export default class Graph extends BlockComponent {
           {
             updateType: "updateValue",
             componentName: this.componentName,
-            stateVariable: "nChildrenAdded",
-            value: (await this.stateValues.nChildrenAdded) - numberToDelete,
+            stateVariable: "numChildrenAdded",
+            value: (await this.stateValues.numChildrenAdded) - numberToDelete,
           },
         ],
         actionId,

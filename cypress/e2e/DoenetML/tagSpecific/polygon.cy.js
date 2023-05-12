@@ -42,15 +42,15 @@ async function testPolygonCopiedTwice({
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
-    expect(stateVariables[graph1Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph2Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph3Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
+    expect(
+      stateVariables[graph1Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph2Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph3Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
 
     for (let i in vertices) {
       if (Number.isFinite(vertices[i][0])) {
@@ -330,7 +330,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -407,7 +407,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -455,7 +455,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -501,7 +501,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -631,7 +631,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -998,10 +998,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1345,10 +1345,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1631,7 +1631,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);
@@ -1771,7 +1771,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);
@@ -3848,6 +3848,104 @@ describe("Polygon Tag Tests", function () {
     <graph>
       <point name="P">(2,1)</point>
       <polygon vertices="2(2,-3)+(3,4) 3$P $P+2$m" name="polygon" />
+    </graph>
+ 
+    <p><copy source="polygon.vertices" assignNames="P1 P2 P3" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [7, -2],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 0: [3, 5] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [3, 5],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 1: [-9, -6] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 2: [-3, 1] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
+  });
+
+  it("polygon from vector operations, create individual vectors", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polygon vertices="$v1 $v2 $v3" name="polygon" />
+      <vector name="v1">2(2,-3)+(3,4)</vector>
+      <vector name="v2">3$P</vector>
+      <vector name="v3">$P+2$m</vector>
+
     </graph>
  
     <p><copy source="polygon.vertices" assignNames="P1 P2 P3" /></p>

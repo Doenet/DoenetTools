@@ -36,10 +36,10 @@ export default class Matrix extends MathComponent {
       createStateVariable: "defaultEntry",
       defaultValue: me.fromAst(0),
     };
-    attributes.nRows = {
+    attributes.numRows = {
       createComponentOfType: "integer",
     };
-    attributes.nColumns = {
+    attributes.numColumns = {
       createComponentOfType: "integer",
     };
 
@@ -123,100 +123,101 @@ export default class Matrix extends MathComponent {
         rowChildren: {
           dependencyType: "child",
           childGroups: ["rows"],
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         colChildren: {
           dependencyType: "child",
           childGroups: ["columns"],
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         mathChildren: {
           dependencyType: "child",
           childGroups: ["maths"],
           variableNames: ["matrixSize"],
         },
-        nRowsAttr: {
+        numRowsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nRows",
+          attributeName: "numRows",
           variableNames: ["value"],
         },
-        nColumnsAttr: {
+        numColumnsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nColumns",
+          attributeName: "numColumns",
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
-        let nRows = null,
-          nColumns = null;
+        let numRows = null,
+          numColumns = null;
 
-        if (dependencyValues.nRowsAttr) {
-          nRows = dependencyValues.nRowsAttr.stateValues.value;
-          if (!(Number.isFinite(nRows) && nRows > 0)) {
-            nRows = null;
+        if (dependencyValues.numRowsAttr) {
+          numRows = dependencyValues.numRowsAttr.stateValues.value;
+          if (!(Number.isFinite(numRows) && numRows > 0)) {
+            numRows = null;
           }
         }
-        if (dependencyValues.nColumnsAttr) {
-          nColumns = dependencyValues.nColumnsAttr.stateValues.value;
-          if (!(Number.isFinite(nColumns) && nColumns > 0)) {
-            nColumns = null;
+        if (dependencyValues.numColumnsAttr) {
+          numColumns = dependencyValues.numColumnsAttr.stateValues.value;
+          if (!(Number.isFinite(numColumns) && numColumns > 0)) {
+            numColumns = null;
           }
         }
 
         if (dependencyValues.rowChildren.length > 0) {
-          if (nRows === null) {
-            nRows = dependencyValues.rowChildren.length;
+          if (numRows === null) {
+            numRows = dependencyValues.rowChildren.length;
           }
-          if (nColumns === null) {
-            nColumns = Math.max(
+          if (numColumns === null) {
+            numColumns = Math.max(
               1,
               ...dependencyValues.rowChildren.map(
-                (x) => x.stateValues.nComponents,
+                (x) => x.stateValues.numComponents,
               ),
             );
           }
         } else if (dependencyValues.colChildren.length > 0) {
-          if (nColumns === null) {
-            nColumns = dependencyValues.colChildren.length;
+          if (numColumns === null) {
+            numColumns = dependencyValues.colChildren.length;
           }
-          if (nRows === null) {
-            nRows = Math.max(
+          if (numRows === null) {
+            numRows = Math.max(
               1,
               ...dependencyValues.colChildren.map(
-                (x) => x.stateValues.nComponents,
+                (x) => x.stateValues.numComponents,
               ),
             );
           }
         } else if (dependencyValues.mathChildren.length === 1) {
-          if (nRows === null) {
-            nRows = dependencyValues.mathChildren[0].stateValues.matrixSize[0];
+          if (numRows === null) {
+            numRows =
+              dependencyValues.mathChildren[0].stateValues.matrixSize[0];
           }
-          if (nColumns === null) {
-            nColumns =
+          if (numColumns === null) {
+            numColumns =
               dependencyValues.mathChildren[0].stateValues.matrixSize[1];
           }
         } else {
-          // if nRows or nColumns is not specified, set to 1,
+          // if numRows or numColumns is not specified, set to 1,
           // except if both are not specified, set both to 0
-          if (nRows === null) {
-            if (nColumns === null) {
-              nRows = 0;
-              nColumns = 0;
+          if (numRows === null) {
+            if (numColumns === null) {
+              numRows = 0;
+              numColumns = 0;
             } else {
-              nRows = 1;
+              numRows = 1;
             }
-          } else if (nColumns === null) {
-            nColumns = 1;
+          } else if (numColumns === null) {
+            numColumns = 1;
           }
         }
 
-        return { setValue: { matrixSizePre: [nRows, nColumns] } };
+        return { setValue: { matrixSizePre: [numRows, numColumns] } };
       },
     };
 
     stateVariableDefinitions.matrixPre = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       hasEssential: true,
       returnArraySizeDependencies: () => ({
         matrixSizePre: {

@@ -605,7 +605,7 @@ export function returnSequenceValues(
   includeOriginalIndex = false,
 ) {
   let sequenceValues = [];
-  let nValues = 0;
+  let numValues = 0;
 
   for (let ind = 0; ind < length; ind++) {
     let value = from;
@@ -650,9 +650,9 @@ export function returnSequenceValues(
       sequenceValues.push(value);
     }
 
-    nValues++;
+    numValues++;
 
-    if (nValues === maxNum) {
+    if (numValues === maxNum) {
       break;
     }
   }

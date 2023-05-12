@@ -307,7 +307,7 @@ export default class Ray extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimDirection = {
+    stateVariableDefinitions.numDimDirection = {
       stateVariablesDeterminingDependencies: [
         "basedOnDirection",
         "basedOnThrough",
@@ -334,72 +334,73 @@ export default class Ray extends GraphicalComponent {
           directionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "direction",
-            variableNames: ["nDimensions"],
+            variableNames: ["numDimensions"],
           },
         };
 
         if (!stateValues.basedOnDirection) {
           if (stateValues.basedOnThrough) {
-            dependencies.nDimThrough = {
+            dependencies.numDimThrough = {
               dependencyType: "stateVariable",
-              variableName: "nDimThrough",
+              variableName: "numDimThrough",
             };
           }
           if (stateValues.basedOnEndpoint) {
-            dependencies.nDimEndpoint = {
+            dependencies.numDimEndpoint = {
               dependencyType: "stateVariable",
-              variableName: "nDimEndpoint",
+              variableName: "numDimEndpoint",
             };
           }
         }
         return dependencies;
       },
       definition: function ({ dependencyValues }) {
-        let nDimDirection;
+        let numDimDirection;
 
         if (dependencyValues.basedOnDirection) {
           if (dependencyValues.directionAttr !== null) {
-            nDimDirection =
-              dependencyValues.directionAttr.stateValues.nDimensions;
+            numDimDirection =
+              dependencyValues.directionAttr.stateValues.numDimensions;
           } else if (dependencyValues.directionShadow) {
             let directionTree = dependencyValues.directionShadow.tree;
             if (
               Array.isArray(directionTree) &&
               vectorOperators.includes(directionTree[0])
             ) {
-              nDimDirection = directionTree.length - 1;
+              numDimDirection = directionTree.length - 1;
             } else {
-              nDimDirection = 2;
+              numDimDirection = 2;
             }
           }
         } else {
           if (dependencyValues.basedOnThrough) {
             if (dependencyValues.basedOnEndpoint) {
               if (
-                dependencyValues.nDimThrough === dependencyValues.nDimEndpoint
+                dependencyValues.numDimThrough ===
+                dependencyValues.numDimEndpoint
               ) {
-                nDimDirection = dependencyValues.nDimThrough;
+                numDimDirection = dependencyValues.numDimThrough;
               } else {
-                nDimDirection = NaN;
+                numDimDirection = NaN;
               }
             } else {
-              nDimDirection = dependencyValues.nDimThrough;
+              numDimDirection = dependencyValues.numDimThrough;
             }
           } else if (dependencyValues.basedOnEndpoint) {
-            nDimDirection = dependencyValues.nDimEndpoint;
+            numDimDirection = dependencyValues.numDimEndpoint;
           } else {
-            nDimDirection = 2;
+            numDimDirection = 2;
           }
         }
 
         return {
-          setValue: { nDimDirection },
-          checkForActualChange: { nDimDirection: true },
+          setValue: { numDimDirection },
+          checkForActualChange: { numDimDirection: true },
         };
       },
     };
 
-    stateVariableDefinitions.nDimThrough = {
+    stateVariableDefinitions.numDimThrough = {
       stateVariablesDeterminingDependencies: [
         "basedOnDirection",
         "basedOnThrough",
@@ -426,71 +427,73 @@ export default class Ray extends GraphicalComponent {
           throughAttr: {
             dependencyType: "attributeComponent",
             attributeName: "through",
-            variableNames: ["nDimensions"],
+            variableNames: ["numDimensions"],
           },
         };
 
         if (!stateValues.basedOnThrough) {
           if (stateValues.basedOnEndpoint) {
-            dependencies.nDimEndpoint = {
+            dependencies.numDimEndpoint = {
               dependencyType: "stateVariable",
-              variableName: "nDimEndpoint",
+              variableName: "numDimEndpoint",
             };
           }
           if (stateValues.basedOnDirection) {
-            dependencies.nDimDirection = {
+            dependencies.numDimDirection = {
               dependencyType: "stateVariable",
-              variableName: "nDimDirection",
+              variableName: "numDimDirection",
             };
           }
         }
         return dependencies;
       },
       definition: function ({ dependencyValues }) {
-        let nDimThrough;
+        let numDimThrough;
 
         if (dependencyValues.basedOnThrough) {
           if (dependencyValues.throughAttr !== null) {
-            nDimThrough = dependencyValues.throughAttr.stateValues.nDimensions;
+            numDimThrough =
+              dependencyValues.throughAttr.stateValues.numDimensions;
           } else if (dependencyValues.throughShadow) {
             let throughTree = dependencyValues.throughShadow.tree;
             if (
               Array.isArray(throughTree) &&
               vectorOperators.includes(throughTree[0])
             ) {
-              nDimThrough = throughTree.length - 1;
+              numDimThrough = throughTree.length - 1;
             } else {
-              nDimThrough = 2;
+              numDimThrough = 2;
             }
           }
         } else {
           if (dependencyValues.basedOnDirection) {
             if (dependencyValues.basedOnEndpoint) {
               if (
-                dependencyValues.nDimDirection === dependencyValues.nDimEndpoint
+                dependencyValues.numDimDirection ===
+                dependencyValues.numDimEndpoint
               ) {
-                nDimThrough = dependencyValues.nDimDirection;
+                numDimThrough = dependencyValues.numDimDirection;
               } else {
-                nDimThrough = NaN;
+                numDimThrough = NaN;
               }
             } else {
-              nDimThrough = dependencyValues.nDimDirection;
+              numDimThrough = dependencyValues.numDimDirection;
             }
           } else if (dependencyValues.basedOnEndpoint) {
-            nDimThrough = dependencyValues.nDimEndpoint;
+            numDimThrough = dependencyValues.numDimEndpoint;
           } else {
-            nDimThrough = 2;
+            numDimThrough = 2;
           }
         }
 
         return {
-          setValue: { nDimThrough },
-          checkForActualChange: { nDimThrough: true },
+          setValue: { numDimThrough },
+          checkForActualChange: { numDimThrough: true },
         };
       },
     };
 
-    stateVariableDefinitions.nDimEndpoint = {
+    stateVariableDefinitions.numDimEndpoint = {
       stateVariablesDeterminingDependencies: [
         "basedOnDirection",
         "basedOnThrough",
@@ -517,72 +520,73 @@ export default class Ray extends GraphicalComponent {
           endpointAttr: {
             dependencyType: "attributeComponent",
             attributeName: "endpoint",
-            variableNames: ["nDimensions"],
+            variableNames: ["numDimensions"],
           },
         };
 
         if (!stateValues.basedOnEndpoint) {
           if (stateValues.basedOnThrough) {
-            dependencies.nDimThrough = {
+            dependencies.numDimThrough = {
               dependencyType: "stateVariable",
-              variableName: "nDimThrough",
+              variableName: "numDimThrough",
             };
           }
           if (stateValues.basedOnDirection) {
-            dependencies.nDimDirection = {
+            dependencies.numDimDirection = {
               dependencyType: "stateVariable",
-              variableName: "nDimDirection",
+              variableName: "numDimDirection",
             };
           }
         }
         return dependencies;
       },
       definition: function ({ dependencyValues }) {
-        let nDimEndpoint;
+        let numDimEndpoint;
 
         if (dependencyValues.basedOnEndpoint) {
           if (dependencyValues.endpointAttr !== null) {
-            nDimEndpoint =
-              dependencyValues.endpointAttr.stateValues.nDimensions;
+            numDimEndpoint =
+              dependencyValues.endpointAttr.stateValues.numDimensions;
           } else if (dependencyValues.endpointShadow) {
             let endpointTree = dependencyValues.endpointShadow.tree;
             if (
               Array.isArray(endpointTree) &&
               vectorOperators.includes(endpointTree[0])
             ) {
-              nDimEndpoint = endpointTree.length - 1;
+              numDimEndpoint = endpointTree.length - 1;
             } else {
-              nDimEndpoint = 2;
+              numDimEndpoint = 2;
             }
           }
         } else {
           if (dependencyValues.basedOnDirection) {
             if (dependencyValues.basedOnThrough) {
               if (
-                dependencyValues.nDimDirection === dependencyValues.nDimThrough
+                dependencyValues.numDimDirection ===
+                dependencyValues.numDimThrough
               ) {
-                nDimEndpoint = dependencyValues.nDimDirection;
+                numDimEndpoint = dependencyValues.numDimDirection;
               } else {
-                nDimEndpoint = NaN;
+                numDimEndpoint = NaN;
               }
             } else {
-              nDimEndpoint = dependencyValues.nDimDirection;
+              numDimEndpoint = dependencyValues.numDimDirection;
             }
           } else if (dependencyValues.basedOnThrough) {
-            nDimEndpoint = dependencyValues.nDimThrough;
+            numDimEndpoint = dependencyValues.numDimThrough;
           } else {
-            nDimEndpoint = 2;
+            numDimEndpoint = 2;
           }
         }
 
         return {
-          setValue: { nDimEndpoint },
-          checkForActualChange: { nDimEndpoint: true },
+          setValue: { numDimEndpoint },
+          checkForActualChange: { numDimEndpoint: true },
         };
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -600,61 +604,63 @@ export default class Ray extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "basedOnDirection",
         },
-        nDimDirection: {
+        numDimDirection: {
           dependencyType: "stateVariable",
-          variableName: "nDimDirection",
+          variableName: "numDimDirection",
         },
-        nDimThrough: {
+        numDimThrough: {
           dependencyType: "stateVariable",
-          variableName: "nDimThrough",
+          variableName: "numDimThrough",
         },
-        nDimEndpoint: {
+        numDimEndpoint: {
           dependencyType: "stateVariable",
-          variableName: "nDimEndpoint",
+          variableName: "numDimEndpoint",
         },
       }),
       definition: function ({ dependencyValues }) {
-        // console.log(`nDimensions definition`)
+        // console.log(`numDimensions definition`)
         // console.log(dependencyValues)
 
-        let nDimensions;
+        let numDimensions;
         if (dependencyValues.basedOnDirection) {
           if (dependencyValues.basedOnEndpoint) {
             // ignore through if have both direction and endpoint
             if (
-              dependencyValues.nDimDirection !== dependencyValues.nDimEndpoint
+              dependencyValues.numDimDirection !==
+              dependencyValues.numDimEndpoint
             ) {
-              console.warn(`nDimensions mismatch in vector`);
-              return { setValue: { nDimensions: NaN } };
+              console.warn(`numDimensions mismatch in vector`);
+              return { setValue: { numDimensions: NaN } };
             }
           } else if (dependencyValues.basedOnThrough) {
             if (
-              dependencyValues.nDimDirection !== dependencyValues.nDimThrough
+              dependencyValues.numDimDirection !==
+              dependencyValues.numDimThrough
             ) {
-              console.warn(`nDimensions mismatch in vector`);
-              return { setValue: { nDimensions: NaN } };
+              console.warn(`numDimensions mismatch in vector`);
+              return { setValue: { numDimensions: NaN } };
             }
           }
-          nDimensions = dependencyValues.nDimDirection;
+          numDimensions = dependencyValues.numDimDirection;
         } else if (dependencyValues.basedOnEndpoint) {
           if (dependencyValues.basedOnThrough) {
             if (
-              dependencyValues.nDimEndpoint !== dependencyValues.nDimThrough
+              dependencyValues.numDimEndpoint !== dependencyValues.numDimThrough
             ) {
-              console.warn(`nDimensions mismatch in vector`);
-              return { setValue: { nDimensions: NaN } };
+              console.warn(`numDimensions mismatch in vector`);
+              return { setValue: { numDimensions: NaN } };
             }
           }
-          nDimensions = dependencyValues.nDimEndpoint;
+          numDimensions = dependencyValues.numDimEndpoint;
         } else if (dependencyValues.basedOnThrough) {
-          nDimensions = dependencyValues.nDimThrough;
+          numDimensions = dependencyValues.numDimThrough;
         } else {
-          nDimensions = 2;
+          numDimensions = 2;
         }
 
         return {
-          setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
@@ -698,13 +704,13 @@ export default class Ray extends GraphicalComponent {
         "basedOnThrough",
       ],
       returnArraySizeDependencies: () => ({
-        nDimDirection: {
+        numDimDirection: {
           dependencyType: "stateVariable",
-          variableName: "nDimDirection",
+          variableName: "numDimDirection",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimDirection];
+        return [dependencyValues.numDimDirection];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
@@ -914,13 +920,13 @@ export default class Ray extends GraphicalComponent {
       set: convertValueToMathExpression,
       stateVariablesDeterminingDependencies: ["basedOnThrough"],
       returnArraySizeDependencies: () => ({
-        nDimThrough: {
+        numDimThrough: {
           dependencyType: "stateVariable",
-          variableName: "nDimThrough",
+          variableName: "numDimThrough",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimThrough];
+        return [dependencyValues.numDimThrough];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
@@ -1117,13 +1123,13 @@ export default class Ray extends GraphicalComponent {
         "basedOnDirection",
       ],
       returnArraySizeDependencies: () => ({
-        nDimEndpoint: {
+        numDimEndpoint: {
           dependencyType: "stateVariable",
-          variableName: "nDimEndpoint",
+          variableName: "numDimEndpoint",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimEndpoint];
+        return [dependencyValues.numDimEndpoint];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
@@ -1324,9 +1330,9 @@ export default class Ray extends GraphicalComponent {
       forRenderer: true,
       returnDependencies() {
         return {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           endpoint: {
             dependencyType: "stateVariable",
@@ -1336,13 +1342,13 @@ export default class Ray extends GraphicalComponent {
       },
 
       definition({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.nDimensions)) {
+        if (Number.isNaN(dependencyValues.numDimensions)) {
           return null;
         }
 
         let endpoint = dependencyValues.endpoint;
         let numericalEndpoint = [];
-        for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
+        for (let ind = 0; ind < dependencyValues.numDimensions; ind++) {
           let val = endpoint[ind].evaluate_to_constant();
           numericalEndpoint.push(val);
         }
@@ -1355,9 +1361,9 @@ export default class Ray extends GraphicalComponent {
       forRenderer: true,
       returnDependencies() {
         return {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           through: {
             dependencyType: "stateVariable",
@@ -1367,13 +1373,13 @@ export default class Ray extends GraphicalComponent {
       },
 
       definition({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.nDimensions)) {
+        if (Number.isNaN(dependencyValues.numDimensions)) {
           return null;
         }
 
         let through = dependencyValues.through;
         let numericalThroughpoint = [];
-        for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
+        for (let ind = 0; ind < dependencyValues.numDimensions; ind++) {
           let val = through[ind].evaluate_to_constant();
           numericalThroughpoint.push(val);
         }
@@ -1384,9 +1390,9 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalEndpoint: {
           dependencyType: "stateVariable",
@@ -1414,7 +1420,7 @@ export default class Ray extends GraphicalComponent {
         // - constant endpoint/through and
         // - non-degenerate parameters
         let skip =
-          dependencyValues.nDimensions !== 2 ||
+          dependencyValues.numDimensions !== 2 ||
           !haveConstants ||
           (B1 === A1 && B2 === A2);
 
@@ -1624,16 +1630,16 @@ export default class Ray extends GraphicalComponent {
       ];
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // One point was altered from the requested location
         // while the other point stayed at the requested location.
         // We interpret this as one point being constrained and the second one being free

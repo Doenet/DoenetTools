@@ -37,16 +37,16 @@ export default class BestFitLine extends Line {
       definition: () => ({ setValue: { draggable: false } }),
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nDimensions: 2 } }),
+      definition: () => ({ setValue: { numDimensions: 2 } }),
     };
 
-    delete stateVariableDefinitions.nPointsPrescribed;
+    delete stateVariableDefinitions.numPointsPrescribed;
     delete stateVariableDefinitions.basedOnSlope;
     delete stateVariableDefinitions.dForSlope;
     delete stateVariableDefinitions.essentialPoint1x;
@@ -60,7 +60,7 @@ export default class BestFitLine extends Line {
       points: {
         dependencyType: "attributeComponent",
         attributeName: "points",
-        variableNames: ["points", "nDimensions"],
+        variableNames: ["points", "numDimensions"],
       },
       variables: {
         dependencyType: "stateVariable",
@@ -73,7 +73,7 @@ export default class BestFitLine extends Line {
     }) {
       if (
         !dependencyValues.points ||
-        dependencyValues.points.stateValues.nDimensions < 2 ||
+        dependencyValues.points.stateValues.numDimensions < 2 ||
         dependencyValues.points.stateValues.points.length < 1
       ) {
         let blankMath = me.fromAst("\uff3f");

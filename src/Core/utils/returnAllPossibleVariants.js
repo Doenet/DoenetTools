@@ -32,21 +32,21 @@ export async function returnAllPossibleVariants({ cid, doenetML }) {
     componentInfoObjects,
   });
 
-  let nVariants = results.numberOfVariants;
+  let numVariants = results.numberOfVariants;
 
   let allPossibleVariants;
 
   if (results.variantNames) {
     let variantNames = [...results.variantNames];
 
-    if (variantNames.length >= nVariants) {
-      variantNames = variantNames.slice(0, nVariants);
+    if (variantNames.length >= numVariants) {
+      variantNames = variantNames.slice(0, numVariants);
     } else {
       let originalVariantNames = [...variantNames];
       let variantNumber = variantNames.length;
       let variantValue = variantNumber;
       let variantString;
-      while (variantNumber < nVariants) {
+      while (variantNumber < numVariants) {
         variantNumber++;
         variantValue++;
         variantString = indexToLowercaseLetters(variantValue);
@@ -60,7 +60,7 @@ export async function returnAllPossibleVariants({ cid, doenetML }) {
 
     allPossibleVariants = variantNames;
   } else {
-    allPossibleVariants = [...Array(nVariants).keys()].map((x) =>
+    allPossibleVariants = [...Array(numVariants).keys()].map((x) =>
       indexToLowercaseLetters(x + 1),
     );
   }

@@ -109,7 +109,7 @@ describe("Math Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy source="_math1" sourceAttributesToIgnore="" /> + 5</math>
+    <math>3<copy source="_math1" /> + 5</math>
     `,
         },
         "*",
@@ -4132,7 +4132,7 @@ describe("Math Tag Tests", function () {
   <p><mathinput name="m" prefill="(a,b,c)" /></p>
   <p><math name="m2">$m</math></p>
   <p><math name="m3" createVectors>$m</math></p>
-  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" source="m2" assignNames="nDim2" /> <copy prop="nDimensions" source="m3" assignNames="nDim3" /></p>
+  <p>Ndimensions: <extract prop="numDimensions" assignNames="numDim1">$m</extract> <copy prop="numDimensions" source="m2" assignNames="numDim2" /> <copy prop="numDimensions" source="m3" assignNames="numDim3" /></p>
   <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" source="m2" assignNames="x_2" /> <copy prop="x" source="m3" assignNames="x_3" /></p>
   <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" source="m2" assignNames="y_2" /> <copy prop="y" source="m3" assignNames="y_3" /></p>
   <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" source="m2" assignNames="z_2" /> <copy prop="z" source="m3" assignNames="z_3" /></p>
@@ -4158,8 +4158,8 @@ describe("Math Tag Tests", function () {
     let indToComp = ["x", "y", "z"];
 
     function check_values(xs, operator) {
-      cy.get(cesc(`#\\/nDim1`)).should("have.text", xs.length.toString());
-      cy.get(cesc(`#\\/nDim2`)).should("have.text", xs.length.toString());
+      cy.get(cesc(`#\\/numDim1`)).should("have.text", xs.length.toString());
+      cy.get(cesc(`#\\/numDim2`)).should("have.text", xs.length.toString());
 
       for (let [ind, x] of xs.entries()) {
         let comp = indToComp[ind];
@@ -4212,8 +4212,8 @@ describe("Math Tag Tests", function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect(stateVariables["/nDim1"].stateValues.value).eq(xs.length);
-        expect(stateVariables["/nDim2"].stateValues.value).eq(xs.length);
+        expect(stateVariables["/numDim1"].stateValues.value).eq(xs.length);
+        expect(stateVariables["/numDim2"].stateValues.value).eq(xs.length);
 
         let m3Operator = operator === "tuple" ? "vector" : operator;
 
@@ -6796,18 +6796,18 @@ describe("Math Tag Tests", function () {
   <math name="v12">⟨1,2⟩^T</math>
   </p>
   <p>N dimensions:
-    <integer copySource="v1.nDimensions" name="v1nd" />
-    <integer copySource="v2.nDimensions" name="v2nd" />
-    <integer copySource="v3.nDimensions" name="v3nd" />
-    <integer copySource="v4.nDimensions" name="v4nd" />
-    <integer copySource="v5.nDimensions" name="v5nd" />
-    <integer copySource="v6.nDimensions" name="v6nd" />
-    <integer copySource="v7.nDimensions" name="v7nd" />
-    <integer copySource="v8.nDimensions" name="v8nd" />
-    <integer copySource="v9.nDimensions" name="v9nd" />
-    <integer copySource="v10.nDimensions" name="v10nd" />
-    <integer copySource="v11.nDimensions" name="v11nd" />
-    <integer copySource="v12.nDimensions" name="v12nd" />
+    <integer copySource="v1.numDimensions" name="v1nd" />
+    <integer copySource="v2.numDimensions" name="v2nd" />
+    <integer copySource="v3.numDimensions" name="v3nd" />
+    <integer copySource="v4.numDimensions" name="v4nd" />
+    <integer copySource="v5.numDimensions" name="v5nd" />
+    <integer copySource="v6.numDimensions" name="v6nd" />
+    <integer copySource="v7.numDimensions" name="v7nd" />
+    <integer copySource="v8.numDimensions" name="v8nd" />
+    <integer copySource="v9.numDimensions" name="v9nd" />
+    <integer copySource="v10.numDimensions" name="v10nd" />
+    <integer copySource="v11.numDimensions" name="v11nd" />
+    <integer copySource="v12.numDimensions" name="v12nd" />
   </p>
   <p>Vectors:
     <vector copySource="v1.vector" name="v1v" />
@@ -6908,32 +6908,32 @@ describe("Math Tag Tests", function () {
     <numberList copySource="v12.matrixSize" name="v12ms" />
   </p>
   <p>N rows:
-    <integer copySource="v1.nRows" name="v1nr" />
-    <integer copySource="v2.nRows" name="v2nr" />
-    <integer copySource="v3.nRows" name="v3nr" />
-    <integer copySource="v4.nRows" name="v4nr" />
-    <integer copySource="v5.nRows" name="v5nr" />
-    <integer copySource="v6.nRows" name="v6nr" />
-    <integer copySource="v7.nRows" name="v7nr" />
-    <integer copySource="v8.nRows" name="v8nr" />
-    <integer copySource="v9.nRows" name="v9nr" />
-    <integer copySource="v10.nRows" name="v10nr" />
-    <integer copySource="v11.nRows" name="v11nr" />
-    <integer copySource="v12.nRows" name="v12nr" />
+    <integer copySource="v1.numRows" name="v1nr" />
+    <integer copySource="v2.numRows" name="v2nr" />
+    <integer copySource="v3.numRows" name="v3nr" />
+    <integer copySource="v4.numRows" name="v4nr" />
+    <integer copySource="v5.numRows" name="v5nr" />
+    <integer copySource="v6.numRows" name="v6nr" />
+    <integer copySource="v7.numRows" name="v7nr" />
+    <integer copySource="v8.numRows" name="v8nr" />
+    <integer copySource="v9.numRows" name="v9nr" />
+    <integer copySource="v10.numRows" name="v10nr" />
+    <integer copySource="v11.numRows" name="v11nr" />
+    <integer copySource="v12.numRows" name="v12nr" />
   </p>
   <p>N columns:
-    <integer copySource="v1.nColumns" name="v1nc" />
-    <integer copySource="v2.nColumns" name="v2nc" />
-    <integer copySource="v3.nColumns" name="v3nc" />
-    <integer copySource="v4.nColumns" name="v4nc" />
-    <integer copySource="v5.nColumns" name="v5nc" />
-    <integer copySource="v6.nColumns" name="v6nc" />
-    <integer copySource="v7.nColumns" name="v7nc" />
-    <integer copySource="v8.nColumns" name="v8nc" />
-    <integer copySource="v9.nColumns" name="v9nc" />
-    <integer copySource="v10.nColumns" name="v10nc" />
-    <integer copySource="v11.nColumns" name="v11nc" />
-    <integer copySource="v12.nColumns" name="v12nc" />
+    <integer copySource="v1.numColumns" name="v1nc" />
+    <integer copySource="v2.numColumns" name="v2nc" />
+    <integer copySource="v3.numColumns" name="v3nc" />
+    <integer copySource="v4.numColumns" name="v4nc" />
+    <integer copySource="v5.numColumns" name="v5nc" />
+    <integer copySource="v6.numColumns" name="v6nc" />
+    <integer copySource="v7.numColumns" name="v7nc" />
+    <integer copySource="v8.numColumns" name="v8nc" />
+    <integer copySource="v9.numColumns" name="v9nc" />
+    <integer copySource="v10.numColumns" name="v10nc" />
+    <integer copySource="v11.numColumns" name="v11nc" />
+    <integer copySource="v12.numColumns" name="v12nc" />
   </p>
   <p>Matrices:
     <matrix copySource="v1.matrix" name="v1m" />
@@ -8806,14 +8806,14 @@ describe("Math Tag Tests", function () {
     <numberList copySource="m3.matrixSize" name="m3ms" />
   </p>
   <p>N rows:
-    <integer copySource="m1.nRows" name="m1nr" />
-    <integer copySource="m2.nRows" name="m2nr" />
-    <integer copySource="m3.nRows" name="m3nr" />
+    <integer copySource="m1.numRows" name="m1nr" />
+    <integer copySource="m2.numRows" name="m2nr" />
+    <integer copySource="m3.numRows" name="m3nr" />
   </p>
   <p>N columns:
-    <integer copySource="m1.nColumns" name="m1nc" />
-    <integer copySource="m2.nColumns" name="m2nc" />
-    <integer copySource="m3.nColumns" name="m3nc" />
+    <integer copySource="m1.numColumns" name="m1nc" />
+    <integer copySource="m2.numColumns" name="m2nc" />
+    <integer copySource="m3.numColumns" name="m3nc" />
   </p>
   <p>Matrices:
     <matrix copySource="m1.matrix" name="m1m" />

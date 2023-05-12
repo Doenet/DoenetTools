@@ -27,8 +27,8 @@ export default class When extends BooleanComponent {
       "allowedErrorInNumbers",
       "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
-      "nSignErrorsMatched",
-      "nPeriodicSetMatchesRequired",
+      "numSignErrorsMatched",
+      "numPeriodicSetMatchesRequired",
       "caseInsensitiveMatch",
       "matchBlanks",
     ]) {
@@ -100,13 +100,13 @@ export default class When extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "allowedErrorIsAbsolute",
         },
-        nSignErrorsMatched: {
+        numSignErrorsMatched: {
           dependencyType: "stateVariable",
-          variableName: "nSignErrorsMatched",
+          variableName: "numSignErrorsMatched",
         },
-        nPeriodicSetMatchesRequired: {
+        numPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
-          variableName: "nPeriodicSetMatchesRequired",
+          variableName: "numPeriodicSetMatchesRequired",
         },
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",
