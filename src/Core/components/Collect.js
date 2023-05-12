@@ -36,9 +36,9 @@ export default class Collect extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
-    attributes.maximumNumber = {
+    attributes.maxNumber = {
       createComponentOfType: "number",
-      createStateVariable: "maximumNumber",
+      createStateVariable: "maxNumber",
       defaultValue: null,
       public: true,
     };
@@ -246,9 +246,9 @@ export default class Collect extends CompositeComponent {
 
         return {
           descendants,
-          maximumNumber: {
+          maxNumber: {
             dependencyType: "stateVariable",
-            variableName: "maximumNumber",
+            variableName: "maxNumber",
           },
           propName: {
             dependencyType: "stateVariable",
@@ -266,10 +266,10 @@ export default class Collect extends CompositeComponent {
         }
 
         if (
-          dependencyValues.maximumNumber !== null &&
-          collectedComponents.length > dependencyValues.maximumNumber
+          dependencyValues.maxNumber !== null &&
+          collectedComponents.length > dependencyValues.maxNumber
         ) {
-          let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumber));
+          let maxnum = Math.max(0, Math.floor(dependencyValues.maxNumber));
           collectedComponents = collectedComponents.slice(0, maxnum);
         }
 
@@ -336,7 +336,7 @@ export default class Collect extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -377,7 +377,7 @@ export default class Collect extends CompositeComponent {
           uniqueIdentifiersUsed,
           componentInfoObjects,
           compositeAttributesObj,
-          nComponentsForSource,
+          numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
           flags,
         });
@@ -413,7 +413,7 @@ export default class Collect extends CompositeComponent {
     uniqueIdentifiersUsed,
     componentInfoObjects,
     compositeAttributesObj,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -451,7 +451,7 @@ export default class Collect extends CompositeComponent {
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
       });
 
@@ -512,7 +512,7 @@ export default class Collect extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -647,7 +647,7 @@ export default class Collect extends CompositeComponent {
           uniqueIdentifiersUsed,
           componentInfoObjects,
           compositeAttributesObj,
-          nComponentsForSource,
+          numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
           flags,
         });
@@ -718,7 +718,7 @@ export default class Collect extends CompositeComponent {
         uniqueIdentifiersUsed,
         componentInfoObjects,
         compositeAttributesObj,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
       });
@@ -810,7 +810,7 @@ export default class Collect extends CompositeComponent {
     components,
     componentInfoObjects,
     compositeAttributesObj,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -822,7 +822,7 @@ export default class Collect extends CompositeComponent {
       uniqueIdentifiersUsed,
       componentInfoObjects,
       compositeAttributesObj,
-      nComponentsForSource,
+      numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
       flags,
     });

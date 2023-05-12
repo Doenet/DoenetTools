@@ -65,9 +65,9 @@ export default class Curve extends GraphicalComponent {
       public: true,
       forRenderer: true,
     };
-    attributes.nDiscretizationPoints = {
+    attributes.numDiscretizationPoints = {
       createComponentOfType: "number",
-      createStateVariable: "nDiscretizationPoints",
+      createStateVariable: "numDiscretizationPoints",
       defaultValue: 1000,
       public: true,
     };
@@ -435,9 +435,9 @@ export default class Curve extends GraphicalComponent {
           attributeName: "parMax",
           variableNames: ["value"],
         },
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
         extrapolateForward: {
           dependencyType: "stateVariable",
@@ -476,7 +476,7 @@ export default class Curve extends GraphicalComponent {
       definition: function ({ dependencyValues }) {
         let parMax;
         if (dependencyValues.curveType === "bezier") {
-          parMax = dependencyValues.nThroughPoints - 1;
+          parMax = dependencyValues.numThroughPoints - 1;
           if (dependencyValues.extrapolateForward) {
             parMax *= 2;
           }
@@ -540,9 +540,9 @@ export default class Curve extends GraphicalComponent {
           attributeName: "parMin",
           variableNames: ["value"],
         },
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
         extrapolateBackward: {
           dependencyType: "stateVariable",
@@ -583,7 +583,7 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.curveType === "bezier") {
           parMin = 0;
           if (dependencyValues.extrapolateBackward) {
-            parMin = -(dependencyValues.nThroughPoints - 1);
+            parMin = -(dependencyValues.numThroughPoints - 1);
           }
         } else if (dependencyValues.parMinAttr !== null) {
           parMin =
@@ -648,24 +648,24 @@ export default class Curve extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nThroughPoints = {
+    stateVariableDefinitions.numThroughPoints = {
       returnDependencies: () => ({
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
-        let nThroughPoints = 0;
+        let numThroughPoints = 0;
         if (dependencyValues.through !== null) {
-          nThroughPoints = dependencyValues.through.stateValues.nPoints;
+          numThroughPoints = dependencyValues.through.stateValues.numPoints;
         }
-        return { setValue: { nThroughPoints } };
+        return { setValue: { numThroughPoints } };
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -675,20 +675,21 @@ export default class Curve extends GraphicalComponent {
           through: {
             dependencyType: "attributeComponent",
             attributeName: "through",
-            variableNames: ["nDimensions"],
+            variableNames: ["numDimensions"],
           },
         };
       },
       definition: function ({ dependencyValues }) {
         if (dependencyValues.through !== null) {
-          let nDimensions = dependencyValues.through.stateValues.nDimensions;
+          let numDimensions =
+            dependencyValues.through.stateValues.numDimensions;
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         } else {
           // curve through zero points
-          return { setValue: { nDimensions: 2 } };
+          return { setValue: { numDimensions: 2 } };
         }
       },
     };
@@ -714,7 +715,7 @@ export default class Curve extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
@@ -783,17 +784,20 @@ export default class Curve extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, dependencyValues.nDimensions];
+        return [
+          dependencyValues.numThroughPoints,
+          dependencyValues.numDimensions,
+        ];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -883,13 +887,13 @@ export default class Curve extends GraphicalComponent {
       entryPrefixes: ["numericalThroughPoint"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints];
+        return [dependencyValues.numThroughPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -969,13 +973,13 @@ export default class Curve extends GraphicalComponent {
       entryPrefixes: ["vectorControlDirection"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints];
+        return [dependencyValues.numThroughPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1059,13 +1063,13 @@ export default class Curve extends GraphicalComponent {
       entryPrefixes: ["hiddenControl"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints];
+        return [dependencyValues.numThroughPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1161,10 +1165,10 @@ export default class Curve extends GraphicalComponent {
         },
       },
       entryPrefixes: ["controlVectorX", "controlVector"],
-      nDimensions: 3,
+      numDimensions: 3,
       stateVariablesDeterminingDependencies: [
         "vectorControlDirections",
-        "nThroughPoints",
+        "numThroughPoints",
       ],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlVectorX") {
@@ -1219,20 +1223,20 @@ export default class Curve extends GraphicalComponent {
         }
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
         return [
-          dependencyValues.nThroughPoints,
+          dependencyValues.numThroughPoints,
           2,
-          dependencyValues.nDimensions,
+          dependencyValues.numDimensions,
         ];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -1241,13 +1245,13 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "haveBezierControls",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           splineTension: {
             dependencyType: "stateVariable",
@@ -1290,7 +1294,7 @@ export default class Curve extends GraphicalComponent {
           }
 
           for (let ind of indsToCheck) {
-            if (ind >= 0 && ind < stateValues.nThroughPoints) {
+            if (ind >= 0 && ind < stateValues.numThroughPoints) {
               dependenciesByKey[arrayKey]["throughPoint" + (ind + 1)] = {
                 dependencyType: "stateVariable",
                 variableName: "throughPoint" + (ind + 1),
@@ -1315,7 +1319,7 @@ export default class Curve extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
           // we have calculated this only for 2D
-          if (globalDependencyValues.nDimensions !== 2) {
+          if (globalDependencyValues.numDimensions !== 2) {
             newControlValues[arrayKey] = me.fromAst(NaN);
             continue;
           }
@@ -1351,7 +1355,7 @@ export default class Curve extends GraphicalComponent {
               point1 =
                 dependencyValuesByKey[arrayKey]["throughPoint" + pointInd];
             }
-            if (pointInd < globalDependencyValues.nThroughPoints) {
+            if (pointInd < globalDependencyValues.numThroughPoints) {
               point3 =
                 dependencyValuesByKey[arrayKey][
                   "throughPoint" + (pointInd + 2)
@@ -1446,7 +1450,7 @@ export default class Curve extends GraphicalComponent {
         // Also can't change if aren't in 2D
         if (
           !globalDependencyValues.haveBezierControls ||
-          globalDependencyValues.nDimensions !== 2
+          globalDependencyValues.numDimensions !== 2
         ) {
           return { success: false };
         }
@@ -1486,15 +1490,15 @@ export default class Curve extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["numericalControlVector"],
       forRenderer: true,
-      nDimensions: 2,
+      numDimensions: 2,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, 2];
+        return [dependencyValues.numThroughPoints, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1553,7 +1557,7 @@ export default class Curve extends GraphicalComponent {
         },
       },
       entryPrefixes: ["controlPointX", "controlPoint"],
-      nDimensions: 3,
+      numDimensions: 3,
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlPointX") {
           // controlPointX3_2_1 is the first component of the second control point
@@ -1607,20 +1611,20 @@ export default class Curve extends GraphicalComponent {
         }
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
         return [
-          dependencyValues.nThroughPoints,
+          dependencyValues.numThroughPoints,
           2,
-          dependencyValues.nDimensions,
+          dependencyValues.numDimensions,
         ];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
@@ -1629,9 +1633,9 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "haveBezierControls",
           },
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
         };
 
@@ -1671,7 +1675,7 @@ export default class Curve extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
           // we have calculated this only for 2D
-          if (globalDependencyValues.nDimensions !== 2) {
+          if (globalDependencyValues.numDimensions !== 2) {
             newControlValues[arrayKey] = me.fromAst(NaN);
           } else {
             let vectorX = dependencyValuesByKey[arrayKey].controlVectorX;
@@ -1704,7 +1708,7 @@ export default class Curve extends GraphicalComponent {
         // Also can't change if aren't in 2D
         if (
           !globalDependencyValues.haveBezierControls ||
-          globalDependencyValues.nDimensions !== 2
+          globalDependencyValues.numDimensions !== 2
         ) {
           return { success: false };
         }
@@ -1746,15 +1750,15 @@ export default class Curve extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["numericalControlPoint"],
       forRenderer: true,
-      nDimensions: 2,
+      numDimensions: 2,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, 2];
+        return [dependencyValues.numThroughPoints, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1792,13 +1796,13 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.splineCoeffs = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints - 1];
+        return [dependencyValues.numThroughPoints - 1];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1873,9 +1877,9 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "extrapolateBackward",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
         };
 
@@ -1958,7 +1962,7 @@ export default class Curve extends GraphicalComponent {
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
@@ -2007,14 +2011,14 @@ export default class Curve extends GraphicalComponent {
           ) {
             // if we are in graph, make sure that the speed of the parametrization
             // is fast enough for the curve to leave the graph while
-            // the parameter increases by the amount nThroughPoints - 1
+            // the parameter increases by the amount numThroughPoints - 1
 
             let xscale =
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
 
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let minSpeedToReachXEdge = xscale / tMax;
 
@@ -2073,14 +2077,14 @@ export default class Curve extends GraphicalComponent {
           ) {
             // if we are in graph, make sure that the speed of the parametrization
             // is fast enough for the curve to leave the graph while
-            // the parameter increases by the amount nThroughPoints - 1
+            // the parameter increases by the amount numThroughPoints - 1
 
             let xscale =
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
 
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let minSpeedToReachYEdge = yscale / tMax;
 
@@ -2128,7 +2132,7 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.extrapolateForwardCoeffs = {
       stateVariablesDeterminingDependencies: [
-        "nThroughPoints",
+        "numThroughPoints",
         "extrapolateForward",
       ],
       additionalStateVariablesDefined: [
@@ -2146,16 +2150,19 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "extrapolateForward",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
         };
 
-        if (stateValues.extrapolateForward && stateValues.nThroughPoints >= 2) {
+        if (
+          stateValues.extrapolateForward &&
+          stateValues.numThroughPoints >= 2
+        ) {
           dependencies.lastSplineCoeffs = {
             dependencyType: "stateVariable",
-            variableName: "splineCoeffs" + (stateValues.nThroughPoints - 1),
+            variableName: "splineCoeffs" + (stateValues.numThroughPoints - 1),
           };
           dependencies.graphXmin = {
             dependencyType: "stateVariable",
@@ -2230,7 +2237,7 @@ export default class Curve extends GraphicalComponent {
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let scaleSpeedToReachXEdge = xscale / tMax / Math.abs(xpEffective);
             let scaleSpeedToReachYEdge = yscale / tMax / Math.abs(ypEffective);
@@ -2279,14 +2286,14 @@ export default class Curve extends GraphicalComponent {
           ) {
             // if we are in graph, make sure that the speed of the parametrization
             // is fast enough for the curve to leave the graph while
-            // the parameter increases by the amount nThroughPoints - 1
+            // the parameter increases by the amount numThroughPoints - 1
 
             let xscale =
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
 
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let minSpeedToReachXEdge = xscale / tMax;
 
@@ -2345,14 +2352,14 @@ export default class Curve extends GraphicalComponent {
           ) {
             // if we are in graph, make sure that the speed of the parametrization
             // is fast enough for the curve to leave the graph while
-            // the parameter increases by the amount nThroughPoints - 1
+            // the parameter increases by the amount numThroughPoints - 1
 
             let xscale =
               dependencyValues.graphXmax - dependencyValues.graphXmin;
             let yscale =
               dependencyValues.graphYmax - dependencyValues.graphYmin;
 
-            let tMax = dependencyValues.nThroughPoints - 1;
+            let tMax = dependencyValues.numThroughPoints - 1;
 
             let minSpeedToReachYEdge = yscale / tMax;
 
@@ -2454,9 +2461,9 @@ export default class Curve extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "splineCoeffs",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
           extrapolateBackward: {
             dependencyType: "stateVariable",
@@ -2507,7 +2514,7 @@ export default class Curve extends GraphicalComponent {
         if (globalDependencyValues.curveType === "bezier") {
           let bezierArguments = {
             functionType: "bezier",
-            nThroughPoints: globalDependencyValues.nThroughPoints,
+            numThroughPoints: globalDependencyValues.numThroughPoints,
             numericalThroughPoints:
               globalDependencyValues.numericalThroughPoints,
             splineCoeffs: globalDependencyValues.splineCoeffs,
@@ -2662,7 +2669,7 @@ export default class Curve extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nXCriticalPoints = {
+    stateVariableDefinitions.numXCriticalPoints = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -2676,7 +2683,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nXCriticalPoints: dependencyValues.allXCriticalPoints.length,
+            numXCriticalPoints: dependencyValues.allXCriticalPoints.length,
           },
         };
       },
@@ -2702,7 +2709,7 @@ export default class Curve extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["xCriticalPointX", "xCriticalPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "xCriticalPointX") {
@@ -2771,13 +2778,13 @@ export default class Curve extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nXCriticalPoints: {
+        numXCriticalPoints: {
           dependencyType: "stateVariable",
-          variableName: "nXCriticalPoints",
+          variableName: "numXCriticalPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nXCriticalPoints, 2];
+        return [dependencyValues.numXCriticalPoints, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -2902,7 +2909,7 @@ export default class Curve extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nYCriticalPoints = {
+    stateVariableDefinitions.numYCriticalPoints = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -2916,7 +2923,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nYCriticalPoints: dependencyValues.allYCriticalPoints.length,
+            numYCriticalPoints: dependencyValues.allYCriticalPoints.length,
           },
         };
       },
@@ -2942,7 +2949,7 @@ export default class Curve extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["yCriticalPointX", "yCriticalPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "yCriticalPointX") {
@@ -3011,13 +3018,13 @@ export default class Curve extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nYCriticalPoints: {
+        numYCriticalPoints: {
           dependencyType: "stateVariable",
-          variableName: "nYCriticalPoints",
+          variableName: "numYCriticalPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nYCriticalPoints, 2];
+        return [dependencyValues.numYCriticalPoints, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -3143,7 +3150,7 @@ export default class Curve extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nCurvatureChangePoints = {
+    stateVariableDefinitions.numCurvatureChangePoints = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -3157,7 +3164,7 @@ export default class Curve extends GraphicalComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nCurvatureChangePoints:
+            numCurvatureChangePoints:
               dependencyValues.allCurvatureChangePoints.length,
           },
         };
@@ -3184,7 +3191,7 @@ export default class Curve extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["curvatureChangePointX", "curvatureChangePoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "curvatureChangePointX") {
@@ -3256,13 +3263,13 @@ export default class Curve extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nCurvatureChangePoints: {
+        numCurvatureChangePoints: {
           dependencyType: "stateVariable",
-          variableName: "nCurvatureChangePoints",
+          variableName: "numCurvatureChangePoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nCurvatureChangePoints, 2];
+        return [dependencyValues.numCurvatureChangePoints, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -3341,9 +3348,9 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "flipFunction",
         },
-        nDiscretizationPoints: {
+        numDiscretizationPoints: {
           dependencyType: "stateVariable",
-          variableName: "nDiscretizationPoints",
+          variableName: "numDiscretizationPoints",
         },
         parMin: {
           dependencyType: "stateVariable",
@@ -3582,7 +3589,7 @@ export default class Curve extends GraphicalComponent {
 function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
   let flipFunction = dependencyValues.flipFunction;
   let f = dependencyValues.fs[0];
-  let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
+  let numDiscretizationPoints = dependencyValues.numDiscretizationPoints;
   let parMax = dependencyValues.parMax;
   let parMin = dependencyValues.parMin;
 
@@ -3734,7 +3741,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       maxT = parMax;
     }
 
-    let Nsteps = nDiscretizationPoints;
+    let Nsteps = numDiscretizationPoints;
     let delta = (maxT - minT) / Nsteps;
 
     // sample Nsteps values of x between  [minT, maxT]
@@ -3841,7 +3848,7 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
   let fs = dependencyValues.fs;
   let parMin = dependencyValues.parMin;
   let parMax = dependencyValues.parMax;
-  let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
+  let numDiscretizationPoints = dependencyValues.numDiscretizationPoints;
   let periodic = dependencyValues.periodic;
 
   return function ({ variables, scales }) {
@@ -3871,7 +3878,7 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
     let minT = parMin;
     let maxT = parMax;
 
-    let Nsteps = nDiscretizationPoints;
+    let Nsteps = numDiscretizationPoints;
     let delta = (maxT - minT) / Nsteps;
 
     // sample Nsteps values of x between  [minT, maxT]

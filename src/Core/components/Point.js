@@ -385,7 +385,7 @@ export default class Point extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -415,33 +415,33 @@ export default class Point extends GraphicalComponent {
         xs: {
           dependencyType: "attributeComponent",
           attributeName: "xs",
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         pointOrVectorChild: {
           dependencyType: "child",
           childGroups: ["pointsAndVectors"],
-          variableNames: ["nDimensions"],
+          variableNames: ["numDimensions"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        // console.log(`nDimensions definition`)
+        // console.log(`numDimensions definition`)
         // console.log(dependencyValues)
 
         let basedOnCoords = false;
         let coords;
-        let nDimensions;
+        let numDimensions;
 
         // if have a component child, they will overwrite any other component values
-        // so is a minimum for nDimensions
-        // Exception if only x is specified, least nDimensions at zero
+        // so is a minimum for numDimensions
+        // Exception if only x is specified, least numDimensions at zero
         // so that only specifying x still gives a 2D point
         // (If want 1D point, specify via other means, such as coords or xs)
         if (dependencyValues.z !== null) {
-          nDimensions = 3;
+          numDimensions = 3;
         } else if (dependencyValues.y !== null) {
-          nDimensions = 2;
+          numDimensions = 2;
         } else {
-          nDimensions = 0;
+          numDimensions = 0;
         }
 
         if (dependencyValues.coords !== null) {
@@ -458,24 +458,24 @@ export default class Point extends GraphicalComponent {
             Array.isArray(coordsTree) &&
             vectorOperators.includes(coordsTree[0])
           ) {
-            nDimensions = Math.max(coordsTree.length - 1, nDimensions);
+            numDimensions = Math.max(coordsTree.length - 1, numDimensions);
           } else {
-            nDimensions = Math.max(1, nDimensions);
+            numDimensions = Math.max(1, numDimensions);
           }
 
           // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         } else {
           if (dependencyValues.xs !== null) {
             return {
               setValue: {
-                nDimensions: Math.max(
-                  dependencyValues.xs.stateValues.nComponents,
-                  nDimensions,
+                numDimensions: Math.max(
+                  dependencyValues.xs.stateValues.numComponents,
+                  numDimensions,
                 ),
               },
             };
@@ -483,23 +483,23 @@ export default class Point extends GraphicalComponent {
           if (dependencyValues.pointOrVectorChild.length > 0) {
             return {
               setValue: {
-                nDimensions: Math.max(
+                numDimensions: Math.max(
                   dependencyValues.pointOrVectorChild[0].stateValues
-                    .nDimensions,
-                  nDimensions,
+                    .numDimensions,
+                  numDimensions,
                 ),
               },
             };
           }
 
-          if (nDimensions === 0) {
+          if (numDimensions === 0) {
             // if nothing specified, make it a 2D point
-            nDimensions = 2;
+            numDimensions = 2;
           }
 
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         }
       },
@@ -519,9 +519,9 @@ export default class Point extends GraphicalComponent {
       }),
     };
 
-    stateVariableDefinitions.nDimensionsForConstraints = {
+    stateVariableDefinitions.numDimensionsForConstraints = {
       isAlias: true,
-      targetVariableName: "nDimensions",
+      targetVariableName: "numDimensions",
     };
 
     stateVariableDefinitions.unconstrainedXs = {
@@ -531,13 +531,13 @@ export default class Point extends GraphicalComponent {
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
@@ -793,13 +793,13 @@ export default class Point extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["x"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1077,13 +1077,13 @@ export default class Point extends GraphicalComponent {
       entryPrefixes: ["numericalX"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1149,9 +1149,9 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalXs: {
           dependencyType: "stateVariable",
@@ -1165,7 +1165,7 @@ export default class Point extends GraphicalComponent {
             // only implement for numerical values
             let result = {};
 
-            for (let ind = 1; ind <= dependencyValues.nDimensions; ind++) {
+            for (let ind = 1; ind <= dependencyValues.numDimensions; ind++) {
               let x = dependencyValues.numericalXs[ind - 1];
               if (!Number.isFinite(x)) {
                 return {};

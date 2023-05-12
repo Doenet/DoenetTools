@@ -52,7 +52,7 @@ export default class Copy extends CompositeComponent {
     attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
-    attributes.nComponents = {
+    attributes.numComponents = {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
@@ -739,11 +739,11 @@ export default class Copy extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nComponentsSpecified = {
+    stateVariableDefinitions.numComponentsSpecified = {
       returnDependencies: () => ({
-        nComponentsAttr: {
+        numComponentsAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "nComponents",
+          attributeName: "numComponents",
         },
         typeAttr: {
           dependencyType: "attributePrimitive",
@@ -751,7 +751,7 @@ export default class Copy extends CompositeComponent {
         },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
-        let nComponentsSpecified;
+        let numComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
           let componentType =
@@ -764,20 +764,20 @@ export default class Copy extends CompositeComponent {
               `Invalid componentType ${dependencyValues.typeAttr} of copy.`,
             );
           }
-          if (dependencyValues.nComponentsAttr !== null) {
-            nComponentsSpecified = dependencyValues.nComponentsAttr;
+          if (dependencyValues.numComponentsAttr !== null) {
+            numComponentsSpecified = dependencyValues.numComponentsAttr;
           } else {
-            nComponentsSpecified = 1;
+            numComponentsSpecified = 1;
           }
-        } else if (dependencyValues.nComponentsAttr !== null) {
+        } else if (dependencyValues.numComponentsAttr !== null) {
           throw Error(
-            `You must specify createComponentOfType when specifying nComponents for a copy.`,
+            `You must specify createComponentOfType when specifying numComponents for a copy.`,
           );
         } else {
-          nComponentsSpecified = null;
+          numComponentsSpecified = null;
         }
 
-        return { setValue: { nComponentsSpecified } };
+        return { setValue: { numComponentsSpecified } };
       },
     };
 
@@ -1036,8 +1036,8 @@ export default class Copy extends CompositeComponent {
     // console.log(await component.stateValues.effectivePropNameBySource);
     // console.log(await component.stateValues.replacementSources)
 
-    // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
-    await component.stateValues.nComponentsSpecified;
+    // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
+    await component.stateValues.numComponentsSpecified;
 
     workspace.numReplacementsBySource = [];
     workspace.numNonStringReplacementsBySource = [];
@@ -1361,17 +1361,18 @@ export default class Copy extends CompositeComponent {
         sourceNum
       ] = []);
 
-      let nComponentsForSource;
+      let numComponentsForSource;
 
       if (component.attributes.createComponentOfType?.primitive) {
-        let nComponentsTotal = await component.stateValues.nComponentsSpecified;
-        let nSources = replacementSourceIdentities.length;
+        let numComponentsTotal = await component.stateValues
+          .numComponentsSpecified;
+        let numSources = replacementSourceIdentities.length;
 
         // arbitrarily divide these components among the sources
-        nComponentsForSource = Math.floor(nComponentsTotal / nSources);
-        let nExtras = nComponentsTotal % nSources;
+        numComponentsForSource = Math.floor(numComponentsTotal / numSources);
+        let nExtras = numComponentsTotal % numSources;
         if (sourceNum < nExtras) {
-          nComponentsForSource++;
+          numComponentsForSource++;
         }
       }
 
@@ -1384,7 +1385,7 @@ export default class Copy extends CompositeComponent {
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
         fromCopyTarget:
@@ -1437,7 +1438,7 @@ export default class Copy extends CompositeComponent {
     uniqueIdentifiersUsed,
     compositeAttributesObj,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
     fromCopyTarget,
@@ -1484,7 +1485,7 @@ export default class Copy extends CompositeComponent {
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
       });
@@ -1844,17 +1845,18 @@ export default class Copy extends CompositeComponent {
     let recreateRemaining = false;
 
     for (let sourceNum = 0; sourceNum < maxSourceLength; sourceNum++) {
-      let nComponentsForSource;
+      let numComponentsForSource;
 
       if (component.attributes.createComponentOfType?.primitive) {
-        let nComponentsTotal = await component.stateValues.nComponentsSpecified;
-        let nSources = replacementSourceIdentities.length;
+        let numComponentsTotal = await component.stateValues
+          .numComponentsSpecified;
+        let numSources = replacementSourceIdentities.length;
 
         // arbitrarily divide these components among the sources
-        nComponentsForSource = Math.floor(nComponentsTotal / nSources);
-        let nExtras = nComponentsTotal % nSources;
+        numComponentsForSource = Math.floor(numComponentsTotal / numSources);
+        let nExtras = numComponentsTotal % numSources;
         if (sourceNum < nExtras) {
-          nComponentsForSource++;
+          numComponentsForSource++;
         }
       }
 
@@ -1962,7 +1964,7 @@ export default class Copy extends CompositeComponent {
           uniqueIdentifiersUsed,
           compositeAttributesObj,
           componentInfoObjects,
-          nComponentsForSource,
+          numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
           flags,
         });
@@ -2043,7 +2045,7 @@ export default class Copy extends CompositeComponent {
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
-        nComponentsForSource,
+        numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
       });
@@ -2116,7 +2118,7 @@ export default class Copy extends CompositeComponent {
 
           if (ind == 0 && foundDifference && onlyDifferenceIsType) {
             let requiredLength = await component.stateValues
-              .nComponentsSpecified;
+              .numComponentsSpecified;
 
             let wrapExistingReplacements =
               requiredLength === 1 &&
@@ -2206,7 +2208,7 @@ export default class Copy extends CompositeComponent {
     components,
     compositeAttributesObj,
     componentInfoObjects,
-    nComponentsForSource,
+    numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
     flags,
   }) {
@@ -2219,7 +2221,7 @@ export default class Copy extends CompositeComponent {
       uniqueIdentifiersUsed,
       compositeAttributesObj,
       componentInfoObjects,
-      nComponentsForSource,
+      numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
       flags,
     });
@@ -2258,7 +2260,7 @@ export async function replacementFromProp({
   uniqueIdentifiersUsed,
   compositeAttributesObj,
   componentInfoObjects,
-  nComponentsForSource,
+  numComponentsForSource,
   publicCaseInsensitiveAliasSubstitutions,
   flags,
 }) {
@@ -2324,7 +2326,7 @@ export async function replacementFromProp({
     let wrappingComponents = stateVarObj.wrappingComponents;
     let numWrappingComponents = wrappingComponents.length;
 
-    let numReplacementsForSource = nComponentsForSource;
+    let numReplacementsForSource = numComponentsForSource;
 
     if (stateVarObj.isArray) {
       numReplacementsForSource = arraySize
@@ -2338,10 +2340,10 @@ export async function replacementFromProp({
         // with no wrapping components, will just output
         // one component for each component of the array
         numReplacementsForSource = arrayKeys.length;
-      } else if (numWrappingComponents >= stateVarObj.nDimensions) {
+      } else if (numWrappingComponents >= stateVarObj.numDimensions) {
         // if had an outer wrapping component, would just have a single component
         numReplacementsForSource = 1;
-      } else if (numWrappingComponents === stateVarObj.nDimensions - 1) {
+      } else if (numWrappingComponents === stateVarObj.numDimensions - 1) {
         // if the second from outer dimension is wrapped
         // then just count the number of entries in the original array
         numReplacementsForSource = unflattenedArrayKeys.length;
@@ -2351,7 +2353,7 @@ export async function replacementFromProp({
         // Note: we need to create a 3D array entry to access this,
         // so this code is so far untested
         let nLevelsToFlatten =
-          stateVarObj.nDimensions - numWrappingComponents - 1;
+          stateVarObj.numDimensions - numWrappingComponents - 1;
         numReplacementsForSource = flattenLevels(
           unflattenedArrayKeys,
           nLevelsToFlatten,
@@ -2656,19 +2658,19 @@ export async function replacementFromProp({
 
       let createReplacementPiece = async function (
         subArrayKeys,
-        nDimensionsLeft,
+        numDimensionsLeft,
         init = false,
       ) {
         let pieces = [];
         let propVariablesCopiedByPiece = [];
 
-        if (nDimensionsLeft > 1) {
-          // since nDimensionsLeft > 1, each component of subArray should be an array
+        if (numDimensionsLeft > 1) {
+          // since numDimensionsLeft > 1, each component of subArray should be an array
           for (let subSubArrayKeys of subArrayKeys) {
             // recurse down to previous dimension
             let result = await createReplacementPiece(
               subSubArrayKeys,
-              nDimensionsLeft - 1,
+              numDimensionsLeft - 1,
             );
             pieces.push(...result.pieces);
             propVariablesCopiedByPiece.push(
@@ -2916,7 +2918,7 @@ export async function replacementFromProp({
         }
 
         // we wrap this dimension if have corresponding wrapping components
-        let wrapCs = wrappingComponents[nDimensionsLeft - 1];
+        let wrapCs = wrappingComponents[numDimensionsLeft - 1];
         if (pieces.length > 0 && wrapCs && wrapCs.length > 0) {
           for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
             let wrapCT =
@@ -3066,7 +3068,7 @@ export async function replacementFromProp({
 
       let result = await createReplacementPiece(
         unflattenedArrayKeys,
-        stateVarObj.nDimensions,
+        stateVarObj.numDimensions,
         true,
       );
 
@@ -3115,7 +3117,7 @@ export async function replacementFromProp({
 
       if (newReplacements.length < numReplacementsForSource) {
         // we didn't create enough replacements,
-        // which could happen if we have componentType and nComponentsSpecified set
+        // which could happen if we have componentType and numComponentsSpecified set
 
         // just create additional replacements,
         // even though they won't yet refer to the right dependencies

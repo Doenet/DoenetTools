@@ -77,7 +77,7 @@ export default class Sources extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.numberOfChildren = {
+    stateVariableDefinitions.numChildren = {
       additionalStateVariablesDefined: [
         "childComponentNames",
         "childIdentities",
@@ -89,13 +89,13 @@ export default class Sources extends BaseComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let numberOfChildren = dependencyValues.children.length;
+        let numChildren = dependencyValues.children.length;
         let childComponentNames = dependencyValues.children.map(
           (x) => x.componentName,
         );
         return {
           setValue: {
-            numberOfChildren,
+            numChildren,
             childComponentNames,
             childIdentities: dependencyValues.children,
           },

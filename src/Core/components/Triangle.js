@@ -38,15 +38,15 @@ export default class Triangle extends Polygon {
     };
 
     stateVariableDefinitions.vertices.returnArraySizeDependencies = () => ({
-      nDimensions: {
+      numDimensions: {
         dependencyType: "stateVariable",
-        variableName: "nDimensions",
+        variableName: "numDimensions",
       },
     });
     stateVariableDefinitions.vertices.returnArraySize = function ({
       dependencyValues,
     }) {
-      return [3, dependencyValues.nDimensions];
+      return [3, dependencyValues.numDimensions];
     };
 
     stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({
@@ -166,17 +166,17 @@ export default class Triangle extends Polygon {
 
     //     let instructions = [];
 
-    //     let nVerticesSpecified = 0;
+    //     let numVerticesSpecified = 0;
     //     if (dependencyValues.verticesAttr.length === 1) {
-    //       nVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.nPoints);
+    //       numVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.numPoints);
 
     //       let verticesForVerticesAttr;
     //       if (Array.isArray(desiredStateVariableValues)) {
-    //         verticesForVerticesAttr = desiredStateVariableValues.vertices.slice(0, nVerticesSpecified)
+    //         verticesForVerticesAttr = desiredStateVariableValues.vertices.slice(0, numVerticesSpecified)
     //       } else {
     //         verticesForVerticesAttr = {};
     //         for (let key in desiredStateVariableValues.vertices) {
-    //           if (Number(key) < nVerticesSpecified) {
+    //           if (Number(key) < numVerticesSpecified) {
     //             verticesForVerticesAttr[key] = desiredStateVariableValues.vertices[key]
     //           }
     //         }
@@ -195,7 +195,7 @@ export default class Triangle extends Polygon {
     //       }
     //     }
 
-    //     for (let ind = nVerticesSpecified; ind < 3; ind++) {
+    //     for (let ind = numVerticesSpecified; ind < 3; ind++) {
     //       if (desiredStateVariableValues.vertices[ind] !== undefined) {
 
     //         // Since we don't have a vertex child that will do the merge,
@@ -228,8 +228,8 @@ export default class Triangle extends Polygon {
 
     //     if (dependencyValues.verticesAttr.length === 1) {
     //       // so child variable of verticesAttr is an array entry (rather than array)
-    //       let nVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.nPoints);
-    //       if (arrayKey < nVerticesSpecified) {
+    //       let numVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.numPoints);
+    //       if (arrayKey < numVerticesSpecified) {
     //         return {
     //           success: true,
     //           instructions: [{
@@ -265,14 +265,14 @@ export default class Triangle extends Polygon {
 
     // }
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nVertices: 3 } }),
+      definition: () => ({ setValue: { numVertices: 3 } }),
     };
 
     return stateVariableDefinitions;

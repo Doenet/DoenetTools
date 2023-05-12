@@ -2686,7 +2686,7 @@ class Dependency {
                 let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
                   arrayEntryPrefix,
                   varEnding: vName.substring(arrayEntryPrefix.length),
-                  nDimensions: arrayStateVarObj.nDimensions,
+                  numDimensions: arrayStateVarObj.numDimensions,
                 });
 
                 if (arrayKeys.length > 0) {

@@ -2644,7 +2644,7 @@ describe("Problem Tag Tests", function () {
     let doenetML = `
     <text>a</text>
     <problem name="problem1" newNamespace>
-      <variantControl nVariants="2" variantNames="apple banana" />
+      <variantControl numVariants="2" variantNames="apple banana" />
       <select assignNames="fruit" hide>
         <option selectForVariants="apple" newNamespace>
           <text name="name">apple</text>

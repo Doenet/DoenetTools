@@ -41,7 +41,7 @@ export default class Intersection extends CompositeComponent {
             "numericalCoeff0",
             "numericalCoeffvar1",
             "numericalCoeffvar2",
-            "nDimensions",
+            "numDimensions",
           ],
         },
       }),
@@ -125,8 +125,8 @@ export default class Intersection extends CompositeComponent {
     let line2 = lineChildren[1];
 
     if (
-      line1.stateValues.nDimensions !== 2 ||
-      line2.stateValues.nDimensions !== 2
+      line1.stateValues.numDimensions !== 2 ||
+      line2.stateValues.numDimensions !== 2
     ) {
       console.log("Intersection of lines implemented only in 2D");
       return { replacements: [] };

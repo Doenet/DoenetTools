@@ -42,15 +42,15 @@ async function testPolygonCopiedTwice({
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
-    expect(stateVariables[graph1Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph2Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph3Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
+    expect(
+      stateVariables[graph1Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph2Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph3Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
 
     for (let i in vertices) {
       if (Number.isFinite(vertices[i][0])) {
@@ -330,7 +330,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -407,7 +407,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -455,7 +455,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -501,7 +501,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -631,7 +631,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -998,10 +998,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1345,10 +1345,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1631,7 +1631,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);
@@ -1771,7 +1771,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);

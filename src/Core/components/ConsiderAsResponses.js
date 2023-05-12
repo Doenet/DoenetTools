@@ -21,7 +21,7 @@ export default class ConsiderAsResponses extends BaseComponent {
         children: {
           dependencyType: "child",
           childGroups: ["anything"],
-          variableNames: ["nValues"],
+          variableNames: ["numValues"],
           variablesOptional: true,
         },
       }),

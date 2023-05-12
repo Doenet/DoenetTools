@@ -845,14 +845,14 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
 
   electronConfig = electronConfig.slice(1);
 
-  let nRows = electronConfig.length / 2;
-  if (!Number.isInteger(nRows)) {
+  let numRows = electronConfig.length / 2;
+  if (!Number.isInteger(numRows)) {
     return null;
   }
 
   let orbitalDiagram = [];
 
-  for (let rowInd = 0; rowInd < nRows; rowInd++) {
+  for (let rowInd = 0; rowInd < numRows; rowInd++) {
     let electronLevel = electronConfig[2 * rowInd];
     if (!(Number.isInteger(electronLevel) && electronLevel > 0)) {
       return null;

@@ -40,7 +40,7 @@ export default class VectorListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nVectors = {
+    stateVariableDefinitions.numVectors = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
@@ -49,46 +49,46 @@ export default class VectorListComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { nVectors: dependencyValues.vectorChildren.length },
-        checkForActualChange: { nVectors: true },
+        setValue: { numVectors: dependencyValues.vectorChildren.length },
+        checkForActualChange: { numVectors: true },
       }),
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
           childGroups: ["vectors"],
-          variableNames: ["nDimensions"],
+          variableNames: ["numDimensions"],
           skipPlaceholders: true,
         },
       }),
       definition: function ({ dependencyValues }) {
-        let nDimensions;
+        let numDimensions;
 
         if (dependencyValues.vectorChildren.length === 0) {
-          nDimensions = 2;
+          numDimensions = 2;
         } else {
-          nDimensions = 1;
+          numDimensions = 1;
           for (let vector of dependencyValues.vectorChildren) {
-            if (Number.isFinite(vector.stateValues.nDimensions)) {
-              nDimensions = Math.max(
-                nDimensions,
-                vector.stateValues.nDimensions,
+            if (Number.isFinite(vector.stateValues.numDimensions)) {
+              numDimensions = Math.max(
+                numDimensions,
+                vector.stateValues.numDimensions,
               );
             }
           }
         }
         return {
-          setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
 
     stateVariableDefinitions.vectors = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vectorX", "vector"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vectorX") {
@@ -157,17 +157,17 @@ export default class VectorListComponent extends BaseComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nVectors: {
+        numVectors: {
           dependencyType: "stateVariable",
-          variableName: "nVectors",
+          variableName: "numVectors",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVectors, dependencyValues.nDimensions];
+        return [dependencyValues.numVectors, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

@@ -42,24 +42,24 @@ export default class Rectangle extends Polygon {
       return { setValue: { styleDescriptionWithNoun } };
     };
 
-    stateVariableDefinitions.nVerticesSpecified = {
+    stateVariableDefinitions.numVerticesSpecified = {
       returnDependencies: () => ({
         verticesAttr: {
           dependencyType: "attributeComponent",
           attributeName: "vertices",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.verticesAttr !== null) {
           return {
             setValue: {
-              nVerticesSpecified:
-                dependencyValues.verticesAttr.stateValues.nPoints,
+              numVerticesSpecified:
+                dependencyValues.verticesAttr.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nVerticesSpecified: 0 } };
+          return { setValue: { numVerticesSpecified: 0 } };
         }
       },
     };
@@ -71,13 +71,13 @@ export default class Rectangle extends Polygon {
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
-        nVerticesSpecified: {
+        numVerticesSpecified: {
           dependencyType: "stateVariable",
-          variableName: "nVerticesSpecified",
+          variableName: "numVerticesSpecified",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVerticesSpecified === 0 ? 2 : 0];
+        return [dependencyValues.numVerticesSpecified === 0 ? 2 : 0];
       },
 
       returnArrayDependenciesByKey() {
@@ -214,9 +214,9 @@ export default class Rectangle extends Polygon {
             attributeName: "width",
             variableNames: ["value"],
           },
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
@@ -234,7 +234,7 @@ export default class Rectangle extends Polygon {
           };
         } else if (
           (dependencyValues.haveSpecifiedCenter ? 1 : 0) +
-            dependencyValues.nVerticesSpecified <=
+            dependencyValues.numVerticesSpecified <=
           1
         ) {
           return { useEssentialOrDefaultValue: { specifiedWidth: true } };
@@ -281,9 +281,9 @@ export default class Rectangle extends Polygon {
             attributeName: "height",
             variableNames: ["value"],
           },
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
@@ -301,7 +301,7 @@ export default class Rectangle extends Polygon {
           };
         } else if (
           (dependencyValues.haveSpecifiedCenter ? 1 : 0) +
-            dependencyValues.nVerticesSpecified <=
+            dependencyValues.numVerticesSpecified <=
           1
         ) {
           return { useEssentialOrDefaultValue: { specifiedHeight: true } };
@@ -575,7 +575,7 @@ export default class Rectangle extends Polygon {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
@@ -644,7 +644,7 @@ export default class Rectangle extends Polygon {
         return null;
       },
       stateVariablesDeterminingDependencies: [
-        "nVerticesSpecified",
+        "numVerticesSpecified",
         "haveSpecifiedCenter",
       ],
       returnArraySizeDependencies: () => ({}),
@@ -654,13 +654,13 @@ export default class Rectangle extends Polygon {
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};
         let globalDependencies = {
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
         };
 
-        if (stateValues.nVerticesSpecified === 0) {
+        if (stateValues.numVerticesSpecified === 0) {
           globalDependencies.haveSpecifiedCenter = {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter",
@@ -721,7 +721,7 @@ export default class Rectangle extends Polygon {
               }
             }
           }
-        } else if (stateValues.nVerticesSpecified === 1) {
+        } else if (stateValues.numVerticesSpecified === 1) {
           globalDependencies.haveSpecifiedCenter = {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter",
@@ -834,7 +834,7 @@ export default class Rectangle extends Polygon {
       }) {
         let vertices = {};
 
-        if (globalDependencyValues.nVerticesSpecified === 0) {
+        if (globalDependencyValues.numVerticesSpecified === 0) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // width, height, center
 
@@ -888,7 +888,7 @@ export default class Rectangle extends Polygon {
               }
             }
           }
-        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+        } else if (globalDependencyValues.numVerticesSpecified === 1) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // 1 vertex, center
 
@@ -1037,7 +1037,7 @@ export default class Rectangle extends Polygon {
 
         let instructions = [];
 
-        if (globalDependencyValues.nVerticesSpecified === 0) {
+        if (globalDependencyValues.numVerticesSpecified === 0) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // width, height, center
 
@@ -1123,7 +1123,7 @@ export default class Rectangle extends Polygon {
               });
             }
           }
-        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+        } else if (globalDependencyValues.numVerticesSpecified === 1) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // 1 vertex, center
 
@@ -1252,14 +1252,14 @@ export default class Rectangle extends Polygon {
       },
     };
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nVertices: 4 } }),
+      definition: () => ({ setValue: { numVertices: 4 } }),
     };
 
     return stateVariableDefinitions;
@@ -1273,9 +1273,9 @@ export default class Rectangle extends Polygon {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    let nVerticesMoved = Object.keys(pointCoords).length;
+    let numVerticesMoved = Object.keys(pointCoords).length;
 
-    if (nVerticesMoved === 1) {
+    if (numVerticesMoved === 1) {
       // single vertex dragged
       if (!(await this.stateValues.verticesDraggable)) {
         return await this.coreFunctions.resolveAction({ actionId });
@@ -1303,7 +1303,7 @@ export default class Rectangle extends Polygon {
       sourceDetails,
     });
 
-    if (nVerticesMoved === 1) {
+    if (numVerticesMoved === 1) {
       // When dragging a rectangle corner, add additional instructions
       // if they are needed to ensure the opposite corner doesn't move
 
@@ -1316,7 +1316,7 @@ export default class Rectangle extends Polygon {
       let oppositeX = vertices[oppositeInd][0];
       let oppositeY = vertices[oppositeInd][1];
 
-      if ((await this.stateValues.nVerticesSpecified) < 2) {
+      if ((await this.stateValues.numVerticesSpecified) < 2) {
         if (await this.stateValues.haveSpecifiedCenter) {
           // 1 vertex (or essential vertex) and center
 
@@ -1417,12 +1417,12 @@ export default class Rectangle extends Polygon {
     // if dragged the whole rectangle that is based on two points (vertices and/or center),
     // address case where only one point is constrained
     // to make rectangle just translate in this case
-    if (nVerticesMoved > 1) {
-      let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
+    if (numVerticesMoved > 1) {
+      let numVerticesSpecified = await this.stateValues.numVerticesSpecified;
 
       if (
-        nVerticesSpecified > 1 ||
-        (nVerticesSpecified === 1 &&
+        numVerticesSpecified > 1 ||
+        (numVerticesSpecified === 1 &&
           (await this.stateValues.haveSpecifiedCenter))
       ) {
         let resultingNumericalVertices = await this.stateValues
@@ -1430,7 +1430,7 @@ export default class Rectangle extends Polygon {
 
         let numericalPoints, resultingNumericalPoints;
 
-        if (nVerticesSpecified > 1) {
+        if (numVerticesSpecified > 1) {
           // just look at first and third vertex
           numericalPoints = [pointCoords[0], pointCoords[2]];
           resultingNumericalPoints = [
@@ -1463,16 +1463,16 @@ export default class Rectangle extends Polygon {
         }
 
         let pointsChanged = [];
-        let nPointsChanged = 0;
+        let numPointsChanged = 0;
 
         for (let [ind, pt] of numericalPoints.entries()) {
           if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
             pointsChanged.push(ind);
-            nPointsChanged++;
+            numPointsChanged++;
           }
         }
 
-        if (nPointsChanged === 1) {
+        if (numPointsChanged === 1) {
           // One of the defining points (center or vertex)
           // was altered from the requested location
           // while the other point stayed at the requested location.

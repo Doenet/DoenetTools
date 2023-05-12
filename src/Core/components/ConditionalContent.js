@@ -94,7 +94,7 @@ export default class ConditionalContent extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nCases = {
+    stateVariableDefinitions.numCases = {
       additionalStateVariablesDefined: ["caseChildren"],
       returnDependencies: () => ({
         caseChildren: {
@@ -106,7 +106,7 @@ export default class ConditionalContent extends CompositeComponent {
         return {
           setValue: {
             caseChildren: dependencyValues.caseChildren,
-            nCases: dependencyValues.caseChildren.length,
+            numCases: dependencyValues.caseChildren.length,
           },
         };
       },
@@ -130,9 +130,9 @@ export default class ConditionalContent extends CompositeComponent {
 
     stateVariableDefinitions.haveCasesOrElse = {
       returnDependencies: () => ({
-        nCases: {
+        numCases: {
           dependencyType: "stateVariable",
-          variableName: "nCases",
+          variableName: "numCases",
         },
         elseChild: {
           dependencyType: "stateVariable",
@@ -142,7 +142,8 @@ export default class ConditionalContent extends CompositeComponent {
       definition: ({ dependencyValues }) => ({
         setValue: {
           haveCasesOrElse:
-            dependencyValues.nCases > 0 || dependencyValues.elseChild !== null,
+            dependencyValues.numCases > 0 ||
+            dependencyValues.elseChild !== null,
         },
       }),
     };
@@ -311,7 +312,7 @@ export default class ConditionalContent extends CompositeComponent {
         await component.stateValues.selectedIndices
       ).entries()) {
         let selectedChildName, childComponentType, newNameForSelectedChild;
-        if (selectedIndex < (await component.stateValues.nCases)) {
+        if (selectedIndex < (await component.stateValues.numCases)) {
           selectedChildName = caseChildren[selectedIndex].componentName;
           newNameForSelectedChild = createUniqueName(
             "case",

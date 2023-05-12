@@ -9,11 +9,11 @@ export default class RegularPolygon extends Polygon {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.nVertices = {
+    attributes.numVertices = {
       createComponentOfType: "integer",
     };
 
-    attributes.nSides = {
+    attributes.numSides = {
       createComponentOfType: "integer",
     };
 
@@ -68,9 +68,9 @@ export default class RegularPolygon extends Polygon {
 
     let styleDescriptionWithNounDeps =
       stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies();
-    styleDescriptionWithNounDeps.nSides = {
+    styleDescriptionWithNounDeps.numSides = {
       dependencyType: "stateVariable",
-      variableName: "nSides",
+      variableName: "numSides",
     };
 
     stateVariableDefinitions.styleDescriptionWithNoun.returnDependencies = () =>
@@ -88,13 +88,13 @@ export default class RegularPolygon extends Polygon {
 
       styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll(
         "polygon",
-        `${dependencyValues.nSides}-sided regular polygon`,
+        `${dependencyValues.numSides}-sided regular polygon`,
       );
 
       return { setValue: { styleDescriptionWithNoun } };
     };
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       isLocation: true,
       hasEssential: true,
       defaultValue: 3,
@@ -104,55 +104,55 @@ export default class RegularPolygon extends Polygon {
         createComponentOfType: "integer",
       },
       returnDependencies: () => ({
-        nVerticesAttr: {
+        numVerticesAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nVertices",
+          attributeName: "numVertices",
           variableNames: ["value"],
         },
-        nSidesAttr: {
+        numSidesAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nSides",
+          attributeName: "numSides",
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.nVerticesAttr) {
+        if (dependencyValues.numVerticesAttr) {
           return {
             setValue: {
-              nVertices: dependencyValues.nVerticesAttr.stateValues.value,
+              numVertices: dependencyValues.numVerticesAttr.stateValues.value,
             },
           };
-        } else if (dependencyValues.nSidesAttr) {
+        } else if (dependencyValues.numSidesAttr) {
           return {
             setValue: {
-              nVertices: dependencyValues.nSidesAttr.stateValues.value,
+              numVertices: dependencyValues.numSidesAttr.stateValues.value,
             },
           };
         } else {
           return {
-            useEssentialOrDefaultValue: { nVertices: true },
+            useEssentialOrDefaultValue: { numVertices: true },
           };
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.nVerticesAttr) {
+        if (dependencyValues.numVerticesAttr) {
           return {
             success: true,
             instructions: [
               {
-                setDependency: "nVerticesAttr",
-                desiredValue: desiredStateVariableValues.nVertices,
+                setDependency: "numVerticesAttr",
+                desiredValue: desiredStateVariableValues.numVertices,
                 variableIndex: 0,
               },
             ],
           };
-        } else if (dependencyValues.nSidesAttr) {
+        } else if (dependencyValues.numSidesAttr) {
           return {
             success: true,
             instructions: [
               {
-                setDependency: "nSidesAttr",
-                desiredValue: desiredStateVariableValues.nVertices,
+                setDependency: "numSidesAttr",
+                desiredValue: desiredStateVariableValues.numVertices,
                 variableIndex: 0,
               },
             ],
@@ -162,8 +162,8 @@ export default class RegularPolygon extends Polygon {
             success: true,
             instructions: [
               {
-                setEssentialValue: "nVertices",
-                value: desiredStateVariableValues.nVertices,
+                setEssentialValue: "numVertices",
+                value: desiredStateVariableValues.numVertices,
               },
             ],
           };
@@ -171,29 +171,29 @@ export default class RegularPolygon extends Polygon {
       },
     };
 
-    stateVariableDefinitions.nSides = {
+    stateVariableDefinitions.numSides = {
       isAlias: true,
-      targetVariableName: "nVertices",
+      targetVariableName: "numVertices",
     };
 
-    stateVariableDefinitions.nVerticesSpecified = {
+    stateVariableDefinitions.numVerticesSpecified = {
       returnDependencies: () => ({
         verticesAttr: {
           dependencyType: "attributeComponent",
           attributeName: "vertices",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.verticesAttr !== null) {
           return {
             setValue: {
-              nVerticesSpecified:
-                dependencyValues.verticesAttr.stateValues.nPoints,
+              numVerticesSpecified:
+                dependencyValues.verticesAttr.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nVerticesSpecified: 0 } };
+          return { setValue: { numVerticesSpecified: 0 } };
         }
       },
     };
@@ -205,9 +205,9 @@ export default class RegularPolygon extends Polygon {
       defaultValueByArrayKey: () => 0,
       hasEssential: true,
       returnArraySizeDependencies: () => ({
-        nVerticesSpecified: {
+        numVerticesSpecified: {
           dependencyType: "stateVariable",
-          variableName: "nVerticesSpecified",
+          variableName: "numVerticesSpecified",
         },
         haveSpecifiedCenter: {
           dependencyType: "stateVariable",
@@ -217,7 +217,7 @@ export default class RegularPolygon extends Polygon {
       returnArraySize({ dependencyValues }) {
         let needDir =
           (dependencyValues.haveSpecifiedCenter ? 1 : 0) +
-            dependencyValues.nVerticesSpecified <=
+            dependencyValues.numVerticesSpecified <=
           1;
         return [needDir ? 2 : 0];
       },
@@ -413,9 +413,9 @@ export default class RegularPolygon extends Polygon {
             attributeName: "radius",
             variableNames: ["value"],
           },
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
@@ -701,13 +701,13 @@ export default class RegularPolygon extends Polygon {
       isLocation: true,
       additionalStateVariablesDefined: ["directionWithRadius"],
       returnDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
-        nVerticesSpecified: {
+        numVerticesSpecified: {
           dependencyType: "stateVariable",
-          variableName: "nVerticesSpecified",
+          variableName: "numVerticesSpecified",
         },
         haveSpecifiedCenter: {
           dependencyType: "stateVariable",
@@ -761,12 +761,12 @@ export default class RegularPolygon extends Polygon {
         },
       }),
       definition({ dependencyValues }) {
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let center;
         let directionWithRadius;
 
-        if (dependencyValues.nVerticesSpecified === 0) {
+        if (dependencyValues.numVerticesSpecified === 0) {
           // with no vertices, use center (specified or essential), direction, and a measure of size
 
           if (dependencyValues.haveSpecifiedCenter) {
@@ -782,19 +782,19 @@ export default class RegularPolygon extends Polygon {
           } else if (dependencyValues.specifiedInradius !== null) {
             circumradius =
               dependencyValues.specifiedInradius /
-              Math.cos(Math.PI / nVertices);
+              Math.cos(Math.PI / numVertices);
           } else if (dependencyValues.specifiedSideLength !== null) {
             circumradius =
               dependencyValues.specifiedSideLength /
-              (2 * Math.sin(Math.PI / nVertices));
+              (2 * Math.sin(Math.PI / numVertices));
           } else if (dependencyValues.specifiedPerimeter !== null) {
             circumradius =
               dependencyValues.specifiedPerimeter /
-              (2 * nVertices * Math.sin(Math.PI / nVertices));
+              (2 * numVertices * Math.sin(Math.PI / numVertices));
           } else if (dependencyValues.specifiedArea !== null) {
             circumradius = Math.sqrt(
               dependencyValues.specifiedArea /
-                ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices)),
+                ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices)),
             );
           } else {
             circumradius = dependencyValues.essentialCircumradius;
@@ -813,7 +813,7 @@ export default class RegularPolygon extends Polygon {
           );
 
           directionWithRadius = [vertex[0] - center[0], vertex[1] - center[1]];
-        } else if (dependencyValues.nVerticesSpecified === 1) {
+        } else if (dependencyValues.numVerticesSpecified === 1) {
           // one vertex, no center
           // use vertex, direction, and a measure of size
 
@@ -824,19 +824,19 @@ export default class RegularPolygon extends Polygon {
           } else if (dependencyValues.specifiedInradius !== null) {
             circumradius =
               dependencyValues.specifiedInradius /
-              Math.cos(Math.PI / nVertices);
+              Math.cos(Math.PI / numVertices);
           } else if (dependencyValues.specifiedSideLength !== null) {
             circumradius =
               dependencyValues.specifiedSideLength /
-              (2 * Math.sin(Math.PI / nVertices));
+              (2 * Math.sin(Math.PI / numVertices));
           } else if (dependencyValues.specifiedPerimeter !== null) {
             circumradius =
               dependencyValues.specifiedPerimeter /
-              (2 * nVertices * Math.sin(Math.PI / nVertices));
+              (2 * numVertices * Math.sin(Math.PI / numVertices));
           } else if (dependencyValues.specifiedArea !== null) {
             circumradius = Math.sqrt(
               dependencyValues.specifiedArea /
-                ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices)),
+                ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices)),
             );
           } else {
             circumradius = dependencyValues.essentialCircumradius;
@@ -871,7 +871,7 @@ export default class RegularPolygon extends Polygon {
             (vertex1[1] + vertex2[1]) / 2,
           ];
           let sideLength = Math.sqrt(sideVector[0] ** 2 + sideVector[1] ** 2);
-          let inradius = sideLength / (2 * Math.tan(Math.PI / nVertices));
+          let inradius = sideLength / (2 * Math.tan(Math.PI / numVertices));
 
           let inradiusDirection = [
             -sideVector[1] / sideLength,
@@ -897,7 +897,7 @@ export default class RegularPolygon extends Polygon {
         workspace,
         stateValues,
       }) {
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let instructions = [];
 
@@ -932,7 +932,7 @@ export default class RegularPolygon extends Polygon {
         workspace.desiredCenter = desiredCenter;
         workspace.desiredDirectionWithRadius = desiredDirectionWithRadius;
 
-        if (dependencyValues.nVerticesSpecified === 0) {
+        if (dependencyValues.numVerticesSpecified === 0) {
           // with no vertices, use center (specified or essential), direction, and a measure of size
 
           if (dependencyValues.haveSpecifiedCenter) {
@@ -963,27 +963,28 @@ export default class RegularPolygon extends Polygon {
           } else if (dependencyValues.specifiedInradius !== null) {
             instructions.push({
               setDependency: "specifiedInradius",
-              desiredValue: desiredCircumradius * Math.cos(Math.PI / nVertices),
+              desiredValue:
+                desiredCircumradius * Math.cos(Math.PI / numVertices),
             });
           } else if (dependencyValues.specifiedSideLength !== null) {
             instructions.push({
               setDependency: "specifiedSideLength",
               desiredValue:
-                desiredCircumradius * (2 * Math.sin(Math.PI / nVertices)),
+                desiredCircumradius * (2 * Math.sin(Math.PI / numVertices)),
             });
           } else if (dependencyValues.specifiedPerimeter !== null) {
             instructions.push({
               setDependency: "specifiedPerimeter",
               desiredValue:
                 desiredCircumradius *
-                (2 * nVertices * Math.sin(Math.PI / nVertices)),
+                (2 * numVertices * Math.sin(Math.PI / numVertices)),
             });
           } else if (dependencyValues.specifiedArea !== null) {
             instructions.push({
               setDependency: "specifiedArea",
               desiredValue:
                 desiredCircumradius ** 2 *
-                ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices)),
+                ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices)),
             });
           } else {
             instructions.push({
@@ -1014,7 +1015,7 @@ export default class RegularPolygon extends Polygon {
             desiredValue: desiredVertices,
             variableIndex: 0,
           });
-        } else if (dependencyValues.nVerticesSpecified === 1) {
+        } else if (dependencyValues.numVerticesSpecified === 1) {
           // one vertex, no center
           // use vertex, direction, and a measure of size
 
@@ -1034,27 +1035,28 @@ export default class RegularPolygon extends Polygon {
           } else if (dependencyValues.specifiedInradius !== null) {
             instructions.push({
               setDependency: "specifiedInradius",
-              desiredValue: desiredCircumradius * Math.cos(Math.PI / nVertices),
+              desiredValue:
+                desiredCircumradius * Math.cos(Math.PI / numVertices),
             });
           } else if (dependencyValues.specifiedSideLength !== null) {
             instructions.push({
               setDependency: "specifiedSideLength",
               desiredValue:
-                desiredCircumradius * (2 * Math.sin(Math.PI / nVertices)),
+                desiredCircumradius * (2 * Math.sin(Math.PI / numVertices)),
             });
           } else if (dependencyValues.specifiedPerimeter !== null) {
             instructions.push({
               setDependency: "specifiedPerimeter",
               desiredValue:
                 desiredCircumradius *
-                (2 * nVertices * Math.sin(Math.PI / nVertices)),
+                (2 * numVertices * Math.sin(Math.PI / numVertices)),
             });
           } else if (dependencyValues.specifiedArea !== null) {
             instructions.push({
               setDependency: "specifiedArea",
               desiredValue:
                 desiredCircumradius ** 2 *
-                ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices)),
+                ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices)),
             });
           } else {
             instructions.push({
@@ -1082,7 +1084,7 @@ export default class RegularPolygon extends Polygon {
           // have at least two vertices specified
           // these vertices are adjacent vertices of the polygon, in counterclockwise order
 
-          let angle = (2 * Math.PI) / nVertices;
+          let angle = (2 * Math.PI) / numVertices;
 
           let c = Math.cos(angle);
           let s = Math.sin(angle);
@@ -1140,7 +1142,7 @@ export default class RegularPolygon extends Polygon {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
@@ -1209,19 +1211,19 @@ export default class RegularPolygon extends Polygon {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices, 2];
+        return [dependencyValues.numVertices, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nVertices: {
+          numVertices: {
             dependencyType: "stateVariable",
-            variableName: "nVertices",
+            variableName: "numVertices",
           },
           centerComponents: {
             dependencyType: "stateVariable",
@@ -1241,7 +1243,7 @@ export default class RegularPolygon extends Polygon {
         // just compute all vertices every time, as they are all mutually dependent
         // (rather than just computing for the array keys requested)
 
-        let nVertices = globalDependencyValues.nVertices;
+        let numVertices = globalDependencyValues.numVertices;
 
         let center = globalDependencyValues.centerComponents;
         let directionWithRadius = globalDependencyValues.directionWithRadius;
@@ -1252,13 +1254,13 @@ export default class RegularPolygon extends Polygon {
           center.some((x) => !Number.isFinite(x)) ||
           directionWithRadius.some((x) => !Number.isFinite(x))
         ) {
-          for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
+          for (let vertexInd = 0; vertexInd < numVertices; vertexInd++) {
             vertices[`${vertexInd},0`] = me.fromAst("\uff3f");
             vertices[`${vertexInd},1`] = me.fromAst("\uff3f");
           }
         } else {
-          for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
-            let rotation = (vertexInd * 2 * Math.PI) / nVertices;
+          for (let vertexInd = 0; vertexInd < numVertices; vertexInd++) {
+            let rotation = (vertexInd * 2 * Math.PI) / numVertices;
 
             let s = Math.sin(rotation);
             let c = Math.cos(rotation);
@@ -1285,7 +1287,7 @@ export default class RegularPolygon extends Polygon {
         stateValues,
         workspace,
       }) {
-        let nVertices = globalDependencyValues.nVertices;
+        let numVertices = globalDependencyValues.numVertices;
 
         if (!workspace.desiredVertices) {
           workspace.desiredVertices = {};
@@ -1321,7 +1323,7 @@ export default class RegularPolygon extends Polygon {
           let center_x = 0,
             center_y = 0;
 
-          for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
+          for (let vertexInd = 0; vertexInd < numVertices; vertexInd++) {
             let v_x = workspace.allVertices[vertexInd + ",0"];
             if (!v_x) {
               let vertices = await stateValues.vertices;
@@ -1340,8 +1342,8 @@ export default class RegularPolygon extends Polygon {
             center_y += v_y.evaluate_to_constant();
           }
 
-          center_x /= nVertices;
-          center_y /= nVertices;
+          center_x /= numVertices;
+          center_y /= numVertices;
 
           desiredCenter = [center_x, center_y];
         }
@@ -1373,7 +1375,7 @@ export default class RegularPolygon extends Polygon {
           desiredVertex[1] - desiredCenter[1],
         ];
 
-        let angle = (-vertexInd1 * 2 * Math.PI) / nVertices;
+        let angle = (-vertexInd1 * 2 * Math.PI) / numVertices;
 
         let c = Math.cos(angle);
         let s = Math.sin(angle);
@@ -1579,25 +1581,25 @@ export default class RegularPolygon extends Polygon {
           dependencyType: "stateVariable",
           variableName: "circumradius",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
         let circumradius = dependencyValues.circumradius;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
-        let inradius = circumradius * Math.cos(Math.PI / nVertices);
+        let inradius = circumradius * Math.cos(Math.PI / numVertices);
 
         return { setValue: { inradius } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredInradius = desiredStateVariableValues.inradius;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let desiredCircumradius =
-          desiredInradius / Math.cos(Math.PI / nVertices);
+          desiredInradius / Math.cos(Math.PI / numVertices);
 
         return {
           success: true,
@@ -1629,25 +1631,25 @@ export default class RegularPolygon extends Polygon {
           dependencyType: "stateVariable",
           variableName: "circumradius",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
         let circumradius = dependencyValues.circumradius;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
-        let sideLength = circumradius * (2 * Math.sin(Math.PI / nVertices));
+        let sideLength = circumradius * (2 * Math.sin(Math.PI / numVertices));
 
         return { setValue: { sideLength } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredSideLength = desiredStateVariableValues.sideLength;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let desiredCircumradius =
-          desiredSideLength / (2 * Math.sin(Math.PI / nVertices));
+          desiredSideLength / (2 * Math.sin(Math.PI / numVertices));
 
         return {
           success: true,
@@ -1674,26 +1676,27 @@ export default class RegularPolygon extends Polygon {
           dependencyType: "stateVariable",
           variableName: "circumradius",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
         let circumradius = dependencyValues.circumradius;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let perimeter =
-          circumradius * (2 * nVertices * Math.sin(Math.PI / nVertices));
+          circumradius * (2 * numVertices * Math.sin(Math.PI / numVertices));
 
         return { setValue: { perimeter } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredPerimeter = desiredStateVariableValues.perimeter;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let desiredCircumradius =
-          desiredPerimeter / (2 * nVertices * Math.sin(Math.PI / nVertices));
+          desiredPerimeter /
+          (2 * numVertices * Math.sin(Math.PI / numVertices));
 
         return {
           success: true,
@@ -1720,27 +1723,28 @@ export default class RegularPolygon extends Polygon {
           dependencyType: "stateVariable",
           variableName: "circumradius",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
         let circumradius = dependencyValues.circumradius;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let area =
           circumradius ** 2 *
-          ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices));
+          ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices));
 
         return { setValue: { area } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredArea = desiredStateVariableValues.area;
-        let nVertices = dependencyValues.nVertices;
+        let numVertices = dependencyValues.numVertices;
 
         let desiredCircumradius = Math.sqrt(
-          desiredArea / ((nVertices / 2) * Math.sin((2 * Math.PI) / nVertices)),
+          desiredArea /
+            ((numVertices / 2) * Math.sin((2 * Math.PI) / numVertices)),
         );
 
         return {
@@ -1766,9 +1770,9 @@ export default class RegularPolygon extends Polygon {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    let nVerticesMoved = Object.keys(pointCoords).length;
+    let numVerticesMoved = Object.keys(pointCoords).length;
 
-    if (nVerticesMoved === 1) {
+    if (numVerticesMoved === 1) {
       // single vertex dragged
 
       if (!(await this.stateValues.verticesDraggable)) {
@@ -1844,20 +1848,20 @@ export default class RegularPolygon extends Polygon {
     // We just want this special behavior for the case when the entire polygon
     // is moved by the renderer.
 
-    let nVertices = await this.stateValues.nVertices;
+    let numVertices = await this.stateValues.numVertices;
 
     // First calculate the desired centers as the average of all points
 
     let center_x = 0,
       center_y = 0;
 
-    for (let vertexInd = 0; vertexInd < nVertices; vertexInd++) {
+    for (let vertexInd = 0; vertexInd < numVertices; vertexInd++) {
       center_x += pointCoords[vertexInd][0];
       center_y += pointCoords[vertexInd][1];
     }
 
-    center_x /= nVertices;
-    center_y /= nVertices;
+    center_x /= numVertices;
+    center_y /= numVertices;
 
     let center = [center_x, center_y];
 
@@ -1914,11 +1918,11 @@ export default class RegularPolygon extends Polygon {
 
     // we will attempt to create a rigid translation of the polygon
     // even if a subset of the vertices are constrained.
-    let nVerticesSpecified = await this.stateValues.nVerticesSpecified;
+    let numVerticesSpecified = await this.stateValues.numVerticesSpecified;
     let haveSpecifiedCenter = await this.stateValues.haveSpecifiedCenter;
 
     if (haveSpecifiedCenter) {
-      if (nVerticesSpecified >= 1) {
+      if (numVerticesSpecified >= 1) {
         // polygon was determined by center and 1 vertex
 
         let resultingCenter = await this.stateValues.centerComponents;
@@ -2000,11 +2004,11 @@ export default class RegularPolygon extends Polygon {
           });
         }
       }
-    } else if (nVerticesSpecified >= 2) {
+    } else if (numVerticesSpecified >= 2) {
       //polygon was determined by two vertices
 
       // calculate the value of vertex2 calculated from center and vertex1
-      let angle = (2 * Math.PI) / nVertices;
+      let angle = (2 * Math.PI) / numVertices;
 
       let c = Math.cos(angle);
       let s = Math.sin(angle);

@@ -20,7 +20,7 @@ describe("TriggerSet Tag Tests", function () {
       <point name="P">(1,2)</point>
     </graph>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet name="tset">
       <label>perform updates and actions</label>
@@ -150,7 +150,7 @@ describe("TriggerSet Tag Tests", function () {
       <point name="P">(1,2)</point>
     </graph>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet name="tset">
       <label>perform updates and actions</label>
@@ -281,7 +281,7 @@ describe("TriggerSet Tag Tests", function () {
       <point name="P">(1,2)</point>
     </graph>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet name="tset">
       <label>perform updates and actions</label>
@@ -417,7 +417,7 @@ describe("TriggerSet Tag Tests", function () {
       <point name="P">(1,2)</point>
     </graph>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet name="tset">
       <label>perform updates and actions</label>
@@ -1196,7 +1196,7 @@ describe("TriggerSet Tag Tests", function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet triggerWhen="$(P.x)>0 and $(P.y)>0">
       <label>perform updates</label>

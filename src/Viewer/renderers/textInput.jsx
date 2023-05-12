@@ -676,25 +676,25 @@ export default function TextInput(props) {
       }
     }
 
-    if (SVs.numberOfAttemptsLeft < 0) {
+    if (SVs.numAttemptsLeft < 0) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(no attempts remaining)</span>
         </>
       );
-    } else if (SVs.numberOfAttemptsLeft == 1) {
+    } else if (SVs.numAttemptsLeft == 1) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(1 attempt remaining)</span>
         </>
       );
-    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+    } else if (Number.isFinite(SVs.numAttemptsLeft)) {
       checkWorkButton = (
         <>
           {checkWorkButton}
-          <span>(attempts remaining: {SVs.numberOfAttemptsLeft})</span>
+          <span>(attempts remaining: {SVs.numAttemptsLeft})</span>
         </>
       );
     }

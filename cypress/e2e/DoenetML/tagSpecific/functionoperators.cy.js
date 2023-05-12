@@ -1539,7 +1539,7 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><aslist>
-      <function name="f1" nInputs="3">sin(x+y^2)z</function>
+      <function name="f1" numInputs="3">sin(x+y^2)z</function>
       <function name="f2" variables="z y x">sin(x+y^2)z</function>
       <function name="f3" variables="x y">sin(x+y^2)z</function>
       <function name="f4" variables="x_1 x_2 x_3">sin(x_1+x_2^2)x_3</function>
@@ -3600,17 +3600,17 @@ describe("Function Operator Tag Tests", function () {
     </m></p>
 
 
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+    <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima" target="fp" /></p>
     <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+    <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima" target="fp" /></p>
     <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
 
     <p>To repeat:</p>
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+    <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima2" target="fp2" /></p>
     <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+    <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima2" target="fp2" /></p>
     <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
 
 
@@ -3905,17 +3905,17 @@ describe("Function Operator Tag Tests", function () {
 
       <copy target="fp" name="fp2" />
 
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+      <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima" target="fp" /></p>
       <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+      <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima" target="fp" /></p>
       <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
   
       <p>To repeat:</p>
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+      <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima2" target="fp2" /></p>
       <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+      <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima2" target="fp2" /></p>
       <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
   
       `,

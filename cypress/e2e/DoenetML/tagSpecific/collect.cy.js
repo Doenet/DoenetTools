@@ -488,11 +488,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(3);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(3);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(3);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(3);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(3);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(6);
@@ -526,11 +526,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -564,11 +564,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -602,11 +602,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(1);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(2);
@@ -640,11 +640,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(4);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(8);
@@ -678,11 +678,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(6);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(6);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(6);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(6);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(6);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(12);
@@ -751,11 +751,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(3);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(3);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(3);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(3);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(3);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(6);
@@ -789,11 +789,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -827,11 +827,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -865,11 +865,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(1);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(2);
@@ -903,11 +903,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(4);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(8);
@@ -941,11 +941,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(6);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(6);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(6);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(6);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(6);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(12);
@@ -1229,18 +1229,18 @@ describe("Collect Tag Tests", function () {
     <graph>
       <map assignNames="(q1) (q2) (q3) (q4) (q5)">
       <template><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-      <sources alias="p"><collect componentTypes="point" source="_map1" maximumnumber="$maxnumber" assignNames="pa1 pa2 pa3 pa4 pa5" /></sources>
+      <sources alias="p"><collect componentTypes="point" source="_map1" maxNumber="$maxnumber" assignNames="pa1 pa2 pa3 pa4 pa5" /></sources>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" source="_panel1" maximumnumber="2$maxnumber" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10" />
+      <collect componentTypes="point" source="_panel1" maxNumber="2$maxnumber" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10" />
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" source="_graph3" maximumnumber="$maxnumber" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10" />
+      <collect componentTypes="point" prop="y" source="_graph3" maxNumber="$maxnumber" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10" />
     </aslist></p>
     `,
         },
@@ -1252,11 +1252,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(2);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(2);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(2);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(4);
@@ -1297,11 +1297,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -1336,11 +1336,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -1374,11 +1374,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(5);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(5);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(5);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(10);
@@ -1412,11 +1412,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(1);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(1);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(1);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(2);
@@ -1450,11 +1450,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(4);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(8);
@@ -1489,11 +1489,11 @@ describe("Collect Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_map1"].stateValues.nIterates[0]).eq(4);
+      expect(stateVariables["/_map1"].stateValues.numIterates[0]).eq(4);
       expect(
         stateVariables["/_collect1"].stateValues.collectedComponents.length,
       ).eq(3);
-      expect(stateVariables["/_map2"].stateValues.nIterates[0]).eq(3);
+      expect(stateVariables["/_map2"].stateValues.numIterates[0]).eq(3);
       expect(
         stateVariables["/_collect2"].stateValues.collectedComponents.length,
       ).eq(6);
