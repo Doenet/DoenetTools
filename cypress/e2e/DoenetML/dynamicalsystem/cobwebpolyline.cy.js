@@ -64,7 +64,7 @@ describe("CobwebPolyline Tag Tests", function () {
 
   <p>Cobweb at least three iterations</p>
   <p><answer name="check_cobweb">
-  <award credit="$(graph1/cobweb.fractionumCorrectVerticesAdjusted)"><when>true</when></award>
+  <award credit="$(graph1/cobweb.fractionCorrectVerticesAdjusted)"><when>true</when></award>
     <considerAsResponses>
       <copy prop="vertices" target="graph1/cobweb" />
     </considerAsResponses>
@@ -1798,7 +1798,7 @@ describe("CobwebPolyline Tag Tests", function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreibhvb4a7olqqdfk2i6dsvitlneojzbgskiwtiigxo6j3p2kzoacha" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" numIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreibhvb4a7olqqdfk2i6dsvitlneojzbgskiwtiigxo6j3p2kzoacha" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
   
   `,
         },

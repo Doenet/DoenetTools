@@ -16632,7 +16632,7 @@ describe("Vector Tag Tests", function () {
     <copy target="v5" head="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="tail" assignNames="v0t" />
   <copy target="g0/v0" prop="head" assignNames="v0h" />
@@ -17358,7 +17358,7 @@ describe("Vector Tag Tests", function () {
 
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/vdrag" prop="tail" assignNames="vdragt" />
   <copy target="g0/vdrag" prop="head" assignNames="vdragh" />

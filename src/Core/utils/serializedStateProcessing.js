@@ -320,7 +320,6 @@ function substituteAttributeDeprecations(serializedComponents) {
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
-    tname: "target",
     triggerwithtnames: "triggerWith",
     updatewithtname: "updateWith",
     paginatortname: "paginator",
@@ -347,6 +346,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     npoints: "numPoints",
     nvariants: "numVariants",
     nsides: "numSides",
+    niterationsrequired: "numIterationsRequired",
   };
 
   // Note: use lower case
@@ -391,13 +391,14 @@ function substituteAttributeDeprecations(serializedComponents) {
 
     if (component.props) {
       let cType = component.componentType;
+      let cTypeLower = cType.toLowerCase();
       let typeSpecificDeps =
-        deprecatedAttributeSubstitutionsComponentSpecific[cType.toLowerCase()];
+        deprecatedAttributeSubstitutionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeps) {
         typeSpecificDeps = {};
       }
       let typeSpecificDeletions =
-        deprecatedAttributeDeletionsComponentSpecific[cType.toLowerCase()];
+        deprecatedAttributeDeletionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeletions) {
         typeSpecificDeletions = [];
       }
@@ -420,7 +421,10 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (propLower in deprecatedAttributeSubstitutions) {
+          } else if (
+            cTypeLower !== "copy" &&
+            propLower in deprecatedAttributeSubstitutions
+          ) {
             let newProp = deprecatedAttributeSubstitutions[propLower];
 
             console.warn(
@@ -444,7 +448,10 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (deprecatedAttributeDeletions.has(propLower)) {
+          } else if (
+            cTypeLower !== "copy" &&
+            deprecatedAttributeDeletions.has(propLower)
+          ) {
             console.warn(`Attribute ${prop} is deprecated.  It is ignored.`);
             delete component.props[prop];
 

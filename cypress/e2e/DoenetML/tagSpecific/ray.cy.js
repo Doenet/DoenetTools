@@ -9296,7 +9296,7 @@ describe("Ray Tag Tests", function () {
     <copy target="v5" through="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="endpoint" assignNames="v0t" />
   <copy target="g0/v0" prop="through" assignNames="v0h" />
