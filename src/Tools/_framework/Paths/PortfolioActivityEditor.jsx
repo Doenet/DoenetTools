@@ -1206,12 +1206,18 @@ export function PortfolioActivityEditor() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.metaKey && event.code === "KeyS") {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
+      ) {
         event.preventDefault();
         event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
       }
-      if (event.metaKey && event.code === "KeyU") {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyU")
+      ) {
         event.preventDefault();
         event.stopPropagation();
         controlsOnOpen();
@@ -1223,7 +1229,7 @@ export function PortfolioActivityEditor() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [textEditorDoenetML, controlsOnOpen]);
+  }, [textEditorDoenetML, controlsOnOpen, platform]);
 
   const { saveDraft } = useSaveDraft();
 
@@ -1369,7 +1375,14 @@ export function PortfolioActivityEditor() {
                 )}
 
                 {mode == "Edit" && (
-                  <Tooltip hasArrow label="Updates Viewer cmd+s">
+                  <Tooltip
+                    hasArrow
+                    label={
+                      platform == "Mac"
+                        ? "Updates Viewer cmd+s"
+                        : "Updates Viewer ctrl+s"
+                    }
+                  >
                     <Button
                       ml="10px"
                       mt="-1"
@@ -1431,7 +1444,14 @@ export function PortfolioActivityEditor() {
                 >
                   Documentation <ExternalLinkIcon mx="2px" />
                 </Link>
-                <Tooltip hasArrow label="Open Controls cmd+u">
+                <Tooltip
+                  hasArrow
+                  label={
+                    platform == "Mac"
+                      ? "Open Controls cmd+u"
+                      : "Open Controls ctrl+u"
+                  }
+                >
                   <Button
                     mt="4px"
                     size="sm"
