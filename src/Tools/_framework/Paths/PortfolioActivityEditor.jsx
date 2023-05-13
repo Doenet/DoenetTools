@@ -6,7 +6,7 @@ import CodeMirror from "../CodeMirror";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import {
   Alert,
   AlertDescription,
@@ -52,7 +52,6 @@ import {
   Progress,
   // Spinner,
   Select,
-  Slide,
   Tab,
   TabList,
   TabPanel,
@@ -63,10 +62,10 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CloseIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
-import { FaCog, FaFileImage, FaKeyboard } from "react-icons/fa";
+import { FaCog, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -1204,6 +1203,7 @@ export function PortfolioActivityEditor() {
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
+  let [codeChanged, setCodeChanged] = useState(false);
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1220,6 +1220,7 @@ export function PortfolioActivityEditor() {
         event.preventDefault();
         event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
+        setCodeChanged(false);
       }
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
@@ -1392,12 +1393,23 @@ export function PortfolioActivityEditor() {
                   >
                     <Button
                       ml="10px"
-                      mt="-1"
                       size="sm"
                       variant="outline"
+                      // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
                       leftIcon={<RxUpdate />}
+                      rightIcon={
+                        codeChanged ? (
+                          <WarningTwoIcon
+                            color="doenet.mainBlue"
+                            fontSize="18px"
+                          />
+                        ) : (
+                          ""
+                        )
+                      }
                       onClick={() => {
                         setViewerDoenetML(textEditorDoenetML.current);
+                        setCodeChanged(false);
                       }}
                     >
                       Update
@@ -1507,13 +1519,16 @@ export function PortfolioActivityEditor() {
                 right={
                   <CodeMirror
                     editorRef={editorRef}
-                    setInternalValueTo={textEditorDoenetML.current}
+                    setInternalValueTo={doenetML}
                     onBeforeChange={(value) => {
                       textEditorDoenetML.current = value;
+                      setEditorDoenetML(value);
+                      if (!codeChanged) {
+                        setCodeChanged(true);
+                      }
                       // Debounce save to server at 3 seconds
                       clearTimeout(timeout.current);
                       timeout.current = setTimeout(async function () {
-                        setEditorDoenetML(value);
                         setLastKnownCid(lastKnownCidRef.current);
 
                         saveDraft({
@@ -1523,9 +1538,11 @@ export function PortfolioActivityEditor() {
                         }).then(({ success }) => {
                           if (success) {
                             backupOldDraft.current = false;
-                            cidFromText(value).then((newlySavedCid) => {
-                              lastKnownCidRef.current = newlySavedCid;
-                            });
+                            cidFromText(textEditorDoenetML.current).then(
+                              (newlySavedCid) => {
+                                lastKnownCidRef.current = newlySavedCid;
+                              },
+                            );
                           }
                         });
                         timeout.current = null;

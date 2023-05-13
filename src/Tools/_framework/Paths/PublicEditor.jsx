@@ -398,7 +398,9 @@ export function PublicEditor() {
                             color="doenet.mainBlue"
                             fontSize="18px"
                           />
-                        ) : null
+                        ) : (
+                          ""
+                        )
                       }
                       onClick={() => {
                         setViewerDoenetML(textEditorDoenetML.current);
@@ -440,10 +442,6 @@ export function PublicEditor() {
                     This is a public editor. Remix to save changes.
                   </Text>
                 </Center>
-                {/* <Text>
-                  This is a public editor. Remix to save changes to your
-                  account.
-                </Text> */}
                 {signedIn ? (
                   <Button
                     size="xs"
@@ -514,7 +512,7 @@ export function PublicEditor() {
             right={
               <CodeMirror
                 editorRef={editorRef}
-                setInternalValueTo={textEditorDoenetML.current}
+                setInternalValueTo={doenetML}
                 onBeforeChange={(value) => {
                   textEditorDoenetML.current = value;
                   if (!codeChanged) {
