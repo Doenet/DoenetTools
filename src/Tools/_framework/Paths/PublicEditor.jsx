@@ -47,74 +47,13 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 
+//Delete this action???
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
   // console.log({ formObj });
 
-  //Don't let label be blank
-  let label = formObj?.label?.trim();
-  if (label == "") {
-    label = "Untitled";
-  }
-
-  // console.log("formObj", formObj, params.doenetId);
-  if (formObj._action == "update label") {
-    let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
-    );
-    let respObj = await response.json();
-  }
-
-  if (formObj._action == "update general") {
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: params.doenetId,
-        learningOutcomes,
-      },
-    );
-  }
-  if (formObj._action == "update description") {
-    let { data } = await axios.get("/api/updateFileDescription.php", {
-      params: {
-        doenetId: formObj.doenetId,
-        cid: formObj.cid,
-        description: formObj.description,
-      },
-    });
-  }
-  if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile.php", {
-      params: { doenetId: formObj.doenetId, cid: formObj.cid },
-    });
-
-    return {
-      _action: formObj._action,
-      fileRemovedCid: formObj.cid,
-      success: resp.data.success,
-    };
-  }
-
-  if (formObj._action == "noop") {
-    // console.log("noop");
-  }
-
   return { nothingToReturn: true };
-  // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  // );
-  // let respObj = await response.json();
-
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(
-  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  // );
 }
 
 function findFirstPageIdInContent(content) {
@@ -157,9 +96,20 @@ export async function loader({ params }) {
     }
   }
 
-  //Get the doenetML of the pageId.
-  const doenetMLResponse = await axios.get(`/media/byPageId/${pageId}.doenet`);
-  let doenetML = doenetMLResponse.data;
+  //Get the public doenetML of the Activity
+  const response2 = await fetch(
+    `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+  );
+  const data2 = await response2.json();
+  const cidResponse = await fetch(`/media/${data2.json.assignedCid}.doenet`);
+  const activityML = await cidResponse.text();
+
+  //Find the first page's doenetML
+  const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
+  const pageIds = activityML.match(regex);
+
+  const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
+  const doenetML = await doenetMLResponse.text();
   const lastKnownCid = await cidFromText(doenetML);
 
   const supportingFileResp = await axios.get(
