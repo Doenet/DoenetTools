@@ -178,7 +178,6 @@ export async function loader({ params }) {
     const response = await axios.get("/api/getPortfolioEditorData.php", {
       params: { doenetId: params.doenetId },
     });
-
     let data = response.data;
     const activityData = { ...data.activity };
     const courseId = data.courseId;
@@ -211,12 +210,19 @@ export async function loader({ params }) {
 
     let supportingFileData = supportingFileResp.data;
 
+    //This code isn't depreciated but only works on Chrome
+    //navigator.userAgentData.platform.indexOf("linux") != -1
+    // let platform = "Linux";
+    // if (navigator.userAgentData.platform.indexOf("win") != -1) {
+    //   platform = "Win";
+    // } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+    //   platform = "Mac";
+    // }
     //Win, Mac or Linux
     let platform = "Linux";
-    //navigator.userAgentData.platform.indexOf("linux") != -1
-    if (navigator.userAgentData.platform.indexOf("win") != -1) {
+    if (navigator.platform.indexOf("Win") != -1) {
       platform = "Win";
-    } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+    } else if (navigator.platform.indexOf("Mac") != -1) {
       platform = "Mac";
     }
 

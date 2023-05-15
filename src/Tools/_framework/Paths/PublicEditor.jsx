@@ -123,10 +123,9 @@ export async function loader({ params }) {
 
   //Win, Mac or Linux
   let platform = "Linux";
-  //navigator.userAgentData.platform.indexOf("linux") != -1
-  if (navigator.userAgentData.platform.indexOf("win") != -1) {
+  if (navigator.platform.indexOf("Win") != -1) {
     platform = "Win";
-  } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+  } else if (navigator.platform.indexOf("Mac") != -1) {
     platform = "Mac";
   }
 
