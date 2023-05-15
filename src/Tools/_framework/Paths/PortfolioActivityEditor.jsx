@@ -1197,6 +1197,9 @@ export function PortfolioActivityEditor() {
     onClose: controlsOnClose,
   } = useDisclosure();
 
+  //Warning: this will reboot codeMirror Editor sending cursor to the top
+  let initializeEditorDoenetML = useRef(doenetML);
+
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -1243,7 +1246,6 @@ export function PortfolioActivityEditor() {
   const { saveDraft } = useSaveDraft();
 
   // save draft when leave page
-  //TODO: is textEditorDoenetML.current is NOT actually the entered - how do we get that?
   useEffect(() => {
     return () => {
       setEditorDoenetML(textEditorDoenetML.current);
@@ -1263,7 +1265,14 @@ export function PortfolioActivityEditor() {
       });
       timeout.current = null;
     };
-  }, [pageId, saveDraft, courseId, textEditorDoenetML]);
+  }, [
+    pageId,
+    saveDraft,
+    courseId,
+    textEditorDoenetML,
+    setEditorDoenetML,
+    setLastKnownCid,
+  ]);
 
   const controlsBtnRef = useRef(null);
 
@@ -1348,6 +1357,8 @@ export function PortfolioActivityEditor() {
                       size="sm"
                       leftIcon={<MdModeEditOutline />}
                       onClick={() => {
+                        initializeEditorDoenetML.current =
+                          textEditorDoenetML.current;
                         setMode("Edit");
                       }}
                     >
@@ -1526,7 +1537,7 @@ export function PortfolioActivityEditor() {
                 right={
                   <CodeMirror
                     editorRef={editorRef}
-                    setInternalValueTo={doenetML}
+                    setInternalValueTo={initializeEditorDoenetML.current}
                     onBeforeChange={(value) => {
                       textEditorDoenetML.current = value;
                       setEditorDoenetML(value);
