@@ -30,6 +30,11 @@ import {
   action as portfolioAction,
   Portfolio,
 } from "./Tools/_framework/Paths/Portfolio";
+import {
+  loader as courseLoader,
+  action as courseAction,
+  Courses,
+} from "./Tools/_framework/Paths/Courses";
 import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap";
 import {
   loader as publicPortfolioLoader,
@@ -188,6 +193,16 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Portfolio />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "courses",
+        loader: courseLoader,
+        action: courseAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Courses />
           </ChakraProvider>
         ),
       },
