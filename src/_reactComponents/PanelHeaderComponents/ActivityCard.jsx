@@ -31,6 +31,7 @@ export default function ActivityCard({
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
       <Link to={imageLink}>
         <Image
+          data-test="Card Image Link"
           height="120px"
           width="180px"
           src={imagePath}
@@ -45,6 +46,7 @@ export default function ActivityCard({
           <Avatar size="sm" name={fullName} />
           <Box width="140px" p="1">
             <Text
+              data-test="Card Label"
               height="26px"
               lineHeight="1.1"
               fontSize="xs"
@@ -54,14 +56,19 @@ export default function ActivityCard({
             >
               {label}
             </Text>
-            <Text fontSize="xs" noOfLines={1} textAlign="left">
+            <Text
+              fontSize="xs"
+              noOfLines={1}
+              textAlign="left"
+              data-test="Card Full Name"
+            >
               {fullName}
             </Text>
           </Box>
 
           {menuItems ? (
             <Menu>
-              <MenuButton height="30px">
+              <MenuButton height="30px" data-test="Card Menu Button">
                 <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
               </MenuButton>
               <MenuList zIndex="1000">{menuItems}</MenuList>

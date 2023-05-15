@@ -56,6 +56,7 @@ export default function RecoilActivityCard({
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
       <Link to={`/portfolioeditor/${doenetId}/${pageDoenetId}`}>
         <Image
+          data-test="Card Image Link"
           height="120px"
           width="180px"
           src={imagePath}
@@ -70,6 +71,7 @@ export default function RecoilActivityCard({
           <Avatar size="sm" name={fullName} />
           <Box width="120px" p="1">
             <Text
+              data-test="Card Label"
               height="26px"
               lineHeight="1.1"
               fontSize="xs"
@@ -79,18 +81,24 @@ export default function RecoilActivityCard({
             >
               {label}
             </Text>
-            <Text fontSize="xs" noOfLines={1} textAlign="left">
+            <Text
+              fontSize="xs"
+              noOfLines={1}
+              textAlign="left"
+              data-test="Card Full Name"
+            >
               {fullName}
             </Text>
           </Box>
 
           <Menu>
-            <MenuButton height="30px">
+            <MenuButton height="30px" data-test="Card Menu Button">
               <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
             </MenuButton>
             <MenuList zIndex="1000">
               {isPublic ? (
                 <MenuItem
+                  data-test="Make Private Menu Item"
                   onClick={() => {
                     fetcher.submit(
                       { _action: "Make Private", doenetId },
@@ -102,6 +110,7 @@ export default function RecoilActivityCard({
                 </MenuItem>
               ) : (
                 <MenuItem
+                  data-test="Make Public Menu Item"
                   onClick={() => {
                     //THINGS WE NEED FROM THE DB
                     //- Version of DoenetML
@@ -137,6 +146,7 @@ export default function RecoilActivityCard({
                 </MenuItem>
               )}
               <MenuItem
+                data-test="Delete Menu Item"
                 onClick={() => {
                   fetcher.submit(
                     { _action: "Delete", doenetId },
@@ -147,6 +157,7 @@ export default function RecoilActivityCard({
                 Delete
               </MenuItem>
               <MenuItem
+                data-test="Settings Menu Item"
                 onClick={() => {
                   setDoenetId(doenetId);
                   onOpen();

@@ -1094,7 +1094,7 @@ function PortfolioActivitySettingsDrawer({
     >
       <DrawerOverlay />
       <DrawerContent>
-        <DrawerCloseButton />
+        <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader>
           <Center>
             {/* <Icon as={FaCog} mr="14px" /> */}
@@ -1139,7 +1139,7 @@ function PortfolioActivitySettingsDrawer({
   );
 }
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableLabel() {
+function EditableLabel({ dataTest }) {
   const { activityData } = useLoaderData();
   const [label, setLabel] = useState(activityData.label);
   const fetcher = useFetcher();
@@ -1156,6 +1156,7 @@ function EditableLabel() {
 
   return (
     <Editable
+      data-test={dataTest}
       mt="4px"
       value={label}
       textAlign="center"
@@ -1329,6 +1330,7 @@ export function PortfolioActivityEditor() {
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button
+                      data-test="View Mode Button"
                       isActive={mode == "View"}
                       size="sm"
                       leftIcon={<BsPlayBtnFill />}
@@ -1342,6 +1344,7 @@ export function PortfolioActivityEditor() {
                   <Tooltip hasArrow label="Edit Activity">
                     <Button
                       isActive={mode == "Edit"}
+                      data-test="Edit Mode Button"
                       size="sm"
                       leftIcon={<MdModeEditOutline />}
                       onClick={() => {
@@ -1395,6 +1398,7 @@ export function PortfolioActivityEditor() {
                       ml="10px"
                       size="sm"
                       variant="outline"
+                      data-test="Viewer Update Button"
                       // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
                       leftIcon={<RxUpdate />}
                       rightIcon={
@@ -1419,7 +1423,7 @@ export function PortfolioActivityEditor() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <EditableLabel />
+              <EditableLabel dataTest="Activity Label Edititable" />
             </GridItem>
             <GridItem
               area="rightControls"
@@ -1429,6 +1433,7 @@ export function PortfolioActivityEditor() {
               <HStack mr="10px">
                 {activityData?.isPublic == "1" && (
                   <Button
+                    data-test="Update Public Activity Button"
                     size="sm"
                     onClick={() => {
                       //Process making activity public here
@@ -1460,6 +1465,7 @@ export function PortfolioActivityEditor() {
                 <Link
                   href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
                   isExternal
+                  data-test="Documentation Link"
                 >
                   Documentation <ExternalLinkIcon mx="2px" />
                 </Link>
@@ -1472,6 +1478,7 @@ export function PortfolioActivityEditor() {
                   }
                 >
                   <Button
+                    data-test="Controls Button"
                     mt="4px"
                     size="sm"
                     variant="outline"

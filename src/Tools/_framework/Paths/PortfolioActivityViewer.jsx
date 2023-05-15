@@ -178,6 +178,7 @@ export function PortfolioActivityViewer() {
                     {label}
                   </Text>
                   <Link
+                    data-test="Avatar Link"
                     style={{
                       textDecoration: "none",
                       color: "black",
@@ -202,6 +203,7 @@ export function PortfolioActivityViewer() {
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
                   <Button
                     size="xs"
+                    data-test="See Inside"
                     onClick={() => {
                       navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
                     }}
@@ -211,6 +213,7 @@ export function PortfolioActivityViewer() {
                   {signedIn ? (
                     <HeaderSectionRight>
                       <Button
+                        data-test="Remix"
                         size="xs"
                         onClick={async () => {
                           let resp = await axios.get(
