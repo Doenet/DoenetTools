@@ -59,25 +59,36 @@ test.skip("test rendering the portfolio", async () => {
   expect(screen.getByRole("button")).toBeDisabled();
 });
 
-test("OLD test rendering the portfolio", async () => {
-  const mockedLoaderData = { publicActivities: [], privateActivities: [] };
-  const routes = [
+function createRoutesWithOutlet(
+  component,
+  mockedLoaderData,
+  outletContext,
+  path,
+) {
+  return [
     {
-      path: "/portfolio",
-      element: <Outlet context={{ signedIn: true }} />,
+      path: path,
+      element: <Outlet context={outletContext} />,
       children: [
         {
-          path: "/portfolio",
-          element: (
-            <RecoilRoot>
-              <Portfolio />
-            </RecoilRoot>
-          ),
+          path: path,
+          element: <RecoilRoot>{component}</RecoilRoot>,
           loader: () => mockedLoaderData,
         },
       ],
     },
   ];
+}
+
+test("OLD test rendering the portfolio", async () => {
+  const mockedLoaderData = { publicActivities: [], privateActivities: [] };
+  const outletContext = { signedIn: true };
+  const routes = createRoutesWithOutlet(
+    <Portfolio />,
+    mockedLoaderData,
+    outletContext,
+    "/portfolio",
+  );
 
   const router = createMemoryRouter(routes, { initialEntries: ["/portfolio"] });
 
