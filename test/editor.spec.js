@@ -13,84 +13,40 @@ import { RecoilRoot } from "recoil";
 
 jest.mock("axios");
 
-function renderWithOutletContext(children, context, initEntries) {
-  createMemoryRouter(
-    [
-      {
-        path: "portfolio",
-        element: <Outlet context={context} />,
-        children: children,
-      },
-    ],
-    initEntries,
-  );
-}
-
-test.skip("test rendering the portfolio", async () => {
-  const routes = [
-    {
-      path: "portfolio",
-      element: <Portfolio />,
-      loader: () => ({
-        fullName: "Test User",
-      }),
-    },
-  ];
-
-  const router = renderWithOutletContext(
-    routes,
-    { singedIn: true },
-    { initialEntries: ["/portfolio"] },
-  );
-
-  render(
-    <RecoilRoot>
-      <RouterProvider router={router} />
-    </RecoilRoot>,
-  );
-
-  // ACT
-  //await userEvent.click(screen.getByText("Load Greeting"));
-  //await screen.findByRole("heading");
-
-  await screen.findByRole("heading");
-  // ASSERT
-  expect(screen.getByText("No Public Activities")).exist;
-  expect(screen.getByRole("button")).toBeDisabled();
-});
-
-function createRoutesWithOutlet(
+function createRouterWithOutlet(
   component,
   mockedLoaderData,
   outletContext,
   path,
 ) {
-  return [
-    {
-      path: path,
-      element: <Outlet context={outletContext} />,
-      children: [
-        {
-          path: path,
-          element: <RecoilRoot>{component}</RecoilRoot>,
-          loader: () => mockedLoaderData,
-        },
-      ],
-    },
-  ];
+  return createMemoryRouter(
+    [
+      {
+        path: path,
+        element: <Outlet context={outletContext} />,
+        children: [
+          {
+            path: path,
+            element: <RecoilRoot>{component}</RecoilRoot>,
+            loader: () => mockedLoaderData,
+          },
+        ],
+      },
+    ],
+    { initialEntries: [path] },
+  );
 }
 
 test("OLD test rendering the portfolio", async () => {
   const mockedLoaderData = { publicActivities: [], privateActivities: [] };
   const outletContext = { signedIn: true };
-  const routes = createRoutesWithOutlet(
+
+  const router = createRouterWithOutlet(
     <Portfolio />,
     mockedLoaderData,
     outletContext,
     "/portfolio",
   );
-
-  const router = createMemoryRouter(routes, { initialEntries: ["/portfolio"] });
 
   render(<RouterProvider router={router} />);
 
@@ -98,7 +54,7 @@ test("OLD test rendering the portfolio", async () => {
   //await userEvent.click(screen.getByText("Load Greeting"));
   //await screen.findByRole("heading");
 
-  await screen.findByRole("button");
+  await screen.findByRole("button", { name: "Add Activity" });
   // ASSERT
   expect(screen.getByText("No Public Activities")).exist;
   expect(screen.getByText("No Private Activities")).exist;
