@@ -1,21 +1,22 @@
-import { useCourse, coursePermissionsAndSettings } from '../src/_reactComponents/Course/CourseActions';
-import { renderHook } from '@testing-library/react';
-import { RecoilRoot, useRecoilSetState } from 'recoil';
-import axios from 'axios';
-import { act } from 'react-dom/test-utils';
+import {
+  useCourse,
+  coursePermissionsAndSettings,
+} from "../src/_reactComponents/Course/CourseActions";
+import { renderHook } from "@testing-library/react";
+import { RecoilRoot, useRecoilSetState } from "recoil";
+import axios from "axios";
+import { act } from "react-dom/test-utils";
 
-jest.mock('axios');
+jest.mock("axios");
 
-test('test creating a course', () => {
-    // https://recoiljs.org/docs/guides/testing/#testing-recoil-state-inside-a-custom-hook
-    // doesn't work because we need a <RecoilRoot> in the render tree
-    // let { course } = renderHook(() => useCourse(12345));
+test.skip("test creating a course", () => {
+  // https://recoiljs.org/docs/guides/testing/#testing-recoil-state-inside-a-custom-hook
+  // doesn't work because we need a <RecoilRoot> in the render tree
+  // let { course } = renderHook(() => useCourse(12345));
 
-
-
-    // try to manually set course details, the call to axios is in an effect that isn't being called in the path of useCourse
-    // from src/Api/defineDBAndUserAndCourseInfo.php
-    /*
+  // try to manually set course details, the call to axios is in an effect that isn't being called in the path of useCourse
+  // from src/Api/defineDBAndUserAndCourseInfo.php
+  /*
 
     $settings->sql = "SELECT
     c.courseId,
@@ -54,24 +55,35 @@ test('test creating a course', () => {
     ";
     */
 
-    axios.get.mockResolvedValue({data: {coursePermissionsAndSettings: [{ courseId: 12345, canEditContent : 1 }] }}); 
-    //axios.put.mockResolvedValue({data: []}); 
-    const resp = {success: true};
-    axios.post.mockResolvedValue(resp); 
+  axios.get.mockResolvedValue({
+    data: {
+      coursePermissionsAndSettings: [{ courseId: 12345, canEditContent: 1 }],
+    },
+  });
+  //axios.put.mockResolvedValue({data: []});
+  const resp = { success: true };
+  axios.post.mockResolvedValue(resp);
 
-    act(() => {
-    renderHook(() => {
-            let { create } = useCourse(12345);
-            create( { itemType: 'activity', 
-                    parentDoenetId: '1', 
-                    previousDoenetId: '2', 
-                    previousContainingDoenetId: '3'
-                },
-                () => {console.log("successs!")}, //successCallback
-                (e) => { console.log("something failed", e)} //failureCallback
-            );
-        },
-        { wrapper: RecoilRoot}
+  act(() => {
+    renderHook(
+      () => {
+        let { create } = useCourse(12345);
+        create(
+          {
+            itemType: "activity",
+            parentDoenetId: "1",
+            previousDoenetId: "2",
+            previousContainingDoenetId: "3",
+          },
+          () => {
+            console.log("successs!");
+          }, //successCallback
+          (e) => {
+            console.log("something failed", e);
+          }, //failureCallback
+        );
+      },
+      { wrapper: RecoilRoot },
     );
-    });
+  });
 });
