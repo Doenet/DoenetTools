@@ -9,8 +9,8 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 
-import React, { useEffect, useMemo, useRef, useTransition } from "react";
-import { useLoaderData, useFetcher, Link } from "react-router-dom";
+import React from "react";
+import { useLoaderData, useFetcher } from "react-router-dom";
 import { GoPlus } from "react-icons/go";
 import axios from "axios";
 import { CourseCard } from "../../../_reactComponents/PanelHeaderComponents/CourseCard";
