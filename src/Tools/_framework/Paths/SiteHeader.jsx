@@ -176,21 +176,9 @@ export function SiteHeader(props) {
                     >
                       Portfolio
                     </NavLinkTab>
-                    <Center
-                      cursor="pointer"
-                      fontSize="md"
-                      onClick={() => {
-                        navigateTo.current = "/course";
-                        setRecoilPageToolView({
-                          page: "course",
-                          tool: "",
-                          view: "",
-                          params: {},
-                        });
-                      }}
-                    >
+                    <NavLinkTab to="courses" datatest="My Courses">
                       My Courses
-                    </Center>
+                    </NavLinkTab>
                     {isAdmin && (
                       <NavLinkTab to="admin" datatest="Admin">
                         Admin
