@@ -91,9 +91,8 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="Viewer Update Button"]').should("have.length", 1);
     cy.log("In the editor");
 
-    cy.wait(10); //Seems to need this to do ctrl+end
     cy.get(".cm-content").type(
-      `{ctrl+end}<p>Hello, <text name="name2" copySource="name" />!</p>`,
+      `{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p>Hello, <text name="name2" copySource="name" />!</p>`,
     );
     cy.get('[data-test="Viewer Update Button"]').click();
 
@@ -136,11 +135,7 @@ describe("doenetEditor test", function () {
     cy.log("Edit the public activity");
     cy.get('[data-test="Public Activities"] [data-test="Card Image Link"] ').eq(0).click();
 
-    cy.wait(50);
-
     cy.get(".cm-content").type(`{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="draft">Draft content</p>`);
-    // cy.get(".cm-content").type(`{ctrl+end}<p name="draft">Draft content</p>`);
-    cy.wait(50);
 
     cy.get('[data-test="Viewer Update Button"]').click();
     cy.get(cesc2("#/draft")).should("have.text", "Draft content");
@@ -201,19 +196,19 @@ describe("doenetEditor test", function () {
     cy.contains("See Inside").click();
 
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
-    // cy.get(cesc2("#/draft")).should("not.exist");
+    cy.get(cesc2("#/draft")).should("not.exist");
 
     cy.get(cesc2("#/name")).type("You{enter}");
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, You!");
 
 
 
-    // cy.log("Temporarily modify the source");
-    // cy.get(".cm-content").type(
-    //   `{ctrl+end}<p name="temp_content">Temporary content</p>`,
-    // );
-    // cy.get('[data-test="Viewer Update Button"]').click();
-    // cy.get(cesc2("#/temp_content")).should("have.text", "Temporary content");
+    cy.log("Temporarily modify the source");
+    cy.get(".cm-content").type(
+      `{ctrl+end}<p name="temp_content">Temporary content</p>`,
+    );
+    cy.get('[data-test="Viewer Update Button"]').click();
+    cy.get(cesc2("#/temp_content")).should("have.text", "Temporary content");
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/name")).type("Mom{enter}");

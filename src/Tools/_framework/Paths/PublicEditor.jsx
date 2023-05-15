@@ -288,6 +288,7 @@ export function PublicEditor() {
               <GridItem area="leftControls">
                 <HStack ml="10px" mt="4px">
                   <Button
+                    data-test="View Navigation Button"
                     ml="10px"
                     size="sm"
                     variant="outline"
@@ -340,6 +341,7 @@ export function PublicEditor() {
                       ml="10px"
                       size="sm"
                       variant="outline"
+                      data-test="Viewer Update Button"
                       // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
                       leftIcon={<RxUpdate />}
                       rightIcon={
@@ -377,6 +379,7 @@ export function PublicEditor() {
                   <Link
                     href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
                     isExternal
+                    data-test="Documentation Navigation"
                   >
                     Documentation <ExternalLinkIcon mx="2px" />
                   </Link>
@@ -394,6 +397,7 @@ export function PublicEditor() {
                 </Center>
                 {signedIn ? (
                   <Button
+                    data-test="Remix Button"
                     size="xs"
                     onClick={async () => {
                       let resp = await axios.get(
