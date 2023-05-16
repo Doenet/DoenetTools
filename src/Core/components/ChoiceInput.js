@@ -706,10 +706,10 @@ export default class Choiceinput extends Input {
             attributeName: "bindValueTo",
             variableNames: ["value"],
           },
-          // just for inverse definition
           valueChanged: {
             dependencyType: "stateVariable",
             variableName: "valueChanged",
+            onlyToSetInInverseDefinition: true,
           },
         };
       },

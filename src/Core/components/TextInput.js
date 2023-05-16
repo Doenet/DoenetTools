@@ -235,29 +235,18 @@ export default class Textinput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
-        // just for inverse definition
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
         },
-        // just for inverse definition
         immediateValueChanged: {
           dependencyType: "stateVariable",
           variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
-      definition: function ({ dependencyValues, changes }) {
-        // If the only reason for this update was that we marked immediateValue changed,
-        // then don't mark value as changed.
-        // TODO: this seems like unnecessary complexity, but we needed it to set immediateValueChanged value changed.
-        // Is there a better way of accomplishing this?
-        if (
-          changes.immediateValueChanged &&
-          Object.keys(changes).length === 1
-        ) {
-          return { noChanges: ["value"] };
-        }
-
+      definition: function ({ dependencyValues }) {
         if (dependencyValues.textChild.length > 0) {
           return {
             setValue: {
@@ -355,10 +344,10 @@ export default class Textinput extends Input {
           dependencyType: "stateVariable",
           variableName: "value",
         },
-        // just for inverse definition
         immediateValueChanged: {
           dependencyType: "stateVariable",
           variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition: function ({

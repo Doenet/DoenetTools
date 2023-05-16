@@ -160,10 +160,10 @@ export default class BooleanInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
-        // just for inverse definition
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition: function ({ dependencyValues }) {

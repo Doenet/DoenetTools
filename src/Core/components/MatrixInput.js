@@ -227,10 +227,15 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
-        // just for inverse definition
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       set: convertValueToMathExpression,
@@ -261,12 +266,16 @@ export class MatrixInput extends Input {
         desiredStateVariableValues,
         dependencyValues,
       }) {
-        // console.log(`inverse definition of valueOriginal for matrixInput`)
-        // console.log(desiredStateVariableValues)
+        // console.log(`inverse definition of valueOriginal for matrixInput`);
+        // console.log(desiredStateVariableValues);
 
         let instructions = [
           {
             setDependency: "valueChanged",
+            desiredValue: true,
+          },
+          {
+            setDependency: "immediateValueChanged",
             desiredValue: true,
           },
         ];
@@ -327,10 +336,10 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "valueOriginal",
         },
-        // just for inverse definition
         immediateValueChanged: {
           dependencyType: "stateVariable",
           variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       set: convertValueToMathExpression,
@@ -404,6 +413,11 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.haveBoundValue = {
       returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          proceedIfAllChildrenNotMatched: true, // to avoid circular dependency with readyToExpandWhenResolved of matrixInputGrid child
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -411,7 +425,11 @@ export class MatrixInput extends Input {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { haveBoundValue: dependencyValues.bindValueTo !== null },
+          setValue: {
+            haveBoundValue:
+              dependencyValues.mathChild.length > 0 ||
+              dependencyValues.bindValueTo !== null,
+          },
         };
       },
     };
@@ -435,14 +453,15 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
         },
-        // just for inverse definition
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
         },
         immediateValueChanged: {
           dependencyType: "stateVariable",
           variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -574,6 +593,8 @@ export class MatrixInput extends Input {
           }
         }
 
+        console.log(instructions);
+
         return {
           success: true,
           instructions,
@@ -600,14 +621,15 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
         },
-        // just for inverse definition
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
         },
         immediateValueChanged: {
           dependencyType: "stateVariable",
           variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -1828,64 +1850,64 @@ export class MatrixInput extends Input {
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredTree = desiredStateVariableValues.value.tree;
-        if (
-          Array.isArray(desiredTree) &&
-          desiredTree[0] === "matrix" &&
-          desiredTree[1][1] === dependencyValues.numRows &&
-          desiredTree[1][2] === dependencyValues.numColumns
-        ) {
-          if (dependencyValues.numColumns === 1) {
-            let originalTree = dependencyValues.valueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-              if (vectorOperators.includes(operator)) {
-                // if original value was a vector, then keep it as a vector
-                let desiredValue = me.fromAst([
-                  operator,
-                  ...desiredTree[2].slice(1).map((x) => x[1]),
-                ]);
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "valueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
-              }
-            }
-          } else if (dependencyValues.numRows === 1) {
-            let originalTree = dependencyValues.valueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-
-              if (
-                Array.isArray(originalTree[1]) &&
-                vectorOperators.includes(originalTree[1][0]) &&
-                ((operator === "^" && originalTree[2] === "T") ||
-                  operator === "prime")
-              ) {
-                // if original value was the transpose of a vector,
-                // then keep it as the transpose of a vector
-                let desiredValue = [
-                  originalTree[1][0],
-                  ...desiredTree[2][1].slice(1),
-                ];
-                if (operator === "^") {
-                  desiredValue = me.fromAst(["^", desiredValue, "T"]);
-                } else {
-                  desiredValue = me.fromAst(["prime", desiredValue]);
+        if (Array.isArray(desiredTree) && desiredTree[0] === "matrix") {
+          if (
+            desiredTree[1][1] === dependencyValues.numRows &&
+            desiredTree[1][2] === dependencyValues.numColumns
+          ) {
+            if (dependencyValues.numColumns === 1) {
+              let originalTree = dependencyValues.valueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+                if (vectorOperators.includes(operator)) {
+                  // if original value was a vector, then keep it as a vector
+                  let desiredValue = me.fromAst([
+                    operator,
+                    ...desiredTree[2].slice(1).map((x) => x[1]),
+                  ]);
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "valueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
                 }
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "valueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
+              }
+            } else if (dependencyValues.numRows === 1) {
+              let originalTree = dependencyValues.valueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+
+                if (
+                  Array.isArray(originalTree[1]) &&
+                  vectorOperators.includes(originalTree[1][0]) &&
+                  ((operator === "^" && originalTree[2] === "T") ||
+                    operator === "prime")
+                ) {
+                  // if original value was the transpose of a vector,
+                  // then keep it as the transpose of a vector
+                  let desiredValue = [
+                    originalTree[1][0],
+                    ...desiredTree[2][1].slice(1),
+                  ];
+                  if (operator === "^") {
+                    desiredValue = me.fromAst(["^", desiredValue, "T"]);
+                  } else {
+                    desiredValue = me.fromAst(["prime", desiredValue]);
+                  }
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "valueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
+                }
               }
             }
           }
@@ -1952,64 +1974,64 @@ export class MatrixInput extends Input {
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredTree = desiredStateVariableValues.immediateValue.tree;
-        if (
-          Array.isArray(desiredTree) &&
-          desiredTree[0] === "matrix" &&
-          desiredTree[1][1] === dependencyValues.numRows &&
-          desiredTree[1][2] === dependencyValues.numColumns
-        ) {
-          if (dependencyValues.numColumns === 1) {
-            let originalTree = dependencyValues.immediateValueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-              if (vectorOperators.includes(operator)) {
-                // if original immediateValue was a vector, then keep it as a vector
-                let desiredValue = me.fromAst([
-                  operator,
-                  ...desiredTree[2].slice(1).map((x) => x[1]),
-                ]);
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "immediateValueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
-              }
-            }
-          } else if (dependencyValues.numRows === 1) {
-            let originalTree = dependencyValues.immediateValueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-
-              if (
-                Array.isArray(originalTree[1]) &&
-                vectorOperators.includes(originalTree[1][0]) &&
-                ((operator === "^" && originalTree[2] === "T") ||
-                  operator === "prime")
-              ) {
-                // if original immediateValue was the transpose of a vector,
-                // then keep it as the transpose of a vector
-                let desiredValue = [
-                  originalTree[1][0],
-                  ...desiredTree[2][1].slice(1),
-                ];
-                if (operator === "^") {
-                  desiredValue = me.fromAst(["^", desiredValue, "T"]);
-                } else {
-                  desiredValue = me.fromAst(["prime", desiredValue]);
+        if (Array.isArray(desiredTree) && desiredTree[0] === "matrix") {
+          if (
+            desiredTree[1][1] === dependencyValues.numRows &&
+            desiredTree[1][2] === dependencyValues.numColumns
+          ) {
+            if (dependencyValues.numColumns === 1) {
+              let originalTree = dependencyValues.immediateValueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+                if (vectorOperators.includes(operator)) {
+                  // if original immediateValue was a vector, then keep it as a vector
+                  let desiredValue = me.fromAst([
+                    operator,
+                    ...desiredTree[2].slice(1).map((x) => x[1]),
+                  ]);
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "immediateValueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
                 }
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "immediateValueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
+              }
+            } else if (dependencyValues.numRows === 1) {
+              let originalTree = dependencyValues.immediateValueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+
+                if (
+                  Array.isArray(originalTree[1]) &&
+                  vectorOperators.includes(originalTree[1][0]) &&
+                  ((operator === "^" && originalTree[2] === "T") ||
+                    operator === "prime")
+                ) {
+                  // if original immediateValue was the transpose of a vector,
+                  // then keep it as the transpose of a vector
+                  let desiredValue = [
+                    originalTree[1][0],
+                    ...desiredTree[2][1].slice(1),
+                  ];
+                  if (operator === "^") {
+                    desiredValue = me.fromAst(["^", desiredValue, "T"]);
+                  } else {
+                    desiredValue = me.fromAst(["prime", desiredValue]);
+                  }
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "immediateValueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
+                }
               }
             }
           }
