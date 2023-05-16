@@ -1,4 +1,4 @@
-describe("Activity Settings Test", function () {
+describe("People Test", function () {
   const userId = "cyuserId";
   const studentUserId = "cyStudentUserId";
   const courseId = "courseid1";
