@@ -346,7 +346,7 @@ export class ContentBrowserItem extends BlockComponent {
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
-      defaultValue: "",
+      defaultValue: "Unlabeled",
       public: true,
       forRenderer: true,
     };

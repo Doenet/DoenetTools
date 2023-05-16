@@ -9,6 +9,8 @@ describe("doenet events test", function () {
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
+  const blankCid =
+    "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
   before(() => {
     // cy.clearAllOfAUsersActivities({userId})
@@ -46,7 +48,12 @@ describe("doenet events test", function () {
   <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </answer></p>
   `;
-    cy.saveDoenetML({ doenetML, pageId: pageDoenetId, courseId });
+    cy.saveDoenetML({
+      doenetML,
+      pageId: pageDoenetId,
+      courseId,
+      lastKnownCid: blankCid,
+    });
     cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();

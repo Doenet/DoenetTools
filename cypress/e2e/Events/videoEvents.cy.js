@@ -8,6 +8,8 @@ describe("video events test", function () {
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
+  const blankCid =
+    "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
   before(() => {
     // cy.clearAllOfAUsersActivities({userId})
@@ -51,7 +53,12 @@ describe("video events test", function () {
   <p>Skip to time 157: <updateValue target="v" prop="time" newValue="157" name="skip1"><label>Skip 1</label></updateValue></p>
   <p>Skip to time 57: <updateValue target="v" prop="time" newValue="57" name="skip2"><label>Skip 2</label></updateValue></p>
   `;
-    cy.saveDoenetML({ doenetML, pageId: pageDoenetId, courseId });
+    cy.saveDoenetML({
+      doenetML,
+      pageId: pageDoenetId,
+      courseId,
+      lastKnownCid: blankCid,
+    });
     cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
