@@ -8,6 +8,7 @@ import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
+import { returnWrapNonLabelsSugarFunction } from "../utils/label";
 
 export default class Curve extends GraphicalComponent {
   constructor(args) {
@@ -136,65 +137,7 @@ export default class Curve extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakNonLabelIntoFunctionsByCommas = function ({
-      matchedChildren,
-      componentInfoObjects,
-    }) {
-      let componentIsLabel = (x) =>
-        componentInfoObjects.componentIsSpecifiedType(x, "label");
-
-      // only apply if all children are strings, macros, or labels
-      if (
-        matchedChildren.length === 0 ||
-        !matchedChildren.every(
-          (child) =>
-            typeof child === "string" ||
-            child.doenetAttributes?.createdFromMacro ||
-            componentIsLabel(child),
-        )
-      ) {
-        return { success: false };
-      }
-
-      // find first non-label children to break
-
-      let childIsLabel = matchedChildren.map(componentIsLabel);
-
-      let childrenToBreak = [],
-        childrenToNotBreakBegin = [],
-        childrenToNotBreakEnd = [];
-
-      if (childIsLabel.filter((x) => x).length === 0) {
-        childrenToBreak = matchedChildren;
-      } else {
-        if (childIsLabel[0]) {
-          // started with label, find first non-label child
-          let firstNonLabelInd = childIsLabel.indexOf(false);
-          if (firstNonLabelInd !== -1) {
-            childrenToNotBreakBegin = matchedChildren.slice(
-              0,
-              firstNonLabelInd,
-            );
-            matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsLabel = childIsLabel.slice(firstNonLabelInd);
-          }
-        }
-
-        // now we don't have label at the beginning
-        // find first label ind
-        let firstLabelInd = childIsLabel.indexOf(true);
-        if (firstLabelInd === -1) {
-          childrenToBreak = matchedChildren;
-        } else {
-          childrenToBreak = matchedChildren.slice(0, firstLabelInd);
-          childrenToNotBreakEnd = matchedChildren.slice(firstLabelInd);
-        }
-      }
-
-      if (childrenToBreak.length === 0) {
-        return { success: false };
-      }
-
+    let breakIntoFunctionsByCommas = function (childrenToBreak) {
       let childrenToComponentFunction = (x) => ({
         componentType: "function",
         children: x,
@@ -221,19 +164,14 @@ export default class Curve extends GraphicalComponent {
           },
         ];
       }
-
-      return {
-        success: true,
-        newChildren: [
-          ...childrenToNotBreakBegin,
-          ...functionChildren,
-          ...childrenToNotBreakEnd,
-        ],
-      };
+      return functionChildren;
     };
 
     sugarInstructions.push({
-      replacementFunction: breakNonLabelIntoFunctionsByCommas,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        onlyStringOrMacros: true,
+        customWrappingFunction: breakIntoFunctionsByCommas,
+      }),
     });
 
     return sugarInstructions;
