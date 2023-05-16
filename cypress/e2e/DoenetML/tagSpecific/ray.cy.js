@@ -2339,12 +2339,12 @@ describe("Ray Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <ray through="(-1,-0.05)" endpoint="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="P" assignNames="Pa" />
+  <copy target="P" assignNames="Pa" displayDigits="8" />
   `,
         },
         "*",
@@ -9296,7 +9296,7 @@ describe("Ray Tag Tests", function () {
     <copy target="v5" through="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="endpoint" assignNames="v0t" />
   <copy target="g0/v0" prop="through" assignNames="v0h" />
@@ -10372,7 +10372,7 @@ describe("Ray Tag Tests", function () {
   <graph>
   <point name="P">(4,1)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <point name="Q">(-4,2)</point>
@@ -10541,7 +10541,7 @@ describe("Ray Tag Tests", function () {
   <point name="P">(4,1)</point>
   <point name="Q">(-4,2)
     <constraints>
-      <constrainToGrid dx="5" dy="3" ignoreGraphBounds />
+      <constrainToGrid dx="5" dy="3" />
     </constraints>
   </point>
   <ray endpoint="$P" through="$Q" />
@@ -10704,5 +10704,67 @@ describe("Ray Tag Tests", function () {
         directionEndpointShifty,
       });
     });
+  });
+
+  it("round vector", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <ray endpoint="(2.58106823,510.523950183)" through="(5.2164162,623.5234601)" name="r1"/>
+
+    $r1.direction{assignNames="r1d"}
+    $r1.endpoint{assignNames="r1t"}
+    $r1.through{assignNames="r1h"}
+    
+    <p>
+      <ray copysource="r1" name="r2" displayDigits="6" />
+      
+      $r2.direction{assignNames="r2d"}
+      $r2.endpoint{assignNames="r2t"}
+      $r2.through{assignNames="r2h"}
+    </p>
+
+    <ray copysource="r1" name="r3" displayDecimals="0" ignoreDisplayDigits />
+    
+    $r3.direction{assignNames="r3d"}
+    $r3.endpoint{assignNames="r3t"}
+    $r3.through{assignNames="r3h"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/r1d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/r1t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58,510.52)");
+    cy.get(cesc2("#/r1h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.22,623.52)");
+
+    cy.get(cesc2("#/r2d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/r2t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58107,510.524)");
+    cy.get(cesc2("#/r2h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.21642,623.523)");
+
+    cy.get(cesc2("#/r3d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/r3t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,511)");
+    cy.get(cesc2("#/r3h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,624)");
   });
 });

@@ -3573,18 +3573,18 @@ describe("Math Operator Tag Tests", function () {
       <round>log(31)</round>
       <round>0.5</round>
 
-      <round numberdecimals="1">55.3252326</round>
-      <round numberdecimals="2">log(31)</round>
-      <round numberdecimals="3">0.5555</round>
+      <round numDecimals="1">55.3252326</round>
+      <round numDecimals="2">log(31)</round>
+      <round numDecimals="3">0.5555</round>
 
-      <round numberdigits="3">55.3252326</round>
-      <round numberdigits="4">log(31)</round>
-      <round numberdigits="5">0.555555</round>
+      <round numDigits="3">55.3252326</round>
+      <round numDigits="4">log(31)</round>
+      <round numDigits="5">0.555555</round>
 
-      <round numberdigits="3"><math>sin(55.3252326 x)</math></round>
-      <round numberdigits="3">log(31) exp(3) <number>sin(2)</number></round>
+      <round numDigits="3"><math>sin(55.3252326 x)</math></round>
+      <round numDigits="3">log(31) exp(3) <number>sin(2)</number></round>
 
-      <round numberdecimals="-6"><math>exp(20) pi</math></round>
+      <round numDecimals="-6"><math>exp(20) pi</math></round>
 
       <copy target="_round1" />
       <copy target="_round5" />
@@ -3738,6 +3738,130 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables[replacement3Name].stateValues.value).eq(62.7);
       });
     });
+  });
+
+  it("round ignores display rounding of math children", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <round numDigits="6"><math>55.3252326</math></round>
+      <round numDigits="6"><number>55.3252326</number></round>
+      <round numDecimals="6"><math>55.3252326</math></round>
+      <round numDecimals="6"><number>55.3252326</number></round>
+
+      <round numDigits="6"><math displayDigits="1">55.3252326</math></round>
+      <round numDigits="6"><number displayDecimals="1">55.3252326</number></round>
+      <round numDecimals="6"><math displayDigits="1">55.3252326</math></round>
+      <round numDecimals="6"><number displayDecimals="1">55.3252326</number></round>
+
+      <math copysource="_round1" name="r1a" />
+      <math copysource="_round2" name="r2a" />
+      <math copysource="_round3" name="r3a" />
+      <math copysource="_round4" name="r4a" />
+      
+      <math copysource="_round5" name="r5a" />
+      <math copysource="_round6" name="r6a" />
+      <math copysource="_round7" name="r7a" />
+      <math copysource="_round8" name="r8a" />
+
+      <math copysource="_round1.value" name="r1b" />
+      <math copysource="_round2.value" name="r2b" />
+      <math copysource="_round3.value" name="r3b" />
+      <math copysource="_round4.value" name="r4b" />
+      
+      <math copysource="_round5.value" name="r5b" />
+      <math copysource="_round6.value" name="r6b" />
+      <math copysource="_round7.value" name="r7b" />
+      <math copysource="_round8.value" name="r8b" />
+
+  
+      `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.get(cesc2("#/_round1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/_round2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/_round3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/_round4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+
+    cy.get(cesc2("#/_round5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/_round6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/_round7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/_round8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+
+    cy.get(cesc2("#/r1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/r4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+
+    cy.get(cesc2("#/r5a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r6a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r7a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/r8a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+
+    cy.get(cesc2("#/r1b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r2b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r3b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/r4b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+
+    cy.get(cesc2("#/r5b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r6b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.3252");
+    cy.get(cesc2("#/r7b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
+    cy.get(cesc2("#/r8b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "55.325233");
   });
 
   it("convert set to list", () => {
@@ -4121,25 +4245,25 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <math name="floor1" format="latex">\\lfloor 55.3252326 \\rfloor</math>
-      <math name="floor2">floor(55.3252326)</math>
-      <math name="floor1simp" copySource="floor1" simplify />
-      <math name="floor2simp" copySource="floor2" simplify />
-      <math name="ceil1" format="latex">\\lceil \\log(31.1) \\rceil</math>
-      <math name="ceil2">ceil(log(31.1))</math>
-      <math name="ceil1simp" copySource="ceil1" simplify />
-      <math name="ceil2simp" copySource="ceil2" simplify />
+      <math displayDigits="10" name="floor1" format="latex">\\lfloor 55.3252326 \\rfloor</math>
+      <math displayDigits="10" name="floor2">floor(55.3252326)</math>
+      <math displayDigits="10" name="floor1simp" copySource="floor1" simplify />
+      <math displayDigits="10" name="floor2simp" copySource="floor2" simplify />
+      <math displayDigits="10" name="ceil1" format="latex">\\lceil \\log(31.1) \\rceil</math>
+      <math displayDigits="10" name="ceil2">ceil(log(31.1))</math>
+      <math displayDigits="10" name="ceil1simp" copySource="ceil1" simplify />
+      <math displayDigits="10" name="ceil2simp" copySource="ceil2" simplify />
 
-      <math name="floor3" format="latex" simplify>\\lfloor $floor1/$ceil1 \\rfloor</math>
-      <math name="floor4" simplify>floor($floor1/$ceil1)</math>
-      <math name="ceil3" format="latex" simplify>\\lceil $ceil1/$floor1 \\rceil</math>
-      <math name="ceil4" simplify>ceil($ceil1/$floor1)</math>
+      <math displayDigits="10" name="floor3" format="latex" simplify>\\lfloor $floor1/$ceil1 \\rfloor</math>
+      <math displayDigits="10" name="floor4" simplify>floor($floor1/$ceil1)</math>
+      <math displayDigits="10" name="ceil3" format="latex" simplify>\\lceil $ceil1/$floor1 \\rceil</math>
+      <math displayDigits="10" name="ceil4" simplify>ceil($ceil1/$floor1)</math>
 
       <p>Allow for slight roundoff error:
-      <math format="latex" name="floor5" simplify>\\lfloor 3.999999999999999 \\rfloor</math>
-      <math name="floor6" simplify>floor 3.999999999999999</math>
-      <math format="latex" name="ceil5" simplify>\\lceil -6999.999999999999 \\rceil</math>
-      <math name="ceil6" simplify>ceil -6999.999999999999</math>
+      <math displayDigits="10" format="latex" name="floor5" simplify>\\lfloor 3.999999999999999 \\rfloor</math>
+      <math displayDigits="10" name="floor6" simplify>floor 3.999999999999999</math>
+      <math displayDigits="10" format="latex" name="ceil5" simplify>\\lceil -6999.999999999999 \\rceil</math>
+      <math displayDigits="10" name="ceil6" simplify>ceil -6999.999999999999</math>
       </p>
 
       `,
@@ -6930,11 +7054,11 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="pPrime">Variance of first primes: <variance name="variancePrime">2 3 5 7</variance></p>
+    <p name="pPrime">Variance of first primes: <variance displayDigits="10" name="variancePrime">2 3 5 7</variance></p>
     <p>Copying that variance: <copy target="variancePrime" /></p>
     <copy target="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence to="100" /></variance></p>
+    <p name="p100">Variance of numbers from 1 to 100: <variance displayDigits="10" name="variance100"><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy target="variance100" /></p>
     <copy target="p100" />
     `,
@@ -7056,19 +7180,19 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
         <text>a</text>
-        <variance population name="numbers"><number>4</number><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>4</number><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumberMath"><math>4</math><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>4</math><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>4</math><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumericMath"><math>8/2</math><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumericMathSimplify" simplify><math>8/2</math><number>16</number><number>5-4</number></variance>
-        <variance population name="numbersWithNumericMathForceNumeric" forceNumeric><math>8/2</math><number>16</number><number>5-4</number></variance>
-        <variance population name="withNumberVariance"><math>4</math><variance population><number>17</number><number>5-4</number></variance></variance>
-        <variance population name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></variance>
-        <variance population name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></variance>
-        <variance population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
+        <variance population displayDigits="10" name="numbers"><number>4</number><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>4</number><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumberMath"><math>4</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>4</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>4</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumericMath"><math>8/2</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumericMathSimplify" simplify><math>8/2</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="numbersWithNumericMathForceNumeric" forceNumeric><math>8/2</math><number>16</number><number>5-4</number></variance>
+        <variance population displayDigits="10" name="withNumberVariance"><math>4</math><variance population><number>17</number><number>5-4</number></variance></variance>
+        <variance population displayDigits="10" name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></variance>
+        <variance population displayDigits="10" name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></variance>
+        <variance population displayDigits="10" name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></variance>
         <copy target="numbers" />
         <copy target="vars" />
         `,
@@ -7334,11 +7458,11 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="pPrime">Variance of first primes: <variance population name="variancePrime">2 3 5 7</variance></p>
+    <p name="pPrime">Variance of first primes: <variance population displayDigits="10" name="variancePrime">2 3 5 7</variance></p>
     <p>Copying that variance: <copy target="variancePrime" /></p>
     <copy target="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: <variance population name="variance100"><sequence to="100" /></variance></p>
+    <p name="p100">Variance of numbers from 1 to 100: <variance population displayDigits="10" name="variance100"><sequence to="100" /></variance></p>
     <p>Copying that variance: <copy target="variance100" /></p>
     <copy target="p100" />
     `,
@@ -7461,19 +7585,19 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <standarddeviation name="numbers"><number>3</number><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>3</number><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumberMath"><math>3</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>3</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>3</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumericMath"><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumericMathSimplify" simplify><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="numbersWithNumericMathForceNumeric" forceNumeric><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
-      <standarddeviation name="withNumberStandardDeviation"><math>3</math><standarddeviation><number>17</number><number>5-4</number></standarddeviation></standarddeviation>
-      <standarddeviation name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <standarddeviation name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <standarddeviation name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbers"><number>3</number><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersForceSymbolic" forceSymbolic><number>3</number><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>3</number><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumberMath"><math>3</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>3</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>3</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumericMath"><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumericMathSimplify" simplify><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="numbersWithNumericMathForceNumeric" forceNumeric><math>6/2</math><number>17</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" name="withNumberStandardDeviation"><math>3</math><standarddeviation><number>17</number><number>5-4</number></standarddeviation></standarddeviation>
+      <standarddeviation displayDigits="10" name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <copy target="numbers" />
       <copy target="vars" />
       `,
@@ -7986,11 +8110,11 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="pPrime">Standard deviation of first primes: <standarddeviation name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
+    <p name="pPrime">Standard deviation of first primes: <standarddeviation displayDigits="10" name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
     <copy target="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation displayDigits="10" name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
     <copy target="p100" />
     `,
@@ -8108,19 +8232,19 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <standarddeviation population name="numbers"><number>4</number><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>4</number><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumberMath"><math>4</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>4</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>4</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumericMath"><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumericMathSimplify" simplify><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="numbersWithNumericMathForceNumeric" forceNumeric><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
-      <standarddeviation population name="withNumberStandardDeviation"><math>3</math><standarddeviation population><number>17</number><number>5-4</number></standarddeviation></standarddeviation>
-      <standarddeviation population name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <standarddeviation population name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
-      <standarddeviation population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbers"><number>4</number><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersForceSymbolic" forceSymbolic><number>4</number><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersForceSymbolicSimplify" forceSymbolic simplify><number>4</number><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumberMath"><math>4</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumberMathForceSymbolic" forceSymbolic><math>4</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumberMathForceSymbolicSimplify" forceSymbolic simplify><math>4</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumericMath"><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumericMathSimplify" simplify><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="numbersWithNumericMathForceNumeric" forceNumeric><math>8/2</math><number>16</number><number>5-4</number></standarddeviation>
+      <standarddeviation displayDigits="10" population name="withNumberStandardDeviation"><math>3</math><standarddeviation displayDigits="10" population><number>17</number><number>5-4</number></standarddeviation></standarddeviation>
+      <standarddeviation displayDigits="10" population name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" population name="varsSimplify" simplify><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
+      <standarddeviation displayDigits="10" population name="varsForcedNumeric" forceNumeric><math>x</math><math>x+y</math><math>x+y+z</math></standarddeviation>
       <copy target="numbers" />
       <copy target="vars" />
       `,
@@ -8389,11 +8513,11 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="pPrime">Standard deviation of first primes: <standarddeviation population name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
+    <p name="pPrime">Standard deviation of first primes: <standarddeviation displayDigits="10" population name="standarddeviationPrime">2 3 5 7</standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviationPrime" /></p>
     <copy target="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation population name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation displayDigits="10" population name="standarddeviation100"><sequence to="100" /></standarddeviation></p>
     <p>Copying that standard deviation: <copy target="standarddeviation100" /></p>
     <copy target="p100" />
     `,
@@ -13260,7 +13384,7 @@ describe("Math Operator Tag Tests", function () {
       <text>a</text>
       <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
       <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
-      <p>Number of operands: <extractMath type="numberOfOperands" name="numOperands">$expr</extractMath></p>
+      <p>Number of operands: <extractMath type="numOperands" name="numOperands">$expr</extractMath></p>
       <p>First operand: <extractMath type="Operand" name="operand1" operandNumber="1">$expr</extractMath></p>
       <p>Second operand: <extractMath type="Operand" name="operand2" operandNumber="2">$expr</extractMath></p>
       <p>Third operand: <extractMath type="Operand" name="operand3" operandNumber="3">$expr</extractMath></p>
@@ -13276,7 +13400,7 @@ describe("Math Operator Tag Tests", function () {
       <p>Second function argument from second operand: <extractMath type="functionArgument" argumentNumber="2" name="garg2">$operand2</extractMath></p>
       <p>No third function argument from second operand: <extractMath type="functionArgument" argumentNumber="3" name="blank4">$operand2</extractMath></p>
       <p>No function argument from third operand: <extractMath type="functionArgument" name="blank5">$operand3</extractMath></p>
-      <p>Number of operands from first operand: <extractMath type="numberofoperands" name="numOperands1">$operand1</extractMath></p>
+      <p>Number of operands from first operand: <extractMath type="numOperands" name="numOperands1">$operand1</extractMath></p>
       <p>First operand from first operand: <extractMath type="operand" operandNumber="1" name="operand11">$operand1</extractMath></p>
 
 

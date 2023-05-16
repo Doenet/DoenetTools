@@ -66,7 +66,7 @@ describe("Triangle Tag Tests", function () {
         let desiredVertices = [];
         for (
           let i = 0;
-          i < stateVariables["/_triangle1"].stateValues.nVertices;
+          i < stateVariables["/_triangle1"].stateValues.numVertices;
           i++
         ) {
           desiredVertices.push([
@@ -201,7 +201,7 @@ describe("Triangle Tag Tests", function () {
         let desiredVertices = [];
         for (
           let i = 0;
-          i < stateVariables["/_triangle1"].stateValues.nVertices;
+          i < stateVariables["/_triangle1"].stateValues.numVertices;
           i++
         ) {
           desiredVertices.push([
@@ -335,7 +335,7 @@ describe("Triangle Tag Tests", function () {
         let desiredVertices = [];
         for (
           let i = 0;
-          i < stateVariables["/_triangle1"].stateValues.nVertices;
+          i < stateVariables["/_triangle1"].stateValues.numVertices;
           i++
         ) {
           desiredVertices.push([
@@ -469,7 +469,7 @@ describe("Triangle Tag Tests", function () {
         let desiredVertices = [];
         for (
           let i = 0;
-          i < stateVariables["/_triangle1"].stateValues.nVertices;
+          i < stateVariables["/_triangle1"].stateValues.numVertices;
           i++
         ) {
           desiredVertices.push([
@@ -603,7 +603,7 @@ describe("Triangle Tag Tests", function () {
         let desiredVertices = [];
         for (
           let i = 0;
-          i < stateVariables["/_triangle1"].stateValues.nVertices;
+          i < stateVariables["/_triangle1"].stateValues.numVertices;
           i++
         ) {
           desiredVertices.push([

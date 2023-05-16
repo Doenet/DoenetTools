@@ -33,7 +33,7 @@ export default class Extract extends CompositeComponent {
     attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
-    attributes.nComponents = {
+    attributes.numComponents = {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
@@ -63,11 +63,11 @@ export default class Extract extends CompositeComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nComponentsSpecified = {
+    stateVariableDefinitions.numComponentsSpecified = {
       returnDependencies: () => ({
-        nComponentsAttr: {
+        numComponentsAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "nComponents",
+          attributeName: "numComponents",
         },
         typeAttr: {
           dependencyType: "attributePrimitive",
@@ -75,7 +75,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
-        let nComponentsSpecified;
+        let numComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
           let componentType =
@@ -88,20 +88,20 @@ export default class Extract extends CompositeComponent {
               `Invalid componentType ${dependencyValues.typeAttr} of copy.`,
             );
           }
-          if (dependencyValues.nComponentsAttr !== null) {
-            nComponentsSpecified = dependencyValues.nComponentsAttr;
+          if (dependencyValues.numComponentsAttr !== null) {
+            numComponentsSpecified = dependencyValues.numComponentsAttr;
           } else {
-            nComponentsSpecified = 1;
+            numComponentsSpecified = 1;
           }
-        } else if (dependencyValues.nComponentsAttr !== null) {
+        } else if (dependencyValues.numComponentsAttr !== null) {
           throw Error(
-            `You must specify createComponentOfType when specifying nComponents for a copy.`,
+            `You must specify createComponentOfType when specifying numComponents for a copy.`,
           );
         } else {
-          nComponentsSpecified = null;
+          numComponentsSpecified = null;
         }
 
-        return { setValue: { nComponentsSpecified } };
+        return { setValue: { numComponentsSpecified } };
       },
     };
 

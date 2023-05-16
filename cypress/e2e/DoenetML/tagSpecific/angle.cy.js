@@ -23,7 +23,7 @@ describe("Angle Tag Tests", function () {
     <point x="$_mathinput1" y="$_mathinput2" />
     <point>(2,4)</point>
     <point>(4,2)</point>
-    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" />
+    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" displayDigits="10" />
   </graph>
   `,
         },
@@ -199,7 +199,7 @@ describe("Angle Tag Tests", function () {
   <line through="$_point1 $_point2" />
   <line through="$_point1 $_point3" />
 
-  <angle radius="2" betweenLines="$_line1 $_line2" chooseReflexAngle="allowed" />
+  <angle radius="2" betweenLines="$_line1 $_line2" chooseReflexAngle="allowed" displayDigits="10" />
   </graph>
   `,
         },
@@ -360,9 +360,9 @@ describe("Angle Tag Tests", function () {
 
   <graph>
   <line through="(1,2) ($_mathinput1, $_mathinput2)" />
-  <line through="(6,2)(8,4)" />
+  <line through="(6,2) (8,4)" />
 
-  <angle betweenLines="$_line1 $_line2" />
+  <angle betweenLines="$_line1 $_line2" displayDigits="10" />
   </graph>
   `,
         },
@@ -463,7 +463,7 @@ describe("Angle Tag Tests", function () {
     <point>(5,0)</point>
     <point>(0,0)</point>
     <point x="7cos(1)" y="7sin(1)" />
-    <angle radius="$_mathinput1" through="$_point1 $_point2 $_point3" />
+    <angle radius="$_mathinput1" through="$_point1 $_point2 $_point3" displayDigits="10" />
   </graph>
   <copy assignNames="angle2" prop="angle" target="_angle1" />
   <copy assignNames="radius2" prop="radius" target="_angle1" />
@@ -556,7 +556,7 @@ describe("Angle Tag Tests", function () {
     <point>(5,0)</point>
     <point>(0,0)</point>
     <point x="8cos($_mathinput1)" y="8sin($_mathinput1)" />
-    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" />
+    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" displayDigits="10" />
   </graph>
   <p><copy assignNames="alpha" prop="angle" target="_angle1" /></p>
   <p><copy assignNames="alphadeg" prop="degrees" target="_angle1" /></p>
@@ -1457,7 +1457,7 @@ describe("Angle Tag Tests", function () {
     <point name="A">(-6,5)</point>
     <point name="B">(0,0)</point>
     <point name="C">(4,2)</point>
-    <angle name="alpha" through="$A $B $C" chooseReflexAngle="$ra" />
+    <angle name="alpha" through="$A $B $C" chooseReflexAngle="$ra" displayDigits="10" />
   </graph>
   <p>angle: <copy target="alpha" assignNames="alpha2" /></p>
   `,
@@ -1643,7 +1643,7 @@ describe("Angle Tag Tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text).eq(
-          (Math.round((Math.PI / 2) * 10 ** 9) / 10 ** 9).toString(),
+          (Math.round((Math.PI / 2) * 10 ** 2) / 10 ** 2).toString(),
         );
       });
     cy.get(cesc("#\\/_math1"))
@@ -1651,14 +1651,14 @@ describe("Angle Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString());
+        expect(text).eq((Math.round(Math.PI * 10 ** 2) / 10 ** 2).toString());
       });
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString());
+        expect(text).eq((Math.round(Math.PI * 10 ** 2) / 10 ** 2).toString());
       });
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -1692,10 +1692,10 @@ describe("Angle Tag Tests", function () {
     <point name="A">(3,5)</point>
     $_angle1
   </graph>
-  <angle through="$A" />
-  <math simplify>2<copy target="_angle1" /></math>
-  <math simplify>2<copy prop="angle" target="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <angle through="$A" displayDigits="10" />
+  <math simplify displayDigits="10">2<copy target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="angle" target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="degrees" target="_angle1" /></math>
   <copy target="A" assignNames="A2" />
   `,
         },
@@ -2321,10 +2321,10 @@ describe("Angle Tag Tests", function () {
     <point name="B">(6,1)</point>
     $_angle1
   </graph>
-  <angle through="$A $B" />
-  <math simplify>2<copy target="_angle1" /></math>
-  <math simplify>2<copy prop="angle" target="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <angle through="$A $B" displayDigits="10" />
+  <math simplify displayDigits="10">2<copy target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="angle" target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="degrees" target="_angle1" /></math>
   <copy target="A" assignNames="A2" />
   `,
         },
@@ -2967,10 +2967,10 @@ describe("Angle Tag Tests", function () {
     <line name="l">$equation</line>
     $_angle1
   </graph>
-  <angle betweenLines="$l" />
-  <math simplify>2<copy target="_angle1" /></math>
-  <math simplify>2<copy prop="angle" target="_angle1" /></math>
-  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <angle betweenLines="$l" displayDigits="10" />
+  <math simplify displayDigits="10">2<copy target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="angle" target="_angle1" /></math>
+  <math simplify displayDigits="10">2<copy prop="degrees" target="_angle1" /></math>
   <copy target="equation" prop="value" assignNames="equation2" />
   `,
         },
@@ -3729,16 +3729,16 @@ describe("Angle Tag Tests", function () {
   <angle name="a">1.39372582305929123842034823</angle>
   <angle name="aDig5a" displayDigits="5" copySource="a" />
   <angle name="aDec6a" displayDecimals="6" copySource="a" />
-  <angle name="aDig5b" displayDigits="5" copySource="aDec6a" />
+  <angle name="aDig5b" displayDigits="5" ignoreDisplayDecimals copySource="aDec6a" />
   <angle name="aDec6b" displayDecimals="6" copySource="aDig5a" />
-  <angle name="aDig5c" displayDigits="5" copySource="aDec6b" />
+  <angle name="aDig5c" displayDigits="5" ignoreDisplayDecimals copySource="aDec6b" />
   <angle name="aDec6c" displayDecimals="6" copySource="aDig5b" />
 
   <angle name="aDig5d" displayDigits="5">1.39372582305929123842034823</angle>
   <angle name="aDec6d" displayDecimals="6">1.39372582305929123842034823</angle>
-  <angle name="aDig5e" displayDigits="5" copySource="aDec6d" />
+  <angle name="aDig5e" displayDigits="5" ignoreDisplayDecimals copySource="aDec6d" />
   <angle name="aDec6e" displayDecimals="6" copySource="aDig5d" />
-  <angle name="aDig5f" displayDigits="5" copySource="aDec6e" />
+  <angle name="aDig5f" displayDigits="5" ignoreDisplayDecimals copySource="aDec6e" />
   <angle name="aDec6f" displayDecimals="6" copySource="aDig5e" />
 
   `,
@@ -3754,7 +3754,7 @@ describe("Angle Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("1.393725823");
+        expect(text).eq("1.39");
       });
     cy.get(cesc("#\\/aDig5a"))
       .find(".mjx-mrow")

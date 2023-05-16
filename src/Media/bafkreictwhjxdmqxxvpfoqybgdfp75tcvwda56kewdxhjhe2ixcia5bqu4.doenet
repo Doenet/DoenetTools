@@ -5,7 +5,7 @@
     <customAttribute componentType="number" attribute="initialInitialValue" defaultValue="0" assignNames="initialInitialValue" />
     <customAttribute componentType="number" attribute="initialValueDx" defaultValue="0.5" assignNames="initialValueDx" />
     <customAttribute componentType="number" attribute="initialValueOffset" defaultValue="0" assignNames="initialValueOffset" />
-    <customAttribute componentType="number" attribute="nIterationsRequired" defaultValue="0" assignNames="nIterationsRequired" />
+    <customAttribute componentType="number" attribute="numIterationsRequired" defaultValue="0" assignNames="numIterationsRequired" />
     <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
     <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
     <customAttribute componentType="number" attribute="xmin" defaultValue="-10" assignNames="xmin" />
@@ -14,8 +14,8 @@
     <customAttribute componentType="number" attribute="ymax" defaultValue="10" assignNames="ymax" />
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
-    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
-    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
+    <customAttribute componentType="math" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="math" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
     <customAttribute componentType="boolean" attribute="checkInitialCondition" defaultValue="true" assignNames="checkInitialCondition" />
     <customAttribute componentType="number" attribute="initialConditionWeight" defaultValue="1" assignNames="initialConditionWeight" />
     <customAttribute componentType="number" attribute="cobwebbingWeight" defaultValue="1" assignNames="cobwebbingWeight" />
@@ -24,7 +24,7 @@
     <customAttribute componentType="point" attribute="defaultPoint" defaultValue="" assignNames="defaultPoint" />
   </setup>
 
-  <copy uri="doenet:cid=bafkreifax453byfe4snhlzcmxpcisfl2yfijcgsrfdxen522bn6aigap24&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
+  <copy uri="doenet:cid=bafkreifiax4ks3xh5brwwr2fhujxjxlc2nubtlsio5prj7g7ss7u2fg6ta&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" numIterationsRequired="$numIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:
@@ -56,8 +56,8 @@
   <feedback condition="$(correctCobwebbing.submittedResponse2) = false" name="incorrectFeedback">
     At least one point on cobweb plot is incorrect.
   </feedback>
-  <feedback condition="$(correctCobwebbing.submittedResponse2) = true and $(correctCobwebbing.submittedResponse1) > 1 and $(correctCobwebbing.submittedResponse1) <= $nIterationsRequired" name="insufficientFeedback">
-    For full credit, calculate at least $nIterationsRequired iterates (i.e., to <m>x_{$nIterationsRequired}</m>).
+  <feedback condition="$(correctCobwebbing.submittedResponse2) = true and $(correctCobwebbing.submittedResponse1) > 1 and $(correctCobwebbing.submittedResponse1) <= $numIterationsRequired" name="insufficientFeedback">
+    For full credit, calculate at least $numIterationsRequired iterates (i.e., to <m>x_{$numIterationsRequired}</m>).
   </feedback>
 
 </module>

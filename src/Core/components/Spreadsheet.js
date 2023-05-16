@@ -297,7 +297,7 @@ export default class Spreadsheet extends BlockComponent {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["cell", "row", "column", "range", "rows", "columns"],
-      nDimensions: 2,
+      numDimensions: 2,
       defaultValueByArrayKey: () => "",
       hasEssential: true,
       shadowVariable: true,
@@ -661,7 +661,7 @@ export default class Spreadsheet extends BlockComponent {
         "evaluatedRows",
         "evaluatedColumns",
       ],
-      nDimensions: 2,
+      numDimensions: 2,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       returnArraySizeDependencies: () => ({
         numRows: {
@@ -942,7 +942,7 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.pointsInCells = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "point",

@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import Curve from "./Curve";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 
@@ -38,6 +42,10 @@ export default class Circle extends Curve {
       forRenderer: true,
     };
 
+    attributes.hideOffGraphIndicator = {
+      createComponentOfType: "boolean",
+    };
+
     delete attributes.parMin;
     delete attributes.parMax;
     delete attributes.variable;
@@ -52,6 +60,11 @@ export default class Circle extends Curve {
   static returnStateVariableDefinitions(args) {
     let stateVariableDefinitions =
       GraphicalComponent.returnStateVariableDefinitions(args);
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -280,6 +293,48 @@ export default class Circle extends Curve {
       },
     };
 
+    stateVariableDefinitions.hideOffGraphIndicator = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({
+        hideOffGraphIndicatorAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "hideOffGraphIndicator",
+          variableNames: ["value"],
+        },
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["hideOffGraphIndicators"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.hideOffGraphIndicatorAttr) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.hideOffGraphIndicatorAttr.stateValues.value,
+            },
+          };
+        } else if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.graphAncestor.stateValues
+                  .hideOffGraphIndicators,
+            },
+          };
+        } else {
+          return {
+            setValue: { hideOffGraphIndicator: false },
+          };
+        }
+      },
+    };
+
     stateVariableDefinitions.curveType = {
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -316,23 +371,24 @@ export default class Circle extends Curve {
       arrayDefinitionByKey: () => ({ setValue: { fs: {} } }),
     };
 
-    stateVariableDefinitions.nThroughPoints = {
+    stateVariableDefinitions.numThroughPoints = {
       returnDependencies: () => ({
         throughAttr: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr !== null) {
           return {
             setValue: {
-              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints,
+              numThroughPoints:
+                dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nThroughPoints: 0 } };
+          return { setValue: { numThroughPoints: 0 } };
         }
       },
     };
@@ -342,6 +398,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -356,7 +414,7 @@ export default class Circle extends Curve {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
@@ -425,13 +483,13 @@ export default class Circle extends Curve {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, 2];
+        return [dependencyValues.numThroughPoints, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -962,9 +1020,9 @@ export default class Circle extends Curve {
     stateVariableDefinitions.numericalRadiusCalculatedWithCenter = {
       additionalStateVariablesDefined: ["numericalCenterCalculatedWithRadius"],
       returnDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
         numericalThroughPoints: {
           dependencyType: "stateVariable",
@@ -979,7 +1037,7 @@ export default class Circle extends Curve {
         if (dependencyValues.haveNonNumericalThroughPoints) {
           let message =
             "Haven't implemented circle through " +
-            dependencyValues.nThroughPoints +
+            dependencyValues.numThroughPoints +
             " points";
           message += " in case where don't have numerical values.";
           console.warn(message);
@@ -991,7 +1049,7 @@ export default class Circle extends Curve {
           };
         }
 
-        if (dependencyValues.nThroughPoints === 2) {
+        if (dependencyValues.numThroughPoints === 2) {
           let { numericalCenter, numericalRadius } =
             circleFromTwoNumericalPoints({
               point1: dependencyValues.numericalThroughPoints[0],
@@ -1004,7 +1062,7 @@ export default class Circle extends Curve {
               numericalRadiusCalculatedWithCenter: numericalRadius,
             },
           };
-        } else if (dependencyValues.nThroughPoints === 3) {
+        } else if (dependencyValues.numThroughPoints === 3) {
           let x1 = dependencyValues.numericalThroughPoints[0][0];
           let x2 = dependencyValues.numericalThroughPoints[1][0];
           let x3 = dependencyValues.numericalThroughPoints[2][0];
@@ -1071,7 +1129,7 @@ export default class Circle extends Curve {
               numericalRadiusCalculatedWithCenter: numericalRadius,
             },
           };
-        } else if (dependencyValues.nThroughPoints > 3) {
+        } else if (dependencyValues.numThroughPoints > 3) {
           console.warn("Can't calculate circle through more than 3 points");
           return {
             setValue: {
@@ -1117,7 +1175,7 @@ export default class Circle extends Curve {
     stateVariableDefinitions.numericalRadius = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: [
-        "nThroughPoints",
+        "numThroughPoints",
         "havePrescribedCenter",
         "havePrescribedRadius",
       ],
@@ -1127,9 +1185,9 @@ export default class Circle extends Curve {
             dependencyType: "stateVariable",
             variableName: "haveNonNumericalPrescribedRadius",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
           essentialRadius: {
             dependencyType: "stateVariable",
@@ -1144,7 +1202,7 @@ export default class Circle extends Curve {
           };
           if (
             stateValues.havePrescribedCenter &&
-            stateValues.nThroughPoints > 0
+            stateValues.numThroughPoints > 0
           ) {
             dependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
@@ -1153,7 +1211,7 @@ export default class Circle extends Curve {
           }
         } else {
           if (stateValues.havePrescribedCenter) {
-            if (stateValues.nThroughPoints === 1) {
+            if (stateValues.numThroughPoints === 1) {
               dependencies.haveNonNumericalPrescribedCenter = {
                 dependencyType: "stateVariable",
                 variableName: "haveNonNumericalPrescribedCenter",
@@ -1171,7 +1229,7 @@ export default class Circle extends Curve {
                 variableName: "numericalThroughPoints",
               };
             }
-          } else if (stateValues.nThroughPoints > 1) {
+          } else if (stateValues.numThroughPoints > 1) {
             dependencies.numericalRadiusCalculatedWithCenter = {
               dependencyType: "stateVariable",
               variableName: "numericalRadiusCalculatedWithCenter",
@@ -1222,7 +1280,7 @@ export default class Circle extends Curve {
         }
 
         if (dependencyValues.numericalPrescribedCenter !== undefined) {
-          if (dependencyValues.nThroughPoints === 0) {
+          if (dependencyValues.numThroughPoints === 0) {
             let r = dependencyValues.essentialRadius;
             if (r instanceof me.class) {
               r = r.evaluate_to_constant();
@@ -1230,14 +1288,14 @@ export default class Circle extends Curve {
             return {
               setValue: { numericalRadius: r },
             };
-          } else if (dependencyValues.nThroughPoints === 1) {
+          } else if (dependencyValues.numThroughPoints === 1) {
             // center and one point specified.
             // Radius is distance from center to point.
             let pt = dependencyValues.numericalThroughPoints[0];
             if (pt === undefined) {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
-              // than nThroughPoints
+              // than numThroughPoints
               return { setValue: { numericalRadius: NaN } };
             }
             let numericalRadius = Math.sqrt(
@@ -1260,7 +1318,7 @@ export default class Circle extends Curve {
         }
 
         // don't have prescribed center
-        if (dependencyValues.nThroughPoints < 2) {
+        if (dependencyValues.numThroughPoints < 2) {
           let r = dependencyValues.essentialRadius;
           if (r instanceof me.class) {
             r = r.evaluate_to_constant();
@@ -1305,7 +1363,7 @@ export default class Circle extends Curve {
         }
 
         if (dependencyValues.numericalPrescribedCenter !== undefined) {
-          if (dependencyValues.nThroughPoints === 0) {
+          if (dependencyValues.numThroughPoints === 0) {
             return {
               success: true,
               instructions: [
@@ -1318,7 +1376,7 @@ export default class Circle extends Curve {
                 },
               ],
             };
-          } else if (dependencyValues.nThroughPoints === 1) {
+          } else if (dependencyValues.numThroughPoints === 1) {
             let numericalRadius = Math.max(
               0,
               desiredStateVariableValues.numericalRadius,
@@ -1349,7 +1407,7 @@ export default class Circle extends Curve {
         }
 
         // don't have prescribed center
-        if (dependencyValues.nThroughPoints < 2) {
+        if (dependencyValues.numThroughPoints < 2) {
           return {
             success: true,
             instructions: [
@@ -1370,7 +1428,7 @@ export default class Circle extends Curve {
             desiredStateVariableValues.numericalRadius,
           );
 
-          for (let i = 0; i < dependencyValues.nThroughPoints; i++) {
+          for (let i = 0; i < dependencyValues.numThroughPoints; i++) {
             let theta = (await stateValues.throughAngles)[i];
             if (!Number.isFinite(theta)) {
               return { success: false };
@@ -1443,7 +1501,7 @@ export default class Circle extends Curve {
       isArray: true,
       entryPrefixes: ["numericalCenterX"],
       stateVariablesDeterminingDependencies: [
-        "nThroughPoints",
+        "numThroughPoints",
         "havePrescribedCenter",
         "havePrescribedRadius",
       ],
@@ -1468,7 +1526,7 @@ export default class Circle extends Curve {
           }
           if (
             stateValues.havePrescribedRadius &&
-            stateValues.nThroughPoints > 0
+            stateValues.numThroughPoints > 0
           ) {
             globalDependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
@@ -1485,9 +1543,9 @@ export default class Circle extends Curve {
               },
             };
           }
-          globalDependencies.nThroughPoints = {
+          globalDependencies.numThroughPoints = {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           };
           globalDependencies.numericalThroughPoints = {
             dependencyType: "stateVariable",
@@ -1505,14 +1563,14 @@ export default class Circle extends Curve {
               dependencyType: "stateVariable",
               variableName: "numericalRadius",
             };
-          } else if (stateValues.nThroughPoints == 1) {
+          } else if (stateValues.numThroughPoints == 1) {
             // if didn't have prescribed radius but just one point
             // we treat the radius calculated above as prescribed
             globalDependencies.numericalRadius = {
               dependencyType: "stateVariable",
               variableName: "numericalRadius",
             };
-          } else if (stateValues.nThroughPoints > 1) {
+          } else if (stateValues.numThroughPoints > 1) {
             globalDependencies.numericalCenterCalculatedWithRadius = {
               dependencyType: "stateVariable",
               variableName: "numericalCenterCalculatedWithRadius",
@@ -1566,7 +1624,7 @@ export default class Circle extends Curve {
 
         if (globalDependencyValues.numericalRadius !== undefined) {
           // have a radius defined and no center
-          if (globalDependencyValues.nThroughPoints === 0) {
+          if (globalDependencyValues.numThroughPoints === 0) {
             // only radius specified.  use essential center
 
             for (let arrayKey of arrayKeys) {
@@ -1579,14 +1637,14 @@ export default class Circle extends Curve {
             }
 
             return { setValue: { numericalCenter } };
-          } else if (globalDependencyValues.nThroughPoints === 1) {
+          } else if (globalDependencyValues.numThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
 
             if (globalDependencyValues.numericalThroughPoints.length < 1) {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
-              // than nThroughPoints
+              // than numThroughPoints
               return { setValue: { numericalCenter: [NaN, NaN] } };
             }
 
@@ -1597,11 +1655,11 @@ export default class Circle extends Curve {
             ];
 
             return { setValue: { numericalCenter } };
-          } else if (globalDependencyValues.nThroughPoints === 2) {
+          } else if (globalDependencyValues.numThroughPoints === 2) {
             if (globalDependencyValues.numericalThroughPoints.length < 2) {
               // if dependencies haven't been updated,
               // it is possible to temporarility have fewer numericalThroughPoints
-              // than nThroughPoints
+              // than numThroughPoints
               return { setValue: { numericalCenter: [NaN, NaN] } };
             }
 
@@ -1650,7 +1708,7 @@ export default class Circle extends Curve {
         }
 
         // don't have prescribed radius
-        if (globalDependencyValues.nThroughPoints === 0) {
+        if (globalDependencyValues.numThroughPoints === 0) {
           for (let arrayKey of arrayKeys) {
             let value = dependencyValuesByKey[arrayKey].essentialCenterX;
 
@@ -1673,7 +1731,7 @@ export default class Circle extends Curve {
             globalDependencyValues.numericalCenterCalculatedWithRadius ===
             undefined
           ) {
-            // if nThroughPoints changed, but dependencies haven't been recalculated yet
+            // if numThroughPoints changed, but dependencies haven't been recalculated yet
             // could get to here where don't have numericalCenterCalculatedWithRadius
             return {
               setValue: {
@@ -1726,7 +1784,7 @@ export default class Circle extends Curve {
           };
         }
 
-        if (globalDependencyValues.nThroughPoints === 0) {
+        if (globalDependencyValues.numThroughPoints === 0) {
           // just change value of essentialCenter
           for (let arrayKey in desiredStateVariableValues.numericalCenter) {
             instructions.push({
@@ -1758,7 +1816,7 @@ export default class Circle extends Curve {
           let throughAngles = await stateValues.throughAngles;
           let numericalRadius = await stateValues.numericalRadius;
 
-          for (let i = 0; i < globalDependencyValues.nThroughPoints; i++) {
+          for (let i = 0; i < globalDependencyValues.numThroughPoints; i++) {
             let theta = throughAngles[i];
             if (!Number.isFinite(theta)) {
               return { success: false };
@@ -1797,9 +1855,9 @@ export default class Circle extends Curve {
           dependencyType: "stateVariable",
           variableName: "haveNumericalEntries",
         },
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
         numericalThroughPoints: {
           dependencyType: "stateVariable",
@@ -1818,7 +1876,7 @@ export default class Circle extends Curve {
         if (
           !(
             dependencyValues.haveNumericalEntries &&
-            dependencyValues.nThroughPoints > 0 &&
+            dependencyValues.numThroughPoints > 0 &&
             dependencyValues.numericalRadius > 0 &&
             dependencyValues.numericalCenter.every((x) => Number.isFinite(x))
           )
@@ -1856,9 +1914,11 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       stateVariablesDeterminingDependencies: [
-        "nThroughPoints",
+        "numThroughPoints",
         "havePrescribedCenter",
         "havePrescribedRadius",
       ],
@@ -1868,9 +1928,9 @@ export default class Circle extends Curve {
             dependencyType: "stateVariable",
             variableName: "numericalRadius",
           },
-          nThroughPoints: {
+          numThroughPoints: {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           },
           essentialRadius: {
             dependencyType: "stateVariable",
@@ -1885,7 +1945,7 @@ export default class Circle extends Curve {
           };
           if (
             stateValues.havePrescribedCenter &&
-            stateValues.nThroughPoints > 0
+            stateValues.numThroughPoints > 0
           ) {
             dependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
@@ -1895,7 +1955,7 @@ export default class Circle extends Curve {
         } else {
           if (
             stateValues.havePrescribedCenter &&
-            stateValues.nThroughPoints === 1
+            stateValues.numThroughPoints === 1
           ) {
             dependencies.prescribedCenter = {
               dependencyType: "stateVariable",
@@ -1936,7 +1996,7 @@ export default class Circle extends Curve {
         }
 
         if (dependencyValues.prescribedCenter !== undefined) {
-          if (dependencyValues.nThroughPoints === 0) {
+          if (dependencyValues.numThroughPoints === 0) {
             let r = dependencyValues.essentialRadius;
             if (!(r instanceof me.class)) {
               if (Number.isFinite(r)) {
@@ -1948,7 +2008,7 @@ export default class Circle extends Curve {
             return {
               setValue: { radius: r },
             };
-          } else if (dependencyValues.nThroughPoints === 1) {
+          } else if (dependencyValues.numThroughPoints === 1) {
             // center and one point specified.
             // Radius is distance from center to point.
 
@@ -1980,7 +2040,7 @@ export default class Circle extends Curve {
         }
 
         // don't have prescribed center
-        if (dependencyValues.nThroughPoints < 2) {
+        if (dependencyValues.numThroughPoints < 2) {
           let r = dependencyValues.essentialRadius;
           if (!(r instanceof me.class)) {
             if (Number.isFinite(r)) {
@@ -1997,7 +2057,7 @@ export default class Circle extends Curve {
           // with no prescribed radius or center
 
           console.warn(
-            `Have not implemented circle through ${dependencyValues.nThroughPoints} points when non-numerical values`,
+            `Have not implemented circle through ${dependencyValues.numThroughPoints} points when non-numerical values`,
           );
           return { setValue: { radius: me.fromAst("\uff3f") } };
         }
@@ -2040,7 +2100,7 @@ export default class Circle extends Curve {
           };
         }
 
-        if (dependencyValues.nThroughPoints === 0) {
+        if (dependencyValues.numThroughPoints === 0) {
           // just change essential value of radius
           // (and numericalRadius if we have a numerical radius)
           let instructions = [
@@ -2068,6 +2128,8 @@ export default class Circle extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         radius: {
@@ -2106,6 +2168,8 @@ export default class Circle extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];
@@ -2121,7 +2185,7 @@ export default class Circle extends Curve {
       isArray: true,
       entryPrefixes: ["centerX"],
       stateVariablesDeterminingDependencies: [
-        "nThroughPoints",
+        "numThroughPoints",
         "havePrescribedCenter",
         "havePrescribedRadius",
       ],
@@ -2163,7 +2227,7 @@ export default class Circle extends Curve {
 
           if (
             stateValues.havePrescribedRadius &&
-            stateValues.nThroughPoints > 0
+            stateValues.numThroughPoints > 0
           ) {
             globalDependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
@@ -2188,9 +2252,9 @@ export default class Circle extends Curve {
             variableName: "numericalCenter",
           };
 
-          globalDependencies.nThroughPoints = {
+          globalDependencies.numThroughPoints = {
             dependencyType: "stateVariable",
-            variableName: "nThroughPoints",
+            variableName: "numThroughPoints",
           };
           globalDependencies.throughPoints = {
             dependencyType: "stateVariable",
@@ -2205,7 +2269,7 @@ export default class Circle extends Curve {
               dependencyType: "stateVariable",
               variableName: "prescribedRadius",
             };
-          } else if (stateValues.nThroughPoints == 1) {
+          } else if (stateValues.numThroughPoints == 1) {
             // if didn't have prescribed radius but just one point
             // we treat the radius calculated above as prescribed
             globalDependencies.radius = {
@@ -2270,7 +2334,7 @@ export default class Circle extends Curve {
 
         if (globalDependencyValues.radius !== undefined) {
           // have a radius defined and no center
-          if (globalDependencyValues.nThroughPoints === 0) {
+          if (globalDependencyValues.numThroughPoints === 0) {
             // only radius specified.  Create centered at origin as a default.
 
             let center = {};
@@ -2289,7 +2353,7 @@ export default class Circle extends Curve {
             }
 
             return { setValue: { center } };
-          } else if (globalDependencyValues.nThroughPoints === 1) {
+          } else if (globalDependencyValues.numThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
 
@@ -2322,7 +2386,7 @@ export default class Circle extends Curve {
         }
 
         // don't have prescribed radius
-        if (globalDependencyValues.nThroughPoints === 0) {
+        if (globalDependencyValues.numThroughPoints === 0) {
           let center = {};
 
           for (let arrayKey of arrayKeys) {
@@ -2430,7 +2494,7 @@ export default class Circle extends Curve {
           };
         }
 
-        if (globalDependencyValues.nThroughPoints === 0) {
+        if (globalDependencyValues.numThroughPoints === 0) {
           // just change essential value of center
           // (and numericalCenter if we have a numerical center)
 
@@ -2524,11 +2588,11 @@ export default class Circle extends Curve {
   }) {
     let instructions = [];
 
-    let nThroughPoints = await this.stateValues.nThroughPoints;
+    let numThroughPoints = await this.stateValues.numThroughPoints;
     let numericalPrescribedCenter = await this.stateValues
       .numericalPrescribedCenter;
 
-    if (nThroughPoints <= 1 || numericalPrescribedCenter.length > 0) {
+    if (numThroughPoints <= 1 || numericalPrescribedCenter.length > 0) {
       instructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
@@ -2539,7 +2603,7 @@ export default class Circle extends Curve {
 
     let numericalThroughPoints = [];
 
-    if (nThroughPoints >= 1) {
+    if (numThroughPoints >= 1) {
       // set numerical through points for two reasons
       // 1. if have circle prescribed by center and one point
       //    need to move the point to preserve the radius
@@ -2554,7 +2618,7 @@ export default class Circle extends Curve {
         radius = await this.stateValues.numericalRadius;
       }
 
-      for (let i = 0; i < nThroughPoints; i++) {
+      for (let i = 0; i < numThroughPoints; i++) {
         let theta = throughAngles[i];
         let pt = [
           center[0] + radius * Math.cos(theta),
@@ -2611,8 +2675,9 @@ export default class Circle extends Curve {
     let resultingCenter = await this.stateValues.numericalCenter;
     let resultingNumericalThroughPoints = await this.stateValues
       .numericalThroughPoints;
+    let tol = 1e-6;
 
-    if (numericalPrescribedCenter.length > 0 && nThroughPoints === 1) {
+    if (numericalPrescribedCenter.length > 0 && numThroughPoints === 1) {
       // center and one through point
 
       let throughPointUnchanged = numericalThroughPoints[0].every(
@@ -2668,30 +2733,35 @@ export default class Circle extends Curve {
           skipRendererUpdate,
         });
       }
-    } else if (nThroughPoints >= 2) {
+    } else if (numThroughPoints >= 2) {
       let throughPointsChanged = [];
-      let nThroughPointsChanged = 0;
+      let numThroughPointsChanged = 0;
 
       for (let [ind, pt] of numericalThroughPoints.entries()) {
         if (
-          !pt.every((v, i) => v === resultingNumericalThroughPoints[ind][i])
+          !pt.every(
+            (v, i) =>
+              Math.abs(v - resultingNumericalThroughPoints[ind][i]) < tol,
+          )
         ) {
           throughPointsChanged.push(ind);
-          nThroughPointsChanged++;
+          numThroughPointsChanged++;
         }
       }
 
-      if (nThroughPointsChanged > 0 && nThroughPointsChanged < nThroughPoints) {
+      if (
+        numThroughPointsChanged > 0 &&
+        numThroughPointsChanged < numThroughPoints
+      ) {
         // A subset of points were altered from the requested location.
         // Check to see if the relationship among them is preserved
 
         let changedInd1 = throughPointsChanged[0];
         let relationshipPreserved = true;
 
-        if (nThroughPointsChanged > 1) {
+        if (numThroughPointsChanged > 1) {
           let orig1 = numericalThroughPoints[changedInd1];
           let changed1 = resultingNumericalThroughPoints[changedInd1];
-          let tol = 1e-6;
 
           let changevec1 = orig1.map((v, i) => v - changed1[i]);
 
@@ -2721,7 +2791,7 @@ export default class Circle extends Curve {
 
           let newNumericalThroughPoints = [];
 
-          for (let i = 0; i < nThroughPoints; i++) {
+          for (let i = 0; i < numThroughPoints; i++) {
             if (throughPointsChanged.includes(i)) {
               newNumericalThroughPoints.push(
                 resultingNumericalThroughPoints[i],

@@ -1,7 +1,7 @@
 import me from "math-expressions";
 import { cesc, cesc2 } from "../../../../src/_utils/url";
 
-describe("Point Tag Tests", function () {
+describe("Point Tag Tests 2", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
     cy.visit("/src/Tools/cypressTest/");
@@ -1464,7 +1464,7 @@ describe("Point Tag Tests", function () {
     </section>
 
     <section><title>From point 1</title>
-    <p>Number of dimensions: <copy assignNames="nDimensions1" prop="nDimensions" target="_point1" /></p>
+    <p>Number of dimensions: <copy assignNames="numDimensions1" prop="numDimensions" target="_point1" /></p>
     <p name="p1x">x-coordinate: <copy assignNames="point1x1" prop="x1" target="_point1"/></p>
     <p name="p1y">y-coordinate: <copy assignNames="point1x2" prop="x2" target="_point1"/></p>
     <p name="p1z">z-coordinate: <copy assignNames="point1x3" prop="x3" target="_point1"/></p>
@@ -1473,7 +1473,7 @@ describe("Point Tag Tests", function () {
     </section>
 
     <section><title>From point 2</title>
-    <p>Number of dimensions: <copy assignNames="nDimensions2" prop="nDimensions" target="point2" /></p>
+    <p>Number of dimensions: <copy assignNames="numDimensions2" prop="numDimensions" target="point2" /></p>
     <p name="p2x">x-coordinate: <copy assignNames="point2x1" prop="x1" target="point2"/></p>
     <p name="p2y">y-coordinate: <copy assignNames="point2x2" prop="x2" target="point2"/></p>
     <p name="p2z">z-coordinate: <copy assignNames="point2x3" prop="x3" target="point2"/></p>
@@ -1482,7 +1482,7 @@ describe("Point Tag Tests", function () {
     </section>
 
     <section><title>From point 3</title>
-    <p>Number of dimensions: <copy assignNames="nDimensions3" prop="nDimensions" target="point3" /></p>
+    <p>Number of dimensions: <copy assignNames="numDimensions3" prop="numDimensions" target="point3" /></p>
     <p name="p3x">x-coordinate: <copy assignNames="point3x1" prop="x1" target="point3"/></p>
     <p name="p3y">y-coordinate: <copy assignNames="point3x2" prop="x2" target="point3"/></p>
     <p name="p3z">z-coordinate: <copy assignNames="point3x3" prop="x3" target="point3"/></p>
@@ -1556,9 +1556,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("＿");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "1");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "1");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "1");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -1728,19 +1728,19 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("＿");
       expect(stateVariables["/_point1"].stateValues.x1).eq("＿");
       expect(stateVariables["/_point1"].stateValues.x2).eq(undefined);
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("＿");
       expect(stateVariables["/point2"].stateValues.x1).eq("＿");
       expect(stateVariables["/point2"].stateValues.x2).eq(undefined);
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("＿");
       expect(stateVariables["/point3"].stateValues.x1).eq("＿");
@@ -1776,9 +1776,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(a,b)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "2");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2046,21 +2046,21 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("b");
       expect(stateVariables["/_point1"].stateValues.x1).eq("a");
       expect(stateVariables["/_point1"].stateValues.x2).eq("b");
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("b");
       expect(stateVariables["/point2"].stateValues.x1).eq("a");
       expect(stateVariables["/point2"].stateValues.x2).eq("b");
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("b");
@@ -2098,9 +2098,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("q");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "1");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "1");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "1");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "1");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2284,19 +2284,19 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/_point1"].stateValues.x1).eq("q");
       expect(stateVariables["/_point1"].stateValues.x2).eq(undefined);
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/point2"].stateValues.x1).eq("q");
       expect(stateVariables["/point2"].stateValues.x2).eq(undefined);
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/point3"].stateValues.x1).eq("q");
@@ -2336,9 +2336,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(2x,uv,w2)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2692,7 +2692,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/_point1"].stateValues.xs[1]).eqls([
@@ -2704,7 +2704,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables["/_point1"].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables["/_point1"].stateValues.x3).eqls(["^", "w", 2]);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/point2"].stateValues.xs[1]).eqls(["/", "u", "v"]);
@@ -2712,7 +2712,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables["/point2"].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables["/point2"].stateValues.x3).eqls(["^", "w", 2]);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/point3"].stateValues.xs[1]).eqls(["/", "u", "v"]);
@@ -2754,9 +2754,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(7,8,9)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3107,7 +3107,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq(7);
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq(8);
@@ -3115,7 +3115,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq(7);
       expect(stateVariables["/_point1"].stateValues.x2).eq(8);
       expect(stateVariables["/_point1"].stateValues.x3).eq(9);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq(7);
       expect(stateVariables["/point2"].stateValues.xs[1]).eq(8);
@@ -3123,7 +3123,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq(7);
       expect(stateVariables["/point2"].stateValues.x2).eq(8);
       expect(stateVariables["/point2"].stateValues.x3).eq(9);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq(7);
       expect(stateVariables["/point3"].stateValues.xs[1]).eq(8);
@@ -3165,9 +3165,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(i,j,k)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3518,7 +3518,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("i");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("j");
@@ -3526,7 +3526,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("i");
       expect(stateVariables["/_point1"].stateValues.x2).eq("j");
       expect(stateVariables["/_point1"].stateValues.x3).eq("k");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("i");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("j");
@@ -3534,7 +3534,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("i");
       expect(stateVariables["/point2"].stateValues.x2).eq("j");
       expect(stateVariables["/point2"].stateValues.x3).eq("k");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("i");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("j");
@@ -3576,9 +3576,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(l,m,n)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3929,7 +3929,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("l");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("m");
@@ -3937,7 +3937,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("l");
       expect(stateVariables["/_point1"].stateValues.x2).eq("m");
       expect(stateVariables["/_point1"].stateValues.x3).eq("n");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("l");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("m");
@@ -3945,7 +3945,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("l");
       expect(stateVariables["/point2"].stateValues.x2).eq("m");
       expect(stateVariables["/point2"].stateValues.x3).eq("n");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("l");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("m");
@@ -3995,9 +3995,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(r,s,t)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -4348,7 +4348,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("r");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("s");
@@ -4356,7 +4356,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("r");
       expect(stateVariables["/_point1"].stateValues.x2).eq("s");
       expect(stateVariables["/_point1"].stateValues.x3).eq("t");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("r");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("s");
@@ -4364,7 +4364,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("r");
       expect(stateVariables["/point2"].stateValues.x2).eq("s");
       expect(stateVariables["/point2"].stateValues.x3).eq("t");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("r");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("s");
@@ -4414,9 +4414,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(f,g,h)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -4766,7 +4766,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("f");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("g");
@@ -4774,7 +4774,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("f");
       expect(stateVariables["/_point1"].stateValues.x2).eq("g");
       expect(stateVariables["/_point1"].stateValues.x3).eq("h");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("f");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("g");
@@ -4782,7 +4782,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("f");
       expect(stateVariables["/point2"].stateValues.x2).eq("g");
       expect(stateVariables["/point2"].stateValues.x3).eq("h");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("f");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("g");
@@ -4832,9 +4832,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(x,y,z)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -5185,7 +5185,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("x");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("y");
@@ -5193,7 +5193,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("x");
       expect(stateVariables["/_point1"].stateValues.x2).eq("y");
       expect(stateVariables["/_point1"].stateValues.x3).eq("z");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("x");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("y");
@@ -5201,7 +5201,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("x");
       expect(stateVariables["/point2"].stateValues.x2).eq("y");
       expect(stateVariables["/point2"].stateValues.x3).eq("z");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("x");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("y");
@@ -5243,9 +5243,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(u,v,z)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -5596,7 +5596,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("u");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("v");
@@ -5604,7 +5604,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("u");
       expect(stateVariables["/_point1"].stateValues.x2).eq("v");
       expect(stateVariables["/_point1"].stateValues.x3).eq("z");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("u");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("v");
@@ -5612,7 +5612,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("u");
       expect(stateVariables["/point2"].stateValues.x2).eq("v");
       expect(stateVariables["/point2"].stateValues.x3).eq("z");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("u");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("v");
@@ -5654,9 +5654,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(s,t,z)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -6007,7 +6007,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("s");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("t");
@@ -6015,7 +6015,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("s");
       expect(stateVariables["/_point1"].stateValues.x2).eq("t");
       expect(stateVariables["/_point1"].stateValues.x3).eq("z");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("s");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("t");
@@ -6023,7 +6023,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("s");
       expect(stateVariables["/point2"].stateValues.x2).eq("t");
       expect(stateVariables["/point2"].stateValues.x3).eq("z");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("s");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("t");
@@ -6065,9 +6065,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(q,r,z)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "3");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "3");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "3");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -6417,7 +6417,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("r");
@@ -6425,7 +6425,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point1"].stateValues.x1).eq("q");
       expect(stateVariables["/_point1"].stateValues.x2).eq("r");
       expect(stateVariables["/_point1"].stateValues.x3).eq("z");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("r");
@@ -6433,7 +6433,7 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/point2"].stateValues.x1).eq("q");
       expect(stateVariables["/point2"].stateValues.x2).eq("r");
       expect(stateVariables["/point2"].stateValues.x3).eq("z");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("q");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("r");
@@ -6472,9 +6472,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(p,q)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "2");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -6742,21 +6742,21 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("q");
       expect(stateVariables["/_point1"].stateValues.x1).eq("p");
       expect(stateVariables["/_point1"].stateValues.x2).eq("q");
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("q");
       expect(stateVariables["/point2"].stateValues.x1).eq("p");
       expect(stateVariables["/point2"].stateValues.x2).eq("q");
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("q");
@@ -6794,9 +6794,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(a,b)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "2");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -7064,21 +7064,21 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("b");
       expect(stateVariables["/_point1"].stateValues.x1).eq("a");
       expect(stateVariables["/_point1"].stateValues.x2).eq("b");
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("b");
       expect(stateVariables["/point2"].stateValues.x1).eq("a");
       expect(stateVariables["/point2"].stateValues.x2).eq("b");
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("b");
@@ -7116,9 +7116,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(d,e)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "2");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -7386,21 +7386,21 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("d");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("e");
       expect(stateVariables["/_point1"].stateValues.x1).eq("d");
       expect(stateVariables["/_point1"].stateValues.x2).eq("e");
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("d");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("e");
       expect(stateVariables["/point2"].stateValues.x1).eq("d");
       expect(stateVariables["/point2"].stateValues.x2).eq("e");
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("d");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("e");
@@ -7438,9 +7438,9 @@ describe("Point Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(g,h)");
       });
-    cy.get(cesc("#\\/nDimensions1")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions2")).should("have.text", "2");
-    cy.get(cesc("#\\/nDimensions3")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions1")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions2")).should("have.text", "2");
+    cy.get(cesc("#\\/numDimensions3")).should("have.text", "2");
     cy.get(cesc("#\\/point1x1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -7708,21 +7708,21 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("g");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("h");
       expect(stateVariables["/_point1"].stateValues.x1).eq("g");
       expect(stateVariables["/_point1"].stateValues.x2).eq("h");
       expect(stateVariables["/_point1"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("g");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("h");
       expect(stateVariables["/point2"].stateValues.x1).eq("g");
       expect(stateVariables["/point2"].stateValues.x2).eq("h");
       expect(stateVariables["/point2"].stateValues.x3).eq(undefined);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("g");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("h");
@@ -7781,13 +7781,13 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("＿");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("＿");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("＿");
     });
@@ -7824,15 +7824,15 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("b");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("b");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("a");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("b");
@@ -7871,13 +7871,13 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(1);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("q");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("q");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(1);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(1);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(1);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("q");
     });
@@ -7917,7 +7917,7 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(3);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/_point1"].stateValues.xs[1]).eqls([
@@ -7926,12 +7926,12 @@ describe("Point Tag Tests", function () {
         "v",
       ]);
       expect(stateVariables["/_point1"].stateValues.xs[2]).eqls(["^", "w", 2]);
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point2"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/point2"].stateValues.xs[1]).eqls(["/", "u", "v"]);
       expect(stateVariables["/point2"].stateValues.xs[2]).eqls(["^", "w", 2]);
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(3);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(3);
       expect(stateVariables["/point3"].stateValues.xs[0]).eqls(["*", 2, "x"]);
       expect(stateVariables["/point3"].stateValues.xs[1]).eqls(["/", "u", "v"]);
@@ -7971,15 +7971,15 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/_point1"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/_point1"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs.length).eq(2);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq("q");
-      expect(stateVariables["/point2"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point2"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point2"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point2"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/point2"].stateValues.xs[1]).eq("q");
-      expect(stateVariables["/point3"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/point3"].stateValues.numDimensions).eq(2);
       expect(stateVariables["/point3"].stateValues.xs.length).eq(2);
       expect(stateVariables["/point3"].stateValues.xs[0]).eq("p");
       expect(stateVariables["/point3"].stateValues.xs[1]).eq("q");
@@ -8638,17 +8638,17 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     
-    <point displayDigits="2" name="P">(32.252609, 0.0672854, 5)</point>
-    <point displayDecimals="2" name="Q" x="32.252609" y="0.0672854" z="5" />
+    <point displayDigits="2" ignoreDisplayDecimals name="P">(32.252609, 0.0672854, 5)</point>
+    <point displayDecimals="2" ignoreDisplayDigits name="Q" x="32.252609" y="0.0672854" z="5" />
     <point padZeros name="R" x="32.252609" y="0.0672854" z="5" />
 
     <copy prop="coords" target="P" assignNames="Pcoords" />
     <copy prop="coords" target="Q" assignNames="Qcoords" />
     <copy prop="coords" target="R" assignNames="Rcoords" />
 
-    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" />
-    <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" />
-    <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" />
+    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" ignoreDisplayDigits />
+    <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" ignoreDisplayDecimals />
+    <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" ignoreDisplayDecimals />
 
     <copy prop="coords" target="P" assignNames="PcoordsPad" padZeros />
     <copy prop="coords" target="Q" assignNames="QcoordsPad" padZeros />
@@ -8663,9 +8663,9 @@ describe("Point Tag Tests", function () {
     <math name="Qmath">$Q</math>
     <math name="Rmath">$R</math>
 
-    <math name="PmathDec4" displayDecimals="4">$P</math>
-    <math name="QmathDig4" displayDigits="4">$Q</math>
-    <math name="RmathDig2" displayDigits="2">$R</math>
+    <math name="PmathDec4" displayDecimals="4" ignoreDisplayDigits>$P</math>
+    <math name="QmathDig4" displayDigits="4" ignoreDisplayDecimals>$Q</math>
+    <math name="RmathDig2" displayDigits="2" ignoreDisplayDecimals>$R</math>
 
     <number name="Px1number">$(P.x)</number>
     <number name="Px2number"><copy prop="y" target="P" /></number>
@@ -8698,7 +8698,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/Pcoords") + " .mjx-mrow")
       .eq(0)
@@ -8716,7 +8716,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/PcoordsDec4") + " .mjx-mrow")
       .eq(0)
@@ -8752,7 +8752,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.252609,0.0672854,5)");
+        expect(text).eq("(32.25,0.0673,5)");
       });
     cy.get(cesc("#\\/Px1") + " .mjx-mrow")
       .eq(0)
@@ -8788,7 +8788,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("5.000000000");
+        expect(text).eq("5.00");
       });
     cy.get(cesc("#\\/Pmath") + " .mjx-mrow")
       .eq(0)
@@ -8806,7 +8806,7 @@ describe("Point Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("(32.25260900,0.06728540000,5.000000000)");
+        expect(text).eq("(32.25,0.0673,5.00)");
       });
     cy.get(cesc("#\\/PmathDec4") + " .mjx-mrow")
       .eq(0)
@@ -8839,11 +8839,11 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p><point name="p1">(34.245023482352345, 245.23823402358234234)</point></p>
-    <p><point name="p1Dig4" copySource="p1" displayDigits="4" /></p>
-    <p><point name="p1Dec6" copySource="p1" displayDecimals="5" /></p>
-    <p><point name="p1Dig4a" copySource="p1Dec6" displayDigits="4" /></p>
-    <p><point name="p1Dec6a" copySource="p1Dig4" displayDecimals="5" /></p>
+    <p><point name="p1" displayDigits="10">(34.245023482352345, 245.23823402358234234)</point></p>
+    <p><point name="p1Dig4" copySource="p1" displayDigits="4" ignoreDisplayDecimals /></p>
+    <p><point name="p1Dec6" copySource="p1" displayDecimals="5" ignoreDisplayDigits /></p>
+    <p><point name="p1Dig4a" copySource="p1Dec6" displayDigits="4" ignoreDisplayDecimals /></p>
+    <p><point name="p1Dec6a" copySource="p1Dig4" displayDecimals="5" ignoreDisplayDigits /></p>
     `,
         },
         "*",
@@ -8878,19 +8878,19 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <point name="P" displayDecimals="1" padZeros>
+      <point name="P" displayDecimals="1" ignoreDisplayDigits padZeros>
         (1,2)
         <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
       </point>
-      <point name="Q" displayDigits="3" padZeros>
+      <point name="Q" displayDigits="3" ignoreDisplayDecimals padZeros>
         <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
         (3,4)
       </point>
-      <point name="R" displayDecimals="2">
+      <point name="R" displayDecimals="2" ignoreDisplayDigits>
         <label><copy prop="label" target="P"/> and <copy prop="coords" target="R" /></label>
         (5,6)
       </point>
-      <point name="S" displayDigits="2">
+      <point name="S" displayDigits="2" ignoreDisplayDecimals>
         <label><copy prop="label" target="Q"/> and <copy prop="coords" target="S" /></label>
         (7,8)
       </point>
@@ -9042,13 +9042,13 @@ describe("Point Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <point name="P" displayDecimals="1" padZeros>
+      <point name="P" displayDecimals="1" ignoreDisplayDigits padZeros>
         (1,2)
         <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
       </point>
     </graph>
     <graph>
-      <point name="Q" displayDigits="3" padZeros copySource="P">
+      <point name="Q" displayDigits="3" ignoreDisplayDecimals padZeros copySource="P">
         <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
       </point>
     </graph>
@@ -9643,15 +9643,87 @@ describe("Point Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/oneDa"].stateValues.nDimensions).eq(1);
-      expect(stateVariables["/oneDb"].stateValues.nDimensions).eq(1);
-      expect(stateVariables["/oneDc"].stateValues.nDimensions).eq(1);
-      expect(stateVariables["/twoD"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/oneDa"].stateValues.numDimensions).eq(1);
+      expect(stateVariables["/oneDb"].stateValues.numDimensions).eq(1);
+      expect(stateVariables["/oneDc"].stateValues.numDimensions).eq(1);
+      expect(stateVariables["/twoD"].stateValues.numDimensions).eq(2);
 
       expect(stateVariables["/oneDa"].stateValues.xs).eqls([1]);
       expect(stateVariables["/oneDb"].stateValues.xs).eqls([1]);
       expect(stateVariables["/oneDc"].stateValues.xs).eqls([1]);
       expect(stateVariables["/twoD"].stateValues.xs).eqls([1, 0]);
+    });
+  });
+
+  it("points from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" fixed>(6,3)</math>
+    <graph>
+      <point name="P">(3,4) + 2(1,-1)</point>
+      <point name="Q">2$m - 3$P</point>
+    </graph>
+
+    <math copySource="P" name="P2" />
+    <math copySource="Q" name="Q2" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,0)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/P"].stateValues.xs).eqls([5, 2]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([-3, 0]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 4 },
+      });
+    });
+
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(1,4)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(9,−6)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([1, 4]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([9, -6]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: -9, y: 9 },
+      });
+    });
+
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(7,−1)");
+    cy.get(cesc2("#/Q2") + " .mjx-mrow").should("contain.text", "(−9,9)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([7, -1]);
+      expect(stateVariables["/Q"].stateValues.xs).eqls([-9, 9]);
     });
   });
 
@@ -10130,5 +10202,58 @@ describe("Point Tag Tests", function () {
     cy.log("can still change fixed");
     cy.get(cesc2("#/fx")).click();
     cy.get(cesc2("#/fx2")).should("have.text", "false");
+  });
+
+  it("hideOffGraphIndicator", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <point name="P1">(12,3)</point>
+      <point name="Q1" hideOffGraphIndicator>(-2,14)</point>
+      <point name="R1" hideOffGraphIndicator="false">(6,-14)</point>
+    </graph>
+
+    <boolean copySource="P1.hideOffGraphIndicator" name="P1h" />
+    <boolean copySource="Q1.hideOffGraphIndicator" name="Q1h" />
+    <boolean copySource="R1.hideOffGraphIndicator" name="R1h" />
+
+    <graph hideOffGraphIndicators>
+      <point name="P2" copySource="P1" />
+      <point name="Q2" copySource="Q1" />
+      <point name="R2" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P2.hideOffGraphIndicator" name="P2h" />
+    <boolean copySource="Q2.hideOffGraphIndicator" name="Q2h" />
+    <boolean copySource="R2.hideOffGraphIndicator" name="R2h" />
+
+    <graph hideOffGraphIndicators="false" >
+      <point name="P3" copySource="P1" />
+      <point name="Q3" copySource="Q1" />
+      <point name="R3" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P3.hideOffGraphIndicator" name="P3h" />
+    <boolean copySource="Q3.hideOffGraphIndicator" name="Q3h" />
+    <boolean copySource="R3.hideOffGraphIndicator" name="R3h" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/P1h")).should("have.text", "false");
+    cy.get(cesc2("#/Q1h")).should("have.text", "true");
+    cy.get(cesc2("#/R1h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P2h")).should("have.text", "true");
+    cy.get(cesc2("#/Q2h")).should("have.text", "true");
+    cy.get(cesc2("#/R2h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P3h")).should("have.text", "false");
+    cy.get(cesc2("#/Q3h")).should("have.text", "true");
+    cy.get(cesc2("#/R3h")).should("have.text", "false");
   });
 });

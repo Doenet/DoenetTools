@@ -2,6 +2,11 @@ import { roundForDisplay } from "../utils/math";
 import BaseComponent from "./abstract/BaseComponent";
 import me from "math-expressions";
 import { returnLabelStateVariableDefinitions } from "../utils/label";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Slider extends BaseComponent {
   constructor(args) {
@@ -95,24 +100,7 @@ export default class Slider extends BaseComponent {
       forRenderer: true,
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.bindValueTo = {
       createComponentOfType: "_componentWithSelectableType",
@@ -145,69 +133,10 @@ export default class Slider extends BaseComponent {
 
     Object.assign(stateVariableDefinitions, labelDefinitions);
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.items = {
       forRenderer: true,
@@ -279,7 +208,7 @@ export default class Slider extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.nItems = {
+    stateVariableDefinitions.numItems = {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
@@ -308,23 +237,23 @@ export default class Slider extends BaseComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let nItems = dependencyValues.items.length;
+        let numItems = dependencyValues.items.length;
 
-        if (nItems === 0 && dependencyValues.type === "number") {
+        if (numItems === 0 && dependencyValues.type === "number") {
           // Note: add 1E-10 before taking floor
           // to make sure round-off error doesn't reduce number of items
-          nItems =
+          numItems =
             Math.floor(
               (dependencyValues.to - dependencyValues.from) /
                 dependencyValues.step +
                 1e-10,
             ) + 1;
-          if (!(nItems >= 0 && Number.isFinite(nItems))) {
-            nItems = 0;
+          if (!(numItems >= 0 && Number.isFinite(numItems))) {
+            numItems = 0;
           }
         }
 
-        return { setValue: { nItems } };
+        return { setValue: { numItems } };
       },
     };
 
@@ -370,9 +299,9 @@ export default class Slider extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "from",
         },
-        nItems: {
+        numItems: {
           dependencyType: "stateVariable",
-          variableName: "nItems",
+          variableName: "numItems",
         },
         step: {
           dependencyType: "stateVariable",
@@ -391,7 +320,7 @@ export default class Slider extends BaseComponent {
         } else if (dependencyValues.type === "number") {
           lastItem =
             dependencyValues.from +
-            (dependencyValues.nItems - 1) * dependencyValues.step;
+            (dependencyValues.numItems - 1) * dependencyValues.step;
         } else {
           lastItem = null; // text with no children
         }
@@ -507,9 +436,9 @@ export default class Slider extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "step",
         },
-        nItems: {
+        numItems: {
           dependencyType: "stateVariable",
-          variableName: "nItems",
+          variableName: "numItems",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -534,7 +463,7 @@ export default class Slider extends BaseComponent {
             return { success: false };
           }
 
-          if (ind >= 0 && ind < dependencyValues.nItems) {
+          if (ind >= 0 && ind < dependencyValues.numItems) {
             return {
               success: true,
               instructions: [
@@ -573,6 +502,8 @@ export default class Slider extends BaseComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         type: {
@@ -635,13 +566,12 @@ export default class Slider extends BaseComponent {
           variableName: "displaySmallAsZero",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
         let rounded = roundForDisplay({
           value: dependencyValues.value,
           dependencyValues,
-          usedDefault,
         });
 
         return {
@@ -777,7 +707,7 @@ function findIndexOfClosestValidValue({
   items,
   from,
   step,
-  nItems,
+  numItems,
 }) {
   let value = preliminaryValue;
 
@@ -790,10 +720,10 @@ function findIndexOfClosestValidValue({
     let ind = Math.round((value - from) / step);
 
     if (ind >= 0) {
-      if (ind < nItems) {
+      if (ind < numItems) {
         return ind;
       } else {
-        return nItems - 1;
+        return numItems - 1;
       }
     } else {
       return 0;
@@ -869,7 +799,7 @@ async function invertSliderValue({ desiredStateVariableValues, stateValues }) {
     items: await stateValues.items,
     from: await stateValues.from,
     step: await stateValues.step,
-    nItems: await stateValues.nItems,
+    numItems: await stateValues.numItems,
   });
 
   // Text value requested didn't match so can't update

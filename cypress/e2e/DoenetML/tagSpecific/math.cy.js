@@ -109,7 +109,7 @@ describe("Math Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy source="_math1" sourceAttributesToIgnore="" /> + 5</math>
+    <math>3<copy source="_math1" /> + 5</math>
     `,
         },
         "*",
@@ -426,14 +426,14 @@ describe("Math Tag Tests", function () {
     });
   });
 
-  it("math displayed rounded to 10 significant digits by default", () => {
+  it("math displayed rounded to 3 significant digits by default", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><math>1.000000000000001</math></p>
-  <p><math>0.30000000000000004 x + 4pi</math></p>
+  <p><math>1.001</math></p>
+  <p><math>0.3004 x + 4pi</math></p>
   `,
         },
         "*",
@@ -461,10 +461,10 @@ describe("Math Tag Tests", function () {
     cy.log("Test internal values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_math1"].stateValues.value).eq(1.000000000000001);
+      expect(stateVariables["/_math1"].stateValues.value).eq(1.001);
       expect(stateVariables["/_math2"].stateValues.value).eqls([
         "+",
-        ["*", 0.30000000000000004, "x"],
+        ["*", 0.3004, "x"],
         ["*", 4, "pi"],
       ]);
     });
@@ -917,14 +917,14 @@ describe("Math Tag Tests", function () {
     });
   });
 
-  it("display small numbers as zero", () => {
+  it("display small numbers as zero by default", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
   <p><text>a</text></p>
+  <p><math parseScientificNotation displaysmallaszero="false">2x + (1E-15)y</math></p>
   <p><math parseScientificNotation>2x + (1E-15)y</math></p>
-  <p><math parseScientificNotation displaysmallaszero>2x + (1E-15)y</math></p>
   <p><math parseScientificNotation displaysmallaszero>2x + (1E-13)y</math></p>
   <p><math parseScientificNotation displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `,
@@ -948,7 +948,7 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("2x");
+        expect(text.trim()).equal("2x+0y");
       });
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -962,7 +962,7 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("2x");
+        expect(text.trim()).equal("2x+0y");
       });
 
     cy.log("Test internal values");
@@ -1009,29 +1009,29 @@ describe("Math Tag Tests", function () {
   <p><text>a</text></p>
   <p><math name="expr1">621802.3520303639164826281</math></p>
   <p><math name="expr2">31.3835205397397634 x + 4pi</math></p>
-  <p><math name="expr1Dig5" displayDigits="5">621802.3520303639164826281</math></p>
-  <p><math name="expr2Dig5" displayDigits="5">31.3835205397397634 x + 4pi</math></p>
-  <p><math name="expr1Dec5" displayDecimals="5">621802.3520303639164826281</math></p>
-  <p><math name="expr2Dec5" displayDecimals="5">31.3835205397397634 x + 4pi</math></p>
-  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5" assignNames="expr1Dig5b" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5" assignNames="expr2Dig5b" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5" assignNames="expr1Dec5b" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5" assignNames="expr2Dec5b" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5a" assignNames="expr1Dig5c" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5a" assignNames="expr2Dig5c" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5a" assignNames="expr1Dec5c" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5a" assignNames="expr2Dec5c" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5b" assignNames="expr1Dig5d" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5b" assignNames="expr2Dig5d" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5b" assignNames="expr1Dec5d" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5b" assignNames="expr2Dec5d" displayDecimals="5" /></p>
+  <p><math name="expr1Dig5" displayDigits="5" ignoreDisplayDecimals>621802.3520303639164826281</math></p>
+  <p><math name="expr2Dig5" displayDigits="5" ignoreDisplayDecimals>31.3835205397397634 x + 4pi</math></p>
+  <p><math name="expr1Dec5" displayDecimals="5" ignoreDisplayDigits>621802.3520303639164826281</math></p>
+  <p><math name="expr2Dec5" displayDecimals="5" ignoreDisplayDigits>31.3835205397397634 x + 4pi</math></p>
+  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr1Dec5" assignNames="expr1Dig5b" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr2Dec5" assignNames="expr2Dig5b" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr1Dig5" assignNames="expr1Dec5b" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr2Dig5" assignNames="expr2Dec5b" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr1Dec5a" assignNames="expr1Dig5c" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr2Dec5a" assignNames="expr2Dig5c" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr1Dig5a" assignNames="expr1Dec5c" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr2Dig5a" assignNames="expr2Dec5c" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr1Dec5b" assignNames="expr1Dig5d" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr2Dec5b" assignNames="expr2Dig5d" displayDigits="5" ignoreDisplayDecimals /></p>
+  <p><copy source="expr1Dig5b" assignNames="expr1Dec5d" displayDecimals="5" ignoreDisplayDigits /></p>
+  <p><copy source="expr2Dig5b" assignNames="expr2Dec5d" displayDecimals="5" ignoreDisplayDigits /></p>
 
-  <p><copy source="expr1" assignNames="expr1Dig5e" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy source="expr2" assignNames="expr2Dig5e" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="expr1" assignNames="expr1Dig5Dec1" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="expr2" assignNames="expr2Dig5Dec1" displayDigits="5" displayDecimals="1" /></p>
   `,
         },
         "*",
@@ -1046,14 +1046,14 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("621802.352");
+        expect(text.trim()).equal("621802.35");
       });
     cy.get(cesc("#\\/expr2"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("31.38352054x+4π");
+        expect(text.trim()).equal("31.38x+4π");
       });
     cy.get(cesc("#\\/expr1Dig5"))
       .find(".mjx-mrow")
@@ -1199,14 +1199,14 @@ describe("Math Tag Tests", function () {
         expect(text.trim()).equal("31.38352x+4π");
       });
 
-    cy.get(cesc("#\\/expr1Dig5e"))
+    cy.get(cesc("#\\/expr1Dig5Dec1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("621800");
+        expect(text.trim()).equal("621802.4");
       });
-    cy.get(cesc("#\\/expr2Dig5e"))
+    cy.get(cesc("#\\/expr2Dig5Dec1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1303,21 +1303,21 @@ describe("Math Tag Tests", function () {
         ["*", 31.383520539739763, "x"],
         ["*", 4, "pi"],
       ]);
-      expect(stateVariables["/expr1Dig5e"].stateValues.value).eq(
+      expect(stateVariables["/expr1Dig5Dec1"].stateValues.value).eq(
         621802.3520303639,
       );
-      expect(stateVariables["/expr2Dig5e"].stateValues.value).eqls([
+      expect(stateVariables["/expr2Dig5Dec1"].stateValues.value).eqls([
         "+",
         ["*", 31.383520539739763, "x"],
         ["*", 4, "pi"],
       ]);
 
       expect(stateVariables["/expr1"].stateValues.valueForDisplay).eq(
-        621802.352,
+        621802.35,
       );
       expect(stateVariables["/expr2"].stateValues.valueForDisplay).eqls([
         "+",
-        ["*", 31.38352054, "x"],
+        ["*", 31.38, "x"],
         ["*", 4, "pi"],
       ]);
       expect(stateVariables["/expr1Dig5"].stateValues.valueForDisplay).eq(
@@ -1400,14 +1400,377 @@ describe("Math Tag Tests", function () {
         ["*", 31.38352, "x"],
         ["*", 4, "pi"],
       ]);
-      expect(stateVariables["/expr1Dig5e"].stateValues.valueForDisplay).eq(
-        621800,
+      expect(stateVariables["/expr1Dig5Dec1"].stateValues.valueForDisplay).eq(
+        621802.4,
       );
-      expect(stateVariables["/expr2Dig5e"].stateValues.valueForDisplay).eqls([
+      expect(stateVariables["/expr2Dig5Dec1"].stateValues.valueForDisplay).eqls(
+        ["+", ["*", 31.384, "x"], ["*", 4, "pi"]],
+      );
+    });
+  });
+
+  it("display digits and decimals 2", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <p><text>a</text></p>
+  <p><math name="expr1">621802.3520303639164826281</math></p>
+  <p><math name="expr2">31.3835205397397634 x + 4pi</math></p>
+  <p><math name="expr1Dig5" displayDigits="5">621802.3520303639164826281</math></p>
+  <p><math name="expr2Dig5" displayDigits="5">31.3835205397397634 x + 4pi</math></p>
+  <p><math name="expr1Dec5" displayDecimals="5">621802.3520303639164826281</math></p>
+  <p><math name="expr2Dec5" displayDecimals="5">31.3835205397397634 x + 4pi</math></p>
+  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" /></p>
+  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" /></p>
+  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" /></p>
+  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" /></p>
+  <p><copy source="expr1Dec5" assignNames="expr1Dig8Dec5" displayDigits="8" /></p>
+  <p><copy source="expr2Dec5" assignNames="expr2Dig8Dec5" displayDigits="8" /></p>
+  <p><copy source="expr1Dig5" assignNames="expr1Dec8Dig5" displayDecimals="8" /></p>
+  <p><copy source="expr2Dig5" assignNames="expr2Dec8Dig5" displayDecimals="8" /></p>
+  <p><copy source="expr1Dec5a" assignNames="expr1Dig8Dec5a" displayDigits="8" /></p>
+  <p><copy source="expr2Dec5a" assignNames="expr2Dig8Dec5a" displayDigits="8" /></p>
+  <p><copy source="expr1Dig5a" assignNames="expr1Dec8Dig5a" displayDecimals="8" /></p>
+  <p><copy source="expr2Dig5a" assignNames="expr2Dec8Dig5a" displayDecimals="8" /></p>
+  <p><copy source="expr1Dec8Dig5" assignNames="expr1Dig3Dec8" displayDigits="3" /></p>
+  <p><copy source="expr2Dec8Dig5" assignNames="expr2Dig3Dec8" displayDigits="3" /></p>
+  <p><copy source="expr1Dig8Dec5" assignNames="expr1Dec3Dig8" displayDecimals="3" /></p>
+  <p><copy source="expr2Dig8Dec5" assignNames="expr2Dec3Dig8" displayDecimals="3" /></p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.log("Test value displayed in browser");
+    cy.get(cesc("#\\/expr1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35");
+      });
+    cy.get(cesc("#\\/expr2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dig5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35");
+      });
+    cy.get(cesc("#\\/expr2Dig5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.384x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dec5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203");
+      });
+    cy.get(cesc("#\\/expr2Dec5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38352x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dig5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35");
+      });
+    cy.get(cesc("#\\/expr2Dig5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.384x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dec5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203");
+      });
+    cy.get(cesc("#\\/expr2Dec5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38352x+4π");
+      });
+
+    cy.get(cesc("#\\/expr1Dig8Dec5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203");
+      });
+    cy.get(cesc("#\\/expr2Dig8Dec5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.383521x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dec8Dig5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203036");
+      });
+    cy.get(cesc("#\\/expr2Dec8Dig5"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38352054x+4π");
+      });
+
+    cy.get(cesc("#\\/expr1Dig8Dec5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203");
+      });
+    cy.get(cesc("#\\/expr2Dig8Dec5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.383521x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dec8Dig5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203036");
+      });
+    cy.get(cesc("#\\/expr2Dec8Dig5a"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38352054x+4π");
+      });
+
+    cy.get(cesc("#\\/expr1Dig3Dec8"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.35203036");
+      });
+    cy.get(cesc("#\\/expr2Dig3Dec8"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.38352054x+4π");
+      });
+    cy.get(cesc("#\\/expr1Dec3Dig8"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("621802.352");
+      });
+    cy.get(cesc("#\\/expr2Dec3Dig8"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("31.383521x+4π");
+      });
+
+    cy.log("Test internal values");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/expr1"].stateValues.value).eq(621802.3520303639);
+      expect(stateVariables["/expr2"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig5"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dig5"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec5"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dec5"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig5a"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dig5a"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec5a"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dec5a"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig8Dec5"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dig8Dec5"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec8Dig5"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dec8Dig5"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig8Dec5a"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dig8Dec5a"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec8Dig5a"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dec8Dig5a"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig3Dec8"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dig3Dec8"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec3Dig8"].stateValues.value).eq(
+        621802.3520303639,
+      );
+      expect(stateVariables["/expr2Dec3Dig8"].stateValues.value).eqls([
+        "+",
+        ["*", 31.383520539739763, "x"],
+        ["*", 4, "pi"],
+      ]);
+
+      expect(stateVariables["/expr1"].stateValues.valueForDisplay).eq(
+        621802.35,
+      );
+      expect(stateVariables["/expr2"].stateValues.valueForDisplay).eqls([
+        "+",
+        ["*", 31.38, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig5"].stateValues.valueForDisplay).eq(
+        621802.35,
+      );
+      expect(stateVariables["/expr2Dig5"].stateValues.valueForDisplay).eqls([
         "+",
         ["*", 31.384, "x"],
         ["*", 4, "pi"],
       ]);
+      expect(stateVariables["/expr1Dec5"].stateValues.valueForDisplay).eq(
+        621802.35203,
+      );
+      expect(stateVariables["/expr2Dec5"].stateValues.valueForDisplay).eqls([
+        "+",
+        ["*", 31.38352, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig5a"].stateValues.valueForDisplay).eq(
+        621802.35,
+      );
+      expect(stateVariables["/expr2Dig5a"].stateValues.valueForDisplay).eqls([
+        "+",
+        ["*", 31.384, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dec5a"].stateValues.valueForDisplay).eq(
+        621802.35203,
+      );
+      expect(stateVariables["/expr2Dec5a"].stateValues.valueForDisplay).eqls([
+        "+",
+        ["*", 31.38352, "x"],
+        ["*", 4, "pi"],
+      ]);
+      expect(stateVariables["/expr1Dig8Dec5"].stateValues.valueForDisplay).eq(
+        621802.35203,
+      );
+      expect(stateVariables["/expr2Dig8Dec5"].stateValues.valueForDisplay).eqls(
+        ["+", ["*", 31.383521, "x"], ["*", 4, "pi"]],
+      );
+      expect(stateVariables["/expr1Dec8Dig5"].stateValues.valueForDisplay).eq(
+        621802.35203036,
+      );
+      expect(stateVariables["/expr2Dec8Dig5"].stateValues.valueForDisplay).eqls(
+        ["+", ["*", 31.38352054, "x"], ["*", 4, "pi"]],
+      );
+      expect(stateVariables["/expr1Dig8Dec5a"].stateValues.valueForDisplay).eq(
+        621802.35203,
+      );
+      expect(
+        stateVariables["/expr2Dig8Dec5a"].stateValues.valueForDisplay,
+      ).eqls(["+", ["*", 31.383521, "x"], ["*", 4, "pi"]]);
+      expect(stateVariables["/expr1Dec8Dig5a"].stateValues.valueForDisplay).eq(
+        621802.35203036,
+      );
+      expect(
+        stateVariables["/expr2Dec8Dig5a"].stateValues.valueForDisplay,
+      ).eqls(["+", ["*", 31.38352054, "x"], ["*", 4, "pi"]]);
+      expect(stateVariables["/expr1Dig3Dec8"].stateValues.valueForDisplay).eq(
+        621802.35203036,
+      );
+      expect(stateVariables["/expr2Dig3Dec8"].stateValues.valueForDisplay).eqls(
+        ["+", ["*", 31.38352054, "x"], ["*", 4, "pi"]],
+      );
+      expect(stateVariables["/expr1Dec3Dig8"].stateValues.valueForDisplay).eq(
+        621802.352,
+      );
+      expect(stateVariables["/expr2Dec3Dig8"].stateValues.valueForDisplay).eqls(
+        ["+", ["*", 31.383521, "x"], ["*", 4, "pi"]],
+      );
     });
   });
 
@@ -2165,8 +2528,8 @@ describe("Math Tag Tests", function () {
       <p>Number: <math name="n">35203423.02352343201</math></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy source="n" displayDigits='$ndigits' assignNames="na" /></p>
-      <p><copy source="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+      <p><copy source="n" displayDigits='$ndigits' displayDecimals='$ndecimals' assignNames="na" /></p>
+      <p><copy prop="value" source="ndigits" assignNames="ndigits2" /></p>
       <p><copy prop="value" source="ndecimals" assignNames="ndecimals2" /></p>
     `,
         },
@@ -2183,14 +2546,8 @@ describe("Math Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("35203423.02");
       });
+
     cy.get(cesc("#\\/na"))
-      .find(".mjx-mrow")
-      .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("35200000");
-      });
-    cy.get(cesc("#\\/nb"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2198,11 +2555,7 @@ describe("Math Tag Tests", function () {
         expect(text.trim()).equal("35203423.024");
       });
 
-    cy.log("higher precision");
-    cy.get(cesc("#\\/ndigits") + " textarea").type(
-      "{end}{backspace}12{enter}",
-      { force: true },
-    );
+    cy.log("higher decimals");
     cy.get(cesc("#\\/ndecimals") + " textarea").type(
       "{end}{backspace}5{enter}",
       { force: true },
@@ -2213,21 +2566,52 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("35203423.0235");
+        expect(text.trim()).equal("35203423.02352");
       });
-    cy.get(cesc("#\\/nb"))
+
+    cy.log("lower decimals");
+    cy.get(cesc("#\\/ndecimals") + " textarea").type(
+      "{end}{backspace}-3{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/ndecimals2")).should("contain.text", "−3");
+    cy.get(cesc("#\\/na"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("35203423.02352");
+        expect(text.trim()).equal("35203000");
       });
 
-    cy.log("invalid precision means default rounding of 10 digits");
+    cy.log("increase digits");
+    cy.get(cesc("#\\/ndigits") + " textarea").type(
+      "{end}{backspace}12{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/ndigits2")).should("contain.text", "12");
+    cy.get(cesc("#\\/na"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("35203423.0235");
+      });
+
+    cy.log("invalid ndigits, falls back to decimals");
     cy.get(cesc("#\\/ndigits") + " textarea").type(
       "{end}{backspace}{backspace}x{enter}",
       { force: true },
     );
+    cy.get(cesc("#\\/ndigits2")).should("contain.text", "x");
+    cy.get(cesc("#\\/na"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("35203000");
+      });
+
+    cy.log("invalid both, no rounding");
     cy.get(cesc("#\\/ndecimals") + " textarea").type(
       "{end}{backspace}{backspace}y{enter}",
       { force: true },
@@ -2238,25 +2622,15 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("35203423.02");
-      });
-    cy.get(cesc("#\\/nb"))
-      .find(".mjx-mrow")
-      .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text).eq("35203423.02");
+        expect(text).eq("35203423.023523435");
       });
 
-    cy.log("low precision");
-    cy.get(cesc("#\\/ndigits") + " textarea").type("{end}{backspace}1{enter}", {
-      force: true,
-    });
-    cy.get(cesc("#\\/ndecimals") + " textarea").type(
-      "{end}{backspace}1{enter}",
+    cy.log("only invalid ndecimals, falls back to digits");
+    cy.get(cesc("#\\/ndigits") + " textarea").type(
+      "{end}{backspace}{backspace}1{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/ndecimals2")).should("contain.text", "1");
+
     cy.get(cesc("#\\/na"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2264,37 +2638,52 @@ describe("Math Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("40000000");
       });
-    cy.get(cesc("#\\/nb"))
-      .find(".mjx-mrow")
-      .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("35203423");
-      });
 
-    cy.log("negative precision, default rounding from negative displayDigits");
-    cy.get(cesc("#\\/ndigits") + " textarea").type(
-      "{end}{backspace}-3{enter}",
-      { force: true },
-    );
+    cy.log("negative decimals past number magnitude");
     cy.get(cesc("#\\/ndecimals") + " textarea").type(
-      "{end}{backspace}-3{enter}",
-      { force: true },
+      "{end}{backspace}-8{enter}",
+      {
+        force: true,
+      },
     );
-    cy.get(cesc("#\\/ndecimals2")).should("contain.text", `${nInDOM(-3)}`);
+    cy.get(cesc("#\\/ndecimals2")).should("contain.text", "−8");
+
     cy.get(cesc("#\\/na"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("35203423.02");
+        expect(text.trim()).equal("40000000");
       });
-    cy.get(cesc("#\\/nb"))
+
+    cy.log("becomes zero with no digits");
+    cy.get(cesc("#\\/ndigits") + " textarea").type(
+      "{end}{backspace}{backspace}0{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/na"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("35203000");
+        expect(text.trim()).equal("0");
+      });
+
+    cy.log("get number back with less rounding");
+    cy.get(cesc("#\\/ndecimals") + " textarea").type(
+      "{end}{backspace}6{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc("#\\/ndecimals2")).should("contain.text", "−6");
+
+    cy.get(cesc("#\\/na"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("35000000");
       });
   });
 
@@ -3743,7 +4132,7 @@ describe("Math Tag Tests", function () {
   <p><mathinput name="m" prefill="(a,b,c)" /></p>
   <p><math name="m2">$m</math></p>
   <p><math name="m3" createVectors>$m</math></p>
-  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" source="m2" assignNames="nDim2" /> <copy prop="nDimensions" source="m3" assignNames="nDim3" /></p>
+  <p>Ndimensions: <extract prop="numDimensions" assignNames="numDim1">$m</extract> <copy prop="numDimensions" source="m2" assignNames="numDim2" /> <copy prop="numDimensions" source="m3" assignNames="numDim3" /></p>
   <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" source="m2" assignNames="x_2" /> <copy prop="x" source="m3" assignNames="x_3" /></p>
   <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" source="m2" assignNames="y_2" /> <copy prop="y" source="m3" assignNames="y_3" /></p>
   <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" source="m2" assignNames="z_2" /> <copy prop="z" source="m3" assignNames="z_3" /></p>
@@ -3769,8 +4158,8 @@ describe("Math Tag Tests", function () {
     let indToComp = ["x", "y", "z"];
 
     function check_values(xs, operator) {
-      cy.get(cesc(`#\\/nDim1`)).should("have.text", xs.length.toString());
-      cy.get(cesc(`#\\/nDim2`)).should("have.text", xs.length.toString());
+      cy.get(cesc(`#\\/numDim1`)).should("have.text", xs.length.toString());
+      cy.get(cesc(`#\\/numDim2`)).should("have.text", xs.length.toString());
 
       for (let [ind, x] of xs.entries()) {
         let comp = indToComp[ind];
@@ -3823,8 +4212,8 @@ describe("Math Tag Tests", function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect(stateVariables["/nDim1"].stateValues.value).eq(xs.length);
-        expect(stateVariables["/nDim2"].stateValues.value).eq(xs.length);
+        expect(stateVariables["/numDim1"].stateValues.value).eq(xs.length);
+        expect(stateVariables["/numDim2"].stateValues.value).eq(xs.length);
 
         let m3Operator = operator === "tuple" ? "vector" : operator;
 
@@ -4468,11 +4857,11 @@ describe("Math Tag Tests", function () {
   <copy source="m2" prop="value" link="false" displayDecimals="6" assignNames="m2d" />
   </p>
 
-  <p><math name="m3" displaySmallAsZero>0.000000000000000015382487</math>
+  <p><math name="m3" displaySmallAsZero="false">0.000000000000000015382487</math>
   <copy source="m3" prop="value" assignNames="m3a" />
-  <copy source="m3" prop="value" displaySmallAsZero="false" assignNames="m3b" />
+  <copy source="m3" prop="value" displaySmallAsZero="true" assignNames="m3b" />
   <copy source="m3" prop="value" link="false" assignNames="m3c" />
-  <copy source="m3" prop="value" link="false" displaySmallAsZero="false" assignNames="m3d" />
+  <copy source="m3" prop="value" link="false" displaySmallAsZero="true" assignNames="m3d" />
   </p>
 
   `,
@@ -4517,19 +4906,19 @@ describe("Math Tag Tests", function () {
 
     cy.get(cesc("#\\/m3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "1.54⋅10−17");
     cy.get(cesc("#\\/m3a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "1.54⋅10−17");
     cy.get(cesc("#\\/m3b") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17");
+      .should("have.text", "0");
     cy.get(cesc("#\\/m3c") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "1.54⋅10−17");
     cy.get(cesc("#\\/m3d") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17");
+      .should("have.text", "0");
   });
 
   // TODO: fix so doesn't break when copy the math, not just copy its value
@@ -4786,14 +5175,24 @@ describe("Math Tag Tests", function () {
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><math name="m1"><math displayDigits="3">8.5203845251</math></math>
-    <math name="m1a"><number displayDigits="3">8.5203845251</number></math>
-    <math name="m1b"><math displayDigits="3">8.5203845251</math>x+526195.5352</math>
-    <math name="m1c"><number displayDigits="3">8.5203845251</number>x+526195.5352</math>
-    <math name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">x</math></math>
-    <math name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">x</math></math>
-    <math name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></math>
-    <math name="m1g" displayDecimals="8"><math displayDigits="3">8.5203845251</math></math>
+  <p><math name="m1"><math displayDigits="5">8.5203845251</math></math>
+    <math name="m1a"><number displayDigits="5">8.5203845251</number></math>
+    <math name="m1b"><math displayDigits="5">8.5203845251</math>x+526195.5352</math>
+    <math name="m1c"><number displayDigits="5">8.5203845251</number>x+526195.5352</math>
+    <math name="m1d"><math displayDigits="5">8.5203845251</math><math displayDigits="5">x</math></math>
+    <math name="m1e"><number displayDigits="5">8.5203845251</number><math displayDigits="5">x</math></math>
+    <math name="m1f" displayDigits="7"><math displayDigits="5">8.5203845251</math></math>
+    <math name="m1g" displayDecimals="4"><math displayDigits="8">8.5203845251+582342.423835237238</math></math>
+  </p>
+
+  <p><math name="m1_v" copySource="m1.value" />
+    <math name="m1a_v" copySource="m1a.value" />
+    <math name="m1b_v" copySource="m1b.value" />
+    <math name="m1c_v" copySource="m1c.value" />
+    <math name="m1d_v" copySource="m1d.value" />
+    <math name="m1e_v" copySource="m1e.value" />
+    <math name="m1f_v" copySource="m1f.value" />
+    <math name="m1g_v" copySource="m1g.value" />
   </p>
 
   <p><math name="m2"><math displayDecimals="4">8.5203845251</math></math>
@@ -4803,26 +5202,54 @@ describe("Math Tag Tests", function () {
     <math name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">x</math></math>
     <math name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">x</math></math>
     <math name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></math>
-    <math name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251</math></math>
+    <math name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251+582342.423835237238</math></math>
   </p>
 
-  <p><math name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></math>
-    <math name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></math>
-    <math name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>x+526195.5352</math>
-    <math name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>x+526195.5352</math>
-    <math name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>x</math></math>
-    <math name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>x</math></math>
-    <math name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></math>
+  <p><math name="m2_v" copySource="m2.value" />
+    <math name="m2a_v" copySource="m2a.value" />
+    <math name="m2b_v" copySource="m2b.value" />
+    <math name="m2c_v" copySource="m2c.value" />
+    <math name="m2d_v" copySource="m2d.value" />
+    <math name="m2e_v" copySource="m2e.value" />
+    <math name="m2f_v" copySource="m2f.value" />
+    <math name="m2g_v" copySource="m2g.value" />
   </p>
 
-  <p><math name="m4"><math displayDigits="3" padZeros>8</math></math>
-  <math name="m4a"><number displayDigits="3" padZeros>8</number></math>
-  <math name="m4b"><math displayDigits="3" padZeros>8</math>x+526195.5352</math>
-  <math name="m4c"><number displayDigits="3" padZeros>8</number>x+526195.5352</math>
-  <math name="m4d"><math displayDigits="3" padZeros>8</math><math displayDigits="3" padZeros>x</math></math>
-  <math name="m4e"><number displayDigits="3" padZeros>8</number><math displayDigits="3" padZeros>x</math></math>
-  <math name="m4f" padZeros="false"><math displayDigits="3" padZeros>8</math></math>
-</p>
+  <p><math name="m3"><math displaySmallAsZero="false">0.000000000000000015382487</math></math>
+    <math name="m3a"><number displaySmallAsZero="false">0.000000000000000015382487</number></math>
+    <math name="m3b"><math displaySmallAsZero="false">0.000000000000000015382487</math>x+526195.5352</math>
+    <math name="m3c"><number displaySmallAsZero="false">0.000000000000000015382487</number>x+526195.5352</math>
+    <math name="m3d"><math displaySmallAsZero="false">0.000000000000000015382487</math><math displaySmallAsZero="false">x</math></math>
+    <math name="m3e"><number displaySmallAsZero="false">0.000000000000000015382487</number><math displaySmallAsZero="false">x</math></math>
+    <math name="m3f" displaySmallAsZero="true"><math displaySmallAsZero="false">0.000000000000000015382487</math></math>
+  </p>
+
+  <p><math name="m3_v" copySource="m3.value" />
+    <math name="m3a_v" copySource="m3a.value" />
+    <math name="m3b_v" copySource="m3b.value" />
+    <math name="m3c_v" copySource="m3c.value" />
+    <math name="m3d_v" copySource="m3d.value" />
+    <math name="m3e_v" copySource="m3e.value" />
+    <math name="m3f_v" copySource="m3f.value" />
+  </p>
+
+  <p><math name="m4"><math displayDigits="5" padZeros>8</math></math>
+    <math name="m4a"><number displayDigits="5" padZeros>8</number></math>
+    <math name="m4b"><math displayDigits="5" padZeros>8</math>x+526195.5352</math>
+    <math name="m4c"><number displayDigits="5" padZeros>8</number>x+526195.5352</math>
+    <math name="m4d"><math displayDigits="5" padZeros>8</math><math displayDigits="5" padZeros>x</math></math>
+    <math name="m4e"><number displayDigits="5" padZeros>8</number><math displayDigits="5" padZeros>x</math></math>
+    <math name="m4f" padZeros="false"><math displayDigits="5" padZeros>8</math></math>
+  </p>
+
+  <p><math name="m4_v" copySource="m4.value" />
+    <math name="m4a_v" copySource="m4a.value" />
+    <math name="m4b_v" copySource="m4b.value" />
+    <math name="m4c_v" copySource="m4c.value" />
+    <math name="m4d_v" copySource="m4d.value" />
+    <math name="m4e_v" copySource="m4e.value" />
+    <math name="m4f_v" copySource="m4f.value" />
+  </p>
 
   `,
         },
@@ -4834,28 +5261,53 @@ describe("Math Tag Tests", function () {
 
     cy.get(cesc("#\\/m1") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.52");
+      .should("have.text", "8.5204");
     cy.get(cesc("#\\/m1a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.52");
+      .should("have.text", "8.5204");
     cy.get(cesc("#\\/m1b") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x+526195.5352");
+      .should("have.text", "8.52x+526195.54");
     cy.get(cesc("#\\/m1c") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x+526195.5352");
+      .should("have.text", "8.52x+526195.54");
     cy.get(cesc("#\\/m1d") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x");
+      .should("have.text", "8.52x");
     cy.get(cesc("#\\/m1e") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x");
+      .should("have.text", "8.52x");
     cy.get(cesc("#\\/m1f") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.52038");
+      .should("have.text", "8.520385");
     cy.get(cesc("#\\/m1g") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.52038453");
+      .should("have.text", "8.5203845+582342.4238");
+
+    cy.get(cesc("#\\/m1_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m1a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m1b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m1c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m1d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m1e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m1f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.520385");
+    cy.get(cesc("#\\/m1g_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5203845+582342.4238");
 
     cy.get(cesc("#\\/m2") + " .mjx-mrow")
       .eq(0)
@@ -4865,57 +5317,104 @@ describe("Math Tag Tests", function () {
       .should("have.text", "8.5204");
     cy.get(cesc("#\\/m2b") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x+526195.5352");
+      .should("have.text", "8.52x+526195.54");
     cy.get(cesc("#\\/m2c") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x+526195.5352");
+      .should("have.text", "8.52x+526195.54");
     cy.get(cesc("#\\/m2d") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x");
+      .should("have.text", "8.52x");
     cy.get(cesc("#\\/m2e") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.520384525x");
+      .should("have.text", "8.52x");
     cy.get(cesc("#\\/m2f") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8.520385");
     cy.get(cesc("#\\/m2g") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.5203845");
+      .should("have.text", "8.5203845+582342.4238");
+
+    cy.get(cesc("#\\/m2_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m2c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x+526195.54");
+    cy.get(cesc("#\\/m2d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m2e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.52x");
+    cy.get(cesc("#\\/m2f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.520385");
+    cy.get(cesc("#\\/m2g_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.5203845+582342.4238");
 
     cy.get(cesc("#\\/m3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "1.54⋅10−17");
     cy.get(cesc("#\\/m3a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "1.54⋅10−17");
     cy.get(cesc("#\\/m3b") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17x+526195.5352");
+      .should("have.text", "0x+526195.54");
     cy.get(cesc("#\\/m3c") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17x+526195.5352");
+      .should("have.text", "0x+526195.54");
     cy.get(cesc("#\\/m3d") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17x");
+      .should("have.text", "0x");
     cy.get(cesc("#\\/m3e") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17x");
+      .should("have.text", "0x");
     cy.get(cesc("#\\/m3f") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "1.5382487⋅10−17");
+      .should("have.text", "0");
+
+    cy.get(cesc("#\\/m3_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.54⋅10−17");
+    cy.get(cesc("#\\/m3a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.54⋅10−17");
+    cy.get(cesc("#\\/m3b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x+526195.54");
+    cy.get(cesc("#\\/m3c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x+526195.54");
+    cy.get(cesc("#\\/m3d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x");
+    cy.get(cesc("#\\/m3e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0x");
+    cy.get(cesc("#\\/m3f_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0");
 
     cy.get(cesc("#\\/m4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.00");
+      .should("have.text", "8.0000");
     cy.get(cesc("#\\/m4a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8.00");
+      .should("have.text", "8.0000");
     cy.get(cesc("#\\/m4b") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8x+526195.5352");
+      .should("have.text", "8x+526195.54");
     cy.get(cesc("#\\/m4c") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8x+526195.5352");
+      .should("have.text", "8x+526195.54");
     cy.get(cesc("#\\/m4d") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8x");
@@ -4923,6 +5422,28 @@ describe("Math Tag Tests", function () {
       .eq(0)
       .should("have.text", "8x");
     cy.get(cesc("#\\/m4f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+
+    cy.get(cesc("#\\/m4_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.0000");
+    cy.get(cesc("#\\/m4a_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8.0000");
+    cy.get(cesc("#\\/m4b_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x+526195.54");
+    cy.get(cesc("#\\/m4c_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x+526195.54");
+    cy.get(cesc("#\\/m4d_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x");
+    cy.get(cesc("#\\/m4e_v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8x");
+    cy.get(cesc("#\\/m4f_v") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
   });
@@ -6275,18 +6796,18 @@ describe("Math Tag Tests", function () {
   <math name="v12">⟨1,2⟩^T</math>
   </p>
   <p>N dimensions:
-    <integer copySource="v1.nDimensions" name="v1nd" />
-    <integer copySource="v2.nDimensions" name="v2nd" />
-    <integer copySource="v3.nDimensions" name="v3nd" />
-    <integer copySource="v4.nDimensions" name="v4nd" />
-    <integer copySource="v5.nDimensions" name="v5nd" />
-    <integer copySource="v6.nDimensions" name="v6nd" />
-    <integer copySource="v7.nDimensions" name="v7nd" />
-    <integer copySource="v8.nDimensions" name="v8nd" />
-    <integer copySource="v9.nDimensions" name="v9nd" />
-    <integer copySource="v10.nDimensions" name="v10nd" />
-    <integer copySource="v11.nDimensions" name="v11nd" />
-    <integer copySource="v12.nDimensions" name="v12nd" />
+    <integer copySource="v1.numDimensions" name="v1nd" />
+    <integer copySource="v2.numDimensions" name="v2nd" />
+    <integer copySource="v3.numDimensions" name="v3nd" />
+    <integer copySource="v4.numDimensions" name="v4nd" />
+    <integer copySource="v5.numDimensions" name="v5nd" />
+    <integer copySource="v6.numDimensions" name="v6nd" />
+    <integer copySource="v7.numDimensions" name="v7nd" />
+    <integer copySource="v8.numDimensions" name="v8nd" />
+    <integer copySource="v9.numDimensions" name="v9nd" />
+    <integer copySource="v10.numDimensions" name="v10nd" />
+    <integer copySource="v11.numDimensions" name="v11nd" />
+    <integer copySource="v12.numDimensions" name="v12nd" />
   </p>
   <p>Vectors:
     <vector copySource="v1.vector" name="v1v" />
@@ -6387,32 +6908,32 @@ describe("Math Tag Tests", function () {
     <numberList copySource="v12.matrixSize" name="v12ms" />
   </p>
   <p>N rows:
-    <integer copySource="v1.nRows" name="v1nr" />
-    <integer copySource="v2.nRows" name="v2nr" />
-    <integer copySource="v3.nRows" name="v3nr" />
-    <integer copySource="v4.nRows" name="v4nr" />
-    <integer copySource="v5.nRows" name="v5nr" />
-    <integer copySource="v6.nRows" name="v6nr" />
-    <integer copySource="v7.nRows" name="v7nr" />
-    <integer copySource="v8.nRows" name="v8nr" />
-    <integer copySource="v9.nRows" name="v9nr" />
-    <integer copySource="v10.nRows" name="v10nr" />
-    <integer copySource="v11.nRows" name="v11nr" />
-    <integer copySource="v12.nRows" name="v12nr" />
+    <integer copySource="v1.numRows" name="v1nr" />
+    <integer copySource="v2.numRows" name="v2nr" />
+    <integer copySource="v3.numRows" name="v3nr" />
+    <integer copySource="v4.numRows" name="v4nr" />
+    <integer copySource="v5.numRows" name="v5nr" />
+    <integer copySource="v6.numRows" name="v6nr" />
+    <integer copySource="v7.numRows" name="v7nr" />
+    <integer copySource="v8.numRows" name="v8nr" />
+    <integer copySource="v9.numRows" name="v9nr" />
+    <integer copySource="v10.numRows" name="v10nr" />
+    <integer copySource="v11.numRows" name="v11nr" />
+    <integer copySource="v12.numRows" name="v12nr" />
   </p>
   <p>N columns:
-    <integer copySource="v1.nColumns" name="v1nc" />
-    <integer copySource="v2.nColumns" name="v2nc" />
-    <integer copySource="v3.nColumns" name="v3nc" />
-    <integer copySource="v4.nColumns" name="v4nc" />
-    <integer copySource="v5.nColumns" name="v5nc" />
-    <integer copySource="v6.nColumns" name="v6nc" />
-    <integer copySource="v7.nColumns" name="v7nc" />
-    <integer copySource="v8.nColumns" name="v8nc" />
-    <integer copySource="v9.nColumns" name="v9nc" />
-    <integer copySource="v10.nColumns" name="v10nc" />
-    <integer copySource="v11.nColumns" name="v11nc" />
-    <integer copySource="v12.nColumns" name="v12nc" />
+    <integer copySource="v1.numColumns" name="v1nc" />
+    <integer copySource="v2.numColumns" name="v2nc" />
+    <integer copySource="v3.numColumns" name="v3nc" />
+    <integer copySource="v4.numColumns" name="v4nc" />
+    <integer copySource="v5.numColumns" name="v5nc" />
+    <integer copySource="v6.numColumns" name="v6nc" />
+    <integer copySource="v7.numColumns" name="v7nc" />
+    <integer copySource="v8.numColumns" name="v8nc" />
+    <integer copySource="v9.numColumns" name="v9nc" />
+    <integer copySource="v10.numColumns" name="v10nc" />
+    <integer copySource="v11.numColumns" name="v11nc" />
+    <integer copySource="v12.numColumns" name="v12nc" />
   </p>
   <p>Matrices:
     <matrix copySource="v1.matrix" name="v1m" />
@@ -8285,14 +8806,14 @@ describe("Math Tag Tests", function () {
     <numberList copySource="m3.matrixSize" name="m3ms" />
   </p>
   <p>N rows:
-    <integer copySource="m1.nRows" name="m1nr" />
-    <integer copySource="m2.nRows" name="m2nr" />
-    <integer copySource="m3.nRows" name="m3nr" />
+    <integer copySource="m1.numRows" name="m1nr" />
+    <integer copySource="m2.numRows" name="m2nr" />
+    <integer copySource="m3.numRows" name="m3nr" />
   </p>
   <p>N columns:
-    <integer copySource="m1.nColumns" name="m1nc" />
-    <integer copySource="m2.nColumns" name="m2nc" />
-    <integer copySource="m3.nColumns" name="m3nc" />
+    <integer copySource="m1.numColumns" name="m1nc" />
+    <integer copySource="m2.numColumns" name="m2nc" />
+    <integer copySource="m3.numColumns" name="m3nc" />
   </p>
   <p>Matrices:
     <matrix copySource="m1.matrix" name="m1m" />
@@ -10280,7 +10801,7 @@ describe("Math Tag Tests", function () {
     cy.get(cesc("#\\/ndeg60"))
       .invoke("text")
       .then((text) => {
-        expect(parseFloat(text)).closeTo(Math.PI / 3, 1e-6);
+        expect(parseFloat(text)).closeTo(Math.PI / 3, 1e-2);
       });
     cy.get(cesc("#\\/nsin90deg")).should("have.text", "1");
 
@@ -10419,5 +10940,51 @@ describe("Math Tag Tests", function () {
         ["apply", "cot", "y"],
       ]);
     });
+  });
+
+  it("Don't divide by vectors when inverting math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <number name="n">3</number>
+  <math name="m" simplify>$n(3,4)</math>
+  <mathinput name="mi" bindValueTo="$m" />
+
+  <number name="n2">3</number>
+  <math name="m2" simplify>$n2*4</math>
+  <mathinput name="mi2" bindValueTo="$m2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/n")).should("have.text", "3");
+    cy.get(cesc2("#/n2")).should("have.text", "3");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,12)");
+    cy.get(cesc2("#/m2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "12");
+
+    cy.get(cesc2("#/mi") + " textarea").type(
+      "{end}{shift+home}{backspace}(6,8){enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{shift+home}{backspace}8{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/n")).should("have.text", "3");
+    cy.get(cesc2("#/n2")).should("have.text", "2");
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,12)");
+    cy.get(cesc2("#/m2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
   });
 });

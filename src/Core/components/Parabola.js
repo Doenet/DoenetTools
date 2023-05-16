@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import Curve from "./Curve";
 import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
@@ -32,6 +36,11 @@ export default class Parabola extends Curve {
   static returnStateVariableDefinitions(args) {
     let stateVariableDefinitions =
       GraphicalComponent.returnStateVariableDefinitions(args);
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(
       args,
@@ -73,6 +82,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -83,6 +94,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -116,23 +129,24 @@ export default class Parabola extends Curve {
       },
     };
 
-    stateVariableDefinitions.nThroughPoints = {
+    stateVariableDefinitions.numThroughPoints = {
       returnDependencies: () => ({
         throughAttr: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.throughAttr === null) {
           return {
-            setValue: { nThroughPoints: 0 },
+            setValue: { numThroughPoints: 0 },
           };
         } else {
           return {
             setValue: {
-              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints,
+              numThroughPoints:
+                dependencyValues.throughAttr.stateValues.numPoints,
             },
           };
         }
@@ -144,6 +158,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "throughPointX") {
             return [];
@@ -158,7 +174,7 @@ export default class Parabola extends Curve {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
@@ -227,13 +243,13 @@ export default class Parabola extends Curve {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints, 2];
+        return [dependencyValues.numThroughPoints, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -334,13 +350,13 @@ export default class Parabola extends Curve {
       isArray: true,
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nThroughPoints: {
+        numThroughPoints: {
           dependencyType: "stateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nThroughPoints];
+        return [dependencyValues.numThroughPoints];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -466,6 +482,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
@@ -473,6 +491,8 @@ export default class Parabola extends Curve {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
           hasEssential: true,
           defaultValue: 0,
@@ -482,6 +502,8 @@ export default class Parabola extends Curve {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
+            addAttributeComponentsShadowingStateVariables:
+              returnRoundingAttributeComponentShadowing(),
           },
           hasEssential: true,
           defaultValue: 0,
@@ -1118,6 +1140,8 @@ export default class Parabola extends Curve {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];
@@ -1238,6 +1262,8 @@ export default class Parabola extends Curve {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       // TODO: implement additional properties
       additionalProperties: {
@@ -1332,8 +1358,8 @@ export default class Parabola extends Curve {
                   globalDependencyValues.c,
                 ],
                 variables: ["x"],
-                nInputs: 1,
-                nOutputs: 1,
+                numInputs: 1,
+                numOutputs: 1,
                 domain: null,
               },
             ],

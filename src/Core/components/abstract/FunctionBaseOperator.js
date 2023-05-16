@@ -4,6 +4,7 @@ import {
   returnNumericalFunctionFromFormula,
   returnSymbolicFunctionFromFormula,
 } from "../../utils/function";
+import { returnRoundingAttributeComponentShadowing } from "../../utils/rounding";
 
 export default class FunctionOperator extends Function {
   static componentType = "_functionOperator";
@@ -107,7 +108,7 @@ export default class FunctionOperator extends Function {
       definition: () => ({ setValue: { isInterpolatedFunction: false } }),
     };
 
-    delete stateVariableDefinitions.nPrescribedPoints;
+    delete stateVariableDefinitions.numPrescribedPoints;
     delete stateVariableDefinitions.prescribedPoints;
     delete stateVariableDefinitions.prescribedMinima;
     delete stateVariableDefinitions.prescribedMaxima;
@@ -170,6 +171,8 @@ export default class FunctionOperator extends Function {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: ["operatorBasedOnFormula"],
       // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],
@@ -232,13 +235,13 @@ export default class FunctionOperator extends Function {
       isArray: true,
       entryPrefixes: ["symbolicf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey: () => ({
         globalDependencies: {
@@ -254,9 +257,9 @@ export default class FunctionOperator extends Function {
             dependencyType: "stateVariable",
             variableName: "variables",
           },
-          nInputs: {
+          numInputs: {
             dependencyType: "stateVariable",
-            variableName: "nInputs",
+            variableName: "numInputs",
           },
           simplify: {
             dependencyType: "stateVariable",
@@ -303,7 +306,7 @@ export default class FunctionOperator extends Function {
               formula: globalDependencyValues.formula,
               simplify: globalDependencyValues.simplify,
               expand: globalDependencyValues.expand,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -339,7 +342,7 @@ export default class FunctionOperator extends Function {
                     formula: dependencyValuesWithChildFormula.formula,
                     simplify: dependencyValuesWithChildFormula.simplify,
                     expand: dependencyValuesWithChildFormula.expand,
-                    nInputs: dependencyValuesWithChildFormula.nInputs,
+                    numInputs: dependencyValuesWithChildFormula.numInputs,
                     variables: dependencyValuesWithChildFormula.variables,
                     domain: globalDependencyValues.domain,
                     component: ind,
@@ -397,13 +400,13 @@ export default class FunctionOperator extends Function {
       isArray: true,
       entryPrefixes: ["numericalf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey: () => ({
         globalDependencies: {
@@ -419,9 +422,9 @@ export default class FunctionOperator extends Function {
             dependencyType: "stateVariable",
             variableName: "variables",
           },
-          nInputs: {
+          numInputs: {
             dependencyType: "stateVariable",
-            variableName: "nInputs",
+            variableName: "numInputs",
           },
           functionChild: {
             dependencyType: "child",
@@ -453,14 +456,14 @@ export default class FunctionOperator extends Function {
         arrayKeys,
         arraySize,
       }) {
-        // TODO: correctly handle nOutputs > 1
+        // TODO: correctly handle numOutputs > 1
 
         if (globalDependencyValues.operatorBasedOnFormula) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
             numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
               formula: globalDependencyValues.formula,
-              nInputs: globalDependencyValues.nInputs,
+              numInputs: globalDependencyValues.numInputs,
               variables: globalDependencyValues.variables,
               domain: globalDependencyValues.domain,
               component: arrayKey,
@@ -494,7 +497,7 @@ export default class FunctionOperator extends Function {
                 childFs.push(
                   returnNumericalFunctionFromFormula({
                     formula: globalDependencyValues.formula,
-                    nInputs: globalDependencyValues.nInputs,
+                    numInputs: globalDependencyValues.numInputs,
                     variables: globalDependencyValues.variables,
                     domain: globalDependencyValues.domain,
                     component: ind,
@@ -552,13 +555,13 @@ export default class FunctionOperator extends Function {
       isArray: true,
       entryPrefixes: ["fDefinition"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey: () => ({
         globalDependencies: {
@@ -574,13 +577,13 @@ export default class FunctionOperator extends Function {
             dependencyType: "stateVariable",
             variableName: "variables",
           },
-          nInputs: {
+          numInputs: {
             dependencyType: "stateVariable",
-            variableName: "nInputs",
+            variableName: "numInputs",
           },
-          nOutputs: {
+          numOutputs: {
             dependencyType: "stateVariable",
-            variableName: "nOutputs",
+            variableName: "numOutputs",
           },
           functionChild: {
             dependencyType: "child",
@@ -617,7 +620,7 @@ export default class FunctionOperator extends Function {
         arrayKeys,
         arraySize,
       }) {
-        // TODO: correctly handle nOutputs > 1
+        // TODO: correctly handle numOutputs > 1
 
         if (globalDependencyValues.operatorBasedOnFormula) {
           let fDefinitions = {};
@@ -626,8 +629,8 @@ export default class FunctionOperator extends Function {
               functionType: "formula",
               formula: globalDependencyValues.formula.tree,
               variables: globalDependencyValues.variables.map((x) => x.tree),
-              nInputs: globalDependencyValues.nInputs,
-              nOutputs: globalDependencyValues.nOutputs,
+              numInputs: globalDependencyValues.numInputs,
+              numOutputs: globalDependencyValues.numOutputs,
               domain: globalDependencyValues.domain,
               component: arrayKey,
             };
@@ -646,8 +649,8 @@ export default class FunctionOperator extends Function {
                   variables: globalDependencyValues.variables.map(
                     (x) => x.tree,
                   ),
-                  nInputs: globalDependencyValues.nInputs,
-                  nOutputs: globalDependencyValues.nOutputs,
+                  numInputs: globalDependencyValues.numInputs,
+                  numOutputs: globalDependencyValues.numOutputs,
                   domain: globalDependencyValues.domain,
                 };
               }
@@ -666,7 +669,7 @@ export default class FunctionOperator extends Function {
               fDefinitions[arrayKey] = {
                 functionType: "functionOperator",
                 componentType,
-                nOutputs: globalDependencyValues.nOutputs,
+                numOutputs: globalDependencyValues.numOutputs,
                 functionOperatorArguments:
                   globalDependencyValues.numericalFunctionOperatorArguments,
                 operatorComposesWithOriginal: true,
@@ -690,8 +693,8 @@ export default class FunctionOperator extends Function {
                   variables: globalDependencyValues.variables.map(
                     (x) => x.tree,
                   ),
-                  nInputs: globalDependencyValues.nInputs,
-                  nOutputs: globalDependencyValues.nOutputs,
+                  numInputs: globalDependencyValues.numInputs,
+                  numOutputs: globalDependencyValues.numOutputs,
                   domain: globalDependencyValues.domain,
                 };
               }
@@ -710,7 +713,7 @@ export default class FunctionOperator extends Function {
               fDefinitions[arrayKey] = {
                 functionType: "functionOperator",
                 componentType,
-                nOutputs: globalDependencyValues.nOutputs,
+                numOutputs: globalDependencyValues.numOutputs,
                 functionOperatorArguments:
                   globalDependencyValues.numericalFunctionOperatorArguments,
                 operatorComposesWithOriginal: false,

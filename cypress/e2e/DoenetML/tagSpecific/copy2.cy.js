@@ -14,137 +14,24 @@ describe("Copy Tag Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
-  it("target attributes to ignore, component and primitive attributes", () => {
+  it("source attributes to ignore", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
 
-    <p newNamespace name="p1" hide fixed>Hidden text: <text name="hidden" hide fixed newNamespace>secret <text name="pw">password</text></text></p>
+    <p name="p1" newNamespace fixed isResponse>The text: <text name="hidden" hide fixed isResponse>secret</text></p>
 
-    <p name="p2">Text revealed by default: <copy source="p1/hidden" name="c1" assignNames="notHidden" /></p>
-    <p name="p3">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c1" obtainPropFromComposite /></p>
-    <p name="p4">Check attributes: <copy prop="hidden" source="notHidden" /> <copy prop="fixed" source="notHidden" /> <copy prop="newNamespace" source="notHidden" /></p>
-    <p name="p5">Check if new namespace copied: <copy source="notHidden/pw"/></p>
-
-    <p>Text but not paragraph stays hidden by default:</p>
-    <copy source="p1" name="c2" assignNames="p6" />
-    <p name="p7">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c2" obtainPropFromComposite /></p>
-    <p name="p8">Check attributes: <copy prop="hidden" source="p6" /> <copy prop="fixed" source="p6" /> <copy prop="newNamespace" source="p6" /> <copy prop="hidden" source="p6/hidden" /> <copy prop="fixed" source="p6/hidden" /> <copy prop="newNamespace" source="p6/hidden" /></p>
-    <p name="p9">Check if inner new namespace copied: <copy source="p6/hidden/pw"/></p>
-
-
-    <p name="p10">Now text stays hidden: <copy source="p1/hidden" name="c3" assignNames="stillHidden" sourceAttributesToIgnore="newNamespace fixed" /></p>
-    <p name="p11">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c3" obtainPropFromComposite /></p>
-    <p name="p12">Check attributes: <copy prop="hidden" source="stillHidden" /> <copy prop="fixed" source="stillHidden" /> <copy prop="newNamespace" source="stillHidden" /></p>
-    <p name="p13">Check that new namespace not copied: <copy source="stillHidden/pw" /></p>
-
-    <p>Now paragraph stay hidden:</p>
-    <copy source="p1" name="c4" assignNames="p14" sourceAttributesToIgnore="newNamespace fixed" />
-    <p name="p15">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c4" obtainPropFromComposite /></p>
-    <p name="p16">Check attributes: <copy prop="hidden" source="p14" /> <copy prop="fixed" source="p14" /> <copy prop="newNamespace" source="p14" /></p>
-    <p name="p17">Check that outer new namespace not copied: <copy source="p14/hidden"/></p>
-
-
-    `,
-        },
-        "*",
-      );
-    });
-
-    // to wait for page to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-
-    cy.get(cesc("#\\/p1")).should("not.exist");
-
-    cy.get(cesc("#\\/p2")).should(
-      "have.text",
-      "Text revealed by default: secret password",
-    );
-    cy.get(cesc("#\\/p3")).should(
-      "have.text",
-      "Because source attributes to ignore are: hide",
-    );
-    cy.get(cesc("#\\/p4")).should(
-      "have.text",
-      "Check attributes: false true true",
-    );
-    cy.get(cesc("#\\/p5")).should(
-      "have.text",
-      "Check if new namespace copied: password",
-    );
-
-    cy.get(cesc("#\\/p6")).should("have.text", "Hidden text: ");
-    cy.get(cesc("#\\/p7")).should(
-      "have.text",
-      "Because source attributes to ignore are: hide",
-    );
-    cy.get(cesc("#\\/p8")).should(
-      "have.text",
-      "Check attributes: false true true true true true",
-    );
-    cy.get(cesc("#\\/p9")).should(
-      "have.text",
-      "Check if inner new namespace copied: password",
-    );
-
-    cy.get(cesc("#\\/p10")).should("have.text", "Now text stays hidden: ");
-    cy.get(cesc("#\\/p11")).should(
-      "have.text",
-      "Because source attributes to ignore are: newNamespace, fixed",
-    );
-    cy.get(cesc("#\\/p12")).should(
-      "have.text",
-      "Check attributes: true false false",
-    );
-    cy.get(cesc("#\\/p13")).should(
-      "have.text",
-      "Check that new namespace not copied: ",
-    );
-
-    cy.get(cesc("#\\/p14")).should("not.exist");
-    cy.get(cesc("#\\/p15")).should(
-      "have.text",
-      "Because source attributes to ignore are: newNamespace, fixed",
-    );
-    cy.get(cesc("#\\/p16")).should(
-      "have.text",
-      "Check attributes: true false false",
-    );
-    cy.get(cesc("#\\/p17")).should(
-      "have.text",
-      "Check that outer new namespace not copied: ",
-    );
-
-    // TODO: is there a way to check that inner new namespace was maintained?
-  });
-
-  it("target attributes to ignore recursively", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-    <text>a</text>
-
-    <p name="p1" hide newNamespace fixed isResponse>The text: <text name="hidden" hide fixed isResponse>secret</text></p>
-
-    <p>Text but not paragraph stays hidden by default:</p>
+    <p>Text stays hidden by default:</p>
     <copy source="p1" name="c1" assignNames="p2" />
-    <p name="p3">Because source attributes to ignore recursively are: <copy prop="sourceAttributesToIgnoreRecursively" source="c1" obtainPropFromComposite /></p>
+    <p name="p3">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c1" obtainPropFromComposite /></p>
     <p name="p4">Check attributes: <copy prop="hidden" source="p2" /> <copy prop="fixed" source="p2" /> <copy prop="isResponse" source="p2" /> <copy prop="hidden" source="p2/hidden" /> <copy prop="fixed" source="p2/hidden" /> <copy prop="isResponse" source="p2/hidden" /></p>
 
     <p>Now all is revealed:</p>
-    <copy source="p1" name="c2" assignNames="p5" sourceAttributesToIgnoreRecursively="hide fixed" />
-    <p name="p6">Because source attributes to ignore recursively are: <copy prop="sourceAttributesToIgnoreRecursively" source="c2" obtainPropFromComposite /></p>
+    <copy source="p1" name="c2" assignNames="p5" sourceAttributesToIgnore="hide fixed" />
+    <p name="p6">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c2" obtainPropFromComposite /></p>
     <p name="p7">Check attributes: <copy prop="hidden" source="p5" /> <copy prop="fixed" source="p5" /> <copy prop="isResponse" source="p5" /> <copy prop="hidden" source="p5/hidden" /> <copy prop="fixed" source="p5/hidden" /> <copy prop="isResponse" source="p5/hidden" /></p>
-
-
-    <p>All is still revealed:</p>
-    <copy source="p1" name="c3" assignNames="p8" sourceAttributesToIgnoreRecursively="hide" sourceAttributesToIgnore="fixed isResponse" />
-    <p name="p9">Because source attributes to ignore recursively are: <copy prop="sourceAttributesToIgnoreRecursively" source="c3" obtainPropFromComposite /></p>
-    <p name="p10">And source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c3" obtainPropFromComposite /></p>
-    <p name="p11">Check attributes: <copy prop="hidden" source="p8" /> <copy prop="fixed" source="p8" /> <copy prop="isResponse" source="p8" /> <copy prop="hidden" source="p8/hidden" /> <copy prop="fixed" source="p8/hidden" /> <copy prop="isResponse" source="p8/hidden" /></p>
 
     `,
         },
@@ -155,12 +42,12 @@ describe("Copy Tag Tests", function () {
     // to wait for page to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/p1")).should("not.exist");
+    cy.get(cesc("#\\/p1")).should("have.text", "The text: ");
 
     cy.get(cesc("#\\/p2")).should("have.text", "The text: ");
     cy.get(cesc("#\\/p3")).should(
       "have.text",
-      "Because source attributes to ignore recursively are: isResponse",
+      "Because source attributes to ignore are: isResponse",
     );
     cy.get(cesc("#\\/p4")).should(
       "have.text",
@@ -170,25 +57,11 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/p5")).should("have.text", "The text: secret");
     cy.get(cesc("#\\/p6")).should(
       "have.text",
-      "Because source attributes to ignore recursively are: hide, fixed",
+      "Because source attributes to ignore are: hide, fixed",
     );
     cy.get(cesc("#\\/p7")).should(
       "have.text",
       "Check attributes: false false true false false true",
-    );
-
-    cy.get(cesc("#\\/p8")).should("have.text", "The text: secret");
-    cy.get(cesc("#\\/p9")).should(
-      "have.text",
-      "Because source attributes to ignore recursively are: hide",
-    );
-    cy.get(cesc("#\\/p10")).should(
-      "have.text",
-      "And source attributes to ignore are: fixed, isResponse",
-    );
-    cy.get(cesc("#\\/p11")).should(
-      "have.text",
-      "Check attributes: false false false false true true",
     );
   });
 
@@ -4396,7 +4269,7 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph size="small">
-      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" />
+      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" ignoreDisplayDecimals />
     </graph>
     
     <p name="p1">$l.points.coords</p>
@@ -4719,13 +4592,13 @@ describe("Copy Tag Tests", function () {
       <line name="l" through="(2/3,3/4) (5/8,6/10)" displayDigits="2" />
     </graph>
     
-    <p name="p1"><aslist><copy source="l.points.coords" creatComponentOfType="math" nComponents="2" /></aslist></p>
-    <p name="p2"><aslist><copy source="l.points.x" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p3"><aslist><copy source="l.points.y" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p4"><aslist><copy source="l.points.bad" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p5"><aslist><copy source="l.points.xs[1]" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p6"><aslist><copy source="l.points.xs[2]" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p7"><aslist><copy source="l.points.xs[3]" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p1"><aslist><copy source="l.points.coords" creatComponentOfType="math" numComponents="2" /></aslist></p>
+    <p name="p2"><aslist><copy source="l.points.x" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p3"><aslist><copy source="l.points.y" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p4"><aslist><copy source="l.points.bad" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p5"><aslist><copy source="l.points.xs[1]" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p6"><aslist><copy source="l.points.xs[2]" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p7"><aslist><copy source="l.points.xs[3]" createComponentOfType="number" numComponents="2" /></aslist></p>
 
     <p name="p8"><math copySource="l.points[1].coords" /></p>
     <p name="p9"><number copySource="l.points[1].x" /></p>
@@ -4751,13 +4624,13 @@ describe("Copy Tag Tests", function () {
     <p name="p27"><number copysource="l.points[3].xs[2]" /></p>
     <p name="p28"><number copysource="l.points[3].xs[3]" /></p>
 
-    <p name="p29"><aslist><copy source="l.points.coords.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p30"><aslist><copy source="l.points.x.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p31"><aslist><copy source="l.points.y.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p32"><aslist><copy source="l.points.bad.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p33"><aslist><copy source="l.points.xs[1].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p34"><aslist><copy source="l.points.xs[2].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p35"><aslist><copy source="l.points.xs[3].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p29"><aslist><copy source="l.points.coords.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p30"><aslist><copy source="l.points.x.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p31"><aslist><copy source="l.points.y.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p32"><aslist><copy source="l.points.bad.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p33"><aslist><copy source="l.points.xs[1].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p34"><aslist><copy source="l.points.xs[2].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p35"><aslist><copy source="l.points.xs[3].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
     
     <p name="p36"><text copysource="l.points[1].coords.latex" /></p>
     <p name="p37"><text copysource="l.points[1].x.latex" /></p>
@@ -5771,19 +5644,19 @@ describe("Copy Tag Tests", function () {
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n2" displayDigits="3" /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n2" displayDigits="10" /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
-    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="3" name="n4" /></p>
+    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="10" name="n4" /></p>
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n6" displayDigits="3" newNamespace /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n6" displayDigits="10" newNamespace /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
-    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="3" name="n8" newNamespace /></p>
+    <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" displayDigits="10" name="n8" newNamespace /></p>
 
     `,
         },
@@ -5791,14 +5664,14 @@ describe("Copy Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n2")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_number1")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n4")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_p5")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/_copy4\\/n6")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_number3")).should("have.text", "8.853729375");
-    cy.get(cesc("#\\/n8")).should("have.text", "8.85");
+    cy.get(cesc("#\\/_p1")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n2")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_number1")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n4")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_p5")).should("have.text", "8.85");
+    cy.get(cesc("#\\/_copy4\\/n6")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/_number3")).should("have.text", "8.85");
+    cy.get(cesc("#\\/n8")).should("have.text", "8.853729375");
   });
 
   it("correctly wrap replacement changes when verifying to force component type", () => {

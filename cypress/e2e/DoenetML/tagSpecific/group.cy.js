@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("Group Tag Tests", function () {
   beforeEach(() => {
@@ -624,5 +624,60 @@ describe("Group Tag Tests", function () {
       expect(stateVariables["/g3/ti"].stateValues.value).eq("this");
       expect(stateVariables["/g4/ti"].stateValues.value).eq("that");
     });
+  });
+
+  it("change rendered", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <p><booleanInput name="ren1"><label>rendereed 1</label></booleaninput></p>
+      <group name="g1" rendered="$ren1" newNamespace>
+        <p>Hello</p>
+      </group>
+
+      <p><booleanInput name="ren2" prefill="true"><label>rendereed 2</label></booleaninput></p>
+      <group name="g2" rendered="$ren2" newNamespace>
+        <p>Bye</p>
+      </group>
+
+      
+      <copy target="g1" assignNames="g1a" />
+      <copy target="g2" assignNames="g2a" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/g2/_p1")).should("have.text", "Bye");
+    cy.get(cesc2("#/g2a/_p1")).should("have.text", "Bye");
+    cy.get(cesc2("#/g1/_p1")).should("not.exist");
+    cy.get(cesc2("#/g1a/_p1")).should("not.exist");
+
+    cy.get(cesc2("#/ren1")).click();
+    cy.get(cesc2("#/g1/_p1")).should("have.text", "Hello");
+    cy.get(cesc2("#/g1a/_p1")).should("have.text", "Hello");
+    cy.get(cesc2("#/g2/_p1")).should("have.text", "Bye");
+    cy.get(cesc2("#/g2a/_p1")).should("have.text", "Bye");
+
+    cy.get(cesc2("#/ren2")).click();
+    cy.get(cesc2("#/g2/_p1")).should("not.exist");
+    cy.get(cesc2("#/g2a/_p1")).should("not.exist");
+    cy.get(cesc2("#/g1/_p1")).should("have.text", "Hello");
+    cy.get(cesc2("#/g1a/_p1")).should("have.text", "Hello");
+
+    cy.get(cesc2("#/ren1")).click();
+    cy.get(cesc2("#/g1/_p1")).should("not.exist");
+    cy.get(cesc2("#/g1a/_p1")).should("not.exist");
+    cy.get(cesc2("#/g2/_p1")).should("not.exist");
+    cy.get(cesc2("#/g2a/_p1")).should("not.exist");
+
+    cy.get(cesc2("#/ren2")).click();
+    cy.get(cesc2("#/g2/_p1")).should("have.text", "Bye");
+    cy.get(cesc2("#/g2a/_p1")).should("have.text", "Bye");
+    cy.get(cesc2("#/g1/_p1")).should("not.exist");
+    cy.get(cesc2("#/g1a/_p1")).should("not.exist");
   });
 });

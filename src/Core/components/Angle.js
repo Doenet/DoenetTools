@@ -1,6 +1,11 @@
 import GraphicalComponent from "./abstract/GraphicalComponent";
 import me from "math-expressions";
 import { roundForDisplay } from "../utils/math";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
@@ -50,32 +55,7 @@ export default class Angle extends GraphicalComponent {
       createComponentOfType: "_lineListComponent",
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.emphasizeRightAngle = {
       createComponentOfType: "boolean",
@@ -157,69 +137,10 @@ export default class Angle extends GraphicalComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.betweenLinesName = {
       returnDependencies: () => ({
@@ -238,30 +159,31 @@ export default class Angle extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nPointsSpecified = {
+    stateVariableDefinitions.numPointsSpecified = {
       returnDependencies: () => ({
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.through !== null) {
           return {
             setValue: {
-              nPointsSpecified: dependencyValues.through.stateValues.nPoints,
+              numPointsSpecified:
+                dependencyValues.through.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nPointsSpecified: 0 } };
+          return { setValue: { numPointsSpecified: 0 } };
         }
       },
     };
 
     stateVariableDefinitions.points = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       stateVariablesDeterminingDependencies: ["betweenLinesName"],
       returnArraySizeDependencies: () => ({}),
@@ -317,9 +239,9 @@ export default class Angle extends GraphicalComponent {
       },
       returnArrayDependenciesByKey({ stateValues }) {
         let globalDependencies = {
-          nPointsSpecified: {
+          numPointsSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nPointsSpecified",
+            variableName: "numPointsSpecified",
           },
           throughAttr: {
             dependencyType: "attributeComponent",
@@ -345,7 +267,7 @@ export default class Angle extends GraphicalComponent {
             childGroups: ["lines"],
             variableNames: [
               "points",
-              "nDimensions",
+              "numDimensions",
               "coeff0",
               "coeffvar1",
               "coeffvar2",
@@ -372,7 +294,7 @@ export default class Angle extends GraphicalComponent {
             return { setValue: { points } };
           } else if (globalDependencyValues.lineChildren.length === 1) {
             let line1 = globalDependencyValues.lineChildren[0];
-            if (line1.stateValues.nDimensions !== 2) {
+            if (line1.stateValues.numDimensions !== 2) {
               let points = {};
               for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 2; j++) {
@@ -490,7 +412,7 @@ export default class Angle extends GraphicalComponent {
           }
         }
 
-        let nPointsSpecified = globalDependencyValues.nPointsSpecified;
+        let numPointsSpecified = globalDependencyValues.numPointsSpecified;
         let prescribedPoints;
         if (globalDependencyValues.throughAttr) {
           prescribedPoints =
@@ -506,17 +428,17 @@ export default class Angle extends GraphicalComponent {
           points[ind + ",1"] = prescribedPoint[1];
         }
 
-        if (nPointsSpecified === 0) {
+        if (numPointsSpecified === 0) {
           points["0,0"] = me.fromAst(1);
           points["0,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 2) {
+        if (numPointsSpecified < 2) {
           points["1,0"] = me.fromAst(0);
           points["1,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 3) {
+        if (numPointsSpecified < 3) {
           let radians = null;
           if (globalDependencyValues.radiansAttr) {
             radians =
@@ -560,12 +482,8 @@ export default class Angle extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
@@ -675,12 +593,8 @@ export default class Angle extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         radians: {
@@ -742,14 +656,13 @@ export default class Angle extends GraphicalComponent {
           variableName: "padZeros",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
@@ -760,7 +673,6 @@ export default class Angle extends GraphicalComponent {
         let latexForRenderer = roundForDisplay({
           value,
           dependencyValues,
-          usedDefault,
         }).toLatex(params);
         if (dependencyValues.inDegrees) {
           latexForRenderer += "^\\circ";
@@ -826,13 +738,20 @@ export default class Angle extends GraphicalComponent {
     return stateVariableDefinitions;
   }
 
-  static adapters = ["radians"];
+  static adapters = [
+    {
+      stateVariable: "radians",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+  ];
 }
 
 function calculateLineIntersection(line1, line2) {
   if (
-    line1.stateValues.nDimensions !== 2 ||
-    line2.stateValues.nDimensions !== 2
+    line1.stateValues.numDimensions !== 2 ||
+    line2.stateValues.numDimensions !== 2
   ) {
     console.log("Calculating angle between two lines implemented only in 2D");
     return;

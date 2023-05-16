@@ -1,9 +1,9 @@
-import MathList from "./MathList";
+import MathList from "../MathList";
 import me from "math-expressions";
-import { isValidVariable } from "../utils/math";
+import { isValidVariable } from "../../utils/math";
 
-export default class Variables extends MathList {
-  static componentType = "variables";
+export default class VariableNameList extends MathList {
+  static componentType = "_variableNameList";
 
   // when another component has a attribute that is a mathList,
   // use the maths state variable to populate that attribute
@@ -15,18 +15,18 @@ export default class Variables extends MathList {
     stateVariableDefinitions.variables = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       isArray: true,
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
-        nComponents: {
+        numComponents: {
           dependencyType: "stateVariable",
-          variableName: "nComponents",
+          variableName: "numComponents",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nComponents];
+        return [dependencyValues.numComponents];
       },
 
       returnArrayDependenciesByKey({ arrayKeys }) {

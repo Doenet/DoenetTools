@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -27,8 +27,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="center" assignNames="centerPoint2" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -291,8 +291,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point name="radiusPoint" x="$(_circle1.radius)" y="0" />
     </graph>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="center" assignNames="centerPoint2" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -617,8 +617,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -1019,8 +1019,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -1590,7 +1590,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -2669,7 +2669,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -3746,11 +3746,11 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
+    <extract prop="coords" displaySmallAsZero displayDigits="8" assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="diameter" assignNames="diam" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="diameter" assignNames="diam" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -5646,11 +5646,11 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
+    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2" displayDigits="8">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="diameter" assignNames="diam" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="diameter" assignNames="diam" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -7550,7 +7550,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -8322,10 +8322,10 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
+    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2" displayDigits="8">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -9832,7 +9832,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -10815,7 +10815,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -11180,7 +11180,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <copy name="graph2" source="_graph1" newNamespace />
     `,
         },
@@ -11786,8 +11786,8 @@ describe("Circle Tag Tests", function () {
     </point>
     <copy assignNames="circle2" source="_circle1" />
     </graph>
-    <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
     `,
         },
@@ -12644,8 +12644,8 @@ describe("Circle Tag Tests", function () {
     </point>
   
     </graph>
-    <copy prop="center" assignNames="centerPoint2" source="c" />
-    <copy prop="radius" assignNames="radiusNumber" source="c" />
+    <copy prop="center" assignNames="centerPoint2" source="c" displayDigits="8" />
+    <copy prop="radius" assignNames="radiusNumber" source="c" displayDigits="8" />
 
     `,
         },
@@ -13326,8 +13326,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
     `,
         },
@@ -13459,8 +13459,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -13590,8 +13590,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -13732,8 +13732,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -13866,8 +13866,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14036,8 +14036,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14207,8 +14207,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14387,8 +14387,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14588,8 +14588,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14789,8 +14789,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" source="_circle1" assignNames="centerPoint" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -14898,8 +14898,8 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -15301,7 +15301,7 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
   </graph>
 
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -15694,7 +15694,7 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
   </graph>
 
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -16050,7 +16050,7 @@ describe("Circle Tag Tests", function () {
   </graph>
 
   <copy prop="throughPoint1" source="_circle1" assignNames="TP1" />
-  <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+  <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -16571,7 +16571,7 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
   </graph>
 
-  <copy prop="center" assignNames="centerPoint2" source="_circle1" />
+  <copy prop="center" assignNames="centerPoint2" source="_circle1" displayDigits="8" />
 
   `,
         },
@@ -17777,7 +17777,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -18758,7 +18758,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -19747,7 +19747,7 @@ describe("Circle Tag Tests", function () {
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -20772,11 +20772,11 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
+    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2" displayDigits="8">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="diameter" assignNames="diam" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="diameter" assignNames="diam" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -21349,12 +21349,12 @@ describe("Circle Tag Tests", function () {
     <point>(2,-3)</point>
     <point>(3,4)
     <constraints>
-      <constrainToGrid ignoreGraphBounds dx="3" dy="2" />
+      <constrainToGrid dx="3" dy="2" />
     </constraints>
     </point>
     <point>(-3,4)
     <constraints>
-      <constrainToGrid ignoreGraphBounds dx="3" dy="2" />
+      <constrainToGrid dx="3" dy="2" />
     </constraints>
     </point>
     <circle through="$_point1 $_point2 $_point3" />
@@ -21363,11 +21363,11 @@ describe("Circle Tag Tests", function () {
     <copy prop="center" assignNames="centerPoint" source="_circle1" />
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
+    <extract prop="coords" displaySmallAsZero assignNames="centerPoint2" displayDigits="8">
       <copy prop="center" source="_circle1" />
     </extract>
-    <copy prop="radius" assignNames="radiusNumber" source="_circle1" />
-    <copy prop="diameter" assignNames="diam" source="_circle1" />
+    <copy prop="radius" assignNames="radiusNumber" source="_circle1" displayDigits="8" />
+    <copy prop="diameter" assignNames="diam" source="_circle1" displayDigits="8" />
     <graph name="graph3" newNamespace>
       <copy assignNames="circle" source="../_circle1" />
     </graph>
@@ -21928,5 +21928,109 @@ describe("Circle Tag Tests", function () {
         expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1e-12);
       });
     });
+  });
+
+  it("hideOffGraphIndicator", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <circle name="P1" center="(12,3)" />
+      <circle name="Q1" hideOffGraphIndicator center="(-2,14)" />
+      <circle name="R1" hideOffGraphIndicator="false" center="(6,-14)" />
+    </graph>
+
+    <boolean copySource="P1.hideOffGraphIndicator" name="P1h" />
+    <boolean copySource="Q1.hideOffGraphIndicator" name="Q1h" />
+    <boolean copySource="R1.hideOffGraphIndicator" name="R1h" />
+
+    <graph hideOffGraphIndicators>
+      <circle name="P2" copySource="P1" />
+      <circle name="Q2" copySource="Q1" />
+      <circle name="R2" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P2.hideOffGraphIndicator" name="P2h" />
+    <boolean copySource="Q2.hideOffGraphIndicator" name="Q2h" />
+    <boolean copySource="R2.hideOffGraphIndicator" name="R2h" />
+
+    <graph hideOffGraphIndicators="false" >
+      <circle name="P3" copySource="P1" />
+      <circle name="Q3" copySource="Q1" />
+      <circle name="R3" copySource="R1" />
+    </graph>
+
+    <boolean copySource="P3.hideOffGraphIndicator" name="P3h" />
+    <boolean copySource="Q3.hideOffGraphIndicator" name="Q3h" />
+    <boolean copySource="R3.hideOffGraphIndicator" name="R3h" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/P1h")).should("have.text", "false");
+    cy.get(cesc2("#/Q1h")).should("have.text", "true");
+    cy.get(cesc2("#/R1h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P2h")).should("have.text", "true");
+    cy.get(cesc2("#/Q2h")).should("have.text", "true");
+    cy.get(cesc2("#/R2h")).should("have.text", "false");
+
+    cy.get(cesc2("#/P3h")).should("have.text", "false");
+    cy.get(cesc2("#/Q3h")).should("have.text", "true");
+    cy.get(cesc2("#/R3h")).should("have.text", "false");
+  });
+
+  it("circle with rounding", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <circle center="(12.3456789, 0.123456789)" radius="1234.56789" name="c1" />
+    <p>
+      <number copySource="c1.radius" name="c1r" />
+      <number copySource="c1.diameter" name="c1d" />
+      <coords copySource="c1.center" name="c1c" />
+    </p>
+    <circle copySource="c1" displayDigits="4" displayDecimals="1" name="c1a" />
+    <p>
+      <number copySource="c1a.radius" name="c1ar" />
+      <number copySource="c1a.diameter" name="c1ad" />
+      <coords copySource="c1a.center" name="c1ac" />
+    </p>
+    <circle through="(1234.56789, 0.123456789)" name="c2" />
+    <p>
+      <point copySource="c2.throughPoint1" name="c2tp" />
+    </p>
+    <circle copySource="c2" displayDigits="4" displayDecimals="1" name="c2a" />
+    <p>
+      <point copySource="c2a.throughPoint1" name="c2atp" />
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/c1r")).should("have.text", "1234.57");
+    cy.get(cesc2("#/c1d")).should("have.text", "2469.14");
+    cy.get(cesc2("#/c1c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(12.35,0.123)");
+
+    cy.get(cesc2("#/c1ar")).should("have.text", "1234.6");
+    cy.get(cesc2("#/c1ad")).should("have.text", "2469.1");
+    cy.get(cesc2("#/c1ac") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(12.35,0.1235)");
+
+    cy.get(cesc2("#/c2tp") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1234.57,0.123)");
+    cy.get(cesc2("#/c2atp") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1234.6,0.1235)");
   });
 });

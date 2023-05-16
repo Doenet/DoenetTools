@@ -1045,19 +1045,6 @@ export default function PageViewer(props) {
     }
   }
 
-  if (errMsg !== null) {
-    let errorIcon = (
-      <span style={{ fontSize: "1em", color: "#C1292E" }}>
-        <FontAwesomeIcon icon={faExclamationCircle} />
-      </span>
-    );
-    return (
-      <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>
-        {errorIcon} {errMsg}
-      </div>
-    );
-  }
-
   // first, if cidFromProps or doenetMLFromProps don't match props
   // set state to props and record that that need a new core
 
@@ -1106,6 +1093,13 @@ export default function PageViewer(props) {
 
   // Next time through will recalculate, after state variables are set
   if (changedState) {
+    if (errMsg !== null) {
+      setErrMsg(null);
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(false);
+      }
+    }
+
     if (coreWorker.current) {
       terminateCoreAndAnimations();
     }
@@ -1114,6 +1108,19 @@ export default function PageViewer(props) {
     initialCoreData.current = {};
     setPageContentChanged(true);
     return null;
+  }
+
+  if (errMsg !== null) {
+    let errorIcon = (
+      <span style={{ fontSize: "1em", color: "#C1292E" }}>
+        <FontAwesomeIcon icon={faExclamationCircle} />
+      </span>
+    );
+    return (
+      <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>
+        {errorIcon} {errMsg}
+      </div>
+    );
   }
 
   if (stage === "wait") {

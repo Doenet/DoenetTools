@@ -126,7 +126,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       },
     };
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -139,11 +139,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nVertices: dependencyValues.allIterates.length } };
+        return {
+          setValue: { numVertices: dependencyValues.allIterates.length },
+        };
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -151,7 +153,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: function ({ dependencyValues }) {
-        return { setValue: { nDimensions: 2 } };
+        return { setValue: { numDimensions: 2 } };
       },
     };
 
@@ -174,7 +176,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
@@ -280,13 +282,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         }
       },
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices, 2];
+        return [dependencyValues.numVertices, 2];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -326,13 +328,13 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       entryPrefixes: ["numericalVertex"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices];
+        return [dependencyValues.numVertices];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -367,22 +369,22 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
           variableName: "numericalVertices",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
-        let nDimensions = dependencyValues.nDimensions;
-        let nVertices = dependencyValues.nVertices;
+        let numDimensions = dependencyValues.numDimensions;
+        let numVertices = dependencyValues.numVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
         let vals = [];
@@ -390,7 +392,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         let nxPtx = numericalVertices[0]?.[0];
         let nxPty = numericalVertices[0]?.[1];
 
-        for (let i = 1; i < nVertices; i++) {
+        for (let i = 1; i < numVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
@@ -426,7 +428,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
               let yscale = scales[1];
 
               // only implemented in 2D for now
-              if (nDimensions !== 2 || nVertices === 0) {
+              if (numDimensions !== 2 || numVertices === 0) {
                 return {};
               }
 
@@ -440,7 +442,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
               let nextPtx = numericalVertices[0][0];
               let nextPty = numericalVertices[0][1];
 
-              for (let i = 1; i < nVertices; i++) {
+              for (let i = 1; i < numVertices; i++) {
                 prevPtx = nextPtx;
                 prevPty = nextPty;
 

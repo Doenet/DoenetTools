@@ -43,13 +43,13 @@ async function testPolylineCopiedTwice({
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
     expect(
-      stateVariables[graph1Name + polylineName].stateValues.nVertices,
+      stateVariables[graph1Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
     expect(
-      stateVariables[graph2Name + polylineName].stateValues.nVertices,
+      stateVariables[graph2Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
     expect(
-      stateVariables[graph3Name + polylineName].stateValues.nVertices,
+      stateVariables[graph3Name + polylineName].stateValues.numVertices,
     ).eqls(vertices.length);
 
     for (let i in vertices) {
@@ -235,7 +235,7 @@ describe("Polyline Tag Tests", function () {
   <text>a</text>
   <math>-1</math>
   <graph name="g1" newNamespace>
-    <polyline vertices="(3,5) (-4,$(../_math1))(5,2)(-3,4)" name="pg" />
+    <polyline vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
@@ -330,7 +330,7 @@ describe("Polyline Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -407,7 +407,7 @@ describe("Polyline Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -448,14 +448,14 @@ describe("Polyline Tag Tests", function () {
   <mathinput/>
 
   <graph name="g1" newNamespace>
-    <polyline vertices="(1,2) (-1,5) ($(../_mathinput1),7)(3,-5)(-4,-3)" name="pg" />
+    <polyline vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -501,7 +501,7 @@ describe("Polyline Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -631,7 +631,7 @@ describe("Polyline Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -740,7 +740,7 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="(-3,-1)(1,2)(3,4)(6,-2)" />
+  <polyline vertices="(-3,-1) (1,2) (3,4) (6,-2)" />
   </graph>
   <graph>
   <copy assignNames="v1" prop="vertex1" target="_polyline1" />
@@ -855,7 +855,7 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph name="g1" newNamespace>
-  <polyline vertices="(-9,6)(-3,7)(4,0)(8,5)" name="pg" />
+  <polyline vertices="(-9,6) (-3,7) (4,0) (8,5)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <polyline vertices="$(../g1/pg.vertices)" name="pg" />
@@ -998,10 +998,10 @@ describe("Polyline Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1309,7 +1309,7 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polyline vertices="(-9,6)(-3,7)(4,0)(8,5)" />
+    <polyline vertices="(-9,6) (-3,7) (4,0) (8,5)" />
   </graph>
   <graph>
     <polyline vertices="$(_polyline1.vertex1) ($(_polyline1.vertexX2_2), $(_polyline1.vertexX2_1)) $(_polyline1.vertex3) ($(_polyline1.vertexX4_2), $(_polyline1.vertexX4_1))" />
@@ -1346,10 +1346,10 @@ describe("Polyline Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polyline2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1611,7 +1611,7 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="(1,2) (3,4)(-5,6) $(_polyline1.vertex1{createComponentOfType='point'})" />
+  <polyline vertices="(1,2) (3,4) (-5,6) $(_polyline1.vertex1{createComponentOfType='point'})" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
   `,
@@ -1632,7 +1632,7 @@ describe("Polyline Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polyline1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polyline1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polyline1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polyline1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polyline1"].stateValues.vertices[2]).eqls(C);
@@ -1772,7 +1772,7 @@ describe("Polyline Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polyline1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polyline1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polyline1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polyline1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polyline1"].stateValues.vertices[2]).eqls(C);
@@ -1891,7 +1891,7 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="$(_polyline1.vertex4{createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polyline1.vertexX1_1)+1,2)" />
+  <polyline vertices="$(_polyline1.vertex4{createComponentOfType='point'}) (3,4) (-5,6) (1,2) ($(_polyline1.vertexX1_1)+1,2)" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
   
@@ -2814,15 +2814,15 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polyline vertices=" (3,5) (-4,-1)(5,2)" />
+    <polyline vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <attractTo><copy target="_polyline1" /></attractTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polyline1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polyline1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",
@@ -3151,15 +3151,15 @@ describe("Polyline Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polyline vertices=" (3,5) (-4,-1)(5,2)" />
+    <polyline vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <constrainTo><copy target="_polyline1" /></constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polyline1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polyline1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",
@@ -3498,8 +3498,8 @@ describe("Polyline Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <polyline vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="p" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="p" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -3838,6 +3838,100 @@ describe("Polyline Tag Tests", function () {
     cy.get(cesc("#\\/P3") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/x") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/xa") + " .mjx-mrow").should("not.exist");
+  });
+
+  it("polyline from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polyline vertices="2(2,-3)+(3,4) 3$P $P+2$m" name="polyline" />
+    </graph>
+ 
+    <p><copy source="polyline.vertices" assignNames="P1 P2 P3" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polyline"].stateValues.vertices).eqls([
+        [7, -2],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 0: [3, 5] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polyline"].stateValues.vertices).eqls([
+        [3, 5],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 1: [-9, -6] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/polyline",
+        args: {
+          pointCoords: { 2: [-3, 1] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
   });
 
   it("draggable, vertices draggable", () => {
@@ -4268,7 +4362,7 @@ describe("Polyline Tag Tests", function () {
     <point>(-4,-1)</point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>
@@ -4378,13 +4472,13 @@ describe("Polyline Tag Tests", function () {
   <graph name="g1" newNamespace>
     <point>(3,5)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-4,-1)</point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>
@@ -4494,17 +4588,17 @@ describe("Polyline Tag Tests", function () {
   <graph name="g1" newNamespace>
     <point>(3,5)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-4,-1)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(5,2)
       <constraints>
-        <constrainToGrid dx="3" dy="4" ignoreGraphBounds />
+        <constrainToGrid dx="3" dy="4" />
       </constraints>
     </point>
     <point>(-3,4)</point>

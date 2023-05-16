@@ -7,6 +7,11 @@ import {
   widthsBySize,
   sizePossibilities,
 } from "../utils/size";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 export default class Graph extends BlockComponent {
   constructor(args) {
     super(args);
@@ -110,9 +115,6 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
-    attributes.xlabel = {
-      createComponentOfType: "label",
-    };
     attributes.xlabelPosition = {
       createComponentOfType: "text",
       createStateVariable: "xlabelPosition",
@@ -128,9 +130,6 @@ export default class Graph extends BlockComponent {
       defaultValue: null,
       public: true,
       forRenderer: true,
-    };
-    attributes.ylabel = {
-      createComponentOfType: "label",
     };
     attributes.ylabelPosition = {
       createComponentOfType: "text",
@@ -174,32 +173,8 @@ export default class Graph extends BlockComponent {
     attributes.grid = {
       createComponentOfType: "text",
     };
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
 
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.showBorder = {
       createComponentOfType: "boolean",
@@ -208,6 +183,14 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+
+    attributes.hideOffGraphIndicators = {
+      createComponentOfType: "boolean",
+      createStateVariable: "hideOffGraphIndicators",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -254,69 +237,10 @@ export default class Graph extends BlockComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.xlabel = {
       forRenderer: true,
@@ -338,11 +262,6 @@ export default class Graph extends BlockComponent {
         },
       ],
       returnDependencies: () => ({
-        xlabelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "xlabel",
-          variableNames: ["value", "hasLatex"],
-        },
         xlabelChild: {
           dependencyType: "child",
           childGroups: ["xlabels"],
@@ -359,13 +278,6 @@ export default class Graph extends BlockComponent {
             setValue: {
               xlabel: xlabelChild.stateValues.value,
               xlabelHasLatex: xlabelChild.stateValues.hasLatex,
-            },
-          };
-        } else if (dependencyValues.xlabelAttr) {
-          return {
-            setValue: {
-              xlabel: dependencyValues.xlabelAttr.stateValues.value,
-              xlabelHasLatex: dependencyValues.xlabelAttr.stateValues.hasLatex,
             },
           };
         } else {
@@ -427,11 +339,6 @@ export default class Graph extends BlockComponent {
         },
       ],
       returnDependencies: () => ({
-        ylabelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "ylabel",
-          variableNames: ["value", "hasLatex"],
-        },
         ylabelChild: {
           dependencyType: "child",
           childGroups: ["ylabels"],
@@ -448,13 +355,6 @@ export default class Graph extends BlockComponent {
             setValue: {
               ylabel: ylabelChild.stateValues.value,
               ylabelHasLatex: ylabelChild.stateValues.hasLatex,
-            },
-          };
-        } else if (dependencyValues.ylabelAttr) {
-          return {
-            setValue: {
-              ylabel: dependencyValues.ylabelAttr.stateValues.value,
-              ylabelHasLatex: dependencyValues.ylabelAttr.stateValues.hasLatex,
             },
           };
         } else {
@@ -547,20 +447,20 @@ export default class Graph extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.nChildrenAdded = {
+    stateVariableDefinitions.numChildrenAdded = {
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
-        useEssentialOrDefaultValue: { nChildrenAdded: true },
+        useEssentialOrDefaultValue: { numChildrenAdded: true },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "nChildrenAdded",
-              value: desiredStateVariableValues.nChildrenAdded,
+              setEssentialValue: "numChildrenAdded",
+              value: desiredStateVariableValues.numChildrenAdded,
             },
           ],
         };
@@ -789,12 +689,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -887,6 +783,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -926,12 +823,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1032,6 +925,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1071,12 +965,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1173,6 +1063,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1212,12 +1103,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -1319,6 +1206,7 @@ export default class Graph extends BlockComponent {
           }
         }
       },
+      markStale: () => ({ updateDescendantRenderers: true }),
       async inverseDefinition({
         desiredStateVariableValues,
         dependencyValues,
@@ -1354,6 +1242,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         xmin: {
@@ -1378,6 +1268,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         ymin: {
@@ -1451,12 +1343,8 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["gridAttrCompChildren"],
@@ -1709,7 +1597,7 @@ export default class Graph extends BlockComponent {
         parentName: this.componentName,
         parentCreatesNewNamespace: this.attributes.newNamespace?.primitive,
         componentInfoObjects: this.componentInfoObjects,
-        indOffset: await this.stateValues.nChildrenAdded,
+        indOffset: await this.stateValues.numChildrenAdded,
       });
 
       return await this.coreFunctions.performUpdate({
@@ -1718,14 +1606,14 @@ export default class Graph extends BlockComponent {
             updateType: "addComponents",
             serializedComponents: processResult.serializedComponents,
             parentName: this.componentName,
-            assignNamesOffset: await this.stateValues.nChildrenAdded,
+            assignNamesOffset: await this.stateValues.numChildrenAdded,
           },
           {
             updateType: "updateValue",
             componentName: this.componentName,
-            stateVariable: "nChildrenAdded",
+            stateVariable: "numChildrenAdded",
             value:
-              (await this.stateValues.nChildrenAdded) +
+              (await this.stateValues.numChildrenAdded) +
               processResult.serializedComponents.length,
           },
         ],
@@ -1746,13 +1634,13 @@ export default class Graph extends BlockComponent {
   }) {
     let numberToDelete = Math.min(
       number,
-      await this.stateValues.nChildrenAdded,
+      await this.stateValues.numChildrenAdded,
     );
 
     if (numberToDelete > 0) {
-      let nChildren = this.definingChildren.length;
+      let numChildren = this.definingChildren.length;
       let componentNamesToDelete = this.definingChildren
-        .slice(nChildren - numberToDelete, nChildren)
+        .slice(numChildren - numberToDelete, numChildren)
         .map((x) => x.componentName);
 
       return await this.coreFunctions.performUpdate({
@@ -1764,8 +1652,8 @@ export default class Graph extends BlockComponent {
           {
             updateType: "updateValue",
             componentName: this.componentName,
-            stateVariable: "nChildrenAdded",
-            value: (await this.stateValues.nChildrenAdded) - numberToDelete,
+            stateVariable: "numChildrenAdded",
+            value: (await this.stateValues.numChildrenAdded) - numberToDelete,
           },
         ],
         actionId,

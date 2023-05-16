@@ -16,7 +16,7 @@ export default class SubsetOfReals extends MathComponent {
     attributes.createIntervals.defaultValue = true;
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
     };

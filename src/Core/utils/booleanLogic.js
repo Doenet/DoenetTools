@@ -654,9 +654,9 @@ export function evaluateLogic({
           includeErrorInNumberExponents:
             dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-          nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-          nPeriodicSetMatchesRequired:
-            dependencyValues.nPeriodicSetMatchesRequired,
+          numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
+          numPeriodicSetMatchesRequired:
+            dependencyValues.numPeriodicSetMatchesRequired,
           caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
           matchBlanks: dependencyValues.matchBlanks,
         }),
@@ -681,9 +681,9 @@ export function evaluateLogic({
             includeErrorInNumberExponents:
               dependencyValues.includeErrorInNumberExponents,
             allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-            nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-            nPeriodicSetMatchesRequired:
-              dependencyValues.nPeriodicSetMatchesRequired,
+            numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
+            numPeriodicSetMatchesRequired:
+              dependencyValues.numPeriodicSetMatchesRequired,
             caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
             matchBlanks: dependencyValues.matchBlanks,
           }).fraction_equal === 1,
@@ -706,8 +706,9 @@ export function evaluateLogic({
       includeErrorInNumberExponents:
         dependencyValues.includeErrorInNumberExponents,
       allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-      nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-      nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+      numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
+      numPeriodicSetMatchesRequired:
+        dependencyValues.numPeriodicSetMatchesRequired,
       caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
       matchBlanks: dependencyValues.matchBlanks,
     }).fraction_equal;
@@ -739,9 +740,9 @@ export function evaluateLogic({
           includeErrorInNumberExponents:
             dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-          nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-          nPeriodicSetMatchesRequired:
-            dependencyValues.nPeriodicSetMatchesRequired,
+          numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
+          numPeriodicSetMatchesRequired:
+            dependencyValues.numPeriodicSetMatchesRequired,
           caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
           matchBlanks: dependencyValues.matchBlanks,
         }),
@@ -772,9 +773,9 @@ export function evaluateLogic({
             includeErrorInNumberExponents:
               dependencyValues.includeErrorInNumberExponents,
             allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-            nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
-            nPeriodicSetMatchesRequired:
-              dependencyValues.nPeriodicSetMatchesRequired,
+            numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
+            numPeriodicSetMatchesRequired:
+              dependencyValues.numPeriodicSetMatchesRequired,
             caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
             matchBlanks: dependencyValues.matchBlanks,
           }).fraction_equal === 1,

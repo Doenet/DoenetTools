@@ -10,7 +10,7 @@ export default class HasSameFactoring extends BooleanComponent {
     let attributes = super.createAttributesObject();
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
     };
@@ -77,9 +77,9 @@ export default class HasSameFactoring extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "allowedErrorIsAbsolute",
         },
-        nSignErrorsMatched: {
+        numSignErrorsMatched: {
           dependencyType: "stateVariable",
-          variableName: "nSignErrorsMatched",
+          variableName: "numSignErrorsMatched",
         },
         variable: {
           dependencyType: "stateVariable",
@@ -116,7 +116,7 @@ export default class HasSameFactoring extends BooleanComponent {
           includeErrorInNumberExponents:
             dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
-          nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
+          numSignErrorsMatched: dependencyValues.numSignErrorsMatched,
         });
 
         if (result.fraction_equal !== 1) {

@@ -21,6 +21,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
+  static includeBlankStringChildren = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -288,7 +290,7 @@ export default class Document extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.nScoredDescendants = {
+    stateVariableDefinitions.numScoredDescendants = {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "stateVariable",
@@ -298,7 +300,7 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nScoredDescendants: dependencyValues.scoredDescendants.length,
+            numScoredDescendants: dependencyValues.scoredDescendants.length,
           },
         };
       },
@@ -307,13 +309,13 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.itemCreditAchieved = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        nScoredDescendants: {
+        numScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants",
+          variableName: "numScoredDescendants",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nScoredDescendants];
+        return [dependencyValues.numScoredDescendants];
       },
       stateVariablesDeterminingDependencies: ["scoredDescendants"],
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -396,13 +398,13 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.itemVariantInfo = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        nScoredDescendants: {
+        numScoredDescendants: {
           dependencyType: "stateVariable",
-          variableName: "nScoredDescendants",
+          variableName: "numScoredDescendants",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nScoredDescendants];
+        return [dependencyValues.numScoredDescendants];
       },
       stateVariablesDeterminingDependencies: ["scoredDescendants"],
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -484,6 +486,13 @@ export default class Document extends BaseComponent {
       },
     };
 
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
+    };
+
     stateVariableDefinitions.creditAchieved = {
       public: true,
       forRenderer: true,
@@ -493,6 +502,9 @@ export default class Document extends BaseComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },
@@ -505,6 +517,9 @@ export default class Document extends BaseComponent {
             addAttributeComponentsShadowingStateVariables: {
               displayDigits: {
                 stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+              displayDecimals: {
+                stateVariableToShadow: "displayDecimalsForCreditAchieved",
               },
             },
           },
@@ -711,7 +726,7 @@ export default class Document extends BaseComponent {
       },
     });
 
-    let nAnswers = await this.stateValues.answerDescendants;
+    let numAnswers = await this.stateValues.answerDescendants;
     for (let [
       ind,
       answer,
@@ -723,7 +738,7 @@ export default class Document extends BaseComponent {
           args: {
             actionId,
             sourceInformation,
-            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1,
+            skipRendererUpdate: skipRendererUpdate || ind < numAnswers - 1,
           },
         });
       }
@@ -751,7 +766,7 @@ export default class Document extends BaseComponent {
   }) {
     // console.log("****Variant for document*****")
 
-    let nVariants = serializedComponent.variants.numberOfVariants;
+    let numVariants = serializedComponent.variants.numberOfVariants;
 
     let variantIndex;
     // check if desiredVariant was specified
@@ -771,9 +786,9 @@ export default class Document extends BaseComponent {
             );
             desiredVariantIndex = Math.round(desiredVariantIndex);
           }
-          let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
+          let indexFrom0 = (desiredVariantIndex - 1) % numVariants;
           if (indexFrom0 < 0) {
-            indexFrom0 += nVariants;
+            indexFrom0 += numVariants;
           }
           variantIndex = indexFrom0 + 1;
         }
@@ -870,6 +885,4 @@ export default class Document extends BaseComponent {
       },
     };
   }
-
-  static includeBlankStringChildren = true;
 }

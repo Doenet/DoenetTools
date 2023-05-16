@@ -6030,7 +6030,7 @@ describe("Answer Tag Tests", function () {
       <mathList isResponse>$mi1 $mi2</mathList> = <mathList>x+y z</mathList>
     </when></award></answer></p>
   <p>Current response: <copy prop="currentResponses" target="_answer1" assignNames="cr1 cr2" /></p>
-  <p>Submitted response: <copy prop="submittedResponses" target="_answer1" createComponentOfType="math" nComponents="2" assignNames="sr1 sr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponses" target="_answer1" createComponentOfType="math" numComponents="2" assignNames="sr1 sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `,
         },
@@ -8782,7 +8782,7 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <p><textinput name="ti1" /> <textinput name="ti2" />
     <answer><award matchPartial><when>
-      <textlist isResponse>$ti1$ti2</textlist>=<textlist>  hello there </textlist>
+      <textlist isResponse>$ti1 $ti2</textlist>=<textlist>  hello there </textlist>
     </when></award></answer></p>
   <p>Current responses: <copy prop="currentResponses" target="_answer1" assignNames="cr1 cr2" /></p>
   <p>Submitted responses: <copy prop="submittedResponses" target="_answer1" assignNames="sr1 sr2" /></p>
@@ -18768,7 +18768,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -18805,7 +18805,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -18840,7 +18840,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.3333333333");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.333");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -19158,7 +19158,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: cat, dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -19196,7 +19196,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: cat, dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -19233,7 +19233,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.3333333333");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.333");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -21027,7 +21027,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -21064,7 +21064,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -21102,7 +21102,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.3333333333");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.333");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -21420,7 +21420,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: cat, dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -21458,7 +21458,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: cat, dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -21495,7 +21495,7 @@ describe("Answer Tag Tests", function () {
         "have.text",
         "Submitted response: dog, monkey",
       );
-      cy.get(cesc("#\\/credit")).should("have.text", "0.3333333333");
+      cy.get(cesc("#\\/credit")).should("have.text", "0.333");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -21808,7 +21808,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -21845,7 +21845,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: cat, dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.6666666667");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.667");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -21883,7 +21883,7 @@ describe("Answer Tag Tests", function () {
       "have.text",
       "Submitted response: dog, monkey",
     );
-    cy.get(cesc("#\\/credit")).should("have.text", "0.3333333333");
+    cy.get(cesc("#\\/credit")).should("have.text", "0.333");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -23587,7 +23587,7 @@ describe("Answer Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/a"].stateValues.nResponses).eq(1);
+      expect(stateVariables["/a"].stateValues.numResponses).eq(1);
     });
 
     cy.get(cesc("#\\/min") + " textarea").type("2{enter}", { force: true });
@@ -23667,8 +23667,8 @@ describe("Answer Tag Tests", function () {
          <award><when>$(QQ.x) > $(PP.x) and $(QQ.y) > $(PP.y)</when></award>
         </answer>
         
-        <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
-        <p>Submitted responses <aslist><copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
+        <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" numComponents="2" /></aslist></p>
+        <p>Submitted responses <aslist><copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" numComponents="2" /></aslist></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `,
         },
@@ -23710,7 +23710,7 @@ describe("Answer Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/a"].stateValues.nResponses).eq(2);
+      expect(stateVariables["/a"].stateValues.numResponses).eq(2);
     });
 
     cy.get(cesc("#\\/P") + " textarea").type("(2,3){enter}", { force: true });
@@ -24117,8 +24117,8 @@ describe("Answer Tag Tests", function () {
          <award ><when>$val > $min</when></award>
         </answer>
         
-        <p>Current responses <copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></p>
-        <p>Submitted response <copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" /></p>
+        <p>Current responses <copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" numComponents="2" /></p>
+        <p>Submitted response <copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" numComponents="2" /></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `,
         },
@@ -24160,7 +24160,7 @@ describe("Answer Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/a"].stateValues.nResponses).eq(2);
+      expect(stateVariables["/a"].stateValues.numResponses).eq(2);
     });
 
     cy.get(cesc("#\\/min") + " textarea").type("2{enter}", { force: true });
@@ -24535,7 +24535,7 @@ describe("Answer Tag Tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
+        <variantControl numVariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
           <option selectForVariants="cat">
@@ -24597,7 +24597,7 @@ describe("Answer Tag Tests", function () {
           {
             doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
+        <variantControl numVariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
           <option selectForVariants="cat">
@@ -24673,7 +24673,7 @@ describe("Answer Tag Tests", function () {
         <p>Distinct numbers greater than 3:
         <mathinput name="mi1" />
         <mathinput name="mi2" />
-        <answer nAwardsCredited="$nawards" name="a">
+        <answer numAwardsCredited="$nawards" name="a">
           <award feedbackText="First is greater than 3" credit="0.4" sourcesAreResponses="mi1"><when>$mi1 > 3</when></award>
           <award feedbackText="Second is greater than 3" credit="0.4" sourcesAreResponses="mi2"><when>$mi2 > 3</when></award>
           <award feedbackText="Distinct and greater than 3" credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
@@ -24684,8 +24684,8 @@ describe("Answer Tag Tests", function () {
 
         <copy prop="feedbacks" target="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
 
-        <p>Current responses: <aslist><copy prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" assignNames="cr1 cr2" /></aslist></p>
-        <p>Submitted response: <aslist><copy prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" assignNames="sr1 sr2" /></aslist></p>
+        <p>Current responses: <aslist><copy prop="currentResponses" target="a" createComponentOfType="math" numComponents="2" assignNames="cr1 cr2" /></aslist></p>
+        <p>Submitted response: <aslist><copy prop="submittedResponses" target="a" createComponentOfType="math" numComponents="2" assignNames="sr1 sr2" /></aslist></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `,
         },
@@ -25389,7 +25389,7 @@ describe("Answer Tag Tests", function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <mathinput name="mi3" />
-        <answer nAwardsCredited="3" name="a">
+        <answer numAwardsCredited="3" name="a">
           <award feedbackText="First is positive" credit="0.2" sourcesAreResponses="mi1"><when>$mi1 > 0</when></award>
           <award feedbackText="Second is positive" credit="0.2" sourcesAreResponses="mi2"><when>$mi2 > 0</when></award>
           <award feedbackText="Third is positive" credit="0.2" sourcesAreResponses="mi3"><when>$mi3 > 0</when></award>
@@ -25753,7 +25753,7 @@ describe("Answer Tag Tests", function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <mathinput name="mi3" />
-        <answer nAwardsCredited="3" name="a">
+        <answer numAwardsCredited="3" name="a">
           <award sourcesAreResponses="mi1 mi2 mi3" matchPartial>
             <when>$mi1=x and $mi2=y and $mi3=z</when>
           </award>
@@ -25942,7 +25942,7 @@ describe("Answer Tag Tests", function () {
     cy.get(cesc("#\\/ca")).should("have.text", "1");
   });
 
-  it("nSubmissions", () => {
+  it("numSubmissions", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -25952,8 +25952,8 @@ describe("Answer Tag Tests", function () {
     <award><math>x+y</math></award>
   </answer></p>
   <p><answer type="text">hello</answer></p>
-  <p>Number of submissions 1: <copy target="_answer1" prop="nSubmissions" assignNames="nsubs1" /></p>
-  <p>Number of submissions 2: <copy target="_answer2" prop="nSubmissions" assignNames="nsubs2" /></p>
+  <p>Number of submissions 1: <copy target="_answer1" prop="numSubmissions" assignNames="nsubs1" /></p>
+  <p>Number of submissions 2: <copy target="_answer2" prop="numSubmissions" assignNames="nsubs2" /></p>
   `,
         },
         "*",
@@ -25967,9 +25967,9 @@ describe("Answer Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(0);
+      expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(0);
       expect(stateVariables["/nsubs1"].stateValues.value).eq(0);
-      expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+      expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
       expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
 
       let mathinputName =
@@ -25988,9 +25988,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26002,9 +26002,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26013,9 +26013,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26025,9 +26025,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 0);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(0);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(0);
       });
 
@@ -26038,9 +26038,9 @@ describe("Answer Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26051,9 +26051,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 1);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26062,9 +26062,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 1);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(1);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(1);
       });
 
@@ -26073,9 +26073,9 @@ describe("Answer Tag Tests", function () {
       cy.get(cesc("#\\/nsubs2")).should("have.text", 2);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(stateVariables["/_answer1"].stateValues.numSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
-        expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(2);
+        expect(stateVariables["/_answer2"].stateValues.numSubmissions).eq(2);
         expect(stateVariables["/nsubs2"].stateValues.value).eq(2);
       });
     });
@@ -26152,14 +26152,14 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer>x</answer></p>
-  <p><answer maximumNumberOfAttempts="2">x</answer></p>
+  <p><answer maxNumAttempts="2">x</answer></p>
   <p><answer forceFullCheckworkButton>x</answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">x</answer></p>
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">x</answer></p>
   
   <p><answer type="text">hello</answer></p>
-  <p><answer type="text" maximumNumberOfAttempts="2">hello</answer></p>
+  <p><answer type="text" maxNumAttempts="2">hello</answer></p>
   <p><answer type="text" forceFullCheckworkButton>hello</answer></p>
-  <p><answer type="text" forceFullCheckworkButton maximumNumberOfAttempts="2">hello</answer></p>
+  <p><answer type="text" forceFullCheckworkButton maxNumAttempts="2">hello</answer></p>
     
   <p><answer>
     <choiceinput>
@@ -26167,7 +26167,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer maximumNumberOfAttempts="2">
+  <p><answer maxNumAttempts="2">
     <choiceinput>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26179,7 +26179,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">
     <choiceinput>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26192,7 +26192,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer maximumNumberOfAttempts="2">
+  <p><answer maxNumAttempts="2">
     <choiceinput inline>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26204,7 +26204,7 @@ describe("Answer Tag Tests", function () {
       <choice>no</choice>
     </choiceinput>
   </answer></p>
-  <p><answer forceFullCheckworkButton maximumNumberOfAttempts="2">
+  <p><answer forceFullCheckworkButton maxNumAttempts="2">
     <choiceinput inline>
       <choice credit="1">yes</choice>
       <choice>no</choice>
@@ -26212,9 +26212,9 @@ describe("Answer Tag Tests", function () {
   </answer></p>
 
   <p><answer type="boolean">true</answer></p>
-  <p><answer type="boolean" maximumNumberOfAttempts="2">true</answer></p>
+  <p><answer type="boolean" maxNumAttempts="2">true</answer></p>
   <p><answer type="boolean" forceFullCheckworkButton>true</answer></p>
-  <p><answer type="boolean" forceFullCheckworkButton maximumNumberOfAttempts="2">true</answer></p>
+  <p><answer type="boolean" forceFullCheckworkButton maxNumAttempts="2">true</answer></p>
    `,
         },
         "*",
@@ -27536,7 +27536,7 @@ describe("Answer Tag Tests", function () {
     <award name="aw">1.1</award>
     <award copysource="aw" name="aw2" credit="0.5" allowedErrorInNumbers="0.001" />
   </answer></p>
-  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Number of responses: <copy prop="numResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
   <p name="pfa1">First award awarded: $aw</p>
   <p name="pfa2">First award awarded: $aw.awarded</p>
@@ -27758,7 +27758,7 @@ describe("Answer Tag Tests", function () {
     <award name="aw"><when>$mi=1.1</when></award>
     <award copysource="aw" name="aw2" credit="0.5" allowedErrorInNumbers="0.001" />
   </answer></p>
-  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Number of responses: <copy prop="numResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
   <p name="pfa1">First award awarded: $aw</p>
   <p name="pfa2">First award awarded: $aw.awarded</p>
@@ -27982,7 +27982,7 @@ describe("Answer Tag Tests", function () {
     <award name="aw" sourcesAreResponses="mi"><when>$mi=1.1</when></award>
     <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" sourcesAreResponses="" />
   </answer></p>
-  <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
+  <p>Number of responses: <copy prop="numResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
 
   `,
@@ -28653,7 +28653,7 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <answer name="ans">
     <award>x^2-2x+3</award>
-    <award credit="0.5" nSignErrorsMatched="1">x^2-2x+3</award>
+    <award credit="0.5" numSignErrorsMatched="1">x^2-2x+3</award>
   </answer>
   <p>Current response: <copy prop="currentResponse" target="ans" assignNames="cr" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="ans" createComponentOfType='math' assignNames="sr" /></p>
@@ -29440,7 +29440,7 @@ describe("Answer Tag Tests", function () {
   <graph>
     <point name="P" />
   </graph>
-  <answer nAwardsCredited="2">
+  <answer numAwardsCredited="2">
     <award credit="0.6"><math>x^2</math></award>
     <award credit="0.4" sourcesAreResponses="P">
       <when><copy prop="x" target="P"/> > 0</when>
@@ -31485,5 +31485,163 @@ describe("Answer Tag Tests", function () {
     cy.get(cesc("#\\/oi1ca")).should("have.text", "0");
     cy.get(cesc("#\\/oi2ca")).should("have.text", "0");
     cy.get(cesc("#\\/oi3ca")).should("have.text", "0");
+  });
+
+  it("display digits for credit achieved", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  
+  <p><answer name="def">
+    <award>x</award>
+    <award credit="1/3">y</award>
+  </answer>
+  Credit: <number copysource="def.creditAchieved" name="def_credit" />
+  </p>
+
+  <p><answer displayDigitsForCreditAchieved="8" name="long">
+    <award>x</award>
+    <award credit="1/3">y</award>
+  </answer>
+  Credit: <number copysource="long.creditAchieved" name="long_credit" />
+  </p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/def") + " textarea").type("y{enter}", { force: true });
+    cy.get(cesc2("#/long") + " textarea").type("y{enter}", { force: true });
+
+    cy.get(cesc2("#/def_credit")).should("have.text", "0.333");
+    cy.get(cesc2("#/long_credit")).should("have.text", "0.33333333");
+  });
+
+  it("display digits for responses", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  
+  <p><answer name="def">1.23456789</answer>
+  Current response: <math copysource="def.currentResponse" name="def_cr" />
+  Submitted response: <math copysource="def.SubmittedResponse" name="def_sr" />
+  </p>
+
+  <p><answer displayDigitsForResponses="3" name="short">1.23456789</answer>
+  Current response: <math copysource="short.CurrentResponse" name="short_cr" />
+  Submitted response: <math copysource="short.SubmittedResponse" name="short_sr" />
+  </p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/def") + " textarea")
+      .type("1.23456789", { force: true })
+      .blur();
+    cy.get(cesc2("#/short") + " textarea")
+      .type("1.23456789", { force: true })
+      .blur();
+
+    cy.get(cesc2("#/short_cr")).should("contain.text", "1.23");
+    cy.get(cesc2("#/def_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23");
+    cy.get(cesc2("#/def_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/short_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.get(cesc2("#/def") + " textarea")
+      .type("{enter}", { force: true })
+      .blur();
+    cy.get(cesc2("#/short") + " textarea")
+      .type("{enter}", { force: true })
+      .blur();
+
+    cy.get(cesc2("#/short_sr")).should("contain.text", "1.23");
+
+    cy.get(cesc2("#/def_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23");
+    cy.get(cesc2("#/def_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1.23");
+  });
+
+  it("display digits for responses, turn math to number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  
+  <p><answer name="def">1.23456789</answer>
+  Current response: <number copysource="def.currentResponse" name="def_cr" />
+  Submitted response: <number copysource="def.SubmittedResponse" name="def_sr" />
+  </p>
+
+  <p><answer displayDigitsForResponses="3" name="short">1.23456789</answer>
+  Current response: <number copysource="short.CurrentResponse" name="short_cr" />
+  Submitted response: <number copysource="short.SubmittedResponse" name="short_sr" />
+  </p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/def") + " textarea")
+      .type("1.23456789", { force: true })
+      .blur();
+    cy.get(cesc2("#/short") + " textarea")
+      .type("1.23456789", { force: true })
+      .blur();
+
+    cy.get(cesc2("#/short_cr")).should("contain.text", "1.23");
+    cy.get(cesc2("#/def_cr")).should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_cr")).should("have.text", "1.23");
+    cy.get(cesc2("#/def_sr")).should("have.text", "NaN");
+    cy.get(cesc2("#/short_sr")).should("have.text", "NaN");
+
+    cy.get(cesc2("#/def") + " textarea")
+      .type("{enter}", { force: true })
+      .blur();
+    cy.get(cesc2("#/short") + " textarea")
+      .type("{enter}", { force: true })
+      .blur();
+
+    cy.get(cesc2("#/short_sr")).should("contain.text", "1.23");
+
+    cy.get(cesc2("#/def_cr")).should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_cr")).should("have.text", "1.23");
+    cy.get(cesc2("#/def_sr")).should("have.text", "1.23456789");
+    cy.get(cesc2("#/short_sr")).should("have.text", "1.23");
   });
 });

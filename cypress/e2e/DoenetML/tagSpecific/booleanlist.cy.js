@@ -18,12 +18,12 @@ describe("BooleanList Tag Tests", function () {
     <p><booleanlist>
       <boolean>true</boolean>
       <boolean hide>false</boolean>
-      <copy target="_booleanlist1" />
+      <copy target="_booleanlist1" hide="false" />
       <boolean>false</boolean>
       <copy target="_copy1" />
     </booleanlist></p>
 
-    <p><copy maximumnumber="6" target="_booleanlist2" /></p>
+    <p><copy maxNumber="6" target="_booleanlist2" /></p>
     `,
         },
         "*",
@@ -377,12 +377,12 @@ describe("BooleanList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><booleanlist name="bl1">true true false true false</booleanlist></p>
-      <p><copy target="bl1" maximumNumber="3" assignNames="bl2" /></p>
-      <p><copy target="bl2" maximumNumber="" assignNames="bl3" /></p>
+      <p><copy target="bl1" maxNumber="3" assignNames="bl2" /></p>
+      <p><copy target="bl2" maxNumber="" assignNames="bl3" /></p>
 
-      <p><booleanlist name="bl4" maximumNumber="3">true true false true false</booleanlist></p>
-      <p><copy target="bl4" maximumNumber="4" assignNames="bl5" /></p>
-      <p><copy target="bl5" maximumNumber="" assignNames="bl6" /></p>
+      <p><booleanlist name="bl4" maxNumber="3">true true false true false</booleanlist></p>
+      <p><copy target="bl4" maxNumber="4" assignNames="bl5" /></p>
+      <p><copy target="bl5" maxNumber="" assignNames="bl6" /></p>
 
       `,
         },
@@ -460,8 +460,8 @@ describe("BooleanList Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <p><booleanlist name="bl1" maximumNumber="$mn1">true true false true false</booleanlist></p>
-      <p><copy target="bl1" maximumNumber="$mn2" assignNames="bl2" /></p>
+      <p><booleanlist name="bl1" maxNumber="$mn1">true true false true false</booleanlist></p>
+      <p><copy target="bl1" maxNumber="$mn2" assignNames="bl2" /></p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 

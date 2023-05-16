@@ -17,12 +17,12 @@ describe("TextList Tag Tests", function () {
 
     <p><textlist>
       <text>hello</text>
-      <copy target="_textlist1" />
+      <copy target="_textlist1" hide="false" />
       <text>bye</text>
       <copy target="_copy1" />
     </textlist></p>
 
-    <p><copy maximumnumber="6" target="_textlist2" /></p>
+    <p><copy maxNumber="6" target="_textlist2" /></p>
 
     <p><copy prop="text" target="_textlist2" /></p>
 
@@ -199,12 +199,12 @@ describe("TextList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><textlist name="tl1">a b c d e</textlist></p>
-      <p><copy target="tl1" maximumNumber="3" assignNames="tl2" /></p>
-      <p><copy target="tl2" maximumNumber="" assignNames="tl3" /></p>
+      <p><copy target="tl1" maxNumber="3" assignNames="tl2" /></p>
+      <p><copy target="tl2" maxNumber="" assignNames="tl3" /></p>
 
-      <p><textlist name="tl4" maximumNumber="3">a b c d e</textlist></p>
-      <p><copy target="tl4" maximumNumber="4" assignNames="tl5" /></p>
-      <p><copy target="tl5" maximumNumber="" assignNames="tl6" /></p>
+      <p><textlist name="tl4" maxNumber="3">a b c d e</textlist></p>
+      <p><copy target="tl4" maxNumber="4" assignNames="tl5" /></p>
+      <p><copy target="tl5" maxNumber="" assignNames="tl6" /></p>
 
       `,
         },
@@ -265,8 +265,8 @@ describe("TextList Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <p><textlist name="tl1" maximumNumber="$mn1">a b c d e</textlist></p>
-      <p><copy target="tl1" maximumNumber="$mn2" assignNames="tl2" /></p>
+      <p><textlist name="tl1" maxNumber="$mn1">a b c d e</textlist></p>
+      <p><copy target="tl1" maxNumber="$mn2" assignNames="tl2" /></p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 

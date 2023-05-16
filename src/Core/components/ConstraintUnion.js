@@ -28,23 +28,19 @@ export default class ConstraintUnion extends ConstraintComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          applyConstraint: function ({ variables, scales }) {
+          applyConstraint: function (variables) {
             let constraintResult;
 
             if (dependencyValues.constraintChildren.length === 1) {
               let constraintChild = dependencyValues.constraintChildren[0];
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint({
-                  variables,
-                  scales,
-                });
+                constraintResult =
+                  constraintChild.stateValues.applyConstraint(variables);
               } else {
-                constraintResult = applyConstraintFromComponentConstraints({
+                constraintResult = applyConstraintFromComponentConstraints(
                   variables,
-                  applyComponentConstraint:
-                    constraintChild.stateValues.applyComponentConstraint,
-                  scales,
-                });
+                  constraintChild.stateValues.applyComponentConstraint,
+                );
               }
               return constraintResult;
             }
@@ -59,17 +55,13 @@ export default class ConstraintUnion extends ConstraintComponent {
               constraintChild,
             ] of dependencyValues.constraintChildren.entries()) {
               if (constraintChild.stateValues.applyConstraint) {
-                constraintResult = constraintChild.stateValues.applyConstraint({
-                  variables,
-                  scales,
-                });
+                constraintResult =
+                  constraintChild.stateValues.applyConstraint(variables);
               } else {
-                constraintResult = applyConstraintFromComponentConstraints({
+                constraintResult = applyConstraintFromComponentConstraints(
                   variables,
-                  applyComponentConstraint:
-                    constraintChild.stateValues.applyComponentConstraint,
-                  scales,
-                });
+                  constraintChild.stateValues.applyComponentConstraint,
+                );
               }
 
               if (!constraintResult.constrained) {

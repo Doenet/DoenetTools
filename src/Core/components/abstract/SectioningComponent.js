@@ -62,6 +62,13 @@ export class SectioningComponent extends BlockComponent {
       forRenderer: true,
     };
 
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true,
+    };
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {
@@ -537,9 +544,11 @@ export class SectioningComponent extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.displayDigitsForCreditAchieved = {
+    stateVariableDefinitions.displayDecimalsForCreditAchieved = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } }),
+      definition: () => ({
+        setValue: { displayDecimalsForCreditAchieved: -Infinity },
+      }),
     };
 
     stateVariableDefinitions.creditAchieved = {
@@ -549,6 +558,9 @@ export class SectioningComponent extends BlockComponent {
         addAttributeComponentsShadowingStateVariables: {
           displayDigits: {
             stateVariableToShadow: "displayDigitsForCreditAchieved",
+          },
+          displayDecimals: {
+            stateVariableToShadow: "displayDecimalsForCreditAchieved",
           },
         },
       },
@@ -564,6 +576,9 @@ export class SectioningComponent extends BlockComponent {
             addAttributeComponentsShadowingStateVariables: {
               displayDigits: {
                 stateVariableToShadow: "displayDigitsForCreditAchieved",
+              },
+              displayDecimals: {
+                stateVariableToShadow: "displayDecimalsForCreditAchieved",
               },
             },
           },
@@ -880,7 +895,7 @@ export class SectioningComponent extends BlockComponent {
         creditAchieved: await this.stateValues.creditAchievedIfSubmit,
       },
     });
-    let nAnswers = await this.stateValues.answerDescendants;
+    let numAnswers = await this.stateValues.answerDescendants;
     for (let [
       ind,
       answer,
@@ -892,7 +907,7 @@ export class SectioningComponent extends BlockComponent {
           args: {
             actionId,
             sourceInformation,
-            skipRendererUpdate: skipRendererUpdate || ind < nAnswers - 1,
+            skipRendererUpdate: skipRendererUpdate || ind < numAnswers - 1,
           },
         });
       }
@@ -989,7 +1004,7 @@ export class SectioningComponent extends BlockComponent {
       return;
     }
 
-    let nVariants = serializedComponent.variants.numberOfVariants;
+    let numVariants = serializedComponent.variants.numberOfVariants;
 
     let variantIndex;
     // check if desiredVariant was specified
@@ -1009,9 +1024,9 @@ export class SectioningComponent extends BlockComponent {
             );
             desiredVariantIndex = Math.round(desiredVariantIndex);
           }
-          let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
+          let indexFrom0 = (desiredVariantIndex - 1) % numVariants;
           if (indexFrom0 < 0) {
-            indexFrom0 += nVariants;
+            indexFrom0 += numVariants;
           }
           variantIndex = indexFrom0 + 1;
         }
@@ -1023,8 +1038,8 @@ export class SectioningComponent extends BlockComponent {
       // random number in [0, 1)
       let rand = sharedParameters.variantRng();
 
-      // random integer from 1 to nVariants
-      variantIndex = Math.floor(rand * nVariants) + 1;
+      // random integer from 1 to numVariants
+      variantIndex = Math.floor(rand * numVariants) + 1;
     }
 
     sharedParameters.allPossibleVariants =

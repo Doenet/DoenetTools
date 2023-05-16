@@ -3482,7 +3482,7 @@ describe("Point location validation tests", function () {
       .then((text) => {
         expect(text.trim().toLowerCase()).equal("67% correct");
       });
-    cy.get(cesc("#\\/ca")).should("have.text", 0.6666666667);
+    cy.get(cesc("#\\/ca")).should("have.text", 0.667);
     cy.get(cesc(`#\\/srs`))
       .find(".mjx-mrow")
       .eq(0)
@@ -3511,7 +3511,7 @@ describe("Point location validation tests", function () {
       .then((text) => {
         expect(text.trim().toLowerCase()).equal("67% correct");
       });
-    cy.get(cesc("#\\/ca")).should("have.text", 0.6666666667);
+    cy.get(cesc("#\\/ca")).should("have.text", 0.667);
     cy.get(cesc(`#\\/srs`))
       .find(".mjx-mrow")
       .eq(0)

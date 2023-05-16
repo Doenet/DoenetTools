@@ -181,7 +181,7 @@ describe("Number Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     let num = Math.log(0.5 / 0.3);
-    let numString = me.math.round(num, 10).toString();
+    let numString = me.math.round(num, 3).toString();
 
     cy.log("Test value displayed in browser");
     cy.get(cesc("#\\/_number1")).should("have.text", numString);
@@ -210,29 +210,29 @@ describe("Number Tag Tests", function () {
       <number name="n1">234234823.34235235324</number>
       <number name="n2">5.4285023408250342</number>
       <number name="n3">0.000000000000005023481340324</number>
-      <copy target="n1" displayDigits='3' assignNames="n1a" />
+      <copy target="n1" displayDigits='5' ignoreDisplayDecimals assignNames="n1a" />
       <copy target="n1" displayDecimals='3' assignNames="n1b" />
-      <copy target="n1" displayDigits='3' displaySmallAsZero assignNames="n1c" />
-      <copy target="n2" displayDigits='3' assignNames="n2a" />
+      <copy target="n1" displayDigits='5' displaySmallAsZero="false" assignNames="n1c" />
+      <copy target="n2" displayDigits='5' assignNames="n2a" />
       <copy target="n2" displayDecimals='3' assignNames="n2b" />
-      <copy target="n2" displayDigits='3' displaySmallAsZero assignNames="n2c" />
-      <copy target="n3" displayDigits='3' assignNames="n3a" />
+      <copy target="n2" displayDigits='5' displaySmallAsZero="false" assignNames="n2c" />
+      <copy target="n3" displayDigits='5' assignNames="n3a" />
       <copy target="n3" displayDecimals='3' assignNames="n3b" />
-      <copy target="n3" displayDigits='3' displaySmallAsZero assignNames="n3c" />
+      <copy target="n3" displayDigits='5' displaySmallAsZero="false" assignNames="n3c" />
 
-      <copy target="n1a" displayDigits='3' assignNames="n1aa" />
+      <copy target="n1a" displayDigits='5' assignNames="n1aa" />
       <copy target="n1a" displayDecimals='3' assignNames="n1ab" />
-      <copy target="n2a" displayDigits='3' assignNames="n2aa" />
+      <copy target="n2a" displayDigits='5' assignNames="n2aa" />
       <copy target="n2a" displayDecimals='3' assignNames="n2ab" />
-      <copy target="n3a" displayDigits='3' assignNames="n3aa" />
-      <copy target="n3a" displayDecimals='3' assignNames="n3ab" />
+      <copy target="n3a" displayDigits='5' displaySmallAsZero="false" assignNames="n3aa" />
+      <copy target="n3a" displayDecimals='3' displaySmallAsZero="false" ignoreDisplayDigits assignNames="n3ab" />
 
-      <copy target="n1b" displayDigits='3' assignNames="n1ba" />
+      <copy target="n1b" displayDigits='5' ignoreDisplayDecimals assignNames="n1ba" />
       <copy target="n1b" displayDecimals='3' assignNames="n1bb" />
-      <copy target="n2b" displayDigits='3' assignNames="n2ba" />
+      <copy target="n2b" displayDigits='5' assignNames="n2ba" />
       <copy target="n2b" displayDecimals='3' assignNames="n2bb" />
-      <copy target="n3b" displayDigits='3' assignNames="n3ba" />
-      <copy target="n3b" displayDecimals='3' assignNames="n3bb" />
+      <copy target="n3b" displayDigits='5' displaySmallAsZero="false" assignNames="n3ba" />
+      <copy target="n3b" displayDecimals='3' displaySmallAsZero="false" ignoreDisplayDigits assignNames="n3bb" />
 
       <m name="n1am">$n1a</m>
       <m name="n1bm">$n1b</m>
@@ -266,98 +266,98 @@ describe("Number Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/n1")).should("have.text", "234234823.3");
-    cy.get(cesc("#\\/n1a")).should("have.text", "234000000");
+    cy.get(cesc("#\\/n1")).should("have.text", "234234823.34");
+    cy.get(cesc("#\\/n1a")).should("have.text", "234230000");
     cy.get(cesc("#\\/n1b")).should("have.text", "234234823.342");
-    cy.get(cesc("#\\/n1c")).should("have.text", "234000000");
+    cy.get(cesc("#\\/n1c")).should("have.text", "234234823.34");
     cy.get(cesc("#\\/n1am") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234000000");
+      .should("have.text", "234230000");
     cy.get(cesc("#\\/n1bm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1cm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234000000");
+      .should("have.text", "234234823.34");
 
-    cy.get(cesc("#\\/n2")).should("have.text", "5.428502341");
-    cy.get(cesc("#\\/n2a")).should("have.text", "5.43");
+    cy.get(cesc("#\\/n2")).should("have.text", "5.43");
+    cy.get(cesc("#\\/n2a")).should("have.text", "5.4285");
     cy.get(cesc("#\\/n2b")).should("have.text", "5.429");
-    cy.get(cesc("#\\/n2c")).should("have.text", "5.43");
+    cy.get(cesc("#\\/n2c")).should("have.text", "5.4285");
     cy.get(cesc("#\\/n2am") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.43");
+      .should("have.text", "5.4285");
     cy.get(cesc("#\\/n2bm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5.429");
     cy.get(cesc("#\\/n2cm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.43");
+      .should("have.text", "5.4285");
 
-    cy.get(cesc("#\\/n3")).should("have.text", "5.02348134 * 10^(-15)");
-    cy.get(cesc("#\\/n3a")).should("have.text", "5.02 * 10^(-15)");
+    cy.get(cesc("#\\/n3")).should("have.text", "0");
+    cy.get(cesc("#\\/n3a")).should("have.text", "0");
     cy.get(cesc("#\\/n3b")).should("have.text", "0");
-    cy.get(cesc("#\\/n3c")).should("have.text", "0");
+    cy.get(cesc("#\\/n3c")).should("have.text", "5.0235 * 10^(-15)");
     cy.get(cesc("#\\/n3am") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.02⋅10−15");
+      .should("have.text", "0");
     cy.get(cesc("#\\/n3bm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
     cy.get(cesc("#\\/n3cm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "5.0235⋅10−15");
 
-    cy.get(cesc("#\\/n1aa")).should("have.text", "234000000");
+    cy.get(cesc("#\\/n1aa")).should("have.text", "234230000");
     cy.get(cesc("#\\/n1ab")).should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1aam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234000000");
+      .should("have.text", "234230000");
     cy.get(cesc("#\\/n1abm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "234234823.342");
 
-    cy.get(cesc("#\\/n2aa")).should("have.text", "5.43");
-    cy.get(cesc("#\\/n2ab")).should("have.text", "5.429");
+    cy.get(cesc("#\\/n2aa")).should("have.text", "5.4285");
+    cy.get(cesc("#\\/n2ab")).should("have.text", "5.4285");
     cy.get(cesc("#\\/n2aam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.43");
+      .should("have.text", "5.4285");
     cy.get(cesc("#\\/n2abm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.429");
+      .should("have.text", "5.4285");
 
-    cy.get(cesc("#\\/n3aa")).should("have.text", "5.02 * 10^(-15)");
+    cy.get(cesc("#\\/n3aa")).should("have.text", "5.0235 * 10^(-15)");
     cy.get(cesc("#\\/n3ab")).should("have.text", "0");
     cy.get(cesc("#\\/n3aam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.02⋅10−15");
+      .should("have.text", "5.0235⋅10−15");
     cy.get(cesc("#\\/n3abm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
 
-    cy.get(cesc("#\\/n1ba")).should("have.text", "234000000");
+    cy.get(cesc("#\\/n1ba")).should("have.text", "234230000");
     cy.get(cesc("#\\/n1bb")).should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234000000");
+      .should("have.text", "234230000");
     cy.get(cesc("#\\/n1bbm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "234234823.342");
 
-    cy.get(cesc("#\\/n2ba")).should("have.text", "5.43");
+    cy.get(cesc("#\\/n2ba")).should("have.text", "5.4285");
     cy.get(cesc("#\\/n2bb")).should("have.text", "5.429");
     cy.get(cesc("#\\/n2bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.43");
+      .should("have.text", "5.4285");
     cy.get(cesc("#\\/n2bbm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5.429");
 
-    cy.get(cesc("#\\/n3ba")).should("have.text", "5.02 * 10^(-15)");
+    cy.get(cesc("#\\/n3ba")).should("have.text", "5.0235 * 10^(-15)");
     cy.get(cesc("#\\/n3bb")).should("have.text", "0");
     cy.get(cesc("#\\/n3bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.02⋅10−15");
+      .should("have.text", "5.0235⋅10−15");
     cy.get(cesc("#\\/n3bbm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
@@ -514,19 +514,19 @@ describe("Number Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <number name="n1">22</number>
-      <number name="n2">0.000000000000005</number>
-      <copy target="n1" displayDigits='3' assignNames="n1a" />
-      <copy target="n1" displayDigits='3' assignNames="n1apad" padZeros />
+      <number name="n2" displaySmallAsZero="false">0.000000000000005</number>
+      <copy target="n1" displayDigits='4' assignNames="n1a" />
+      <copy target="n1" displayDigits='4' assignNames="n1apad" padZeros />
       <copy target="n1" displayDecimals='3' assignNames="n1b" />
       <copy target="n1" displayDecimals='3' assignNames="n1bpad" padZeros />
-      <copy target="n1" displayDigits='3' displaySmallAsZero assignNames="n1c" />
-      <copy target="n1" displayDigits='3' displaySmallAsZero assignNames="n1cpad" padZeros />
-      <copy target="n2" displayDigits='3' assignNames="n2a" />
-      <copy target="n2" displayDigits='3' assignNames="n2apad" padZeros />
-      <copy target="n2" displayDecimals='3' assignNames="n2b" />
-      <copy target="n2" displayDecimals='3' assignNames="n2bpad" padZeros />
-      <copy target="n2" displayDigits='3' displaySmallAsZero assignNames="n2c" />
-      <copy target="n2" displayDigits='3' displaySmallAsZero assignNames="n2cpad" padZeros />
+      <copy target="n1" displayDigits='4' displaySmallAsZero assignNames="n1c" />
+      <copy target="n1" displayDigits='4' displaySmallAsZero assignNames="n1cpad" padZeros />
+      <copy target="n2" displayDigits='4' assignNames="n2a" />
+      <copy target="n2" displayDigits='4' assignNames="n2apad" padZeros />
+      <copy target="n2" displayDecimals='3' ignoreDisplayDigits assignNames="n2b" />
+      <copy target="n2" displayDecimals='3' ignoreDisplayDigits assignNames="n2bpad" padZeros />
+      <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2c" />
+      <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2cpad" padZeros />
 
       <m name="n1am">$n1a</m>
       <m name="n1apadm">$n1apad</m>
@@ -616,25 +616,25 @@ describe("Number Tag Tests", function () {
 
     cy.get(cesc("#\\/n1")).should("have.text", "22");
     cy.get(cesc("#\\/n1a")).should("have.text", "22");
-    cy.get(cesc("#\\/n1apad")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1apad")).should("have.text", "22.00");
     cy.get(cesc("#\\/n1b")).should("have.text", "22");
     cy.get(cesc("#\\/n1bpad")).should("have.text", "22.000");
     cy.get(cesc("#\\/n1c")).should("have.text", "22");
-    cy.get(cesc("#\\/n1cpad")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1cpad")).should("have.text", "22.00");
     cy.get(cesc("#\\/n2")).should("have.text", "5 * 10^(-15)");
     cy.get(cesc("#\\/n2a")).should("have.text", "5 * 10^(-15)");
-    cy.get(cesc("#\\/n2apad")).should("have.text", "5.00 * 10^(-15)");
+    cy.get(cesc("#\\/n2apad")).should("have.text", "5.000 * 10^(-15)");
     cy.get(cesc("#\\/n2b")).should("have.text", "0");
     cy.get(cesc("#\\/n2bpad")).should("have.text", "0.000");
     cy.get(cesc("#\\/n2c")).should("have.text", "0");
-    cy.get(cesc("#\\/n2cpad")).should("have.text", "0.00");
+    cy.get(cesc("#\\/n2cpad")).should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1am") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
     cy.get(cesc("#\\/n1apadm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n1bm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
@@ -646,13 +646,13 @@ describe("Number Tag Tests", function () {
       .should("have.text", "22");
     cy.get(cesc("#\\/n1cpadm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n2am") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5⋅10−15");
     cy.get(cesc("#\\/n2apadm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.00⋅10−15");
+      .should("have.text", "5.000⋅10−15");
     cy.get(cesc("#\\/n2bm") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
@@ -664,27 +664,27 @@ describe("Number Tag Tests", function () {
       .should("have.text", "0");
     cy.get(cesc("#\\/n2cpadm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0.00");
+      .should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1aNumber")).should("have.text", "22");
-    cy.get(cesc("#\\/n1apadNumber")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1apadNumber")).should("have.text", "22.00");
     cy.get(cesc("#\\/n1bNumber")).should("have.text", "22");
     cy.get(cesc("#\\/n1bpadNumber")).should("have.text", "22.000");
     cy.get(cesc("#\\/n1cNumber")).should("have.text", "22");
-    cy.get(cesc("#\\/n1cpadNumber")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1cpadNumber")).should("have.text", "22.00");
     cy.get(cesc("#\\/n2aNumber")).should("have.text", "5 * 10^(-15)");
-    cy.get(cesc("#\\/n2apadNumber")).should("have.text", "5.00 * 10^(-15)");
+    cy.get(cesc("#\\/n2apadNumber")).should("have.text", "5.000 * 10^(-15)");
     cy.get(cesc("#\\/n2bNumber")).should("have.text", "0");
     cy.get(cesc("#\\/n2bpadNumber")).should("have.text", "0.000");
     cy.get(cesc("#\\/n2cNumber")).should("have.text", "0");
-    cy.get(cesc("#\\/n2cpadNumber")).should("have.text", "0.00");
+    cy.get(cesc("#\\/n2cpadNumber")).should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1aMath") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
     cy.get(cesc("#\\/n1apadMath") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n1bMath") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
@@ -696,13 +696,13 @@ describe("Number Tag Tests", function () {
       .should("have.text", "22");
     cy.get(cesc("#\\/n1cpadMath") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n2aMath") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5⋅10−15");
     cy.get(cesc("#\\/n2apadMath") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.00⋅10−15");
+      .should("have.text", "5.000⋅10−15");
     cy.get(cesc("#\\/n2bMath") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
@@ -714,40 +714,40 @@ describe("Number Tag Tests", function () {
       .should("have.text", "0");
     cy.get(cesc("#\\/n2cpadMath") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0.00");
+      .should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1aValue")).should("have.text", "22");
-    cy.get(cesc("#\\/n1apadValue")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1apadValue")).should("have.text", "22.00");
     cy.get(cesc("#\\/n1bValue")).should("have.text", "22");
     cy.get(cesc("#\\/n1bpadValue")).should("have.text", "22.000");
     cy.get(cesc("#\\/n1cValue")).should("have.text", "22");
-    cy.get(cesc("#\\/n1cpadValue")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1cpadValue")).should("have.text", "22.00");
     cy.get(cesc("#\\/n2aValue")).should("have.text", "5 * 10^(-15)");
-    cy.get(cesc("#\\/n2apadValue")).should("have.text", "5.00 * 10^(-15)");
+    cy.get(cesc("#\\/n2apadValue")).should("have.text", "5.000 * 10^(-15)");
     cy.get(cesc("#\\/n2bValue")).should("have.text", "0");
     cy.get(cesc("#\\/n2bpadValue")).should("have.text", "0.000");
     cy.get(cesc("#\\/n2cValue")).should("have.text", "0");
-    cy.get(cesc("#\\/n2cpadValue")).should("have.text", "0.00");
+    cy.get(cesc("#\\/n2cpadValue")).should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1aText")).should("have.text", "22");
-    cy.get(cesc("#\\/n1apadText")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1apadText")).should("have.text", "22.00");
     cy.get(cesc("#\\/n1bText")).should("have.text", "22");
     cy.get(cesc("#\\/n1bpadText")).should("have.text", "22.000");
     cy.get(cesc("#\\/n1cText")).should("have.text", "22");
-    cy.get(cesc("#\\/n1cpadText")).should("have.text", "22.0");
+    cy.get(cesc("#\\/n1cpadText")).should("have.text", "22.00");
     cy.get(cesc("#\\/n2aText")).should("have.text", "5 * 10^(-15)");
-    cy.get(cesc("#\\/n2apadText")).should("have.text", "5.00 * 10^(-15)");
+    cy.get(cesc("#\\/n2apadText")).should("have.text", "5.000 * 10^(-15)");
     cy.get(cesc("#\\/n2bText")).should("have.text", "0");
     cy.get(cesc("#\\/n2bpadText")).should("have.text", "0.000");
     cy.get(cesc("#\\/n2cText")).should("have.text", "0");
-    cy.get(cesc("#\\/n2cpadText")).should("have.text", "0.00");
+    cy.get(cesc("#\\/n2cpadText")).should("have.text", "0.000");
 
     cy.get(cesc("#\\/n1aMath2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
     cy.get(cesc("#\\/n1apadMath2") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n1bMath2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "22");
@@ -759,13 +759,13 @@ describe("Number Tag Tests", function () {
       .should("have.text", "22");
     cy.get(cesc("#\\/n1cpadMath2") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "22.0");
+      .should("have.text", "22.00");
     cy.get(cesc("#\\/n2aMath2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5⋅10−15");
     cy.get(cesc("#\\/n2apadMath2") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.00⋅10−15");
+      .should("have.text", "5.000⋅10−15");
     cy.get(cesc("#\\/n2bMath2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0");
@@ -777,7 +777,7 @@ describe("Number Tag Tests", function () {
       .should("have.text", "0");
     cy.get(cesc("#\\/n2cpadMath2") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0.00");
+      .should("have.text", "0.000");
   });
 
   it("dynamic rounding", () => {
@@ -789,8 +789,7 @@ describe("Number Tag Tests", function () {
       <p>Number: <number name="n">35203423.02352343201</number></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy target="n" displayDigits='$ndigits' assignNames="na" /></p>
-      <p><copy target="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+      <p><copy target="n" displayDigits='$ndigits' displayDecimals='$ndecimals' assignNames="na" /></p>
     `,
         },
         "*",
@@ -800,45 +799,63 @@ describe("Number Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.get(cesc("#\\/n")).should("have.text", "35203423.02");
-    cy.get(cesc("#\\/na")).should("have.text", "35200000");
-    cy.get(cesc("#\\/nb")).should("have.text", "35203423.024");
+    cy.get(cesc("#\\/na")).should("have.text", "35203423.024");
 
-    cy.log("higher precision");
+    cy.log("only digits");
+    cy.get(cesc("#\\/ndecimals") + " textarea").type(
+      "{end}{backspace}-\\infty{enter}{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc("#\\/na")).should("have.text", "35200000");
+
+    cy.log("more digits");
     cy.get(cesc("#\\/ndigits") + " textarea").type(
       "{end}{backspace}12{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/ndecimals") + " textarea").type(
-      "{end}{backspace}5{enter}",
+    cy.get(cesc("#\\/na")).should("have.text", "35203423.0235");
+
+    cy.log("remove digits");
+    cy.get(cesc("#\\/ndigits") + " textarea").type(
+      "{end}{backspace}{backspace}0{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/na")).should("have.text", "35203423.0235");
-    cy.get(cesc("#\\/nb")).should("have.text", "35203423.02352");
+    cy.get(cesc("#\\/na")).should("contain.text", "35203423.02352343");
 
-    cy.log("invalid precision means default rounding");
+    cy.log("Fewer digits than have");
+    cy.get(cesc("#\\/ndecimals") + " textarea").type(
+      "{end}{backspace}10{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/na")).should("contain.text", "0");
+
+    cy.log("add one digit");
+    cy.get(cesc("#\\/ndigits") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+    cy.get(cesc("#\\/na")).should("have.text", "40000000");
+
+    cy.log("invalid precision means no rounding");
     cy.get(cesc("#\\/ndigits") + " textarea").type(
       "{end}{backspace}{backspace}x{enter}",
       { force: true },
     );
     cy.get(cesc("#\\/ndecimals") + " textarea").type(
-      "{end}{backspace}{backspace}y{enter}",
+      "{end}{backspace}{backspace}{backspace}y{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/na")).should("have.text", "35203423.02");
-    cy.get(cesc("#\\/nb")).should("have.text", "35203423.02");
 
-    cy.log("low precision");
-    cy.get(cesc("#\\/ndigits") + " textarea").type("{end}{backspace}1{enter}", {
-      force: true,
-    });
+    cy.get(cesc("#\\/na")).should("contain.text", "35203423.02352343");
+
+    cy.log("add a decimal");
     cy.get(cesc("#\\/ndecimals") + " textarea").type(
       "{end}{backspace}1{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/na")).should("have.text", "40000000");
-    cy.get(cesc("#\\/nb")).should("have.text", "35203423");
+    cy.get(cesc("#\\/na")).should("have.text", "35203423");
 
-    cy.log("negative precision, default rounding for displayDigits");
+    cy.log("negative precision, ignores display digits");
     cy.get(cesc("#\\/ndigits") + " textarea").type(
       "{end}{backspace}-3{enter}",
       { force: true },
@@ -847,8 +864,7 @@ describe("Number Tag Tests", function () {
       "{end}{backspace}-3{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/na")).should("have.text", "35203423.02");
-    cy.get(cesc("#\\/nb")).should("have.text", "35203000");
+    cy.get(cesc("#\\/na")).should("have.text", "35203000");
   });
 
   it("infinity and nan", () => {
@@ -951,25 +967,32 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><number name="n1" displayDigits="3">8.5203845251</number>
+  <p><number name="n1" displayDigits="2" ignoreDisplayDecimals>8.5203845251</number>
   <copy target="n1" prop="value" assignNames="n1a" />
   <copy target="n1" prop="value" displayDigits="5" assignNames="n1b" />
   <copy target="n1" prop="value" link="false" assignNames="n1c" />
   <copy target="n1" prop="value" link="false" displayDigits="5" assignNames="n1d" />
   </p>
 
-  <p><number name="n2" displayDecimals="4">8.5203845251</number>
+  <p><number name="n2" displayDecimals="0" ignoreDisplayDigits>8.5203845251</number>
   <copy target="n2" prop="value" assignNames="n2a" />
   <copy target="n2" prop="value" displayDecimals="6" assignNames="n2b" />
   <copy target="n2" prop="value" link="false" assignNames="n2c" />
   <copy target="n2" prop="value" link="false" displayDecimals="6" assignNames="n2d" />
   </p>
 
-  <p><number name="n3" displaySmallAsZero>0.000000000000000015382487</number>
+  <p><number name="n3" displaySmallAsZero="false">0.000000000000000015382487</number>
   <copy target="n3" prop="value" assignNames="n3a" />
-  <copy target="n3" prop="value" displaySmallAsZero="false" assignNames="n3b" />
+  <copy target="n3" prop="value" displaySmallAsZero assignNames="n3b" />
   <copy target="n3" prop="value" link="false" assignNames="n3c" />
-  <copy target="n3" prop="value" link="false" displaySmallAsZero="false" assignNames="n3d" />
+  <copy target="n3" prop="value" link="false" displaySmallAsZero assignNames="n3d" />
+  </p>
+
+  <p><number name="n4" padZeros>8</number>
+  <copy target="n4" prop="value" assignNames="n4a" />
+  <copy target="n4" prop="value" padZeros="false" assignNames="n4b" />
+  <copy target="n4" prop="value" link="false" assignNames="n4c" />
+  <copy target="n4" prop="value" link="false" padZeros="false" assignNames="n4d" />
   </p>
 
   `,
@@ -980,23 +1003,29 @@ describe("Number Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/n1")).should("have.text", "8.52");
-    cy.get(cesc("#\\/n1a")).should("have.text", "8.52");
+    cy.get(cesc("#\\/n1")).should("have.text", "8.5");
+    cy.get(cesc("#\\/n1a")).should("have.text", "8.5");
     cy.get(cesc("#\\/n1b")).should("have.text", "8.5204");
-    cy.get(cesc("#\\/n1c")).should("have.text", "8.52");
+    cy.get(cesc("#\\/n1c")).should("have.text", "8.5");
     cy.get(cesc("#\\/n1d")).should("have.text", "8.5204");
 
-    cy.get(cesc("#\\/n2")).should("have.text", "8.5204");
-    cy.get(cesc("#\\/n2a")).should("have.text", "8.5204");
+    cy.get(cesc("#\\/n2")).should("have.text", "9");
+    cy.get(cesc("#\\/n2a")).should("have.text", "9");
     cy.get(cesc("#\\/n2b")).should("have.text", "8.520385");
-    cy.get(cesc("#\\/n2c")).should("have.text", "8.5204");
+    cy.get(cesc("#\\/n2c")).should("have.text", "9");
     cy.get(cesc("#\\/n2d")).should("have.text", "8.520385");
 
-    cy.get(cesc("#\\/n3")).should("have.text", "0");
-    cy.get(cesc("#\\/n3a")).should("have.text", "0");
-    cy.get(cesc("#\\/n3b")).should("have.text", "1.5382487 * 10^(-17)");
-    cy.get(cesc("#\\/n3c")).should("have.text", "0");
-    cy.get(cesc("#\\/n3d")).should("have.text", "1.5382487 * 10^(-17)");
+    cy.get(cesc("#\\/n3")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/n3a")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/n3b")).should("have.text", "0");
+    cy.get(cesc("#\\/n3c")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/n3d")).should("have.text", "0");
+
+    cy.get(cesc("#\\/n4")).should("have.text", "8.00");
+    cy.get(cesc("#\\/n4a")).should("have.text", "8.00");
+    cy.get(cesc("#\\/n4b")).should("have.text", "8");
+    cy.get(cesc("#\\/n4c")).should("have.text", "8.00");
+    cy.get(cesc("#\\/n4d")).should("have.text", "8");
   });
 
   it("display rounding preserved when only one number or math child", () => {
@@ -1005,14 +1034,24 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><number name="m1"><math displayDigits="3">8.5203845251</math></number>
-    <number name="m1a"><number displayDigits="3">8.5203845251</number></number>
-    <number name="m1b"><math displayDigits="3">8.5203845251</math>2.8392634947</number>
-    <number name="m1c"><number displayDigits="3">8.5203845251</number>2.8392634947</number>
-    <number name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">2.8392634947</math></number>
-    <number name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">2.8392634947</math></number>
-    <number name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></number>
-    <number name="m1g" displayDecimals="8"><math displayDigits="3">8.5203845251</math></number>
+  <p><number name="m1"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
+    <number name="m1a"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number></number>
+    <number name="m1b"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math>2.8392634947</number>
+    <number name="m1c"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number>2.8392634947</number>
+    <number name="m1d"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math><math displayDigits="2" ignoreDisplayDecimals>2.8392634947</math></number>
+    <number name="m1e"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number><math displayDigits="2" ignoreDisplayDecimals>2.8392634947</math></number>
+    <number name="m1f" displayDigits="1"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
+    <number name="m1g" displayDecimals="8"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
+  </p>
+
+  <p><number name="m1_v" copySource="m1.value" />
+    <number name="m1a_v" copySource="m1a.value" />
+    <number name="m1b_v" copySource="m1b.value" />
+    <number name="m1c_v" copySource="m1c.value" />
+    <number name="m1d_v" copySource="m1d.value" />
+    <number name="m1e_v" copySource="m1e.value" />
+    <number name="m1f_v" copySource="m1f.value" />
+    <number name="m1g_v" copySource="m1g.value" />
   </p>
 
   <p><number name="m2"><math displayDecimals="4">8.5203845251</math></number>
@@ -1025,13 +1064,32 @@ describe("Number Tag Tests", function () {
     <number name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251</math></number>
   </p>
 
-  <p><number name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></number>
-    <number name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></number>
-    <number name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>2.8392634947</number>
-    <number name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>2.8392634947</number>
-    <number name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>2.8392634947</math></number>
-    <number name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>2.8392634947</math></number>
-    <number name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></number>
+  <p><number name="m2_v" copySource="m2.value" />
+    <number name="m2a_v" copySource="m2a.value" />
+    <number name="m2b_v" copySource="m2b.value" />
+    <number name="m2c_v" copySource="m2c.value" />
+    <number name="m2d_v" copySource="m2d.value" />
+    <number name="m2e_v" copySource="m2e.value" />
+    <number name="m2f_v" copySource="m2f.value" />
+    <number name="m2g_v" copySource="m2g.value" />
+  </p>
+
+  <p><number name="m3"><math displaySmallAsZero="false">0.000000000000000015382487</math></number>
+    <number name="m3a"><number displaySmallAsZero="false">0.000000000000000015382487</number></number>
+    <number name="m3b"><math displaySmallAsZero="false">0.000000000000000015382487</math>2.8392634947</number>
+    <number name="m3c"><number displaySmallAsZero="false">0.000000000000000015382487</number>2.8392634947</number>
+    <number name="m3d"><math displaySmallAsZero="false">0.000000000000000015382487</math><math displaySmallAsZero="false">2.8392634947</math></number>
+    <number name="m3e"><number displaySmallAsZero="false">0.000000000000000015382487</number><math displaySmallAsZero="false">2.8392634947</math></number>
+    <number name="m3f" displaySmallAsZero="false"><math displaySmallAsZero="true">0.000000000000000015382487</math></number>
+  </p>
+
+  <p><number name="m3_v" copySource="m3.value" />
+    <number name="m3a_v" copySource="m3a.value" />
+    <number name="m3b_v" copySource="m3b.value" />
+    <number name="m3c_v" copySource="m3c.value" />
+    <number name="m3d_v" copySource="m3d.value" />
+    <number name="m3e_v" copySource="m3e.value" />
+    <number name="m3f_v" copySource="m3f.value" />
   </p>
 
   <p><number name="m4"><math displayDigits="3" padZeros>8</math></number>
@@ -1043,6 +1101,15 @@ describe("Number Tag Tests", function () {
     <number name="m4f" padZeros="false"><math displayDigits="3" padZeros>8</math></number>
   </p>
 
+  <p><number name="m4_v" copySource="m4.value" />
+    <number name="m4a_v" copySource="m4a.value" />
+    <number name="m4b_v" copySource="m4b.value" />
+    <number name="m4c_v" copySource="m4c.value" />
+    <number name="m4d_v" copySource="m4d.value" />
+    <number name="m4e_v" copySource="m4e.value" />
+    <number name="m4f_v" copySource="m4f.value" />
+  </p>
+
 
   `,
         },
@@ -1052,31 +1119,57 @@ describe("Number Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/m1")).should("have.text", "8.52");
-    cy.get(cesc("#\\/m1a")).should("have.text", "8.52");
-    cy.get(cesc("#\\/m1b")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m1c")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m1d")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m1e")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m1f")).should("have.text", "8.52038");
+    cy.get(cesc("#\\/m1")).should("have.text", "8.5");
+    cy.get(cesc("#\\/m1a")).should("have.text", "8.5");
+    cy.get(cesc("#\\/m1b")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1c")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1d")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1e")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1f")).should("have.text", "9");
     cy.get(cesc("#\\/m1g")).should("have.text", "8.52038453");
+
+    cy.get(cesc("#\\/m1_v")).should("have.text", "8.5");
+    cy.get(cesc("#\\/m1a_v")).should("have.text", "8.5");
+    cy.get(cesc("#\\/m1b_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1c_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1d_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1e_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m1f_v")).should("have.text", "9");
+    cy.get(cesc("#\\/m1g_v")).should("have.text", "8.52038453");
 
     cy.get(cesc("#\\/m2")).should("have.text", "8.5204");
     cy.get(cesc("#\\/m2a")).should("have.text", "8.5204");
-    cy.get(cesc("#\\/m2b")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m2c")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m2d")).should("have.text", "24.19161674");
-    cy.get(cesc("#\\/m2e")).should("have.text", "24.19161674");
+    cy.get(cesc("#\\/m2b")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2c")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2d")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2e")).should("have.text", "24.19");
     cy.get(cesc("#\\/m2f")).should("have.text", "8.520385");
     cy.get(cesc("#\\/m2g")).should("have.text", "8.5203845");
 
-    cy.get(cesc("#\\/m3")).should("have.text", "0");
-    cy.get(cesc("#\\/m3a")).should("have.text", "0");
-    cy.get(cesc("#\\/m3b")).should("have.text", "4.36749338 * 10^(-17)");
-    cy.get(cesc("#\\/m3c")).should("have.text", "4.36749338 * 10^(-17)");
-    cy.get(cesc("#\\/m3d")).should("have.text", "4.36749338 * 10^(-17)");
-    cy.get(cesc("#\\/m3e")).should("have.text", "4.36749338 * 10^(-17)");
-    cy.get(cesc("#\\/m3f")).should("have.text", "1.5382487 * 10^(-17)");
+    cy.get(cesc("#\\/m2_v")).should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2a_v")).should("have.text", "8.5204");
+    cy.get(cesc("#\\/m2b_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2c_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2d_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2e_v")).should("have.text", "24.19");
+    cy.get(cesc("#\\/m2f_v")).should("have.text", "8.520385");
+    cy.get(cesc("#\\/m2g_v")).should("have.text", "8.5203845");
+
+    cy.get(cesc("#\\/m3")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/m3a")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/m3b")).should("have.text", "0");
+    cy.get(cesc("#\\/m3c")).should("have.text", "0");
+    cy.get(cesc("#\\/m3d")).should("have.text", "0");
+    cy.get(cesc("#\\/m3e")).should("have.text", "0");
+    cy.get(cesc("#\\/m3f")).should("have.text", "1.54 * 10^(-17)");
+
+    cy.get(cesc("#\\/m3_v")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/m3a_v")).should("have.text", "1.54 * 10^(-17)");
+    cy.get(cesc("#\\/m3b_v")).should("have.text", "0");
+    cy.get(cesc("#\\/m3c_v")).should("have.text", "0");
+    cy.get(cesc("#\\/m3d_v")).should("have.text", "0");
+    cy.get(cesc("#\\/m3e_v")).should("have.text", "0");
+    cy.get(cesc("#\\/m3f_v")).should("have.text", "1.54 * 10^(-17)");
 
     cy.get(cesc("#\\/m4")).should("have.text", "8.00");
     cy.get(cesc("#\\/m4a")).should("have.text", "8.00");
@@ -1085,6 +1178,14 @@ describe("Number Tag Tests", function () {
     cy.get(cesc("#\\/m4d")).should("have.text", "16");
     cy.get(cesc("#\\/m4e")).should("have.text", "16");
     cy.get(cesc("#\\/m4f")).should("have.text", "8");
+
+    cy.get(cesc("#\\/m4_v")).should("have.text", "8.00");
+    cy.get(cesc("#\\/m4a_v")).should("have.text", "8.00");
+    cy.get(cesc("#\\/m4b_v")).should("have.text", "16");
+    cy.get(cesc("#\\/m4c_v")).should("have.text", "16");
+    cy.get(cesc("#\\/m4d_v")).should("have.text", "16");
+    cy.get(cesc("#\\/m4e_v")).should("have.text", "16");
+    cy.get(cesc("#\\/m4f_v")).should("have.text", "8");
   });
 
   it("value on NaN", () => {
