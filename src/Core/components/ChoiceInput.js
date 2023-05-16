@@ -714,7 +714,6 @@ export default class Choiceinput extends Input {
         };
       },
       definition({ dependencyValues }) {
-        console.log(dependencyValues);
         if (dependencyValues.bindValueTo) {
           return {
             setValue: {
