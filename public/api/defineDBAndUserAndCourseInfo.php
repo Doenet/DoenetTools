@@ -1,4 +1,5 @@
 <?php
+namespace Legacy;
 //TODO: Kevin, Emilio – discus True / False vs '1' / '0' returns
 //Note using object oriented variables to avoild variable collisions
 
