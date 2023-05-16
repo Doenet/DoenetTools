@@ -469,6 +469,7 @@ export default React.memo(function ChoiceInput(props) {
             <Radio
               type="radio"
               id={keyBeginning + (i + 1) + "_input"}
+              key={inputKey + "_choice" + (i + 1)}
               name={inputKey}
               value={i + 1}
               checked={rendererSelectedIndices.includes(i + 1)}
@@ -502,6 +503,7 @@ export default React.memo(function ChoiceInput(props) {
             <Checkbox
               type="checkbox"
               id={keyBeginning + (i + 1) + "_input"}
+              key={inputKey + "_choice" + (i + 1)}
               name={inputKey}
               value={i + 1}
               checked={rendererSelectedIndices.includes(i + 1)}
@@ -523,10 +525,12 @@ export default React.memo(function ChoiceInput(props) {
 
     return (
       <React.Fragment>
+        {/* <RadioGroup> */}
         <Stack id={inputKey} style={listStyle}>
           <a name={id} />
           {choiceDoenetTags}
         </Stack>
+        {/* </RadioGroup> */}
         {checkworkComponent}
       </React.Fragment>
     );
