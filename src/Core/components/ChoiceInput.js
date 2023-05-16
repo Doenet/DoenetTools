@@ -5,6 +5,7 @@ import {
   enumeratePermutations,
 } from "../utils/enumeration";
 import { setUpVariantSeedAndRng } from "../utils/variants";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
 
 export default class Choiceinput extends Input {
   constructor(args) {
@@ -37,8 +38,8 @@ export default class Choiceinput extends Input {
 
   static renderChildren = true;
 
-  static variableForPlainMacro = "values";
-  static variableForPlainCopy = "values";
+  static variableForPlainMacro = "selectedValues";
+  static variableForPlainCopy = "selectedValues";
 
   static createsVariants = true;
 
@@ -105,11 +106,22 @@ export default class Choiceinput extends Input {
       fallBackToParentStateVariable: "submitLabelNoCorrectness",
     };
 
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
   static returnChildGroups() {
     return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
       {
         group: "choices",
         componentTypes: ["choice"],
@@ -119,6 +131,9 @@ export default class Choiceinput extends Input {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.inline = {
       public: true,
@@ -223,7 +238,6 @@ export default class Choiceinput extends Input {
                 );
               } else {
                 return {
-                  // makeEssential: ["choiceOrder"],
                   setValue: {
                     choiceOrder: desiredChoiceOrder,
                   },
@@ -638,6 +652,30 @@ export default class Choiceinput extends Input {
       },
     };
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.allSelectedIndices = {
       hasEssential: true,
       returnDependencies() {
@@ -668,10 +706,16 @@ export default class Choiceinput extends Input {
             attributeName: "bindValueTo",
             variableNames: ["value"],
           },
+          // just for inverse definition
+          valueChanged: {
+            dependencyType: "stateVariable",
+            variableName: "valueChanged",
+          },
         };
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.bindValueTo !== null) {
+        console.log(dependencyValues);
+        if (dependencyValues.bindValueTo) {
           return {
             setValue: {
               allSelectedIndices: dependencyValues.indicesMatchedByBoundValue,
@@ -685,7 +729,9 @@ export default class Choiceinput extends Input {
                   let ind = dependencyValues.choicePreselects.indexOf(true);
                   if (ind !== -1) {
                     return [ind + 1];
-                  } else if (dependencyValues.preselectChoice !== null) {
+                  } else if (
+                    Number.isInteger(dependencyValues.preselectChoice)
+                  ) {
                     return [dependencyValues.preselectChoice];
                   } else {
                     return [];
@@ -697,17 +743,14 @@ export default class Choiceinput extends Input {
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.bindValueTo === null) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setEssentialValue: "allSelectedIndices",
-                value: desiredStateVariableValues.allSelectedIndices,
-              },
-            ],
-          };
-        } else {
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.bindValueTo) {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
             let choiceChildrenOrdered = dependencyValues.choiceOrder.map(
@@ -723,17 +766,18 @@ export default class Choiceinput extends Input {
             desiredText = selectedTexts.join(", ");
           }
 
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredText,
-                variableIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredText,
+            variableIndex: 0,
+          });
+        } else {
+          instructions.push({
+            setEssentialValue: "allSelectedIndices",
+            value: desiredStateVariableValues.allSelectedIndices,
+          });
         }
+        return { success: true, instructions };
       },
     };
 

@@ -144,21 +144,14 @@ export class MatrixInput extends Input {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let addMatrixInputGrid = function ({
-      matchedChildren,
-      componentAttributes,
-    }) {
-      if (matchedChildren.length > 0) {
-        return { success: false };
-      }
-
+    let addMatrixInputGrid = function ({ matchedChildren }) {
       let matrixInputGrid = {
-        componentType: "matrixInputGrid",
+        componentType: "_matrixInputGrid",
       };
 
       return {
         success: true,
-        newChildren: [matrixInputGrid],
+        newChildren: [matrixInputGrid, ...matchedChildren],
       };
     };
     sugarInstructions.push({
@@ -171,7 +164,11 @@ export class MatrixInput extends Input {
     return [
       {
         group: "matrixComponentInputs",
-        componentTypes: ["matrixComponentInput"],
+        componentTypes: ["_matrixComponentInput"],
+      },
+      {
+        group: "maths",
+        componentTypes: ["math"],
       },
     ];
   }
@@ -187,10 +184,40 @@ export class MatrixInput extends Input {
       }),
     );
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.valueOriginal = {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value"],
+          proceedIfAllChildrenNotMatched: true, // to avoid circular dependency with readyToExpandWhenResolved of matrixInputGrid child
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -200,10 +227,27 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
       }),
       set: convertValueToMathExpression,
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.bindValueTo) {
+        if (dependencyValues.mathChild.length > 0) {
+          return {
+            setValue: {
+              valueOriginal: dependencyValues.mathChild[0].stateValues.value,
+            },
+          };
+        } else if (dependencyValues.bindValueTo) {
+          return {
+            setValue: {
+              valueOriginal: dependencyValues.bindValueTo.stateValues.value,
+            },
+          };
+        } else {
           return {
             useEssentialOrDefaultValue: {
               valueOriginal: {
@@ -212,12 +256,6 @@ export class MatrixInput extends Input {
             },
           };
         }
-
-        return {
-          setValue: {
-            valueOriginal: dependencyValues.bindValueTo.stateValues.value,
-          },
-        };
       },
       inverseDefinition: function ({
         desiredStateVariableValues,
@@ -226,25 +264,55 @@ export class MatrixInput extends Input {
         // console.log(`inverse definition of valueOriginal for matrixInput`)
         // console.log(desiredStateVariableValues)
 
-        if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.valueOriginal,
-                variableIndex: 0,
-              },
-            ],
-          };
-        }
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+        ];
 
+        if (dependencyValues.mathChild.length > 0) {
+          instructions.push({
+            setDependency: "mathChild",
+            desiredValue: desiredStateVariableValues.valueOriginal,
+            variableIndex: 0,
+            childIndex: 0,
+          });
+        } else if (dependencyValues.bindValueTo) {
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.valueOriginal,
+            variableIndex: 0,
+          });
+        } else {
+          // no math child or bindValueTo, so valueOriginal is essential and give it the desired value
+          instructions.push({
+            setEssentialValue: "valueOriginal",
+            value: desiredStateVariableValues.valueOriginal,
+          });
+        }
+        return { success: true, instructions };
+      },
+    };
+
+    stateVariableDefinitions.immediateValueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { immediateValueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "valueOriginal",
-              value: desiredStateVariableValues.valueOriginal,
+              setEssentialValue: "immediateValueChanged",
+              value: Boolean(desiredStateVariableValues.immediateValueChanged),
             },
           ],
         };
@@ -259,19 +327,29 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "valueOriginal",
         },
+        // just for inverse definition
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
       set: convertValueToMathExpression,
       definition: function ({
         dependencyValues,
         changes,
         justUpdatedForNewComponent,
+        usedDefault,
       }) {
         // console.log(`definition of immediateValueOriginal`)
         // console.log(dependencyValues)
         // console.log(changes);
         // console.log(dependencyValues.valueOriginal.toString())
 
-        if (changes.valueOriginal && !justUpdatedForNewComponent) {
+        if (
+          changes.valueOriginal &&
+          !justUpdatedForNewComponent &&
+          !usedDefault.valueOriginal
+        ) {
           // only update to valueOriginal when it changes
           // (otherwise, let its essential value change)
           return {
@@ -302,6 +380,10 @@ export class MatrixInput extends Input {
           {
             setEssentialValue: "immediateValueOriginal",
             value: desiredStateVariableValues.immediateValueOriginal,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
           },
         ];
 
@@ -353,6 +435,15 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         let numRows = dependencyValues.numRowsPreliminary;
@@ -390,6 +481,8 @@ export class MatrixInput extends Input {
             setDependency: "numRowsPreliminary",
             desiredValue: desiredNumRows,
           },
+          { setDependency: "valueChanged", desiredValue: true },
+          { setDependency: "immediateValueChanged", desiredValue: true },
         ];
 
         if (dependencyValues.haveBoundValue) {
@@ -507,6 +600,15 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         let numColumns = dependencyValues.numColumnsPreliminary;
@@ -552,6 +654,8 @@ export class MatrixInput extends Input {
             setDependency: "numColumnsPreliminary",
             desiredValue: desiredNumColumns,
           },
+          { setDependency: "valueChanged", desiredValue: true },
+          { setDependency: "immediateValueChanged", desiredValue: true },
         ];
 
         if (dependencyValues.haveBoundValue) {
@@ -1964,6 +2068,29 @@ export class MatrixInput extends Input {
       definition: () => ({ setValue: { componentType: "matrix" } }),
     };
 
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        numRows: {
+          dependencyType: "stateVariable",
+          variableName: "numRows",
+        },
+        numColumns: {
+          dependencyType: "stateVariable",
+          variableName: "numColumns",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let nChildrenToRender =
+          dependencyValues.numRows * dependencyValues.numColumns;
+
+        return {
+          setValue: {
+            childIndicesToRender: [...Array(nChildrenToRender).keys()],
+          },
+        };
+      },
+    };
+
     return stateVariableDefinitions;
   }
 
@@ -2028,7 +2155,7 @@ export class MatrixInput extends Input {
 }
 
 export class MatrixInputGrid extends CompositeComponent {
-  static componentType = "matrixInputGrid";
+  static componentType = "_matrixInputGrid";
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -2101,7 +2228,7 @@ export class MatrixInputGrid extends CompositeComponent {
 
     for (let rowInd = 0; rowInd < numRows; rowInd++) {
       serializedComponents.push({
-        componentType: "matrixInputRow",
+        componentType: "_matrixInputRow",
         state: { rowInd },
         uniqueIdentifier: rowInd,
       });
@@ -2169,7 +2296,7 @@ export class MatrixInputGrid extends CompositeComponent {
 
       for (let rowInd = previousNumRows; rowInd < numRows; rowInd++) {
         newSerializedReplacements.push({
-          componentType: "matrixInputRow",
+          componentType: "_matrixInputRow",
           state: { rowInd },
           uniqueIdentifier: rowInd,
         });
@@ -2193,7 +2320,7 @@ export class MatrixInputGrid extends CompositeComponent {
 }
 
 export class MatrixInputRow extends CompositeComponent {
-  static componentType = "matrixInputRow";
+  static componentType = "_matrixInputRow";
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -2259,7 +2386,7 @@ export class MatrixInputRow extends CompositeComponent {
 
     for (let colInd = 0; colInd < numColumns; colInd++) {
       serializedComponents.push({
-        componentType: "matrixComponentInput",
+        componentType: "_matrixComponentInput",
         state: {
           rowInd,
           colInd,
@@ -2331,7 +2458,7 @@ export class MatrixInputRow extends CompositeComponent {
 
       for (let colInd = previousNumColumns; colInd < numColumns; colInd++) {
         newSerializedReplacements.push({
-          componentType: "matrixComponentInput",
+          componentType: "_matrixComponentInput",
           state: {
             rowInd,
             colInd,
@@ -2366,7 +2493,7 @@ export default class MatrixComponentInput extends BaseComponent {
       updateValue: this.updateValue.bind(this),
     });
   }
-  static componentType = "matrixComponentInput";
+  static componentType = "_matrixComponentInput";
   static rendererType = "mathInput";
 
   static variableForPlainMacro = "value";

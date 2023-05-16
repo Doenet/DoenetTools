@@ -709,6 +709,206 @@ describe("TextInput Tag Tests", function () {
     });
   });
 
+  it("downstream from textinput via child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Original text: <text>hello there</text></p>
+    <p>textinput based on text: <textinput>$_text1</textinput></p>
+    <p>Copied textinput: <textInput copySource="_textinput1" name="textinput2" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "hello there");
+
+    cy.get(cesc("#\\/_textinput1_input")).should("have.value", "hello there");
+    cy.get(cesc("#\\/textinput2_input")).should("have.value", "hello there");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_textinput1"].stateValues.value).eq(
+        "hello there",
+      );
+      expect(stateVariables["/_textinput1"].stateValues.immediateValue).eq(
+        "hello there",
+      );
+      expect(stateVariables["/_text1"].stateValues.value).eq("hello there");
+      expect(stateVariables["/textinput2"].stateValues.value).eq("hello there");
+      expect(stateVariables["/textinput2"].stateValues.immediateValue).eq(
+        "hello there",
+      );
+    });
+
+    cy.log("enter new values");
+    cy.get(cesc("#\\/_textinput1_input")).clear().type(`bye now{enter}`);
+
+    cy.get(cesc("#\\/_textinput1_input")).should("have.value", "bye now");
+    cy.get(cesc("#\\/textinput2_input")).should("have.value", "bye now");
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "bye now");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_textinput1"].stateValues.value).eq("bye now");
+      expect(stateVariables["/_textinput1"].stateValues.immediateValue).eq(
+        "bye now",
+      );
+      expect(stateVariables["/_text1"].stateValues.value).eq("bye now");
+      expect(stateVariables["/textinput2"].stateValues.value).eq("bye now");
+      expect(stateVariables["/textinput2"].stateValues.immediateValue).eq(
+        "bye now",
+      );
+    });
+
+    cy.log("prefill ignored");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Original text: <text>hello there</text></p>
+    <p>textinput based on text: <textinput prefill="bye now">$_text1</textinput></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_textinput1_input")).should("have.value", "hello there");
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "hello there");
+
+    cy.log("prefill ignored, use string child");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>textinput based on text: <textinput prefill="bye now">Good morning</textinput></p>
+    <p>value: <text copySource="_textinput1" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_textinput1_input")).should("have.value", "Good morning");
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "Good morning");
+
+    cy.log("enter new values");
+    cy.get(cesc("#\\/_textinput1_input")).clear().type(`Good night{enter}`);
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "Good night");
+
+    cy.log("bindvalue ignored, use string child");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Ignore me: <text>ignore</text></p>
+    <p>textinput based on text: <textinput bindValueTo="$_text1">Override with this</textinput></p>
+    <p>value: <text copySource="_textinput1" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_textinput1_input")).should(
+      "have.value",
+      "Override with this",
+    );
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "ignore");
+    cy.get(cesc("#\\/_text2")).should("have.text", "Override with this");
+
+    cy.log("enter new values");
+    cy.get(cesc("#\\/_textinput1_input")).clear().type(`Changed{enter}`);
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "ignore");
+    cy.get(cesc("#\\/_text2")).should("have.text", "Changed");
+
+    cy.log("values revert if not updatable");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Original text: <text>update</text></p>
+    <p>textinput based on text: <textinput>can't $_text1 me</textinput></p>
+    <p>immediate value: <copy prop="immediateValue" target="_textinput1" assignNames="iv" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_textinput1_input")).should(
+      "have.value",
+      `can't update me`,
+    );
+
+    cy.get(cesc("#\\/_text1")).should("have.text", `update`);
+
+    cy.get(cesc("#\\/iv")).should("have.text", `can't update me`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_textinput1"].stateValues.value).eq(
+        `can't update me`,
+      );
+      expect(stateVariables["/_textinput1"].stateValues.immediateValue).eq(
+        `can't update me`,
+      );
+      expect(stateVariables["/_text1"].stateValues.value).eq(`update`);
+    });
+
+    cy.log("enter new values");
+    cy.get(cesc("#\\/_textinput1_input")).clear().type(`disappear`);
+
+    cy.get(cesc("#\\/_textinput1_input")).should("have.value", `disappear`);
+
+    cy.get(cesc("#\\/_text1")).should("have.text", `update`);
+
+    cy.get(cesc("#\\/iv")).should("have.text", `disappear`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_textinput1"].stateValues.value).eq(
+        `can't update me`,
+      );
+      expect(stateVariables["/_textinput1"].stateValues.immediateValue).eq(
+        `disappear`,
+      );
+      expect(stateVariables["/_text1"].stateValues.value).eq(`update`);
+    });
+
+    cy.log("values revert when press enter");
+    cy.get(cesc("#\\/_textinput1_input")).type(`{enter}`);
+
+    cy.get(cesc("#\\/_textinput1_input")).should(
+      "have.value",
+      `can't update me`,
+    );
+
+    cy.get(cesc("#\\/_text1")).should("have.text", `update`);
+
+    cy.get(cesc("#\\/iv")).should("have.text", `can't update me`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_textinput1"].stateValues.value).eq(
+        `can't update me`,
+      );
+      expect(stateVariables["/_textinput1"].stateValues.immediateValue).eq(
+        `can't update me`,
+      );
+      expect(stateVariables["/_text1"].stateValues.value).eq(`update`);
+    });
+  });
+
   it("textinput based on value of textinput", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -1104,7 +1304,7 @@ describe("TextInput Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/ti_input")).type("hello", { force: true });
+    cy.get(cesc("#\\/ti_input")).type("hello");
 
     cy.get(cesc("#\\/piv")).should("have.text", "immediate value: hello");
     cy.get(cesc("#\\/pv")).should("have.text", "value: ");
@@ -1541,5 +1741,437 @@ describe("TextInput Tag Tests", function () {
       .should("have.text", "62");
     cy.get(cesc2("#/n1")).should("have.text", "NaN");
     cy.get(cesc2("#/n2")).should("have.text", "3");
+  });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <p><textInput name="ti1" /> <text copySource="ti1" name="ti1a" /> <boolean copysource="ti1.valueChanged" name="ti1changed" /> <text copySource="ti1.immediateValue" name="ti1iva" /> <boolean copysource="ti1.immediateValueChanged" name="ti1ivchanged" /></p>
+    <p><textInput name="ti2" prefill="apple" /> <text copySource="ti2" name="ti2a" /> <boolean copysource="ti2.valueChanged" name="ti2changed" /> <text copySource="ti2.immediateValue" name="ti2iva" /> <boolean copysource="ti2.immediateValueChanged" name="ti2ivchanged" /></p>
+    <p><textInput name="ti3" bindValueTo="$ti1" /> <text copySource="ti3" name="ti3a" /> <boolean copysource="ti3.valueChanged" name="ti3changed" /> <text copySource="ti3.immediateValue" name="ti3iva" /> <boolean copysource="ti3.immediateValueChanged" name="ti3ivchanged" /></p>
+    <p><textInput name="ti4">$ti2.immediateValue</textInput> <text copySource="ti4" name="ti4a" /> <boolean copysource="ti4.valueChanged" name="ti4changed" /> <text copySource="ti4.immediateValue" name="ti4iva" /> <boolean copysource="ti4.immediateValueChanged" name="ti4ivchanged" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in first marks only first immediate value as changed");
+
+    cy.get(cesc2("#/ti1") + "_input").type("banana");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in first marks only first value as changed");
+
+    cy.get(cesc2("#/ti1") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in second marks only second immediate value as changed");
+
+    cy.get(cesc2("#/ti2") + "_input")
+      .clear()
+      .type("cherry", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in second marks only second value as changed");
+
+    cy.get(cesc2("#/ti2") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks third immediate value as changed");
+
+    cy.get(cesc2("#/ti3") + "_input")
+      .clear()
+      .type("dragonfruit", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ti3iva")).should("have.text", "dragonfruit");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in third marks third value as changed");
+
+    cy.get(cesc2("#/ti3") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti3a")).should("have.text", "dragonfruit");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks fourth immediate value as changed");
+
+    cy.get(cesc2("#/ti4") + "_input")
+      .clear()
+      .type("eggplant", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ti4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "true");
+
+    cy.log("press enter in fourth marks fourth value as changed");
+
+    cy.get(cesc2("#/ti4") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti4a")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2a")).should("have.text", "eggplant");
+    cy.get(cesc2("#/ti3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4a")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "eggplant");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks only third immediate value as changed");
+
+    cy.get(cesc2("#/ti3") + "_input").type("banana");
+
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "press enter in third marks first and third value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/ti3") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks only fourth immediate value as changed");
+
+    cy.get(cesc2("#/ti4") + "_input")
+      .clear()
+      .type("cherry", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "true");
+
+    cy.log(
+      "press enter in fourth marks third and fourth value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/ti4") + "_input").type("{enter}");
+
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ti3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ti4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ti1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ti4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/ti1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ti4ivchanged")).should("have.text", "true");
+  });
+
+  it("text input with label", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><textInput name="ti1" ><label>Type something</label></textInput></p>
+    <p><textInput name="ti2"><label>Hello <math>a/b</math></label></textInput></p>
+
+     `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ti1")).should("have.text", "Type something");
+    cy.get(cesc2("#/ti2")).should("contain.text", "Hello");
+    cy.get(cesc2("#/ti2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "ab");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ti1"].stateValues.label).eq("Type something");
+      expect(stateVariables["/ti2"].stateValues.label).eq(
+        "Hello \\(\\frac{a}{b}\\)",
+      );
+    });
   });
 });

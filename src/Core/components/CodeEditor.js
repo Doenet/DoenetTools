@@ -199,6 +199,30 @@ export default class CodeEditor extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
@@ -220,8 +244,29 @@ export default class CodeEditor extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "prefillFromChildren",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
+        // just for inverse definition
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues, usedDefault, changes }) {
+        // If the only reason for this update was that we marked immediateValue changed,
+        // then don't mark value as changed.
+        // TODO: this seems like unnecessary complexity, but we needed it to set immediateValueChanged value changed.
+        // Is there a better way of accomplishing this?
+        if (
+          changes.immediateValueChanged &&
+          Object.keys(changes).length === 1
+        ) {
+          return { noChanges: ["value"] };
+        }
+
         if (!dependencyValues.bindValueTo) {
           return {
             useEssentialOrDefaultValue: {
@@ -246,26 +291,53 @@ export default class CodeEditor extends BlockComponent {
         desiredStateVariableValues,
         dependencyValues,
       }) {
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
+          },
+        ];
+
         if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.value,
-                variableIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+          });
+        } else {
+          // no bindValueTo, so value is essential and give it the desired value
+          instructions.push({
+            setEssentialValue: "value",
+            value: desiredStateVariableValues.value,
+          });
         }
 
-        // subsetValue is essential; give it the desired value
+        return { success: true, instructions };
+      },
+    };
+
+    stateVariableDefinitions.immediateValueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { immediateValueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "value",
-              value: desiredStateVariableValues.value,
+              setEssentialValue: "immediateValueChanged",
+              value: Boolean(desiredStateVariableValues.immediateValueChanged),
             },
           ],
         };
@@ -278,28 +350,39 @@ export default class CodeEditor extends BlockComponent {
         createComponentOfType: "text",
       },
       hasEssential: true,
+      shadowVariable: true,
       forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
         },
+        // just for inverse definition
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
       definition: function ({
         dependencyValues,
         changes,
         justUpdatedForNewComponent,
+        usedDefault,
       }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
 
-        if (changes.value && !justUpdatedForNewComponent) {
+        if (
+          changes.value &&
+          !justUpdatedForNewComponent &&
+          !usedDefault.value
+        ) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
             setValue: { immediateValue: dependencyValues.value },
-            makeEssential: { immediateValue: true },
+            setEssentialValue: { immediateValue: dependencyValues.value },
           };
         } else {
           return {
@@ -322,6 +405,10 @@ export default class CodeEditor extends BlockComponent {
           {
             setEssentialValue: "immediateValue",
             value: desiredStateVariableValues.immediateValue,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
           },
         ];
 

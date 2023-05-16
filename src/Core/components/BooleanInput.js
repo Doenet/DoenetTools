@@ -3,9 +3,11 @@ import {
   returnAnchorAttributes,
   returnAnchorStateVariableDefinition,
 } from "../utils/graphical";
-import { returnLabelStateVariableDefinitions } from "../utils/label";
+import {
+  returnLabelStateVariableDefinitions,
+  returnWrapNonLabelsSugarFunction,
+} from "../utils/label";
 import Input from "./abstract/Input";
-import me from "math-expressions";
 
 export default class BooleanInput extends Input {
   constructor(args) {
@@ -77,11 +79,27 @@ export default class BooleanInput extends Input {
     return attributes;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    sugarInstructions.push({
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "boolean",
+      }),
+    });
+
+    return sugarInstructions;
+  }
+
   static returnChildGroups() {
     return [
       {
         group: "labels",
         componentTypes: ["label"],
+      },
+      {
+        group: "booleans",
+        componentTypes: ["boolean"],
       },
     ];
   }
@@ -95,6 +113,30 @@ export default class BooleanInput extends Input {
     let anchorDefinition = returnAnchorStateVariableDefinition();
     Object.assign(stateVariableDefinitions, anchorDefinition);
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
@@ -104,6 +146,11 @@ export default class BooleanInput extends Input {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
+        booleanChild: {
+          dependencyType: "child",
+          childGroups: ["booleans"],
+          variableNames: ["value"],
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -113,9 +160,24 @@ export default class BooleanInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.bindValueTo) {
+        if (dependencyValues.booleanChild.length > 0) {
+          return {
+            setValue: {
+              value: dependencyValues.booleanChild[0].stateValues.value,
+            },
+          };
+        } else if (dependencyValues.bindValueTo) {
+          return {
+            setValue: { value: dependencyValues.bindValueTo.stateValues.value },
+          };
+        } else {
           return {
             useEssentialOrDefaultValue: {
               value: {
@@ -124,36 +186,40 @@ export default class BooleanInput extends Input {
             },
           };
         }
-        return {
-          setValue: { value: dependencyValues.bindValueTo.stateValues.value },
-        };
       },
       inverseDefinition: function ({
         desiredStateVariableValues,
         dependencyValues,
       }) {
-        if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.value,
-                variableIndex: 0,
-              },
-            ],
-          };
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.booleanChild.length > 0) {
+          instructions.push({
+            setDependency: "booleanChild",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+            childIndex: 0,
+          });
+        } else if (dependencyValues.bindValueTo) {
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+          });
+        } else {
+          // no child or bindValueTo, so value is essential and give it the desired value
+          instructions.push({
+            setEssentialValue: "value",
+            value: desiredStateVariableValues.value,
+          });
         }
 
-        return {
-          success: true,
-          instructions: [
-            {
-              setEssentialValue: "value",
-              value: desiredStateVariableValues.value,
-            },
-          ],
-        };
+        return { success: true, instructions };
       },
     };
 

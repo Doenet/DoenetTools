@@ -3,9 +3,11 @@ import {
   returnAnchorAttributes,
   returnAnchorStateVariableDefinition,
 } from "../utils/graphical";
-import { returnLabelStateVariableDefinitions } from "../utils/label";
+import {
+  returnLabelStateVariableDefinitions,
+  returnWrapNonLabelsSugarFunction,
+} from "../utils/label";
 import Input from "./abstract/Input";
-import me from "math-expressions";
 
 export default class Textinput extends Input {
   constructor(args) {
@@ -90,11 +92,27 @@ export default class Textinput extends Input {
     return attributes;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    sugarInstructions.push({
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "text",
+      }),
+    });
+
+    return sugarInstructions;
+  }
+
   static returnChildGroups() {
     return [
       {
         group: "labels",
         componentTypes: ["label"],
+      },
+      {
+        group: "texts",
+        componentTypes: ["text"],
       },
     ];
   }
@@ -171,6 +189,30 @@ export default class Textinput extends Input {
       },
     };
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
@@ -179,6 +221,11 @@ export default class Textinput extends Input {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
+        textChild: {
+          dependencyType: "child",
+          childGroups: ["texts"],
+          variableNames: ["value"],
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -188,9 +235,40 @@ export default class Textinput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        // just for inverse definition
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+        },
+        // just for inverse definition
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        if (!dependencyValues.bindValueTo) {
+      definition: function ({ dependencyValues, changes }) {
+        // If the only reason for this update was that we marked immediateValue changed,
+        // then don't mark value as changed.
+        // TODO: this seems like unnecessary complexity, but we needed it to set immediateValueChanged value changed.
+        // Is there a better way of accomplishing this?
+        if (
+          changes.immediateValueChanged &&
+          Object.keys(changes).length === 1
+        ) {
+          return { noChanges: ["value"] };
+        }
+
+        if (dependencyValues.textChild.length > 0) {
+          return {
+            setValue: {
+              value: dependencyValues.textChild[0].stateValues.value,
+            },
+          };
+        } else if (dependencyValues.bindValueTo) {
+          return {
+            setValue: { value: dependencyValues.bindValueTo.stateValues.value },
+          };
+        } else {
           return {
             useEssentialOrDefaultValue: {
               value: {
@@ -199,34 +277,65 @@ export default class Textinput extends Input {
             },
           };
         }
-        return {
-          setValue: { value: dependencyValues.bindValueTo.stateValues.value },
-        };
       },
       inverseDefinition: function ({
         desiredStateVariableValues,
         dependencyValues,
       }) {
-        if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.value,
-                variableIndex: 0,
-              },
-            ],
-          };
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.textChild.length > 0) {
+          instructions.push({
+            setDependency: "textChild",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+            childIndex: 0,
+          });
+        } else if (dependencyValues.bindValueTo) {
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+          });
+        } else {
+          // no child or bindValueTo, so value is essential and give it the desired value
+          instructions.push({
+            setEssentialValue: "value",
+            value: desiredStateVariableValues.value,
+          });
         }
 
-        // subsetValue is essential; give it the desired value
+        return { success: true, instructions };
+      },
+    };
+
+    stateVariableDefinitions.immediateValueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { immediateValueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "value",
-              value: desiredStateVariableValues.value,
+              setEssentialValue: "immediateValueChanged",
+              value: Boolean(desiredStateVariableValues.immediateValueChanged),
             },
           ],
         };
@@ -246,17 +355,27 @@ export default class Textinput extends Input {
           dependencyType: "stateVariable",
           variableName: "value",
         },
+        // just for inverse definition
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+        },
       }),
       definition: function ({
         dependencyValues,
         changes,
         justUpdatedForNewComponent,
+        usedDefault,
       }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
 
-        if (changes.value && !justUpdatedForNewComponent) {
+        if (
+          changes.value &&
+          !justUpdatedForNewComponent &&
+          !usedDefault.value
+        ) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
@@ -283,6 +402,10 @@ export default class Textinput extends Input {
           {
             setEssentialValue: "immediateValue",
             value: desiredStateVariableValues.immediateValue,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
           },
         ];
 
