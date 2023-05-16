@@ -45,7 +45,8 @@
         "eamodio.gitlens",
         "DotJoshJohnson.xml",
         "wix.vscode-import-cost",
-        "bmewburn.vscode-intelephense-client"
+        "bmewburn.vscode-intelephense-client",
+        "Orta.vscode-jest"
       ],
       "settings": {
         "editor.formatOnSave": true,
