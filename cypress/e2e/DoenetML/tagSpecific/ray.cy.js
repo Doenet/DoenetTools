@@ -2339,12 +2339,12 @@ describe("Ray Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <ray through="(-1,-0.05)" endpoint="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="P" assignNames="Pa" />
+  <copy target="P" assignNames="Pa" displayDigits="8" />
   `,
         },
         "*",
@@ -9296,7 +9296,7 @@ describe("Ray Tag Tests", function () {
     <copy target="v5" through="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="endpoint" assignNames="v0t" />
   <copy target="g0/v0" prop="through" assignNames="v0h" />
@@ -10361,5 +10361,410 @@ describe("Ray Tag Tests", function () {
     cy.get(cesc("#\\/Adescrip")).should("have.text", "Ray A is thick yellow.");
     cy.get(cesc("#\\/Bdescrip")).should("have.text", "B is a light red ray.");
     cy.get(cesc("#\\/Cdescrip")).should("have.text", "C is a thin white ray.");
+  });
+
+  it("ray with through and endpoint, endpoint constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" />
+    </constraints>
+  </point>
+  <point name="Q">(-4,2)</point>
+  <ray endpoint="$P" through="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="endpoint" target="_ray1" assignNames="endpoint" />
+  <copy prop="through" target="_ray1" assignNames="through" />
+  <copy prop="direction" target="_ray1" assignNames="direction" />
+  </graph>
+  
+  <copy prop="endpoint" target="_ray1" assignNames="endpoint2" />
+  <copy prop="through" target="_ray1" assignNames="through2" />
+  <copy prop="direction" target="_ray1" assignNames="direction2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let endpointx = 5;
+    let endpointy = 0;
+    let throughx = -4;
+    let throughy = 2;
+    let directionEndpointShiftx = 0;
+    let directionEndpointShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move ray up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      endpointx += moveX;
+      throughx += moveX;
+      endpointy += moveY;
+      throughy += moveY;
+
+      win.callAction1({
+        actionName: "moveRay",
+        componentName: "/_ray1",
+        args: {
+          endpointcoords: [endpointx, endpointy],
+          throughcoords: [throughx, throughy],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      endpointx += moveX;
+      throughx += moveX;
+      endpointy += moveY;
+      throughy += moveY;
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied through");
+    cy.window().then(async (win) => {
+      throughx = -5;
+      throughy = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/through",
+        args: { x: throughx, y: throughy },
+      });
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied endpoint");
+    cy.window().then(async (win) => {
+      endpointx = -3;
+      endpointy = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/endpoint",
+        args: { x: endpointx, y: endpointy },
+      });
+
+      // adjust for constraints
+      endpointx = -5;
+      endpointy = -9;
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied direction");
+    cy.window().then(async (win) => {
+      let directionEndpointShiftx = -4;
+      let directionEndpointShifty = -5;
+
+      let directionx = 2;
+      let directiony = -3;
+
+      throughx = endpointx + directionx;
+      throughy = endpointy + directiony;
+
+      let directionthroughx = directionEndpointShiftx + directionx;
+      let directionthroughy = directionEndpointShifty + directiony;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/direction",
+        args: {
+          tailcoords: [directionEndpointShiftx, directionEndpointShifty],
+          headcoords: [directionthroughx, directionthroughy],
+        },
+      });
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+  });
+
+  it("ray with through and endpoint, through point constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)</point>
+  <point name="Q">(-4,2)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" />
+    </constraints>
+  </point>
+  <ray endpoint="$P" through="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="endpoint" target="_ray1" assignNames="endpoint" />
+  <copy prop="through" target="_ray1" assignNames="through" />
+  <copy prop="direction" target="_ray1" assignNames="direction" />
+  </graph>
+  
+  <copy prop="endpoint" target="_ray1" assignNames="endpoint2" />
+  <copy prop="through" target="_ray1" assignNames="through2" />
+  <copy prop="direction" target="_ray1" assignNames="direction2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let endpointx = 4;
+    let endpointy = 1;
+    let throughx = -5;
+    let throughy = 3;
+    let directionEndpointShiftx = 0;
+    let directionEndpointShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move ray up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      endpointx += moveX;
+      throughx += moveX;
+      endpointy += moveY;
+      throughy += moveY;
+
+      win.callAction1({
+        actionName: "moveRay",
+        componentName: "/_ray1",
+        args: {
+          endpointcoords: [endpointx, endpointy],
+          throughcoords: [throughx, throughy],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      endpointx += moveX;
+      throughx += moveX;
+      endpointy += moveY;
+      throughy += moveY;
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied through");
+    cy.window().then(async (win) => {
+      throughx = -5;
+      throughy = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/through",
+        args: { x: throughx, y: throughy },
+      });
+
+      // adjust for constraints
+      throughx = -5;
+      throughy = 6;
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied endpoint");
+    cy.window().then(async (win) => {
+      endpointx = -3;
+      endpointy = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/endpoint",
+        args: { x: endpointx, y: endpointy },
+      });
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+
+    cy.log("move copied direction");
+    cy.window().then(async (win) => {
+      let directionEndpointShiftx = -4;
+      let directionEndpointShifty = -5;
+
+      let directionx = 2;
+      let directiony = -3;
+
+      throughx = endpointx + directionx;
+      throughy = endpointy + directiony;
+
+      let directionthroughx = directionEndpointShiftx + directionx;
+      let directionthroughy = directionEndpointShifty + directiony;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/direction",
+        args: {
+          tailcoords: [directionEndpointShiftx, directionEndpointShifty],
+          headcoords: [directionthroughx, directionthroughy],
+        },
+      });
+
+      // adjust for constraints
+      throughx = Math.round(throughx / 5) * 5;
+      throughy = Math.round(throughy / 3) * 3;
+      throughx = throughx === 0 ? 0 : throughx; // change -0 to 0
+      directionx = throughx - endpointx;
+      directiony = throughy - endpointy;
+
+      await testRayCopiedHTD({
+        throughx,
+        throughy,
+        endpointx,
+        endpointy,
+        directionEndpointShiftx,
+        directionEndpointShifty,
+      });
+    });
+  });
+
+  it("round vector", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <ray endpoint="(2.58106823,510.523950183)" through="(5.2164162,623.5234601)" name="r1"/>
+
+    $r1.direction{assignNames="r1d"}
+    $r1.endpoint{assignNames="r1t"}
+    $r1.through{assignNames="r1h"}
+    
+    <p>
+      <ray copysource="r1" name="r2" displayDigits="6" />
+      
+      $r2.direction{assignNames="r2d"}
+      $r2.endpoint{assignNames="r2t"}
+      $r2.through{assignNames="r2h"}
+    </p>
+
+    <ray copysource="r1" name="r3" displayDecimals="0" ignoreDisplayDigits />
+    
+    $r3.direction{assignNames="r3d"}
+    $r3.endpoint{assignNames="r3t"}
+    $r3.through{assignNames="r3h"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/r1d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/r1t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58,510.52)");
+    cy.get(cesc2("#/r1h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.22,623.52)");
+
+    cy.get(cesc2("#/r2d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/r2t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58107,510.524)");
+    cy.get(cesc2("#/r2h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.21642,623.523)");
+
+    cy.get(cesc2("#/r3d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/r3t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,511)");
+    cy.get(cesc2("#/r3h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,624)");
   });
 });

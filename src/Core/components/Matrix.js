@@ -1,3 +1,7 @@
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 import MathComponent from "./Math";
 import me from "math-expressions";
 
@@ -25,39 +29,17 @@ export default class Matrix extends MathComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.defaultEntry = {
       createComponentOfType: "math",
       createStateVariable: "defaultEntry",
       defaultValue: me.fromAst(0),
     };
-    attributes.nRows = {
+    attributes.numRows = {
       createComponentOfType: "integer",
     };
-    attributes.nColumns = {
+    attributes.numColumns = {
       createComponentOfType: "integer",
     };
 
@@ -110,9 +92,6 @@ export default class Matrix extends MathComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.displayDecimals;
-    delete stateVariableDefinitions.displaySmallAsZero;
-    delete stateVariableDefinitions.padZeros;
     delete stateVariableDefinitions.codePre;
     delete stateVariableDefinitions.mathChildrenFunctionSymbols;
     delete stateVariableDefinitions.expressionWithCodes;
@@ -121,69 +100,10 @@ export default class Matrix extends MathComponent {
     delete stateVariableDefinitions.canBeModified;
     delete stateVariableDefinitions.mathChildrenByVectorComponent;
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
-      },
-    };
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.unordered = {
       public: true,
@@ -203,100 +123,101 @@ export default class Matrix extends MathComponent {
         rowChildren: {
           dependencyType: "child",
           childGroups: ["rows"],
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         colChildren: {
           dependencyType: "child",
           childGroups: ["columns"],
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
         mathChildren: {
           dependencyType: "child",
           childGroups: ["maths"],
           variableNames: ["matrixSize"],
         },
-        nRowsAttr: {
+        numRowsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nRows",
+          attributeName: "numRows",
           variableNames: ["value"],
         },
-        nColumnsAttr: {
+        numColumnsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "nColumns",
+          attributeName: "numColumns",
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
-        let nRows = null,
-          nColumns = null;
+        let numRows = null,
+          numColumns = null;
 
-        if (dependencyValues.nRowsAttr) {
-          nRows = dependencyValues.nRowsAttr.stateValues.value;
-          if (!(Number.isFinite(nRows) && nRows > 0)) {
-            nRows = null;
+        if (dependencyValues.numRowsAttr) {
+          numRows = dependencyValues.numRowsAttr.stateValues.value;
+          if (!(Number.isFinite(numRows) && numRows > 0)) {
+            numRows = null;
           }
         }
-        if (dependencyValues.nColumnsAttr) {
-          nColumns = dependencyValues.nColumnsAttr.stateValues.value;
-          if (!(Number.isFinite(nColumns) && nColumns > 0)) {
-            nColumns = null;
+        if (dependencyValues.numColumnsAttr) {
+          numColumns = dependencyValues.numColumnsAttr.stateValues.value;
+          if (!(Number.isFinite(numColumns) && numColumns > 0)) {
+            numColumns = null;
           }
         }
 
         if (dependencyValues.rowChildren.length > 0) {
-          if (nRows === null) {
-            nRows = dependencyValues.rowChildren.length;
+          if (numRows === null) {
+            numRows = dependencyValues.rowChildren.length;
           }
-          if (nColumns === null) {
-            nColumns = Math.max(
+          if (numColumns === null) {
+            numColumns = Math.max(
               1,
               ...dependencyValues.rowChildren.map(
-                (x) => x.stateValues.nComponents,
+                (x) => x.stateValues.numComponents,
               ),
             );
           }
         } else if (dependencyValues.colChildren.length > 0) {
-          if (nColumns === null) {
-            nColumns = dependencyValues.colChildren.length;
+          if (numColumns === null) {
+            numColumns = dependencyValues.colChildren.length;
           }
-          if (nRows === null) {
-            nRows = Math.max(
+          if (numRows === null) {
+            numRows = Math.max(
               1,
               ...dependencyValues.colChildren.map(
-                (x) => x.stateValues.nComponents,
+                (x) => x.stateValues.numComponents,
               ),
             );
           }
         } else if (dependencyValues.mathChildren.length === 1) {
-          if (nRows === null) {
-            nRows = dependencyValues.mathChildren[0].stateValues.matrixSize[0];
+          if (numRows === null) {
+            numRows =
+              dependencyValues.mathChildren[0].stateValues.matrixSize[0];
           }
-          if (nColumns === null) {
-            nColumns =
+          if (numColumns === null) {
+            numColumns =
               dependencyValues.mathChildren[0].stateValues.matrixSize[1];
           }
         } else {
-          // if nRows or nColumns is not specified, set to 1,
+          // if numRows or numColumns is not specified, set to 1,
           // except if both are not specified, set both to 0
-          if (nRows === null) {
-            if (nColumns === null) {
-              nRows = 0;
-              nColumns = 0;
+          if (numRows === null) {
+            if (numColumns === null) {
+              numRows = 0;
+              numColumns = 0;
             } else {
-              nRows = 1;
+              numRows = 1;
             }
-          } else if (nColumns === null) {
-            nColumns = 1;
+          } else if (numColumns === null) {
+            numColumns = 1;
           }
         }
 
-        return { setValue: { matrixSizePre: [nRows, nColumns] } };
+        return { setValue: { matrixSizePre: [numRows, numColumns] } };
       },
     };
 
     stateVariableDefinitions.matrixPre = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       hasEssential: true,
       returnArraySizeDependencies: () => ({
         matrixSizePre: {

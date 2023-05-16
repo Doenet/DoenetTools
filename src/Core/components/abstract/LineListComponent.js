@@ -53,7 +53,7 @@ export default class LineListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nLines = {
+    stateVariableDefinitions.numLines = {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "child",
@@ -63,8 +63,8 @@ export default class LineListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nLines: dependencyValues.lineChildren.length },
-          checkForActualChange: { nLines: true },
+          setValue: { numLines: dependencyValues.lineChildren.length },
+          checkForActualChange: { numLines: true },
         };
       },
     };
@@ -73,13 +73,13 @@ export default class LineListComponent extends BaseComponent {
       isArray: true,
       entryPrefixes: ["lineName"],
       returnArraySizeDependencies: () => ({
-        nLines: {
+        numLines: {
           dependencyType: "stateVariable",
-          variableName: "nLines",
+          variableName: "numLines",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nLines];
+        return [dependencyValues.numLines];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

@@ -66,6 +66,19 @@ export default class CodeEditor extends BlockComponent {
       public: true,
     };
 
+    attributes.resultsLocation = {
+      createComponentOfType: "text",
+      createStateVariable: "resultsLocation",
+      defaultValue: "bottom",
+      forRenderer: true,
+      public: true,
+      toLowerCase: true,
+      validValues: ["bottom", "left", "right"],
+    };
+
+    // Note: these attributes don't accomplish anything
+    // until we can find a way to communicate with the
+    // rendered DoenetML again
     attributes.renderedName = {
       createPrimitiveOfType: "string",
     };
@@ -81,10 +94,6 @@ export default class CodeEditor extends BlockComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let addCodeViewer = function ({ matchedChildren, componentAttributes }) {
-      if (matchedChildren.length > 0) {
-        return { success: false };
-      }
-
       let codeViewer = {
         componentType: "codeViewer",
         children: [{ componentType: "renderDoenetML" }],
@@ -102,24 +111,28 @@ export default class CodeEditor extends BlockComponent {
         };
       }
 
-      if (componentAttributes.staticName) {
-        let hiddenRenderDoenetML = {
-          componentType: "codeViewer",
-          attributes: {
-            hide: {
-              component: { componentType: "boolean", state: { value: true } },
-            },
-          },
-          children: [
-            {
-              componentType: "renderDoenetML",
-              props: { name: componentAttributes.staticName },
-            },
-          ],
-        };
-        //Update code depends on this being the 2nd index position
-        newChildren.push(hiddenRenderDoenetML);
-      }
+      // TODO: if we can come up with a way to communicate to the rendered doenetML
+      // we can revive the static version
+      // if (componentAttributes.staticName) {
+      //   let hiddenRenderDoenetML = {
+      //     componentType: "codeViewer",
+      //     attributes: {
+      //       hide: {
+      //         component: { componentType: "boolean", state: { value: true } },
+      //       },
+      //     },
+      //     children: [
+      //       {
+      //         componentType: "renderDoenetML",
+      //         props: { name: componentAttributes.staticName },
+      //       },
+      //     ],
+      //   };
+      //   //Update code depends on this being the 2nd index position
+      //   newChildren.push(hiddenRenderDoenetML);
+      // }
+
+      newChildren.push(...matchedChildren);
 
       return {
         success: true,
@@ -135,8 +148,8 @@ export default class CodeEditor extends BlockComponent {
   static returnChildGroups() {
     return [
       {
-        group: "codeViewers",
-        componentTypes: ["codeViewer"],
+        group: "anything",
+        componentTypes: ["_base"],
       },
     ];
   }
@@ -154,14 +167,35 @@ export default class CodeEditor extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "viewerRatio",
         },
+        resultsLocation: {
+          dependencyType: "stateVariable",
+          variableName: "resultsLocation",
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.height.isAbsolute) {
           throw Error("Codeeditor relative height not implemented");
         }
-        let size = dependencyValues.height.size * dependencyValues.viewerRatio;
+        let size = dependencyValues.height.size;
+        if (dependencyValues.resultsLocation === "bottom") {
+          size *= dependencyValues.viewerRatio;
+        }
         let viewerHeight = { size, isAbsolute: true };
         return { setValue: { viewerHeight } };
+      },
+    };
+
+    stateVariableDefinitions.prefillFromChildren = {
+      returnDependencies: () => ({
+        childrenDoenetML: {
+          dependencyType: "doenetML",
+          displayOnlyChildren: true,
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: { prefillFromChildren: dependencyValues.childrenDoenetML },
+        };
       },
     };
 
@@ -182,14 +216,24 @@ export default class CodeEditor extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        prefillFromChildren: {
+          dependencyType: "stateVariable",
+          variableName: "prefillFromChildren",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (!dependencyValues.bindValueTo) {
           return {
             useEssentialOrDefaultValue: {
               value: {
                 variablesToCheck: "value",
-                defaultValue: dependencyValues.prefill,
+                get defaultValue() {
+                  if (usedDefault.prefill) {
+                    return dependencyValues.prefillFromChildren;
+                  } else {
+                    return dependencyValues.prefill;
+                  }
+                },
               },
             },
           };
@@ -317,19 +361,39 @@ export default class CodeEditor extends BlockComponent {
       definition: () => ({ setValue: { componentType: "text" } }),
     };
 
-    stateVariableDefinitions.viewerChild = {
+    stateVariableDefinitions.allChildren = {
       returnDependencies: () => ({
-        viewerChild: {
+        allChildren: {
           dependencyType: "child",
-          childGroups: ["codeViewers"],
+          childGroups: ["anything"],
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.viewerChild.length > 0) {
-          return { setValue: { viewerChild: dependencyValues.viewerChild } };
-        } else {
-          return { setValue: { viewerChild: null } };
+        return { setValue: { allChildren: dependencyValues.allChildren } };
+      },
+    };
+
+    stateVariableDefinitions.childIndicesToRender = {
+      stateVariablesDeterminingDependencies: ["allChildren"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+        if (stateValues.allChildren[0]?.componentType === "codeViewer") {
+          dependencies.firstCodeViewerFromSugar = {
+            dependencyType: "doenetAttribute",
+            componentName: stateValues.allChildren[0].componentName,
+            attributeName: "createdFromSugar",
+          };
         }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        if (dependencyValues.firstCodeViewerFromSugar) {
+          childIndicesToRender.push(0);
+        }
+
+        return { setValue: { childIndicesToRender } };
       },
     };
 
@@ -437,8 +501,8 @@ export default class CodeEditor extends BlockComponent {
             });
             if (
               this.attributes.staticName &&
-              this.definingChildren.length === 2 &&
-              this.definingChildren[1].componentType === "codeViewer"
+              this.definingChildren[1]?.componentType === "codeViewer" &&
+              this.definingChildren[1].doenetAttributes.createdFromSugar
             ) {
               this.coreFunctions.performAction({
                 componentName: this.definingChildren[1].componentName,
@@ -455,8 +519,8 @@ export default class CodeEditor extends BlockComponent {
 
   async updateComponents() {
     if (
-      this.definingChildren.length === 1 &&
-      this.definingChildren[0].componentType === "codeViewer"
+      this.definingChildren[0]?.componentType === "codeViewer" &&
+      this.definingChildren[0].doenetAttributes?.createdFromSugar
     ) {
       await this.coreFunctions.performAction({
         componentName: this.definingChildren[0].componentName,

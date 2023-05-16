@@ -33,7 +33,6 @@ export default class IntervalListComponent extends BaseComponent {
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createIntervalList,
     });
 
@@ -52,7 +51,7 @@ export default class IntervalListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nIntervals = {
+    stateVariableDefinitions.numIntervals = {
       returnDependencies: () => ({
         intervalChildren: {
           dependencyType: "child",
@@ -62,24 +61,24 @@ export default class IntervalListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nIntervals: dependencyValues.intervalChildren.length },
-          checkForActualChange: { nIntervals: true },
+          setValue: { numIntervals: dependencyValues.intervalChildren.length },
+          checkForActualChange: { numIntervals: true },
         };
       },
     };
 
     stateVariableDefinitions.intervals = {
       isArray: true,
-      nDimensions: 1,
+      numDimensions: 1,
       entryPrefixes: ["interval"],
       returnArraySizeDependencies: () => ({
-        nIntervals: {
+        numIntervals: {
           dependencyType: "stateVariable",
-          variableName: "nIntervals",
+          variableName: "numIntervals",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nIntervals];
+        return [dependencyValues.numIntervals];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

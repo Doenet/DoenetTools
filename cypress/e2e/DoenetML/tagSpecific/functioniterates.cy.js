@@ -34,7 +34,7 @@ describe("FunctionIterates Tag Tests", function () {
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `,
@@ -89,7 +89,7 @@ describe("FunctionIterates Tag Tests", function () {
       ]);
     });
 
-    cy.log("change function, nIterates, and initial");
+    cy.log("change function, numIterates, and initial");
     cy.get(cesc("#\\/fformula") + " textarea").type(
       "{end}{backspace}{backspace}bx^2{enter}",
       { force: true },
@@ -306,12 +306,12 @@ describe("FunctionIterates Tag Tests", function () {
   Then</p>
   <ul>
   <map assignNames="(l1) (l2) (l3) (l4) (l5) (l6) (l7)">
-    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" /></m></li></template>
+    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" target="../iterates" assignNames="iter" displayDigits="10" /></m></li></template>
     <sources indexAlias="i"><sequence length="$n" /></sources>
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="$n" name="fis" /><copy prop="iterates" target="fis"  name="iterates" /></p>
   
 
   `,
@@ -351,7 +351,7 @@ describe("FunctionIterates Tag Tests", function () {
       expect(stateVariables["/l3/iter"].stateValues.value).eqls(54);
     });
 
-    cy.log("change function, nIterates, and initial");
+    cy.log("change function, numIterates, and initial");
     cy.get(cesc("#\\/fformula") + " textarea").type(
       "{end}{backspace}{backspace}2x^2{enter}",
       { force: true },
@@ -517,7 +517,7 @@ describe("FunctionIterates Tag Tests", function () {
   <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y">($a$x+$b$y, $c$x+$d$y)</function>
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
 
-  <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
+  <functionIterates function="$f" initialValue="$u" numIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
   <copy prop="value" target="n" assignNames="n2" />
 
@@ -613,7 +613,7 @@ describe("FunctionIterates Tag Tests", function () {
   <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y">⟨$a$x+$b$y, $c$x+$d$y⟩</function>
   <m>u = </m> <mathinput name="u" prefill="⟨2,1⟩" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
 
-  <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
+  <functionIterates function="$f" initialValue="$u" numIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
   <copy prop="value" target="n" assignNames="n2" />
 
@@ -711,7 +711,7 @@ describe("FunctionIterates Tag Tests", function () {
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="3" name="fis" /></p>
   
   <copy prop="value" target="vars" assignNames="vars2" />
   <copy prop="value" target="fformula" assignNames="fformula2" />
@@ -733,7 +733,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(2);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls([
         "vector",
         2,
@@ -789,7 +789,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(0);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
@@ -831,7 +831,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
@@ -873,7 +873,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls([
         "vector",
         2,
@@ -930,7 +930,7 @@ describe("FunctionIterates Tag Tests", function () {
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="3" name="fis" /></p>
   <copy prop="value" target="u" assignNames="u2" />
   <copy prop="value" target="fformula" assignNames="fformula2" />
   <copy prop="value" target="vars" assignNames="vars2" />
@@ -951,7 +951,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(2);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls([
         "vector",
         2,
@@ -1005,7 +1005,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(2);
 
       cy.get(iterAnchors[0])
         .find(".mjx-mrow")
@@ -1048,7 +1048,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(0);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
@@ -1090,7 +1090,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
       expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
@@ -1132,7 +1132,7 @@ describe("FunctionIterates Tag Tests", function () {
       );
       let iterAnchors = iterNames.map((x) => cesc2("#" + x));
 
-      expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
+      expect(stateVariables["/fis"].stateValues.numDimensions).eq(3);
       expect(stateVariables[iterNames[0]].stateValues.value).eqls([
         "vector",
         2,

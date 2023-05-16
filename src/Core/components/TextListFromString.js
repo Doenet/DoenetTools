@@ -46,7 +46,7 @@ export default class TextListFromString extends InlineComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nComponents = {
+    stateVariableDefinitions.numComponents = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -59,7 +59,7 @@ export default class TextListFromString extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nComponents: dependencyValues.stringChildren.length },
+          setValue: { numComponents: dependencyValues.stringChildren.length },
         };
       },
     };
@@ -72,13 +72,13 @@ export default class TextListFromString extends InlineComponent {
       isArray: true,
       entryPrefixes: ["text"],
       returnArraySizeDependencies: () => ({
-        nComponents: {
+        numComponents: {
           dependencyType: "stateVariable",
-          variableName: "nComponents",
+          variableName: "numComponents",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nComponents];
+        return [dependencyValues.numComponents];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -105,9 +105,9 @@ export default class TextListFromString extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       isAlias: true,
-      targetVariableName: "nComponents",
+      targetVariableName: "numComponents",
     };
 
     stateVariableDefinitions.values = {

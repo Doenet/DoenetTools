@@ -18,6 +18,8 @@ export default class Template extends CompositeComponent {
 
   static createsVariants = true;
 
+  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
   static keepChildrenSerialized({ serializedComponent }) {
     if (serializedComponent.children === undefined) {
       return [];
@@ -40,7 +42,7 @@ export default class Template extends CompositeComponent {
     attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
-    attributes.nComponents = {
+    attributes.numComponents = {
       createPrimitiveOfType: "number",
     };
     return attributes;
@@ -87,9 +89,17 @@ export default class Template extends CompositeComponent {
     };
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
-      returnDependencies: () => ({}),
+      returnDependencies: () => ({
+        rendered: {
+          dependencyType: "stateVariable",
+          variableName: "rendered",
+        },
+      }),
       definition: function () {
         return { setValue: { readyToExpandWhenResolved: true } };
+      },
+      markStale() {
+        return { updateReplacements: true };
       },
     };
 
@@ -144,11 +154,11 @@ export default class Template extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nComponentsSpecified = {
+    stateVariableDefinitions.numComponentsSpecified = {
       returnDependencies: () => ({
-        nComponentsAttr: {
+        numComponentsAttr: {
           dependencyType: "attributePrimitive",
-          attributeName: "nComponents",
+          attributeName: "numComponents",
         },
         typeAttr: {
           dependencyType: "attributePrimitive",
@@ -156,7 +166,7 @@ export default class Template extends CompositeComponent {
         },
       }),
       definition({ dependencyValues, componentInfoObjects }) {
-        let nComponentsSpecified;
+        let numComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
           let componentType =
@@ -169,20 +179,20 @@ export default class Template extends CompositeComponent {
               `Invalid componentType ${dependencyValues.typeAttr} of copy.`,
             );
           }
-          if (dependencyValues.nComponentsAttr !== null) {
-            nComponentsSpecified = dependencyValues.nComponentsAttr;
+          if (dependencyValues.numComponentsAttr !== null) {
+            numComponentsSpecified = dependencyValues.numComponentsAttr;
           } else {
-            nComponentsSpecified = 1;
+            numComponentsSpecified = 1;
           }
-        } else if (dependencyValues.nComponentsAttr !== null) {
+        } else if (dependencyValues.numComponentsAttr !== null) {
           throw Error(
-            `You must specify createComponentOfType when specifying nComponents for a ${componentClass.componentType}.`,
+            `You must specify createComponentOfType when specifying numComponents for a ${componentClass.componentType}.`,
           );
         } else {
-          nComponentsSpecified = null;
+          numComponentsSpecified = null;
         }
 
-        return { setValue: { nComponentsSpecified } };
+        return { setValue: { numComponentsSpecified } };
       },
     };
 
@@ -192,16 +202,12 @@ export default class Template extends CompositeComponent {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    alwaysCreateReplacements,
     flags,
   }) {
-    // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(await component.stateValues.rendered);
+    // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
+    await component.stateValues.numComponentsSpecified;
 
-    // evaluate nComponentsSpecified so get error if specify nComponents without createComponentOfType
-    await component.stateValues.nComponentsSpecified;
-
-    if (!((await component.stateValues.rendered) || alwaysCreateReplacements)) {
+    if (!(await component.stateValues.rendered)) {
       return { replacements: [] };
     } else {
       let replacements = deepClone(
@@ -267,6 +273,59 @@ export default class Template extends CompositeComponent {
       // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
 
       return { replacements: verificationResult.replacements };
+    }
+  }
+
+  static async calculateReplacementChanges({
+    component,
+    componentInfoObjects,
+    flags,
+  }) {
+    if (!(await component.stateValues.rendered)) {
+      if (
+        component.replacements.length > 0 &&
+        component.replacementsToWithhold === 0
+      ) {
+        let replacementsToWithhold = component.replacements.length;
+        let replacementInstruction = {
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold,
+        };
+        return [replacementInstruction];
+      } else {
+        return [];
+      }
+    } else {
+      if (component.replacements.length > 0) {
+        if (component.replacementsToWithhold > 0) {
+          let replacementInstruction = {
+            changeType: "changeReplacementsToWithhold",
+            replacementsToWithhold: 0,
+          };
+          return [replacementInstruction];
+        } else {
+          return [];
+        }
+      } else {
+        let createResult = await this.createSerializedReplacements({
+          component,
+          componentInfoObjects,
+          flags,
+        });
+
+        let replacements = createResult.replacements;
+
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: replacements,
+          replacementsToWithhold: 0,
+        };
+
+        return [replacementInstruction];
+      }
     }
   }
 

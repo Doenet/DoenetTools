@@ -867,7 +867,7 @@ export default class BaseComponent {
       "stateVariablesDeterminingDependencies",
       "stateVariablesDeterminingArraySizeDependencies",
       "isArray",
-      "nDimensions",
+      "numDimensions",
       "returnArraySizeDependencies",
       "returnArraySize",
       "returnArrayDependenciesByKey",
@@ -1002,8 +1002,10 @@ export default class BaseComponent {
         }
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
-          stateVariableDescriptions[varName].nDimensions =
-            theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
+          stateVariableDescriptions[varName].numDimensions =
+            theStateDef.numDimensions === undefined
+              ? 1
+              : theStateDef.numDimensions;
           stateVariableDescriptions[varName].wrappingComponents = theStateDef
             .shadowingInstructions?.returnWrappingComponents
             ? theStateDef.shadowingInstructions.returnWrappingComponents()
@@ -1017,7 +1019,7 @@ export default class BaseComponent {
           for (let prefix of entryPrefixes) {
             arrayEntryPrefixes[prefix] = {
               arrayVariableName: varName,
-              nDimensions: theStateDef.returnEntryDimensions
+              numDimensions: theStateDef.returnEntryDimensions
                 ? theStateDef.returnEntryDimensions(prefix)
                 : 1,
               wrappingComponents: theStateDef.shadowingInstructions
@@ -1034,7 +1036,7 @@ export default class BaseComponent {
           } else {
             stateVariableDescriptions[varName].getArrayKeysFromVarName =
               returnDefaultGetArrayKeysFromVarName(
-                stateVariableDescriptions[varName].nDimensions,
+                stateVariableDescriptions[varName].numDimensions,
               );
           }
         }
@@ -1108,16 +1110,10 @@ export default class BaseComponent {
     let parametersForChildren = { ...parameters };
 
     let sourceAttributesToIgnore;
-    if (parameters.sourceAttributesToIgnoreRecursively) {
-      sourceAttributesToIgnore = [
-        ...parameters.sourceAttributesToIgnoreRecursively,
-      ];
+    if (parameters.sourceAttributesToIgnore) {
+      sourceAttributesToIgnore = parameters.sourceAttributesToIgnore;
     } else {
       sourceAttributesToIgnore = [];
-    }
-    if (parameters.sourceAttributesToIgnore) {
-      sourceAttributesToIgnore.push(...parameters.sourceAttributesToIgnore);
-      delete parametersForChildren.sourceAttributesToIgnore;
     }
 
     if (includeDefiningChildren) {
@@ -1169,6 +1165,12 @@ export default class BaseComponent {
     // always copy essential state
     if (this.essentialState && Object.keys(this.essentialState).length > 0) {
       serializedComponent.state = deepClone(this.essentialState);
+    }
+
+    if (this.doenetMLrange) {
+      serializedComponent.range = JSON.parse(
+        JSON.stringify(this.doenetMLrange),
+      );
     }
 
     if (parameters.copyVariants) {
@@ -1230,6 +1232,10 @@ export default class BaseComponent {
       delete serializedCopy.doenetAttributes.assignNames;
     }
 
+    if (serializedComponent.range !== undefined) {
+      serializedCopy.range = deepClone(serializedComponent.range);
+    }
+
     if (serializedComponent.state !== undefined) {
       // shallow copy of state
       Object.assign(serializedCopy.state, serializedComponent.state);
@@ -1240,7 +1246,7 @@ export default class BaseComponent {
 
   static adapters = [];
 
-  static get nAdapters() {
+  static get numAdapters() {
     return this.adapters.length;
   }
 

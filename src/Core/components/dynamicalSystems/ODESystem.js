@@ -5,6 +5,11 @@ import {
   returnSelectedStyleStateVariableDefinition,
   returnTextStyleDescriptionDefinitions,
 } from "../../utils/style";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
@@ -14,7 +19,7 @@ export default class ODESystem extends InlineComponent {
     let attributes = super.createAttributesObject();
 
     attributes.independentVariable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "independentVariable",
       defaultValue: me.fromAst("t"),
       public: true,
@@ -27,32 +32,7 @@ export default class ODESystem extends InlineComponent {
       public: true,
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 14,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.renderMode = {
       createComponentOfType: "text",
@@ -95,7 +75,7 @@ export default class ODESystem extends InlineComponent {
     };
 
     attributes.variables = {
-      createComponentOfType: "variables",
+      createComponentOfType: "_variableNameList",
     };
 
     attributes.number = {
@@ -119,6 +99,11 @@ export default class ODESystem extends InlineComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
@@ -144,7 +129,7 @@ export default class ODESystem extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
         rhsChildren: {
           dependencyType: "child",
@@ -154,8 +139,8 @@ export default class ODESystem extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          setValue: { nDimensions: dependencyValues.rhsChildren.length },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions: dependencyValues.rhsChildren.length },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
@@ -171,23 +156,23 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "variable",
+        createComponentOfType: "_variableName",
       },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           variables: {
             dependencyType: "attributeComponent",
@@ -205,16 +190,16 @@ export default class ODESystem extends InlineComponent {
       arrayDefinitionByKey({ globalDependencyValues }) {
         let variablesSpecified = [];
         let validVariables = [];
-        let nDims = globalDependencyValues.nDimensions;
+        let numDims = globalDependencyValues.numDimensions;
         if (globalDependencyValues.variables !== null) {
           variablesSpecified =
             globalDependencyValues.variables.stateValues.variables;
           validVariables = [
             ...globalDependencyValues.variables.stateValues.validVariables,
-          ].slice(0, nDims);
+          ].slice(0, numDims);
         }
 
-        let variables = returnNVariables(nDims, variablesSpecified);
+        let variables = returnNVariables(numDims, variablesSpecified);
 
         if (
           variables.some((x) =>
@@ -226,9 +211,9 @@ export default class ODESystem extends InlineComponent {
           );
         }
 
-        if (validVariables.length < nDims) {
+        if (validVariables.length < numDims) {
           validVariables.push(
-            ...Array(nDims - validVariables.length).fill(true),
+            ...Array(numDims - validVariables.length).fill(true),
           );
         }
 
@@ -243,16 +228,18 @@ export default class ODESystem extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["rhs", "righthandside"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -302,17 +289,19 @@ export default class ODESystem extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["initialCondition"],
       defaultValueByArrayKey: () => me.fromAst(0),
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -409,9 +398,9 @@ export default class ODESystem extends InlineComponent {
       forRenderer: true,
       returnDependencies() {
         return {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           variables: {
             dependencyType: "stateVariable",
@@ -463,27 +452,25 @@ export default class ODESystem extends InlineComponent {
           },
         };
       },
-      definition({ dependencyValues, usedDefault }) {
+      definition({ dependencyValues }) {
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
 
         let systemDisplay = [];
         let indVar = dependencyValues.independentVariable.toLatex();
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           let variable = dependencyValues.variables[dim].toLatex();
 
           let rhs = roundForDisplay({
             value: dependencyValues.rhss[dim],
             dependencyValues,
-            usedDefault,
           });
 
           let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex(
@@ -500,12 +487,11 @@ export default class ODESystem extends InlineComponent {
         if (!dependencyValues.hideInitialCondition) {
           let indVarVal0 = dependencyValues.initialIndependentVariableValue;
 
-          for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
             let variable = dependencyValues.variables[dim].toLatex();
             let ic = roundForDisplay({
               value: dependencyValues.initialConditions[dim],
               dependencyValues,
-              usedDefault,
             });
 
             systemDisplay.push(
@@ -631,7 +617,7 @@ export default class ODESystem extends InlineComponent {
             numericalRHSfDefinitions: dependencyValues.rhss.map((x) => ({
               functionType: "formula",
               formula: x,
-              nInputs: varNames.length + 1,
+              numInputs: varNames.length + 1,
               variables: [indVarName, ...varNames],
             })),
           },
@@ -678,22 +664,24 @@ export default class ODESystem extends InlineComponent {
             stateVariableToShadow: "numericalSolutionFDefinitions",
           },
         },
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       createWorkspace: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
@@ -755,7 +743,7 @@ export default class ODESystem extends InlineComponent {
         workspace.maxPossibleTime = undefined;
 
         if (!globalDependencyValues.haveNumericalInitialConditions) {
-          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
             numericalSolutions[ind] = (_) => NaN;
           }
           return { setValue: { numericalSolutions } };
@@ -768,7 +756,7 @@ export default class ODESystem extends InlineComponent {
         let numericalRHSf = globalDependencyValues.numericalRHSf;
         let maxIterations = globalDependencyValues.maxIterations;
 
-        for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+        for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
           numericalSolutions[ind] = function f(t) {
             if (!Number.isFinite(t)) {
               return NaN;
@@ -857,19 +845,19 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       entryPrefixes: ["numericalSolutionFDefinition"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
           validIndependentVariable: {
             dependencyType: "stateVariable",
@@ -923,7 +911,7 @@ export default class ODESystem extends InlineComponent {
           return {
             setValue: {
               numericalSolutionFDefinitions: Array(
-                globalDependencyValues.nDimensions,
+                globalDependencyValues.numDimensions,
               ).fill({}),
             },
           };
@@ -932,10 +920,10 @@ export default class ODESystem extends InlineComponent {
         return {
           setValue: {
             numericalSolutionFDefinitions: [
-              ...Array(globalDependencyValues.nDimensions).keys(),
+              ...Array(globalDependencyValues.numDimensions).keys(),
             ].map((ind) => ({
               functionType: "ODESolution",
-              nDimensions: globalDependencyValues.nDimensions,
+              numDimensions: globalDependencyValues.numDimensions,
               t0: globalDependencyValues.t0,
               x0s: globalDependencyValues.x0s,
               chunkSize: globalDependencyValues.chunkSize,

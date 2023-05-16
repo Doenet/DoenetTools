@@ -1,3 +1,4 @@
+import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
 import Polygon from "./Polygon";
 import me from "math-expressions";
 
@@ -41,24 +42,24 @@ export default class Rectangle extends Polygon {
       return { setValue: { styleDescriptionWithNoun } };
     };
 
-    stateVariableDefinitions.nVerticesSpecified = {
+    stateVariableDefinitions.numVerticesSpecified = {
       returnDependencies: () => ({
         verticesAttr: {
           dependencyType: "attributeComponent",
           attributeName: "vertices",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.verticesAttr !== null) {
           return {
             setValue: {
-              nVerticesSpecified:
-                dependencyValues.verticesAttr.stateValues.nPoints,
+              numVerticesSpecified:
+                dependencyValues.verticesAttr.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nVerticesSpecified: 0 } };
+          return { setValue: { numVerticesSpecified: 0 } };
         }
       },
     };
@@ -70,13 +71,13 @@ export default class Rectangle extends Polygon {
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
-        nVerticesSpecified: {
+        numVerticesSpecified: {
           dependencyType: "stateVariable",
-          variableName: "nVerticesSpecified",
+          variableName: "numVerticesSpecified",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVerticesSpecified === 0 ? 2 : 0];
+        return [dependencyValues.numVerticesSpecified === 0 ? 2 : 0];
       },
 
       returnArrayDependenciesByKey() {
@@ -213,9 +214,9 @@ export default class Rectangle extends Polygon {
             attributeName: "width",
             variableNames: ["value"],
           },
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
@@ -233,7 +234,7 @@ export default class Rectangle extends Polygon {
           };
         } else if (
           (dependencyValues.haveSpecifiedCenter ? 1 : 0) +
-            dependencyValues.nVerticesSpecified <=
+            dependencyValues.numVerticesSpecified <=
           1
         ) {
           return { useEssentialOrDefaultValue: { specifiedWidth: true } };
@@ -280,9 +281,9 @@ export default class Rectangle extends Polygon {
             attributeName: "height",
             variableNames: ["value"],
           },
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
           haveSpecifiedCenter: {
             dependencyType: "stateVariable",
@@ -300,7 +301,7 @@ export default class Rectangle extends Polygon {
           };
         } else if (
           (dependencyValues.haveSpecifiedCenter ? 1 : 0) +
-            dependencyValues.nVerticesSpecified <=
+            dependencyValues.numVerticesSpecified <=
           1
         ) {
           return { useEssentialOrDefaultValue: { specifiedHeight: true } };
@@ -341,6 +342,8 @@ export default class Rectangle extends Polygon {
       entryPrefixes: ["centerX"],
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "centerX") {
             return [];
@@ -439,9 +442,11 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
 
-      returnDependencies({}) {
+      returnDependencies() {
         return {
           vertex0: {
             dependencyType: "stateVariable",
@@ -495,9 +500,11 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
 
-      returnDependencies({}) {
+      returnDependencies() {
         return {
           vertex0: {
             dependencyType: "stateVariable",
@@ -552,6 +559,8 @@ export default class Rectangle extends Polygon {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "vertexX") {
             return [];
@@ -566,7 +575,7 @@ export default class Rectangle extends Polygon {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
@@ -635,7 +644,7 @@ export default class Rectangle extends Polygon {
         return null;
       },
       stateVariablesDeterminingDependencies: [
-        "nVerticesSpecified",
+        "numVerticesSpecified",
         "haveSpecifiedCenter",
       ],
       returnArraySizeDependencies: () => ({}),
@@ -645,13 +654,13 @@ export default class Rectangle extends Polygon {
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};
         let globalDependencies = {
-          nVerticesSpecified: {
+          numVerticesSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nVerticesSpecified",
+            variableName: "numVerticesSpecified",
           },
         };
 
-        if (stateValues.nVerticesSpecified === 0) {
+        if (stateValues.numVerticesSpecified === 0) {
           globalDependencies.haveSpecifiedCenter = {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter",
@@ -712,7 +721,7 @@ export default class Rectangle extends Polygon {
               }
             }
           }
-        } else if (stateValues.nVerticesSpecified === 1) {
+        } else if (stateValues.numVerticesSpecified === 1) {
           globalDependencies.haveSpecifiedCenter = {
             dependencyType: "stateVariable",
             variableName: "haveSpecifiedCenter",
@@ -825,7 +834,7 @@ export default class Rectangle extends Polygon {
       }) {
         let vertices = {};
 
-        if (globalDependencyValues.nVerticesSpecified === 0) {
+        if (globalDependencyValues.numVerticesSpecified === 0) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // width, height, center
 
@@ -879,7 +888,7 @@ export default class Rectangle extends Polygon {
               }
             }
           }
-        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+        } else if (globalDependencyValues.numVerticesSpecified === 1) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // 1 vertex, center
 
@@ -1028,7 +1037,7 @@ export default class Rectangle extends Polygon {
 
         let instructions = [];
 
-        if (globalDependencyValues.nVerticesSpecified === 0) {
+        if (globalDependencyValues.numVerticesSpecified === 0) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // width, height, center
 
@@ -1114,7 +1123,7 @@ export default class Rectangle extends Polygon {
               });
             }
           }
-        } else if (globalDependencyValues.nVerticesSpecified === 1) {
+        } else if (globalDependencyValues.numVerticesSpecified === 1) {
           if (globalDependencyValues.haveSpecifiedCenter) {
             // 1 vertex, center
 
@@ -1243,14 +1252,14 @@ export default class Rectangle extends Polygon {
       },
     };
 
-    stateVariableDefinitions.nVertices = {
+    stateVariableDefinitions.numVertices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nVertices: 4 } }),
+      definition: () => ({ setValue: { numVertices: 4 } }),
     };
 
     return stateVariableDefinitions;
@@ -1264,9 +1273,9 @@ export default class Rectangle extends Polygon {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    let nVerticesMoved = Object.keys(pointCoords).length;
+    let numVerticesMoved = Object.keys(pointCoords).length;
 
-    if (nVerticesMoved === 1) {
+    if (numVerticesMoved === 1) {
       // single vertex dragged
       if (!(await this.stateValues.verticesDraggable)) {
         return await this.coreFunctions.resolveAction({ actionId });
@@ -1294,7 +1303,7 @@ export default class Rectangle extends Polygon {
       sourceDetails,
     });
 
-    if (Object.keys(pointCoords).length === 1) {
+    if (numVerticesMoved === 1) {
       // When dragging a rectangle corner, add additional instructions
       // if they are needed to ensure the opposite corner doesn't move
 
@@ -1307,7 +1316,7 @@ export default class Rectangle extends Polygon {
       let oppositeX = vertices[oppositeInd][0];
       let oppositeY = vertices[oppositeInd][1];
 
-      if ((await this.stateValues.nVerticesSpecified) < 2) {
+      if ((await this.stateValues.numVerticesSpecified) < 2) {
         if (await this.stateValues.haveSpecifiedCenter) {
           // 1 vertex (or essential vertex) and center
 
@@ -1370,22 +1379,22 @@ export default class Rectangle extends Polygon {
       }
     }
 
-    // console.log("movePolygon updateInstructions", updateInstructions);
-
+    // Note: we set skipRendererUpdate to true
+    // so that we can make further adjustments before the renderers are updated
     if (transient) {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
       });
     } else {
-      return await this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         actionId,
         sourceInformation,
-        skipRendererUpdate,
+        skipRendererUpdate: true,
         event: {
           verb: "interacted",
           object: {
@@ -1398,5 +1407,129 @@ export default class Rectangle extends Polygon {
         },
       });
     }
+
+    // we will attempt to preserve the relationship among all the vertices
+    // so that we have a rigid translation
+    // when the whole rectangle is moved.
+    // This procedure may preserve the rigid translation
+    // even if a subset of the vertices are constrained.
+
+    // if dragged the whole rectangle that is based on two points (vertices and/or center),
+    // address case where only one point is constrained
+    // to make rectangle just translate in this case
+    if (numVerticesMoved > 1) {
+      let numVerticesSpecified = await this.stateValues.numVerticesSpecified;
+
+      if (
+        numVerticesSpecified > 1 ||
+        (numVerticesSpecified === 1 &&
+          (await this.stateValues.haveSpecifiedCenter))
+      ) {
+        let resultingNumericalVertices = await this.stateValues
+          .numericalVertices;
+
+        let numericalPoints, resultingNumericalPoints;
+
+        if (numVerticesSpecified > 1) {
+          // just look at first and third vertex
+          numericalPoints = [pointCoords[0], pointCoords[2]];
+          resultingNumericalPoints = [
+            resultingNumericalVertices[0],
+            resultingNumericalVertices[2],
+          ];
+        } else {
+          // just look at center and first vertex
+          // (calculate center from first and third vertex)
+
+          let numericalCenter = [
+            (pointCoords[0][0] + pointCoords[2][0]) / 2,
+            (pointCoords[0][1] + pointCoords[2][1]) / 2,
+          ];
+
+          let resultingNumericalCenter = [
+            (resultingNumericalVertices[0][0] +
+              resultingNumericalVertices[2][0]) /
+              2,
+            (resultingNumericalVertices[0][1] +
+              resultingNumericalVertices[2][1]) /
+              2,
+          ];
+
+          numericalPoints = [numericalCenter, pointCoords[0]];
+          resultingNumericalPoints = [
+            resultingNumericalCenter,
+            resultingNumericalVertices[0],
+          ];
+        }
+
+        let pointsChanged = [];
+        let numPointsChanged = 0;
+
+        for (let [ind, pt] of numericalPoints.entries()) {
+          if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
+            pointsChanged.push(ind);
+            numPointsChanged++;
+          }
+        }
+
+        if (numPointsChanged === 1) {
+          // One of the defining points (center or vertex)
+          // was altered from the requested location
+          // while the other point stayed at the requested location.
+          // We interpret this as one point being constrained and the second one being free
+          // and we move the second point to keep their relative position fixed.
+
+          let changedInd = pointsChanged[0];
+
+          let orig1 = numericalPoints[changedInd];
+          let changed1 = resultingNumericalPoints[changedInd];
+          let changevec1 = orig1.map((v, i) => v - changed1[i]);
+
+          let newNumericalVertices = [];
+
+          for (let i = 0; i < 4; i++) {
+            newNumericalVertices.push(
+              pointCoords[i].map((v, j) => v - changevec1[j]),
+            );
+          }
+
+          let newVertexComponents = {};
+
+          for (let ind in newNumericalVertices) {
+            newVertexComponents[ind + ",0"] = me.fromAst(
+              newNumericalVertices[ind][0],
+            );
+            newVertexComponents[ind + ",1"] = me.fromAst(
+              newNumericalVertices[ind][1],
+            );
+          }
+
+          let newInstructions = [
+            {
+              updateType: "updateValue",
+              componentName: this.componentName,
+              stateVariable: "vertices",
+              value: newVertexComponents,
+            },
+          ];
+
+          return await this.coreFunctions.performUpdate({
+            updateInstructions: newInstructions,
+            transient,
+            actionId,
+            sourceInformation,
+            skipRendererUpdate,
+          });
+        }
+      }
+    }
+
+    // if no modifications were made, still need to update renderers
+    // as original update was performed with skipping renderer update
+    return await this.coreFunctions.updateRenderers({
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 }

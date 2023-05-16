@@ -1,41 +1,28 @@
 import BaseComponent from "./BaseComponent";
-import { breakEmbeddedStringsIntoParensPieces } from "../commonsugar/breakstrings";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "../commonsugar/lists";
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorListComponent";
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let createVectorList = function ({ matchedChildren }) {
-      let results = breakEmbeddedStringsIntoParensPieces({
-        componentList: matchedChildren,
+    let groupIntoVectorsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "vector",
       });
 
-      if (results.success !== true) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || typeof piece[0] === "string") {
-            return {
-              componentType: "vector",
-              children: piece,
-            };
-          } else {
-            return piece[0];
-          }
-        }),
-      };
-    };
-
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
-      replacementFunction: createVectorList,
+      replacementFunction: function ({ matchedChildren }) {
+        return groupIntoVectorsSeparatedBySpacesOutsideParens({
+          matchedChildren,
+        });
+      },
     });
 
     return sugarInstructions;
@@ -53,7 +40,7 @@ export default class VectorListComponent extends BaseComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nVectors = {
+    stateVariableDefinitions.numVectors = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
@@ -62,46 +49,46 @@ export default class VectorListComponent extends BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        setValue: { nVectors: dependencyValues.vectorChildren.length },
-        checkForActualChange: { nVectors: true },
+        setValue: { numVectors: dependencyValues.vectorChildren.length },
+        checkForActualChange: { numVectors: true },
       }),
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
           childGroups: ["vectors"],
-          variableNames: ["nDimensions"],
+          variableNames: ["numDimensions"],
           skipPlaceholders: true,
         },
       }),
       definition: function ({ dependencyValues }) {
-        let nDimensions;
+        let numDimensions;
 
         if (dependencyValues.vectorChildren.length === 0) {
-          nDimensions = 2;
+          numDimensions = 2;
         } else {
-          nDimensions = 1;
+          numDimensions = 1;
           for (let vector of dependencyValues.vectorChildren) {
-            if (Number.isFinite(vector.stateValues.nDimensions)) {
-              nDimensions = Math.max(
-                nDimensions,
-                vector.stateValues.nDimensions,
+            if (Number.isFinite(vector.stateValues.numDimensions)) {
+              numDimensions = Math.max(
+                numDimensions,
+                vector.stateValues.numDimensions,
               );
             }
           }
         }
         return {
-          setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
 
     stateVariableDefinitions.vectors = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["vectorX", "vector"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vectorX") {
@@ -170,17 +157,17 @@ export default class VectorListComponent extends BaseComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nVectors: {
+        numVectors: {
           dependencyType: "stateVariable",
-          variableName: "nVectors",
+          variableName: "numVectors",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVectors, dependencyValues.nDimensions];
+        return [dependencyValues.numVectors, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};

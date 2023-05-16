@@ -1027,7 +1027,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function maxima="(-2,2)" through="(-5,0) (-6,-1)(0,0) (1,0)" />
+    <function maxima="(-2,2)" through="(-5,0) (-6,-1) (0, 0) (1, 0)" />
     </graph>
     `,
         },
@@ -1988,7 +1988,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2029,7 +2029,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2068,7 +2068,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2108,7 +2108,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2150,7 +2150,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2188,7 +2188,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2229,7 +2229,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2268,7 +2268,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -2465,7 +2465,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="$var">
+    <function variable="$var">
       $var^$c sin(pi $var/$c)/$d
     </function>
 
@@ -2581,7 +2581,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
+    <function variable="q"><math>q^2 sin(pi q/2)/100</math></function>
     <graph>
       <function>
         $_function1
@@ -2660,7 +2660,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="u">
+    <function variable="u">
       log(2u)
     </function>
     <point x="-3" y="5">
@@ -2817,7 +2817,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function variables="u" domain="[0.1, 6)" >
+    <function variable="u" domain="[0.1, 6)" >
       log(2u)
     </function>
     <point x="-3" y="5">
@@ -2914,11 +2914,11 @@ describe("Function Tag Tests", function () {
     <copy prop="minima" target="_function1" />
     <!--</graph>-->
 
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function1" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function1" /></p>
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" assignNames="numberextrema" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `,
         },
@@ -2929,7 +2929,7 @@ describe("Function Tag Tests", function () {
     //wait for window to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2937,7 +2937,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−2.15,7),(5,6))");
       });
-    cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "2");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -2945,7 +2945,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−5,6),(3,4))");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "4");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -2962,7 +2962,7 @@ describe("Function Tag Tests", function () {
         args: { x: 2, y: 2 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -2970,7 +2970,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1.5,7),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -2978,7 +2978,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(2,2))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "4");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -2995,7 +2995,7 @@ describe("Function Tag Tests", function () {
         args: { x: 3.6, y: 5.1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "3");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3003,7 +3003,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3011,7 +3011,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "6");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3030,7 +3030,7 @@ describe("Function Tag Tests", function () {
         args: { x: 8, y: 9 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3038,7 +3038,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3046,7 +3046,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(3,4),(6.5,5))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "5");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "5");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3063,7 +3063,7 @@ describe("Function Tag Tests", function () {
         args: { x: 5, y: 2 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "0");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "0");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3071,7 +3071,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("＿");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "0");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "0");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3079,7 +3079,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("＿");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "0");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "0");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3096,7 +3096,7 @@ describe("Function Tag Tests", function () {
         args: { x: -9, y: 0 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "3");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3104,7 +3104,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−7,7),(−1,7),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3112,7 +3112,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(3,4))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "5");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "5");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3129,7 +3129,7 @@ describe("Function Tag Tests", function () {
         args: { x: 8, y: 3 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3137,7 +3137,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,6)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3145,7 +3145,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(8,3)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "2");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "2");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3162,7 +3162,7 @@ describe("Function Tag Tests", function () {
         args: { x: 8, y: 6 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3170,7 +3170,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((5,6),(7,7))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3178,7 +3178,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((6,5),(8,6))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "4");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3207,11 +3207,11 @@ describe("Function Tag Tests", function () {
     <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function1" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function1" /></p>
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" assignNames="numberextrema" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `,
         },
@@ -3222,7 +3222,7 @@ describe("Function Tag Tests", function () {
     //wait for window to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3230,7 +3230,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−2.15,7),(5,6))");
       });
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3238,7 +3238,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "3");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "3");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -3255,7 +3255,7 @@ describe("Function Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "0");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "0");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3263,7 +3263,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("＿");
       });
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3271,7 +3271,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -3288,7 +3288,7 @@ describe("Function Tag Tests", function () {
         args: { x: 2, y: 2 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3296,7 +3296,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(−1.5,7)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3304,7 +3304,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(2,2)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "2");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "2");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3320,7 +3320,7 @@ describe("Function Tag Tests", function () {
         force: true,
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3328,7 +3328,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1.5,7),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3336,7 +3336,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(2,2))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "4");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3353,7 +3353,7 @@ describe("Function Tag Tests", function () {
         args: { x: 3.6, y: 5.1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "3");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3361,7 +3361,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3369,7 +3369,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "6");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3387,7 +3387,7 @@ describe("Function Tag Tests", function () {
         force: true,
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3395,7 +3395,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(3.6,5.1))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3403,7 +3403,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(3,4)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "3");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "3");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3432,11 +3432,11 @@ describe("Function Tag Tests", function () {
     <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function1" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function1" /></p>
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" assignNames="numberextrema" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `,
         },
@@ -3447,7 +3447,7 @@ describe("Function Tag Tests", function () {
     //wait for window to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3455,7 +3455,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−2.15,7),(5,6))");
       });
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3463,7 +3463,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "3");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "3");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -3480,7 +3480,7 @@ describe("Function Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "0");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "0");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3488,7 +3488,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("＿");
       });
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3496,7 +3496,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -3513,7 +3513,7 @@ describe("Function Tag Tests", function () {
         args: { x: 2, y: 2 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3521,7 +3521,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(−1.5,7)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3529,7 +3529,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(2,2)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "2");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "2");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3545,7 +3545,7 @@ describe("Function Tag Tests", function () {
         force: true,
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3553,7 +3553,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1.5,7),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3561,7 +3561,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(2,2))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "4");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3578,7 +3578,7 @@ describe("Function Tag Tests", function () {
         args: { x: 3.6, y: 5.1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "3");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3586,7 +3586,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "3");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3594,7 +3594,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "6");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3612,7 +3612,7 @@ describe("Function Tag Tests", function () {
         force: true,
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3620,7 +3620,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(3.6,5.1)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3628,7 +3628,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(3,4)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "2");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "2");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3656,11 +3656,11 @@ describe("Function Tag Tests", function () {
     <copy prop="minima" target="_function1" />
     </graph>
 
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function1" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function1" /></p>
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
-    <p>Number of extrema: <copy prop="numberextrema" assignNames="numberextrema" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
     `,
         },
@@ -3674,8 +3674,8 @@ describe("Function Tag Tests", function () {
     // it is set up so that minimum of quadratic interpolating between first two points
     // is past maximum of domain
     // check for bug where this stopped looking for minima
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "0");
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "0");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
       .find(".mjx-mrow")
       .eq(0)
@@ -3683,7 +3683,7 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(5,−4)");
       });
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
 
     cy.get(cesc("#\\/_math3"))
       .find(".mjx-mrow")
@@ -3714,8 +3714,8 @@ describe("Function Tag Tests", function () {
         args: { x: 1, y: -0.866 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "0");
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "0");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3723,7 +3723,7 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,−4)");
         });
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3759,7 +3759,7 @@ describe("Function Tag Tests", function () {
         args: { x: 8, y: -1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3767,8 +3767,8 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,4)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "0");
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "0");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3799,7 +3799,7 @@ describe("Function Tag Tests", function () {
         args: { x: 1, y: 0.866 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3807,8 +3807,8 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,4)");
         });
-      cy.get(cesc("#\\/numberminima")).should("have.text", "0");
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "0");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "1");
       cy.get(cesc("#\\/_math3"))
         .find(".mjx-mrow")
         .eq(0)
@@ -3832,17 +3832,17 @@ describe("Function Tag Tests", function () {
     <copy prop="extrema" target="_function1" />
     </graph>
     
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function1" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maximum locations: <copy prop="maximumlocation1" assignNames="maximumlocation1" target="_function1" />,
     <copy prop="maximumlocation2" assignNames="maximumlocation2" target="_function1" /></p>
     <p>Maximum values: <copy prop="maximumvalue1" assignNames="maximumvalue1" target="_function1" />,
     <copy prop="maximumvalue2" assignNames="maximumvalue2" target="_function1" /></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function1" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function1" /></p>
     <p>Minimum locations: <copy prop="minimumlocation1" assignNames="minimumlocation1" target="_function1" />,
     <copy prop="minimumlocation2" assignNames="minimumlocation2" target="_function1" /></p>
     <p>Minimum values: <copy prop="minimumvalue1" assignNames="minimumvalue1" target="_function1" />,
     <copy prop="minimumvalue2" assignNames="minimumvalue2" target="_function1" /></p>
-    <p>Number of extrema: <copy prop="numberextrema" assignNames="numberextrema" target="_function1" /></p>
+    <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extremum locations: <copy prop="extremumlocation1" assignNames="extremumlocation1" target="_function1" />,
     <copy prop="extremumlocation2" assignNames="extremumlocation2" target="_function1" />,
     <copy prop="extremumlocation3" assignNames="extremumlocation3" target="_function1" /></p>
@@ -3858,7 +3858,7 @@ describe("Function Tag Tests", function () {
     //wait for window to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
     cy.get(cesc("#\\/maximumlocation1"))
       .invoke("text")
       .then((text) => {
@@ -3880,7 +3880,7 @@ describe("Function Tag Tests", function () {
         expect(Number(text.replace(/−/, "-"))).closeTo(1, 0.01);
       });
 
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/minimumlocation1"))
       .invoke("text")
       .then((text) => {
@@ -3892,7 +3892,7 @@ describe("Function Tag Tests", function () {
         expect(Number(text.replace(/−/, "-"))).closeTo(0.21, 0.01);
       });
 
-    cy.get(cesc("#\\/numberextrema")).should("have.text", "3");
+    cy.get(cesc("#\\/numExtrema")).should("have.text", "3");
     cy.get(cesc("#\\/extremumlocation1"))
       .invoke("text")
       .then((text) => {
@@ -3933,7 +3933,7 @@ describe("Function Tag Tests", function () {
         args: { x: 3, y: -1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/maximumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -3947,7 +3947,7 @@ describe("Function Tag Tests", function () {
         });
       cy.get(cesc("#\\/maximumvalue2")).should("not.exist");
 
-      cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/minimumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -3959,7 +3959,7 @@ describe("Function Tag Tests", function () {
           expect(Number(text.replace(/−/, "-"))).closeTo(-1, 0.01);
         });
 
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "2");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "2");
       cy.get(cesc("#\\/extremumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -3991,7 +3991,7 @@ describe("Function Tag Tests", function () {
         args: { x: 0, y: -1 },
       });
 
-      cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
+      cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
       cy.get(cesc("#\\/maximumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -4005,7 +4005,7 @@ describe("Function Tag Tests", function () {
         });
       cy.get(cesc("#\\/maximumvalue2")).should("not.exist");
 
-      cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+      cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/minimumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -4027,7 +4027,7 @@ describe("Function Tag Tests", function () {
           expect(Number(text.replace(/−/, "-"))).closeTo(-1, 0.01);
         });
 
-      cy.get(cesc("#\\/numberextrema")).should("have.text", "3");
+      cy.get(cesc("#\\/numExtrema")).should("have.text", "3");
       cy.get(cesc("#\\/extremumlocation1"))
         .invoke("text")
         .then((text) => {
@@ -4093,9 +4093,9 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(0);
-      expect(f.stateValues.numberMinima).eq(0);
-      expect(f.stateValues.numberExtrema).eq(0);
+      expect(f.stateValues.numMaxima).eq(0);
+      expect(f.stateValues.numMinima).eq(0);
+      expect(f.stateValues.numExtrema).eq(0);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type("10{enter}", {
@@ -4110,7 +4110,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(200 / period);
+      expect(f.stateValues.numMaxima).eq(200 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4122,7 +4122,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(200 / period);
+      expect(f.stateValues.numMinima).eq(200 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4137,7 +4137,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(400 / period);
+      expect(f.stateValues.numExtrema).eq(400 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4166,7 +4166,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(200 / period);
+      expect(f.stateValues.numMaxima).eq(200 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4178,7 +4178,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(200 / period);
+      expect(f.stateValues.numMinima).eq(200 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4193,7 +4193,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(400 / period);
+      expect(f.stateValues.numExtrema).eq(400 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4246,9 +4246,9 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(0);
-      expect(f.stateValues.numberMinima).eq(0);
-      expect(f.stateValues.numberExtrema).eq(0);
+      expect(f.stateValues.numMaxima).eq(0);
+      expect(f.stateValues.numMinima).eq(0);
+      expect(f.stateValues.numExtrema).eq(0);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type("10{enter}", {
@@ -4263,7 +4263,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(20 / period);
+      expect(f.stateValues.numMaxima).eq(20 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4275,7 +4275,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(20 / period);
+      expect(f.stateValues.numMinima).eq(20 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4290,7 +4290,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(40 / period);
+      expect(f.stateValues.numExtrema).eq(40 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4323,7 +4323,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(30 / period);
+      expect(f.stateValues.numMaxima).eq(30 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4335,7 +4335,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(30 / period);
+      expect(f.stateValues.numMinima).eq(30 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4350,7 +4350,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(60 / period);
+      expect(f.stateValues.numExtrema).eq(60 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4379,7 +4379,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(30 / period);
+      expect(f.stateValues.numMaxima).eq(30 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4391,7 +4391,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(30 / period);
+      expect(f.stateValues.numMinima).eq(30 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4406,7 +4406,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(60 / period);
+      expect(f.stateValues.numExtrema).eq(60 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4438,7 +4438,7 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(f.stateValues.numberMaxima).eq(10 / period);
+      expect(f.stateValues.numMaxima).eq(10 / period);
 
       let maximumLocations = f.stateValues.maximumLocations;
       for (let m of maximumLocations) {
@@ -4450,7 +4450,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.stateValues.numberMinima).eq(10 / period);
+      expect(f.stateValues.numMinima).eq(10 / period);
 
       let minimumLocations = f.stateValues.minimumLocations;
       for (let m of minimumLocations) {
@@ -4465,7 +4465,7 @@ describe("Function Tag Tests", function () {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.stateValues.numberExtrema).eq(20 / period);
+      expect(f.stateValues.numExtrema).eq(20 / period);
 
       let extremumLocations = f.stateValues.minimumLocations;
       for (let m of extremumLocations) {
@@ -4508,9 +4508,9 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(await f.stateValues.numberMaxima).eq(0);
-      expect(await f.stateValues.numberMinima).eq(0);
-      expect(await f.stateValues.numberExtrema).eq(0);
+      expect(await f.stateValues.numMaxima).eq(0);
+      expect(await f.stateValues.numMinima).eq(0);
+      expect(await f.stateValues.numExtrema).eq(0);
     });
   });
 
@@ -4557,9 +4557,9 @@ describe("Function Tag Tests", function () {
         0.00247762462709702, -1.9201441781587, 0.012920204644976,
       ];
 
-      expect(f.stateValues.numberMaxima).eq(3);
-      expect(f.stateValues.numberMinima).eq(1);
-      expect(f.stateValues.numberExtrema).eq(4);
+      expect(f.stateValues.numMaxima).eq(3);
+      expect(f.stateValues.numMinima).eq(1);
+      expect(f.stateValues.numExtrema).eq(4);
 
       // Note: since just one value, the arrayEntries minimumValues and minimumLocations
       // are not arrays.
@@ -4604,9 +4604,9 @@ describe("Function Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let f = stateVariables["/_function1"];
-      expect(f.stateValues.numberMaxima).eq(0);
-      expect(f.stateValues.numberMinima).eq(0);
-      expect(f.stateValues.numberExtrema).eq(0);
+      expect(f.stateValues.numMaxima).eq(0);
+      expect(f.stateValues.numMinima).eq(0);
+      expect(f.stateValues.numExtrema).eq(0);
     });
   });
 
@@ -4643,9 +4643,9 @@ describe("Function Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let f = stateVariables["/_function1"];
-      expect(f.stateValues.numberMaxima).eq(1);
-      expect(f.stateValues.numberMinima).eq(0);
-      expect(f.stateValues.numberExtrema).eq(1);
+      expect(f.stateValues.numMaxima).eq(1);
+      expect(f.stateValues.numMinima).eq(0);
+      expect(f.stateValues.numExtrema).eq(1);
 
       expect(f.stateValues.maximumLocations).closeTo(2.614, 0.001);
       expect(f.stateValues.maximumValues).closeTo(3.82, 0.001);
@@ -4684,25 +4684,25 @@ describe("Function Tag Tests", function () {
       let f1 = stateVariables["/f1"];
       let f2 = stateVariables["/f2"];
       let f3 = stateVariables["/f3"];
-      expect(f1.stateValues.numberMaxima).eq(1);
-      expect(f1.stateValues.numberMinima).eq(0);
-      expect(f1.stateValues.numberExtrema).eq(1);
+      expect(f1.stateValues.numMaxima).eq(1);
+      expect(f1.stateValues.numMinima).eq(0);
+      expect(f1.stateValues.numExtrema).eq(1);
       expect((await f1.stateValues.maxima)[0][0]).closeTo(1.0131, 1e-6);
       expect(f1.stateValues.maxima[0][1]).eq(2);
       expect((await f1.stateValues.extrema)[0][0]).closeTo(1.0131, 1e-6);
       expect(f1.stateValues.extrema[0][1]).eq(2);
 
-      expect(f2.stateValues.numberMaxima).eq(0);
-      expect(f2.stateValues.numberMinima).eq(1);
-      expect(f2.stateValues.numberExtrema).eq(1);
+      expect(f2.stateValues.numMaxima).eq(0);
+      expect(f2.stateValues.numMinima).eq(1);
+      expect(f2.stateValues.numExtrema).eq(1);
       expect((await f2.stateValues.minima)[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f2.stateValues.minima[0][1]).eq(3);
       expect((await f2.stateValues.extrema)[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f2.stateValues.extrema[0][1]).eq(3);
 
-      expect(f3.stateValues.numberMaxima).eq(2);
-      expect(f3.stateValues.numberMinima).eq(2);
-      expect(f3.stateValues.numberExtrema).eq(4);
+      expect(f3.stateValues.numMaxima).eq(2);
+      expect(f3.stateValues.numMinima).eq(2);
+      expect(f3.stateValues.numExtrema).eq(4);
       expect((await f3.stateValues.minima)[0][0]).closeTo(
         (3 * Math.PI) / 6,
         1e-6,
@@ -5170,9 +5170,9 @@ describe("Function Tag Tests", function () {
       let f2 = stateVariables["/f2"];
       let f3 = stateVariables["/f3"];
       let f4 = stateVariables["/f4"];
-      expect(f1.stateValues.numberMaxima).eq(1);
-      expect(f1.stateValues.numberMinima).eq(1);
-      expect(f1.stateValues.numberExtrema).eq(2);
+      expect(f1.stateValues.numMaxima).eq(1);
+      expect(f1.stateValues.numMinima).eq(1);
+      expect(f1.stateValues.numExtrema).eq(2);
       expect(f1.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
       expect(f1.stateValues.minima[0][1]).eq(-1);
       expect(f1.stateValues.maxima[0][0]).closeTo(0, 1e-6);
@@ -5182,9 +5182,9 @@ describe("Function Tag Tests", function () {
       expect(f1.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
       expect(f1.stateValues.extrema[1][1]).eq(-1);
 
-      expect(f2.stateValues.numberMaxima).eq(2);
-      expect(f2.stateValues.numberMinima).eq(2);
-      expect(f2.stateValues.numberExtrema).eq(4);
+      expect(f2.stateValues.numMaxima).eq(2);
+      expect(f2.stateValues.numMinima).eq(2);
+      expect(f2.stateValues.numExtrema).eq(4);
       expect(f2.stateValues.minima[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f2.stateValues.minima[0][1]).eq(0);
       expect(f2.stateValues.minima[1][0]).closeTo(Math.PI, 1e-6);
@@ -5202,9 +5202,9 @@ describe("Function Tag Tests", function () {
       expect(f2.stateValues.extrema[3][0]).closeTo(2 * Math.PI, 1e-6);
       expect(f2.stateValues.extrema[3][1]).eq(2);
 
-      expect(f3.stateValues.numberMaxima).eq(1);
-      expect(f3.stateValues.numberMinima).eq(2);
-      expect(f3.stateValues.numberExtrema).eq(3);
+      expect(f3.stateValues.numMaxima).eq(1);
+      expect(f3.stateValues.numMinima).eq(2);
+      expect(f3.stateValues.numExtrema).eq(3);
       expect(f3.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
       expect(f3.stateValues.minima[0][1]).eq(1);
       expect(f3.stateValues.minima[1][0]).closeTo(1.5 * Math.PI, 1e-6);
@@ -5218,9 +5218,9 @@ describe("Function Tag Tests", function () {
       expect(f3.stateValues.extrema[2][0]).closeTo(1.5 * Math.PI, 1e-6);
       expect(f3.stateValues.extrema[2][1]).eq(1);
 
-      expect(f4.stateValues.numberMaxima).eq(2);
-      expect(f4.stateValues.numberMinima).eq(1);
-      expect(f4.stateValues.numberExtrema).eq(3);
+      expect(f4.stateValues.numMaxima).eq(2);
+      expect(f4.stateValues.numMinima).eq(1);
+      expect(f4.stateValues.numExtrema).eq(3);
       expect(f4.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
       expect(f4.stateValues.minima[0][1]).eq(2);
       expect(f4.stateValues.maxima[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
@@ -5238,9 +5238,9 @@ describe("Function Tag Tests", function () {
       let f2a = stateVariables["/f2a"];
       let f3a = stateVariables["/f3a"];
       let f4a = stateVariables["/f4a"];
-      expect(f1a.stateValues.numberMaxima).eq(1);
-      expect(f1a.stateValues.numberMinima).eq(1);
-      expect(f1a.stateValues.numberExtrema).eq(2);
+      expect(f1a.stateValues.numMaxima).eq(1);
+      expect(f1a.stateValues.numMinima).eq(1);
+      expect(f1a.stateValues.numExtrema).eq(2);
       expect(f1a.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
       expect(f1a.stateValues.minima[0][1]).eq(-1);
       expect(f1a.stateValues.maxima[0][0]).closeTo(0, 1e-6);
@@ -5250,9 +5250,9 @@ describe("Function Tag Tests", function () {
       expect(f1a.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
       expect(f1a.stateValues.extrema[1][1]).eq(-1);
 
-      expect(f3a.stateValues.numberMaxima).eq(1);
-      expect(f3a.stateValues.numberMinima).eq(2);
-      expect(f3a.stateValues.numberExtrema).eq(3);
+      expect(f3a.stateValues.numMaxima).eq(1);
+      expect(f3a.stateValues.numMinima).eq(2);
+      expect(f3a.stateValues.numExtrema).eq(3);
       expect(f3a.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
       expect(f3a.stateValues.minima[0][1]).eq(1);
       expect(f3a.stateValues.minima[1][0]).closeTo(1.5 * Math.PI, 1e-6);
@@ -5266,9 +5266,9 @@ describe("Function Tag Tests", function () {
       expect(f3a.stateValues.extrema[2][0]).closeTo(1.5 * Math.PI, 1e-6);
       expect(f3a.stateValues.extrema[2][1]).eq(1);
 
-      expect(f4a.stateValues.numberMaxima).eq(2);
-      expect(f4a.stateValues.numberMinima).eq(1);
-      expect(f4a.stateValues.numberExtrema).eq(3);
+      expect(f4a.stateValues.numMaxima).eq(2);
+      expect(f4a.stateValues.numMinima).eq(1);
+      expect(f4a.stateValues.numExtrema).eq(3);
       expect(f4a.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
       expect(f4a.stateValues.minima[0][1]).eq(2);
       expect(f4a.stateValues.maxima[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
@@ -5286,9 +5286,9 @@ describe("Function Tag Tests", function () {
       let f6 = stateVariables["/f6"];
       let f7 = stateVariables["/f7"];
       let f8 = stateVariables["/f8"];
-      expect(f5.stateValues.numberMaxima).eq(1);
-      expect(f5.stateValues.numberMinima).eq(1);
-      expect(f5.stateValues.numberExtrema).eq(2);
+      expect(f5.stateValues.numMaxima).eq(1);
+      expect(f5.stateValues.numMinima).eq(1);
+      expect(f5.stateValues.numExtrema).eq(2);
       expect(f5.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
       expect(f5.stateValues.minima[0][1]).eq(-1);
       expect(f5.stateValues.maxima[0][0]).closeTo(2 * Math.PI, 1e-6);
@@ -5298,9 +5298,9 @@ describe("Function Tag Tests", function () {
       expect(f5.stateValues.extrema[1][0]).closeTo(2 * Math.PI, 1e-6);
       expect(f5.stateValues.extrema[1][1]).eq(1);
 
-      expect(f6.stateValues.numberMaxima).eq(2);
-      expect(f6.stateValues.numberMinima).eq(2);
-      expect(f6.stateValues.numberExtrema).eq(4);
+      expect(f6.stateValues.numMaxima).eq(2);
+      expect(f6.stateValues.numMinima).eq(2);
+      expect(f6.stateValues.numExtrema).eq(4);
       expect(f6.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
       expect(f6.stateValues.minima[0][1]).eq(0);
       expect(f6.stateValues.minima[1][0]).closeTo(3 * Math.PI, 1e-6);
@@ -5318,9 +5318,9 @@ describe("Function Tag Tests", function () {
       expect(f6.stateValues.extrema[3][0]).closeTo(3 * Math.PI, 1e-6);
       expect(f6.stateValues.extrema[3][1]).eq(0);
 
-      expect(f7.stateValues.numberMaxima).eq(2);
-      expect(f7.stateValues.numberMinima).eq(1);
-      expect(f7.stateValues.numberExtrema).eq(3);
+      expect(f7.stateValues.numMaxima).eq(2);
+      expect(f7.stateValues.numMinima).eq(1);
+      expect(f7.stateValues.numExtrema).eq(3);
       expect(f7.stateValues.minima[0][0]).closeTo(2 * Math.PI, 1e-6);
       expect(f7.stateValues.minima[0][1]).eq(3);
       expect(f7.stateValues.maxima[0][0]).closeTo(Math.PI, 1e-6);
@@ -5334,9 +5334,9 @@ describe("Function Tag Tests", function () {
       expect(f7.stateValues.extrema[2][0]).closeTo(3 * Math.PI, 1e-6);
       expect(f7.stateValues.extrema[2][1]).eq(5);
 
-      expect(f8.stateValues.numberMaxima).eq(1);
-      expect(f8.stateValues.numberMinima).eq(2);
-      expect(f8.stateValues.numberExtrema).eq(3);
+      expect(f8.stateValues.numMaxima).eq(1);
+      expect(f8.stateValues.numMinima).eq(2);
+      expect(f8.stateValues.numExtrema).eq(3);
       expect(f8.stateValues.minima[0][0]).closeTo(0, 1e-6);
       expect(f8.stateValues.minima[0][1]).eq(4);
       expect(f8.stateValues.minima[1][0]).closeTo(2 * Math.PI, 1e-6);
@@ -5354,9 +5354,9 @@ describe("Function Tag Tests", function () {
       let f10 = stateVariables["/f10"];
       let f11 = stateVariables["/f11"];
       let f12 = stateVariables["/f12"];
-      expect(f9.stateValues.numberMaxima).eq(1);
-      expect(f9.stateValues.numberMinima).eq(1);
-      expect(f9.stateValues.numberExtrema).eq(2);
+      expect(f9.stateValues.numMaxima).eq(1);
+      expect(f9.stateValues.numMinima).eq(1);
+      expect(f9.stateValues.numExtrema).eq(2);
       expect(f9.stateValues.minima[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f9.stateValues.minima[0][1]).eq(-1);
       expect(f9.stateValues.maxima[0][0]).closeTo(-2 * Math.PI, 1e-6);
@@ -5366,9 +5366,9 @@ describe("Function Tag Tests", function () {
       expect(f9.stateValues.extrema[1][0]).closeTo(-Math.PI, 1e-6);
       expect(f9.stateValues.extrema[1][1]).eq(-1);
 
-      expect(f10.stateValues.numberMaxima).eq(2);
-      expect(f10.stateValues.numberMinima).eq(2);
-      expect(f10.stateValues.numberExtrema).eq(4);
+      expect(f10.stateValues.numMaxima).eq(2);
+      expect(f10.stateValues.numMinima).eq(2);
+      expect(f10.stateValues.numExtrema).eq(4);
       expect(f10.stateValues.minima[0][0]).closeTo(-3 * Math.PI, 1e-6);
       expect(f10.stateValues.minima[0][1]).eq(0);
       expect(f10.stateValues.minima[1][0]).closeTo(-Math.PI, 1e-6);
@@ -5386,9 +5386,9 @@ describe("Function Tag Tests", function () {
       expect(f10.stateValues.extrema[3][0]).closeTo(0, 1e-6);
       expect(f10.stateValues.extrema[3][1]).eq(2);
 
-      expect(f11.stateValues.numberMaxima).eq(1);
-      expect(f11.stateValues.numberMinima).eq(2);
-      expect(f11.stateValues.numberExtrema).eq(3);
+      expect(f11.stateValues.numMaxima).eq(1);
+      expect(f11.stateValues.numMinima).eq(2);
+      expect(f11.stateValues.numExtrema).eq(3);
       expect(f11.stateValues.minima[0][0]).closeTo(-2 * Math.PI, 1e-6);
       expect(f11.stateValues.minima[0][1]).eq(3);
       expect(f11.stateValues.minima[1][0]).closeTo(0, 1e-6);
@@ -5402,9 +5402,700 @@ describe("Function Tag Tests", function () {
       expect(f11.stateValues.extrema[2][0]).closeTo(0, 1e-6);
       expect(f11.stateValues.extrema[2][1]).eq(3);
 
-      expect(f12.stateValues.numberMaxima).eq(2);
-      expect(f12.stateValues.numberMinima).eq(1);
-      expect(f12.stateValues.numberExtrema).eq(3);
+      expect(f12.stateValues.numMaxima).eq(2);
+      expect(f12.stateValues.numMinima).eq(1);
+      expect(f12.stateValues.numExtrema).eq(3);
+      expect(f12.stateValues.minima[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f12.stateValues.minima[0][1]).eq(4);
+      expect(f12.stateValues.maxima[0][0]).closeTo(-3 * Math.PI, 1e-6);
+      expect(f12.stateValues.maxima[0][1]).eq(6);
+      expect(f12.stateValues.maxima[1][0]).closeTo(-Math.PI, 1e-6);
+      expect(f12.stateValues.maxima[1][1]).eq(6);
+      expect(f12.stateValues.extrema[0][0]).closeTo(-3 * Math.PI, 1e-6);
+      expect(f12.stateValues.extrema[0][1]).eq(6);
+      expect(f12.stateValues.extrema[1][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f12.stateValues.extrema[1][1]).eq(4);
+      expect(f12.stateValues.extrema[2][0]).closeTo(-Math.PI, 1e-6);
+      expect(f12.stateValues.extrema[2][1]).eq(6);
+    });
+  });
+
+  it("extrema at domain endpoints, function from formula, link=false", () => {
+    // Note: checking to see if rounding attributes are properly copied
+    // for wrapped array state variables when link="false"
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f1" domain="(-pi,2pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f2" domain="[-pi,2pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f3" domain="(-3pi/2,3pi/2]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+2</function>
+      <function name="f4" domain="[-3pi/2,3pi/2)" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+3</function>
+    </graph>
+    <p><copy prop="extrema" target="f1" assignNames="f1e1 f1e2 f1e3" link="false" /></p>
+    <p><copy prop="extrema" target="f2" assignNames="f2e1 f2e2 f2e3 f2e4 f2e5" link="false" /></p>
+    <p><copy prop="extrema" target="f3" assignNames="f3e1 f3e2 f3e3 f3e4" link="false" /></p>
+    <p><copy prop="extrema" target="f4" assignNames="f4e1 f4e2 f4e3 f4e4" link="false" /></p>
+
+    <graph>
+      <function name="f1a" domain="[-pi+10^(-6),2pi-10^(-6)]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f3a" domain="[-3pi/2+10^(-6),3pi/2]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+2</function>
+      <function name="f4a" domain="[-3pi/2,3pi/2-10^(-6)]" displayDecimals="5" displaySmallAsZero="10^(-6)">sin(x)+3</function>
+    </graph>
+    <p><copy prop="extrema" target="f1a" assignNames="f1ae1 f1ae2 f1ae3" link="false" /></p>
+    <p><copy prop="extrema" target="f3a" assignNames="f3ae1 f3ae2 f3ae3 f3ae4" link="false" /></p>
+    <p><copy prop="extrema" target="f4a" assignNames="f4ae1 f4ae2 f4ae3 f4ae4" link="false" /></p>
+
+    <graph>
+      <function name="f5" domain="(0,3pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f6" domain="[0,3pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f7" domain="(0,3pi]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+4</function>
+      <function name="f8" domain="[0,3pi)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+5</function>
+      
+    </graph>
+    <p><copy prop="extrema" target="f5" assignNames="f5e1 f5e2 f5e3" link="false" /></p>
+    <p><copy prop="extrema" target="f6" assignNames="f6e1 f6e2 f6e3 f6e4 f6e5" link="false" /></p>
+    <p><copy prop="extrema" target="f7" assignNames="f7e1 f7e2 f7e3 f7e4" link="false" /></p>
+    <p><copy prop="extrema" target="f8" assignNames="f8e1 f8e2 f8e3 f8e4" link="false" /></p>
+
+    <graph>
+      <function name="f9" domain="(-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)</function>
+      <function name="f10" domain="[-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x)+1</function>
+      <function name="f11" domain="(-3pi, 0]" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+4</function>
+      <function name="f12" domain="[-3pi, 0)" displayDecimals="5" displaySmallAsZero="10^(-6)">cos(x-pi)+5</function>
+      
+    </graph>
+    <p><copy prop="extrema" target="f9" assignNames="f9e1 f9e2 f9e3" link="false" /></p>
+    <p><copy prop="extrema" target="f10" assignNames="f10e1 f10e2 f10e3 f10e4 f10e5" link="false" /></p>
+    <p><copy prop="extrema" target="f11" assignNames="f11e1 f11e2 f11e3 f11e4" link="false" /></p>
+    <p><copy prop="extrema" target="f12" assignNames="f12e1 f12e2 f12e3 f12e4" link="false" /></p>
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.get(cesc("#\\/f1e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,1)`);
+      });
+    cy.get(cesc("#\\/f1e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`,
+        );
+      });
+    cy.get(cesc("#\\/f1e3")).should("not.exist");
+
+    cy.get(cesc("#\\/f2e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f2e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,2)`);
+      });
+    cy.get(cesc("#\\/f2e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f2e4") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`,
+        );
+      });
+    cy.get(cesc("#\\/f2e5")).should("not.exist");
+
+    cy.get(cesc("#\\/f3e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`,
+        );
+      });
+    cy.get(cesc("#\\/f3e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},3)`,
+        );
+      });
+    cy.get(cesc("#\\/f3e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(1.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`,
+        );
+      });
+    cy.get(cesc("#\\/f3e4")).should("not.exist");
+
+    cy.get(cesc("#\\/f4e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-1.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f4e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},2)`,
+        );
+      });
+    cy.get(cesc("#\\/f4e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f4e4")).should("not.exist");
+
+    cy.get(cesc("#\\/f1ae1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,1)`);
+      });
+    cy.get(cesc("#\\/f1ae2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`,
+        );
+      });
+    cy.get(cesc("#\\/f1ae3")).should("not.exist");
+
+    cy.get(cesc("#\\/f3ae1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`,
+        );
+      });
+    cy.get(cesc("#\\/f3ae2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},3)`,
+        );
+      });
+    cy.get(cesc("#\\/f3ae3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(1.5 * Math.PI * 10 ** 5) / 10 ** 5)},1)`,
+        );
+      });
+    cy.get(cesc("#\\/f3ae4")).should("not.exist");
+
+    cy.get(cesc("#\\/f4ae1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-1.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f4ae2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-0.5 * Math.PI * 10 ** 5) / 10 ** 5)},2)`,
+        );
+      });
+    cy.get(cesc("#\\/f4ae3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(0.5 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f4ae4")).should("not.exist");
+
+    cy.get(cesc("#\\/f5e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`,
+        );
+      });
+    cy.get(cesc("#\\/f5e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(
+            1,
+          )})`,
+        );
+      });
+    cy.get(cesc("#\\/f5e3")).should("not.exist");
+
+    cy.get(cesc("#\\/f6e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,2)`);
+      });
+    cy.get(cesc("#\\/f6e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f6e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`,
+        );
+      });
+    cy.get(cesc("#\\/f6e4") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(3 * Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f6e5")).should("not.exist");
+
+    cy.get(cesc("#\\/f7e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},5)`,
+        );
+      });
+    cy.get(cesc("#\\/f7e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},3)`,
+        );
+      });
+    cy.get(cesc("#\\/f7e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(3 * Math.PI * 10 ** 5) / 10 ** 5)},5)`,
+        );
+      });
+    cy.get(cesc("#\\/f7e4")).should("not.exist");
+
+    cy.get(cesc("#\\/f8e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,4)`);
+      });
+    cy.get(cesc("#\\/f8e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(Math.PI * 10 ** 5) / 10 ** 5)},6)`,
+        );
+      });
+    cy.get(cesc("#\\/f8e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(2 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f8e4")).should("not.exist");
+
+    cy.get(cesc("#\\/f9e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(
+            1,
+          )})`,
+        );
+      });
+    cy.get(cesc("#\\/f9e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},${nInDOM(-1)})`,
+        );
+      });
+    cy.get(cesc("#\\/f9e3")).should("not.exist");
+
+    cy.get(cesc("#\\/f10e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-3 * Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f10e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},2)`,
+        );
+      });
+    cy.get(cesc("#\\/f10e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},0)`,
+        );
+      });
+    cy.get(cesc("#\\/f10e4") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,2)`);
+      });
+    cy.get(cesc("#\\/f10e5")).should("not.exist");
+
+    cy.get(cesc("#\\/f11e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},3)`,
+        );
+      });
+    cy.get(cesc("#\\/f11e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},5)`,
+        );
+      });
+    cy.get(cesc("#\\/f11e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(`(0,3)`);
+      });
+    cy.get(cesc("#\\/f11e4")).should("not.exist");
+
+    cy.get(cesc("#\\/f12e1") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-3 * Math.PI * 10 ** 5) / 10 ** 5)},6)`,
+        );
+      });
+    cy.get(cesc("#\\/f12e2") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-2 * Math.PI * 10 ** 5) / 10 ** 5)},4)`,
+        );
+      });
+    cy.get(cesc("#\\/f12e3") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq(
+          `(${nInDOM(Math.round(-Math.PI * 10 ** 5) / 10 ** 5)},6)`,
+        );
+      });
+    cy.get(cesc("#\\/f12e4")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f1 = stateVariables["/f1"];
+      let f2 = stateVariables["/f2"];
+      let f3 = stateVariables["/f3"];
+      let f4 = stateVariables["/f4"];
+      expect(f1.stateValues.numMaxima).eq(1);
+      expect(f1.stateValues.numMinima).eq(1);
+      expect(f1.stateValues.numExtrema).eq(2);
+      expect(f1.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f1.stateValues.minima[0][1]).eq(-1);
+      expect(f1.stateValues.maxima[0][0]).closeTo(0, 1e-6);
+      expect(f1.stateValues.maxima[0][1]).eq(1);
+      expect(f1.stateValues.extrema[0][0]).closeTo(0, 1e-6);
+      expect(f1.stateValues.extrema[0][1]).eq(1);
+      expect(f1.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
+      expect(f1.stateValues.extrema[1][1]).eq(-1);
+
+      expect(f2.stateValues.numMaxima).eq(2);
+      expect(f2.stateValues.numMinima).eq(2);
+      expect(f2.stateValues.numExtrema).eq(4);
+      expect(f2.stateValues.minima[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f2.stateValues.minima[0][1]).eq(0);
+      expect(f2.stateValues.minima[1][0]).closeTo(Math.PI, 1e-6);
+      expect(f2.stateValues.minima[1][1]).eq(0);
+      expect(f2.stateValues.maxima[0][0]).closeTo(0, 1e-6);
+      expect(f2.stateValues.maxima[0][1]).eq(2);
+      expect(f2.stateValues.maxima[1][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f2.stateValues.maxima[1][1]).eq(2);
+      expect(f2.stateValues.extrema[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f2.stateValues.extrema[0][1]).eq(0);
+      expect(f2.stateValues.extrema[1][0]).closeTo(0, 1e-6);
+      expect(f2.stateValues.extrema[1][1]).eq(2);
+      expect(f2.stateValues.extrema[2][0]).closeTo(Math.PI, 1e-6);
+      expect(f2.stateValues.extrema[2][1]).eq(0);
+      expect(f2.stateValues.extrema[3][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f2.stateValues.extrema[3][1]).eq(2);
+
+      expect(f3.stateValues.numMaxima).eq(1);
+      expect(f3.stateValues.numMinima).eq(2);
+      expect(f3.stateValues.numExtrema).eq(3);
+      expect(f3.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.minima[0][1]).eq(1);
+      expect(f3.stateValues.minima[1][0]).closeTo(1.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.minima[1][1]).eq(1);
+      expect(f3.stateValues.maxima[0][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.maxima[0][1]).eq(3);
+      expect(f3.stateValues.extrema[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.extrema[0][1]).eq(1);
+      expect(f3.stateValues.extrema[1][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.extrema[1][1]).eq(3);
+      expect(f3.stateValues.extrema[2][0]).closeTo(1.5 * Math.PI, 1e-6);
+      expect(f3.stateValues.extrema[2][1]).eq(1);
+
+      expect(f4.stateValues.numMaxima).eq(2);
+      expect(f4.stateValues.numMinima).eq(1);
+      expect(f4.stateValues.numExtrema).eq(3);
+      expect(f4.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.minima[0][1]).eq(2);
+      expect(f4.stateValues.maxima[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.maxima[0][1]).eq(4);
+      expect(f4.stateValues.maxima[1][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.maxima[1][1]).eq(4);
+      expect(f4.stateValues.extrema[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.extrema[0][1]).eq(4);
+      expect(f4.stateValues.extrema[1][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.extrema[1][1]).eq(2);
+      expect(f4.stateValues.extrema[2][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f4.stateValues.extrema[2][1]).eq(4);
+
+      let f1a = stateVariables["/f1a"];
+      let f2a = stateVariables["/f2a"];
+      let f3a = stateVariables["/f3a"];
+      let f4a = stateVariables["/f4a"];
+      expect(f1a.stateValues.numMaxima).eq(1);
+      expect(f1a.stateValues.numMinima).eq(1);
+      expect(f1a.stateValues.numExtrema).eq(2);
+      expect(f1a.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f1a.stateValues.minima[0][1]).eq(-1);
+      expect(f1a.stateValues.maxima[0][0]).closeTo(0, 1e-6);
+      expect(f1a.stateValues.maxima[0][1]).eq(1);
+      expect(f1a.stateValues.extrema[0][0]).closeTo(0, 1e-6);
+      expect(f1a.stateValues.extrema[0][1]).eq(1);
+      expect(f1a.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
+      expect(f1a.stateValues.extrema[1][1]).eq(-1);
+
+      expect(f3a.stateValues.numMaxima).eq(1);
+      expect(f3a.stateValues.numMinima).eq(2);
+      expect(f3a.stateValues.numExtrema).eq(3);
+      expect(f3a.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.minima[0][1]).eq(1);
+      expect(f3a.stateValues.minima[1][0]).closeTo(1.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.minima[1][1]).eq(1);
+      expect(f3a.stateValues.maxima[0][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.maxima[0][1]).eq(3);
+      expect(f3a.stateValues.extrema[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.extrema[0][1]).eq(1);
+      expect(f3a.stateValues.extrema[1][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.extrema[1][1]).eq(3);
+      expect(f3a.stateValues.extrema[2][0]).closeTo(1.5 * Math.PI, 1e-6);
+      expect(f3a.stateValues.extrema[2][1]).eq(1);
+
+      expect(f4a.stateValues.numMaxima).eq(2);
+      expect(f4a.stateValues.numMinima).eq(1);
+      expect(f4a.stateValues.numExtrema).eq(3);
+      expect(f4a.stateValues.minima[0][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.minima[0][1]).eq(2);
+      expect(f4a.stateValues.maxima[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.maxima[0][1]).eq(4);
+      expect(f4a.stateValues.maxima[1][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.maxima[1][1]).eq(4);
+      expect(f4a.stateValues.extrema[0][0]).closeTo(-1.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.extrema[0][1]).eq(4);
+      expect(f4a.stateValues.extrema[1][0]).closeTo(-0.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.extrema[1][1]).eq(2);
+      expect(f4a.stateValues.extrema[2][0]).closeTo(0.5 * Math.PI, 1e-6);
+      expect(f4a.stateValues.extrema[2][1]).eq(4);
+
+      let f5 = stateVariables["/f5"];
+      let f6 = stateVariables["/f6"];
+      let f7 = stateVariables["/f7"];
+      let f8 = stateVariables["/f8"];
+      expect(f5.stateValues.numMaxima).eq(1);
+      expect(f5.stateValues.numMinima).eq(1);
+      expect(f5.stateValues.numExtrema).eq(2);
+      expect(f5.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f5.stateValues.minima[0][1]).eq(-1);
+      expect(f5.stateValues.maxima[0][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f5.stateValues.maxima[0][1]).eq(1);
+      expect(f5.stateValues.extrema[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f5.stateValues.extrema[0][1]).eq(-1);
+      expect(f5.stateValues.extrema[1][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f5.stateValues.extrema[1][1]).eq(1);
+
+      expect(f6.stateValues.numMaxima).eq(2);
+      expect(f6.stateValues.numMinima).eq(2);
+      expect(f6.stateValues.numExtrema).eq(4);
+      expect(f6.stateValues.minima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f6.stateValues.minima[0][1]).eq(0);
+      expect(f6.stateValues.minima[1][0]).closeTo(3 * Math.PI, 1e-6);
+      expect(f6.stateValues.minima[1][1]).eq(0);
+      expect(f6.stateValues.maxima[0][0]).closeTo(0, 1e-6);
+      expect(f6.stateValues.maxima[0][1]).eq(2);
+      expect(f6.stateValues.maxima[1][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f6.stateValues.maxima[1][1]).eq(2);
+      expect(f6.stateValues.extrema[0][0]).closeTo(0, 1e-6);
+      expect(f6.stateValues.extrema[0][1]).eq(2);
+      expect(f6.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
+      expect(f6.stateValues.extrema[1][1]).eq(0);
+      expect(f6.stateValues.extrema[2][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f6.stateValues.extrema[2][1]).eq(2);
+      expect(f6.stateValues.extrema[3][0]).closeTo(3 * Math.PI, 1e-6);
+      expect(f6.stateValues.extrema[3][1]).eq(0);
+
+      expect(f7.stateValues.numMaxima).eq(2);
+      expect(f7.stateValues.numMinima).eq(1);
+      expect(f7.stateValues.numExtrema).eq(3);
+      expect(f7.stateValues.minima[0][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f7.stateValues.minima[0][1]).eq(3);
+      expect(f7.stateValues.maxima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f7.stateValues.maxima[0][1]).eq(5);
+      expect(f7.stateValues.maxima[1][0]).closeTo(3 * Math.PI, 1e-6);
+      expect(f7.stateValues.maxima[1][1]).eq(5);
+      expect(f7.stateValues.extrema[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f7.stateValues.extrema[0][1]).eq(5);
+      expect(f7.stateValues.extrema[1][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f7.stateValues.extrema[1][1]).eq(3);
+      expect(f7.stateValues.extrema[2][0]).closeTo(3 * Math.PI, 1e-6);
+      expect(f7.stateValues.extrema[2][1]).eq(5);
+
+      expect(f8.stateValues.numMaxima).eq(1);
+      expect(f8.stateValues.numMinima).eq(2);
+      expect(f8.stateValues.numExtrema).eq(3);
+      expect(f8.stateValues.minima[0][0]).closeTo(0, 1e-6);
+      expect(f8.stateValues.minima[0][1]).eq(4);
+      expect(f8.stateValues.minima[1][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f8.stateValues.minima[1][1]).eq(4);
+      expect(f8.stateValues.maxima[0][0]).closeTo(Math.PI, 1e-6);
+      expect(f8.stateValues.maxima[0][1]).eq(6);
+      expect(f8.stateValues.extrema[0][0]).closeTo(0, 1e-6);
+      expect(f8.stateValues.extrema[0][1]).eq(4);
+      expect(f8.stateValues.extrema[1][0]).closeTo(Math.PI, 1e-6);
+      expect(f8.stateValues.extrema[1][1]).eq(6);
+      expect(f8.stateValues.extrema[2][0]).closeTo(2 * Math.PI, 1e-6);
+      expect(f8.stateValues.extrema[2][1]).eq(4);
+
+      let f9 = stateVariables["/f9"];
+      let f10 = stateVariables["/f10"];
+      let f11 = stateVariables["/f11"];
+      let f12 = stateVariables["/f12"];
+      expect(f9.stateValues.numMaxima).eq(1);
+      expect(f9.stateValues.numMinima).eq(1);
+      expect(f9.stateValues.numExtrema).eq(2);
+      expect(f9.stateValues.minima[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f9.stateValues.minima[0][1]).eq(-1);
+      expect(f9.stateValues.maxima[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f9.stateValues.maxima[0][1]).eq(1);
+      expect(f9.stateValues.extrema[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f9.stateValues.extrema[0][1]).eq(1);
+      expect(f9.stateValues.extrema[1][0]).closeTo(-Math.PI, 1e-6);
+      expect(f9.stateValues.extrema[1][1]).eq(-1);
+
+      expect(f10.stateValues.numMaxima).eq(2);
+      expect(f10.stateValues.numMinima).eq(2);
+      expect(f10.stateValues.numExtrema).eq(4);
+      expect(f10.stateValues.minima[0][0]).closeTo(-3 * Math.PI, 1e-6);
+      expect(f10.stateValues.minima[0][1]).eq(0);
+      expect(f10.stateValues.minima[1][0]).closeTo(-Math.PI, 1e-6);
+      expect(f10.stateValues.minima[1][1]).eq(0);
+      expect(f10.stateValues.maxima[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f10.stateValues.maxima[0][1]).eq(2);
+      expect(f10.stateValues.maxima[1][0]).closeTo(0, 1e-6);
+      expect(f10.stateValues.maxima[1][1]).eq(2);
+      expect(f10.stateValues.extrema[0][0]).closeTo(-3 * Math.PI, 1e-6);
+      expect(f10.stateValues.extrema[0][1]).eq(0);
+      expect(f10.stateValues.extrema[1][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f10.stateValues.extrema[1][1]).eq(2);
+      expect(f10.stateValues.extrema[2][0]).closeTo(-Math.PI, 1e-6);
+      expect(f10.stateValues.extrema[2][1]).eq(0);
+      expect(f10.stateValues.extrema[3][0]).closeTo(0, 1e-6);
+      expect(f10.stateValues.extrema[3][1]).eq(2);
+
+      expect(f11.stateValues.numMaxima).eq(1);
+      expect(f11.stateValues.numMinima).eq(2);
+      expect(f11.stateValues.numExtrema).eq(3);
+      expect(f11.stateValues.minima[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f11.stateValues.minima[0][1]).eq(3);
+      expect(f11.stateValues.minima[1][0]).closeTo(0, 1e-6);
+      expect(f11.stateValues.minima[1][1]).eq(3);
+      expect(f11.stateValues.maxima[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f11.stateValues.maxima[0][1]).eq(5);
+      expect(f11.stateValues.extrema[0][0]).closeTo(-2 * Math.PI, 1e-6);
+      expect(f11.stateValues.extrema[0][1]).eq(3);
+      expect(f11.stateValues.extrema[1][0]).closeTo(-Math.PI, 1e-6);
+      expect(f11.stateValues.extrema[1][1]).eq(5);
+      expect(f11.stateValues.extrema[2][0]).closeTo(0, 1e-6);
+      expect(f11.stateValues.extrema[2][1]).eq(3);
+
+      expect(f12.stateValues.numMaxima).eq(2);
+      expect(f12.stateValues.numMinima).eq(1);
+      expect(f12.stateValues.numExtrema).eq(3);
       expect(f12.stateValues.minima[0][0]).closeTo(-2 * Math.PI, 1e-6);
       expect(f12.stateValues.minima[0][1]).eq(4);
       expect(f12.stateValues.maxima[0][0]).closeTo(-3 * Math.PI, 1e-6);
@@ -5732,9 +6423,9 @@ describe("Function Tag Tests", function () {
       let f1 = stateVariables["/f1"];
       let f2 = stateVariables["/f2"];
       let f3 = stateVariables["/f3"];
-      expect(f1.stateValues.numberMaxima).eq(1);
-      expect(f1.stateValues.numberMinima).eq(1);
-      expect(f1.stateValues.numberExtrema).eq(2);
+      expect(f1.stateValues.numMaxima).eq(1);
+      expect(f1.stateValues.numMinima).eq(1);
+      expect(f1.stateValues.numExtrema).eq(2);
       expect(f1.stateValues.minima[0][0]).closeTo(extremax1[1], 1e-12);
       expect(f1.stateValues.minima[0][1]).closeTo(Math.sqrt(3) - 1, 1e-12);
       expect(f1.stateValues.maxima[0][0]).closeTo(extremax1[2], 1e-12);
@@ -5744,9 +6435,9 @@ describe("Function Tag Tests", function () {
       expect(f1.stateValues.extrema[1][0]).closeTo(extremax1[2], 1e-12);
       expect(f1.stateValues.extrema[1][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f2.stateValues.numberMaxima).eq(2);
-      expect(f2.stateValues.numberMinima).eq(2);
-      expect(f2.stateValues.numberExtrema).eq(4);
+      expect(f2.stateValues.numMaxima).eq(2);
+      expect(f2.stateValues.numMinima).eq(2);
+      expect(f2.stateValues.numExtrema).eq(4);
       expect(f2.stateValues.minima[0][0]).closeTo(extremax1[1], 1e-12);
       expect(f2.stateValues.minima[0][1]).closeTo(Math.sqrt(3), 1e-12);
       expect(f2.stateValues.minima[1][0]).closeTo(extremax1[3], 1e-12);
@@ -5764,9 +6455,9 @@ describe("Function Tag Tests", function () {
       expect(f2.stateValues.extrema[3][0]).closeTo(extremax1[3], 1e-12);
       expect(f2.stateValues.extrema[3][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f3.stateValues.numberMaxima).eq(1);
-      expect(f3.stateValues.numberMinima).eq(1);
-      expect(f3.stateValues.numberExtrema).eq(2);
+      expect(f3.stateValues.numMaxima).eq(1);
+      expect(f3.stateValues.numMinima).eq(1);
+      expect(f3.stateValues.numExtrema).eq(2);
       expect(f3.stateValues.minima[0][0]).closeTo(extremax1[1], 1e-12);
       expect(f3.stateValues.minima[0][1]).closeTo(Math.sqrt(3) + 1, 1e-12);
       expect(f3.stateValues.maxima[0][0]).closeTo(extremax1[2], 1e-12);
@@ -5779,9 +6470,9 @@ describe("Function Tag Tests", function () {
       let f4 = stateVariables["/f4"];
       let f5 = stateVariables["/f5"];
       let f6 = stateVariables["/f6"];
-      expect(f4.stateValues.numberMaxima).eq(1);
-      expect(f4.stateValues.numberMinima).eq(1);
-      expect(f4.stateValues.numberExtrema).eq(2);
+      expect(f4.stateValues.numMaxima).eq(1);
+      expect(f4.stateValues.numMinima).eq(1);
+      expect(f4.stateValues.numExtrema).eq(2);
       expect(f4.stateValues.minima[0][0]).closeTo(extremax2[1], 1e-12);
       expect(f4.stateValues.minima[0][1]).closeTo(Math.sqrt(3) - 1, 1e-12);
       expect(f4.stateValues.maxima[0][0]).closeTo(extremax2[2], 1e-12);
@@ -5791,9 +6482,9 @@ describe("Function Tag Tests", function () {
       expect(f4.stateValues.extrema[1][0]).closeTo(extremax2[2], 1e-12);
       expect(f4.stateValues.extrema[1][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f5.stateValues.numberMaxima).eq(2);
-      expect(f5.stateValues.numberMinima).eq(2);
-      expect(f5.stateValues.numberExtrema).eq(4);
+      expect(f5.stateValues.numMaxima).eq(2);
+      expect(f5.stateValues.numMinima).eq(2);
+      expect(f5.stateValues.numExtrema).eq(4);
       expect(f5.stateValues.minima[0][0]).closeTo(extremax2[1], 1e-12);
       expect(f5.stateValues.minima[0][1]).closeTo(Math.sqrt(3), 1e-12);
       expect(f5.stateValues.minima[1][0]).closeTo(extremax2[3], 1e-12);
@@ -5811,9 +6502,9 @@ describe("Function Tag Tests", function () {
       expect(f5.stateValues.extrema[3][0]).closeTo(extremax2[3], 1e-12);
       expect(f5.stateValues.extrema[3][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f6.stateValues.numberMaxima).eq(1);
-      expect(f6.stateValues.numberMinima).eq(1);
-      expect(f6.stateValues.numberExtrema).eq(2);
+      expect(f6.stateValues.numMaxima).eq(1);
+      expect(f6.stateValues.numMinima).eq(1);
+      expect(f6.stateValues.numExtrema).eq(2);
       expect(f6.stateValues.minima[0][0]).closeTo(extremax2[1], 1e-12);
       expect(f6.stateValues.minima[0][1]).closeTo(Math.sqrt(3) + 1, 1e-12);
       expect(f6.stateValues.maxima[0][0]).closeTo(extremax2[2], 1e-12);
@@ -5826,9 +6517,9 @@ describe("Function Tag Tests", function () {
       let f7 = stateVariables["/f7"];
       let f8 = stateVariables["/f8"];
       let f9 = stateVariables["/f9"];
-      expect(f7.stateValues.numberMaxima).eq(1);
-      expect(f7.stateValues.numberMinima).eq(1);
-      expect(f7.stateValues.numberExtrema).eq(2);
+      expect(f7.stateValues.numMaxima).eq(1);
+      expect(f7.stateValues.numMinima).eq(1);
+      expect(f7.stateValues.numExtrema).eq(2);
       expect(f7.stateValues.minima[0][0]).closeTo(extremax3[1], 1e-12);
       expect(f7.stateValues.minima[0][1]).closeTo(Math.sqrt(3) - 1, 1e-12);
       expect(f7.stateValues.maxima[0][0]).closeTo(extremax3[2], 1e-12);
@@ -5838,9 +6529,9 @@ describe("Function Tag Tests", function () {
       expect(f7.stateValues.extrema[1][0]).closeTo(extremax3[2], 1e-12);
       expect(f7.stateValues.extrema[1][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f8.stateValues.numberMaxima).eq(2);
-      expect(f8.stateValues.numberMinima).eq(2);
-      expect(f8.stateValues.numberExtrema).eq(4);
+      expect(f8.stateValues.numMaxima).eq(2);
+      expect(f8.stateValues.numMinima).eq(2);
+      expect(f8.stateValues.numExtrema).eq(4);
       expect(f8.stateValues.minima[0][0]).closeTo(extremax3[1], 1e-12);
       expect(f8.stateValues.minima[0][1]).closeTo(Math.sqrt(3), 1e-12);
       expect(f8.stateValues.minima[1][0]).closeTo(extremax3[3], 1e-12);
@@ -5858,9 +6549,9 @@ describe("Function Tag Tests", function () {
       expect(f8.stateValues.extrema[3][0]).closeTo(extremax3[3], 1e-12);
       expect(f8.stateValues.extrema[3][1]).closeTo(Math.sqrt(11) + 1, 1e-12);
 
-      expect(f9.stateValues.numberMaxima).eq(1);
-      expect(f9.stateValues.numberMinima).eq(1);
-      expect(f9.stateValues.numberExtrema).eq(2);
+      expect(f9.stateValues.numMaxima).eq(1);
+      expect(f9.stateValues.numMinima).eq(1);
+      expect(f9.stateValues.numExtrema).eq(2);
       expect(f9.stateValues.minima[0][0]).closeTo(extremax3[1], 1e-12);
       expect(f9.stateValues.minima[0][1]).closeTo(Math.sqrt(3) + 1, 1e-12);
       expect(f9.stateValues.maxima[0][0]).closeTo(extremax3[2], 1e-12);
@@ -5883,13 +6574,13 @@ describe("Function Tag Tests", function () {
     <point>(3,4)</point>
     <point>(-5,7)</point>
     <point>(8,-1)</point>
-    <function yscale="5" maxima="($_function2.numbermaxima,$_function2.numberminima)" through="(-8,5) (9,10)" />
+    <function yscale="5" maxima="($_function2.numMaxima,$_function2.numMinima)" through="(-8,5) (9,10)" />
     
     <function yscale="$_function1.yscale" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
     </graph>
     
-    <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function2" /></p>
-    <p>Number of minima: <copy prop="numberminima" assignNames="numberminima" target="_function2" /></p>
+    <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function2" /></p>
+    <p>Number of minima: <copy prop="numMinima" assignNames="numMinima" target="_function2" /></p>
     
     <p><aslist><copy prop="maximumLocations" target="_function1" /></aslist></p>
     <p><aslist><copy prop="maximumValues" target="_function1" /></aslist></p>
@@ -5912,12 +6603,12 @@ describe("Function Tag Tests", function () {
 
       let f1 = stateVariables["/_function1"];
       let f2 = stateVariables["/_function2"];
-      expect(await f1.stateValues.numberMaxima).eq(1);
-      expect(await f1.stateValues.numberMinima).eq(2);
-      expect(await f1.stateValues.numberExtrema).eq(3);
-      expect(await f2.stateValues.numberMaxima).eq(2);
-      expect(await f2.stateValues.numberMinima).eq(1);
-      expect(await f2.stateValues.numberExtrema).eq(3);
+      expect(await f1.stateValues.numMaxima).eq(1);
+      expect(await f1.stateValues.numMinima).eq(2);
+      expect(await f1.stateValues.numExtrema).eq(3);
+      expect(await f2.stateValues.numMaxima).eq(2);
+      expect(await f2.stateValues.numMinima).eq(1);
+      expect(await f2.stateValues.numExtrema).eq(3);
 
       expect(await f1.stateValues.maximumLocations).eq(2);
       expect(await f1.stateValues.maximumValues).eq(1);
@@ -5928,8 +6619,8 @@ describe("Function Tag Tests", function () {
       expect(await f2.stateValues.yscale).eq(5);
     });
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
-    cy.get(cesc("#\\/numberminima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "1");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -5942,19 +6633,19 @@ describe("Function Tag Tests", function () {
 
       let f1 = stateVariables["/_function1"];
       let f2 = stateVariables["/_function2"];
-      expect(await f1.stateValues.numberMaxima).eq(1);
-      expect(await f1.stateValues.numberMinima).eq(2);
-      expect(await f1.stateValues.numberExtrema).eq(3);
-      expect(await f2.stateValues.numberMaxima).eq(1);
-      expect(await f2.stateValues.numberMinima).eq(0);
-      expect(await f2.stateValues.numberExtrema).eq(1);
+      expect(await f1.stateValues.numMaxima).eq(1);
+      expect(await f1.stateValues.numMinima).eq(2);
+      expect(await f1.stateValues.numExtrema).eq(3);
+      expect(await f2.stateValues.numMaxima).eq(1);
+      expect(await f2.stateValues.numMinima).eq(0);
+      expect(await f2.stateValues.numExtrema).eq(1);
 
       expect(await f1.stateValues.maximumLocations).eq(1);
       expect(await f1.stateValues.maximumValues).eq(0);
     });
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "1");
-    cy.get(cesc("#\\/numberminima")).should("have.text", "0");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "1");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "0");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -5972,19 +6663,19 @@ describe("Function Tag Tests", function () {
 
       let f1 = stateVariables["/_function1"];
       let f2 = stateVariables["/_function2"];
-      expect(await f1.stateValues.numberMaxima).eq(1);
-      expect(await f1.stateValues.numberMinima).eq(2);
-      expect(await f1.stateValues.numberExtrema).eq(3);
-      expect(await f2.stateValues.numberMaxima).eq(2);
-      expect(await f2.stateValues.numberMinima).eq(2);
-      expect(await f2.stateValues.numberExtrema).eq(4);
+      expect(await f1.stateValues.numMaxima).eq(1);
+      expect(await f1.stateValues.numMinima).eq(2);
+      expect(await f1.stateValues.numExtrema).eq(3);
+      expect(await f2.stateValues.numMaxima).eq(2);
+      expect(await f2.stateValues.numMinima).eq(2);
+      expect(await f2.stateValues.numExtrema).eq(4);
 
       expect(await f1.stateValues.maximumLocations).eq(2);
       expect(await f1.stateValues.maximumValues).eq(2);
     });
 
-    cy.get(cesc("#\\/numbermaxima")).should("have.text", "2");
-    cy.get(cesc("#\\/numberminima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMaxima")).should("have.text", "2");
+    cy.get(cesc("#\\/numMinima")).should("have.text", "2");
   });
 
   it("shadowed works correctly with initially unresolved", () => {
@@ -6177,7 +6868,7 @@ describe("Function Tag Tests", function () {
     <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
     <function name="f2" symbolic simplify="false"><copy target="f"/></function>
-    <function name="f3" variables="s" symbolic simplify="false"><copy target="f.formula"/></function>
+    <function name="f3" variable="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
     <copy assignNames="f4" target="f"/>
     <copy assignNames="f5" target="f2"/>
@@ -6615,9 +7306,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/f"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/f"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/f"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/f"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/f"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/f"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/f"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/f"].state.minima.isResolved).eq(false);
       expect(stateVariables["/f"].state.extrema.isResolved).eq(false);
@@ -6628,9 +7319,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/f2"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/f2"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/f2"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/f2"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/f2"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/f2"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/f2"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/f2"].state.minima.isResolved).eq(false);
       expect(stateVariables["/f2"].state.extrema.isResolved).eq(false);
@@ -6641,9 +7332,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/f3"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/f3"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/f3"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/f3"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/f3"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/f3"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/f3"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/f3"].state.minima.isResolved).eq(false);
       expect(stateVariables["/f3"].state.extrema.isResolved).eq(false);
@@ -6654,9 +7345,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/g"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/g"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/g"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/g"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/g"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/g"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/g"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/g"].state.minima.isResolved).eq(false);
       expect(stateVariables["/g"].state.extrema.isResolved).eq(false);
@@ -6667,9 +7358,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/g2"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/g2"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/g2"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/g2"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/g2"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/g2"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/g2"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/g2"].state.minima.isResolved).eq(false);
       expect(stateVariables["/g2"].state.extrema.isResolved).eq(false);
@@ -6680,9 +7371,9 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/g3"].state.allMaxima.isResolved).eq(false);
       expect(stateVariables["/g3"].state.allMinima.isResolved).eq(false);
       expect(stateVariables["/g3"].state.allExtrema.isResolved).eq(false);
-      expect(stateVariables["/g3"].state.numberMaxima.isResolved).eq(false);
-      expect(stateVariables["/g3"].state.numberMinima.isResolved).eq(false);
-      expect(stateVariables["/g3"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numMaxima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numMinima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numExtrema.isResolved).eq(false);
       expect(stateVariables["/g3"].state.maxima.isResolved).eq(false);
       expect(stateVariables["/g3"].state.minima.isResolved).eq(false);
       expect(stateVariables["/g3"].state.extrema.isResolved).eq(false);
@@ -6696,7 +7387,7 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function nInputs="1">3/(1+e^(-x/2))</function>
+    <function numInputs="1">3/(1+e^(-x/2))</function>
     </graph>
     `,
         },
@@ -6709,7 +7400,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6733,7 +7424,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2">3/(y+e^(-x/2))</function>
+    <function numInputs="2">3/(y+e^(-x/2))</function>
     `,
         },
         "*",
@@ -6745,7 +7436,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6769,7 +7460,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2" variables="q r">3/(r+e^(-q/2))</function>
+    <function numInputs="2" variables="q r">3/(r+e^(-q/2))</function>
     `,
         },
         "*",
@@ -6781,7 +7472,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6799,7 +7490,7 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("function of two variables determined by formula, specify variables, no nInputs specified", () => {
+  it("function of two variables determined by formula, specify variables, no numInputs specified", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6817,7 +7508,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6841,7 +7532,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="3">z/(y+e^(-x/2))</function>
+    <function numInputs="3">z/(y+e^(-x/2))</function>
     `,
         },
         "*",
@@ -6853,7 +7544,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6889,7 +7580,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6913,7 +7604,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
+    <function numInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
     `,
         },
         "*",
@@ -6925,7 +7616,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6949,7 +7640,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
+    <function numInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
     `,
         },
         "*",
@@ -6961,7 +7652,7 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -6997,8 +7688,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       // let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
       let f1 = createFunctionFromDefinition(
@@ -7035,7 +7726,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="t">(t^2, t^3)</function>
+    <function variable="t">(t^2, t^3)</function>
     `,
         },
         "*",
@@ -7047,8 +7738,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7081,13 +7772,13 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("2D vector-valued function of a single variable, specify nOutputs", () => {
+  it("2D vector-valued function of a single variable, specify numOutputs", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <function variables="t" nOutputs="2">(t^2, t^3)</function>
+    <function variables="t" numOutputs="2">(t^2, t^3)</function>
     `,
         },
         "*",
@@ -7099,8 +7790,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7148,8 +7839,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7197,7 +7888,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function variables="t">(t^2, t^3, t^4)</function>
+    <function variable="t">(t^2, t^3, t^4)</function>
     `,
         },
         "*",
@@ -7209,8 +7900,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7258,7 +7949,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function nInputs="2">(x^2y^3, x^3y^2)</function>
+    <function numInputs="2">(x^2y^3, x^3y^2)</function>
     `,
         },
         "*",
@@ -7270,8 +7961,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(2);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7319,8 +8010,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7380,8 +8071,8 @@ describe("Function Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_function1"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/_function1"].stateValues.nOutputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.numOutputs).eq(3);
 
       let f1 = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
@@ -7457,15 +8148,15 @@ describe("Function Tag Tests", function () {
     });
   });
 
-  it("copy function and overwrite nInputs", () => {
+  it("copy function and overwrite numInputs", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <function name="f1" symbolic>xyz</function>
-    <copy target="f1" nInputs="2" assignNames="f2" />
-    <copy target="f2" nInputs="3" assignNames="f3" />
+    <copy target="f1" numInputs="2" assignNames="f2" />
+    <copy target="f2" numInputs="3" assignNames="f3" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
@@ -7501,9 +8192,9 @@ describe("Function Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/f1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/f2"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f3"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f2"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f3"].stateValues.numInputs).eq(3);
       expect(stateVariables["/f1"].stateValues.variables.map((x) => x)).eqls([
         "x",
       ]);
@@ -7530,12 +8221,14 @@ describe("Function Tag Tests", function () {
     <copy target="f2" variables="x y z" assignNames="f3" />
     <copy target="f3" variables="z y" assignNames="f4" />
     <copy target="f4" variables="y" assignNames="f5" />
+    <copy target="f4" variable="y" assignNames="f5a" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
     <p name="p3">$$f3(a,b,c)</p>
     <p name="p4">$$f4(a,b)</p>
     <p name="p5">$$f5(a)</p>
+    <p name="p5a">$$f5a(a)</p>
     `,
         },
         "*",
@@ -7575,15 +8268,22 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text).eq("xaz");
       });
+    cy.get(cesc("#\\/p5a") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("xaz");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/f1"].stateValues.nInputs).eq(1);
-      expect(stateVariables["/f2"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f3"].stateValues.nInputs).eq(3);
-      expect(stateVariables["/f4"].stateValues.nInputs).eq(2);
-      expect(stateVariables["/f5"].stateValues.nInputs).eq(1);
+      expect(stateVariables["/f1"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f2"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f3"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/f4"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/f5"].stateValues.numInputs).eq(1);
+      expect(stateVariables["/f5a"].stateValues.numInputs).eq(1);
       expect(stateVariables["/f1"].stateValues.variables.map((x) => x)).eqls([
         "x",
       ]);
@@ -7601,6 +8301,9 @@ describe("Function Tag Tests", function () {
         "y",
       ]);
       expect(stateVariables["/f5"].stateValues.variables.map((x) => x)).eqls([
+        "y",
+      ]);
+      expect(stateVariables["/f5a"].stateValues.variables.map((x) => x)).eqls([
         "y",
       ]);
     });
@@ -7929,8 +8632,8 @@ describe("Function Tag Tests", function () {
   <text>a</text>
 
   <function name="f1" simplify="none">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" simplify="none" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" simplify="none" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" simplify="none" displayDigits="4"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" simplify="none" displayDigits="4" padZeros> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f4" simplify="none" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f5" simplify="none" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
@@ -7982,19 +8685,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4") + " .mjx-mrow")
       .eq(0)
@@ -8013,19 +8716,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2a") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3a") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4a") + " .mjx-mrow")
       .eq(0)
@@ -8044,19 +8747,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2b") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3b") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4b") + " .mjx-mrow")
       .eq(0)
@@ -8075,19 +8778,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2c") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3c") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4c") + " .mjx-mrow")
       .eq(0)
@@ -8106,19 +8809,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2d") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3d") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4d") + " .mjx-mrow")
       .eq(0)
@@ -8137,19 +8840,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2e") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3e") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4e") + " .mjx-mrow")
       .eq(0)
@@ -8168,19 +8871,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2f") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3f") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4f") + " .mjx-mrow")
       .eq(0)
@@ -8204,8 +8907,8 @@ describe("Function Tag Tests", function () {
   <text>a</text>
 
   <function name="f1">255.029847 sin(0.52952342x) + 3</function>
-  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
-  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" displayDigits="4"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" displayDigits="4" padZeros> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
@@ -8287,19 +8990,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4") + " .mjx-mrow")
       .eq(0)
@@ -8504,19 +9207,19 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.0298470sin(0.5295234200x)+3.000000000");
+        expect(text).eq("255.03sin(0.530x)+3.00");
       });
     cy.get(cesc("#\\/f2pt") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f3pt") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.530x)+3.00");
+        expect(text).eq("255.03sin(0.5295x)+3.000");
       });
     cy.get(cesc("#\\/f4pt") + " .mjx-mrow")
       .eq(0)
@@ -8531,23 +9234,85 @@ describe("Function Tag Tests", function () {
         expect(text).eq("255.030sin(0.530x)+3.000");
       });
 
+    cy.get(cesc("#\\/f1fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.530x)+3.00");
+      });
+    cy.get(cesc("#\\/f2fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f3fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f4fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+    cy.get(cesc("#\\/f5fpt") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+
+    cy.get(cesc("#\\/f1pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.530x)+3.00");
+      });
+    cy.get(cesc("#\\/f2pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f3pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3.000");
+      });
+    cy.get(cesc("#\\/f4pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+    cy.get(cesc("#\\/f5pta") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.030sin(0.530x)+3.000");
+      });
+
     cy.get(cesc("#\\/f1pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255.029847sin(0.52952342x)+3");
+        expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f2pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f3pf") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text).eq("255sin(0.53x)+3");
+        expect(text).eq("255.03sin(0.5295x)+3");
       });
     cy.get(cesc("#\\/f4pf") + " .mjx-mrow")
       .eq(0)
@@ -8556,6 +9321,68 @@ describe("Function Tag Tests", function () {
         expect(text).eq("255.03sin(0.53x)+3");
       });
     cy.get(cesc("#\\/f5pf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+
+    cy.get(cesc("#\\/f1fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f2fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f3fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f4fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f5fpf") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+
+    cy.get(cesc("#\\/f1pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f2pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f3pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.5295x)+3");
+      });
+    cy.get(cesc("#\\/f4pfa") + " .mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text).eq("255.03sin(0.53x)+3");
+      });
+    cy.get(cesc("#\\/f5pfa") + " .mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {

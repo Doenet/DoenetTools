@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
 import PageViewer from "../../../Viewer/PageViewer";
 import {
@@ -19,6 +19,8 @@ import {
   Link,
   Image,
   Tooltip,
+  useColorModeValue,
+  Button,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -33,33 +35,33 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
-const CarouselSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 60px 10px 60px 10px;
-  margin: 0px;
-  row-gap: 45px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: var(--mainGray);
-  height: 300px;
-`;
+// const CarouselSection = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   padding: 60px 10px 60px 10px;
+//   margin: 0px;
+//   row-gap: 45px;
+//   justify-content: center;
+//   align-items: center;
+//   text-align: center;
+//   background: var(--mainGray);
+//   height: 300px;
+// `;
 
-const CreateContentSection = styled.div`
-  display: flex;
-  column-gap: 20px;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-  background: #0e1111;
-  @media (max-width: 1024px) {
-    /* height: 300px; */
-    flex-direction: column;
-    row-gap: 20px;
-    height: 600px;
-  }
-`;
+// const CreateContentSection = styled.div`
+//   display: flex;
+//   column-gap: 20px;
+//   justify-content: center;
+//   align-items: center;
+//   height: 500px;
+//   background: #0e1111;
+//   @media (max-width: 1024px) {
+//     /* height: 300px; */
+//     flex-direction: column;
+//     row-gap: 20px;
+//     height: 600px;
+//   }
+// `;
 
 let doenetML = `
 <example>
@@ -158,6 +160,12 @@ export function Home() {
     });
   }
 
+  const grayColor = useColorModeValue("doenet.mainGray", "doenet.lightGray");
+  const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
+  const blackColor = useColorModeValue("gray.900", "white");
+  const whiteColor = useColorModeValue("white", "gray.900");
+  const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
+
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
     return null;
@@ -165,17 +173,22 @@ export function Home() {
 
   return (
     <>
-      <Center background="doenet.mainGray" padding="20px">
+      <Center background={grayColor} padding="20px">
         <Flex>
           <Box w="120px" h="120px" mr="20px">
             <Image src="Doenet_Logo_Frontpage.png" />
           </Box>
           <Center>
             <Box>
-              <Text fontSize="30px" fontWeight="700">
+              <Text color="black" fontSize="30px" fontWeight="700">
                 The Distributed Open Education Network
               </Text>
-              <Text fontSize="16px" fontWeight="700" textAlign="center">
+              <Text
+                color="black"
+                fontSize="16px"
+                fontWeight="700"
+                textAlign="center"
+              >
                 The free and open data-driven education technology platform
               </Text>
             </Box>
@@ -186,7 +199,7 @@ export function Home() {
         heading="Announcements"
         // subheading="Quickly create interactive activities"
       />
-      <Center background="doenet.lightBlue" padding="20px">
+      <Center background={blueColor} padding="20px">
         <Flex flexDirection="column">
           <Text fontSize="16px" fontWeight="700" textAlign="left">
             Doenet Workshop
@@ -194,11 +207,10 @@ export function Home() {
           <Text maxWidth="800px">
             From May 22 - May 26, 2023, we will host the second{" "}
             <Link
-              color="doenet.mainBlue"
               href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023"
               isExternal
             >
-              workshop
+              <Text as="u">workshop</Text>
             </Link>{" "}
             on developing content and learning experiments in Doenet. It will be
             held at the University of Minnesota, the workshop for instructors of
@@ -211,88 +223,108 @@ export function Home() {
         heading="Create Content"
         subheading="Quickly create interactive activities"
       />
-      <CreateContentSection>
-        <Box width="260px" display="flex" flexDirection="column" rowGap="15px">
-          <Text color="white" fontSize="16pt">
-            Introducing DoenetML
-          </Text>
-          <Text color="white" fontSize="10pt">
-            DoenetML is the markup language we&apos;ve created to let you focus
-            on the meaning of the elements you wish to create.
-          </Text>
-          <Button
-            value="See Inside"
-            onClick={() =>
-              window.open(
-                "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
-                "_blank",
-              )
-            }
-          />
-        </Box>
-        <Suspense fallback={"Loading..."}>
-          {" "}
-          {/* Does this lazy loading do anything? */}
-          <HomeIntroVideo />
-        </Suspense>
-      </CreateContentSection>
+      <Flex
+        alignItems="center"
+        justifyContent="center"
+        bg={blackColor}
+        py="30px"
+      >
+        <Flex alignItems="center" justifyContent="center" gap={6} maxW="900px">
+          <Flex
+            textAlign="left"
+            flexDirection="column"
+            justifyContent="center"
+            gap={4}
+          >
+            <Text color={textColor} fontSize="16pt">
+              Introducing DoenetML
+            </Text>
+            <Text color={textColor} fontSize="10pt">
+              DoenetML is the markup language we&apos;ve created to let you
+              focus on the meaning of the elements you wish to create.
+            </Text>
+            <Button
+              // dataTest="Nav to course"
+              size="xs"
+              borderRadius={20}
+              onClick={() =>
+                window.open(
+                  "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
+                  "_blank",
+                )
+              }
+            >
+              <Text fontSize="xs">See Inside</Text>
+            </Button>
+          </Flex>
+          <Suspense fallback={"Loading..."}>
+            {" "}
+            {/* Does this lazy loading do anything? */}
+            <HomeIntroVideo />
+          </Suspense>
+        </Flex>
+      </Flex>
       <Heading
         heading="Explore"
         subheading="Interact with our existing content"
       />
-      <CarouselSection>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        bg={grayColor}
+        p="60px 10px"
+      >
         <Carousel title="Doenet Team Favorites" data={favorites} />
-      </CarouselSection>
+      </Flex>
       <Heading
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
       />
-      <div
-        style={{
-          padding: "20px 10px 60px 10px",
-          margin: "0px",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          background: "var(--lightBlue)",
-        }}
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        bg={blueColor}
       >
-        <div
-          style={{
-            textAlign: "Left",
-            maxWidth: "800px",
-            display: "inline-block",
-            marginLeft: "3em",
-            marginRight: "3em",
-          }}
+        <Flex
+          flexDirection="column"
+          justifyContent="center"
+          textAlign="left"
+          p="20px"
+          gap="20px"
         >
-          <Text fontSize="16px">Immediate feedback in class</Text>
-          <Text fontSize="12px" marginLeft="10px">
-            One benefit of using Doenet during in-class activities is the
-            immediate feedback students receive even before an instructor can
-            come by their group.
-          </Text>
-          <Text fontSize="16px" marginTop="10px">
-            Open-ended response
-          </Text>
-          <Text fontSize="12px" marginLeft="10px">
-            Try our open-ended response example! ({" "}
-            <a
-              rel="noreferrer"
-              target="_blank"
-              href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
-            >
-              See source
-            </a>
-            )
-          </Text>
+          <Flex
+            flexDirection="column"
+            justifyContent="center"
+            textAlign="left"
+            gap={1}
+          >
+            <Text fontSize="16px">Immediate feedback in class</Text>
+            <Text fontSize="12px" marginLeft="10px">
+              One benefit of using Doenet during in-class activities is the
+              immediate feedback students receive even before an instructor can
+              come by their group.
+            </Text>
+            <Text fontSize="16px" marginTop="10px">
+              Open-ended response
+            </Text>
+            <Text fontSize="12px" marginLeft="10px">
+              Try our open-ended response example! ({" "}
+              <a
+                rel="noreferrer"
+                target="_blank"
+                href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
+              >
+                See source
+              </a>
+              )
+            </Text>
+          </Flex>
 
-          <div
-            style={{
-              background: "var(--canvas)",
-              padding: "20px 0px 20px 0px",
-              marginTop: "10px",
-            }}
+          <Flex
+            bg={whiteColor}
+            py="10px"
+            justifyContent="center"
+            alignItems="center"
           >
             <PageViewer
               key={`HPpageViewer`}
@@ -316,12 +348,12 @@ export function Home() {
               // setIsInErrorState={setIsInErrorState}
               pageIsActive={true}
             />
-          </div>
-        </div>
-      </div>
+          </Flex>
+        </Flex>
+      </Flex>
       <Center
         width="100%"
-        backgroundColor="doenet.mainGray"
+        bg={grayColor}
         color="doenet.canvastext"
         padding="20px 40px"
         display="flex"

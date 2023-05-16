@@ -7,7 +7,7 @@ export default class VariantControl extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.nVariants = {
+    attributes.numVariants = {
       createPrimitiveOfType: "integer",
     };
 

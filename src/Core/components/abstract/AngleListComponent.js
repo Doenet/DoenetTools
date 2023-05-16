@@ -73,7 +73,7 @@ export default class AngleListComponent extends BaseComponent {
 
     if (!this.childLogicSatisfied) {
       this.unresolvedState.angles = true;
-      this.unresolvedState.nAngles = true;
+      this.unresolvedState.numAngles = true;
       return;
     }
 
@@ -82,11 +82,11 @@ export default class AngleListComponent extends BaseComponent {
 
     if (childrenChanged) {
       delete this.unresolvedState.angles;
-      delete this.unresolvedState.nAngles;
+      delete this.unresolvedState.numAngles;
 
       let AtLeastZeroAngles =
         this.childLogic.returnMatches("AtLeastZeroAngles");
-      this.state.nAngles = AtLeastZeroAngles.length;
+      this.state.numAngles = AtLeastZeroAngles.length;
       this.state.angles = AtLeastZeroAngles.map((i) => this.activeChildren[i]);
     }
   }

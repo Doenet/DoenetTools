@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -1214,6 +1214,220 @@ describe("Rectangle Tag Tests", function () {
       expect(stateVariables["/p"].stateValues.draggable).eq(true);
       expect(stateVariables["/p"].stateValues.verticesDraggable).eq(false);
     });
+  });
+
+  it("single vertex constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="P">(1,3)
+      <constraints>
+         <constrainToGrid dx="3" dy="2" />
+      </constraints>
+    </point>
+    <rectangle vertices="$P" name="p" />
+  </graph>
+  <p name="pvert">corner vertices: $p.vertex1{assignNames="v1"} $p.vertex3{assignNames="v3"}</p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,4)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,5)");
+
+    cy.log("move rectangle");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: [
+            [8, 9],
+            [9, 9],
+            [9, 10],
+            [8, 10],
+          ],
+        },
+      });
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(9,10)");
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,10)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(10,11)");
+  });
+
+  it("two vertices, first vertex constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="P">(1,3)
+      <constraints>
+         <constrainToGrid dx="3" dy="2" />
+      </constraints>
+    </point>
+    <point name="Q">(6,5)</point>
+    <rectangle vertices="$P $Q" name="p" />
+  </graph>
+  <p name="pvert">corner vertices: $p.vertex1{assignNames="v1"} $p.vertex3{assignNames="v3"}</p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,4)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,5)");
+
+    cy.log("move rectangle");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: [
+            [-8, -9],
+            [-2, -9],
+            [-2, -8],
+            [-8, -8],
+          ],
+        },
+      });
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−9,−8)");
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,−7)");
+  });
+
+  it("center and vertex, vertex constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="P">(1,3)
+      <constraints>
+         <constrainToGrid dx="3" dy="2" />
+      </constraints>
+    </point>
+    <point name="Q">(6,5)</point>
+    <rectangle vertices="$P" center="$Q" name="p" />
+  </graph>
+  <p name="pvert">corner vertices: $p.vertex1{assignNames="v1"} $p.vertex3{assignNames="v3"}</p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,4)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(12,6)");
+
+    cy.log("move rectangle");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: [
+            [-8, -9],
+            [4, -9],
+            [4, -7],
+            [-8, -7],
+          ],
+        },
+      });
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−9,−8)");
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,−6)");
+  });
+
+  it("center and vertex, center constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="P">(1,3)</point>
+    <point name="Q">(6,5)
+      <constraints>
+        <constrainToGrid dx="3" dy="2" />
+      </constraints>
+    </point>
+    <rectangle vertices="$P" center="$Q" name="p" />
+  </graph>
+  <p name="pvert">corner vertices: $p.vertex1{assignNames="v1"} $p.vertex3{assignNames="v3"}</p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,3)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(11,9)");
+
+    cy.log("move rectangle");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: [
+            [-9, -8],
+            [1, -8],
+            [1, -2],
+            [-9, -2],
+          ],
+        },
+      });
+    });
+    cy.get(cesc2("#/v1") + " .mjx-mrow").should("contain.text", "(−8,−7)");
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−8,−7)");
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,−1)");
   });
 });
 

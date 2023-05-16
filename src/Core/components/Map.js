@@ -55,7 +55,7 @@ export default class Map extends CompositeComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nSources = {
+    stateVariableDefinitions.numSources = {
       additionalStateVariablesDefined: [
         "sourcesNames",
         "sourceAliases",
@@ -71,7 +71,7 @@ export default class Map extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         return {
           setValue: {
-            nSources: dependencyValues.sourcesChildren.length,
+            numSources: dependencyValues.sourcesChildren.length,
             sourcesNames: dependencyValues.sourcesChildren.map(
               (x) => x.componentName,
             ),
@@ -86,28 +86,28 @@ export default class Map extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nIterates = {
+    stateVariableDefinitions.numIterates = {
       additionalStateVariablesDefined: ["minNIterates", "sourcesChildNames"],
       returnDependencies: () => ({
         sourcesChildren: {
           dependencyType: "child",
           childGroups: ["sources"],
-          variableNames: ["numberOfChildren", "childComponentNames"],
+          variableNames: ["numChildren", "childComponentNames"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        let nIterates = dependencyValues.sourcesChildren.map(
-          (x) => x.stateValues.numberOfChildren,
+        let numIterates = dependencyValues.sourcesChildren.map(
+          (x) => x.stateValues.numChildren,
         );
 
         // calculate scalar minNIterates, a scalar holding the minimum value
-        let minNIterates = Math.min(...nIterates);
+        let minNIterates = Math.min(...numIterates);
 
         let sourcesChildNames = dependencyValues.sourcesChildren.map((x) => [
           ...x.stateValues.childComponentNames,
         ]);
 
-        return { setValue: { nIterates, minNIterates, sourcesChildNames } };
+        return { setValue: { numIterates, minNIterates, sourcesChildNames } };
       },
     };
 
@@ -150,9 +150,9 @@ export default class Map extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "behavior",
         },
-        nIterates: {
+        numIterates: {
           dependencyType: "stateVariable",
-          variableName: "nIterates",
+          variableName: "numIterates",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -161,9 +161,9 @@ export default class Map extends CompositeComponent {
         if (dependencyValues.behavior === "parallel") {
           // display warning if some sources activeChildren have differ numbers of iterates
           if (
-            dependencyValues.nIterates
+            dependencyValues.numIterates
               .slice(1)
-              .some((x) => x != dependencyValues.nIterates[0])
+              .some((x) => x != dependencyValues.numIterates[0])
           ) {
             console.warn(
               "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
@@ -265,7 +265,7 @@ export default class Map extends CompositeComponent {
         sourcesNames: [],
         sourcesChildNames: [],
         behavior: undefined,
-        nIterates: undefined,
+        numIterates: undefined,
         minNIterates: undefined,
       };
       return { replacements: [] };
@@ -275,7 +275,7 @@ export default class Map extends CompositeComponent {
       sourcesNames: await component.stateValues.sourcesNames,
       sourcesChildNames: await component.stateValues.sourcesChildNames,
       behavior: await component.stateValues.behavior,
-      nIterates: await component.stateValues.nIterates,
+      numIterates: await component.stateValues.numIterates,
       minNIterates: await component.stateValues.minNIterates,
       replacementsToWithhold: 0,
       withheldSubstitutionChildNames: [],
@@ -364,7 +364,7 @@ export default class Map extends CompositeComponent {
     await addSharedParameters(
       replacements[0],
       component,
-      Array(await component.stateValues.nSources).fill(iter),
+      Array(await component.stateValues.numSources).fill(iter),
     );
 
     return replacements;
@@ -382,15 +382,15 @@ export default class Map extends CompositeComponent {
     let newChildnumberArray = [...childnumberArray, 0];
     let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let nIterates = await component.stateValues.nIterates;
-    let nSources = await component.stateValues.nSources;
+    let numIterates = await component.stateValues.numIterates;
+    let numSources = await component.stateValues.numSources;
     let template = await component.stateValues.template;
 
     let compositeAttributesObj = this.createAttributesObject();
 
-    for (let iter = 0; iter < nIterates[sourcesNumber]; iter++) {
+    for (let iter = 0; iter < numIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;
-      if (sourcesNumber >= nSources - 1) {
+      if (sourcesNumber >= numSources - 1) {
         iterateNumber++;
 
         let serializedComponents = [deepClone(template)];
@@ -473,7 +473,7 @@ export default class Map extends CompositeComponent {
         sourcesNames: [],
         sourcesChildNames: [],
         behavior: undefined,
-        nIterates: undefined,
+        numIterates: undefined,
         minNIterates: undefined,
         replacementsToWithhold: 0,
         withheldSubstitutionChildNames: [],
@@ -498,13 +498,13 @@ export default class Map extends CompositeComponent {
 
     let allSameSourcesNames = true;
 
-    let nSources = await component.stateValues.nSources;
+    let numSources = await component.stateValues.numSources;
     let sourcesNames = await component.stateValues.sourcesNames;
 
-    if (nSources !== lrp.sourcesNames.length) {
+    if (numSources !== lrp.sourcesNames.length) {
       allSameSourcesNames = false;
     } else {
-      for (let ind = 0; ind < nSources; ind++) {
+      for (let ind = 0; ind < numSources; ind++) {
         if (sourcesNames[ind] !== lrp.sourcesNames[ind]) {
           allSameSourcesNames = false;
           break;
@@ -515,7 +515,7 @@ export default class Map extends CompositeComponent {
     // if sources names or behavior changed,
     // need to recalculate all replacements
 
-    let nIterates = await component.stateValues.nIterates;
+    let numIterates = await component.stateValues.numIterates;
     let sourcesChildNames = await component.stateValues.sourcesChildNames;
     let behavior = await component.stateValues.behavior;
 
@@ -526,12 +526,12 @@ export default class Map extends CompositeComponent {
 
       let allSameChildSubstitutionNames = true;
 
-      if (lrp.nIterates === undefined) {
+      if (lrp.numIterates === undefined) {
         recreateReplacements = true;
       } else {
-        for (let ind = 0; ind < nSources; ind++) {
-          let currentNIters = nIterates[ind];
-          let prevNIters = lrp.nIterates[ind];
+        for (let ind = 0; ind < numSources; ind++) {
+          let currentNIters = numIterates[ind];
+          let prevNIters = lrp.numIterates[ind];
           if (currentNIters !== prevNIters) {
             allSameChildSubstitutionNames = false;
           }
@@ -559,7 +559,7 @@ export default class Map extends CompositeComponent {
       // for combinations with more than one substitution,
       // just recreate everything if iterates have changed
       // TODO: actually calculate changes in this case rather than completely redoing
-      if (behavior === "combination" && nSources > 1) {
+      if (behavior === "combination" && numSources > 1) {
         recreateReplacements = true;
       }
     }
@@ -587,7 +587,7 @@ export default class Map extends CompositeComponent {
         sourcesNames,
         sourcesChildNames,
         behavior,
-        nIterates,
+        numIterates,
         minNIterates: await component.stateValues.minNIterates,
         replacementsToWithhold: 0,
         withheldSubstitutionChildNames: [],
@@ -613,7 +613,7 @@ export default class Map extends CompositeComponent {
 
     let foundDeletedSourcesChild = false;
     if (currentMinNIterates < prevMinNIterates) {
-      for (let ind = 0; ind < nSources; ind++) {
+      for (let ind = 0; ind < numSources; ind++) {
         for (let ind2 = currentMinNIterates; ind2 < prevMinNIterates; ind2++) {
           if (components[lrp.sourcesChildNames[ind][ind2]] === undefined) {
             foundDeletedSourcesChild = true;
@@ -668,7 +668,7 @@ export default class Map extends CompositeComponent {
         };
         replacementChanges.push(replacementInstruction);
 
-        for (let ind = 0; ind < nSources; ind++) {
+        for (let ind = 0; ind < numSources; ind++) {
           let withheldNames = lrp.withheldSubstitutionChildNames[ind];
           if (withheldNames) {
             withheldNames = [...withheldNames];
@@ -742,7 +742,7 @@ export default class Map extends CompositeComponent {
       sourcesNames,
       sourcesChildNames,
       behavior,
-      nIterates,
+      numIterates,
       minNIterates: currentMinNIterates,
       replacementsToWithhold: newReplacementsToWithhold,
       withheldSubstitutionChildNames,

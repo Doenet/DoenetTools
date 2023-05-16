@@ -97,7 +97,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="uniform" numberToSelect="5" to="8" /></template>
+      <template><selectrandomnumbers type="uniform" numToSelect="5" to="8" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -184,7 +184,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="uniform" numberToSelect="5" from="-5" /></template>
+      <template><selectrandomnumbers type="uniform" numToSelect="5" from="-5" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -271,7 +271,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers numberToSelect="10" from="-4" to="-2" /></template>
+      <template><selectrandomnumbers numToSelect="10" from="-4" to="-2" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
@@ -358,7 +358,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers numberToSelect="10" from="-2" to="-4" /></template>
+      <template><selectrandomnumbers numToSelect="10" from="-2" to="-4" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
@@ -445,7 +445,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="gaussian" numberToSelect="20" /></template>
+      <template><selectrandomnumbers type="gaussian" numToSelect="20" /></template>
       <sources><sequence length="5" /></sources>
     </map>
     </aslist></p>
@@ -527,7 +527,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="gaussian" numberToSelect="5" standardDeviation="10" /></template>
+      <template><selectrandomnumbers type="gaussian" numToSelect="5" standardDeviation="10" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -691,7 +691,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="gaussian" numberToSelect="20" mean="100" standardDeviation="10" /></template>
+      <template><selectrandomnumbers type="gaussian" numToSelect="20" mean="100" standardDeviation="10" /></template>
       <sources><sequence length="5" /></sources>
     </map>
     </aslist></p>
@@ -773,7 +773,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="gaussian" numberToSelect="20" mean="-3" variance="0.01" /></template>
+      <template><selectrandomnumbers type="gaussian" numToSelect="20" mean="-3" variance="0.01" /></template>
       <sources><sequence length="5" /></sources>
     </map>
     </aslist></p>
@@ -1122,7 +1122,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="discreteUniform" from="-3" to="5" numberToSelect="5" /></template>
+      <template><selectrandomnumbers type="discreteUniform" from="-3" to="5" numToSelect="5" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -1211,7 +1211,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="discreteUniform" from="5" to="-3" numberToSelect="5" /></template>
+      <template><selectrandomnumbers type="discreteUniform" from="5" to="-3" numToSelect="5" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -1275,7 +1275,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><selectrandomnumbers type="discreteUniform" from="-3" to="5" numberToSelect="10" step="2" /></template>
+      <template><selectrandomnumbers type="discreteUniform" from="-3" to="5" numToSelect="10" step="2" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
@@ -1362,16 +1362,16 @@ describe("SelectRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <mathinput prefill="20" name="numbertoselect"/>
+    <mathinput prefill="20" name="numToSelect"/>
     <mathinput prefill="10" name="maxnum"/>
     <p><aslist>
-    <selectRandomNumbers name="sample1" to="$maxnum" numberToSelect="$numbertoselect" />
+    <selectRandomNumbers name="sample1" to="$maxnum" numToSelect="$numToSelect" />
     </aslist></p>
 
-    <mathinput prefill="10" name="numbertoselect2"/>
+    <mathinput prefill="10" name="numToSelect2"/>
     <mathinput prefill="4" name="maxnum2"/>
     <p><aslist>
-    <selectRandomNumbers type="discreteUniform" name="sample2" to="$maxnum2" numberToSelect="$numbertoselect2" />
+    <selectRandomNumbers type="discreteUniform" name="sample2" to="$maxnum2" numToSelect="$numToSelect2" />
     </aslist></p>
     <p><copy prop="value" target="maxnum2" assignNames="maxnum2a" /></p>
     `,
@@ -1407,7 +1407,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     });
 
     cy.log("Nothing changes when change mathinputs");
-    cy.get(cesc("#\\/numbertoselect") + " textarea").type(
+    cy.get(cesc("#\\/numToSelect") + " textarea").type(
       `{end}{backspace}{backspace}7{enter}`,
       { force: true },
     );
@@ -1415,7 +1415,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
       `{end}{backspace}{backspace}11{enter}`,
       { force: true },
     );
-    cy.get(cesc("#\\/numbertoselect2") + " textarea").type(
+    cy.get(cesc("#\\/numToSelect2") + " textarea").type(
       `{end}{backspace}{backspace}15{enter}`,
       { force: true },
     );
@@ -2610,7 +2610,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <selectRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberToSelect="6" />
+      <selectRandomNumbers name="s" from="3" to="13" assignnames="u v w" numToSelect="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="u" /></p>
     <p><copy assignNames="v2" target="v" /></p>
@@ -2678,7 +2678,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <selectRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberToSelect="6" />
+      <selectRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numToSelect="6" displayDigits="10"  />
     </aslist></p>
     <p><copy assignNames="u2" target="s/u" /></p>
     <p><copy assignNames="v2" target="s/v" /></p>
@@ -2739,7 +2739,7 @@ describe("SelectRandomNumbers Tag Tests", function () {
     });
   });
 
-  it("numberToSelect from selectfromsequence", () => {
+  it("numToSelect from selectfromsequence", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -2747,23 +2747,23 @@ describe("SelectRandomNumbers Tag Tests", function () {
     <text>a</text>
 
     <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums1" from="1" to="10" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums1" from="1" to="10" numToSelect="$n1" assignNames="a1 b1 c1 d1 e1" displayDigits="10" /></aslist></p>
     <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
 
     <p>n2 = <selectFromSequence from="1" to="5" assignNames="n2" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums2" from="1" to="10" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums2" from="1" to="10" numToSelect="$n2" assignNames="a2 b2 c2 d2 e2" displayDigits="10" /></aslist></p>
     <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
 
     <p>n3 = <selectFromSequence from="1" to="5" assignNames="n3" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums3" from="1" to="10" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums3" from="1" to="10" numToSelect="$n3" assignNames="a3 b3 c3 d3 e3" displayDigits="10" /></aslist></p>
     <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
 
     <p>n4 = <selectFromSequence from="1" to="5" assignNames="n4" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums4" from="1" to="10" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums4" from="1" to="10" numToSelect="$n4" assignNames="a4 b4 c4 d4 e4" displayDigits="10" /></aslist></p>
     <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
 
     <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
-    <p>nums = <aslist><selectRandomNumbers name="nums5" from="1" to="10" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
+    <p>nums = <aslist><selectRandomNumbers name="nums5" from="1" to="10" numToSelect="$n5" assignNames="a5 b5 c5 d5 e5" displayDigits="10" /></aslist></p>
     <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
       `,
         },
@@ -2856,10 +2856,10 @@ describe("SelectRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectRandomNumbers assignNames="n1" from="10" to="20" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
-    <p><aslist><selectRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n1" from="10" to="20" displayDigits="10" /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><selectRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

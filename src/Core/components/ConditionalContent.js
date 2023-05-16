@@ -45,12 +45,6 @@ export default class ConditionalContent extends CompositeComponent {
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.maximumNumberToShow = {
-      createComponentOfType: "number",
-      createStateVariable: "maximumNumberToShow",
-      defaultValue: null,
-      public: true,
-    };
 
     attributes.condition = {
       createComponentOfType: "boolean",
@@ -94,7 +88,7 @@ export default class ConditionalContent extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.nCases = {
+    stateVariableDefinitions.numCases = {
       additionalStateVariablesDefined: ["caseChildren"],
       returnDependencies: () => ({
         caseChildren: {
@@ -106,7 +100,7 @@ export default class ConditionalContent extends CompositeComponent {
         return {
           setValue: {
             caseChildren: dependencyValues.caseChildren,
-            nCases: dependencyValues.caseChildren.length,
+            numCases: dependencyValues.caseChildren.length,
           },
         };
       },
@@ -130,9 +124,9 @@ export default class ConditionalContent extends CompositeComponent {
 
     stateVariableDefinitions.haveCasesOrElse = {
       returnDependencies: () => ({
-        nCases: {
+        numCases: {
           dependencyType: "stateVariable",
-          variableName: "nCases",
+          variableName: "numCases",
         },
         elseChild: {
           dependencyType: "stateVariable",
@@ -142,12 +136,13 @@ export default class ConditionalContent extends CompositeComponent {
       definition: ({ dependencyValues }) => ({
         setValue: {
           haveCasesOrElse:
-            dependencyValues.nCases > 0 || dependencyValues.elseChild !== null,
+            dependencyValues.numCases > 0 ||
+            dependencyValues.elseChild !== null,
         },
       }),
     };
 
-    stateVariableDefinitions.selectedIndices = {
+    stateVariableDefinitions.selectedIndex = {
       returnDependencies: () => ({
         caseChildren: {
           dependencyType: "child",
@@ -158,36 +153,22 @@ export default class ConditionalContent extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "elseChild",
         },
-        maximumNumberToShow: {
-          dependencyType: "stateVariable",
-          variableName: "maximumNumberToShow",
-        },
       }),
       definition({ dependencyValues }) {
-        let selectedIndices = [];
+        let selectedIndex = null;
         for (let [ind, child] of dependencyValues.caseChildren.entries()) {
           if (child.stateValues.conditionSatisfied) {
-            selectedIndices.push(ind);
+            selectedIndex = ind;
+            break;
           }
         }
-        if (selectedIndices.length === 0 && dependencyValues.elseChild) {
-          selectedIndices.push(dependencyValues.caseChildren.length);
-        }
-
-        if (
-          dependencyValues.maximumNumberToShow !== null &&
-          selectedIndices.length > dependencyValues.maximumNumberToShow
-        ) {
-          let maxnum = Math.max(
-            0,
-            Math.floor(dependencyValues.maximumNumberToShow),
-          );
-          selectedIndices = selectedIndices.slice(0, maxnum);
+        if (selectedIndex === null && dependencyValues.elseChild) {
+          selectedIndex = dependencyValues.caseChildren.length;
         }
 
         return {
           setValue: {
-            selectedIndices,
+            selectedIndex,
           },
         };
       },
@@ -203,9 +184,9 @@ export default class ConditionalContent extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "haveCasesOrElse",
         },
-        selectedIndices: {
+        selectedIndex: {
           dependencyType: "stateVariable",
-          variableName: "selectedIndices",
+          variableName: "selectedIndex",
         },
       }),
       markStale: () => ({ updateReplacements: true }),
@@ -282,9 +263,7 @@ export default class ConditionalContent extends CompositeComponent {
       componentInfoObjects,
     );
 
-    workspace.previousSelectedIndices = [
-      ...(await component.stateValues.selectedIndices),
-    ];
+    workspace.previousSelectedIndex = await component.stateValues.selectedIndex;
     workspace.previousBaseConditionSatisfied = await component.stateValues
       .baseConditionSatisfied;
 
@@ -307,11 +286,11 @@ export default class ConditionalContent extends CompositeComponent {
     } else {
       let caseChildren = await component.stateValues.caseChildren;
 
-      for (let [replInd, selectedIndex] of (
-        await component.stateValues.selectedIndices
-      ).entries()) {
+      let selectedIndex = await component.stateValues.selectedIndex;
+
+      if (selectedIndex !== null) {
         let selectedChildName, childComponentType, newNameForSelectedChild;
-        if (selectedIndex < (await component.stateValues.nCases)) {
+        if (selectedIndex < (await component.stateValues.numCases)) {
           selectedChildName = caseChildren[selectedIndex].componentName;
           newNameForSelectedChild = createUniqueName(
             "case",
@@ -352,7 +331,6 @@ export default class ConditionalContent extends CompositeComponent {
             desiredVariant: {
               seed:
                 component.sharedParameters.variantSeed +
-                replInd.toString() +
                 "|" +
                 selectedIndex.toString(),
             },
@@ -383,25 +361,19 @@ export default class ConditionalContent extends CompositeComponent {
 
   static async calculateReplacementChanges({
     component,
-    componentChanges,
     components,
     workspace,
     componentInfoObjects,
   }) {
     // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
-    // console.log(workspace.previousSelectedIndices);
-    // console.log(component.stateValues.selectedIndices);
+    // console.log(workspace.previousSelectedIndex);
+    // console.log(component.stateValues.selectedIndex);
 
-    let selectedIndices = await component.stateValues.selectedIndices;
+    let selectedIndex = await component.stateValues.selectedIndex;
     let baseConditionSatisfied = await component.stateValues
       .baseConditionSatisfied;
 
-    if (
-      workspace.previousSelectedIndices.length === selectedIndices.length &&
-      workspace.previousSelectedIndices.every(
-        (v, i) => v === selectedIndices[i],
-      )
-    ) {
+    if (workspace.previousSelectedIndex === selectedIndex) {
       if (workspace.previousBaseConditionSatisfied === baseConditionSatisfied) {
         return [];
       } else {
@@ -457,7 +429,7 @@ export default class ConditionalContent extends CompositeComponent {
 
     replacementChanges.push(replacementInstruction);
 
-    workspace.previousSelectedIndices = [...selectedIndices];
+    workspace.previousSelectedIndex = selectedIndex;
     workspace.previousBaseConditionSatisfied = baseConditionSatisfied;
 
     return replacementChanges;

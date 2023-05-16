@@ -282,23 +282,24 @@ export function determineVariantsForSection({
     throw Error("Duplicate variant names specified");
   }
 
-  let nVariantsSpecified = variantControlChild?.attributes.nVariants?.primitive;
-  if (!Number.isFinite(nVariantsSpecified)) {
-    nVariantsSpecified = 100;
+  let numVariantsSpecified =
+    variantControlChild?.attributes.numVariants?.primitive;
+  if (!Number.isFinite(numVariantsSpecified)) {
+    numVariantsSpecified = 100;
   }
 
-  nVariantsSpecified = Math.min(Math.max(nVariantsSpecified, 1), 1000);
+  numVariantsSpecified = Math.min(Math.max(numVariantsSpecified, 1), 1000);
 
   let variantNames = [...specifiedVariantNames];
 
-  if (variantNames.length < nVariantsSpecified) {
-    // if fewer variantNames specified than nVariantsSpecified, find additional variantNames
-    // try variantNames, n, n+1, ...., nVariantsSpecified, (converted to letters)
+  if (variantNames.length < numVariantsSpecified) {
+    // if fewer variantNames specified than numVariantsSpecified, find additional variantNames
+    // try variantNames, n, n+1, ...., numVariantsSpecified, (converted to letters)
     // except skipping variantNames that are already in original variantNames
     let variantNumber = variantNames.length;
     let variantValue = variantNumber;
     let variantString;
-    while (variantNumber < nVariantsSpecified) {
+    while (variantNumber < numVariantsSpecified) {
       variantNumber++;
       variantValue++;
       variantString = indexToLowercaseLetters(variantValue);
@@ -309,7 +310,7 @@ export function determineVariantsForSection({
       variantNames.push(variantString);
     }
   } else {
-    variantNames = variantNames.slice(0, nVariantsSpecified);
+    variantNames = variantNames.slice(0, numVariantsSpecified);
   }
 
   let variantsToInclude =
@@ -373,15 +374,15 @@ export function determineVariantsForSection({
 
   let variantSeeds = [...specifiedSeeds];
 
-  if (variantSeeds.length < nVariantsSpecified) {
-    // if fewer variantSeeds specified than nVariantsSpecified, find additional seeds
-    // try seeds, n, n+1, ...., nVariantsSpecified
+  if (variantSeeds.length < numVariantsSpecified) {
+    // if fewer variantSeeds specified than numVariantsSpecified, find additional seeds
+    // try seeds, n, n+1, ...., numVariantsSpecified
     // except skipping seeds that are already in specifiedSeeds
 
     let seedNumber = variantSeeds.length;
     let seedValue = seedNumber;
     let seedString;
-    while (seedNumber < nVariantsSpecified) {
+    while (seedNumber < numVariantsSpecified) {
       seedNumber++;
       seedValue++;
       seedString = seedValue.toString();
@@ -392,7 +393,7 @@ export function determineVariantsForSection({
       variantSeeds.push(seedString);
     }
   } else {
-    variantSeeds = variantSeeds.slice(0, nVariantsSpecified);
+    variantSeeds = variantSeeds.slice(0, numVariantsSpecified);
   }
 
   let variantsToIncludeSeeds = variantsToIncludeUniqueIndices.map(
@@ -404,7 +405,7 @@ export function determineVariantsForSection({
   // then do no use unique variants
   // else if
   // - unique variants attribute is specified as true or
-  // - number of unique variants <= nVariantsSpecified
+  // - number of unique variants <= numVariantsSpecified
   // then use unique variants
   // else do not use unique variants
 
@@ -427,7 +428,7 @@ export function determineVariantsForSection({
       uniqueVariants = false;
     } else {
       uniqueVariants =
-        uniqueVariants || uniqueResult.numberOfVariants <= nVariantsSpecified;
+        uniqueVariants || uniqueResult.numberOfVariants <= numVariantsSpecified;
     }
   }
 

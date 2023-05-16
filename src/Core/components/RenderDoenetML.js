@@ -1,8 +1,6 @@
-import CompositeComponent from "./abstract/CompositeComponent";
-import * as serializeFunctions from "../utils/serializedStateProcessing";
-import { setUpVariantSeedAndRng } from "../utils/variants";
+import BlockComponent from "./abstract/BlockComponent";
 
-export default class RenderDoenetML extends CompositeComponent {
+export default class RenderDoenetML extends BlockComponent {
   constructor(args) {
     super(args);
 
@@ -82,7 +80,7 @@ export default class RenderDoenetML extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.doenetML = {
+    stateVariableDefinitions.doenetMLFromSource = {
       stateVariablesDeterminingDependencies: ["codeSource"],
       returnDependencies: ({ stateValues }) => ({
         doenetML: {
@@ -102,203 +100,50 @@ export default class RenderDoenetML extends CompositeComponent {
           }
         }
 
-        return { setValue: { doenetML } };
+        return { setValue: { doenetMLFromSource: doenetML } };
       },
     };
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.doenetML = {
+      forRenderer: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      provideEssentialValuesInDefinition: true,
       returnDependencies: () => ({
-        doenetML: {
+        doenetMLFromSource: {
           dependencyType: "stateVariable",
-          variableName: "doenetML",
+          variableName: "doenetMLFromSource",
         },
       }),
-      definition() {
-        return { setValue: { readyToExpandWhenResolved: true } };
-      },
-    };
-
-    stateVariableDefinitions.triggerUpdates = {
-      defaultValue: true,
-      hasEssential: true,
-      returnDependencies: () => ({}),
-      markStale() {
-        return { updateReplacements: true };
-      },
-      definition() {
-        return { useEssentialOrDefaultValue: { triggerUpdates: {} } };
+      definition({ dependencyValues, essentialValues }) {
+        let result = {
+          useEssentialOrDefaultValue: {
+            doenetML: {
+              defaultValue: dependencyValues.doenetMLFromSource,
+            },
+          },
+        };
+        if (essentialValues.doenetML === undefined) {
+          result.setEssentialValue = {
+            doenetML: dependencyValues.doenetMLFromSource,
+          };
+        }
+        return result;
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "triggerUpdates",
-              value: desiredStateVariableValues.triggerUpdates,
+              setEssentialValue: "doenetML",
+              value: desiredStateVariableValues.doenetML,
             },
           ],
         };
       },
     };
 
-    stateVariableDefinitions.isVariantComponent = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { isVariantComponent: true } }),
-    };
-
-    stateVariableDefinitions.generatedVariantInfo = {
-      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
-        variantSeed: {
-          dependencyType: "value",
-          value: sharedParameters.variantSeed,
-        },
-        variantDescendants: {
-          dependencyType: "descendant",
-          componentTypes: Object.keys(
-            componentInfoObjects.componentTypesCreatingVariants,
-          ),
-          variableNames: ["isVariantComponent", "generatedVariantInfo"],
-          useReplacementsForComposites: true,
-          recurseToMatchedChildren: false,
-          variablesOptional: true,
-          includeNonActiveChildren: true,
-          ignoreReplacementsOfEncounteredComposites: true,
-        },
-      }),
-      definition({ dependencyValues, componentName }) {
-        let generatedVariantInfo = {
-          seed: dependencyValues.variantSeed,
-          meta: {
-            createdBy: componentName,
-          },
-        };
-
-        let subvariants = (generatedVariantInfo.subvariants = []);
-        for (let descendant of dependencyValues.variantDescendants) {
-          if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo);
-          } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(
-              ...descendant.stateValues.generatedVariantInfo.subvariants,
-            );
-          }
-        }
-
-        return {
-          setValue: {
-            generatedVariantInfo,
-          },
-        };
-      },
-    };
-
     return stateVariableDefinitions;
-  }
-
-  static async createSerializedReplacements({
-    component,
-    componentInfoObjects,
-    flags,
-    workspace,
-  }) {
-    let serializedComponents = [];
-
-    let doenetML = (await component.stateValues.doenetML).trim();
-
-    workspace.previousDoenetML = doenetML;
-
-    try {
-      let expandResult =
-        await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-          cids: [],
-          doenetMLs: [doenetML],
-          componentInfoObjects,
-          flags,
-        });
-
-      serializedComponents = expandResult.fullSerializedComponents[0];
-    } catch (e) {
-      console.warn("error in user entered doenetML");
-      console.warn(e.message);
-      // throw e; //TODO: Need to communicate to user
-      return { replacements: [] };
-    }
-
-    let namespaceStack = component.componentName
-      .split("/")
-      .map((x) => ({ namespace: x, componentCounts: {}, namesUsed: {} }));
-
-    serializeFunctions.createComponentNames({
-      serializedComponents,
-      componentInfoObjects,
-      namespaceStack,
-    });
-
-    serializeFunctions.restrictTNamesToNamespace({
-      components: serializedComponents,
-      namespace: `${component.componentName}/`,
-    });
-
-    let processResult = serializeFunctions.processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
-      serializedComponents: serializedComponents,
-      parentName: component.componentName,
-      parentCreatesNewNamespace: true,
-      componentInfoObjects,
-      originalNamesAreConsistent: true,
-    });
-
-    return { replacements: processResult.serializedComponents };
-  }
-
-  static async calculateReplacementChanges({
-    component,
-    componentChanges,
-    componentInfoObjects,
-    flags,
-    workspace,
-  }) {
-    let doenetML = (await component.stateValues.doenetML).trim();
-
-    if (workspace.previousDoenetML === doenetML) {
-      return [];
-    }
-
-    workspace.previousDoenetML = doenetML;
-
-    // aways recreate?
-
-    let replacements = (
-      await this.createSerializedReplacements({
-        component,
-        componentInfoObjects,
-        flags,
-        workspace,
-      })
-    ).replacements;
-
-    let replacementInstruction = {
-      changeType: "add",
-      changeTopLevelReplacements: true,
-      firstReplacementInd: 0,
-      numberReplacementsToReplace: component.replacements.length,
-      serializedReplacements: replacements,
-    };
-
-    return [replacementInstruction];
-  }
-
-  static setUpVariant({
-    serializedComponent,
-    sharedParameters,
-    descendantVariantComponents,
-  }) {
-    setUpVariantSeedAndRng({
-      serializedComponent,
-      sharedParameters,
-      descendantVariantComponents,
-      useSubpartVariantRng: true,
-    });
   }
 
   async updateComponents({
@@ -310,8 +155,8 @@ export default class RenderDoenetML extends CompositeComponent {
       {
         updateType: "updateValue",
         componentName: this.componentName,
-        stateVariable: "triggerUpdates",
-        value: true,
+        stateVariable: "doenetML",
+        value: await this.stateValues.doenetMLFromSource,
       },
     ];
 

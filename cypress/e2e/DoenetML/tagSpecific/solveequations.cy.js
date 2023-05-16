@@ -15,7 +15,7 @@ describe("SolveEquations Tag Tests", function () {
   <p>variable: <mathinput name="var" prefill="x" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numberSolutions" target="solve" assignNames="num" /></p>
+  <p>Number of solutions: <copy prop="numSolutions" target="solve" assignNames="num" /></p>
   <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   `,
         },
@@ -43,7 +43,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([
         "i",
         ["-", "i"],
@@ -74,7 +74,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([
         ["apply", "sqrt", ["-", "a"]],
         ["-", ["apply", "sqrt", ["-", "a"]]],
@@ -105,7 +105,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([
         "a",
         ["-", "a"],
@@ -136,7 +136,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([
         "x",
         ["-", "x"],
@@ -154,7 +154,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -182,7 +182,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         0.111833,
         1e-6,
@@ -204,7 +204,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -225,7 +225,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(1);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(1);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([0]);
     });
 
@@ -288,7 +288,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(7);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(7);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -0.870457,
         1e-6,
@@ -343,7 +343,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -0.1,
         1e-6,
@@ -366,7 +366,7 @@ describe("SolveEquations Tag Tests", function () {
   <p>maxvar: <mathinput name="maxvar" prefill="1" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var" minVar="$minvar" maxVar="$maxvar">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numberSolutions" target="solve" assignNames="num" /></p>
+  <p>Number of solutions: <copy prop="numSolutions" target="solve" assignNames="num" /></p>
   <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   <p>
     <copy prop="value" target="equation" assignNames="equation2" />
@@ -387,7 +387,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -403,7 +403,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -419,7 +419,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -440,7 +440,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(1);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(1);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         0.111833,
         1e-6,
@@ -471,7 +471,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         0.111833,
         1e-5,
@@ -499,7 +499,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(1);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(1);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         3.57715,
         1e-4,
@@ -522,7 +522,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([]);
     });
 
@@ -543,7 +543,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(1);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(1);
       expect(stateVariables["/solve"].stateValues.solutions).eqls([0]);
     });
 
@@ -591,7 +591,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(4);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(4);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         0,
         1e-5,
@@ -669,7 +669,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(7);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(7);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -0.870457,
         1e-5,
@@ -718,7 +718,7 @@ describe("SolveEquations Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(21);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(21);
       for (let i = 0; i < 21; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           i - 10,
@@ -736,7 +736,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         0,
         1e-5,
@@ -759,7 +759,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -0.0301,
         1e-5,
@@ -779,7 +779,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 0);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(0);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(0);
     });
 
     cy.get(cesc("#\\/equation") + " textarea").type(
@@ -794,7 +794,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 4);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(4);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(4);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -4.52365,
         1e-4,
@@ -822,7 +822,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 4);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(4);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(4);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -4.52365,
         1e-4,
@@ -849,7 +849,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 10);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(10);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           2 * i - 9,
@@ -866,7 +866,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 11);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(11);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(11);
       for (let i = 0; i < 11; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           2 * i - 10,
@@ -884,7 +884,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 11);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(11);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(11);
       for (let i = 0; i < 11; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           2 * i - 10,
@@ -902,7 +902,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 11);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(11);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(11);
       for (let i = 0; i < 11; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           2 * i - 10,
@@ -920,7 +920,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 11);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(11);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(11);
       for (let i = 0; i < 11; i++) {
         expect(stateVariables["/solve"].stateValues.solutions[i]).closeTo(
           2 * i - 10,
@@ -937,7 +937,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 1);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(1);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(1);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         Math.PI,
         1e-3,
@@ -952,7 +952,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -Math.PI,
         1e-3,
@@ -972,7 +972,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -Math.PI,
         1e-3,
@@ -992,7 +992,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -Math.PI,
         1e-3,
@@ -1012,7 +1012,7 @@ describe("SolveEquations Tag Tests", function () {
     cy.get(cesc("#\\/num")).should("have.text", 2);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/solve"].stateValues.numberSolutions).eq(2);
+      expect(stateVariables["/solve"].stateValues.numSolutions).eq(2);
       expect(stateVariables["/solve"].stateValues.solutions[0]).closeTo(
         -Math.PI,
         1e-3,

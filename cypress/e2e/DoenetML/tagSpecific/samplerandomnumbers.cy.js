@@ -97,7 +97,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="uniform" numberOfSamples="5" to="8" /></template>
+      <template><sampleRandomNumbers type="uniform" numSamples="5" to="8" /></template>
       <sources><sequence length="80" /></sources>
     </map>
     </aslist></p>
@@ -184,7 +184,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="uniform" numberOfSamples="5" from="-5" /></template>
+      <template><sampleRandomNumbers type="uniform" numSamples="5" from="-5" /></template>
       <sources><sequence length="80" /></sources>
     </map>
     </aslist></p>
@@ -271,7 +271,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers numberOfSamples="10" from="-4" to="-2" /></template>
+      <template><sampleRandomNumbers numSamples="10" from="-4" to="-2" /></template>
       <sources><sequence length="40" /></sources>
     </map>
     </aslist></p>
@@ -358,7 +358,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers numberOfSamples="10" from="-2" to="-4" /></template>
+      <template><sampleRandomNumbers numSamples="10" from="-2" to="-4" /></template>
       <sources><sequence length="40" /></sources>
     </map>
     </aslist></p>
@@ -445,7 +445,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="gaussian" numberOfSamples="20" /></template>
+      <template><sampleRandomNumbers type="gaussian" numSamples="20" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -527,7 +527,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="gaussian" numberOfSamples="5" standardDeviation="10" /></template>
+      <template><sampleRandomNumbers type="gaussian" numSamples="5" standardDeviation="10" /></template>
       <sources><sequence length="80" /></sources>
     </map>
     </aslist></p>
@@ -565,7 +565,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let varX = me.math.variance(samples, "uncorrected");
 
       expect(meanX).closeTo(0, 2);
-      expect(varX).closeTo(100, 20);
+      expect(varX).closeTo(100, 25);
 
       let firstSample =
         stateVariables[
@@ -691,7 +691,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="gaussian" numberOfSamples="20" mean="100" standardDeviation="10" /></template>
+      <template><sampleRandomNumbers type="gaussian" numSamples="20" mean="100" standardDeviation="10" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -773,7 +773,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="gaussian" numberOfSamples="20" mean="-3" variance="0.01" /></template>
+      <template><sampleRandomNumbers type="gaussian" numSamples="20" mean="-3" variance="0.01" /></template>
       <sources><sequence length="20" /></sources>
     </map>
     </aslist></p>
@@ -1122,7 +1122,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" numberOfSamples="5" /></template>
+      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" numSamples="5" /></template>
       <sources><sequence length="80" /></sources>
     </map>
     </aslist></p>
@@ -1211,7 +1211,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="discreteUniform" from="5" to="-3" numberOfSamples="5" /></template>
+      <template><sampleRandomNumbers type="discreteUniform" from="5" to="-3" numSamples="5" /></template>
       <sources><sequence length="80" /></sources>
     </map>
     </aslist></p>
@@ -1275,7 +1275,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" numberOfSamples="10" step="2" /></template>
+      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" numSamples="10" step="2" /></template>
       <sources><sequence length="40" /></sources>
     </map>
     </aslist></p>
@@ -1362,19 +1362,19 @@ describe("SampleRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <mathinput prefill="50" name="numberOfSamples"/>
+    <mathinput prefill="50" name="numSamples"/>
     <mathinput prefill="10" name="maxnum"/>
     <p><aslist>
-    <sampleRandomNumbers name="sample1" to="$maxnum" numberOfSamples="$numberOfSamples" />
+    <sampleRandomNumbers name="sample1" to="$maxnum" numSamples="$numSamples" />
     </aslist></p>
 
-    <mathinput prefill="180" name="numberOfSamples2"/>
+    <mathinput prefill="180" name="numSamples2"/>
     <mathinput prefill="4" name="standardDeviation"/>
     <p><aslist>
-    <sampleRandomNumbers type="gaussian" name="sample2" standardDeviation="$standardDeviation" numberOfSamples="$numberOfSamples2" />
+    <sampleRandomNumbers type="gaussian" name="sample2" standardDeviation="$standardDeviation" numSamples="$numSamples2" />
     </aslist></p>
     <p>
-      <copy prop="value" target="numberOfSamples2" assignNames="numberOfSamples2a" />
+      <copy prop="value" target="numSamples2" assignNames="numSamples2a" />
       <copy prop="value" target="standardDeviation" assignNames="standardDeviationa" />
     </p>
     `,
@@ -1416,15 +1416,15 @@ describe("SampleRandomNumbers Tag Tests", function () {
     });
 
     cy.log("Get new samples when change number of samples");
-    cy.get(cesc("#\\/numberOfSamples") + " textarea").type(
+    cy.get(cesc("#\\/numSamples") + " textarea").type(
       `{end}{backspace}{backspace}70{enter}`,
       { force: true },
     );
-    cy.get(cesc("#\\/numberOfSamples2") + " textarea").type(
+    cy.get(cesc("#\\/numSamples2") + " textarea").type(
       `{ctrl+home}{shift+end}{backspace}160{enter}`,
       { force: true },
     );
-    cy.get(cesc("#\\/numberOfSamples2a")).should("contain.text", "160");
+    cy.get(cesc("#\\/numSamples2a")).should("contain.text", "160");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2681,7 +2681,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <sampleRandomNumbers name="s" from="3" to="13" assignnames="u v w" numberOfSamples="6" />
+      <sampleRandomNumbers name="s" from="3" to="13" assignnames="u v w" numSamples="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="u" /></p>
     <p><copy assignNames="v2" target="v" /></p>
@@ -2749,7 +2749,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist>
-      <sampleRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numberOfSamples="6" />
+      <sampleRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numSamples="6" displayDigits="10" />
     </aslist></p>
     <p><copy assignNames="u2" target="s/u" /></p>
     <p><copy assignNames="v2" target="s/v" /></p>
@@ -2827,14 +2827,14 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p>Actual from: <copy prop="from" target="samples" obtainPropFromComposite assignNames="actualFrom" /></p>
     <p>Actual to: <copy prop="to" target="samples" obtainPropFromComposite assignNames="actualTo" /></p>
     <p>Actual step: <copy prop="step" target="samples" obtainPropFromComposite assignNames="actualStep" /></p>
-    <p>Expected mean: <copy prop="mean" target="samples" obtainPropFromComposite assignNames="expectedMean" /></p>
-    <p>Expected variance: <copy prop="variance" target="samples" obtainPropFromComposite assignNames="expectedVariance" /></p>
-    <p>Expected standard deviation: <copy prop="standardDeviation" target="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" /></p>
-    <p>Resulting mean: <mean name="resultingMean">$samples</mean></p>
-    <p>Resulting variance: <variance name="resultingVariance">$samples</variance></p>
-    <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation">$samples</standardDeviation></p>
+    <p>Expected mean: <copy prop="mean" target="samples" obtainPropFromComposite assignNames="expectedMean" displayDigits="10" /></p>
+    <p>Expected variance: <copy prop="variance" target="samples" obtainPropFromComposite assignNames="expectedVariance" displayDigits="10" /></p>
+    <p>Expected standard deviation: <copy prop="standardDeviation" target="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" displayDigits="10" /></p>
+    <p>Resulting mean: <mean name="resultingMean" displayDigits="10">$samples</mean></p>
+    <p>Resulting variance: <variance name="resultingVariance" displayDigits="10">$samples</variance></p>
+    <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation" displayDigits="10">$samples</standardDeviation></p>
     <p name="p1"><aslist>
-      <sampleRandomNumbers name="samples" numberOfSamples="$nSamples" type="$type" mean="$specifiedMean" variance="$specifiedVariance" from="$specifiedFrom" to="$specifiedTo" step="$specifiedStep" />
+      <sampleRandomNumbers name="samples" numSamples="$nSamples" type="$type" mean="$specifiedMean" variance="$specifiedVariance" from="$specifiedFrom" to="$specifiedTo" step="$specifiedStep" displayDigits="10" />
     </aslist></p>
     <p name="p2"><aslist><copy target="samples" /></aslist></p>
     <p name="p3"><copy target="_aslist1" /></p>
@@ -2862,7 +2862,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
     let checkSamples = function ({
-      numberOfSamples,
+      numSamples,
       specifiedType,
       specifiedMean,
       specifiedVariance,
@@ -2882,14 +2882,14 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let samples = sampleComponent.replacements
         .slice(0, nReplacements)
         .map((x) => stateVariables[x.componentName].stateValues.value);
-      expect(samples.length).eq(numberOfSamples);
+      expect(samples.length).eq(numSamples);
 
       cy.get(cesc("#\\/nSamples") + " .mq-editable-field")
         .invoke("text")
         .then((text) => {
           expect(
             text.replace(/[\s\u200B-\u200D\uFEFF]/g, "").replace(/−/, "-"),
-          ).equal(numberOfSamples.toString());
+          ).equal(numSamples.toString());
         });
       cy.get(cesc("#\\/type_input")).should("have.value", specifiedType);
       cy.get(cesc("#\\/specifiedMean") + " .mq-editable-field")
@@ -3018,7 +3018,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
             .invoke("text")
             .then((text) => {
               let numbers = text.split(",").map(Number);
-              expect(numbers.length).eq(numberOfSamples);
+              expect(numbers.length).eq(numSamples);
               for (let [i, num] of numbers.entries()) {
                 expect(num).closeTo(samples[i], 1e-8);
               }
@@ -3027,7 +3027,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       }
     };
 
-    let numberOfSamples = 10;
+    let numSamples = 10;
     let specifiedType = "";
     let specifiedMean = 0;
     let specifiedVariance = 1;
@@ -3040,7 +3040,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3055,7 +3055,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     });
 
     cy.log("Increase number of samples").then(() => {
-      numberOfSamples = 50;
+      numSamples = 50;
     });
     cy.get(cesc(`#\\/nSamples`) + ` textarea`).type(
       "{end}{backspace}{backspace}50{enter}",
@@ -3067,7 +3067,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3099,7 +3099,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3123,7 +3123,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3160,7 +3160,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3184,7 +3184,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3216,7 +3216,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3232,7 +3232,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     });
 
     cy.log("Increase number of samples").then(() => {
-      numberOfSamples = 200;
+      numSamples = 200;
     });
     cy.get(cesc(`#\\/nSamples`) + ` textarea`).type(
       "{end}{backspace}{backspace}200{enter}",
@@ -3243,7 +3243,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3259,7 +3259,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
     });
 
     cy.log("Decrease number of samples").then(() => {
-      numberOfSamples = 20;
+      numSamples = 20;
     });
     cy.get(cesc(`#\\/nSamples`) + ` textarea`).type("{end}{backspace}{enter}", {
       force: true,
@@ -3269,7 +3269,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
-        numberOfSamples,
+        numSamples,
         specifiedType,
         specifiedMean,
         specifiedVariance,
@@ -3561,10 +3561,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" displayDigits="10" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

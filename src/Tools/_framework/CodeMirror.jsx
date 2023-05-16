@@ -31,14 +31,13 @@ const editorConfigStateAtom = atom({
   },
 });
 
-let view;
-
 export default function CodeMirror({
-  setInternalValue,
+  setInternalValueTo,
   onBeforeChange,
   readOnly,
   onBlur,
   onFocus,
+  paddingBottom,
 }) {
   if (readOnly === undefined) {
     readOnly = false;
@@ -82,7 +81,7 @@ export default function CodeMirror({
   });
 
   let editorConfig = useRecoilValue(editorConfigStateAtom);
-  view = useRef(null);
+  let view = useRef(null);
   let parent = useRef(null);
   const [count, setCount] = useState(0);
 
@@ -123,6 +122,73 @@ export default function CodeMirror({
     },
   });
 
+  //tabs = 2 spaces
+  const tab = "  ";
+  const tabCommand = ({ state, dispatch }) => {
+    dispatch(
+      state.update(state.replaceSelection(tab), {
+        scrollIntoView: true,
+        annotations: Transaction.userEvent.of("input"),
+      }),
+    );
+    return true;
+  };
+
+  const tabExtension = keymap.of([
+    {
+      key: "Tab",
+      run: tabCommand,
+    },
+  ]);
+
+  const copyCommand = ({ state, dispatch }) => {
+    if (state.selection.main.empty) {
+      selectLine({ state: state, dispatch: dispatch });
+      document.execCommand("copy");
+    } else {
+      document.execCommand("copy");
+    }
+    return true;
+  };
+
+  const copyExtension = keymap.of([
+    {
+      key: "Mod-x",
+      run: copyCommand,
+    },
+  ]);
+
+  const cutCommand = ({ state, dispatch }) => {
+    //if the selection is empty
+    if (state.selection.main.empty) {
+      selectLine({ state: state, dispatch: dispatch });
+      document.execCommand("copy");
+      if (
+        state.doc.lineAt(state.selection.main.from).number !== state.doc.lines
+      ) {
+        deleteLine(view.current);
+        cursorLineUp(view.current);
+      } else {
+        deleteLine(view.current);
+      }
+    } else {
+      document.execCommand("copy");
+      dispatch(
+        state.update(state.replaceSelection(""), {
+          scrollIntoView: true,
+          annotations: Transaction.userEvent.of("input"),
+        }),
+      );
+    }
+    return true;
+  };
+  const cutExtension = keymap.of([
+    {
+      key: "Mod-x",
+      run: cutCommand,
+    },
+  ]);
+
   const doenetExtensions = useMemo(
     () => [
       basicSetup,
@@ -135,6 +201,7 @@ export default function CodeMirror({
       onBlurExtension,
       onFocusExtension,
       EditorState.changeFilter.of(changeFunc),
+      EditorView.updateListener.of(changeFunc),
     ],
     [changeFunc],
   );
@@ -178,23 +245,23 @@ export default function CodeMirror({
   );
 
   const state = EditorState.create({
-    doc: setInternalValue,
+    doc: setInternalValueTo,
     extensions: doenetExtensions,
   });
 
   useEffect(() => {
     if (view.current !== null && parent.current !== null) {
-      // console.log(">>>changing setInternalValue to",setInternalValue)
+      // console.log(">>>changing setInternalValueTo to", setInternalValueTo);
       let tr = view.current.state.update({
         changes: {
           from: 0,
           to: view.current.state.doc.length,
-          insert: setInternalValue,
+          insert: setInternalValueTo,
         },
       });
       view.current.dispatch(tr);
     }
-  }, [setInternalValue]);
+  }, [setInternalValueTo]);
 
   useEffect(() => {
     if (view.current === null && parent.current !== null) {
@@ -238,7 +305,7 @@ export default function CodeMirror({
     //annoying that editorConfig is a dependency, but no real way around it
   }, [
     doenetExtensions,
-    setInternalValue,
+    setInternalValueTo,
     matchTag,
     readOnly,
     editorConfig.matchTag,
@@ -262,80 +329,19 @@ export default function CodeMirror({
     }
   }, [editorConfig, matchTag, doenetExtensions]);
 
+  let divStyle = {};
+
+  if (paddingBottom) {
+    divStyle.paddingBottom = paddingBottom;
+  }
+
   //should rewrite using compartments once a more formal config component is established
   return (
     <>
-      <div ref={parent} style={{ paddingBottom: "50vh" }}></div>
+      <div ref={parent} style={divStyle}></div>
     </>
   );
 }
-
-//tabs = 2 spaces
-const tab = "  ";
-const tabCommand = ({ state, dispatch }) => {
-  dispatch(
-    state.update(state.replaceSelection(tab), {
-      scrollIntoView: true,
-      annotations: Transaction.userEvent.of("input"),
-    }),
-  );
-  return true;
-};
-
-const tabExtension = keymap.of([
-  {
-    key: "Tab",
-    run: tabCommand,
-  },
-]);
-
-const copyCommand = ({ state, dispatch }) => {
-  if (state.selection.main.empty) {
-    selectLine({ state: state, dispatch: dispatch });
-    document.execCommand("copy");
-  } else {
-    document.execCommand("copy");
-  }
-  return true;
-};
-
-const copyExtension = keymap.of([
-  {
-    key: "Mod-x",
-    run: copyCommand,
-  },
-]);
-
-const cutCommand = ({ state, dispatch }) => {
-  //if the selection is empty
-  if (state.selection.main.empty) {
-    selectLine({ state: state, dispatch: dispatch });
-    document.execCommand("copy");
-    if (
-      state.doc.lineAt(state.selection.main.from).number !== state.doc.lines
-    ) {
-      deleteLine(view.current);
-      cursorLineUp(view.current);
-    } else {
-      deleteLine(view.current);
-    }
-  } else {
-    document.execCommand("copy");
-    dispatch(
-      state.update(state.replaceSelection(""), {
-        scrollIntoView: true,
-        annotations: Transaction.userEvent.of("input"),
-      }),
-    );
-  }
-  return true;
-};
-const cutExtension = keymap.of([
-  {
-    key: "Mod-x",
-    run: cutCommand,
-  },
-]);
 
 const doenetSchema = {
   //TODO update schema to be more complete.
@@ -409,15 +415,19 @@ const doenetLanguage = LRLanguage.define({
   },
 });
 
-export function codeMirrorFocusAndGoToEnd() {
-  view.current.focus();
-  view.current.dispatch(
-    view.current.state.update({
-      selection: { anchor: view.current.state.doc.length },
-    }),
-    { scrollIntoView: true },
-  );
-}
+// TODO: not sure what this is for, but it isn't referenced anywhere.
+// If we need this functionality, we have to rework it
+// given that view is no longer a global variable.
+// export function codeMirrorFocusAndGoToEnd() {
+//   view.current.focus();
+//   view.current.dispatch(
+//     view.current.state.update({
+//       selection: { anchor: view.current.state.doc.length },
+//     }),
+//     { scrollIntoView: true },
+//   );
+// }
+
 const doenet = (conf = {}) =>
   new LanguageSupport(
     doenetLanguage,

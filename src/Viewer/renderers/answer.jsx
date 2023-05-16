@@ -68,7 +68,7 @@ export default React.memo(function Answer(props) {
 
   if (!SVs.delegateCheckWork && !SVs.suppressCheckwork) {
     let validationState = "unvalidated";
-    if (SVs.justSubmitted || SVs.numberOfAttemptsLeft < 1) {
+    if (SVs.justSubmitted || SVs.numAttemptsLeft < 1) {
       if (SVs.creditAchieved === 1) {
         validationState = "correct";
       } else if (SVs.creditAchieved === 0) {
@@ -165,25 +165,25 @@ export default React.memo(function Answer(props) {
       }
     }
 
-    if (SVs.numberOfAttemptsLeft < 0) {
+    if (SVs.numAttemptsLeft < 0) {
       checkworkComponent = (
         <>
           {checkworkComponent}
           <span>(no attempts remaining)</span>
         </>
       );
-    } else if (SVs.numberOfAttemptsLeft == 1) {
+    } else if (SVs.numAttemptsLeft == 1) {
       checkworkComponent = (
         <>
           {checkworkComponent}
           <span>(1 attempt remaining)</span>
         </>
       );
-    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+    } else if (Number.isFinite(SVs.numAttemptsLeft)) {
       checkworkComponent = (
         <>
           {checkworkComponent}
-          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+          <span>({SVs.numAttemptsLeft} attempts remaining)</span>
         </>
       );
     }

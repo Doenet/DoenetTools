@@ -1,6 +1,11 @@
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
 import { vectorOperators } from "../utils/math";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class FunctionIterates extends InlineComponent {
   static componentType = "functionIterates";
@@ -8,9 +13,9 @@ export default class FunctionIterates extends InlineComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.nIterates = {
+    attributes.numIterates = {
       createComponentOfType: "integer",
-      createStateVariable: "nIterates",
+      createStateVariable: "numIterates",
       defaultValue: 0,
       public: true,
     };
@@ -35,13 +40,20 @@ export default class FunctionIterates extends InlineComponent {
       createComponentOfType: "function",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nDimensions = {
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
+
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -50,24 +62,25 @@ export default class FunctionIterates extends InlineComponent {
         functionAttr: {
           dependencyType: "attributeComponent",
           attributeName: "function",
-          variableNames: ["nInputs", "nOutputs"],
+          variableNames: ["numInputs", "numOutputs"],
         },
       }),
       definition({ dependencyValues }) {
         if (!dependencyValues.functionAttr) {
-          return { setValue: { nDimensions: 0 } };
+          return { setValue: { numDimensions: 0 } };
         } else if (
-          dependencyValues.functionAttr.stateValues.nInputs !==
-          dependencyValues.functionAttr.stateValues.nOutputs
+          dependencyValues.functionAttr.stateValues.numInputs !==
+          dependencyValues.functionAttr.stateValues.numOutputs
         ) {
           console.warn(
             `Function iterates are possible only if the number of inputs is equal to the number of outputs`,
           );
-          return { setValue: { nDimensions: 0 } };
+          return { setValue: { numDimensions: 0 } };
         } else {
           return {
             setValue: {
-              nDimensions: dependencyValues.functionAttr.stateValues.nInputs,
+              numDimensions:
+                dependencyValues.functionAttr.stateValues.numInputs,
             },
           };
         }
@@ -78,6 +91,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "mathList",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         functionAttr: {
@@ -93,17 +108,17 @@ export default class FunctionIterates extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "forceNumeric",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         initialValue: {
           dependencyType: "stateVariable",
           variableName: "initialValue",
         },
-        nIterates: {
+        numIterates: {
           dependencyType: "stateVariable",
-          variableName: "nIterates",
+          variableName: "numIterates",
         },
       }),
       definition({ dependencyValues }) {
@@ -113,36 +128,36 @@ export default class FunctionIterates extends InlineComponent {
         let symbolic =
           !dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic);
-        let nIterates = dependencyValues.nIterates;
+        let numIterates = dependencyValues.numIterates;
 
         if (
           !functionComp ||
-          dependencyValues.nDimensions === 0 ||
+          dependencyValues.numDimensions === 0 ||
           !(
-            dependencyValues.nDimensions === 1 ||
+            dependencyValues.numDimensions === 1 ||
             (Array.isArray(initialValue.tree) &&
               vectorOperators.includes(initialValue.tree[0]) &&
-              initialValue.tree.length === dependencyValues.nDimensions + 1)
+              initialValue.tree.length === dependencyValues.numDimensions + 1)
           )
         ) {
-          allIterates = Array(nIterates).fill(me.fromAst("\uff3f"));
+          allIterates = Array(numIterates).fill(me.fromAst("\uff3f"));
           return { setValue: { allIterates } };
         }
 
         if (symbolic) {
-          if (dependencyValues.nDimensions === 1) {
+          if (dependencyValues.numDimensions === 1) {
             let symbolicf = functionComp.stateValues.symbolicfs[0];
             let value = initialValue;
-            for (let ind = 0; ind < nIterates; ind++) {
+            for (let ind = 0; ind < numIterates; ind++) {
               value = symbolicf(value);
               allIterates.push(value);
             }
           } else {
             let symbolicfs = functionComp.stateValues.symbolicfs;
             let value = initialValue.tree.slice(1);
-            for (let ind = 0; ind < nIterates; ind++) {
+            for (let ind = 0; ind < numIterates; ind++) {
               let iterComps = [];
-              for (let i = 0; i < dependencyValues.nDimensions; i++) {
+              for (let i = 0; i < dependencyValues.numDimensions; i++) {
                 iterComps.push(symbolicfs[i](...value).tree);
               }
               allIterates.push(me.fromAst(["vector", ...iterComps]));
@@ -150,13 +165,13 @@ export default class FunctionIterates extends InlineComponent {
             }
           }
         } else {
-          if (dependencyValues.nDimensions === 1) {
+          if (dependencyValues.numDimensions === 1) {
             let numericalf = functionComp.stateValues.numericalfs[0];
             let value = initialValue.evaluate_to_constant();
             if (Number.isNaN(value)) {
-              allIterates = Array(nIterates).fill(me.fromAst("\uff3f"));
+              allIterates = Array(numIterates).fill(me.fromAst("\uff3f"));
             } else {
-              for (let ind = 0; ind < nIterates; ind++) {
+              for (let ind = 0; ind < numIterates; ind++) {
                 value = numericalf(value);
                 allIterates.push(me.fromAst(value));
               }
@@ -166,9 +181,9 @@ export default class FunctionIterates extends InlineComponent {
             let value = initialValue.tree
               .slice(1)
               .map((x) => me.fromAst(x).evaluate_to_constant());
-            for (let ind = 0; ind < nIterates; ind++) {
+            for (let ind = 0; ind < numIterates; ind++) {
               let iterComps = [];
-              for (let i = 0; i < dependencyValues.nDimensions; i++) {
+              for (let i = 0; i < dependencyValues.numDimensions; i++) {
                 iterComps.push(numericalfs[i](...value));
               }
               allIterates.push(me.fromAst(["vector", ...iterComps]));
@@ -185,6 +200,8 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "mathList",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         initialValue: {
@@ -213,16 +230,18 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["iterate"],
       returnArraySizeDependencies: () => ({
-        nIterates: {
+        numIterates: {
           dependencyType: "stateVariable",
-          variableName: "nIterates",
+          variableName: "numIterates",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nIterates];
+        return [dependencyValues.numIterates];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -249,21 +268,23 @@ export default class FunctionIterates extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
-      stateVariablesDeterminingDependencies: ["nIterates"],
+      stateVariablesDeterminingDependencies: ["numIterates"],
       returnDependencies({ stateValues }) {
         if (
-          !Number.isFinite(stateValues.nIterates) ||
-          stateValues.nIterates < 0
+          !Number.isFinite(stateValues.numIterates) ||
+          stateValues.numIterates < 0
         ) {
           return {};
         }
 
-        if (stateValues.nIterates > 0) {
+        if (stateValues.numIterates > 0) {
           return {
             finalIterate: {
               dependencyType: "stateVariable",
-              variableName: `iterate${stateValues.nIterates}`,
+              variableName: `iterate${stateValues.numIterates}`,
             },
           };
         } else {

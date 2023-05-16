@@ -1,3 +1,4 @@
+import { returnRoundingStateVariableDefinitions } from "../utils/rounding";
 import MathBaseOperator from "./abstract/MathBaseOperator";
 import MathBaseOperatorOneInput from "./abstract/MathBaseOperatorOneInput";
 import me from "math-expressions";
@@ -265,15 +266,15 @@ export class Round extends MathBaseOperatorOneInput {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.numberDecimals = {
+    attributes.numDecimals = {
       createComponentOfType: "number",
-      createStateVariable: "numberDecimals",
+      createStateVariable: "numDecimals",
       defaultValue: 0,
       public: true,
     };
-    attributes.numberDigits = {
+    attributes.numDigits = {
       createComponentOfType: "number",
-      createStateVariable: "numberDigits",
+      createStateVariable: "numDigits",
       defaultValue: null,
       public: true,
     };
@@ -283,15 +284,25 @@ export class Round extends MathBaseOperatorOneInput {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // change default rounding to 14
+    // so that actual rounding result can be seen.
+    // Don't include maths for childsGroupIfSingleMatch
+    // so that this overrides display rounding from children
+    let roundingDefinitions = returnRoundingStateVariableDefinitions({
+      includeListParents: true,
+      displayDigitsDefault: 14,
+    });
+    Object.assign(stateVariableDefinitions, roundingDefinitions);
+
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({
-        numberDecimals: {
+        numDecimals: {
           dependencyType: "stateVariable",
-          variableName: "numberDecimals",
+          variableName: "numDecimals",
         },
-        numberDigits: {
+        numDigits: {
           dependencyType: "stateVariable",
-          variableName: "numberDigits",
+          variableName: "numDigits",
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -303,13 +314,13 @@ export class Round extends MathBaseOperatorOneInput {
               evaluate_functions: true,
             });
 
-            if (dependencyValues.numberDigits !== null) {
+            if (dependencyValues.numDigits !== null) {
               return valueWithNumbers.round_numbers_to_precision(
-                dependencyValues.numberDigits,
+                dependencyValues.numDigits,
               );
             } else {
               return valueWithNumbers.round_numbers_to_decimals(
-                dependencyValues.numberDecimals,
+                dependencyValues.numDecimals,
               );
             }
           },
@@ -1067,7 +1078,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
         "operand",
         "function",
         "functionargument",
-        "numberofoperands",
+        "numoperands",
       ],
     };
     attributes.operandNumber = {
@@ -1209,7 +1220,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
               },
             },
           };
-        } else if (dependencyValues.type === "numberofoperands") {
+        } else if (dependencyValues.type === "numoperands") {
           return {
             setValue: {
               mathOperator: function (value) {

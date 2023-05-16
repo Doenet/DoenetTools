@@ -1,14 +1,32 @@
-import { Box, Center, Icon, Text } from "@chakra-ui/react";
-import React, { useRef } from "react";
-import { Outlet, useLoaderData, useNavigate } from "react-router";
+import React, { useRef, useState, useEffect } from "react";
+import {
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  Text,
+  Icon,
+  useColorMode,
+  useColorModeValue,
+  HStack,
+  Spinner,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+  Box,
+  VStack,
+  ButtonGroup,
+} from "@chakra-ui/react";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
-import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaCog } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
+import axios from "axios";
 
 export async function loader() {
   //Check if signedIn
@@ -18,79 +36,76 @@ export async function loader() {
     signedIn = false;
   }
   let portfolioCourseId = null;
+  let firstName = "";
+  let lastName = "";
+  let email = "";
   let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await fetch("/api/getPorfolioCourseId.php");
-
-    const data = await response.json();
+    const response = await axios.get("/api/getPorfolioCourseId.php");
+    let { data } = response;
     portfolioCourseId = data.portfolioCourseId;
-    if (data.portfolioCourseId == "") {
+    firstName = data.firstName;
+    lastName = data.lastName;
+    email = data.email;
+
+    if (portfolioCourseId == "") {
       portfolioCourseId = "not_created";
     }
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const isAdminJson = await isAdminResponse.json();
     isAdmin = isAdminJson.isAdmin;
   }
-  return { signedIn, portfolioCourseId, isAdmin };
+  return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
 }
 
-const SignInButtonContainer = styled.div`
-  margin: auto 10px auto 0px;
-`;
-
-const Branding = styled.span`
-  margin: 4px 0px 4px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 110px;
-  cursor: default;
-  font-size: 16px;
-`;
-
-const StyledMenuItem = styled(NavLink)`
-  padding: 8px;
-  color: black;
-  cursor: pointer;
-  text-decoration: none;
-  &.active {
-    color: var(--mainBlue);
-    border-bottom: 2px solid var(--mainBlue);
-  }
-`;
-
-const BarMenu = styled.div`
-  margin: 0px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  column-gap: 20px;
-`;
-
-function MenuItem({ to, children, dataTest }) {
+function NavLinkTab({ to, children, datatest }) {
+  // TODO: use end only when path is "/"
   return (
-    <StyledMenuItem
-      to={to}
-      data-test={dataTest}
-      className={({ isActive, isPending }) =>
-        location.pathname === "/" || isActive
-          ? "active"
-          : isPending
-          ? "pending"
-          : ""
-      }
-    >
-      {children}
-    </StyledMenuItem>
+    <NavLink to={to} end datatest={datatest}>
+      {({ isActive, isPending }) => {
+        // let spinner = null;
+        // if (isPending) {
+        //   spinner = <Spinner size="sm" />;
+        // }
+        let color = "doenet.canvastext";
+        let borderBottomStyle = "none";
+        let borderBottomWidth = "0px";
+        if (isActive) {
+          color = "doenet.mainBlue";
+          borderBottomWidth = "2px";
+          borderBottomStyle = "solid";
+        }
+
+        return (
+          <Center
+            h="40px"
+            borderBottomStyle={borderBottomStyle}
+            borderBottomWidth={borderBottomWidth}
+            borderBottomColor={color}
+            p="4px"
+          >
+            <Text fontSize="md" color={color}>
+              {children}
+            </Text>
+            {/* {spinner} */}
+          </Center>
+        );
+      }}
+    </NavLink>
   );
 }
 
 export function SiteHeader(props) {
-  let data = useLoaderData();
-  const isAdmin = data?.isAdmin;
-  // const navigate = useNavigate();
+  let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
+    useLoaderData();
+  const { childComponent } = props;
+
+  const { colorMode, toggleColorMode } = useColorMode();
+  let location = useLocation();
+
+  // const navColor = useColorModeValue("#ffffff", "gray.800");
+  const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -101,116 +116,158 @@ export function SiteHeader(props) {
     const newHref = navigateTo.current;
     navigateTo.current = "";
     location.href = newHref;
-  }
-
-  let signInButton = (
-    <Button
-      dataTest="Nav to course"
-      size="medium"
-      value="My Courses"
-      onClick={() => {
-        navigateTo.current = "/course";
-        setRecoilPageToolView({
-          page: "course",
-          tool: "",
-          view: "",
-          params: {},
-        });
-      }}
-    />
-  );
-  if (!data.signedIn) {
-    signInButton = (
-      <Button
-        dataTest="Nav to signin"
-        size="medium"
-        value="Sign In"
-        onClick={() => {
-          navigateTo.current = "/signin";
-          setRecoilPageToolView({
-            page: "signin",
-            tool: "",
-            view: "",
-            params: {},
-          });
-        }}
-      />
-    );
+    navigate(newHref);
   }
 
   return (
     <>
-      <Box
-        display="grid"
+      <Grid
+        templateAreas={`"siteHeader" 
+        "main"`}
         gridTemplateRows="40px auto"
         width="100vw"
         height="100vh"
       >
-        <Box
+        <GridItem
+          area="siteHeader"
           as="header"
-          gridRow="1 / 2"
+          width="100vw"
+          m="0"
           backgroundColor="#fff"
           color="#000"
           height="40px"
-          position="fixed"
-          top="0"
-          width="100%"
-          margin="0"
-          display="flex"
-          justifyContent="space-between"
-          borderBottom="1px solid var(--mainGray)"
-          zIndex="1200"
         >
-          {data.signedIn ? (
-            <Center columnGap="6px">
-              <RouterLogo />
-              <Text>Doenet</Text>
-              <Icon
-                ml="10px"
-                cursor="pointer"
-                fontSize="16pt"
-                as={FaCog}
-                onClick={() => {
-                  navigateTo.current = "/settings";
-                  setRecoilPageToolView({
-                    page: "settings",
-                    tool: "",
-                    view: "",
-                    params: {},
-                  });
-                }}
-              />
-            </Center>
-          ) : (
-            <Branding>
-              <RouterLogo />
-              <Text>Doenet</Text>
-            </Branding>
-          )}
-          <BarMenu>
-            <MenuItem dataTest="Home" to="/">
-              Home
-            </MenuItem>
-            <MenuItem dataTest="Community" to="community">
-              Community
-            </MenuItem>
-            {data.signedIn ? (
-              <MenuItem
-                dataTest="Portfolio"
-                to={`portfolio/${data.portfolioCourseId}`}
-              >
-                Portfolio
-              </MenuItem>
-            ) : null}
-            {isAdmin ? <MenuItem to={`/admin`}>Admin</MenuItem> : null}
-          </BarMenu>
-          <SignInButtonContainer>{signInButton}</SignInButtonContainer>
-        </Box>
-
-        <Box as="main" gridRow="2 / 3" margin="0" overflowY="scroll">
-          <Outlet context={{ signedIn: data.signedIn }} />
-        </Box>
-      </Box>
+          <Grid
+            height="40px"
+            position="fixed"
+            top="0"
+            zIndex="1200"
+            borderBottom="1px solid var(--mainGray)"
+            // paddingBottom="2px"
+            width="100%"
+            margin="0"
+            display="flex"
+            justifyContent="space-between"
+            templateAreas={`"leftHeader menus rightHeader" 
+        "main"`}
+            gridTemplateColumns="1f auto 1f"
+          >
+            <GridItem area="leftHeader">
+              <Center h="100%">
+                {/* <Button display={{ base: "flex", md: "none" }}>
+                  TABS HERE
+                </Button> */}
+                <RouterLogo />
+                <Text ml={1}>Doenet</Text>
+              </Center>
+            </GridItem>
+            <GridItem area="menus">
+              <HStack spacing={8}>
+                <NavLinkTab to="/" datatest="Home">
+                  Home
+                </NavLinkTab>
+                <NavLinkTab to="community" datatest="Community">
+                  Community
+                </NavLinkTab>
+                {signedIn && (
+                  <>
+                    <NavLinkTab
+                      to={`portfolio/${portfolioCourseId}`}
+                      datatest="Portfolio"
+                    >
+                      Portfolio
+                    </NavLinkTab>
+                    <Center
+                      cursor="pointer"
+                      fontSize="md"
+                      onClick={() => {
+                        navigateTo.current = "/course";
+                        setRecoilPageToolView({
+                          page: "course",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      My Courses
+                    </Center>
+                    {isAdmin && (
+                      <NavLinkTab to="admin" datatest="Admin">
+                        Admin
+                      </NavLinkTab>
+                    )}
+                  </>
+                )}
+              </HStack>
+            </GridItem>
+            <GridItem area="rightHeader">
+              {signedIn ? (
+                <Center h="40px" mr="10px">
+                  <Menu>
+                    <MenuButton>
+                      <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                    </MenuButton>
+                    <MenuList>
+                      <VStack mb="20px">
+                        <Avatar size="xl" name={`${firstName} ${lastName}`} />
+                        <Text>
+                          {firstName} {lastName}
+                        </Text>
+                        <Text>{email}</Text>
+                        <ButtonGroup size="sm" isAttached variant="outline">
+                          <Button
+                            leftIcon={<FaSun />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "light"}
+                          >
+                            Light
+                          </Button>
+                          <Button
+                            leftIcon={<FaMoon />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "dark"}
+                            // cursor="not-allowed"
+                          >
+                            Dark
+                          </Button>
+                        </ButtonGroup>
+                      </VStack>
+                      <MenuItem as="a" href="/signout">
+                        Sign Out
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Center>
+              ) : (
+                <Center h="40px" mr="10px">
+                  <Button
+                    datatest="Nav to signin"
+                    size="sm"
+                    // variant="ghost"
+                    variant="outline"
+                    onClick={() => {
+                      navigateTo.current = "/signin";
+                      setRecoilPageToolView({
+                        page: "signin",
+                        tool: "",
+                        view: "",
+                        params: {},
+                      });
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                </Center>
+              )}
+            </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem area="main" as="main" margin="0" overflowY="scroll">
+          {/* <Box>test</Box> */}
+          {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
+        </GridItem>
+      </Grid>
     </>
   );
 }

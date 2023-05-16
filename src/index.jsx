@@ -45,6 +45,7 @@ import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
 
@@ -57,12 +58,15 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
+  initialColorMode: "light",
+  useSystemColorMode: true,
   colors: {
     doenet: {
       mainBlue: "#1a5a99",
       lightBlue: "#b8d2ea",
       solidLightBlue: "#8fb8de",
       mainGray: "#e3e3e3",
+      lightGray: "#e7e7e7",
       donutBody: "#eea177",
       donutTopping: "#6d4445",
       mainRed: "#c1292e",
@@ -126,26 +130,29 @@ const router = createBrowserRouter([
     path: "/",
     loader: siteLoader,
     element: (
-      <ChakraProvider theme={theme}>
-        <SiteHeader />
-      </ChakraProvider>
+      <>
+        {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+        <ChakraProvider theme={theme}>
+          <SiteHeader />
+        </ChakraProvider>
+      </>
     ),
     children: [
       {
         path: "/",
         loader: caroselLoader,
         element: (
-          <DarkmodeController>
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <ChakraProvider theme={theme}>
-                <Home />
-              </ChakraProvider>
-            </MathJaxContext>
-          </DarkmodeController>
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            {/* <ChakraProvider theme={theme}> */}
+            <Home />
+            {/* </ChakraProvider> */}
+          </MathJaxContext>
+          // </DarkmodeController>
         ),
       },
       {
@@ -272,6 +279,15 @@ const router = createBrowserRouter([
           <ToolRoot />
         </MathJaxContext>
       </DarkmodeController>
+    ),
+    // TODO - probably not a good idea long term, this is to populate the site header
+    // on the 404 page, but this results in extra network requests when loading
+    // ToolRoot content
+    loader: siteLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <SiteHeader childComponent={<ErrorPage />} />
+      </ChakraProvider>
     ),
   },
 ]);

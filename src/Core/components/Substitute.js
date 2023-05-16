@@ -1,6 +1,10 @@
 import CompositeComponent from "./abstract/CompositeComponent";
 import { normalizeMathExpression } from "../utils/math";
 import { processAssignNames } from "../utils/serializedStateProcessing";
+import {
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Substitute extends CompositeComponent {
   static componentType = "substitute";
@@ -47,20 +51,8 @@ export default class Substitute extends CompositeComponent {
       valueTransformations: { "": "full", true: "full", false: "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"],
     };
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-    };
+
+    Object.assign(attributes, returnRoundingAttributes());
 
     // attributes for text
     attributes.matchWholeWord = {
@@ -126,272 +118,10 @@ export default class Substitute extends CompositeComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.displayDigits = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: 10,
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        displayDigitsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        child: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: ["displayDigits"],
-          variablesOptional: true,
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.type !== "math") {
-          return { setValue: { displayDigits: null } };
-        } else if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not use default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
-        } else if (dependencyValues.child.length === 1) {
-          // have to check for non-default displayDecimals attribute
-          // because otherwise a non-default displayDigits will win over displayDecimals
-          let displayDigitsChildUsedDefault =
-            usedDefault.child[0]?.displayDigits;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            displayDigitsChildUsedDefault ||
-            !displayDecimalsAttrUsedDefault
-          ) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.child[0].stateValues.displayDigits,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.child[0].stateValues.displayDigits,
-              },
-            };
-          }
-        } else {
-          return { useEssentialOrDefaultValue: { displayDigits: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displayDecimals = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "integer",
-      },
-      hasEssential: true,
-      defaultValue: null,
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        child: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: ["displayDecimals"],
-          variablesOptional: true,
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.type !== "math") {
-          return { setValue: { displayDecimals: null } };
-        } else if (
-          dependencyValues.displayDecimalsAttr !== null &&
-          !usedDefault.displayDecimalsAttr
-        ) {
-          return {
-            setValue: {
-              displayDecimals:
-                dependencyValues.displayDecimalsAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.child.length === 1 &&
-          !(usedDefault.child[0] && usedDefault.child[0].displayDecimals)
-        ) {
-          return {
-            setValue: {
-              displayDecimals:
-                dependencyValues.child[0].stateValues.displayDecimals,
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { displayDecimals: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.displaySmallAsZero = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "number",
-      },
-      hasEssential: true,
-      defaultValue: 0,
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        displaySmallAsZeroAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displaySmallAsZero",
-          variableNames: ["value"],
-        },
-        child: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: ["displaySmallAsZero"],
-          variablesOptional: true,
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.type !== "math") {
-          return { setValue: { displaySmallAsZero: null } };
-        } else if (
-          dependencyValues.displaySmallAsZeroAttr !== null &&
-          !usedDefault.displaySmallAsZeroAttr
-        ) {
-          return {
-            setValue: {
-              displaySmallAsZero:
-                dependencyValues.displaySmallAsZeroAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.child.length === 1 &&
-          !(usedDefault.child[0] && usedDefault.child[0].displaySmallAsZero)
-        ) {
-          return {
-            setValue: {
-              displaySmallAsZero:
-                dependencyValues.child[0].stateValues.displaySmallAsZero,
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.padZeros = {
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "boolean",
-      },
-      hasEssential: true,
-      defaultValue: false,
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type",
-        },
-        padZerosAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "padZeros",
-          variableNames: ["value"],
-        },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
-        },
-        child: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: ["padZeros"],
-          variablesOptional: true,
-        },
-      }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.type !== "math") {
-          return { setValue: { padZeros: null } };
-        } else if (
-          dependencyValues.padZerosAttr !== null &&
-          !usedDefault.padZerosAttr
-        ) {
-          return {
-            setValue: {
-              padZeros: dependencyValues.padZerosAttr.stateValues.value,
-            },
-          };
-        } else if (
-          dependencyValues.child.length === 1 &&
-          !(usedDefault.child[0] && usedDefault.child[0].padZeros)
-        ) {
-          return {
-            setValue: {
-              padZeros: dependencyValues.child[0].stateValues.padZeros,
-            },
-          };
-        } else {
-          return { useEssentialOrDefaultValue: { padZeros: true } };
-        }
-      },
-    };
+    let roundingDefinitions = returnRoundingStateVariableDefinitions({
+      childsGroupIfSingleMatch: ["anything"],
+    });
+    Object.assign(stateVariableDefinitions, roundingDefinitions);
 
     stateVariableDefinitions.originalValue = {
       returnDependencies: () => ({
@@ -698,12 +428,13 @@ export default class Substitute extends CompositeComponent {
     if (type === "math") {
       let attributes = {};
 
-      let attributesComponentTypes = {
-        displayDigits: "integer",
-        displayDecimals: "integer",
-        displaySmallAsZero: "number",
-        padZeros: "boolean",
-      };
+      let attributesComponentTypes = {};
+
+      let roundingSVs = returnRoundingStateVariableDefinitions();
+      for (let attrName in roundingSVs) {
+        attributesComponentTypes[attrName] =
+          roundingSVs[attrName].shadowingInstructions.createComponentOfType;
+      }
 
       for (let attr in attributesComponentTypes) {
         let shadowComponent = {

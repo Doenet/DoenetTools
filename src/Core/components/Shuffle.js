@@ -39,7 +39,7 @@ export default class Shuffle extends CompositeComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.originalComponentNames = {
-      additionalStateVariablesDefined: ["nComponents"],
+      additionalStateVariablesDefined: ["numComponents"],
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
@@ -63,7 +63,7 @@ export default class Shuffle extends CompositeComponent {
         return {
           setValue: {
             originalComponentNames,
-            nComponents: originalComponentNames.length,
+            numComponents: originalComponentNames.length,
           },
         };
       },
@@ -81,9 +81,9 @@ export default class Shuffle extends CompositeComponent {
             value: sharedParameters.rngClass,
             doNotProxy: true,
           },
-          nComponents: {
+          numComponents: {
             dependencyType: "stateVariable",
-            variableName: "nComponents",
+            variableName: "numComponents",
           },
           variants: {
             dependencyType: "variants",
@@ -92,13 +92,13 @@ export default class Shuffle extends CompositeComponent {
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let nComponents = dependencyValues.nComponents;
+        let numComponents = dependencyValues.numComponents;
 
         // if desiredIndices is specfied, use those
         let desiredComponentOrder =
           dependencyValues.variants?.desiredVariant?.indices;
         if (desiredComponentOrder !== undefined) {
-          if (desiredComponentOrder.length !== nComponents) {
+          if (desiredComponentOrder.length !== numComponents) {
             console.warn(
               "Ignoring indices specified for shuffle as number of indices doesn't match number of components.",
             );
@@ -108,7 +108,7 @@ export default class Shuffle extends CompositeComponent {
               throw Error("All indices specified for shuffle must be integers");
             }
             if (
-              !desiredComponentOrder.every((x) => x >= 1 && x <= nComponents)
+              !desiredComponentOrder.every((x) => x >= 1 && x <= numComponents)
             ) {
               console.warn(
                 "Ignoring indices specified for shuffle as some indices out of range.",
@@ -128,8 +128,8 @@ export default class Shuffle extends CompositeComponent {
         );
 
         // https://stackoverflow.com/a/12646864
-        let componentOrder = [...Array(nComponents).keys()].map((x) => x + 1);
-        for (let i = nComponents - 1; i > 0; i--) {
+        let componentOrder = [...Array(numComponents).keys()].map((x) => x + 1);
+        for (let i = numComponents - 1; i > 0; i--) {
           const rand = variantRng();
           const j = Math.floor(rand * (i + 1));
           [componentOrder[i], componentOrder[j]] = [
@@ -241,7 +241,7 @@ export default class Shuffle extends CompositeComponent {
 
         replacements.push(
           await replacementSource.serialize({
-            sourceAttributesToIgnoreRecursively: ["isResponse"],
+            sourceAttributesToIgnore: ["isResponse"],
           }),
         );
       }
@@ -322,7 +322,7 @@ export default class Shuffle extends CompositeComponent {
     serializedComponent,
     componentInfoObjects,
   }) {
-    let nComponents = 0;
+    let numComponents = 0;
 
     for (let child of serializedComponent.children) {
       if (
@@ -332,26 +332,28 @@ export default class Shuffle extends CompositeComponent {
         })
       ) {
         if (child.attributes.createComponentOfType?.primitive) {
-          if (child.attributes.nComponents?.primitive !== undefined) {
-            let newComponents = Number(child.attributes.nComponents?.primitive);
+          if (child.attributes.numComponents?.primitive !== undefined) {
+            let newComponents = Number(
+              child.attributes.numComponents?.primitive,
+            );
             if (Number.isInteger(newComponents) && newComponents >= 0) {
-              nComponents += newComponents;
+              numComponents += newComponents;
             } else {
               return { success: false };
             }
           } else {
-            nComponents++;
+            numComponents++;
           }
         } else {
           return { success: false };
         }
       } else {
-        nComponents++;
+        numComponents++;
       }
     }
 
     let numberOfPermutations = 1;
-    for (let i = 2; i <= nComponents; i++) {
+    for (let i = 2; i <= numComponents; i++) {
       numberOfPermutations *= i;
     }
 
@@ -373,7 +375,7 @@ export default class Shuffle extends CompositeComponent {
         serializedComponent.variants.uniqueVariantData
           .numberOfVariantsByDescendant,
       numberOfPermutations,
-      nComponents,
+      numComponents,
     };
 
     return { success: true, numberOfVariants };
@@ -404,8 +406,8 @@ export default class Shuffle extends CompositeComponent {
       serializedComponent.variants.descendantVariantComponents;
     let numberOfPermutations =
       serializedComponent.variants.uniqueVariantData.numberOfPermutations;
-    let nComponents =
-      serializedComponent.variants.uniqueVariantData.nComponents;
+    let numComponents =
+      serializedComponent.variants.uniqueVariantData.numComponents;
 
     // treat permutations as another descendant variant component
     let numbersOfOptions = [...numberOfVariantsByDescendant];
@@ -421,7 +423,7 @@ export default class Shuffle extends CompositeComponent {
     let indicesForEachDescendant = indicesForEachOption;
 
     // choice a permutation based on permutations index
-    let indicesToPermute = [...Array(nComponents).keys()].map((x) => x + 1);
+    let indicesToPermute = [...Array(numComponents).keys()].map((x) => x + 1);
 
     let permutedIndices = enumeratePermutations({
       values: indicesToPermute,

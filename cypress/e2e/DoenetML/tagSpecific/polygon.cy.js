@@ -42,15 +42,15 @@ async function testPolygonCopiedTwice({
 
   cy.window().then(async (win) => {
     let stateVariables = await win.returnAllStateVariables1();
-    expect(stateVariables[graph1Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph2Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
-    expect(stateVariables[graph3Name + polygonName].stateValues.nVertices).eqls(
-      vertices.length,
-    );
+    expect(
+      stateVariables[graph1Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph2Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
+    expect(
+      stateVariables[graph3Name + polygonName].stateValues.numVertices,
+    ).eqls(vertices.length);
 
     for (let i in vertices) {
       if (Number.isFinite(vertices[i][0])) {
@@ -235,7 +235,7 @@ describe("Polygon Tag Tests", function () {
   <text>a</text>
   <math>-1</math>
   <graph name="g1" newNamespace>
-    <polygon vertices="(3,5) (-4,$(../_math1))(5,2)(-3,4)" name="pg" />
+    <polygon vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
@@ -330,7 +330,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -407,7 +407,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -448,14 +448,14 @@ describe("Polygon Tag Tests", function () {
   <mathinput/>
 
   <graph name="g1" newNamespace>
-    <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7)(3,-5)(-4,-3)" name="pg" />
+    <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   `,
@@ -501,7 +501,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -631,7 +631,7 @@ describe("Polygon Tag Tests", function () {
   </graph>
   <copy target="g2" assignNames="g3" />
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
-    <template><round numberDecimals="8">$v</round></template>
+    <template><round numDecimals="8">$v</round></template>
     <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
   </map>
   <textinput name="ti" />
@@ -740,7 +740,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(-3,-1)(1,2)(3,4)(6,-2)" />
+  <polygon vertices="(-3,-1) (1,2) (3,4) (6,-2)" />
   </graph>
   <graph>
   <copy assignNames="v1" prop="vertex1" target="_polygon1" />
@@ -855,7 +855,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph name="g1" newNamespace>
-  <polygon vertices="(-9,6)(-3,7)(4,0)(8,5)" name="pg" />
+  <polygon vertices="(-9,6) (-3,7) (4,0) (8,5)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
     <polygon vertices="$(../g1/pg.vertices)" name="pg" />
@@ -998,10 +998,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1308,7 +1308,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices="(-9,6)(-3,7)(4,0)(8,5)" />
+    <polygon vertices="(-9,6) (-3,7) (4,0) (8,5)" />
   </graph>
   <graph>
     <polygon vertices="$(_polygon1.vertex1) ($(_polygon1.vertexX2_2), $(_polygon1.vertexX2_1)) $(_polygon1.vertex3) ($(_polygon1.vertexX4_2), $(_polygon1.vertexX4_1))" />
@@ -1345,10 +1345,10 @@ describe("Polygon Tag Tests", function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_polygon1"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon1"].stateValues.numVertices).eqls(
           vertices.length,
         );
-        expect(stateVariables["/_polygon2"].stateValues.nVertices).eqls(
+        expect(stateVariables["/_polygon2"].stateValues.numVertices).eqls(
           vertices.length,
         );
 
@@ -1610,7 +1610,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1.vertex1{createComponentOfType='point'})" />
+  <polygon vertices="(1,2) (3,4) (-5,6) $(_polygon1.vertex1{createComponentOfType='point'})" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
   `,
@@ -1631,7 +1631,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);
@@ -1771,7 +1771,7 @@ describe("Polygon Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_polygon1"].stateValues.nVertices).eq(4);
+      expect(stateVariables["/_polygon1"].stateValues.numVertices).eq(4);
       expect(stateVariables["/_polygon1"].stateValues.vertices[0]).eqls(A);
       expect(stateVariables["/_polygon1"].stateValues.vertices[1]).eqls(B);
       expect(stateVariables["/_polygon1"].stateValues.vertices[2]).eqls(C);
@@ -1890,7 +1890,7 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1.vertex4{createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polygon1.vertexX1_1)+1,2)" />
+  <polygon vertices="$(_polygon1.vertex4{createComponentOfType='point'}) (3,4) (-5,6) (1,2) ($(_polygon1.vertexX1_1)+1,2)" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
   
@@ -2813,15 +2813,15 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices=" (3,5) (-4,-1)(5,2)" />
+    <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <attractTo><copy target="_polygon1" /></attractTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",
@@ -3149,15 +3149,15 @@ describe("Polygon Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <polygon vertices=" (3,5) (-4,-1)(5,2)" />
+    <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
         <constrainTo><copy target="_polygon1" /></constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" />
+  <copy target="_point1" assignNames="p1" displayDigits="8" />
+  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
   `,
         },
         "*",
@@ -3496,8 +3496,8 @@ describe("Polygon Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="p" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="p" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -3836,6 +3836,198 @@ describe("Polygon Tag Tests", function () {
     cy.get(cesc("#\\/P3") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/x") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/xa") + " .mjx-mrow").should("not.exist");
+  });
+
+  it("polygon from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polygon vertices="2(2,-3)+(3,4) 3$P $P+2$m" name="polygon" />
+    </graph>
+ 
+    <p><copy source="polygon.vertices" assignNames="P1 P2 P3" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [7, -2],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 0: [3, 5] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [3, 5],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 1: [-9, -6] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 2: [-3, 1] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
+  });
+
+  it("polygon from vector operations, create individual vectors", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <math name="m" fixed>(-3,2)</math>
+    <graph>
+      <point name="P">(2,1)</point>
+      <polygon vertices="$v1 $v2 $v3" name="polygon" />
+      <vector name="v1">2(2,-3)+(3,4)</vector>
+      <vector name="v2">3$P</vector>
+      <vector name="v3">$P+2$m</vector>
+
+    </graph>
+ 
+    <p><copy source="polygon.vertices" assignNames="P1 P2 P3" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,2)");
+    cy.get(cesc2("#/P1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,−2)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [7, -2],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 0: [3, 5] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(6,3)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−4,5)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/polygon"].stateValues.vertices).eqls([
+        [3, 5],
+        [6, 3],
+        [-4, 5],
+      ]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 1: [-9, -6] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(−9,−6)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−9,2)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/polygon",
+        args: {
+          pointCoords: { 2: [-3, 1] },
+        },
+      });
+    });
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(3,5)");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(9,−9)");
+    cy.get(cesc2("#/P3") + " .mjx-mrow").should("contain.text", "(−3,1)");
   });
 
   it("changing styles", () => {
@@ -4418,5 +4610,356 @@ describe("Polygon Tag Tests", function () {
       "B has a light red fill.",
     );
     cy.get(cesc("#\\/Cfilldescrip")).should("have.text", "C has a white fill.");
+  });
+
+  it("One vertex constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)</point>
+    <point>(-4,-1)</point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 5],
+      [-4, -1],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolygonCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polygon up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polygon down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
+  });
+
+  it("Two vertices constrained to same grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(-4,-1)</point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 4],
+      [-4, -1],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolygonCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polygon up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polygon down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
+  });
+
+  it("Three vertices constrained to same grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <point>(3,5)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(-4,-1)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(5,2)
+      <constraints>
+        <constrainToGrid dx="3" dy="4" />
+      </constraints>
+    </point>
+    <point>(-3,4)</point>
+    <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
+  </graph>
+  <graph name="g2" newNamespace>
+    <copy target="../g1/pg" assignNames="pg" />
+  </graph>
+  <copy target="g2" assignNames="g3" />
+  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let vertices = [
+      [3, 4],
+      [-3, 0],
+      [6, 4],
+      [-3, 4],
+    ];
+
+    testPolygonCopiedTwice({ vertices });
+
+    cy.log("move individual vertex");
+    cy.window().then(async (win) => {
+      vertices[1] = [4, 7];
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/pg",
+        args: {
+          pointCoords: { 1: vertices[1] },
+        },
+      });
+
+      // adjust for constraint
+      vertices[1] = [3, 8];
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("move copied polygon up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 4;
+      let moveY = 3;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = 1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
+
+    cy.log("try to move double copied polygon down and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 1;
+      let moveY = -7;
+
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g3/pg",
+        args: {
+          pointCoords: vertices,
+        },
+      });
+
+      // adjustment due to constraint
+      moveX = -1;
+      moveY = -1;
+      for (let i = 0; i < vertices.length; i++) {
+        vertices[i][0] = vertices[i][0] + moveX;
+        vertices[i][1] = vertices[i][1] + moveY;
+      }
+
+      testPolygonCopiedTwice({ vertices });
+    });
   });
 });

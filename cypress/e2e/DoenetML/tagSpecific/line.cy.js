@@ -108,19 +108,19 @@ async function testLineCopiedTwiceBaseOnSlope({
 }) {
   cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `(${nInDOM(x1).substring(0, 6)}`,
+    `(${nInDOM(x1).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point1InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `,${nInDOM(y1).substring(0, 6)}`,
+    `,${nInDOM(y1).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `(${nInDOM(x2).substring(0, 6)}`,
+    `(${nInDOM(x2).substring(0, 2)}`,
   );
   cy.get(`#${cesc2(point2InDomName)} .mjx-mrow`).should(
     "contain.text",
-    `,${nInDOM(y2).substring(0, 6)}`,
+    `,${nInDOM(y2).substring(0, 2)}`,
   );
 
   cy.window().then(async (win) => {
@@ -392,6 +392,42 @@ describe("Line Tag Tests", function () {
     });
   });
 
+  it("through = maths for points, label child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <math>(1,2)</math>
+  <math>(4,7)</math>
+  <graph>
+    <line through="$_math1 $_math2" ><label>l</label></line>
+  </graph>
+  <copy prop="point1" target="_line1" assignNames="p1" />
+  <copy prop="point2" target="_line1" assignNames="p2" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.log("points are where they should be");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1"].stateValues.xs[0]).eq(1);
+      expect(stateVariables["/p1"].stateValues.xs[1]).eq(2);
+      expect(stateVariables["/p1"].stateValues.coords).eqls(["vector", 1, 2]);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(4);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(7);
+      expect(stateVariables["/p2"].stateValues.coords).eqls(["vector", 4, 7]);
+
+      expect(stateVariables["/_line1"].stateValues.label).eq("l");
+      expect(stateVariables["/_line1"].stateValues.slope).eqls(["/", 5, 3]);
+    });
+  });
+
   it("line from sugared equation, single string", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -458,11 +494,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -552,11 +588,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -758,11 +794,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -857,11 +893,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -1020,11 +1056,11 @@ describe("Line Tag Tests", function () {
 
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `(${nInDOM(point1coords[0]).substring(0, 4)}`,
+        `(${nInDOM(point1coords[0]).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
         "contain.text",
-        `,${nInDOM(point1coords[1]).substring(0, 4)}`,
+        `,${nInDOM(point1coords[1]).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -1250,110 +1286,115 @@ describe("Line Tag Tests", function () {
       });
     });
 
-    cy.log("move line");
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
+    // Note: with the new algorithm for preserving the relationship between points
+    // when moving the whole line, the below calculations are incorrect.
+    // Question: do we want to figure out what the resulting point positions
+    // should be with the new algorithm and test that it stays correct?
 
-      let point1coords = [
-        stateVariables["/_line1"].stateValues.points[0][0],
-        stateVariables["/_line1"].stateValues.points[0][1],
-      ];
-      let point2coords = [
-        stateVariables["/_line1"].stateValues.points[1][0],
-        stateVariables["/_line1"].stateValues.points[1][1],
-      ];
+    // cy.log("move line");
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
 
-      let moveX = -5;
-      let moveY = 12;
+    //   let point1coords = [
+    //     stateVariables["/_line1"].stateValues.points[0][0],
+    //     stateVariables["/_line1"].stateValues.points[0][1],
+    //   ];
+    //   let point2coords = [
+    //     stateVariables["/_line1"].stateValues.points[1][0],
+    //     stateVariables["/_line1"].stateValues.points[1][1],
+    //   ];
 
-      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
-      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
-      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
-      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
+    //   let moveX = -5;
+    //   let moveY = 12;
 
-      win.callAction1({
-        actionName: "moveLine",
-        componentName: "/_line1",
-        args: {
-          point1coords: point1coords,
-          point2coords: point2coords,
-        },
-      });
+    //   point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+    //   point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+    //   point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+    //   point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      // Note: one of two possible scenarios should be true
-      // and it's not clear if either are preferred, given the strange constraints
-      // Whether point1 or point2 wins depends on details of update algorithm
-      // If point2 takes precedence, uncomment the first group of lines
-      // and comment out the second group of lines
+    //   win.callAction1({
+    //     actionName: "moveLine",
+    //     componentName: "/_line1",
+    //     args: {
+    //       point1coords: point1coords,
+    //       point2coords: point2coords,
+    //     },
+    //   });
 
-      // point2x += moveX;;
-      // point2y += moveY;
-      // a = point2x + 1;
-      // point1x = point2y;
-      // point1y = a;
+    //   // Note: one of two possible scenarios should be true
+    //   // and it's not clear if either are preferred, given the strange constraints
+    //   // Whether point1 or point2 wins depends on details of update algorithm
+    //   // If point2 takes precedence, uncomment the first group of lines
+    //   // and comment out the second group of lines
 
-      point1x += moveX;
-      point1y += moveY;
-      a = point1y;
-      point2y = point1x;
-      point2x = a - 1;
+    //   // point2x += moveX;;
+    //   // point2y += moveY;
+    //   // a = point2x + 1;
+    //   // point1x = point2y;
+    //   // point1y = a;
 
-      slope = (point1y - point2y) / (point1x - point2x);
-      yintercept = point2y - slope * point2x;
+    //   point1x += moveX;
+    //   point1y += moveY;
+    //   a = point1y;
+    //   point2y = point1x;
+    //   point2x = a - 1;
 
-      cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(point1x).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
-        "contain.text",
-        `,${nInDOM(point1y).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
-        "contain.text",
-        `(${nInDOM(point2x).substring(0, 4)}`,
-      );
-      cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
-        "contain.text",
-        `,${nInDOM(point2y).substring(0, 4)}`,
-      );
+    //   slope = (point1y - point2y) / (point1x - point2x);
+    //   yintercept = point2y - slope * point2x;
 
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
+    //   cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `(${nInDOM(point1x).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p1") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `,${nInDOM(point1y).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `(${nInDOM(point2x).substring(0, 4)}`,
+    //   );
+    //   cy.get(cesc("#\\/p2") + " .mjx-mrow").should(
+    //     "contain.text",
+    //     `,${nInDOM(point2y).substring(0, 4)}`,
+    //   );
 
-        expect(stateVariables["/_point2"].stateValues.xs[0]).closeTo(
-          point2x,
-          1e-12,
-        );
-        expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(
-          point2y,
-          1e-12,
-        );
+    //   cy.window().then(async (win) => {
+    //     let stateVariables = await win.returnAllStateVariables1();
 
-        expect(stateVariables["/a"].stateValues.value).closeTo(a, 1e-12);
+    //     expect(stateVariables["/_point2"].stateValues.xs[0]).closeTo(
+    //       point2x,
+    //       1e-12,
+    //     );
+    //     expect(stateVariables["/_point2"].stateValues.xs[1]).closeTo(
+    //       point2y,
+    //       1e-12,
+    //     );
 
-        expect(stateVariables["/_point1"].stateValues.xs[0]).closeTo(
-          point1x,
-          1e-12,
-        );
-        expect(stateVariables["/_point1"].stateValues.xs[1]).closeTo(
-          point1y,
-          1e-12,
-        );
+    //     expect(stateVariables["/a"].stateValues.value).closeTo(a, 1e-12);
 
-        expect(
-          me
-            .fromAst(stateVariables["/_line1"].stateValues.slope)
-            .evaluate_to_constant(),
-        ).closeTo(slope, 1e-12);
+    //     expect(stateVariables["/_point1"].stateValues.xs[0]).closeTo(
+    //       point1x,
+    //       1e-12,
+    //     );
+    //     expect(stateVariables["/_point1"].stateValues.xs[1]).closeTo(
+    //       point1y,
+    //       1e-12,
+    //     );
 
-        expect(
-          me
-            .fromAst(stateVariables["/_line1"].stateValues.yintercept)
-            .evaluate_to_constant(),
-        ).closeTo(yintercept, 1e-12);
-      });
-    });
+    //     expect(
+    //       me
+    //         .fromAst(stateVariables["/_line1"].stateValues.slope)
+    //         .evaluate_to_constant(),
+    //     ).closeTo(slope, 1e-12);
+
+    //     expect(
+    //       me
+    //         .fromAst(stateVariables["/_line1"].stateValues.yintercept)
+    //         .evaluate_to_constant(),
+    //     ).closeTo(yintercept, 1e-12);
+    //   });
+    // });
   });
 
   it("copied line", () => {
@@ -2246,7 +2287,7 @@ describe("Line Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <line through="(5,1)(1,5)" />
+    <line through="(5,1) (1,5)" />
   </graph>
   <graph>
   <line equation="$(_line1.equation)" />
@@ -4604,15 +4645,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("try to move line");
     cy.window().then(async (win) => {
-      x2 = -7;
-      y2 = -8;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 4],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 5, y1 + 9],
+          point2coords: [x2 + 5, y2 + 9],
         },
       });
 
@@ -4646,15 +4684,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 8;
-      y2 = 7;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 3, y1 + 7],
+          point2coords: [x2 - 3, y2 + 7],
         },
       });
 
@@ -4688,15 +4723,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2 = 2;
-      y2 = -3;
-
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 8, y1 - 2],
+          point2coords: [x2 - 8, y2 - 2],
         },
       });
 
@@ -5719,14 +5751,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 1");
     cy.window().then(async (win) => {
-      x2 = -6;
-      y2 = -7;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 3],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 5, y1 - 3],
+          point2coords: [x2 + 5, y2 - 3],
         },
       });
 
@@ -5759,14 +5789,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 9;
-      y2 = 8;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 15, y1 + 6],
+          point2coords: [x2 - 15, y2 + 6],
         },
       });
 
@@ -5799,14 +5827,14 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2Essential = x2 = 3;
-      y2Essential = y2 = -2;
+      x2Essential = x2;
+      y2Essential = y2;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 4, y1 + 9],
+          point2coords: [x2 - 4, y2 + 9],
         },
       });
 
@@ -5973,14 +6001,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 1");
     cy.window().then(async (win) => {
-      x2 = -7;
-      y2 = -8;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
-          point1coords: [5, 3],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 8, y1 + 6],
+          point2coords: [x2 + 8, y2 + 6],
         },
       });
 
@@ -6013,14 +6039,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 2");
     cy.window().then(async (win) => {
-      x2 = 8;
-      y2 = 7;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
-          point1coords: [10, 9],
-          point2coords: [x2, y2],
+          point1coords: [x1 - 7, y1 - 1],
+          point2coords: [x2 - 7, y2 - 1],
         },
       });
 
@@ -6053,14 +6077,12 @@ describe("Line Tag Tests", function () {
 
     cy.log("move line 3");
     cy.window().then(async (win) => {
-      x2 = 2;
-      y2 = -3;
       win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
-          point1coords: [0, -1],
-          point2coords: [x2, y2],
+          point1coords: [x1 + 2, y1 + 7],
+          point2coords: [x2 + 2, y2 + 7],
         },
       });
 
@@ -6461,14 +6483,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6518,14 +6541,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6812,14 +6836,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -6869,14 +6894,15 @@ describe("Line Tag Tests", function () {
       let y1try = y1 + dy;
       x1 = y1 = x1 + dx;
       x2 = x2 + dx;
-      y2 = y2 + dy;
+      let y2try = y2 + dy;
+      y2 = y2try + y1 - y1try;
 
       win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
           point1coords: [x1, y1try],
-          point2coords: [x2, y2],
+          point2coords: [x2, y2try],
         },
       });
 
@@ -8014,27 +8040,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -8665,27 +8691,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -9534,27 +9560,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -10200,35 +10226,35 @@ describe("Line Tag Tests", function () {
     }) {
       cy.get(cesc("#\\/x11") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x11).substring(0, 6)}`,
+        `${nInDOM(x11).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y11") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y11).substring(0, 6)}`,
+        `${nInDOM(y11).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x12") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x12).substring(0, 6)}`,
+        `${nInDOM(x12).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y12") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y12).substring(0, 6)}`,
+        `${nInDOM(y12).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -10815,27 +10841,27 @@ describe("Line Tag Tests", function () {
     async function checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 }) {
       cy.get(cesc("#\\/x1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x1).substring(0, 6)}`,
+        `${nInDOM(x1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y1") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y1).substring(0, 6)}`,
+        `${nInDOM(y1).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x21).substring(0, 6)}`,
+        `${nInDOM(x21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y21") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y21).substring(0, 6)}`,
+        `${nInDOM(y21).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/x22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(x22).substring(0, 6)}`,
+        `${nInDOM(x22).substring(0, 2)}`,
       );
       cy.get(cesc("#\\/y22") + " .mjx-mrow").should(
         "contain.text",
-        `${nInDOM(y22).substring(0, 6)}`,
+        `${nInDOM(y22).substring(0, 2)}`,
       );
 
       cy.window().then(async (win) => {
@@ -11386,8 +11412,8 @@ describe("Line Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <line through="(0,0) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -11747,13 +11773,13 @@ describe("Line Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <line name="l" equation="0=52.82340235234x + 2.235980242343224y+0.486234234" />
-    <line name="ldg3" displayDigits="3" copySource="l" />
-    <line name="ldc5" displayDecimals="5" copySource="l" />
-    <line name="ldg3a" displayDigits="3" copySource="ldc5" />
-    <line name="ldc5a" displayDecimals="5" copySource="ldg3" />
-    <line name="ldg3b" displayDigits="3" copySource="ldc5a" />
-    <line name="ldc5b" displayDecimals="5" copySource="ldg3a" />
+    <line name="l" equation="0=528.2340235234x + 2.235980242343224y+0.0486234234" />
+    <line name="ldg4" displayDigits="4" copySource="l" />
+    <line name="ldc3" displayDecimals="3" copySource="l" />
+    <line name="ldc3dg4" displayDigits="4" copySource="ldc3" />
+    <line name="ldg4dc3" displayDecimals="3" copySource="ldg4" />
+    <line name="ldc3dg5" displayDigits="5" copySource="ldg4dc3" />
+    <line name="ldg4dc4" displayDecimals="4" copySource="ldc3dg4" />
 
     `,
         },
@@ -11765,25 +11791,25 @@ describe("Line Tag Tests", function () {
 
     cy.get(cesc("#\\/l") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.82340235x+2.235980242y+0.486234234");
-    cy.get(cesc("#\\/ldg3") + " .mjx-mrow")
+      .should("have.text", "0=528.23x+2.24y+0.0486");
+    cy.get(cesc("#\\/ldg4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldg3a") + " .mjx-mrow")
+      .should("have.text", "0=528.23x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldc3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldg3b") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.0486");
+    cy.get(cesc("#\\/ldc3dg4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8x+2.24y+0.486");
-    cy.get(cesc("#\\/ldc5") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldg4dc3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
-    cy.get(cesc("#\\/ldc5a") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.04862");
+    cy.get(cesc("#\\/ldc3dg5") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
-    cy.get(cesc("#\\/ldc5b") + " .mjx-mrow")
+      .should("have.text", "0=528.234x+2.236y+0.048623");
+    cy.get(cesc("#\\/ldg4dc4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=52.8234x+2.23598y+0.48623");
+      .should("have.text", "0=528.234x+2.236y+0.04862");
   });
 
   it("label positioning", () => {
@@ -12041,5 +12067,101 @@ describe("Line Tag Tests", function () {
       "background-color",
       "rgb(0, 0, 255)",
     );
+  });
+
+  it("line through two points, one constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P" labelIsName>(3,5)
+    <constraints><constrainToGrid dx="2" dy="3" /></constraints>
+    </point>
+  <point name="Q" labelIsName>(-4,-1)</point>
+  <line through="$P $Q" />
+  </graph>
+  <copy target="P" assignNames="Pa" />
+  <copy target="Q" assignNames="Qa" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    let x1 = 4,
+      y1 = 6;
+    let x2 = -4,
+      y2 = -1;
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x1)},${nInDOM(y1)})`,
+    );
+    cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x2)},${nInDOM(y2)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
+
+    cy.log(
+      "move line down 4 and right 0.5 actually moves it down 3 and right none",
+    );
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      let x1Desired = x1 + dx;
+      let y1Desired = y1 + dy;
+      let x2Desired = x2 + dx;
+      let y2Desired = y2 + dy;
+
+      dx = 0;
+      dy = -3;
+      x1 += dx;
+      y1 += dy;
+      x2 += dx;
+      y2 += dy;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/_line1",
+        args: {
+          point1coords: [x1Desired, y1Desired],
+          point2coords: [x2Desired, y2Desired],
+        },
+      });
+
+      cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x1)},${nInDOM(y1)})`,
+      );
+      cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x2)},${nInDOM(y2)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
   });
 });

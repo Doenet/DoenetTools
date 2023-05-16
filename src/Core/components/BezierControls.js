@@ -1,10 +1,13 @@
 import InlineComponent from "./abstract/InlineComponent";
-import { breakEmbeddedStringsIntoParensPieces } from "./commonsugar/breakstrings";
 import me from "math-expressions";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 
 export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
   static rendererType = "containerInline";
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -22,37 +25,44 @@ export default class BezierControls extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let createControlVectorsList = function ({ matchedChildren }) {
-      let results = breakEmbeddedStringsIntoParensPieces({
-        componentList: matchedChildren,
+    let groupIntoVectorsSeparatedBySpacesOutsideParens =
+      returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+        componentType: "vector",
       });
 
-      if (results.success !== true) {
+    let createControlVectorsList = function ({
+      matchedChildren,
+      componentInfoObjects,
+    }) {
+      let results = groupIntoVectorsSeparatedBySpacesOutsideParens({
+        matchedChildren,
+      });
+
+      if (!results.success) {
         return { success: false };
       }
 
       return {
         success: true,
-        newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || typeof piece[0] === "string") {
+        newChildren: results.newChildren.map(function (child) {
+          if (
+            !componentInfoObjects.componentIsSpecifiedType(
+              child,
+              "controlVectors",
+            )
+          ) {
             return {
               componentType: "controlVectors",
-              children: [
-                {
-                  componentType: "vector",
-                  children: piece,
-                },
-              ],
+              children: [child],
             };
           } else {
-            return piece[0];
+            return child;
           }
         }),
       };
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createControlVectorsList,
     });
 
@@ -71,20 +81,20 @@ export default class BezierControls extends InlineComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nControls = {
+    stateVariableDefinitions.numControls = {
       returnDependencies: () => ({
         nParentPoints: {
           dependencyType: "parentStateVariable",
-          variableName: "nThroughPoints",
+          variableName: "numThroughPoints",
           skipComponentNames: true,
         },
       }),
       definition({ dependencyValues }) {
-        let nControls = dependencyValues.nParentPoints;
-        if (!(Number.isInteger(nControls) && nControls >= 0)) {
-          nControls = 0;
+        let numControls = dependencyValues.nParentPoints;
+        if (!(Number.isInteger(numControls) && numControls >= 0)) {
+          numControls = 0;
         }
-        return { setValue: { nControls } };
+        return { setValue: { numControls } };
       },
     };
 
@@ -124,13 +134,13 @@ export default class BezierControls extends InlineComponent {
       defaultValueByArrayKey: () => "none",
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
-        nControls: {
+        numControls: {
           dependencyType: "stateVariable",
-          variableName: "nControls",
+          variableName: "numControls",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nControls];
+        return [dependencyValues.numControls];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};
@@ -219,13 +229,13 @@ export default class BezierControls extends InlineComponent {
       defaultValueByArrayKey: () => false,
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
-        nControls: {
+        numControls: {
           dependencyType: "stateVariable",
-          variableName: "nControls",
+          variableName: "numControls",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nControls];
+        return [dependencyValues.numControls];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};
@@ -309,24 +319,24 @@ export default class BezierControls extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       returnDependencies() {
         return {
           nParentDimensions: {
             dependencyType: "parentStateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
         };
       },
       definition: function ({ dependencyValues }) {
-        let nDimensions = dependencyValues.nParentDimensions;
-        if (!(Number.isInteger(nDimensions) && nDimensions >= 0)) {
-          nDimensions = 0;
+        let numDimensions = dependencyValues.nParentDimensions;
+        if (!(Number.isInteger(numDimensions) && numDimensions >= 0)) {
+          numDimensions = 0;
         }
 
         return {
-          setValue: { nDimensions },
-          checkForActualChange: { nDimensions: true },
+          setValue: { numDimensions },
+          checkForActualChange: { numDimensions: true },
         };
       },
     };
@@ -336,22 +346,22 @@ export default class BezierControls extends InlineComponent {
     stateVariableDefinitions.essentialSymmetricControls = {
       isArray: true,
       entryPrefixes: ["essentialSymmetricControl"],
-      nDimensions: 2,
+      numDimensions: 2,
       hasEssential: true,
       isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       returnArraySizeDependencies: () => ({
-        nControls: {
+        numControls: {
           dependencyType: "stateVariable",
-          variableName: "nControls",
+          variableName: "numControls",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nControls, dependencyValues.nDimensions];
+        return [dependencyValues.numControls, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey: () => ({}),
       arrayDefinitionByKey({ arrayKeys }) {
@@ -394,24 +404,28 @@ export default class BezierControls extends InlineComponent {
     stateVariableDefinitions.controls = {
       isArray: true,
       entryPrefixes: ["control"],
-      nDimensions: 3,
+      numDimensions: 3,
       hasEssential: true,
       shadowVariable: true,
       isLocation: true,
       defaultValueByArrayKey: () => me.fromAst(1),
       stateVariablesDeterminingDependencies: ["pointIndMap", "directions"],
       returnArraySizeDependencies: () => ({
-        nControls: {
+        numControls: {
           dependencyType: "stateVariable",
-          variableName: "nControls",
+          variableName: "numControls",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nControls, 2, dependencyValues.nDimensions];
+        return [
+          dependencyValues.numControls,
+          2,
+          dependencyValues.numDimensions,
+        ];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};

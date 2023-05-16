@@ -12,7 +12,7 @@ describe("CallAction Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" >
       <label>roll dice</label>
     </callAction></p>
@@ -346,7 +346,7 @@ describe("CallAction Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" >
       <label>roll dice and add point</label>
     </callAction></p>
@@ -450,7 +450,7 @@ describe("CallAction Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" >
       <label>roll dice and add point</label>
     </callAction></p>
@@ -556,7 +556,7 @@ describe("CallAction Tag Tests", function () {
 
     <map assignNames="set1 set2">
     <template newNamespace>
-      <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+      <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
       <p><callAction target="s" actionName="resample" name="rs" >
         <label>roll dice and add point</label>
       </callAction></p>
@@ -665,7 +665,7 @@ describe("CallAction Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" >
       <label>roll dice and add point</label>
     </callAction></p>
@@ -820,7 +820,7 @@ describe("CallAction Tag Tests", function () {
     </graph>
     <copy prop="coords" target="P" assignNames="P2" />
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" >
       <label>roll dice</label>
     </callAction></p>
@@ -1034,7 +1034,7 @@ describe("CallAction Tag Tests", function () {
     </graph>
     <copy prop="coords" target="P" assignNames="P2" />
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" triggerWhenObjectsClicked="P" >
       <label>roll dice</label>
     </callAction></p>
@@ -1195,7 +1195,7 @@ describe("CallAction Tag Tests", function () {
         <point name="P">(-1,2)</point>
       </graph>
       <copy prop="coords" target="P" assignNames="P2" />
-      <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+      <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
       <p><callAction target="s" actionName="resample" name="rs" triggerWhenObjectsClicked="P" >
         <label>roll dice</label>
       </callAction></p>
@@ -1374,7 +1374,7 @@ describe("CallAction Tag Tests", function () {
     </graph>
     <copy prop="coords" target="P" assignNames="P2" />
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" triggerWhenObjectsFocused="P" >
       <label>roll dice</label>
     </callAction></p>
@@ -1534,7 +1534,7 @@ describe("CallAction Tag Tests", function () {
     </graph>
     <copy prop="coords" target="P" assignNames="P2" />
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs"  triggerWith="addPoint" >
       <label>roll dice and add point</label>
     </callAction></p>
@@ -1786,7 +1786,7 @@ describe("CallAction Tag Tests", function () {
 
     <copy prop="coords" target="P" assignNames="P2" />
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs"  triggerWith="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" >
       <label>roll dice and add point</label>
     </callAction></p>
@@ -2038,7 +2038,7 @@ describe("CallAction Tag Tests", function () {
 
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <triggerSet name="tset" >
       <label>perform actions</label>
@@ -2143,7 +2143,7 @@ describe("CallAction Tag Tests", function () {
 
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
     <p>Enter x: <answer name="ans">x</answer></p>
 
@@ -2270,7 +2270,7 @@ describe("CallAction Tag Tests", function () {
           doenetML: `
     <text>a</text>
 
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" >
       <label>roll dice and more</label>
     </callAction></p>
@@ -2378,7 +2378,7 @@ describe("CallAction Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="rs" ><label>Hi <m>\\sum_{i=1}^5x_i</m></label></callAction></p>
     `,
         },
@@ -2403,7 +2403,7 @@ describe("CallAction Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" name="resample_numbers" labelIsName /></p>
     `,
         },
@@ -2431,7 +2431,7 @@ describe("CallAction Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="reSamplE" name="rs"><label>roll dice</label></callAction></p>
     <p>Sum: <number name="sum"><sum>
       <map>

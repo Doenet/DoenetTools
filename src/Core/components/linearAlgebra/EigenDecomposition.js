@@ -1,3 +1,8 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 import BaseComponent from "../abstract/BaseComponent";
 import me from "math-expressions";
 
@@ -8,32 +13,7 @@ export default class EigenDecomposition extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 14,
-      public: true,
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     return attributes;
   }
@@ -49,6 +29,11 @@ export default class EigenDecomposition extends BaseComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     stateVariableDefinitions.decomposition = {
       returnDependencies: () => ({
@@ -69,19 +54,19 @@ export default class EigenDecomposition extends BaseComponent {
           return { setValue: { decomposition: null } };
         }
 
-        let nRows = mathTree[1][1];
-        let nCols = mathTree[1][2];
-        if (!(Number.isInteger(nRows) && nCols === nRows)) {
+        let numRows = mathTree[1][1];
+        let numColumns = mathTree[1][2];
+        if (!(Number.isInteger(numRows) && numColumns === numRows)) {
           return { setValue: { decomposition: null } };
         }
 
         let matrixArray = [];
 
-        for (let rowInd = 0; rowInd < nRows; rowInd++) {
+        for (let rowInd = 0; rowInd < numRows; rowInd++) {
           let row = [];
           let rowOperands = mathTree[2][rowInd + 1] || [];
 
-          for (let colInd = 0; colInd < nCols; colInd++) {
+          for (let colInd = 0; colInd < numColumns; colInd++) {
             let val = rowOperands[colInd + 1];
             if (val === undefined || val === null) {
               return { setValue: { decomposition: null } };
@@ -128,12 +113,8 @@ export default class EigenDecomposition extends BaseComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["eigenvalue"],
       returnArraySizeDependencies: () => ({
@@ -175,15 +156,11 @@ export default class EigenDecomposition extends BaseComponent {
     stateVariableDefinitions.eigenvectors = {
       isArray: true,
       public: true,
-      nDimensions: 2,
+      numDimensions: 2,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "eigenvectorX") {
             return [];

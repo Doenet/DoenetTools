@@ -5,9 +5,14 @@ import {
   roundForDisplay,
   vectorOperators,
 } from "../utils/math";
-import { returnBreakStringsSugarFunction } from "./commonsugar/breakstrings";
+import { breakEmbeddedStringByCommas } from "./commonsugar/breakstrings";
 import { deepClone } from "../utils/deepFunctions";
 import { returnTextStyleDescriptionDefinitions } from "../utils/style";
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../utils/rounding";
 
 export default class Point extends GraphicalComponent {
   constructor(args) {
@@ -56,32 +61,7 @@ export default class Point extends GraphicalComponent {
       createComponentOfType: "coords",
     };
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
-    };
-
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1e-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    };
-
-    attributes.padZeros = {
-      createComponentOfType: "boolean",
-      createStateVariable: "padZeros",
-      defaultValue: false,
-      public: true,
-    };
+    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.labelPosition = {
       createComponentOfType: "text",
@@ -110,129 +90,134 @@ export default class Point extends GraphicalComponent {
       forRenderer: true,
     };
 
+    attributes.hideOffGraphIndicator = {
+      createComponentOfType: "boolean",
+    };
+
     return attributes;
   }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoXsByCommas = function ({
+    let breakIntoXsOrCoords = function ({
       matchedChildren,
       componentInfoObjects,
     }) {
-      let childrenToComponentFunction = (x) => ({
-        componentType: "math",
-        children: x,
-      });
+      let componentIsSpecifiedType =
+        componentInfoObjects.componentIsSpecifiedType;
 
-      let breakFunction = returnBreakStringsSugarFunction({
-        childrenToComponentFunction,
-        mustStripOffOuterParentheses: true,
-      });
+      // Find potential component children, i.e., consecutive children that aren't constraints or labels
+      let componentChildren = [],
+        nonComponentChildrenBegin = [],
+        nonComponentChildrenEnd = [];
 
-      // find index of first and last string
-      let cTypes = matchedChildren.map((x) => typeof x);
-      let beginInd = cTypes.indexOf("string");
-      let lastInd = cTypes.lastIndexOf("string");
-
-      if (beginInd === -1) {
-        // if have no strings but have exactly one child that isn't in child group,
-        // (point, vector, constraints, label)
-        // use that for coords
-
-        let componentIsSpecifiedType =
-          componentInfoObjects.componentIsSpecifiedType;
-
-        let otherChildren = matchedChildren.filter(
-          (child) =>
-            !(
-              componentIsSpecifiedType(child, "point") ||
-              componentIsSpecifiedType(child, "vector") ||
-              componentIsSpecifiedType(child, "constraints") ||
-              componentIsSpecifiedType(child, "label")
-            ),
-        );
-
-        if (otherChildren.length === 1) {
-          let mathChild = otherChildren[0];
-          let mathInd = matchedChildren.indexOf(mathChild);
-
-          let newChildren = [
-            ...matchedChildren.slice(0, mathInd),
-            ...matchedChildren.slice(mathInd + 1),
-          ];
-
-          return {
-            success: true,
-            newAttributes: {
-              coords: {
-                component: {
-                  componentType: "math",
-                  children: otherChildren,
-                },
-              },
-            },
-            newChildren,
-          };
+      for (let child of matchedChildren) {
+        if (
+          componentIsSpecifiedType(child, "constraints") ||
+          componentIsSpecifiedType(child, "label")
+        ) {
+          if (componentChildren.length > 0) {
+            nonComponentChildrenEnd.push(child);
+          } else {
+            nonComponentChildrenBegin.push(child);
+          }
+        } else if (nonComponentChildrenEnd.length > 0) {
+          nonComponentChildrenEnd.push(child);
         } else {
-          // no strings and don't have exactly one non child-group child
+          componentChildren.push(child);
+        }
+      }
+
+      if (componentChildren.length === 0) {
+        return { success: false };
+      }
+
+      if (componentChildren.length === 1) {
+        let child = componentChildren[0];
+
+        if (
+          componentIsSpecifiedType(child, "point") ||
+          componentIsSpecifiedType(child, "vector")
+        ) {
+          // if have an isolated point or vector, don't use sugar
+          // and that child will picked up by the point or vector child group
           return { success: false };
         }
       }
 
-      let newChildren = [
-        ...matchedChildren.slice(0, beginInd),
-        ...matchedChildren.slice(lastInd + 1),
-      ];
-      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
+      let nCompChildren = componentChildren.length;
 
-      let result = breakFunction({ matchedChildren });
+      // check if componentChildren represent a single expression inside parens
+      let firstChar, lastChar;
+      if (typeof componentChildren[0] === "string") {
+        componentChildren[0] = componentChildren[0].trimStart();
+        firstChar = componentChildren[0][0];
+      }
+      if (typeof componentChildren[nCompChildren - 1] === "string") {
+        componentChildren[nCompChildren - 1] =
+          componentChildren[nCompChildren - 1].trimEnd();
+        let lastChild = componentChildren[nCompChildren - 1];
+        lastChar = lastChild[lastChild.length - 1];
+      }
 
-      if (!result.success && matchedChildren.length === 1) {
-        // if didn't succeed and just have a single string child,
-        // then just wrap string with an xs
-        return {
-          success: true,
-          newAttributes: {
-            xs: {
-              component: {
-                componentType: "mathList",
-                children: [
-                  {
+      if (firstChar === "(" && lastChar === ")") {
+        // start and end with parens, check if can split by commas after removing these parens
+        let modifiedChildren = [...componentChildren];
+        modifiedChildren[0] = modifiedChildren[0].substring(1);
+
+        let lastChild = modifiedChildren[modifiedChildren.length - 1];
+        modifiedChildren[modifiedChildren.length - 1] = lastChild.substring(
+          0,
+          lastChild.length - 1,
+        );
+
+        let breakResult = breakEmbeddedStringByCommas({
+          childrenList: modifiedChildren,
+        });
+
+        if (breakResult.success) {
+          // wrap maths around each piece, wrap whole thing in mathList
+          // and use for xs attribute
+          return {
+            success: true,
+            newAttributes: {
+              xs: {
+                component: {
+                  componentType: "mathList",
+                  children: breakResult.pieces.map((x) => ({
                     componentType: "math",
-                    children: matchedChildren,
-                  },
-                ],
+                    children: x,
+                  })),
+                  skipSugar: true,
+                },
               },
             },
-          },
-          newChildren,
-        };
+            newChildren: [
+              ...nonComponentChildrenBegin,
+              ...nonComponentChildrenEnd,
+            ],
+          };
+        }
       }
 
-      if (result.success) {
-        // wrap xs around the x children
-        return {
-          success: true,
-          newAttributes: {
-            xs: {
-              component: {
-                componentType: "mathList",
-                children: result.newChildren,
-                skipSugar: true,
-              },
+      // if didn't succeed in breaking it into xs, then use the component children as a coords
+      return {
+        success: true,
+        newAttributes: {
+          coords: {
+            component: {
+              componentType: "coords",
+              children: componentChildren,
             },
           },
-          newChildren,
-        };
-      } else {
-        return { success: false };
-      }
+        },
+        newChildren: [...nonComponentChildrenBegin, ...nonComponentChildrenEnd],
+      };
     };
 
     sugarInstructions.push({
-      // childrenRegex: /n*s+(.*s)?n*/,
-      replacementFunction: breakIntoXsByCommas,
+      replacementFunction: breakIntoXsOrCoords,
     });
 
     return sugarInstructions;
@@ -244,12 +229,8 @@ export default class Point extends GraphicalComponent {
     childGroups.push(
       ...[
         {
-          group: "points",
-          componentTypes: ["point"],
-        },
-        {
-          group: "vectors",
-          componentTypes: ["vector"],
+          group: "pointsAndVectors",
+          componentTypes: ["point", "vector"],
         },
         {
           group: "constraints",
@@ -263,6 +244,11 @@ export default class Point extends GraphicalComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
 
     let styleDescriptionDefinitions = returnTextStyleDescriptionDefinitions();
     Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
@@ -323,69 +309,45 @@ export default class Point extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.displayDigits = {
+    stateVariableDefinitions.hideOffGraphIndicator = {
       public: true,
+      forRenderer: true,
       shadowingInstructions: {
-        createComponentOfType: "integer",
+        createComponentOfType: "boolean",
       },
-      hasEssential: true,
-      defaultValue: 10,
       returnDependencies: () => ({
-        displayDigitsAttr: {
+        hideOffGraphIndicatorAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "displayDigits",
+          attributeName: "hideOffGraphIndicator",
           variableNames: ["value"],
         },
-        displayDecimalsAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "displayDecimals",
-          variableNames: ["value"],
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["hideOffGraphIndicators"],
         },
       }),
-      definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
-          let displayDigitsAttrUsedDefault =
-            dependencyValues.displayDigitsAttr === null ||
-            usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrUsedDefault =
-            dependencyValues.displayDecimalsAttr === null ||
-            usedDefault.displayDecimalsAttr;
-
-          if (
-            !(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)
-          ) {
-            // if both display digits and display decimals did not used default
-            // we'll regard display digits as using default if it comes from a deeper shadow
-            let shadowDepthDisplayDigits =
-              dependencyValues.displayDigitsAttr.shadowDepth;
-            let shadowDepthDisplayDecimals =
-              dependencyValues.displayDecimalsAttr.shadowDepth;
-
-            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-              displayDigitsAttrUsedDefault = true;
-            }
-          }
-
-          if (displayDigitsAttrUsedDefault) {
-            return {
-              useEssentialOrDefaultValue: {
-                displayDigits: {
-                  defaultValue:
-                    dependencyValues.displayDigitsAttr.stateValues.value,
-                },
-              },
-            };
-          } else {
-            return {
-              setValue: {
-                displayDigits:
-                  dependencyValues.displayDigitsAttr.stateValues.value,
-              },
-            };
-          }
+      definition({ dependencyValues }) {
+        if (dependencyValues.hideOffGraphIndicatorAttr) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.hideOffGraphIndicatorAttr.stateValues.value,
+            },
+          };
+        } else if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              hideOffGraphIndicator:
+                dependencyValues.graphAncestor.stateValues
+                  .hideOffGraphIndicators,
+            },
+          };
+        } else {
+          return {
+            setValue: { hideOffGraphIndicator: false },
+          };
         }
-
-        return { useEssentialOrDefaultValue: { displayDigits: true } };
       },
     };
 
@@ -423,7 +385,7 @@ export default class Point extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -453,38 +415,33 @@ export default class Point extends GraphicalComponent {
         xs: {
           dependencyType: "attributeComponent",
           attributeName: "xs",
-          variableNames: ["nComponents"],
+          variableNames: ["numComponents"],
         },
-        pointChild: {
+        pointOrVectorChild: {
           dependencyType: "child",
-          childGroups: ["points"],
-          variableNames: ["nDimensions"],
-        },
-        vectorChild: {
-          dependencyType: "child",
-          childGroups: ["vectors"],
-          variableNames: ["nDimensions"],
+          childGroups: ["pointsAndVectors"],
+          variableNames: ["numDimensions"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        // console.log(`nDimensions definition`)
+        // console.log(`numDimensions definition`)
         // console.log(dependencyValues)
 
         let basedOnCoords = false;
         let coords;
-        let nDimensions;
+        let numDimensions;
 
         // if have a component child, they will overwrite any other component values
-        // so is a minimum for nDimensions
-        // Exception if only x is specified, least nDimensions at zero
+        // so is a minimum for numDimensions
+        // Exception if only x is specified, least numDimensions at zero
         // so that only specifying x still gives a 2D point
         // (If want 1D point, specify via other means, such as coords or xs)
         if (dependencyValues.z !== null) {
-          nDimensions = 3;
+          numDimensions = 3;
         } else if (dependencyValues.y !== null) {
-          nDimensions = 2;
+          numDimensions = 2;
         } else {
-          nDimensions = 0;
+          numDimensions = 0;
         }
 
         if (dependencyValues.coords !== null) {
@@ -492,66 +449,57 @@ export default class Point extends GraphicalComponent {
           coords = dependencyValues.coords.stateValues.value;
         } else if (dependencyValues.coordsShadow) {
           basedOnCoords = true;
-          coords = dependencyValues.coordsShadow;
+          coords = dependencyValues.coordsShadow.tuples_to_vectors();
         }
 
         if (basedOnCoords) {
-          let coordsTree = coords.tree;
+          let coordsTree = coords.expand().simplify().tree;
           if (
             Array.isArray(coordsTree) &&
             vectorOperators.includes(coordsTree[0])
           ) {
-            nDimensions = Math.max(coordsTree.length - 1, nDimensions);
+            numDimensions = Math.max(coordsTree.length - 1, numDimensions);
           } else {
-            nDimensions = Math.max(1, nDimensions);
+            numDimensions = Math.max(1, numDimensions);
           }
 
           // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         } else {
           if (dependencyValues.xs !== null) {
             return {
               setValue: {
-                nDimensions: Math.max(
-                  dependencyValues.xs.stateValues.nComponents,
-                  nDimensions,
+                numDimensions: Math.max(
+                  dependencyValues.xs.stateValues.numComponents,
+                  numDimensions,
                 ),
               },
             };
           }
-          if (dependencyValues.pointChild.length > 0) {
+          if (dependencyValues.pointOrVectorChild.length > 0) {
             return {
               setValue: {
-                nDimensions: Math.max(
-                  dependencyValues.pointChild[0].stateValues.nDimensions,
-                  nDimensions,
-                ),
-              },
-            };
-          }
-          if (dependencyValues.vectorChild.length > 0) {
-            return {
-              setValue: {
-                nDimensions: Math.max(
-                  dependencyValues.vectorChild[0].stateValues.nDimensions,
-                  nDimensions,
+                numDimensions: Math.max(
+                  dependencyValues.pointOrVectorChild[0].stateValues
+                    .numDimensions,
+                  numDimensions,
                 ),
               },
             };
           }
 
-          if (nDimensions === 0) {
+          if (numDimensions === 0) {
             // if nothing specified, make it a 2D point
-            nDimensions = 2;
+            numDimensions = 2;
           }
 
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions },
+            checkForActualChange: { numDimensions: true },
           };
         }
       },
@@ -571,9 +519,9 @@ export default class Point extends GraphicalComponent {
       }),
     };
 
-    stateVariableDefinitions.nDimensionsForConstraints = {
+    stateVariableDefinitions.numDimensionsForConstraints = {
       isAlias: true,
-      targetVariableName: "nDimensions",
+      targetVariableName: "numDimensions",
     };
 
     stateVariableDefinitions.unconstrainedXs = {
@@ -583,13 +531,13 @@ export default class Point extends GraphicalComponent {
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
@@ -613,14 +561,9 @@ export default class Point extends GraphicalComponent {
               attributeName: "xs",
               variableNames: ["math" + varEnding],
             },
-            pointChild: {
+            pointOrVectorChild: {
               dependencyType: "child",
-              childGroups: ["points"],
-              variableNames: ["x" + varEnding],
-            },
-            vectorChild: {
-              dependencyType: "child",
-              childGroups: ["vectors"],
+              childGroups: ["pointsAndVectors"],
               variableNames: ["x" + varEnding],
             },
           };
@@ -668,10 +611,11 @@ export default class Point extends GraphicalComponent {
           coords = globalDependencyValues.coords.stateValues.value;
         } else if (globalDependencyValues.coordsShadow) {
           basedOnCoords = true;
-          coords = globalDependencyValues.coordsShadow;
+          coords = globalDependencyValues.coordsShadow.tuples_to_vectors();
         }
 
         if (basedOnCoords) {
+          coords = coords.expand().simplify();
           let coordsTree = coords.tree;
           if (
             Array.isArray(coordsTree) &&
@@ -680,16 +624,16 @@ export default class Point extends GraphicalComponent {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
-                if (coords.tree[ind + 1] === undefined) {
+                if (coordsTree[ind + 1] === undefined) {
                   newXs[arrayKey] = me.fromAst("\uff3f");
                 } else {
-                  newXs[arrayKey] = coords.get_component(ind).simplify();
+                  newXs[arrayKey] = coords.get_component(ind);
                 }
               }
             }
           } else {
             if (arrayKeys.includes("0")) {
-              newXs[0] = coords.simplify();
+              newXs[0] = coords;
             }
           }
         } else {
@@ -702,14 +646,11 @@ export default class Point extends GraphicalComponent {
                 newXs[arrayKey] = val.simplify();
               }
             } else {
-              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length > 0) {
-                newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding];
-              } else {
-                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
-                if (vectorChild.length > 0) {
-                  newXs[arrayKey] = vectorChild[0].stateValues["x" + varEnding];
-                }
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              if (pointOrVectorChild.length > 0) {
+                newXs[arrayKey] =
+                  pointOrVectorChild[0].stateValues["x" + varEnding];
               }
             }
           }
@@ -794,29 +735,21 @@ export default class Point extends GraphicalComponent {
                 variableIndex: 0,
               });
             } else {
-              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length > 0) {
+              let pointOrVectorChild =
+                dependencyValuesByKey[arrayKey].pointOrVectorChild;
+              if (pointOrVectorChild.length > 0) {
                 instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                  setDependency:
+                    dependencyNamesByKey[arrayKey].pointOrVectorChild,
                   desiredValue,
                   childIndex: 0,
                   variableIndex: 0,
                 });
               } else {
-                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
-                if (vectorChild.length > 0) {
-                  instructions.push({
-                    setDependency: dependencyNamesByKey[arrayKey].vectorChild,
-                    desiredValue,
-                    childIndex: 0,
-                    variableIndex: 0,
-                  });
-                } else {
-                  instructions.push({
-                    setEssentialValue: "unconstrainedXs",
-                    value: { [arrayKey]: desiredValue },
-                  });
-                }
+                instructions.push({
+                  setEssentialValue: "unconstrainedXs",
+                  value: { [arrayKey]: desiredValue },
+                });
               }
             }
           }
@@ -854,23 +787,19 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       isArray: true,
       entryPrefixes: ["x"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -985,12 +914,8 @@ export default class Point extends GraphicalComponent {
       isLocation: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributesToShadow: [
-          "displayDigits",
-          "displayDecimals",
-          "displaySmallAsZero",
-          "padZeros",
-        ],
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
         xs: {
@@ -1096,21 +1021,19 @@ export default class Point extends GraphicalComponent {
           variableName: "padZeros",
         },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
+      definition: function ({ dependencyValues }) {
         let params = {};
         if (dependencyValues.padZeros) {
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            if (Number.isFinite(dependencyValues.displayDecimals)) {
-              params.padToDecimals = dependencyValues.displayDecimals;
-            }
-          } else if (dependencyValues.displayDigits >= 1) {
+          if (Number.isFinite(dependencyValues.displayDecimals)) {
+            params.padToDecimals = dependencyValues.displayDecimals;
+          }
+          if (dependencyValues.displayDigits >= 1) {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
         let latex = roundForDisplay({
           value: dependencyValues.coords,
           dependencyValues,
-          usedDefault,
         }).toLatex(params);
 
         return { setValue: { latex } };
@@ -1154,13 +1077,13 @@ export default class Point extends GraphicalComponent {
       entryPrefixes: ["numericalX"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -1226,9 +1149,9 @@ export default class Point extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalXs: {
           dependencyType: "stateVariable",
@@ -1242,7 +1165,7 @@ export default class Point extends GraphicalComponent {
             // only implement for numerical values
             let result = {};
 
-            for (let ind = 1; ind <= dependencyValues.nDimensions; ind++) {
+            for (let ind = 1; ind <= dependencyValues.numDimensions; ind++) {
               let x = dependencyValues.numericalXs[ind - 1];
               if (!Number.isFinite(x)) {
                 return {};
@@ -1261,12 +1184,9 @@ export default class Point extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "coords",
-      stateVariablesToShadow: [
-        "displayDigits",
-        "displayDecimals",
-        "displaySmallAsZero",
-        "padZeros",
-      ],
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 

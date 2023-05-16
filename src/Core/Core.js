@@ -76,6 +76,19 @@ export default class Core {
 
     this.previousComponentTypeCounts = previousComponentTypeCounts;
 
+    // Note: this changes the stateVariableChanges passed into core as an argument
+    for (let cName in stateVariableChanges) {
+      let componentSVChanges = stateVariableChanges[cName];
+      for (let varName in componentSVChanges) {
+        if (varName in serializeFunctions.deprecatedPropertySubstitutions) {
+          componentSVChanges[
+            serializeFunctions.deprecatedPropertySubstitutions[varName]
+          ] = componentSVChanges[varName];
+          delete componentSVChanges[varName];
+        }
+      }
+    }
+
     this.coreFunctions = {
       requestUpdate: this.requestUpdate.bind(this),
       performUpdate: this.performUpdate.bind(this),
@@ -83,6 +96,7 @@ export default class Core {
       performAction: this.performAction.bind(this),
       resolveAction: this.resolveAction.bind(this),
       triggerChainedActions: this.triggerChainedActions.bind(this),
+      updateRenderers: this.updateRenderers.bind(this),
       requestRecordEvent: this.requestRecordEvent.bind(this),
       requestAnimationFrame: this.requestAnimationFrame.bind(this),
       cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
@@ -187,8 +201,13 @@ export default class Core {
       });
   }
 
-  async finishCoreConstruction({ cids, fullSerializedComponents }) {
+  async finishCoreConstruction({
+    cids,
+    fullSerializedComponents,
+    allDoenetMLs,
+  }) {
     this.cid = cids[0];
+    this.allDoenetMLs = allDoenetMLs;
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -1938,9 +1957,9 @@ export default class Core {
     let childClass = this.componentInfoObjects.allComponentClasses[childType];
 
     // if didn't match child, attempt to match with child's adapters
-    let nAdapters = childClass.nAdapters;
+    let numAdapters = childClass.numAdapters;
 
-    for (let n = 0; n < nAdapters; n++) {
+    for (let n = 0; n < numAdapters; n++) {
       let adapterComponentType = childClass.getAdapterComponentType(
         n,
         this.componentInfoObjects.publicStateVariableInfo,
@@ -2004,9 +2023,9 @@ export default class Core {
 
   async returnActiveChildrenIndicesToRender(component) {
     let indicesToRender = [];
-    let nChildrenToRender = Infinity;
-    if ("nChildrenToRender" in component.state) {
-      nChildrenToRender = await component.stateValues.nChildrenToRender;
+    let numChildrenToRender = Infinity;
+    if ("numChildrenToRender" in component.state) {
+      numChildrenToRender = await component.stateValues.numChildrenToRender;
     }
     let childIndicesToRender = null;
     if ("childIndicesToRender" in component.state) {
@@ -2014,7 +2033,7 @@ export default class Core {
     }
 
     for (let [ind, child] of component.activeChildren.entries()) {
-      if (ind >= nChildrenToRender) {
+      if (ind >= numChildrenToRender) {
         break;
       }
 
@@ -2309,15 +2328,12 @@ export default class Core {
     let serializedReplacements = [];
     let sourceAttributesToIgnore = await component.stateValues
       .sourceAttributesToIgnore;
-    let sourceAttributesToIgnoreRecursively = await component.stateValues
-      .sourceAttributesToIgnoreRecursively;
 
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
         serializedReplacements.push(
           await repl.serialize({
             sourceAttributesToIgnore,
-            sourceAttributesToIgnoreRecursively,
           }),
         );
       } else {
@@ -2611,12 +2627,12 @@ export default class Core {
         let replacements;
 
         if (replaceWithPlaceholders) {
-          let nComponents;
+          let numComponents;
 
-          if (child.attributes.nComponents) {
-            nComponents = child.attributes.nComponents.primitive;
+          if (child.attributes.numComponents) {
+            numComponents = child.attributes.numComponents.primitive;
           } else {
-            nComponents = 1;
+            numComponents = 1;
           }
 
           let componentType =
@@ -2625,7 +2641,7 @@ export default class Core {
             ];
           replacements = [];
 
-          for (let i = 0; i < nComponents; i++) {
+          for (let i = 0; i < numComponents; i++) {
             replacements.push({
               componentType,
               fromComposite: child.componentName,
@@ -2635,7 +2651,7 @@ export default class Core {
           }
 
           parent.hasPlaceholderActiveChildren = true;
-          let placeholdInds = [...Array(nComponents).keys()].map(
+          let placeholdInds = [...Array(numComponents).keys()].map(
             (x) => x + childInd,
           );
 
@@ -3678,14 +3694,12 @@ export default class Core {
                     defaultValue: valueFromTarget,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: valueFromTarget,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
@@ -3697,7 +3711,6 @@ export default class Core {
                     defaultValue: dependencyValues.targetVariable,
                   },
                 },
-                alwaysShadow: [primaryStateVariableForDefinition],
               };
             }
             return {
@@ -3705,7 +3718,6 @@ export default class Core {
                 [primaryStateVariableForDefinition]:
                   dependencyValues.targetVariable,
               },
-              alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         }
@@ -3939,7 +3951,6 @@ export default class Core {
 
           let result = {
             setValue: { [varName]: newEntries },
-            alwaysShadow: [varName],
           };
 
           // TODO: how do we make it do this just once?
@@ -4027,9 +4038,7 @@ export default class Core {
           return dependencies;
         };
         stateDef.definition = function ({ dependencyValues, usedDefault }) {
-          let result = {
-            alwaysShadow: [varName],
-          };
+          let result = {};
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in dependencyValues) {
@@ -4315,7 +4324,7 @@ export default class Core {
       arrayStateVarObj.providePreviousValuesInDefinition;
     stateVarObj.isLocation = arrayStateVarObj.isLocation;
 
-    stateVarObj.nDimensions =
+    stateVarObj.numDimensions =
       arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length);
@@ -4452,7 +4461,7 @@ export default class Core {
         arrayEntryPrefix: stateVarObj.entryPrefix,
         varEnding: stateVarObj.varEnding,
         arraySize,
-        nDimensions: arrayStateVarObj.nDimensions,
+        numDimensions: arrayStateVarObj.numDimensions,
       });
 
       stateVarObj._unflattenedArrayKeys = arrayKeys;
@@ -4482,7 +4491,7 @@ export default class Core {
           let unflattenedArrayKeys = await stateVarObj.unflattenedArrayKeys;
           let arrayEntrySize = [];
           let subArray = [unflattenedArrayKeys];
-          for (let i = 0; i < stateVarObj.nDimensions; i++) {
+          for (let i = 0; i < stateVarObj.numDimensions; i++) {
             subArray = subArray[0];
             arrayEntrySize.push(subArray.length);
           }
@@ -4583,18 +4592,18 @@ export default class Core {
 
     stateVarObj.arrayValues = [];
 
-    if (stateVarObj.nDimensions === undefined) {
-      stateVarObj.nDimensions = 1;
+    if (stateVarObj.numDimensions === undefined) {
+      stateVarObj.numDimensions = 1;
     }
 
-    if (stateVarObj.nDimensions > 1) {
+    if (stateVarObj.numDimensions > 1) {
       // for multiple dimensions, have to convert from arrayKey
       // to multi-index when getting or setting
       // Note: we don't check that arrayKey has the appropriate number of dimensions
-      // If it has fewer dimensions than nDimensions, it will set the slice
+      // If it has fewer dimensions than numDimensions, it will set the slice
       // to the given value
       // (useful, for example, to set entire rows)
-      // If it has more dimensinos than nDimensions, behavior isn't determined
+      // If it has more dimensinos than numDimensions, behavior isn't determined
       // (it should throw an error, assuming the array entries aren't arrays)
       stateVarObj.keyToIndex = (key) => key.split(",").map((x) => Number(x));
       stateVarObj.setArrayValue = function ({
@@ -4604,8 +4613,8 @@ export default class Core {
         arrayValues = stateVarObj.arrayValues,
       }) {
         let index = stateVarObj.keyToIndex(arrayKey);
-        let nDimensionsInArrayKey = index.length;
-        if (!nDimensionsInArrayKey > stateVarObj.nDimensions) {
+        let numDimensionsInArrayKey = index.length;
+        if (!numDimensionsInArrayKey > stateVarObj.numDimensions) {
           console.warn(
             "Cannot set array value.  Number of dimensions is too large.",
           );
@@ -4628,7 +4637,7 @@ export default class Core {
 
         let nFailures = 0;
 
-        if (nDimensionsInArrayKey < stateVarObj.nDimensions) {
+        if (numDimensionsInArrayKey < stateVarObj.numDimensions) {
           // if dimensions from arrayKey is less than number of dimensions
           // then attempt to get additional dimensions from
           // array indices of value
@@ -4775,7 +4784,7 @@ export default class Core {
             entryPrefixes[0] +
             [
               ...propIndex.map((x) => Math.round(Number(x))),
-              ...Array(stateVarObj.nDimensions - propIndex.length).fill(1),
+              ...Array(stateVarObj.numDimensions - propIndex.length).fill(1),
             ].join("_")
           );
         };
@@ -4870,7 +4879,7 @@ export default class Core {
 
     if (!stateVarObj.getArrayKeysFromVarName) {
       stateVarObj.getArrayKeysFromVarName =
-        returnDefaultGetArrayKeysFromVarName(stateVarObj.nDimensions);
+        returnDefaultGetArrayKeysFromVarName(stateVarObj.numDimensions);
     }
 
     // converting from index to key is the same for single and multiple
@@ -5483,7 +5492,7 @@ export default class Core {
             arrayEntryPrefix: entryStateVarObj.entryPrefix,
             varEnding: entryStateVarObj.varEnding,
             arraySize: newArraySize,
-            nDimensions: stateVarObj.nDimensions,
+            numDimensions: stateVarObj.numDimensions,
           });
           entryStateVarObj._unflattenedArrayKeys = arrayKeys;
           entryStateVarObj._arrayKeys = flattenDeep(arrayKeys);
@@ -6168,14 +6177,14 @@ export default class Core {
 
       if (Array.isArray()) {
         for (let arrayKey in result.markAsUsedDefault[varName]) {
-          if (result.markAsUsedDefault[varName][arrayKey]) {
-            component.state[varName].usedDefaultByArrayKey[arrayKey] = true;
-          }
+          component.state[varName].usedDefaultByArrayKey[arrayKey] = Boolean(
+            result.markAsUsedDefault[varName][arrayKey],
+          );
         }
       } else {
-        if (result.markAsUsedDefault[varName]) {
-          component.state[varName].usedDefault = true;
-        }
+        component.state[varName].usedDefault = Boolean(
+          result.markAsUsedDefault[varName],
+        );
       }
     }
 
@@ -6657,7 +6666,7 @@ export default class Core {
           let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
             arrayEntryPrefix: prefix,
             varEnding: stateVariable.substring(prefix.length),
-            nDimensions: arrayStateVarDescription.nDimensions,
+            numDimensions: arrayStateVarDescription.numDimensions,
           });
           if (arrayKeys.length > 0) {
             let newVarName = prefix + lowerCaseVarName.substring(prefix.length);
@@ -6721,7 +6730,7 @@ export default class Core {
           let arrayKeys = arrayStateVarDescription.getArrayKeysFromVarName({
             arrayEntryPrefix: prefix,
             varEnding: varName.substring(prefix.length),
-            nDimensions: arrayStateVarDescription.nDimensions,
+            numDimensions: arrayStateVarDescription.numDimensions,
           });
           if (arrayKeys.length > 0) {
             foundMatch = true;
@@ -6796,7 +6805,7 @@ export default class Core {
         let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
           arrayEntryPrefix,
           varEnding: stateVariable.substring(arrayEntryPrefix.length),
-          nDimensions: arrayStateVarObj.nDimensions,
+          numDimensions: arrayStateVarObj.numDimensions,
         });
         if (arrayKeys.length > 0) {
           return true;
@@ -6833,7 +6842,7 @@ export default class Core {
         let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
           arrayEntryPrefix,
           varEnding: stateVariable.substring(arrayEntryPrefix.length),
-          nDimensions: arrayStateVarObj.nDimensions,
+          numDimensions: arrayStateVarObj.numDimensions,
         });
 
         if (arrayKeys.length > 0) {
@@ -6910,6 +6919,19 @@ export default class Core {
     throw Error(
       `Unknown state variable ${stateVariable} of ${component.componentName}`,
     );
+  }
+
+  async markDescendantsToUpdateRenderers(component) {
+    if (component.constructor.renderChildren) {
+      let indicesToRender = await this.returnActiveChildrenIndicesToRender(
+        component,
+      );
+      for (let ind of indicesToRender) {
+        let child = component.activeChildren[ind];
+        this.updateInfo.componentsToUpdateRenderers.add(child.componentName);
+        await this.markDescendantsToUpdateRenderers(child);
+      }
+    }
   }
 
   async markStateVariableAndUpstreamDependentsStale({ component, varName }) {
@@ -7033,6 +7055,10 @@ export default class Core {
 
       if (result.updateRenderedChildren) {
         this.componentsWithChangedChildrenToRender.add(component.componentName);
+      }
+
+      if (result.updateDescendantRenderers) {
+        await this.markDescendantsToUpdateRenderers(component);
       }
 
       if (result.updateActionChaining) {
@@ -7546,6 +7572,10 @@ export default class Core {
               );
             }
 
+            if (result.updateDescendantRenderers) {
+              await this.markDescendantsToUpdateRenderers(component);
+            }
+
             if (result.updateActionChaining) {
               let chainObj =
                 this.updateInfo.componentsToUpdateActionChaining[
@@ -7705,8 +7735,6 @@ export default class Core {
         let composite = this._components[shadowingParent.shadows.compositeName];
         let sourceAttributesToIgnore = await composite.stateValues
           .sourceAttributesToIgnore;
-        let sourceAttributesToIgnoreRecursively = await composite.stateValues
-          .sourceAttributesToIgnoreRecursively;
 
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
@@ -7714,7 +7742,6 @@ export default class Core {
             shadowingSerializeChildren.push(
               await child.serialize({
                 sourceAttributesToIgnore,
-                sourceAttributesToIgnoreRecursively,
               }),
             );
           } else {
@@ -8712,15 +8739,12 @@ export default class Core {
           this._components[shadowingComponent.shadows.compositeName];
         let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues
           .sourceAttributesToIgnore;
-        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow
-          .stateValues.sourceAttributesToIgnoreRecursively;
 
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
             newSerializedReplacements.push(
               await repl.serialize({
                 sourceAttributesToIgnore,
-                sourceAttributesToIgnoreRecursively,
               }),
             );
           } else {
@@ -9255,6 +9279,16 @@ export default class Core {
       }
     }
 
+    if (!skipRendererUpdate) {
+      await this.updateAllChangedRenderers(sourceInformation, actionId);
+    }
+  }
+
+  async updateRenderers({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
     if (!skipRendererUpdate) {
       await this.updateAllChangedRenderers(sourceInformation, actionId);
     }
@@ -10476,7 +10510,7 @@ export default class Core {
                 }
               } else {
                 if (
-                  depStateVarObj.nDimensions === 1 ||
+                  depStateVarObj.numDimensions === 1 ||
                   !Array.isArray(newInstruction.desiredValue)
                 ) {
                   Object.assign(
@@ -10506,7 +10540,7 @@ export default class Core {
                     arrayInstructionInProgress.desiredValue,
                     convert_md_array(
                       newInstruction.desiredValue,
-                      depStateVarObj.nDimensions,
+                      depStateVarObj.numDimensions,
                     ),
                   );
                 }
@@ -11663,7 +11697,11 @@ export default class Core {
         range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
     }
 
-    let componentDoenetML = this.doenetML.slice(startInd - 1, endInd);
+    let doenetMLId = range.doenetMLId || 0;
+    let componentDoenetML = this.allDoenetMLs[doenetMLId].slice(
+      startInd - 1,
+      endInd,
+    );
 
     if (displayOnlyChildren) {
       // remove any leading linebreak
@@ -11685,6 +11723,11 @@ export default class Core {
           Math.min(a, c.trim().length > 1 ? c.search(/\S|$/) : Infinity),
         Infinity,
       );
+
+    // check first line if didn't get a number of spaces from remaining lines
+    if (minSpaces === Infinity && lines[0].trim().length > 1) {
+      minSpaces = lines[0].search(/\S|$/);
+    }
 
     if (Number.isFinite(minSpaces) && minSpaces > 0) {
       lines = lines.map((s) => {

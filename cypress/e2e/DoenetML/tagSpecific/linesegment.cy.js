@@ -2718,8 +2718,8 @@ describe("LineSegment Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <linesegment endpoints="(-1,-0.05) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -2794,7 +2794,7 @@ describe("LineSegment Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="(1,2)(3,4)"/>
+  <linesegment endpoints="(1,2) (3,4)"/>
   </graph>
   <graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p1" />
@@ -3980,7 +3980,7 @@ describe("LineSegment Tag Tests", function () {
       <point name="B">(7,-2)</point>
       <linesegment name="l" endpoints="$A $B" />
     </graph>
-    <copy prop="length" target="l" assignNames="length" />
+    <copy prop="length" target="l" assignNames="length" displayDigits="10" />
     <point name="Ap" copySource="A" />
     <point name="Bp" copySource="B" />
     <mathinput name="milength" bindValueTo="$length" />
@@ -4649,5 +4649,101 @@ describe("LineSegment Tag Tests", function () {
       "have.text",
       "C is a thin white line segment.",
     );
+  });
+
+  it("line segment based on two endpoints, one constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P" labelIsName>(3,5)
+    <constraints><constrainToGrid dx="2" dy="3" /></constraints>
+    </point>
+  <point name="Q" labelIsName>(-4,-1)</point>
+  <lineSegment endpoints="$P $Q" />
+  </graph>
+  <copy target="P" assignNames="Pa" />
+  <copy target="Q" assignNames="Qa" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    let x1 = 4,
+      y1 = 6;
+    let x2 = -4,
+      y2 = -1;
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x1)},${nInDOM(y1)})`,
+    );
+    cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(x2)},${nInDOM(y2)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
+
+    cy.log(
+      "move line down 4 and right 0.5 actually moves it down 3 and right none",
+    );
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      let x1Desired = x1 + dx;
+      let y1Desired = y1 + dy;
+      let x2Desired = x2 + dx;
+      let y2Desired = y2 + dy;
+
+      dx = 0;
+      dy = -3;
+      x1 += dx;
+      y1 += dy;
+      x2 += dx;
+      y2 += dy;
+
+      win.callAction1({
+        actionName: "moveLineSegment",
+        componentName: "/_linesegment1",
+        args: {
+          point1coords: [x1Desired, y1Desired],
+          point2coords: [x2Desired, y2Desired],
+        },
+      });
+
+      cy.get(cesc2("#/Pa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x1)},${nInDOM(y1)})`,
+      );
+      cy.get(cesc2("#/Qa") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(x2)},${nInDOM(y2)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs[0]).eq(x1);
+      expect(stateVariables["/P"].stateValues.xs[1]).eq(y1);
+      expect(stateVariables["/P"].stateValues.coords).eqls(["vector", x1, y1]);
+      expect(stateVariables["/Q"].stateValues.xs[0]).eq(x2);
+      expect(stateVariables["/Q"].stateValues.xs[1]).eq(y2);
+      expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
+    });
   });
 });

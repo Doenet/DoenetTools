@@ -5,7 +5,7 @@
     <customAttribute componentType="number" attribute="initialInitialValue" defaultValue="0" assignNames="initialInitialValue" />
     <customAttribute componentType="number" attribute="initialValueDx" defaultValue="0.5" assignNames="initialValueDx" />
     <customAttribute componentType="number" attribute="initialValueOffset" defaultValue="0" assignNames="initialValueOffset" />
-    <customAttribute componentType="number" attribute="nIterationsRequired" defaultValue="0" assignNames="nIterationsRequired" />
+    <customAttribute componentType="number" attribute="numIterationsRequired" defaultValue="0" assignNames="numIterationsRequired" />
     <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
     <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
     <customAttribute componentType="number" attribute="xmin" defaultValue="-10" assignNames="xmin" />
@@ -14,8 +14,8 @@
     <customAttribute componentType="number" attribute="ymax" defaultValue="10" assignNames="ymax" />
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
-    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
-    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
+    <customAttribute componentType="math" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="math" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
     <customAttribute componentType="text" attribute="grid" defaultValue="none" assignNames="grid" />
     <customAttribute componentType="point" attribute="defaultPoint" defaultValue="" assignNames="defaultPoint" />
@@ -42,7 +42,7 @@
   </updateValue>
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_$timeVariable" ylabel="$(variable)_{$timeVariable+1}" showNavigation="$showNavigation" identicalAxisScales grid="$grid">
-    <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" defaultPoint="$defaultPoint" />
+    <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" numIterationsRequired="$numIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" defaultPoint="$defaultPoint" />
   </graph>
 
   <aside hide="not $showCalculatedValues" name="calculatedValue">

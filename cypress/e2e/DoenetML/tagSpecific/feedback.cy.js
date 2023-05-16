@@ -2906,7 +2906,7 @@ describe("Feedback Tag Tests", function () {
           <ul>
             <li>
               x: <answer name="ans"><mathinput name="mi" />x</answer>   
-              <feedback name="fb" condition="$ans.nSubmissions > 1">You answered at least twice</feedback>
+              <feedback name="fb" condition="$ans.numSubmissions > 1">You answered at least twice</feedback>
             </li>
             <li>$ans</li>
           </ul>

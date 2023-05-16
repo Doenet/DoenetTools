@@ -34,7 +34,7 @@ export function returnBreakStringsSugarFunction({
     let currentPiece = [];
     let strippedParens = false;
 
-    let nChildren = matchedChildren.length;
+    let numChildren = matchedChildren.length;
 
     if (mustStripOffOuterParentheses) {
       let firstComponent = matchedChildren[0];
@@ -56,7 +56,7 @@ export function returnBreakStringsSugarFunction({
 
       if (compInd === 0 && mustStripOffOuterParentheses && s[0] === "(") {
         // found beginning paren, now check if there is an ending parens
-        let lastChild = matchedChildren[nChildren - 1];
+        let lastChild = matchedChildren[numChildren - 1];
         if (typeof lastChild === "string") {
           let sLast = lastChild.trimRight();
           if (sLast[sLast.length - 1] === ")") {
@@ -81,7 +81,7 @@ export function returnBreakStringsSugarFunction({
             // check if stripped off initial paren and we're at the end
             if (
               strippedParens &&
-              compInd === nChildren - 1 &&
+              compInd === numChildren - 1 &&
               ind === s.length - 1
             ) {
               // strip off last parens
@@ -211,7 +211,7 @@ export function breakEmbeddedStringsIntoParensPieces({
       continue;
     }
 
-    let s = component.trim();
+    let s = component;
 
     let beginInd = 0;
 
@@ -232,7 +232,7 @@ export function breakEmbeddedStringsIntoParensPieces({
           // found end of piece in parens
           if (ind + 1 > beginInd) {
             let lastInd = removeParens ? ind : ind + 1;
-            let newString = s.substring(beginInd, lastInd).trim();
+            let newString = s.substring(beginInd, lastInd);
             if (newString.length > 0) {
               currentPiece.push(newString);
             }
@@ -247,6 +247,69 @@ export function breakEmbeddedStringsIntoParensPieces({
         // starting a new piece
         // each piece must begin with parens
         return { success: false };
+      }
+    }
+
+    if (s.length > beginInd) {
+      let newString = s.substring(beginInd, s.length);
+      currentPiece.push(newString);
+    }
+  }
+
+  // parens didn't match, so return failure
+  if (Nparens !== 0) {
+    return { success: false };
+  }
+
+  if (currentPiece.length > 0) {
+    pieces.push(currentPiece);
+  }
+
+  return {
+    success: true,
+    pieces: pieces,
+  };
+}
+
+export function breakIntoPiecesBySpacesOutsideParens({ componentList }) {
+  let Nparens = 0;
+  let pieces = [];
+  let currentPiece = [];
+
+  for (let component of componentList) {
+    if (typeof component !== "string") {
+      currentPiece.push(component);
+      continue;
+    }
+
+    let s = component;
+
+    let beginInd = 0;
+
+    for (let ind = 0; ind < s.length; ind++) {
+      let char = s[ind];
+
+      if (char === "(") {
+        Nparens++;
+      } else if (char === ")") {
+        if (Nparens === 0) {
+          // parens didn't match, so return failure
+          return { success: false };
+        }
+        Nparens--;
+      } else if (Nparens === 0 && char.match(/\s/)) {
+        // found a space outside parens
+
+        if (ind > beginInd) {
+          currentPiece.push(s.substring(beginInd, ind));
+        }
+
+        if (currentPiece.length > 0) {
+          pieces.push(currentPiece);
+          currentPiece = [];
+        }
+
+        beginInd = ind + 1;
       }
     }
 
@@ -267,7 +330,7 @@ export function breakEmbeddedStringsIntoParensPieces({
 
   return {
     success: true,
-    pieces: pieces,
+    pieces,
   };
 }
 

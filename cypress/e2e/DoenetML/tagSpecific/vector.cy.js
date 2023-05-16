@@ -6868,8 +6868,8 @@ describe("Vector Tag Tests", function () {
   <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
     <vector head="(-1,-0.05)" tail="(1,0.05)" name="l" />
     <point x="100" y="0" name="P">
-      <constraints baseOnGraph="_graph1">
-        <constrainTo><copy target="l" /></constrainTo>
+      <constraints>
+        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
       </constraints>
     </point>
   </graph>
@@ -16632,7 +16632,7 @@ describe("Vector Tag Tests", function () {
     <copy target="v5" head="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="tail" assignNames="v0t" />
   <copy target="g0/v0" prop="head" assignNames="v0h" />
@@ -17358,7 +17358,7 @@ describe("Vector Tag Tests", function () {
 
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/vdrag" prop="tail" assignNames="vdragt" />
   <copy target="g0/vdrag" prop="head" assignNames="vdragh" />
@@ -18765,6 +18765,78 @@ describe("Vector Tag Tests", function () {
     });
   });
 
+  it("vector from vector operations", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" fixed>(6,3)</math>
+    <graph>
+      <vector name="v">(3,4) + 2(1,-1)</vector>
+      <vector name="w">2$m - 3$v</vector>
+    </graph>
+
+    <math copySource="v" name="v2" />
+    <math copySource="w" name="w2" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,3)");
+    cy.get(cesc2("#/v2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−3,0)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/v"].stateValues.displacement).eqls([5, 2]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([-3, 0]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v",
+        args: { headcoords: [1, 4] },
+      });
+    });
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow").should("contain.text", "(1,4)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow").should("contain.text", "(9,−6)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.displacement).eqls([1, 4]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([9, -6]);
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/w",
+        args: { headcoords: [-9, 9] },
+      });
+    });
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow").should("contain.text", "(7,−1)");
+    cy.get(cesc2("#/w2") + " .mjx-mrow").should("contain.text", "(−9,9)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/v"].stateValues.displacement).eqls([7, -1]);
+      expect(stateVariables["/w"].stateValues.displacement).eqls([-9, 9]);
+    });
+  });
+
   it("vector magnitude", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -18772,7 +18844,7 @@ describe("Vector Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <vector name="v" head="(5,4)" tail="(-2,1)" />
+      <vector name="v" head="(5,4)" tail="(-2,1)" displayDigits="10" />
     </graph>
     <copy prop="magnitude" target="v" assignNames="magnitude" />
     <point name="A" copySource="v.tail" />
@@ -19693,5 +19765,419 @@ describe("Vector Tag Tests", function () {
       "background-color",
       "rgb(0, 0, 255)",
     );
+  });
+
+  it("vector with head and tail, tail constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" />
+    </constraints>
+  </point>
+  <point name="Q">(-4,2)</point>
+  <vector tail="$P" head="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 5;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      // adjust for constraints
+      tailx = -5;
+      taily = -9;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
+
+  it("vector with head and tail, head constrained to grid", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+  <point name="P">(4,1)</point>
+  <point name="Q">(-4,2)
+    <constraints>
+      <constrainToGrid dx="5" dy="3" />
+    </constraints>
+  </point>
+  <vector tail="$P" head="$Q" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let tailx = 4;
+    let taily = 1;
+    let headx = -5;
+    let heady = 3;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move vector up and to the right");
+    cy.window().then(async (win) => {
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady],
+        },
+      });
+
+      // adjust for constraints
+      moveX = 2;
+      moveY = 1;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied head");
+    cy.window().then(async (win) => {
+      headx = -5;
+      heady = 7;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady },
+      });
+
+      // adjust for constraints
+      headx = -5;
+      heady = 6;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied tail");
+    cy.window().then(async (win) => {
+      tailx = -3;
+      taily = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily },
+      });
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+
+    cy.log("move copied displacement");
+    cy.window().then(async (win) => {
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady],
+        },
+      });
+
+      // adjust for constraints
+      headx = Math.round(headx / 5) * 5;
+      heady = Math.round(heady / 3) * 3;
+      headx = headx === 0 ? 0 : headx; // change -0 to 0
+      displacementx = headx - tailx;
+      displacementy = heady - taily;
+
+      await testVectorCopiedHTD({
+        headx,
+        heady,
+        tailx,
+        taily,
+        displacementTailShiftx,
+        displacementTailShifty,
+      });
+    });
+  });
+
+  it("round vector", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <vector tail="(2.58106823,510.523950183)" head="(5.2164162,623.5234601)" name="v1"/>
+
+    $v1.displacement{assignNames="v1d"}
+    $v1.tail{assignNames="v1t"}
+    $v1.head{assignNames="v1h"}
+    
+    <p>
+      <vector copysource="v1" name="v2" displayDigits="6" />
+      
+      $v2.displacement{assignNames="v2d"}
+      $v2.tail{assignNames="v2t"}
+      $v2.head{assignNames="v2h"}
+    </p>
+
+    <vector copysource="v1" name="v3" displayDecimals="0" ignoreDisplayDigits />
+    
+    $v3.displacement{assignNames="v3d"}
+    $v3.tail{assignNames="v3t"}
+    $v3.head{assignNames="v3h"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/v1d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.64,113)");
+    cy.get(cesc2("#/v1t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58,510.52)");
+    cy.get(cesc2("#/v1h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.22,623.52)");
+
+    cy.get(cesc2("#/v2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/v2d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.63535,113)");
+    cy.get(cesc2("#/v2t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2.58107,510.524)");
+    cy.get(cesc2("#/v2h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5.21642,623.523)");
+
+    cy.get(cesc2("#/v3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/v3d") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,113)");
+    cy.get(cesc2("#/v3t") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,511)");
+    cy.get(cesc2("#/v3h") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,624)");
   });
 });

@@ -161,7 +161,7 @@ export function Portfolio() {
           justifyContent="center"
           alignItems="center"
           textAlign="center"
-          zIndex="1200"
+          zIndex="500"
         >
           <Text fontSize="24px" fontWeight="700">
             {data.fullName}

@@ -156,7 +156,7 @@ export class Extremum extends BaseComponent {
         extremumChild: {
           dependencyType: "child",
           childGroups: ["points"],
-          variableNames: ["nDimensions", "xs"],
+          variableNames: ["numDimensions", "xs"],
         },
         location: {
           dependencyType: "attributeComponent",
@@ -174,7 +174,7 @@ export class Extremum extends BaseComponent {
 
         if (dependencyValues.extremumChild.length > 0) {
           let extremumChild = dependencyValues.extremumChild[0];
-          if (extremumChild.stateValues.nDimensions !== 2) {
+          if (extremumChild.stateValues.numDimensions !== 2) {
             console.log(
               "Cannot determine " +
                 componentClass.componentType +
@@ -278,7 +278,6 @@ export class Extrema extends BaseComponent {
     };
 
     sugarInstructions.push({
-      // childrenRegex: /s+(.*s)?/,
       replacementFunction: createExtremumList,
     });
 
@@ -323,7 +322,7 @@ export class Extrema extends BaseComponent {
 
     stateVariableDefinitions[extremaClass.componentType] = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       isLocation: true,
       entryPrefixes: [
         extremaClass.componentTypeSingular,
@@ -459,13 +458,13 @@ export class Extrema extends BaseComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nChildren: {
+        numChildren: {
           dependencyType: "stateVariable",
           variableName: "n" + extremaClass.componentTypeCapitalized,
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nChildren, 2];
+        return [dependencyValues.numChildren, 2];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let dependenciesByKey = {};

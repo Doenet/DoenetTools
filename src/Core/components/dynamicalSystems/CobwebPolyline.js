@@ -1,3 +1,8 @@
+import {
+  returnRoundingAttributeComponentShadowing,
+  returnRoundingAttributes,
+  returnRoundingStateVariableDefinitions,
+} from "../../utils/rounding";
 import Polyline from "../Polyline";
 import me from "math-expressions";
 
@@ -15,9 +20,9 @@ export default class CobwebPolyline extends Polyline {
       public: true,
     };
 
-    attributes.nPoints = {
+    attributes.numPoints = {
       createComponentOfType: "number",
-      createStateVariable: "nPoints",
+      createStateVariable: "numPoints",
       defaultValue: 1,
       public: true,
       clamp: [0, Infinity],
@@ -25,16 +30,16 @@ export default class CobwebPolyline extends Polyline {
     };
 
     attributes.variable = {
-      createComponentOfType: "variable",
+      createComponentOfType: "_variableName",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
       public: true,
       forRenderer: true,
     };
 
-    attributes.nIterationsRequired = {
+    attributes.numIterationsRequired = {
       createComponentOfType: "number",
-      createStateVariable: "nIterationsRequired",
+      createStateVariable: "numIterationsRequired",
       defaultValue: 0,
       public: true,
     };
@@ -57,15 +62,22 @@ export default class CobwebPolyline extends Polyline {
       createComponentOfType: "point",
     };
 
+    Object.assign(attributes, returnRoundingAttributes());
+
     return attributes;
   }
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nDimensions.returnDependencies = () => ({});
-    stateVariableDefinitions.nDimensions.definition = () => ({
-      setValue: { nDimensions: 2 },
+    Object.assign(
+      stateVariableDefinitions,
+      returnRoundingStateVariableDefinitions(),
+    );
+
+    stateVariableDefinitions.numDimensions.returnDependencies = () => ({});
+    stateVariableDefinitions.numDimensions.definition = () => ({
+      setValue: { numDimensions: 2 },
     });
 
     stateVariableDefinitions.initialPoint = {
@@ -73,6 +85,8 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
           if (prefix === "initialPointX") {
             return [];
@@ -199,34 +213,34 @@ export default class CobwebPolyline extends Polyline {
       },
     };
 
-    // since inherit from polyline, should have nVertices be number of vertices
-    stateVariableDefinitions.nVertices = {
+    // since inherit from polyline, should have numVertices be number of vertices
+    stateVariableDefinitions.numVertices = {
       isAlias: true,
-      targetVariableName: "nPoints",
+      targetVariableName: "numPoints",
     };
 
-    stateVariableDefinitions.nOriginalVertices = {
+    stateVariableDefinitions.numOriginalVertices = {
       providePreviousValuesInDefinition: true,
       returnDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues, previousValues }) {
-        let nOriginalVertices = dependencyValues.nVertices;
+        let numOriginalVertices = dependencyValues.numVertices;
 
-        if (previousValues.nOriginalVertices > nOriginalVertices) {
-          nOriginalVertices = previousValues.nOriginalVertices;
+        if (previousValues.numOriginalVertices > numOriginalVertices) {
+          numOriginalVertices = previousValues.numOriginalVertices;
         }
 
-        return { setValue: { nOriginalVertices } };
+        return { setValue: { numOriginalVertices } };
       },
     };
 
     stateVariableDefinitions.originalVertices = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       hasEssential: true,
       entryPrefixes: ["originalVertexX", "originalVertex"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -296,19 +310,19 @@ export default class CobwebPolyline extends Polyline {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nOriginalVertices: {
+        numOriginalVertices: {
           dependencyType: "stateVariable",
-          variableName: "nOriginalVertices",
+          variableName: "numOriginalVertices",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
         return [
-          dependencyValues.nOriginalVertices - 1,
-          dependencyValues.nDimensions,
+          dependencyValues.numOriginalVertices - 1,
+          dependencyValues.numDimensions,
         ];
       },
       returnArrayDependenciesByKey: () => ({
@@ -639,13 +653,13 @@ export default class CobwebPolyline extends Polyline {
       },
       entryPrefixes: ["correctVertex"],
       returnArraySizeDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices - 1];
+        return [dependencyValues.numVertices - 1];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -674,17 +688,19 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
-          variableName: "nGradedVertices",
+          variableName: "numGradedVertices",
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
           },
         },
         {
-          variableName: "nCorrectVertices",
+          variableName: "numCorrectVertices",
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
@@ -698,26 +714,26 @@ export default class CobwebPolyline extends Polyline {
         },
       }),
       definition({ dependencyValues }) {
-        let nGradedVertices = dependencyValues.correctVertices.length;
+        let numGradedVertices = dependencyValues.correctVertices.length;
         let fractionCorrectVertices;
-        let nCorrectVertices;
+        let numCorrectVertices;
 
-        if (nGradedVertices === 0) {
+        if (numGradedVertices === 0) {
           fractionCorrectVertices = 0;
-          nCorrectVertices = 0;
+          numCorrectVertices = 0;
         } else {
-          nCorrectVertices = dependencyValues.correctVertices.reduce(
+          numCorrectVertices = dependencyValues.correctVertices.reduce(
             (a, c) => a + c,
             0,
           );
-          fractionCorrectVertices = nCorrectVertices / nGradedVertices;
+          fractionCorrectVertices = numCorrectVertices / numGradedVertices;
         }
 
         return {
           setValue: {
             fractionCorrectVertices,
-            nGradedVertices,
-            nCorrectVertices,
+            numGradedVertices,
+            numCorrectVertices,
           },
         };
       },
@@ -727,10 +743,12 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       additionalStateVariablesDefined: [
         {
-          variableName: "nGradedVerticesAdjusted",
+          variableName: "numGradedVerticesAdjusted",
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
@@ -738,62 +756,62 @@ export default class CobwebPolyline extends Polyline {
         },
       ],
       returnDependencies: () => ({
-        nCorrectVertices: {
+        numCorrectVertices: {
           dependencyType: "stateVariable",
-          variableName: "nCorrectVertices",
+          variableName: "numCorrectVertices",
         },
-        nGradedVertices: {
+        numGradedVertices: {
           dependencyType: "stateVariable",
-          variableName: "nGradedVertices",
+          variableName: "numGradedVertices",
         },
-        nIterationsRequired: {
+        numIterationsRequired: {
           dependencyType: "stateVariable",
-          variableName: "nIterationsRequired",
+          variableName: "numIterationsRequired",
         },
       }),
       definition({ dependencyValues }) {
-        let nVerticesRequired = 0;
-        if (dependencyValues.nIterationsRequired > 0) {
-          nVerticesRequired = 2 * dependencyValues.nIterationsRequired - 1;
+        let numVerticesRequired = 0;
+        if (dependencyValues.numIterationsRequired > 0) {
+          numVerticesRequired = 2 * dependencyValues.numIterationsRequired - 1;
         }
 
-        let nGradedVerticesAdjusted = Math.max(
-          dependencyValues.nGradedVertices,
-          nVerticesRequired,
+        let numGradedVerticesAdjusted = Math.max(
+          dependencyValues.numGradedVertices,
+          numVerticesRequired,
         );
 
         let fractionCorrectVerticesAdjusted;
 
-        if (nGradedVerticesAdjusted === 0) {
+        if (numGradedVerticesAdjusted === 0) {
           fractionCorrectVerticesAdjusted = 0;
         } else {
           fractionCorrectVerticesAdjusted =
-            dependencyValues.nCorrectVertices / nGradedVerticesAdjusted;
+            dependencyValues.numCorrectVertices / numGradedVerticesAdjusted;
         }
 
         return {
           setValue: {
             fractionCorrectVerticesAdjusted,
-            nGradedVerticesAdjusted,
+            numGradedVerticesAdjusted,
           },
         };
       },
     };
 
-    stateVariableDefinitions.nIterateValues = {
+    stateVariableDefinitions.numIterateValues = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
       },
       returnDependencies: () => ({
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          nIterateValues: Math.ceil((dependencyValues.nVertices + 1) / 2),
+          numIterateValues: Math.ceil((dependencyValues.numVertices + 1) / 2),
         },
       }),
     };
@@ -803,16 +821,18 @@ export default class CobwebPolyline extends Polyline {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
       },
       entryPrefixes: ["iterateValue"],
       returnArraySizeDependencies: () => ({
-        nIterateValues: {
+        numIterateValues: {
           dependencyType: "stateVariable",
-          variableName: "nIterateValues",
+          variableName: "numIterateValues",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nIterateValues];
+        return [dependencyValues.numIterateValues];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -848,7 +868,7 @@ export default class CobwebPolyline extends Polyline {
     };
 
     // stateVariableDefinitions.lastVertex = {
-    //   stateVariablesDeterminingDependencies: ["nPoints"],
+    //   stateVariablesDeterminingDependencies: ["numPoints"],
     //   isArray: true,
     //   public: true,
     //   shadowingInstructions: {
@@ -873,7 +893,7 @@ export default class CobwebPolyline extends Polyline {
     //       dependenciesByKey[arrayKey] = {
     //         lastVertex: {
     //           dependencyType: "stateVariable",
-    //           variableName: `vertexX${stateValues.nPoints}_${Number(arrayKey) + 1}`
+    //           variableName: `vertexX${stateValues.numPoints}_${Number(arrayKey) + 1}`
     //         }
     //       }
     //     }
