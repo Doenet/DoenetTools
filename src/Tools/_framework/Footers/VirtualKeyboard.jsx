@@ -81,7 +81,10 @@ export default function VirtualKeyboard() {
       <Button
         flexBasis="9.5%"
         variant="outline"
-        onClick={() => callback("write \\" + letter)}
+        onClick={() => {
+          callback("write \\" + letter);
+          console.log(letter);
+        }}
       >
         <MathJax dynamic>\(\{letter}\)</MathJax>
       </Button>
