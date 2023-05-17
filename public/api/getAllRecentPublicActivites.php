@@ -12,7 +12,7 @@ $userId = $jwtArray['userId'];
 
 $response_arr;
 try {
-    throw new Exception("Temporarily demoing error handling in JS");
+
     $sql = 
         "select doenetId, cc.label, cc.imagePath,
                 screenName, email, concat(firstName, concat(' ', lastName)) as fullName,
