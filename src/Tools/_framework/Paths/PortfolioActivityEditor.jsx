@@ -1244,8 +1244,7 @@ export function PortfolioActivityEditor() {
 
       if (result.success) {
         backupOldDraft.current = false;
-        let newlySavedCid = await cidFromText(doenetML); //TODO: result.cid
-        lastKnownCidRef.current = newlySavedCid;
+        lastKnownCidRef.current = result.cid;
       }
       inTheMiddleOfSaving.current = false;
       timeout.current = null;
