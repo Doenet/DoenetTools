@@ -1,5 +1,22 @@
 import { cesc, cesc2 } from "../../../../src/_utils/url";
 
+function pointInDOM([m, n]) {
+  let str = "(";
+  if (m < 0) {
+    str += `−${Math.abs(m)}`;
+  } else {
+    str += String(m);
+  }
+  str += ",";
+  if (n < 0) {
+    str += `−${Math.abs(n)}`;
+  } else {
+    str += String(n);
+  }
+  str += ")";
+  return str;
+}
+
 describe("Curve Tag Bezier Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
@@ -11536,6 +11553,204 @@ describe("Curve Tag Bezier Tests", function () {
     cy.get(cesc("#\\/x1")).should("not.exist");
     cy.get(cesc("#\\/y1")).should("not.exist");
     cy.get(cesc("#\\/c1")).should("not.exist");
+  });
+
+  it("copy props with propIndex, control vectors and points", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+
+  <p>m: <mathinput name="m" /></p>
+  <p>n: <mathinput name="n" /></p>
+
+  <graph name="g">
+    <curve name="c" through="(1,5) (-3,-6) (1,0) (-6,3) (2,-4)">
+      <bezierControls>
+        <controlVectors>(3,-3)</controlVectors>
+        <controlVectors direction="both">(-2,4) (1,6)</controlVectors>
+        <controlVectors direction="next">(5,3)</controlVectors>
+        <controlVectors direction="previous">(1,-1)</controlVectors>
+        <controlVectors>(3,3)</controlVectors>
+      </bezierControls>
+    </curve>
+  </graph>
+  
+  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m $n" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m $n" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let desiredControlVectors = [
+      [
+        [3, -3],
+        [-3, 3],
+      ],
+      [
+        [-2, 4],
+        [1, 6],
+      ],
+      [
+        [-1.1, -1.6],
+        [5, 3],
+      ],
+      [
+        [1, -1],
+        [2.1, -1.9],
+      ],
+      [
+        [3, 3],
+        [-3, -3],
+      ],
+    ];
+
+    let throughPoints = [
+      [1, 5],
+      [-3, -6],
+      [1, 0],
+      [-6, 3],
+      [2, -4],
+    ];
+
+    let desiredControlPoints = desiredControlVectors.map((x, i) =>
+      x.map((v) =>
+        v.map((a, j) => Math.round((a + throughPoints[i][j]) * 10) / 10),
+      ),
+    );
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.get(cesc2("#/V1")).should("not.exist");
+    cy.get(cesc2("#/V2")).should("not.exist");
+    cy.get(cesc2("#/P1")).should("not.exist");
+    cy.get(cesc2("#/P2")).should("not.exist");
+
+    for (let m = 1; m <= 5; m++) {
+      cy.get(cesc2("#/m") + " textarea").type(`{end}{backspace}${m}{enter}`, {
+        force: true,
+      });
+      for (let n = 1; n <= 2; n++) {
+        cy.get(cesc2("#/n") + " textarea").type(`{end}{backspace}${n}{enter}`, {
+          force: true,
+        });
+
+        cy.get(cesc2("#/V1") + " .mjx-mrow").should(
+          "contain.text",
+          pointInDOM(desiredControlVectors[m - 1][n - 1]),
+        );
+        cy.get(cesc2("#/V2")).should("not.exist");
+
+        cy.get(cesc2("#/P1") + " .mjx-mrow").should(
+          "contain.text",
+          pointInDOM(desiredControlPoints[m - 1][n - 1]),
+        );
+        cy.get(cesc2("#/P2")).should("not.exist");
+      }
+    }
+  });
+
+  it("copy props with propIndex, control vectors and points, dot and array notation", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+
+  <p>m: <mathinput name="m" /></p>
+  <p>n: <mathinput name="n" /></p>
+
+  <graph name="g">
+    <curve name="c" through="(1,5) (-3,-6) (1,0) (-6,3) (2,-4)">
+      <bezierControls>
+        <controlVectors>(3,-3)</controlVectors>
+        <controlVectors direction="both">(-2,4) (1,6)</controlVectors>
+        <controlVectors direction="next">(5,3)</controlVectors>
+        <controlVectors direction="previous">(1,-1)</controlVectors>
+        <controlVectors>(3,3)</controlVectors>
+      </bezierControls>
+    </curve>
+  </graph>
+  
+  <p><aslist><copy source="c.controlVectors[$m][$n]" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy source="c.controlPoints[$m][$n]" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let desiredControlVectors = [
+      [
+        [3, -3],
+        [-3, 3],
+      ],
+      [
+        [-2, 4],
+        [1, 6],
+      ],
+      [
+        [-1.1, -1.6],
+        [5, 3],
+      ],
+      [
+        [1, -1],
+        [2.1, -1.9],
+      ],
+      [
+        [3, 3],
+        [-3, -3],
+      ],
+    ];
+
+    let throughPoints = [
+      [1, 5],
+      [-3, -6],
+      [1, 0],
+      [-6, 3],
+      [2, -4],
+    ];
+
+    let desiredControlPoints = desiredControlVectors.map((x, i) =>
+      x.map((v) =>
+        v.map((a, j) => Math.round((a + throughPoints[i][j]) * 10) / 10),
+      ),
+    );
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.get(cesc2("#/V1")).should("not.exist");
+    cy.get(cesc2("#/V2")).should("not.exist");
+    cy.get(cesc2("#/P1")).should("not.exist");
+    cy.get(cesc2("#/P2")).should("not.exist");
+
+    for (let m = 1; m <= 5; m++) {
+      cy.get(cesc2("#/m") + " textarea").type(`{end}{backspace}${m}{enter}`, {
+        force: true,
+      });
+      for (let n = 1; n <= 2; n++) {
+        cy.get(cesc2("#/n") + " textarea").type(`{end}{backspace}${n}{enter}`, {
+          force: true,
+        });
+
+        cy.get(cesc2("#/V1") + " .mjx-mrow").should(
+          "contain.text",
+          pointInDOM(desiredControlVectors[m - 1][n - 1]),
+        );
+        cy.get(cesc2("#/V2")).should("not.exist");
+
+        cy.get(cesc2("#/P1") + " .mjx-mrow").should(
+          "contain.text",
+          pointInDOM(desiredControlPoints[m - 1][n - 1]),
+        );
+        cy.get(cesc2("#/P2")).should("not.exist");
+      }
+    }
   });
 
   it("copy control vectors", () => {

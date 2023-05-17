@@ -1160,6 +1160,23 @@ export default class Curve extends GraphicalComponent {
           }
         }
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "controlVectors") {
+          if (propIndex.length === 1) {
+            // controlVectors[2] return the first vector controling point 2
+            return `controlVector${propIndex[0]}_1`;
+          }
+          if (propIndex.length === 2) {
+            // controlVectors[3][2] return the second vector control point 3
+            return `controlVector${propIndex[0]}_${propIndex[1]}`;
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `controlVectorX${propIndex[0]}_${propIndex[1]}_${propIndex[2]}`;
+          }
+        }
+        // TODO: do we want to handle a case like controlVector3_2[1]?
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         numThroughPoints: {
           dependencyType: "stateVariable",
@@ -1547,6 +1564,23 @@ export default class Curve extends GraphicalComponent {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "controlPoints") {
+          if (propIndex.length === 1) {
+            // controlPoints[2] return the first point controling point 2
+            return `controlPoint${propIndex[0]}_1`;
+          }
+          if (propIndex.length === 2) {
+            // controlPoints[3][2] return the second point control point 3
+            return `controlPoint${propIndex[0]}_${propIndex[1]}`;
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `controlPointX${propIndex[0]}_${propIndex[1]}_${propIndex[2]}`;
+          }
+        }
+        // TODO: do we want to handle a case like controlPoint3_2[1]?
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numThroughPoints: {
