@@ -70,18 +70,20 @@ export default function VirtualKeyboard() {
       <Button
         flexBasis="9.5%"
         variant="outline"
+        marginBottom="6px"
         onClick={() => callback("write " + letter)}
       >
         {letter}
       </Button>
     );
   }
-  function GreekLetterButton(letter) {
+  function GreekLetterButton({ letter }) {
     return (
       <Button
         flexBasis="9.5%"
         variant="outline"
-        onClick={() => {
+        marginBottom="6px"
+        onMouseDown={() => {
           callback("write \\" + letter);
           console.log(letter);
         }}
@@ -473,7 +475,7 @@ export default function VirtualKeyboard() {
         flexWrap="wrap"
         justifyContent="space-evenly"
       >
-        {GreekLetterButton("Phi")}
+        <GreekLetterButton letter="Phi" />
         {GreekLetterButton("Sigma")}
         {LetterButton("E")}
         {LetterButton("P")}
@@ -546,7 +548,7 @@ export default function VirtualKeyboard() {
         flexWrap="wrap"
         justifyContent="space-evenly"
       >
-        {GreekLetterButton("phi")}
+        <GreekLetterButton letter="phi" />
         {GreekLetterButton("varsigma")}
         {GreekLetterButton("epsilon")}
         {GreekLetterButton("rho")}
@@ -703,7 +705,7 @@ export default function VirtualKeyboard() {
           variant="ghost"
           onClick={keyboardOnClose}
         />
-        <Center tabIndex="0" ref={containerRef}>
+        <Center tabIndex="0" ref={containerRef} id="keyboard">
           <Tabs width="740px">
             <TabList>
               <Tab>123</Tab>
