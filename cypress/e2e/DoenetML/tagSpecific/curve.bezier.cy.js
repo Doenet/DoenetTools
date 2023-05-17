@@ -11579,6 +11579,8 @@ describe("Curve Tag Bezier Tests", function () {
   
   <p><aslist><copy prop="controlVectors" source="c" propIndex="$m $n" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
   <p><aslist><copy prop="controlPoints" source="c" propIndex="$m $n" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
 
   `,
         },
@@ -11629,11 +11631,38 @@ describe("Curve Tag Bezier Tests", function () {
     cy.get(cesc2("#/V2")).should("not.exist");
     cy.get(cesc2("#/P1")).should("not.exist");
     cy.get(cesc2("#/P2")).should("not.exist");
+    cy.get(cesc2("#/Vb1")).should("not.exist");
+    cy.get(cesc2("#/Vb2")).should("not.exist");
+    cy.get(cesc2("#/Vb3")).should("not.exist");
+    cy.get(cesc2("#/Pb1")).should("not.exist");
+    cy.get(cesc2("#/Pb2")).should("not.exist");
+    cy.get(cesc2("#/Pb3")).should("not.exist");
 
     for (let m = 1; m <= 5; m++) {
       cy.get(cesc2("#/m") + " textarea").type(`{end}{backspace}${m}{enter}`, {
         force: true,
       });
+
+      cy.get(cesc2("#/Vb1") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlVectors[m - 1][0]),
+      );
+      cy.get(cesc2("#/Vb2") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlVectors[m - 1][1]),
+      );
+      cy.get(cesc2("#/Vb3")).should("not.exist");
+
+      cy.get(cesc2("#/Pb1") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlPoints[m - 1][0]),
+      );
+      cy.get(cesc2("#/Pb2") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlPoints[m - 1][1]),
+      );
+      cy.get(cesc2("#/Pb3")).should("not.exist");
+
       for (let n = 1; n <= 2; n++) {
         cy.get(cesc2("#/n") + " textarea").type(`{end}{backspace}${n}{enter}`, {
           force: true,
@@ -11678,6 +11707,8 @@ describe("Curve Tag Bezier Tests", function () {
   
   <p><aslist><copy source="c.controlVectors[$m][$n]" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
   <p><aslist><copy source="c.controlPoints[$m][$n]" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy source="c.controlVectors[$m]" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy source="c.controlPoints[$m]" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
 
   `,
         },
@@ -11728,11 +11759,38 @@ describe("Curve Tag Bezier Tests", function () {
     cy.get(cesc2("#/V2")).should("not.exist");
     cy.get(cesc2("#/P1")).should("not.exist");
     cy.get(cesc2("#/P2")).should("not.exist");
+    cy.get(cesc2("#/Vb1")).should("not.exist");
+    cy.get(cesc2("#/Vb2")).should("not.exist");
+    cy.get(cesc2("#/Vb3")).should("not.exist");
+    cy.get(cesc2("#/Pb1")).should("not.exist");
+    cy.get(cesc2("#/Pb2")).should("not.exist");
+    cy.get(cesc2("#/Pb3")).should("not.exist");
 
     for (let m = 1; m <= 5; m++) {
       cy.get(cesc2("#/m") + " textarea").type(`{end}{backspace}${m}{enter}`, {
         force: true,
       });
+
+      cy.get(cesc2("#/Vb1") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlVectors[m - 1][0]),
+      );
+      cy.get(cesc2("#/Vb2") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlVectors[m - 1][1]),
+      );
+      cy.get(cesc2("#/Vb3")).should("not.exist");
+
+      cy.get(cesc2("#/Pb1") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlPoints[m - 1][0]),
+      );
+      cy.get(cesc2("#/Pb2") + " .mjx-mrow").should(
+        "contain.text",
+        pointInDOM(desiredControlPoints[m - 1][1]),
+      );
+      cy.get(cesc2("#/Pb3")).should("not.exist");
+
       for (let n = 1; n <= 2; n++) {
         cy.get(cesc2("#/n") + " textarea").type(`{end}{backspace}${n}{enter}`, {
           force: true,
