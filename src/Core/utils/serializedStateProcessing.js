@@ -363,6 +363,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     "suppressautonumber",
     "targetattributestoignorerecursively",
     "sourceattributestoignorerecursively",
+    "showlabel",
   ]);
 
   // Note: use lower case for keys

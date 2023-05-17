@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("MathInput Tag Tests", function () {
   beforeEach(() => {
@@ -3380,6 +3380,882 @@ describe("MathInput Tag Tests", function () {
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
     <p>MathInput based on math: <mathinput bindValueTo="$_math1" name="mi1" /></p>
+    <p>Copied mathinput: <mathinput copysource="mi1" name="mi2" /></p>
+    <p>Value of original mathinput: <copy source="mi1" prop="value" assignNames="value1" /></p>
+    <p>Immediate value of original mathinput: <copy source="mi1" prop="immediateValue" assignNames="immediate1" /></p>
+    <p>Value of copied mathinput: <copy source="mi2" prop="value" assignNames="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy source="mi2" prop="immediateValue" assignNames="immediate2" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "c"); // to wait until loaded
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("3x+1");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("3x+1");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+1");
+      });
+
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+1");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+1");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+1");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("3x+1");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls([
+        "+",
+        ["*", 3, "x"],
+        1,
+      ]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls([
+        "+",
+        ["*", 3, "x"],
+        1,
+      ]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "+",
+        ["*", 3, "x"],
+        1,
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "+",
+        ["*", 3, "x"],
+        1,
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls([
+        "+",
+        ["*", 3, "x"],
+        1,
+      ]);
+      expect(stateVariables["/_math2"].stateValues.value).eqls(["*", 3, "x"]);
+    });
+
+    cy.log("type new values");
+    cy.get(cesc("#\\/mi1") + " textarea").type(
+      `{ctrl+home}{shift+end}{backspace}xy{enter}`,
+      { force: true, delay: 100 },
+    );
+
+    cy.get(cesc(`#\\/_math1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/value1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/immediate1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/value2`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/immediate2`) + ` .mjx-mrow`).should("contain.text", "xy");
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/_math2"].stateValues.value).eqls([
+        "+",
+        ["*", "x", "y"],
+        -1,
+      ]);
+    });
+
+    cy.log("enter new values in reffed");
+    cy.get(cesc(`#\\/mi2`) + ` textarea`).type(
+      `{end}{backspace}{backspace}qr{enter}`,
+      { force: true },
+    );
+
+    cy.get(cesc(`#\\/_math1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/value1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/immediate1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/value2`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/immediate2`) + ` .mjx-mrow`).should("contain.text", "qr");
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "qr",
+    );
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "qr",
+    );
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("qr");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("qr");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "*",
+        "q",
+        "r",
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "*",
+        "q",
+        "r",
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/_math2"].stateValues.value).eqls([
+        "+",
+        ["*", "q", "r"],
+        -1,
+      ]);
+    });
+  });
+
+  it("downstream from mathinput via child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p>Original math: <math>1+2x</math></p>
+    <p>MathInput based on math: <mathinput name="mi1" >$_math1</mathinput></p>
+    <p>Copied mathinput: <mathinput copySource="mi1" name="mi2" /></p>
+    <p>Value of original mathinput: <copy source="mi1" prop="value" assignNames="value1" /></p>
+    <p>Immediate value of original mathinput: <copy source="mi1" prop="immediateValue" assignNames="immediate1" /></p>
+    <p>Value of copied mathinput: <copy source="mi2" prop="value" assignNames="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy source="mi2" prop="immediateValue" assignNames="immediate2" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1+2x");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+    });
+
+    cy.log("type new values");
+    cy.get(cesc("#\\/mi1") + " textarea").type(
+      `{ctrl+home}{shift+end}{backspace}xy`,
+      { force: true, delay: 100 },
+    );
+
+    cy.get(cesc(`#\\/immediate1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/immediate2`) + ` .mjx-mrow`).should("contain.text", "xy");
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+    });
+
+    cy.log("press enter");
+    cy.get(cesc("#\\/mi1") + " textarea").type(`{enter}`, { force: true });
+
+    cy.get(cesc(`#\\/_math1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/value1`) + ` .mjx-mrow`).should("contain.text", "xy");
+    cy.get(cesc(`#\\/value2`) + ` .mjx-mrow`).should("contain.text", "xy");
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "xy",
+    );
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("xy");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("xy");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["*", "x", "y"]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "*",
+        "x",
+        "y",
+      ]);
+    });
+
+    cy.log("enter new values in referenced");
+    cy.get(cesc(`#\\/mi2`) + ` textarea`)
+      .type(`{end}{backspace}{backspace}qr{enter}`, { force: true })
+      .blur();
+
+    cy.get(cesc(`#\\/_math1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/value1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/immediate1`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/value2`) + ` .mjx-mrow`).should("contain.text", "qr");
+    cy.get(cesc(`#\\/immediate2`) + ` .mjx-mrow`).should("contain.text", "qr");
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "qr",
+    );
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`).should(
+      "contain.text",
+      "qr",
+    );
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("qr");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("qr");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("qr");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(["*", "q", "r"]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "*",
+        "q",
+        "r",
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "*",
+        "q",
+        "r",
+      ]);
+    });
+
+    cy.reload();
+
+    cy.log("prefill ignored");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>b</text>
+    <p>Original math: <math>1+2x</math></p>
+    <p>MathInput based on math: <mathinput prefill="x^2/9" name="mi1" >$_math1</mathinput></p>
+    <p>Copied mathinput: <mathinput copysource="mi1" name="mi2" /></p>
+    <p>Value of original mathinput: <copy source="mi1" prop="value" assignNames="value1" /></p>
+    <p>Immediate value of original mathinput: <copy source="mi1" prop="immediateValue" assignNames="immediate1" /></p>
+    <p>Value of copied mathinput: <copy source="mi2" prop="value" assignNames="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy source="mi2" prop="immediateValue" assignNames="immediate2" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "b"); // to wait until loaded
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1+2x");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/value1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate1`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/value2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+    cy.get(cesc(`#\\/immediate2`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("1+2x");
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/_math1"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi2"].stateValues.value).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi1"].stateValues.immediateValue).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+      expect(stateVariables["/mi2"].stateValues.immediateValue).eqls([
+        "+",
+        1,
+        ["*", 2, "x"],
+      ]);
+    });
+
+    cy.reload();
+
+    cy.log("base on combination children including string");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>bb</text>
+    <p>Original math: <math>x</math></p>
+    <p>MathInput based on math and strings: <mathinput name="mi1" >2$_math1+1</mathinput></p>
+    <p>Value mathinput: <copy source="mi1" prop="value" assignNames="value" /></p>
+  
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "bb"); // to wait until loaded
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("2x+1");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+
+    cy.get(cesc(`#\\/value`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2x+1");
+      });
+
+    cy.log("type new values");
+    cy.get(cesc("#\\/mi1") + " textarea").type(
+      `{ctrl+home}{shift+end}{backspace}2y+1{enter}`,
+      { force: true },
+    );
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("2y+1");
+      });
+
+    cy.get(cesc(`#\\/value`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2y+1");
+      });
+
+    cy.reload();
+
+    cy.log("child overrides bindvalueto");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>bbb</text>
+    <p>Original math: <math>x</math></p>
+    <p>MathInput based on math and strings: <mathinput name="mi1" bindValueTo="$_math1">y</mathinput></p>
+    <p>Value mathinput: <copy source="mi1" prop="value" assignNames="value" /></p>
+  
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "bbb"); // to wait until loaded
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("y");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+
+    cy.get(cesc(`#\\/value`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("y");
+      });
+
+    cy.log("type new values");
+    cy.get(cesc("#\\/mi1") + " textarea").type(
+      `{ctrl+home}{shift+end}{backspace}2z{enter}`,
+      { force: true },
+    );
+
+    cy.get(cesc(`#\\/value`))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2z");
+      });
+
+    cy.get(cesc(`#\\/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("2z");
+      });
+
+    cy.get(cesc("#\\/_math1"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("x");
+      });
+
+    cy.reload();
+
+    cy.log("normal downstream rules apply");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>c</text>
+    <p>Original math: <math simplify>1+<math>3x</math></math></p>
+    <p>MathInput based on math: <mathinput name="mi1" >$_math1</mathinput></p>
     <p>Copied mathinput: <mathinput copysource="mi1" name="mi2" /></p>
     <p>Value of original mathinput: <copy source="mi1" prop="value" assignNames="value1" /></p>
     <p>Immediate value of original mathinput: <copy source="mi1" prop="immediateValue" assignNames="immediate1" /></p>
@@ -14100,5 +14976,653 @@ describe("MathInput Tag Tests", function () {
       "min-width",
       "0px",
     );
+  });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <p><mathInput name="mi1" /> <math copySource="mi1" name="mi1a" /> <boolean copysource="mi1.valueChanged" name="mi1changed" /> <math copySource="mi1.immediateValue" name="mi1iva" /> <boolean copysource="mi1.immediateValueChanged" name="mi1ivchanged" /></p>
+    <p><mathInput name="mi2" prefill="x" /> <math copySource="mi2" name="mi2a" /> <boolean copysource="mi2.valueChanged" name="mi2changed" /> <math copySource="mi2.immediateValue" name="mi2iva" /> <boolean copysource="mi2.immediateValueChanged" name="mi2ivchanged" /></p>
+    <p><mathInput name="mi3" bindValueTo="$mi1" /> <math copySource="mi3" name="mi3a" /> <boolean copysource="mi3.valueChanged" name="mi3changed" /> <math copySource="mi3.immediateValue" name="mi3iva" /> <boolean copysource="mi3.immediateValueChanged" name="mi3ivchanged" /></p>
+    <p><mathInput name="mi4">$mi2.immediateValue</mathInput> <math copySource="mi4" name="mi4a" /> <boolean copysource="mi4.valueChanged" name="mi4changed" /> <math copySource="mi4.immediateValue" name="mi4iva" /> <boolean copysource="mi4.immediateValueChanged" name="mi4ivchanged" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in first marks only first immediate value as changed");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("y", { force: true });
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow").should("contain.text", "y");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in first marks only first value as changed");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow").should("contain.text", "y");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in second marks only second immediate value as changed");
+
+    cy.get(cesc2("#/mi2") + " textarea").type("{end}{backspace}z", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow").should("contain.text", "z");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in second marks only second value as changed");
+
+    cy.get(cesc2("#/mi2") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow").should("contain.text", "z");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks third immediate value as changed");
+
+    cy.get(cesc2("#/mi3") + " textarea").type("{end}{backspace}a", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow").should("contain.text", "a");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in third marks third value as changed");
+
+    cy.get(cesc2("#/mi3") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow").should("contain.text", "a");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks fourth immediate value as changed");
+
+    cy.get(cesc2("#/mi4") + " textarea").type("{end}{backspace}b", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow").should("contain.text", "b");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "b");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log("press enter in fourth marks fourth value as changed");
+
+    cy.get(cesc2("#/mi4") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow").should("contain.text", "b");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "b");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "b");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "b");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "b");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks only third immediate value as changed");
+
+    cy.get(cesc2("#/mi3") + " textarea").type("y", { force: true });
+
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow").should("contain.text", "y");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "press enter in third marks first and third value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/mi3") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow").should("contain.text", "y");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks only fourth immediate value as changed");
+
+    cy.get(cesc2("#/mi4") + " textarea").type("{end}{backspace}z", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow").should("contain.text", "z");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log(
+      "press enter in fourth marks third and fourth value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/mi4") + " textarea").type("{enter}", { force: true });
+
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow").should("contain.text", "z");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+  });
+
+  it("math input with label", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><mathInput name="mi1" ><label>Type something</label></mathInput></p>
+    <p><mathInput name="mi2"><label>Hello <math>a/b</math></label></mathInput></p>
+
+     `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1")).should("have.text", "Type something");
+    cy.get(cesc2("#/mi2")).should("contain.text", "Hello");
+    cy.get(cesc2("#/mi2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "ab");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi1"].stateValues.label).eq("Type something");
+      expect(stateVariables["/mi2"].stateValues.label).eq(
+        "Hello \\(\\frac{a}{b}\\)",
+      );
+    });
   });
 });

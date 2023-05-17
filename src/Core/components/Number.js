@@ -779,10 +779,10 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals",
         },
-        // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition: function ({ dependencyValues }) {
