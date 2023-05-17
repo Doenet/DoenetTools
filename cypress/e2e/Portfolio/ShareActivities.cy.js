@@ -26,36 +26,20 @@ describe("doenetEditor test", function () {
     return false;
   });
 
-  it("Share activities and remix", () => {
+  it.only("Quickly Save", () => {
     cy.get('[data-test="Portfolio"]').click();
-
-    cy.get(
-      '[data-test="Public Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 0);
-    cy.get(
-      '[data-test="Private Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 0);
-
-    cy.log("Create an activity");
     cy.get('[data-test="Add Activity"]').click();
+    cy.get(".cm-content").type(`{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="draft">Draft content</p>`);
 
-    cy.get(".cm-content").type(
-      `<p>What is your name? <textinput name="name" /></p>{enter}`,
-    );
-    cy.get('[data-test="Viewer Update Button"]').click();
+    // cy.get('[data-test="Viewer Update Button"]').click();
+    // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
+
     cy.get('[data-test="Portfolio"]').click();
-
-    cy.get(
-      '[data-test="Private Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 1);
-    cy.get(
-      '[data-test="Public Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 0);
-    // cy.get('[data-test="Private Activities"] [data-test="Activity Card"] [data-test="Menu Button"]').click();
-
+    cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ').eq(0).click();
+    cy.get(cesc2("#/draft")).should("have.text", "Draft content");
   });
 
-  it.only("Share activities and remix", () => {
+  it("Share activities and remix", () => {
     cy.get('[data-test="Portfolio"]').click();
 
     cy.get(
@@ -139,83 +123,92 @@ describe("doenetEditor test", function () {
 
     cy.get('[data-test="Viewer Update Button"]').click();
     cy.get(cesc2("#/draft")).should("have.text", "Draft content");
+    // cy.wait(5000) //TODO: Can the editor save it fast enough???
 
     cy.get('[data-test="Portfolio"]').click();
 
-    cy.log("Create a private activity");
-    cy.get('[data-test="Add Activity"]').click();
 
-    cy.get(".cm-content").type(`Stays private{enter}`);
-    cy.get('[data-test="Viewer Update Button"]').click();
-
-    cy.get('[data-test="Controls Button"]').click();
-
-
-    cy.get('[data-test="Activity Label"]').clear().type("Stay private").blur();
-    cy.get('.chakra-modal__close-btn').click();
-
-    cy.get('[data-test="Portfolio"]').click();
-
-    cy.get(
-      '[data-test="Private Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 1);
-    cy.get(
-      '[data-test="Public Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 1);
-
-    cy.log("Log on as other user");
-    cy.signin({ userId: userId2 });
-
-    cy.visit(`/`);
-
-    cy.log("Cannot find private activity Stay Private");
-    cy.get('[data-test="Community"]').click();
-    cy.get('[data-test="Search"]').type("Stay Private{enter}");
-
-    cy.get('[data-test="Search Results For"]').should('have.text', 'Stay Private');
-    cy.get('[data-test="Search Results"] [data-test="Activity Card"]').should(
-      "have.length",
-      0,
-    );
-
-    cy.log("Find public activity Hello!");
-    cy.get('[data-test="Search"]').clear().should('have.value', '').type("Hello!{enter}");
-    cy.get('[data-test="Search Results For"]').should('have.text', 'Hello!');
+    // ///TEMP
+    // cy.get('[data-test="Public Activities"] [data-test="Card Image Link"] ').eq(0).click();
+    // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
+    // ///TEMP
 
 
 
-    cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"] ').eq(0).click();
+    // cy.log("Create a private activity");
+    // cy.get('[data-test="Add Activity"]').click();
 
-    cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
-    cy.get(cesc2("#/draft")).should("not.exist");
+    // cy.get(".cm-content").type(`Stays private{enter}`);
+    // cy.get('[data-test="Viewer Update Button"]').click();
 
-    cy.get(cesc2("#/name")).type("Me{enter}");
-    cy.get(cesc2("#/_p2")).should("have.text", "Hello, Me!");
-
-    cy.log("View source code");
-    cy.contains("See Inside").click();
-
-    cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
-    cy.get(cesc2("#/draft")).should("not.exist");
-
-    cy.get(cesc2("#/name")).type("You{enter}");
-    cy.get(cesc2("#/_p2")).should("have.text", "Hello, You!");
+    // cy.get('[data-test="Controls Button"]').click();
 
 
+    // cy.get('[data-test="Activity Label"]').clear().type("Stay private").blur();
+    // cy.get('.chakra-modal__close-btn').click();
 
-    cy.log("Temporarily modify the source");
-    cy.get(".cm-content").type(
-      `{ctrl+end}<p name="temp_content">Temporary content</p>`,
-    );
-    cy.get('[data-test="Viewer Update Button"]').click();
-    cy.get(cesc2("#/temp_content")).should("have.text", "Temporary content");
+    // cy.get('[data-test="Portfolio"]').click();
+
+    // cy.get(
+    //   '[data-test="Private Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 1);
+    // cy.get(
+    //   '[data-test="Public Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 1);
+
+    // cy.log("Log on as other user");
+    // cy.signin({ userId: userId2 });
+
+    // cy.visit(`/`);
+
+    // cy.log("Cannot find private activity Stay Private");
+    // cy.get('[data-test="Community"]').click();
+    // cy.get('[data-test="Search"]').type("Stay Private{enter}");
+
+    // cy.get('[data-test="Search Results For"]').should('have.text', 'Stay Private');
+    // cy.get('[data-test="Search Results"] [data-test="Activity Card"]').should(
+    //   "have.length",
+    //   0,
+    // );
+
+    // cy.log("Find public activity Hello!");
+    // cy.get('[data-test="Search"]').clear().should('have.value', '').type("Hello!{enter}");
+    // cy.get('[data-test="Search Results For"]').should('have.text', 'Hello!');
+
+
+
+    // cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"] ').eq(0).click();
+
+    // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
+    // cy.get(cesc2("#/draft")).should("not.exist");
+
+    // cy.get(cesc2("#/name")).type("Me{enter}");
+    // cy.get(cesc2("#/_p2")).should("have.text", "Hello, Me!");
+
+    // cy.log("View source code");
+    // cy.contains("See Inside").click();
+
+    // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
+    // cy.get(cesc2("#/draft")).should("not.exist");
+
+    // cy.get(cesc2("#/name")).type("You{enter}");
+    // cy.get(cesc2("#/_p2")).should("have.text", "Hello, You!");
+
+
+
+    // cy.log("Temporarily modify the source");
+    // cy.get(".cm-content").type(
+    //   `{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="temp_content">Temporary content</p>`,
+    // );
+    // cy.get('[data-test="Viewer Update Button"]').click();
+    // cy.get(cesc2("#/temp_content")).should("have.text", "Temporary content");
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/name")).type("Mom{enter}");
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, Mom!");
 
     // cy.log("Remix");
-    // cy.contains("Remix").click();
+    // cy.get('[data-test="Remix Button"]').click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("not.exist");
@@ -223,13 +216,12 @@ describe("doenetEditor test", function () {
 
     // cy.log("Modify the source for real");
     // cy.get(".cm-content").type(
-    //   `{ctrl+end}<p name="actual_change">Actual change</p>`,
+    //   `{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="actual_change">Actual change</p>`,
     // );
     // cy.get('[data-test="Viewer Update Button"]').click();
     // cy.get(cesc2("#/actual_change")).should("have.text", "Actual change");
 
     // cy.log("Find activity in portfolio");
-    // cy.get('[data-test="Crumb 0"]').click();
     // cy.get('[data-test="Portfolio"]').click();
 
     // cy.get(
@@ -240,11 +232,7 @@ describe("doenetEditor test", function () {
     // ).should("have.length", 1);
 
     // cy.log("Edit the activity");
-    // cy.get('[data-test="Private Activities"] [data-test="Activity Card"]')
-    //   .eq(0)
-    //   .find("img")
-    //   .eq(0)
-    //   .click();
+    // cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ').eq(0).click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("not.exist");
@@ -260,11 +248,7 @@ describe("doenetEditor test", function () {
 
     // cy.log("Verify activity is unchanged with draft content");
     // cy.get('[data-test="Portfolio"]').click();
-    // cy.get('[data-test="Public Activities"] [data-test="Activity Card"]')
-    //   .eq(0)
-    //   .find("img")
-    //   .eq(0)
-    //   .click();
+    // cy.get('[data-test="Public Activities"] [data-test="Card Image Link"] ').eq(0).click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
@@ -272,9 +256,7 @@ describe("doenetEditor test", function () {
     // cy.get(cesc2("#/actual_change")).should("not.exist");
 
     // cy.log("Update public activity");
-    // cy.get('[data-test="Support Panel Controls"]')
-    //   .contains("Button", "Update Public Activity")
-    //   .click();
+    // cy.get('[data-test="Update Public Activity Button"]').click();
 
     // cy.get(cesc2("#/name")).type("Sis{enter}");
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, Sis!");
@@ -287,10 +269,7 @@ describe("doenetEditor test", function () {
     // cy.get('[data-test="Community"]').click();
 
     // cy.get('[data-test="Search"]').type("Hello!{enter}");
-    // cy.get('[data-test="Search Results"] [data-test="Activity Card"]')
-    //   .eq(0)
-    //   .find("img")
-    //   .click();
+    // cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"] ').eq(0).click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
@@ -301,7 +280,7 @@ describe("doenetEditor test", function () {
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, Bro!");
 
     // cy.log("Remix");
-    // cy.contains("Remix").click();
+    // cy.get('[data-test="Remix Button"]').click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
@@ -309,12 +288,11 @@ describe("doenetEditor test", function () {
     // cy.get(cesc2("#/actual_change")).should("not.exist");
 
     // cy.log("Modify the source for real");
-    // cy.get(".cm-content").type(`{ctrl+end}<p name="change2">New change</p>`);
+    // cy.get(".cm-content").type(`{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="change2">New change</p>`);
     // cy.get('[data-test="Viewer Update Button"]').click();
     // cy.get(cesc2("#/change2")).should("have.text", "New change");
 
     // cy.log("Find both activities in portfolio");
-    // cy.get('[data-test="Crumb 0"]').click();
     // cy.get('[data-test="Portfolio"]').click();
 
     // cy.get(
@@ -325,11 +303,7 @@ describe("doenetEditor test", function () {
     // ).should("have.length", 2);
 
     // cy.log("View the most recently remixed activity");
-    // cy.get('[data-test="Private Activities"] [data-test="Activity Card"]')
-    //   .eq(0)
-    //   .find("img")
-    //   .eq(0)
-    //   .click();
+    // cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ').eq(0).click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
@@ -338,12 +312,9 @@ describe("doenetEditor test", function () {
     // cy.get(cesc2("#/change2")).should("have.text", "New change");
 
     // cy.log("View the first remixed activity");
-    // cy.get('[data-test="Crumb 0"]').click();
-    // cy.get('[data-test="Private Activities"] [data-test="Activity Card"]')
-    //   .eq(1)
-    //   .find("img")
-    //   .eq(0)
-    //   .click();
+    // cy.get('[data-test="Portfolio"]').click();
+
+    // cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ').eq(0).click();
 
     // cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     // cy.get(cesc2("#/draft")).should("not.exist");

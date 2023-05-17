@@ -12,11 +12,13 @@ export function useSaveDraft() {
   const addToast = useToast();
   const saveDraft = useRecoilCallback(
     ({ snapshot, set }) =>
-      async ({ pageId, courseId, backup = false }) => {
-        const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const lastKnownCid = await snapshot.getPromise(
-          textEditorLastKnownCidAtom,
-        );
+      async ({ pageId, courseId, backup = false, doenetML, lastKnownCid }) => {
+        if (doenetML == undefined) {
+          doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+        }
+        if (lastKnownCid == undefined) {
+          lastKnownCid = await snapshot.getPromise(textEditorLastKnownCidAtom);
+        }
 
         //Save in localStorage
         // localStorage.setItem(cid,doenetML)

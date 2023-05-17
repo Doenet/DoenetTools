@@ -74,10 +74,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 import { cidFromText } from "../../../Core/utils/cid";
-import {
-  textEditorDoenetMLAtom,
-  textEditorLastKnownCidAtom,
-} from "../../../_sharedRecoil/EditorViewerRecoil";
+import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
@@ -195,8 +192,12 @@ export async function loader({ params }) {
     }
 
     //Get the doenetML of the pageId.
+    //we need transformResponse because
+    //large numbers are simplified with toString if used on doenetMLResponse.data
+    //which was causing errors
     const doenetMLResponse = await axios.get(
       `/media/byPageId/${pageId}.doenet`,
+      { transformResponse: (data) => data.toString() },
     );
     let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
@@ -1209,7 +1210,6 @@ export function PortfolioActivityEditor() {
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
-  const setLastKnownCid = useSetRecoilState(textEditorLastKnownCidAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
@@ -1220,6 +1220,45 @@ export function PortfolioActivityEditor() {
   let editorRef = useRef(null);
   let timeout = useRef(null);
   let backupOldDraft = useRef(true);
+  let inTheMiddleOfSaving = useRef(false);
+  let postponedSaving = useRef(false);
+
+  const { saveDraft } = useSaveDraft();
+
+  const handleSaveDraft = useCallback(async () => {
+    const doenetML = textEditorDoenetML.current;
+    const lastKnownCid = lastKnownCidRef.current;
+    const backup = backupOldDraft.current;
+
+    if (inTheMiddleOfSaving.current) {
+      postponedSaving.current = true;
+    } else {
+      inTheMiddleOfSaving.current = true;
+      let result = await saveDraft({
+        pageId,
+        courseId,
+        backup,
+        lastKnownCid,
+        doenetML,
+      });
+
+      if (result.success) {
+        backupOldDraft.current = false;
+        let newlySavedCid = await cidFromText(doenetML); //TODO: result.cid
+        lastKnownCidRef.current = newlySavedCid;
+      }
+      inTheMiddleOfSaving.current = false;
+      timeout.current = null;
+
+      //If we postponed then potentially
+      //some changes were saved again while we were saving
+      //so save again
+      if (postponedSaving.current) {
+        postponedSaving.current = false;
+        handleSaveDraft();
+      }
+    }
+  }, [pageId, courseId, saveDraft]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -1231,6 +1270,8 @@ export function PortfolioActivityEditor() {
         event.stopPropagation();
         setViewerDoenetML(textEditorDoenetML.current);
         setCodeChanged(false);
+        clearTimeout(timeout.current);
+        handleSaveDraft();
       }
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
@@ -1247,38 +1288,15 @@ export function PortfolioActivityEditor() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [textEditorDoenetML, controlsOnOpen, platform]);
-
-  const { saveDraft } = useSaveDraft();
+  }, [textEditorDoenetML, controlsOnOpen, platform, handleSaveDraft]);
 
   // save draft when leave page
   useEffect(() => {
     return () => {
-      setEditorDoenetML(textEditorDoenetML.current);
-      setLastKnownCid(lastKnownCidRef.current);
-
-      saveDraft({
-        pageId,
-        courseId,
-        backup: backupOldDraft.current,
-      }).then(({ success }) => {
-        if (success) {
-          backupOldDraft.current = false;
-          cidFromText(textEditorDoenetML.current).then((newlySavedCid) => {
-            lastKnownCidRef.current = newlySavedCid;
-          });
-        }
-      });
-      timeout.current = null;
+      clearTimeout(timeout.current);
+      handleSaveDraft();
     };
-  }, [
-    pageId,
-    saveDraft,
-    courseId,
-    textEditorDoenetML,
-    setEditorDoenetML,
-    setLastKnownCid,
-  ]);
+  }, [handleSaveDraft]);
 
   const controlsBtnRef = useRef(null);
 
@@ -1428,9 +1446,12 @@ export function PortfolioActivityEditor() {
                           ""
                         )
                       }
+                      isDisabled={!codeChanged}
                       onClick={() => {
                         setViewerDoenetML(textEditorDoenetML.current);
                         setCodeChanged(false);
+                        clearTimeout(timeout.current);
+                        handleSaveDraft();
                       }}
                     >
                       Update
@@ -1553,23 +1574,7 @@ export function PortfolioActivityEditor() {
                       // Debounce save to server at 3 seconds
                       clearTimeout(timeout.current);
                       timeout.current = setTimeout(async function () {
-                        setLastKnownCid(lastKnownCidRef.current);
-
-                        saveDraft({
-                          pageId,
-                          courseId,
-                          backup: backupOldDraft.current,
-                        }).then(({ success }) => {
-                          if (success) {
-                            backupOldDraft.current = false;
-                            cidFromText(textEditorDoenetML.current).then(
-                              (newlySavedCid) => {
-                                lastKnownCidRef.current = newlySavedCid;
-                              },
-                            );
-                          }
-                        });
-                        timeout.current = null;
+                        handleSaveDraft();
                       }, 3000); //3 seconds
                     }}
                   />

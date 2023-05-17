@@ -213,7 +213,7 @@ export function PortfolioActivityViewer() {
                   {signedIn ? (
                     <HeaderSectionRight>
                       <Button
-                        data-test="Remix"
+                        data-test="Remix Button"
                         size="xs"
                         onClick={async () => {
                           let resp = await axios.get(
