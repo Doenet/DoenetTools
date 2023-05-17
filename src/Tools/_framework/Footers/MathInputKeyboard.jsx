@@ -1091,7 +1091,7 @@ export default function VirtualKeyboard() {
   );
 
   return (
-    <Panel tabIndex="0" ref={containerRef}>
+    <Panel tabIndex="0" ref={containerRef} id="keyboard">
       {/* <ContainerSection>
           <ToggleButtonSection>
             <ToggleButtonGroup onClick={handleGreekToggle}>
