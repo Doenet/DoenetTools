@@ -1102,12 +1102,13 @@ export default class Curve extends GraphicalComponent {
           }
         },
       },
-      entryPrefixes: ["controlVectorX", "controlVector"],
+      entryPrefixes: ["controlVectorX", "controlVector", "controlVectors"],
       numDimensions: 3,
       stateVariablesDeterminingDependencies: [
         "vectorControlDirections",
         "numThroughPoints",
       ],
+      returnEntryDimensions: (prefix) => (prefix === "controlVectors" ? 2 : 1),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlVectorX") {
           // controlVectorX3_2_1 is the first component of the second control vector
@@ -1132,9 +1133,33 @@ export default class Curve extends GraphicalComponent {
           } else {
             return [];
           }
+        } else if (arrayEntryPrefix === "controlVectors") {
+          // controlVectors2 is both vectors controlling the second point
+          let index = Number(varEnding) - 1;
+          if (Number.isInteger(index) && index >= 0) {
+            if (!arraySize) {
+              // if don't' have array size, just return first entry assuming large enough size
+              return [String(index) + ",0,0"];
+            }
+            if (index < arraySize[0]) {
+              let result = [];
+              for (let i = 0; i < arraySize[1]; i++) {
+                let row = [];
+                for (let j = 0; j < arraySize[2]; j++) {
+                  row.push(`${index},${i},${j}`);
+                }
+                result.push(row);
+              }
+              return result;
+            } else {
+              return [];
+            }
+          } else {
+            return [];
+          }
         } else {
           // controlVector3_2 is all components of the second control vector
-          // controling the third point
+          // controlling the third point
 
           let indices = varEnding.split("_").map((x) => Number(x) - 1);
           if (
@@ -1159,6 +1184,23 @@ export default class Curve extends GraphicalComponent {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "controlVectors") {
+          if (propIndex.length === 1) {
+            // controlVectors[2] return both vectors controlling point 2
+            return `controlVectors${propIndex[0]}`;
+          }
+          if (propIndex.length === 2) {
+            // controlVectors[3][2] return the second vector controlling point 3
+            return `controlVector${propIndex[0]}_${propIndex[1]}`;
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `controlVectorX${propIndex[0]}_${propIndex[1]}_${propIndex[2]}`;
+          }
+        }
+        // TODO: do we want to handle a case like controlVector3_2[1]?
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numThroughPoints: {
@@ -1494,8 +1536,9 @@ export default class Curve extends GraphicalComponent {
           }
         },
       },
-      entryPrefixes: ["controlPointX", "controlPoint"],
+      entryPrefixes: ["controlPointX", "controlPoint", "controlPoints"],
       numDimensions: 3,
+      returnEntryDimensions: (prefix) => (prefix === "controlPoints" ? 2 : 1),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlPointX") {
           // controlPointX3_2_1 is the first component of the second control point
@@ -1520,9 +1563,33 @@ export default class Curve extends GraphicalComponent {
           } else {
             return [];
           }
+        } else if (arrayEntryPrefix === "controlPoints") {
+          // controlPoints2 is both points controlling the second point
+          let index = Number(varEnding) - 1;
+          if (Number.isInteger(index) && index >= 0) {
+            if (!arraySize) {
+              // if don't' have array size, just return first entry assuming large enough size
+              return [String(index) + ",0,0"];
+            }
+            if (index < arraySize[0]) {
+              let result = [];
+              for (let i = 0; i < arraySize[1]; i++) {
+                let row = [];
+                for (let j = 0; j < arraySize[2]; j++) {
+                  row.push(`${index},${i},${j}`);
+                }
+                result.push(row);
+              }
+              return result;
+            } else {
+              return [];
+            }
+          } else {
+            return [];
+          }
         } else {
           // controlPoint3_2 is all components of the second control point
-          // controling the third point
+          // controlling the third point
 
           let indices = varEnding.split("_").map((x) => Number(x) - 1);
           if (
@@ -1547,6 +1614,23 @@ export default class Curve extends GraphicalComponent {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "controlPoints") {
+          if (propIndex.length === 1) {
+            // controlPoints[2] return both points controlling point 2
+            return `controlPoints${propIndex[0]}`;
+          }
+          if (propIndex.length === 2) {
+            // controlPoints[3][2] return the second point controlling point 3
+            return `controlPoint${propIndex[0]}_${propIndex[1]}`;
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `controlPointX${propIndex[0]}_${propIndex[1]}_${propIndex[2]}`;
+          }
+        }
+        // TODO: do we want to handle a case like controlPoint3_2[1]?
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numThroughPoints: {
