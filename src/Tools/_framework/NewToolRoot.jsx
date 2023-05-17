@@ -340,7 +340,6 @@ export default function ToolRoot() {
     let footerKey = `footer`;
     footer = (
       <FooterPanel
-        id="keyboard"
         isInitOpen={toolRootMenusAndPanels.footer.open}
         height={toolRootMenusAndPanels.footer.height}
         aria-label="keyboard"
