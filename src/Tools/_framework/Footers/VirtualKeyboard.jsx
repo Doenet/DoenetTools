@@ -77,18 +77,17 @@ export default function VirtualKeyboard() {
       </Button>
     );
   }
-  function GreekLetterButton({ letter }) {
+  function GreekLetterButton(letter) {
     return (
       <Button
         flexBasis="9.5%"
         variant="outline"
         marginBottom="6px"
-        onMouseDown={() => {
+        onClick={() => {
           callback("write \\" + letter);
-          console.log(letter);
         }}
       >
-        <MathJax dynamic>\(\{letter}\)</MathJax>
+        <MathJax dynamic>{"\\(\\" + letter + "\\)"}</MathJax>
       </Button>
     );
   }
@@ -475,7 +474,7 @@ export default function VirtualKeyboard() {
         flexWrap="wrap"
         justifyContent="space-evenly"
       >
-        <GreekLetterButton letter="Phi" />
+        {GreekLetterButton("Phi")}
         {GreekLetterButton("Sigma")}
         {LetterButton("E")}
         {LetterButton("P")}
@@ -548,7 +547,7 @@ export default function VirtualKeyboard() {
         flexWrap="wrap"
         justifyContent="space-evenly"
       >
-        <GreekLetterButton letter="phi" />
+        {GreekLetterButton("phi")}
         {GreekLetterButton("varsigma")}
         {GreekLetterButton("epsilon")}
         {GreekLetterButton("rho")}
