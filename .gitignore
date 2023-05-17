@@ -3,6 +3,8 @@ build
 dist_local
 node_modules
 
+# php dependencies
+vendor
 
 # production
 # /dist
@@ -26,7 +28,6 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 
-.vscode
 # src/Tools/test/testCode.doenet
 #ignore the distribution
 # dist/index.html

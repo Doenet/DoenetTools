@@ -6,7 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
-include 'permissionsAndSettingsForOneCourseFunction.php';
+include_once 'permissionsAndSettingsForOneCourseFunction.php';
 
 date_default_timezone_set('UTC');
 // America/Chicago

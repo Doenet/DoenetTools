@@ -31,10 +31,10 @@ try {
         ";
 
     $result = $conn->query($sql);
+    $promotedGroups = [];
     if ($result->num_rows <= 0) {
-        throw new Exception("No promoted content groups were found." . $conn->error);
+        //throw new Exception("No promoted content groups were found." . $conn->error);
     } else {
-        $promotedGroups = [];
         while ($row = $result->fetch_assoc()) {
             $promotedGroups[] = $row;
         }

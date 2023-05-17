@@ -1,4 +1,5 @@
 <?php
+namespace Legacy;
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: GET");
@@ -86,7 +87,7 @@ if ($success){
   $prev = $row['sortOrder'] ?: "";
   $row = $result->fetch_assoc();
   $next = $row['sortOrder'] ?: "";
-  $sortOrder = SortOrder\getSortOrder($prev, $next);
+  $sortOrder = \SortOrder\getSortOrder($prev, $next);
 
   //Defaults for each item type
   if ($itemType == 'section'){
@@ -229,7 +230,7 @@ if ($success){
 
         /* If code reaches this point without errors then commit the data in the database */
         // $conn->commit();
-    } catch (mysqli_sql_exception $exception) {
+    } catch (\mysqli_sql_exception $exception) {
         // $conn->rollback();
 
         $success = FALSE;

@@ -6,8 +6,8 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
-include 'lexicographicalRankingSort.php';
-include 'permissionsAndSettingsForOneCourseFunction.php';
+include_once 'lexicographicalRankingSort.php';
+include_once 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];

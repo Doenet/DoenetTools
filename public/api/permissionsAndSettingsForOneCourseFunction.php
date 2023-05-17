@@ -1,4 +1,5 @@
 <?php
+namespace Legacy;
 
 function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
 {

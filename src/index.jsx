@@ -18,7 +18,11 @@ import {
   loader as siteLoader,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
-import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
+import {
+  loader as caroselLoader,
+  Home,
+  HomepageCarousel,
+} from "./Tools/_framework/Paths/Home";
 import {
   loader as portfolioActivitySettingsLoader,
   action as portfolioActivitySettingsAction,
@@ -48,6 +52,7 @@ import {
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
+import ErrorPanel from "./Tools/_framework/Panels/ErrorPanel";
 
 const theme = extendTheme({
   fonts: {
@@ -140,7 +145,6 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        loader: caroselLoader,
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -154,6 +158,18 @@ const router = createBrowserRouter([
           </MathJaxContext>
           // </DarkmodeController>
         ),
+        children: [
+          {
+            path: "/",
+            element: <HomepageCarousel />,
+            loader: caroselLoader,
+            errorElement: (
+              <ChakraProvider theme={theme}>
+                <ErrorPanel />
+              </ChakraProvider>
+            ),
+          },
+        ],
       },
       {
         path: "community",
@@ -163,6 +179,11 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Community />
+          </ChakraProvider>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPanel />
           </ChakraProvider>
         ),
       },
@@ -178,6 +199,11 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Admin />
+          </ChakraProvider>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPanel />
           </ChakraProvider>
         ),
       },

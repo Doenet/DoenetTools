@@ -1,4 +1,5 @@
 <?php
+namespace Legacy;
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: GET");
@@ -79,7 +80,7 @@ $headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n";
 mail($emailaddress,$subject,$htmlContent, $headers);
 
 $response_arr = array(
-    "success" => 1,
+    "success" => true,
     "deviceName" => $deviceName,
     );
 

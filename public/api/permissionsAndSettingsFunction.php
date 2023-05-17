@@ -1,4 +1,5 @@
 <?php
+namespace Legacy;
 
 function getpermissionsAndSettings($conn, $userId)
 {

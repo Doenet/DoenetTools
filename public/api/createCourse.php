@@ -1,4 +1,6 @@
 <?php
+namespace Legacy;
+
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: access');
 header('Access-Control-Allow-Methods: GET');
@@ -6,7 +8,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
-include 'permissionsAndSettingsFunction.php';
+include_once 'permissionsAndSettingsFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
