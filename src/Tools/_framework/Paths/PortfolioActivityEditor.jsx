@@ -112,6 +112,13 @@ export async function action({ params, request }) {
         learningOutcomes,
       },
     );
+    return {
+      label,
+      imagePath: formObj.imagePath,
+      public: formObj.public,
+      doenetId: params.doenetId,
+      learningOutcomes,
+    };
   }
   if (formObj._action == "update description") {
     let { data } = await axios.get("/api/updateFileDescription.php", {
@@ -738,17 +745,57 @@ function SupportFilesControls() {
   );
 }
 
-export function GeneralActivityControls({ courseId, doenetId, activityData }) {
+export function GeneralActivityControls({
+  fetcher,
+  courseId,
+  doenetId,
+  activityData,
+}) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
   if (!isPublic && activityData?.public) {
     isPublic = activityData.public;
   }
 
-  const fetcher = useFetcher();
-
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
+
+  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
+    let learningOutcomesToSubmit = learningOutcomes;
+    if (nextLearningOutcomes) {
+      learningOutcomesToSubmit = nextLearningOutcomes;
+    }
+
+    let isPublicToSubmit = checkboxIsPublic;
+    if (nextIsPublic) {
+      isPublicToSubmit = nextIsPublic;
+    }
+
+    // Turn on/off label error messages and
+    // use the latest valid label
+    let labelToSubmit = labelValue;
+    if (labelValue == "") {
+      labelToSubmit = lastAcceptedLabelValue.current;
+      setLabelIsInvalid(true);
+    } else {
+      if (labelIsInvalid) {
+        setLabelIsInvalid(false);
+      }
+    }
+    lastAcceptedLabelValue.current = labelToSubmit;
+    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    fetcher.submit(
+      {
+        _action: "update general",
+        label: labelToSubmit,
+        imagePath,
+        public: isPublicToSubmit,
+        learningOutcomes: serializedLearningOutcomes,
+        doenetId,
+      },
+      { method: "post" },
+    );
+  }
 
   const onDrop = useCallback(
     async (files) => {
@@ -855,44 +902,6 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-    let learningOutcomesToSubmit = learningOutcomes;
-    if (nextLearningOutcomes) {
-      learningOutcomesToSubmit = nextLearningOutcomes;
-    }
-
-    let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
-      isPublicToSubmit = nextIsPublic;
-    }
-
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelValue;
-    if (labelValue == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
-    } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
-      }
-    }
-    lastAcceptedLabelValue.current = labelToSubmit;
-    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-
-    fetcher.submit(
-      {
-        _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
-        doenetId,
-      },
-      { method: "post" },
-    );
-  }
-
   return (
     <>
       <AlertQueue alerts={alerts} />
@@ -975,6 +984,7 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
                   <Input
                     size="sm"
                     value={outcome}
+                    data-test={`learning outcome ${i}`}
                     // width="300px"
                     onChange={(e) => {
                       setLearningOutcomes((prev) => {
@@ -994,6 +1004,7 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
                   />
                   <IconButton
                     variant="outline"
+                    data-test={`delete learning outcome ${i} button`}
                     size="sm"
                     color="doenet.mainRed"
                     borderColor="doenet.mainRed"
@@ -1018,6 +1029,7 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
             <Center>
               <IconButton
                 isDisabled={learningOutcomes.length > 9}
+                data-test={`add a learning outcome button`}
                 variant="outline"
                 width="80%"
                 size="xs"
@@ -1040,6 +1052,7 @@ export function GeneralActivityControls({ courseId, doenetId, activityData }) {
 
           <Checkbox
             size="lg"
+            data-test="Public Checkbox"
             name="public"
             value="on"
             isChecked={checkboxIsPublic == "1"}
@@ -1091,6 +1104,10 @@ function PortfolioActivitySettingsDrawer({
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
 
+  //Need fetcher at this level to get label refresh
+  //when close drawer after changing label
+  const fetcher = useFetcher();
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -1112,10 +1129,16 @@ function PortfolioActivitySettingsDrawer({
         <DrawerBody>
           <Tabs defaultIndex={controlsTabsLastIndex.current}>
             <TabList>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 0)}>
+              <Tab
+                onClick={() => (controlsTabsLastIndex.current = 0)}
+                data-test="General Tab"
+              >
                 General
               </Tab>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 1)}>
+              <Tab
+                onClick={() => (controlsTabsLastIndex.current = 1)}
+                data-test="Support Files Tab"
+              >
                 Support Files
               </Tab>
               {/* <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
@@ -1126,6 +1149,7 @@ function PortfolioActivitySettingsDrawer({
               <TabPanels>
                 <TabPanel>
                   <GeneralActivityControls
+                    fetcher={fetcher}
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
