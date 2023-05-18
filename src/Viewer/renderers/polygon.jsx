@@ -102,7 +102,7 @@ export default React.memo(function Polygon(props) {
     let jsxPolygonAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 

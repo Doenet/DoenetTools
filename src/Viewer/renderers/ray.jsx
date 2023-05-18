@@ -75,7 +75,7 @@ export default React.memo(function Ray(props) {
     var jsxRayAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
       strokeColor: lineColor,
@@ -250,7 +250,7 @@ export default React.memo(function Ray(props) {
       }
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
+    previousWithLabel.current = SVs.labelForGraph !== "";
 
     rayJXG.current = newRayJXG;
   }
@@ -364,9 +364,8 @@ export default React.memo(function Ray(props) {
       }
 
       rayJXG.current.name = SVs.labelForGraph;
-      // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

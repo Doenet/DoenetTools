@@ -100,7 +100,7 @@ export default React.memo(function Circle(props) {
         ? SVs.selectedStyle.markerColorDarkMode
         : SVs.selectedStyle.markerColor;
 
-    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+    let withlabel = SVs.labelForGraph !== "";
 
     var jsxCircleAttributes = {
       name: SVs.labelForGraph,
@@ -133,7 +133,7 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes.label.useMathJax = true;
     }
 
-    if (SVs.showLabel && SVs.labelForGraph !== "") {
+    if (SVs.labelForGraph !== "") {
       if (SVs.applyStyleToLabel) {
         jsxCircleAttributes.label.strokeColor = lineColor;
       } else {
@@ -490,7 +490,7 @@ export default React.memo(function Circle(props) {
       }
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
+    previousWithLabel.current = SVs.labelForGraph !== "";
 
     return circleJXG.current;
   }
@@ -849,7 +849,7 @@ export default React.memo(function Circle(props) {
 
       circleJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         circleJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
