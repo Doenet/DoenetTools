@@ -86,7 +86,7 @@ export default React.memo(function Polyline(props) {
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
       strokeColor: lineColor,

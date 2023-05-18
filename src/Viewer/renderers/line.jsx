@@ -66,7 +66,7 @@ export default React.memo(function Line(props) {
       return;
     }
 
-    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+    let withlabel = SVs.labelForGraph !== "";
 
     let lineColor =
       darkMode === "dark"
@@ -310,7 +310,7 @@ export default React.memo(function Line(props) {
       }
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
+    previousWithLabel.current = SVs.labelForGraph !== "";
 
     lineJXG.current = newLineJXG;
   }
@@ -425,7 +425,7 @@ export default React.memo(function Line(props) {
 
       lineJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

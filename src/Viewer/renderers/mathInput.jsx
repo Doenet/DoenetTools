@@ -387,12 +387,19 @@ export default function MathInput(props) {
                   textareaRef.current.addEventListener(
                     "focusout",
                     (e) => {
-                      let keyboard = document.getElementById("keyboard");
-                      if (keyboard?.contains(e.relatedTarget)) {
-                        e.target.focus();
-                      } else {
-                        // remove focus
-                      }
+                      // apparently there are array-like things in javascript that
+                      // can be converted to real arrays with Array.from()
+                      // https://stackoverflow.com/a/22754453
+                      let keyboards = Array.from(
+                        document.getElementsByClassName("keyboard"),
+                      );
+                      keyboards.forEach((keyboard) => {
+                        if (keyboard?.contains(e.relatedTarget)) {
+                          e.target.focus();
+                        } else {
+                          // remove focus
+                        }
+                      });
                     },
                     false,
                   );

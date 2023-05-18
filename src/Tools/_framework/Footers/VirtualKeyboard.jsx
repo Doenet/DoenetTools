@@ -70,6 +70,7 @@ export default function VirtualKeyboard() {
       <Button
         flexBasis="9.5%"
         variant="outline"
+        marginBottom="6px"
         onClick={() => callback("write " + letter)}
       >
         {letter}
@@ -81,9 +82,12 @@ export default function VirtualKeyboard() {
       <Button
         flexBasis="9.5%"
         variant="outline"
-        onClick={() => callback("write \\" + letter)}
+        marginBottom="6px"
+        onClick={() => {
+          callback("write \\" + letter);
+        }}
       >
-        <MathJax dynamic>\(\{letter}\)</MathJax>
+        <MathJax dynamic>{"\\(\\" + letter + "\\)"}</MathJax>
       </Button>
     );
   }
@@ -700,7 +704,7 @@ export default function VirtualKeyboard() {
           variant="ghost"
           onClick={keyboardOnClose}
         />
-        <Center tabIndex="0" ref={containerRef}>
+        <Center tabIndex="0" ref={containerRef} className="keyboard">
           <Tabs width="740px">
             <TabList>
               <Tab>123</Tab>

@@ -94,7 +94,7 @@ export default React.memo(function Curve(props) {
     var curveAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: lineColor,
@@ -105,7 +105,7 @@ export default React.memo(function Curve(props) {
       lineCap: "butt",
     };
 
-    if (SVs.showLabel && SVs.labelForGraph !== "") {
+    if (SVs.labelForGraph !== "") {
       let anchorx, offset, position;
       if (SVs.labelPosition === "upperright") {
         position = "urt";
@@ -797,8 +797,7 @@ export default React.memo(function Curve(props) {
       curveJXG.current.updateCurve();
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
-        curveJXG.current.label.visPropCalc.visible =
-          SVs.showLabel && SVs.labelForGraph !== "";
+        curveJXG.current.label.visPropCalc.visible = SVs.labelForGraph !== "";
         if (SVs.applyStyleToLabel) {
           curveJXG.current.label.visProp.strokecolor = lineColor;
         } else {

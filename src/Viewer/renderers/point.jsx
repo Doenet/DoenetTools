@@ -94,7 +94,7 @@ export default React.memo(function Point(props) {
     let fillColor = useOpenSymbol ? "var(--canvas)" : markerColor;
     let strokeColor = useOpenSymbol ? markerColor : "none";
 
-    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+    let withlabel = SVs.labelForGraph !== "";
 
     let jsxPointAttributes = {
       name: SVs.labelForGraph,
@@ -584,7 +584,7 @@ export default React.memo(function Point(props) {
 
       pointJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         pointJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
