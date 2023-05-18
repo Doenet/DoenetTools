@@ -1,9 +1,8 @@
 import React from "react";
-// import type { StyleFunctionProps } from '@chakra-ui/styled-system';
-import { createRoot } from "react-dom/client";
-import { RecoilRoot } from "recoil";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+import { createRoot } from "react-dom/client";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
@@ -108,7 +107,7 @@ const theme = extendTheme({
           },
         },
         outline: {
-          borderColor: "doenet.mainBlue",
+          borderColor: "#2D5994",
           _hover: {
             bg: "solidLightBlue",
           },
@@ -296,8 +295,6 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
-    <ChakraProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ChakraProvider>
+    <RouterProvider router={router} />
   </RecoilRoot>,
 );
