@@ -13,13 +13,6 @@ export default class GraphicalComponent extends BaseComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.showLabel = {
-      createComponentOfType: "boolean",
-      createStateVariable: "showLabel",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-    };
     attributes.applyStyleToLabel = {
       createComponentOfType: "boolean",
       createStateVariable: "applyStyleToLabel",
