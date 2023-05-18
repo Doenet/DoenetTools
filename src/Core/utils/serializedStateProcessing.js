@@ -382,6 +382,9 @@ function substituteAttributeDeprecations(serializedComponents) {
     answer: {
       maximumnumberofattempts: "maxNumAttempts",
     },
+    bestfitline: {
+      points: "data",
+    },
   };
 
   // use lower case

@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("BestFitLine Tag Tests", function () {
   beforeEach(() => {
@@ -16,7 +16,6 @@ describe("BestFitLine Tag Tests", function () {
         <collect name="ps" componentTypes="point" target="g" />
       </setup>
       
-      <text>a</text>
       <graph name="g">
         <point>(1,2)</point>
         <point>(1,6)</point>
@@ -24,26 +23,37 @@ describe("BestFitLine Tag Tests", function () {
         <point>(7,3)</point>
         <point>(7,-1)</point>
       
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine data="$ps" name="l" />
       
       </graph>
       
       <copy prop="equation" target="l" assignNames="eq" />
+      <p name="data">data: <aslist>$l.data</aslist></p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
-
-    cy.get(cesc("#\\/eq"))
-      .find(".mjx-mrow")
+    cy.get(cesc2("#/eq") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("y=−0.5x+4.5");
-      });
+      .should("have.text", "y=−0.5x+4.5");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(1,6)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(7,3)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(7,−1)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -78,14 +88,26 @@ describe("BestFitLine Tag Tests", function () {
       });
     });
 
-    cy.get(cesc("#\\/eq")).should("contain.text", "y=2x+1");
-    cy.get(cesc("#\\/eq"))
-      .find(".mjx-mrow")
+    cy.get(cesc2("#/eq") + " .mjx-mrow").should("contain.text", "y=2x+1");
+    cy.get(cesc2("#/eq") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("y=2x+1");
-      });
+      .should("have.text", "y=2x+1");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−5,−8)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(3,5)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(−5,−10)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(3,9)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -144,7 +166,7 @@ describe("BestFitLine Tag Tests", function () {
       <text>a</text>
       <graph name="g">
       
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine data="$ps" name="l" />
       
       </graph>
       
@@ -185,7 +207,7 @@ describe("BestFitLine Tag Tests", function () {
       <graph name="g">
       
         <point>(3,4)</point>
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine data="$ps" name="l" />
       
       </graph>
       
@@ -252,7 +274,7 @@ describe("BestFitLine Tag Tests", function () {
       
         <point>(3,4)</point>
         <point>(-5,0)</point>
-        <bestFitLine points="$ps" name="l" variables="t z" />
+        <bestFitLine data="$ps" name="l" variables="t z" />
       
       </graph>
        
@@ -349,7 +371,7 @@ describe("BestFitLine Tag Tests", function () {
         <point>(7,3,3,1,5)</point>
         <point>(7,-1,5,x)</point>
       
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine data="$ps" name="l" />
       
       </graph>
       
@@ -443,7 +465,7 @@ describe("BestFitLine Tag Tests", function () {
         <point>(7,-1)</point>
         <point>(,-1)</point>
       
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine data="$ps" name="l" />
       
       </graph>
       
@@ -513,5 +535,78 @@ describe("BestFitLine Tag Tests", function () {
       expect(stateVariables["/l"].stateValues.equation).eqls(eqTree);
       expect(stateVariables["/eq"].stateValues.value).eqls(eqTree);
     });
+  });
+
+  it("rounding", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <setup>
+        <collect name="ps" componentTypes="point" target="g" />
+      </setup>
+      
+      <graph name="g">
+        <point>(1.2345678,2.3456789)</point>
+        <point>(1.2345678,6.7891234)</point>
+      
+        <point>(7.8912345,3.4567891)</point>
+        <point>(7.8912345,-1.2345678)</point>
+      
+        <bestFitLine data="$ps" name="l" />
+        <bestFitLine data="$ps" name="l2" displaydigits="5" />
+      
+      </graph>
+      
+      <copy prop="equation" target="l" assignNames="eq" />
+      <p name="data">data: <aslist>$l.data</aslist></p>
+      
+      <copy prop="equation" target="l2" assignNames="eq2" />
+      <p name="data2">data2: <aslist>$l2.data</aslist></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/eq") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y=−0.519x+5.21");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1.23,2.35)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(1.23,6.79)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(7.89,3.46)");
+
+    cy.get(cesc2("#/data") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(7.89,−1.23)");
+
+    cy.get(cesc2("#/eq2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y=−0.51922x+5.2084");
+
+    cy.get(cesc2("#/data2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1.2346,2.3457)");
+
+    cy.get(cesc2("#/data2") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(1.2346,6.7891)");
+
+    cy.get(cesc2("#/data2") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(7.8912,3.4568)");
+
+    cy.get(cesc2("#/data2") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(7.8912,−1.2346)");
   });
 });
