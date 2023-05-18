@@ -320,6 +320,7 @@ function substituteAttributeDeprecations(serializedComponents) {
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
+    tname: "target",
     triggerwithtnames: "triggerWith",
     updatewithtname: "updateWith",
     paginatortname: "paginator",
@@ -347,6 +348,13 @@ function substituteAttributeDeprecations(serializedComponents) {
     nvariants: "numVariants",
     nsides: "numSides",
     niterationsrequired: "numIterationsRequired",
+    numberofsamples: "numSamples",
+    numbertoselect: "numToSelect",
+    nawardscredited: "numAwardsCredited",
+    maximumnumber: "maxNumber",
+    nsignerrorsmatched: "numSignErrorsMatched",
+    nperiodicsetmatchesrequired: "numPeriodicSetMatchesRequired",
+    npages: "numPages",
   };
 
   // Note: use lower case
@@ -355,6 +363,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     "suppressautonumber",
     "targetattributestoignorerecursively",
     "sourceattributestoignorerecursively",
+    "showlabel",
   ]);
 
   // Note: use lower case for keys

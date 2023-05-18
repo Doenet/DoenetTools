@@ -144,21 +144,14 @@ export class MatrixInput extends Input {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let addMatrixInputGrid = function ({
-      matchedChildren,
-      componentAttributes,
-    }) {
-      if (matchedChildren.length > 0) {
-        return { success: false };
-      }
-
+    let addMatrixInputGrid = function ({ matchedChildren }) {
       let matrixInputGrid = {
-        componentType: "matrixInputGrid",
+        componentType: "_matrixInputGrid",
       };
 
       return {
         success: true,
-        newChildren: [matrixInputGrid],
+        newChildren: [matrixInputGrid, ...matchedChildren],
       };
     };
     sugarInstructions.push({
@@ -171,7 +164,11 @@ export class MatrixInput extends Input {
     return [
       {
         group: "matrixComponentInputs",
-        componentTypes: ["matrixComponentInput"],
+        componentTypes: ["_matrixComponentInput"],
+      },
+      {
+        group: "maths",
+        componentTypes: ["math"],
       },
     ];
   }
@@ -187,10 +184,40 @@ export class MatrixInput extends Input {
       }),
     );
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.valueOriginal = {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value"],
+          proceedIfAllChildrenNotMatched: true, // to avoid circular dependency with readyToExpandWhenResolved of matrixInputGrid child
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -200,10 +227,32 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
       }),
       set: convertValueToMathExpression,
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.bindValueTo) {
+        if (dependencyValues.mathChild.length > 0) {
+          return {
+            setValue: {
+              valueOriginal: dependencyValues.mathChild[0].stateValues.value,
+            },
+          };
+        } else if (dependencyValues.bindValueTo) {
+          return {
+            setValue: {
+              valueOriginal: dependencyValues.bindValueTo.stateValues.value,
+            },
+          };
+        } else {
           return {
             useEssentialOrDefaultValue: {
               valueOriginal: {
@@ -212,39 +261,67 @@ export class MatrixInput extends Input {
             },
           };
         }
-
-        return {
-          setValue: {
-            valueOriginal: dependencyValues.bindValueTo.stateValues.value,
-          },
-        };
       },
       inverseDefinition: function ({
         desiredStateVariableValues,
         dependencyValues,
       }) {
-        // console.log(`inverse definition of valueOriginal for matrixInput`)
-        // console.log(desiredStateVariableValues)
+        // console.log(`inverse definition of valueOriginal for matrixInput`);
+        // console.log(desiredStateVariableValues);
 
-        if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.valueOriginal,
-                variableIndex: 0,
-              },
-            ],
-          };
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.mathChild.length > 0) {
+          instructions.push({
+            setDependency: "mathChild",
+            desiredValue: desiredStateVariableValues.valueOriginal,
+            variableIndex: 0,
+            childIndex: 0,
+          });
+        } else if (dependencyValues.bindValueTo) {
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.valueOriginal,
+            variableIndex: 0,
+          });
+        } else {
+          // no math child or bindValueTo, so valueOriginal is essential and give it the desired value
+          instructions.push({
+            setEssentialValue: "valueOriginal",
+            value: desiredStateVariableValues.valueOriginal,
+          });
         }
+        return { success: true, instructions };
+      },
+    };
 
+    stateVariableDefinitions.immediateValueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { immediateValueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [
             {
-              setEssentialValue: "valueOriginal",
-              value: desiredStateVariableValues.valueOriginal,
+              setEssentialValue: "immediateValueChanged",
+              value: Boolean(desiredStateVariableValues.immediateValueChanged),
             },
           ],
         };
@@ -259,19 +336,29 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "valueOriginal",
         },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
       }),
       set: convertValueToMathExpression,
       definition: function ({
         dependencyValues,
         changes,
         justUpdatedForNewComponent,
+        usedDefault,
       }) {
         // console.log(`definition of immediateValueOriginal`)
         // console.log(dependencyValues)
         // console.log(changes);
         // console.log(dependencyValues.valueOriginal.toString())
 
-        if (changes.valueOriginal && !justUpdatedForNewComponent) {
+        if (
+          changes.valueOriginal &&
+          !justUpdatedForNewComponent &&
+          !usedDefault.valueOriginal
+        ) {
           // only update to valueOriginal when it changes
           // (otherwise, let its essential value change)
           return {
@@ -303,6 +390,10 @@ export class MatrixInput extends Input {
             setEssentialValue: "immediateValueOriginal",
             value: desiredStateVariableValues.immediateValueOriginal,
           },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
+          },
         ];
 
         // if from outside sources, also set value
@@ -322,6 +413,11 @@ export class MatrixInput extends Input {
 
     stateVariableDefinitions.haveBoundValue = {
       returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          proceedIfAllChildrenNotMatched: true, // to avoid circular dependency with readyToExpandWhenResolved of matrixInputGrid child
+        },
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
@@ -329,7 +425,11 @@ export class MatrixInput extends Input {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { haveBoundValue: dependencyValues.bindValueTo !== null },
+          setValue: {
+            haveBoundValue:
+              dependencyValues.mathChild.length > 0 ||
+              dependencyValues.bindValueTo !== null,
+          },
         };
       },
     };
@@ -352,6 +452,16 @@ export class MatrixInput extends Input {
         haveBoundValue: {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
+        },
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -390,6 +500,8 @@ export class MatrixInput extends Input {
             setDependency: "numRowsPreliminary",
             desiredValue: desiredNumRows,
           },
+          { setDependency: "valueChanged", desiredValue: true },
+          { setDependency: "immediateValueChanged", desiredValue: true },
         ];
 
         if (dependencyValues.haveBoundValue) {
@@ -481,6 +593,8 @@ export class MatrixInput extends Input {
           }
         }
 
+        console.log(instructions);
+
         return {
           success: true,
           instructions,
@@ -506,6 +620,16 @@ export class MatrixInput extends Input {
         haveBoundValue: {
           dependencyType: "stateVariable",
           variableName: "haveBoundValue",
+        },
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -552,6 +676,8 @@ export class MatrixInput extends Input {
             setDependency: "numColumnsPreliminary",
             desiredValue: desiredNumColumns,
           },
+          { setDependency: "valueChanged", desiredValue: true },
+          { setDependency: "immediateValueChanged", desiredValue: true },
         ];
 
         if (dependencyValues.haveBoundValue) {
@@ -1724,64 +1850,64 @@ export class MatrixInput extends Input {
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredTree = desiredStateVariableValues.value.tree;
-        if (
-          Array.isArray(desiredTree) &&
-          desiredTree[0] === "matrix" &&
-          desiredTree[1][1] === dependencyValues.numRows &&
-          desiredTree[1][2] === dependencyValues.numColumns
-        ) {
-          if (dependencyValues.numColumns === 1) {
-            let originalTree = dependencyValues.valueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-              if (vectorOperators.includes(operator)) {
-                // if original value was a vector, then keep it as a vector
-                let desiredValue = me.fromAst([
-                  operator,
-                  ...desiredTree[2].slice(1).map((x) => x[1]),
-                ]);
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "valueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
-              }
-            }
-          } else if (dependencyValues.numRows === 1) {
-            let originalTree = dependencyValues.valueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-
-              if (
-                Array.isArray(originalTree[1]) &&
-                vectorOperators.includes(originalTree[1][0]) &&
-                ((operator === "^" && originalTree[2] === "T") ||
-                  operator === "prime")
-              ) {
-                // if original value was the transpose of a vector,
-                // then keep it as the transpose of a vector
-                let desiredValue = [
-                  originalTree[1][0],
-                  ...desiredTree[2][1].slice(1),
-                ];
-                if (operator === "^") {
-                  desiredValue = me.fromAst(["^", desiredValue, "T"]);
-                } else {
-                  desiredValue = me.fromAst(["prime", desiredValue]);
+        if (Array.isArray(desiredTree) && desiredTree[0] === "matrix") {
+          if (
+            desiredTree[1][1] === dependencyValues.numRows &&
+            desiredTree[1][2] === dependencyValues.numColumns
+          ) {
+            if (dependencyValues.numColumns === 1) {
+              let originalTree = dependencyValues.valueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+                if (vectorOperators.includes(operator)) {
+                  // if original value was a vector, then keep it as a vector
+                  let desiredValue = me.fromAst([
+                    operator,
+                    ...desiredTree[2].slice(1).map((x) => x[1]),
+                  ]);
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "valueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
                 }
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "valueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
+              }
+            } else if (dependencyValues.numRows === 1) {
+              let originalTree = dependencyValues.valueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+
+                if (
+                  Array.isArray(originalTree[1]) &&
+                  vectorOperators.includes(originalTree[1][0]) &&
+                  ((operator === "^" && originalTree[2] === "T") ||
+                    operator === "prime")
+                ) {
+                  // if original value was the transpose of a vector,
+                  // then keep it as the transpose of a vector
+                  let desiredValue = [
+                    originalTree[1][0],
+                    ...desiredTree[2][1].slice(1),
+                  ];
+                  if (operator === "^") {
+                    desiredValue = me.fromAst(["^", desiredValue, "T"]);
+                  } else {
+                    desiredValue = me.fromAst(["prime", desiredValue]);
+                  }
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "valueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
+                }
               }
             }
           }
@@ -1848,64 +1974,64 @@ export class MatrixInput extends Input {
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         let desiredTree = desiredStateVariableValues.immediateValue.tree;
-        if (
-          Array.isArray(desiredTree) &&
-          desiredTree[0] === "matrix" &&
-          desiredTree[1][1] === dependencyValues.numRows &&
-          desiredTree[1][2] === dependencyValues.numColumns
-        ) {
-          if (dependencyValues.numColumns === 1) {
-            let originalTree = dependencyValues.immediateValueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-              if (vectorOperators.includes(operator)) {
-                // if original immediateValue was a vector, then keep it as a vector
-                let desiredValue = me.fromAst([
-                  operator,
-                  ...desiredTree[2].slice(1).map((x) => x[1]),
-                ]);
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "immediateValueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
-              }
-            }
-          } else if (dependencyValues.numRows === 1) {
-            let originalTree = dependencyValues.immediateValueOriginal.tree;
-            if (Array.isArray(originalTree)) {
-              let operator = originalTree[0];
-
-              if (
-                Array.isArray(originalTree[1]) &&
-                vectorOperators.includes(originalTree[1][0]) &&
-                ((operator === "^" && originalTree[2] === "T") ||
-                  operator === "prime")
-              ) {
-                // if original immediateValue was the transpose of a vector,
-                // then keep it as the transpose of a vector
-                let desiredValue = [
-                  originalTree[1][0],
-                  ...desiredTree[2][1].slice(1),
-                ];
-                if (operator === "^") {
-                  desiredValue = me.fromAst(["^", desiredValue, "T"]);
-                } else {
-                  desiredValue = me.fromAst(["prime", desiredValue]);
+        if (Array.isArray(desiredTree) && desiredTree[0] === "matrix") {
+          if (
+            desiredTree[1][1] === dependencyValues.numRows &&
+            desiredTree[1][2] === dependencyValues.numColumns
+          ) {
+            if (dependencyValues.numColumns === 1) {
+              let originalTree = dependencyValues.immediateValueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+                if (vectorOperators.includes(operator)) {
+                  // if original immediateValue was a vector, then keep it as a vector
+                  let desiredValue = me.fromAst([
+                    operator,
+                    ...desiredTree[2].slice(1).map((x) => x[1]),
+                  ]);
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "immediateValueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
                 }
-                return {
-                  success: true,
-                  instructions: [
-                    {
-                      setDependency: "immediateValueOriginal",
-                      desiredValue,
-                    },
-                  ],
-                };
+              }
+            } else if (dependencyValues.numRows === 1) {
+              let originalTree = dependencyValues.immediateValueOriginal.tree;
+              if (Array.isArray(originalTree)) {
+                let operator = originalTree[0];
+
+                if (
+                  Array.isArray(originalTree[1]) &&
+                  vectorOperators.includes(originalTree[1][0]) &&
+                  ((operator === "^" && originalTree[2] === "T") ||
+                    operator === "prime")
+                ) {
+                  // if original immediateValue was the transpose of a vector,
+                  // then keep it as the transpose of a vector
+                  let desiredValue = [
+                    originalTree[1][0],
+                    ...desiredTree[2][1].slice(1),
+                  ];
+                  if (operator === "^") {
+                    desiredValue = me.fromAst(["^", desiredValue, "T"]);
+                  } else {
+                    desiredValue = me.fromAst(["prime", desiredValue]);
+                  }
+                  return {
+                    success: true,
+                    instructions: [
+                      {
+                        setDependency: "immediateValueOriginal",
+                        desiredValue,
+                      },
+                    ],
+                  };
+                }
               }
             }
           }
@@ -1962,6 +2088,29 @@ export class MatrixInput extends Input {
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { componentType: "matrix" } }),
+    };
+
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        numRows: {
+          dependencyType: "stateVariable",
+          variableName: "numRows",
+        },
+        numColumns: {
+          dependencyType: "stateVariable",
+          variableName: "numColumns",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let nChildrenToRender =
+          dependencyValues.numRows * dependencyValues.numColumns;
+
+        return {
+          setValue: {
+            childIndicesToRender: [...Array(nChildrenToRender).keys()],
+          },
+        };
+      },
     };
 
     return stateVariableDefinitions;
@@ -2028,7 +2177,7 @@ export class MatrixInput extends Input {
 }
 
 export class MatrixInputGrid extends CompositeComponent {
-  static componentType = "matrixInputGrid";
+  static componentType = "_matrixInputGrid";
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -2101,7 +2250,7 @@ export class MatrixInputGrid extends CompositeComponent {
 
     for (let rowInd = 0; rowInd < numRows; rowInd++) {
       serializedComponents.push({
-        componentType: "matrixInputRow",
+        componentType: "_matrixInputRow",
         state: { rowInd },
         uniqueIdentifier: rowInd,
       });
@@ -2169,7 +2318,7 @@ export class MatrixInputGrid extends CompositeComponent {
 
       for (let rowInd = previousNumRows; rowInd < numRows; rowInd++) {
         newSerializedReplacements.push({
-          componentType: "matrixInputRow",
+          componentType: "_matrixInputRow",
           state: { rowInd },
           uniqueIdentifier: rowInd,
         });
@@ -2193,7 +2342,7 @@ export class MatrixInputGrid extends CompositeComponent {
 }
 
 export class MatrixInputRow extends CompositeComponent {
-  static componentType = "matrixInputRow";
+  static componentType = "_matrixInputRow";
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -2259,7 +2408,7 @@ export class MatrixInputRow extends CompositeComponent {
 
     for (let colInd = 0; colInd < numColumns; colInd++) {
       serializedComponents.push({
-        componentType: "matrixComponentInput",
+        componentType: "_matrixComponentInput",
         state: {
           rowInd,
           colInd,
@@ -2331,7 +2480,7 @@ export class MatrixInputRow extends CompositeComponent {
 
       for (let colInd = previousNumColumns; colInd < numColumns; colInd++) {
         newSerializedReplacements.push({
-          componentType: "matrixComponentInput",
+          componentType: "_matrixComponentInput",
           state: {
             rowInd,
             colInd,
@@ -2366,7 +2515,7 @@ export default class MatrixComponentInput extends BaseComponent {
       updateValue: this.updateValue.bind(this),
     });
   }
-  static componentType = "matrixComponentInput";
+  static componentType = "_matrixComponentInput";
   static rendererType = "mathInput";
 
   static variableForPlainMacro = "value";

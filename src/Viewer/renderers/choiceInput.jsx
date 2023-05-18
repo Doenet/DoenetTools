@@ -7,6 +7,7 @@ import {
   faTimes,
   faCloud,
 } from "@fortawesome/free-solid-svg-icons";
+import { MathJax } from "better-react-mathjax";
 import { rendererState } from "../useDoenetRenderer";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -136,6 +137,15 @@ export default React.memo(function ChoiceInput(props) {
   }
 
   let disabled = SVs.disabled;
+
+  let label = SVs.label;
+  if (SVs.labelHasLatex) {
+    label = (
+      <MathJax hideUntilTypeset={"first"} inline dynamic>
+        {label}
+      </MathJax>
+    );
+  }
 
   if (SVs.inline) {
     let checkWorkStyle = {
@@ -281,19 +291,25 @@ export default React.memo(function ChoiceInput(props) {
     return (
       <React.Fragment>
         <a name={id} />
-        <select
-          className="custom-select"
-          id={id}
-          onChange={onChangeHandler}
-          value={value}
-          disabled={disabled}
-          multiple={SVs.selectMultiple}
+        <label
+          style={{ display: "inline-flex", maxWidth: "100%" }}
+          id={id + "-label"}
         >
-          <option hidden={true} value="">
-            {SVs.placeHolder}
-          </option>
-          {optionsList}
-        </select>
+          {label}
+          <select
+            className="custom-select"
+            id={id}
+            onChange={onChangeHandler}
+            value={value}
+            disabled={disabled}
+            multiple={SVs.selectMultiple}
+          >
+            <option hidden={true} value="">
+              {SVs.placeHolder}
+            </option>
+            {optionsList}
+          </select>
+        </label>
         {checkWorkButton}
       </React.Fragment>
     );
@@ -506,13 +522,14 @@ export default React.memo(function ChoiceInput(props) {
       });
 
     return (
-      <React.Fragment>
+      <div id={inputKey + "-label"}>
+        {label}
         <ol id={inputKey} style={listStyle}>
           <a name={id} />
           {choiceDoenetTags}
         </ol>
         {checkworkComponent}
-      </React.Fragment>
+      </div>
     );
   }
 });
