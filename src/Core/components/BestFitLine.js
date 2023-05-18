@@ -134,11 +134,10 @@ export default class BestFitLine extends Line {
           a: coeffvar1,
           c: coeff0,
           x: variables[0],
-          y: variables[1],
         })
         .simplify();
 
-      let equation = me.fromAst(["=", "y", "r"]).substitute({
+      let equation = me.fromAst(["=", variables[1].tree, "r"]).substitute({
         r: rhs,
       });
 

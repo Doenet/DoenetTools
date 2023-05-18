@@ -1412,7 +1412,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       );
 
       expect(me.math.mean(sample2numbers)).closeTo(0, 1);
-      expect(me.math.variance(sample2numbers, "uncorrected")).closeTo(16, 6);
+      expect(me.math.variance(sample2numbers, "uncorrected")).closeTo(16, 8);
     });
 
     cy.log("Get new samples when change number of samples");

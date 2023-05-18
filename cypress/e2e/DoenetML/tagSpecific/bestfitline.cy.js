@@ -238,7 +238,7 @@ describe("BestFitLine Tag Tests", function () {
     });
   });
 
-  it("fit line to 2 points", () => {
+  it("fit line to 2 points, change variables", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -252,10 +252,10 @@ describe("BestFitLine Tag Tests", function () {
       
         <point>(3,4)</point>
         <point>(-5,0)</point>
-        <bestFitLine points="$ps" name="l" />
+        <bestFitLine points="$ps" name="l" variables="t z" />
       
       </graph>
-      
+       
       <copy prop="equation" target="l" assignNames="eq" />
     `,
         },
@@ -270,12 +270,12 @@ describe("BestFitLine Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("y=0.5x+2.5");
+        expect(text.trim()).equal("z=0.5t+2.5");
       });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let eqTree = me.fromText("y=0.5x+2.5").simplify().tree;
+      let eqTree = me.fromText("z=0.5t+2.5").simplify().tree;
       expect(stateVariables["/l"].stateValues.equation).eqls(eqTree);
       expect(stateVariables["/eq"].stateValues.value).eqls(eqTree);
     });
@@ -290,19 +290,19 @@ describe("BestFitLine Tag Tests", function () {
       });
     });
 
-    cy.get(cesc("#\\/eq")).should("contain.text", "y=−4");
+    cy.get(cesc("#\\/eq")).should("contain.text", "z=−4");
     cy.get(cesc("#\\/eq"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("y=−4");
+        expect(text.trim()).equal("z=−4");
       });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l"].stateValues.equation).eqls(["=", "y", -4]);
-      expect(stateVariables["/eq"].stateValues.value).eqls(["=", "y", -4]);
+      expect(stateVariables["/l"].stateValues.equation).eqls(["=", "z", -4]);
+      expect(stateVariables["/eq"].stateValues.value).eqls(["=", "z", -4]);
     });
 
     cy.log("move points");
@@ -315,18 +315,18 @@ describe("BestFitLine Tag Tests", function () {
       });
     });
 
-    cy.get(cesc("#\\/eq")).should("contain.text", "y=2x+2");
+    cy.get(cesc("#\\/eq")).should("contain.text", "z=2t+2");
     cy.get(cesc("#\\/eq"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("y=2x+2");
+        expect(text.trim()).equal("z=2t+2");
       });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let eqTree = me.fromText("y=2x+2").simplify().tree;
+      let eqTree = me.fromText("z=2t+2").simplify().tree;
       expect(stateVariables["/l"].stateValues.equation).eqls(eqTree);
       expect(stateVariables["/eq"].stateValues.value).eqls(eqTree);
     });
