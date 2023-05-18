@@ -453,7 +453,7 @@ export default React.memo(function ChoiceInput(props) {
           return null;
         }
         if (inputType == "radio") {
-          // selectMultiple="false"
+          // selectMultiple = "false";
           let radioDisabled = disabled || svData.choicesDisabled[i];
           let containerClassName = "radio-container";
           let radioClassName = "radio-checkmark";
@@ -470,7 +470,7 @@ export default React.memo(function ChoiceInput(props) {
               type="radio"
               id={keyBeginning + (i + 1) + "_input"}
               key={inputKey + "_choice" + (i + 1)}
-              name={inputKey}
+              name={inputKey + "_choice" + (i + 1)}
               value={i + 1}
               checked={rendererSelectedIndices.includes(i + 1)}
               onChange={onChangeHandler}
@@ -504,7 +504,7 @@ export default React.memo(function ChoiceInput(props) {
               type="checkbox"
               id={keyBeginning + (i + 1) + "_input"}
               key={inputKey + "_choice" + (i + 1)}
-              name={inputKey}
+              name={inputKey + "_choice" + (i + 1)}
               value={i + 1}
               checked={rendererSelectedIndices.includes(i + 1)}
               onChange={onChangeHandler}
@@ -525,12 +525,12 @@ export default React.memo(function ChoiceInput(props) {
 
     return (
       <React.Fragment>
-        {/* <RadioGroup> */}
-        <Stack id={inputKey} style={listStyle}>
-          <a name={id} />
-          {choiceDoenetTags}
-        </Stack>
-        {/* </RadioGroup> */}
+        <RadioGroup>
+          <Stack id={inputKey} style={listStyle}>
+            <a name={id} />
+            {choiceDoenetTags}
+          </Stack>
+        </RadioGroup>
         {checkworkComponent}
       </React.Fragment>
     );
