@@ -70,7 +70,7 @@ export default React.memo(function LineSegment(props) {
       return;
     }
 
-    let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+    let withlabel = SVs.labelForGraph !== "";
 
     let lineColor =
       darkMode === "dark"
@@ -663,7 +663,7 @@ export default React.memo(function LineSegment(props) {
 
       lineSegmentJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         lineSegmentJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
