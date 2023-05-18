@@ -44,7 +44,7 @@ describe("doenetEditor test", function () {
 
   })
 
-  it.only("Learning Outcomes", () => {
+  it("Learning Outcomes", () => {
     const learningOutcome1 = "One, two, buckle my shoe";
     const learningOutcome2 = "Three, four, shut the door";
     const learningOutcome3 = "Five, six, pick up sticks";

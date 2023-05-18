@@ -134,7 +134,6 @@ if ($success) {
 }
 
     if ($success) {
-    //   //TODO: test at the top as well for over quota
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
         $conn,
         $userId
