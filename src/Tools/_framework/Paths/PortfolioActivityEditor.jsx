@@ -101,7 +101,6 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update general") {
     let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
       {
@@ -902,6 +901,13 @@ export function GeneralActivityControls({
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
+  //TODO: Cypress is opening the drawer so fast
+  //the activitieData is out of date
+  //We need something like this. But this code sets learningOutcomes too often
+  // useEffect(() => {
+  //   setLearningOutcomes(learningOutcomesInit);
+  // }, [learningOutcomesInit]);
+
   return (
     <>
       <AlertQueue alerts={alerts} />
@@ -993,10 +999,16 @@ export function GeneralActivityControls({
                         return next;
                       });
                     }}
-                    onBlur={saveDataToServer}
+                    onBlur={() =>
+                      saveDataToServer({
+                        nextLearningOutcomes: learningOutcomes,
+                      })
+                    }
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer();
+                        saveDataToServer({
+                          nextLearningOutcomes: learningOutcomes,
+                        });
                       }
                     }}
                     placeholder={`Learning Outcome #${i + 1}`}
@@ -1103,7 +1115,6 @@ function PortfolioActivitySettingsDrawer({
   controlsTabsLastIndex,
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
-
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
   const fetcher = useFetcher();
@@ -1203,8 +1214,8 @@ function EditableLabel({ dataTest }) {
         );
       }}
     >
-      <EditablePreview />
-      <EditableInput width="400px" />
+      <EditablePreview data-test="Editable Preview" />
+      <EditableInput width="400px" data-test="Editable Input" />
     </Editable>
   );
 }
@@ -1484,7 +1495,7 @@ export function PortfolioActivityEditor() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <EditableLabel dataTest="Activity Label Edititable" />
+              <EditableLabel dataTest="Activity Label Editable" />
             </GridItem>
             <GridItem
               area="rightControls"
