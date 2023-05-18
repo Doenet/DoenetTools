@@ -704,7 +704,7 @@ export default function VirtualKeyboard() {
           variant="ghost"
           onClick={keyboardOnClose}
         />
-        <Center tabIndex="0" ref={containerRef} id="keyboard">
+        <Center tabIndex="0" ref={containerRef} className="keyboard">
           <Tabs width="740px">
             <TabList>
               <Tab>123</Tab>

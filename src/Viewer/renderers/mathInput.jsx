@@ -376,11 +376,13 @@ export default function MathInput(props) {
                 textareaRef.current.addEventListener(
                   "focusout",
                   (e) => {
-                    let keyboard = document.getElementById("keyboard");
-                    if (keyboard?.contains(e.relatedTarget)) {
-                      e.target.focus();
-                    } else {
-                      // remove focus
+                    let keyboard = document.getElementsByClassName("keyboard");
+                    for (let i = 0; i < keyboard.length; i++) {
+                      if (keyboard?.contains(e.relatedTarget)) {
+                        e.target.focus();
+                      } else {
+                        // remove focus
+                      }
                     }
                   },
                   false,
