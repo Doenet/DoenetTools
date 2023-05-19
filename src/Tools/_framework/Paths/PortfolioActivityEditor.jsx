@@ -1332,6 +1332,10 @@ export function PortfolioActivityEditor() {
     };
   }, [handleSaveDraft]);
 
+  useEffect(() => {
+    document.title = `${activityData.label} - Doenet`;
+  }, [activityData.label]);
+
   const controlsBtnRef = useRef(null);
 
   const [variants, setVariants] = useState({

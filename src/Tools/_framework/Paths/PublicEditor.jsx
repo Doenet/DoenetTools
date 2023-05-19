@@ -212,6 +212,10 @@ export function PublicEditor() {
   let [codeChanged, setCodeChanged] = useState(false);
 
   useEffect(() => {
+    document.title = `${activityData.label} - Doenet`;
+  }, [activityData.label]);
+
+  useEffect(() => {
     const handleKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
