@@ -27,7 +27,6 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
-import styled from "styled-components";
 import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
@@ -254,6 +253,10 @@ export function Community() {
     useLoaderData();
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
+
+  useEffect(() => {
+    document.title = `Community - Doenet`;
+  }, []);
 
   if (searchResults) {
     let allMatches = [...searchResults?.activities, ...searchResults?.users];

@@ -14,7 +14,7 @@ import {
   DrawerOverlay,
   Drawer,
 } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useOutletContext,
@@ -230,6 +230,10 @@ export function Portfolio() {
     onOpen: settingsOnOpen,
     onClose: settingsOnClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    document.title = `Portfolio - Doenet`;
+  }, []);
 
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
