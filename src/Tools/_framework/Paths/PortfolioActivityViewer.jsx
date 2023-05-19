@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   redirect,
   useLoaderData,
@@ -113,6 +113,10 @@ export function PortfolioActivityViewer() {
     navigateTo.current = "";
     location.href = newHref;
   }
+
+  useEffect(() => {
+    document.title = `${label} - Doenet`;
+  }, [label]);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)

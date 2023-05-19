@@ -146,6 +146,10 @@ export function Home() {
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
+  useEffect(() => {
+    document.title = `Home - Doenet`;
+  }, []);
+
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
@@ -280,11 +284,7 @@ export function Home() {
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
       />
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg={blueColor}
-      >
+      <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
           justifyContent="center"
