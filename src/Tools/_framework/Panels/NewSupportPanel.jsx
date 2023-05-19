@@ -164,7 +164,9 @@ export default function SupportPanel({ hide, children }) {
         <Button
           value="Documentation"
           onClick={() =>
-            window.open("/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q")
+            window.open(
+              "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+            )
           }
         />
       </ControlsWrapper>

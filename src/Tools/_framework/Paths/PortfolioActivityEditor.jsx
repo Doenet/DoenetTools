@@ -1535,7 +1535,7 @@ export function PortfolioActivityEditor() {
                   </Button>
                 )}
                 <Link
-                  href="https://www.doenet.org/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
+                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
                   isExternal
                   data-test="Documentation Link"
                 >
