@@ -36,7 +36,8 @@ $sql = "
 SELECT cid, fileType, description, asFileName, widthPixels, heightPixels
 FROM support_files
 WHERE doenetId='$doenetId'
-ORDER BY timestamp
+AND isActivityThumbnail='0'
+ORDER BY timestamp DESC
 ";
 
 $result = $conn->query($sql);

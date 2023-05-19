@@ -15,9 +15,12 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
-import { itemByDoenetId, useCourse } from "../Course/CourseActions";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
+import {
+  // itemByDoenetId,
+  useCourse,
+} from "../Course/CourseActions";
+// import { useRecoilState, useSetRecoilState } from "recoil";
+// import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
 
 export default function RecoilActivityCard({
   doenetId,
@@ -29,13 +32,16 @@ export default function RecoilActivityCard({
   courseId,
   version,
   content,
+  setDoenetId,
+  onClose,
+  onOpen,
 }) {
   const fetcher = useFetcher();
-  const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
+  // const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
+  // const [recoilPageToolView, setRecoilPageToolView] =
+  //   useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 
@@ -46,36 +52,26 @@ export default function RecoilActivityCard({
     location.href = newHref;
   }
 
-  // const imageLink = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-
   return (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      {/* <a href={imageLink}> */}
-      <Image
-        height="120px"
-        maxWidth="180px"
-        src={imagePath}
-        alt="Activity Card Image"
-        borderTopRadius="md"
-        objectFit="cover"
-        cursor="pointer"
-        onClick={() => {
-          navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-          setRecoilPageToolView({
-            page: "portfolioeditor",
-            optionalURLParam: doenetId,
-            tool: "editor",
-            view: "",
-            params: { doenetId, pageId: pageDoenetId },
-          });
-        }}
-      />
-      {/* </a> */}
+      <Link to={`/portfolioeditor/${doenetId}/${pageDoenetId}`}>
+        <Image
+          data-test="Card Image Link"
+          height="120px"
+          width="180px"
+          src={imagePath}
+          alt="Activity Card Image"
+          borderTopRadius="md"
+          objectFit="cover"
+          cursor="pointer"
+        />
+      </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
           <Avatar size="sm" name={fullName} />
           <Box width="120px" p="1">
             <Text
+              data-test="Card Label"
               height="26px"
               lineHeight="1.1"
               fontSize="xs"
@@ -85,18 +81,24 @@ export default function RecoilActivityCard({
             >
               {label}
             </Text>
-            <Text fontSize="xs" noOfLines={1} textAlign="left">
+            <Text
+              fontSize="xs"
+              noOfLines={1}
+              textAlign="left"
+              data-test="Card Full Name"
+            >
               {fullName}
             </Text>
           </Box>
 
           <Menu>
-            <MenuButton height="30px">
+            <MenuButton height="30px" data-test="Card Menu Button">
               <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
             </MenuButton>
             <MenuList zIndex="1000">
               {isPublic ? (
                 <MenuItem
+                  data-test="Make Private Menu Item"
                   onClick={() => {
                     fetcher.submit(
                       { _action: "Make Private", doenetId },
@@ -108,6 +110,7 @@ export default function RecoilActivityCard({
                 </MenuItem>
               ) : (
                 <MenuItem
+                  data-test="Make Public Menu Item"
                   onClick={() => {
                     //THINGS WE NEED FROM THE DB
                     //- Version of DoenetML
@@ -143,6 +146,7 @@ export default function RecoilActivityCard({
                 </MenuItem>
               )}
               <MenuItem
+                data-test="Delete Menu Item"
                 onClick={() => {
                   fetcher.submit(
                     { _action: "Delete", doenetId },
@@ -152,7 +156,13 @@ export default function RecoilActivityCard({
               >
                 Delete
               </MenuItem>
-              <MenuItem as={Link} to={`/portfolio/${doenetId}/settings`}>
+              <MenuItem
+                data-test="Settings Menu Item"
+                onClick={() => {
+                  setDoenetId(doenetId);
+                  onOpen();
+                }}
+              >
                 Settings
               </MenuItem>
             </MenuList>

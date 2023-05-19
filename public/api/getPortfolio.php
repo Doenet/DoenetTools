@@ -63,6 +63,7 @@ if ($success && !$notMe) {
     cc.label,
     cc.isPublic,
     CAST(jsonDefinition as CHAR) AS json,
+    CAST(learningOutcomes as CHAR) AS learningOutcomes,
     p.doenetId AS 'pageDoenetId'
     FROM course_content AS cc
     LEFT JOIN pages AS p
@@ -77,6 +78,7 @@ if ($success && !$notMe) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $json = json_decode($row['json'], true);
+            $learningOutcomes = json_decode($row['learningOutcomes'], true);
             $activity = [
                 'doenetId' => $row['doenetId'],
                 'version' => $json['version'],
@@ -85,6 +87,7 @@ if ($success && !$notMe) {
                 'label' => $row['label'],
                 'public' => $row['isPublic'],
                 'pageDoenetId' => $row['pageDoenetId'],
+                'learningOutcomes' => $learningOutcomes,
             ];
             array_push($privateActivities, $activity);
         }
@@ -95,6 +98,7 @@ if ($success && !$notMe) {
     cc.label,
     cc.isPublic,
     CAST(jsonDefinition as CHAR) AS json,
+    CAST(learningOutcomes as CHAR) AS learningOutcomes,
     p.doenetId AS 'pageDoenetId'
     FROM course_content AS cc
     LEFT JOIN pages AS p
@@ -109,6 +113,7 @@ if ($success && !$notMe) {
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $json = json_decode($row['json'], true);
+            $learningOutcomes = json_decode($row['learningOutcomes'], true);
             $activity = [
                 'doenetId' => $row['doenetId'],
                 'version' => $json['version'],
@@ -117,6 +122,8 @@ if ($success && !$notMe) {
                 'label' => $row['label'],
                 'public' => $row['isPublic'],
                 'pageDoenetId' => $row['pageDoenetId'],
+                'learningOutcomes' => $learningOutcomes,
+
             ];
             array_push($publicActivities, $activity);
         }
