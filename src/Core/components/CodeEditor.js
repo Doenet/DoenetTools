@@ -210,8 +210,12 @@ export default class CodeEditor extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let prefillFromChildren = dependencyValues.childrenDoenetML;
+        if (prefillFromChildren) {
+          prefillFromChildren += "\n";
+        }
         return {
-          setValue: { prefillFromChildren: dependencyValues.childrenDoenetML },
+          setValue: { prefillFromChildren },
         };
       },
     };
