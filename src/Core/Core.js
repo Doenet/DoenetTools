@@ -11740,7 +11740,6 @@ export default class Core {
       });
       componentDoenetML = lines.join("\n");
     }
-    componentDoenetML += "\n";
 
     return componentDoenetML;
   }

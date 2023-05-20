@@ -90,6 +90,23 @@ export default class CodeEditor extends BlockComponent {
     return attributes;
   }
 
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
+    if (serializedComponent.children === undefined) {
+      return [];
+    } else {
+      let keepSerializedInds = [];
+      for (let [ind, child] of serializedComponent.children.entries()) {
+        if (
+          !componentInfoObjects.componentIsSpecifiedType(child, "codeViewer")
+        ) {
+          keepSerializedInds.push(ind);
+        }
+      }
+
+      return keepSerializedInds;
+    }
+  }
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
@@ -193,8 +210,12 @@ export default class CodeEditor extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let prefillFromChildren = dependencyValues.childrenDoenetML;
+        if (prefillFromChildren) {
+          prefillFromChildren += "\n";
+        }
         return {
-          setValue: { prefillFromChildren: dependencyValues.childrenDoenetML },
+          setValue: { prefillFromChildren },
         };
       },
     };

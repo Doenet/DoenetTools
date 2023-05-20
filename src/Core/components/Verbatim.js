@@ -51,6 +51,14 @@ export class DisplayDoenetML extends InlineComponent {
   static componentType = "displayDoenetML";
   static rendererType = "text";
 
+  static keepChildrenSerialized({ serializedComponent }) {
+    if (serializedComponent.children === undefined) {
+      return [];
+    } else {
+      return Object.keys(serializedComponent.children);
+    }
+  }
+
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {
