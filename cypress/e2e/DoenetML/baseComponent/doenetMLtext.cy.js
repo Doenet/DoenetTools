@@ -31,15 +31,14 @@ describe("DoenetML tests", function () {
   <math name="m">1 + 1</math>
   =
   $m{simplify}?
-</p>
-`;
+</p>`;
 
     cy.get(cesc("#\\/theP")).should(
-      "contains.text",
+      "contain.text",
       "\n          Did you know that\n          1+1",
     );
     cy.get(cesc("#\\/theP")).should(
-      "contains.text",
+      "contain.text",
       "1\n          =\n          2",
     );
     cy.get(cesc("#\\/theDoenetML")).should("have.text", thePDoenetML);
@@ -69,11 +68,9 @@ describe("DoenetML tests", function () {
           A string by itself!
         </displayDoenetML></pre>
       
-        <p name="pxcoord">The x-coordinate is $P.x.</p>
-        <p>Change the x-coordinate: <mathinput name="mixcoord" bindValueTo="$P.x" /></p>
-
-
         <pre name="theDoenetML2"><displayDoenetML>String with no space.</displayDoenetML></pre>
+
+        <p name="pMacro">This is a macro: <c><displayDoenetML>$f</displayDoenetML></c>.</p>
 
   `,
         },
@@ -87,52 +84,23 @@ describe("DoenetML tests", function () {
   <point name="P">(3,4)</point>
 </graph>
 
-A string by itself!
-`;
+A string by itself!`;
 
     cy.get(cesc("#\\/theDoenetML")).should("have.text", thePDoenetML);
     cy.get(cesc("#\\/theDoenetML2")).should(
       "have.text",
-      "String with no space.\n",
+      "String with no space.",
     );
-
-    cy.get(cesc("#\\/pxcoord") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "3");
+    cy.get(cesc("#\\/pMacro")).should("have.text", "This is a macro: $f.");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/ddml"].stateValues.value).eq(thePDoenetML);
       expect(stateVariables["/ddml"].stateValues.text).eq(thePDoenetML);
       expect(stateVariables["/_displaydoenetml2"].stateValues.value).eq(
-        "String with no space.\n",
+        "String with no space.",
       );
-
-      expect(stateVariables["/P"].stateValues.xs).eqls([3, 4]);
-    });
-
-    cy.log("Change point coords, don't change DoenetML");
-    cy.get(cesc("#\\/mixcoord") + " textarea").type(
-      "{end}{backspace}9{enter}",
-      { force: true },
-    );
-
-    cy.get(cesc("#\\/pxcoord") + " .mjx-mrow").should("contain.text", "9");
-    cy.get(cesc("#\\/pxcoord") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "9");
-
-    cy.get(cesc("#\\/theDoenetML")).should("have.text", thePDoenetML);
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/ddml"].stateValues.value).eq(thePDoenetML);
-      expect(stateVariables["/ddml"].stateValues.text).eq(thePDoenetML);
-      expect(stateVariables["/_displaydoenetml2"].stateValues.value).eq(
-        "String with no space.\n",
-      );
-
-      expect(stateVariables["/P"].stateValues.xs).eqls([9, 4]);
+      expect(stateVariables["/_displaydoenetml3"].stateValues.value).eq("$f");
     });
   });
 
@@ -204,119 +172,89 @@ A string by itself!
       );
     });
 
-    cy.get(cesc2("#/s1/_pre1")).should("have.text", `<text>hello!</text>\n`);
-    cy.get(cesc2("#/s1/pd")).should(
-      "have.text",
-      `DoenetML: <p>A sentence</p>\n`,
-    );
+    cy.get(cesc2("#/s1/_pre1")).should("have.text", `<text>hello!</text>`);
+    cy.get(cesc2("#/s1/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
-    cy.get(cesc2("#/s2/_pre1")).should("have.text", `<text>hello!</text>\n`);
-    cy.get(cesc2("#/s2/pd")).should(
-      "have.text",
-      `DoenetML: <p>A sentence</p>\n`,
-    );
+    cy.get(cesc2("#/s2/_pre1")).should("have.text", `<text>hello!</text>`);
+    cy.get(cesc2("#/s2/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
-    cy.get(cesc2("#/s3/_pre1")).should("have.text", `<text>hello!</text>\n`);
-    cy.get(cesc2("#/s3/pd")).should(
-      "have.text",
-      `DoenetML: <p>A sentence</p>\n`,
-    );
+    cy.get(cesc2("#/s3/_pre1")).should("have.text", `<text>hello!</text>`);
+    cy.get(cesc2("#/s3/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
-    cy.get(cesc2("#/s4/_pre1")).should("have.text", `<text>hello!</text>\n`);
-    cy.get(cesc2("#/s4/pd")).should(
-      "have.text",
-      `DoenetML: <p>A sentence</p>\n`,
-    );
+    cy.get(cesc2("#/s4/_pre1")).should("have.text", `<text>hello!</text>`);
+    cy.get(cesc2("#/s4/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
-    cy.get(cesc2("#/s5/_pre1")).should("have.text", `<text>hello!</text>\n`);
-    cy.get(cesc2("#/s5/pd")).should(
-      "have.text",
-      `DoenetML: <p>A sentence</p>\n`,
-    );
+    cy.get(cesc2("#/s5/_pre1")).should("have.text", `<text>hello!</text>`);
+    cy.get(cesc2("#/s5/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
-    cy.get(cesc2("#/s1a/p1")).should(
-      "have.text",
-      `Copy: <text>hello!</text>\n`,
-    );
+    cy.get(cesc2("#/s1a/p1")).should("have.text", `Copy: <text>hello!</text>`);
     cy.get(cesc2("#/s1a/p2")).should(
       "have.text",
-      `Copy, no link: <text>hello!</text>\n`,
+      `Copy, no link: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s1a/p3")).should(
       "have.text",
-      `Copy text: <text>hello!</text>\n`,
+      `Copy text: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s1a/p4")).should(
       "have.text",
-      `Copy text, no link: <text>hello!</text>\n`,
+      `Copy text, no link: <text>hello!</text>`,
     );
 
-    cy.get(cesc2("#/s2a/p1")).should(
-      "have.text",
-      `Copy: <text>hello!</text>\n`,
-    );
+    cy.get(cesc2("#/s2a/p1")).should("have.text", `Copy: <text>hello!</text>`);
     cy.get(cesc2("#/s2a/p2")).should(
       "have.text",
-      `Copy, no link: <text>hello!</text>\n`,
+      `Copy, no link: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s2a/p3")).should(
       "have.text",
-      `Copy text: <text>hello!</text>\n`,
+      `Copy text: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s2a/p4")).should(
       "have.text",
-      `Copy text, no link: <text>hello!</text>\n`,
+      `Copy text, no link: <text>hello!</text>`,
     );
 
-    cy.get(cesc2("#/s3a/p1")).should(
-      "have.text",
-      `Copy: <text>hello!</text>\n`,
-    );
+    cy.get(cesc2("#/s3a/p1")).should("have.text", `Copy: <text>hello!</text>`);
     cy.get(cesc2("#/s3a/p2")).should(
       "have.text",
-      `Copy, no link: <text>hello!</text>\n`,
+      `Copy, no link: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s3a/p3")).should(
       "have.text",
-      `Copy text: <text>hello!</text>\n`,
+      `Copy text: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s3a/p4")).should(
       "have.text",
-      `Copy text, no link: <text>hello!</text>\n`,
+      `Copy text, no link: <text>hello!</text>`,
     );
 
-    cy.get(cesc2("#/s4a/p1")).should(
-      "have.text",
-      `Copy: <text>hello!</text>\n`,
-    );
+    cy.get(cesc2("#/s4a/p1")).should("have.text", `Copy: <text>hello!</text>`);
     cy.get(cesc2("#/s4a/p2")).should(
       "have.text",
-      `Copy, no link: <text>hello!</text>\n`,
+      `Copy, no link: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s4a/p3")).should(
       "have.text",
-      `Copy text: <text>hello!</text>\n`,
+      `Copy text: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s4a/p4")).should(
       "have.text",
-      `Copy text, no link: <text>hello!</text>\n`,
+      `Copy text, no link: <text>hello!</text>`,
     );
 
-    cy.get(cesc2("#/s5a/p1")).should(
-      "have.text",
-      `Copy: <text>hello!</text>\n`,
-    );
+    cy.get(cesc2("#/s5a/p1")).should("have.text", `Copy: <text>hello!</text>`);
     cy.get(cesc2("#/s5a/p2")).should(
       "have.text",
-      `Copy, no link: <text>hello!</text>\n`,
+      `Copy, no link: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s5a/p3")).should(
       "have.text",
-      `Copy text: <text>hello!</text>\n`,
+      `Copy text: <text>hello!</text>`,
     );
     cy.get(cesc2("#/s5a/p4")).should(
       "have.text",
-      `Copy text, no link: <text>hello!</text>\n`,
+      `Copy text, no link: <text>hello!</text>`,
     );
   });
 
@@ -328,14 +266,14 @@ A string by itself!
     <section name="s1">
       <section boxed>
         <title>Copy in external</title>
-        <copy uri="doenet:cid=bafkreia2rjmvbvsyjf5yibxvlsmrrgkaj2xfd2aqrdycwagibjmiifkjve" assignNames="external" />
+        <copy uri="doenet:cid=bafkreievuawsojoy4kzz7sbjvc2sxreqw6bzg3gow2jwor23aknjsmihcy" assignNames="external" />
       </section>
 
       <p>Grab the DoenetML from external pre:</p>
       <pre>$(external/_pre1.doenetML)</pre>
 
-      <p>Grab the DoenetML from external graph from external:</p>
-      <pre>$(external/external/_graph1.doenetML)</pre>
+      <p>Grab the DoenetML from external p from external:</p>
+      <pre>$(external/external/p.doenetML)</pre>
     </section>
 
 
@@ -354,8 +292,7 @@ A string by itself!
 
     let theGraphDoenetML = `<graph>
   <point name="P" />
-</graph>
-`;
+</graph>`;
 
     cy.log("check original");
 
@@ -365,23 +302,23 @@ A string by itself!
     );
     cy.get(cesc2("#/external/external/_pre2")).should(
       "have.text",
-      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>
-`,
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
     );
 
-    cy.get(cesc2("#/external/_pre1")).should("have.text", theGraphDoenetML);
-    cy.get(cesc2("#/external/_pre2")).should(
+    cy.get(cesc2("#/external/_pre1")).should(
       "have.text",
-      `<text>hi</text>
-`,
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+    cy.get(cesc2("#/external/_pre2")).should("have.text", `<text>hi</text>`);
 
     cy.get(cesc2("#/_pre1")).should(
       "have.text",
-      `<pre>$(external/_graph1.doenetML)</pre>
-`,
+      `<pre>$(external/p.doenetML)</pre>`,
     );
-    cy.get(cesc2("#/_pre2")).should("have.text", theGraphDoenetML);
+    cy.get(cesc2("#/_pre2")).should(
+      "have.text",
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
+    );
 
     cy.log("check s2");
 
@@ -391,23 +328,23 @@ A string by itself!
     );
     cy.get(cesc2("#/s2/external/external/_pre2")).should(
       "have.text",
-      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>
-`,
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
     );
 
-    cy.get(cesc2("#/s2/external/_pre1")).should("have.text", theGraphDoenetML);
-    cy.get(cesc2("#/s2/external/_pre2")).should(
+    cy.get(cesc2("#/s2/external/_pre1")).should(
       "have.text",
-      `<text>hi</text>
-`,
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+    cy.get(cesc2("#/s2/external/_pre2")).should("have.text", `<text>hi</text>`);
 
     cy.get(cesc2("#/s2/_pre1")).should(
       "have.text",
-      `<pre>$(external/_graph1.doenetML)</pre>
-`,
+      `<pre>$(external/p.doenetML)</pre>`,
     );
-    cy.get(cesc2("#/s2/_pre2")).should("have.text", theGraphDoenetML);
+    cy.get(cesc2("#/s2/_pre2")).should(
+      "have.text",
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
+    );
 
     cy.log("check s3");
 
@@ -417,23 +354,23 @@ A string by itself!
     );
     cy.get(cesc2("#/s3/external/external/_pre2")).should(
       "have.text",
-      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>
-`,
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
     );
 
-    cy.get(cesc2("#/s3/external/_pre1")).should("have.text", theGraphDoenetML);
-    cy.get(cesc2("#/s3/external/_pre2")).should(
+    cy.get(cesc2("#/s3/external/_pre1")).should(
       "have.text",
-      `<text>hi</text>
-`,
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+    cy.get(cesc2("#/s3/external/_pre2")).should("have.text", `<text>hi</text>`);
 
     cy.get(cesc2("#/s3/_pre1")).should(
       "have.text",
-      `<pre>$(external/_graph1.doenetML)</pre>
-`,
+      `<pre>$(external/p.doenetML)</pre>`,
     );
-    cy.get(cesc2("#/s3/_pre2")).should("have.text", theGraphDoenetML);
+    cy.get(cesc2("#/s3/_pre2")).should(
+      "have.text",
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
+    );
 
     cy.log("check s4");
 
@@ -443,23 +380,23 @@ A string by itself!
     );
     cy.get(cesc2("#/s4/external/external/_pre2")).should(
       "have.text",
-      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>
-`,
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
     );
 
-    cy.get(cesc2("#/s4/external/_pre1")).should("have.text", theGraphDoenetML);
-    cy.get(cesc2("#/s4/external/_pre2")).should(
+    cy.get(cesc2("#/s4/external/_pre1")).should(
       "have.text",
-      `<text>hi</text>
-`,
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+    cy.get(cesc2("#/s4/external/_pre2")).should("have.text", `<text>hi</text>`);
 
     cy.get(cesc2("#/s4/_pre1")).should(
       "have.text",
-      `<pre>$(external/_graph1.doenetML)</pre>
-`,
+      `<pre>$(external/p.doenetML)</pre>`,
     );
-    cy.get(cesc2("#/s4/_pre2")).should("have.text", theGraphDoenetML);
+    cy.get(cesc2("#/s4/_pre2")).should(
+      "have.text",
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
+    );
 
     cy.log("check s5");
 
@@ -469,22 +406,22 @@ A string by itself!
     );
     cy.get(cesc2("#/s5/external/external/_pre2")).should(
       "have.text",
-      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>
-`,
+      `<p name="p">The <alert>DoenetML</alert> of a graph:</p>`,
     );
 
-    cy.get(cesc2("#/s5/external/_pre1")).should("have.text", theGraphDoenetML);
-    cy.get(cesc2("#/s5/external/_pre2")).should(
+    cy.get(cesc2("#/s5/external/_pre1")).should(
       "have.text",
-      `<text>hi</text>
-`,
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+    cy.get(cesc2("#/s5/external/_pre2")).should("have.text", `<text>hi</text>`);
 
     cy.get(cesc2("#/s5/_pre1")).should(
       "have.text",
-      `<pre>$(external/_graph1.doenetML)</pre>
-`,
+      `<pre>$(external/p.doenetML)</pre>`,
     );
-    cy.get(cesc2("#/s5/_pre2")).should("have.text", theGraphDoenetML);
+    cy.get(cesc2("#/s5/_pre2")).should(
+      "have.text",
+      '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
+    );
   });
 });
