@@ -31,10 +31,11 @@ $description = ''; //Don't automatically fill with file name
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
-if ($type != "image/png" && $type != "image/jpeg"){
+if ($type != "image/png" && $type != "image/jpeg" && $type != "text/csv"){
     $success = false;
-    $msg = "Only .png or .jpg files. '$original_file_name' can not be uploaded.";
+    $msg = "Only .csv .png or .jpg files. '$original_file_name' can not be uploaded.";
 }
+
 //Test if user has space to upload files
 if ($success) {
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(

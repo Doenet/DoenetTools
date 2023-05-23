@@ -361,8 +361,7 @@ function SupportFilesControls() {
       onDrop,
       maxFiles: 1,
       maxSize: 1048576,
-      accept: ".jpg,.png",
-      // accept: ".csv,.jpg,.png",
+      accept: ".csv,.jpg,.png",
     });
 
   let handledTooMany = false;
@@ -462,7 +461,7 @@ function SupportFilesControls() {
             </HStack>
 
             <Text color="doenet.mediumGray" fontSize="20pt">
-              Drop an image file here,
+              Drop a file here,
             </Text>
             <Text color="doenet.mediumGray" fontSize="20pt">
               or click to select a file
@@ -476,12 +475,14 @@ function SupportFilesControls() {
         {supportingFiles.map((file, i) => {
           let previewImagePath = `/media/${file.fileName}`;
 
-          let doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+          let fileNameNoExtension = file.fileName.split(".")[0];
 
-          // if (file.fileType == "text/csv") {
-          //   previewImagePath = "/activity_default.jpg";
-          //   doenetMLCode = `CSV Code HERE`;
-          // }
+          let doenetMLCode = `<image source='doenet:cid=${fileNameNoExtension}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+
+          if (file.fileType == "text/csv") {
+            previewImagePath = "/activity_default.jpg";
+            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${file.description}' hasHeader="true" columnTypes='' />`;
+          }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
@@ -555,7 +556,11 @@ function SupportFilesControls() {
                           </Menu>
                         </Flex>
                         <Text fontSize="xs">
-                          Alt Text Description required to use file
+                          {file.fileType == "text/csv" ? (
+                            <>DoenetML Name needed to use file</>
+                          ) : (
+                            <>Alt Text Description required to use file</>
+                          )}
                         </Text>
                         <InputGroup size="xs">
                           <Input
@@ -657,7 +662,7 @@ function SupportFilesControls() {
                           }}
                         >
                           <EditablePreview />
-                          <EditableInput width="400px" />
+                          <EditableInput width="300px" />
                         </Editable>
                         {/* <Text
                           height="26px"
@@ -670,7 +675,13 @@ function SupportFilesControls() {
                           {file.description}
                         </Text> */}
                         <Text>
-                          {file.fileType} {file.width} x {file.height}
+                          {file.fileType == "text/csv" ? (
+                            <>{file.fileType} </>
+                          ) : (
+                            <>
+                              {file.fileType} {file.width} x {file.height}
+                            </>
+                          )}
                         </Text>
                       </VStack>
                     </GridItem>
