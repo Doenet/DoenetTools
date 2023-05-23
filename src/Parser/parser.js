@@ -8,6 +8,46 @@ import { parser } from "./doenet.js";
 export function parse(inText) {
   return parser.parse(inText).cursor();
 }
+
+function extractCurrentToken(inText, cursor) {
+  return inText.slice(cursor.from - 1, cursor.to);
+}
+
+function printRangeOfPositions(inText, cursor) {
+  inText = inText.slice(0);
+  let startPos = cursor.from;
+  let endPos = cursor.to;
+  let lineAndColStart = getLineNumberAndColumn(inText, startPos);
+  let lineAndColEnd = getLineNumberAndColumn(inText, endPos);
+  if (lineAndColStart.line == lineAndColEnd.line) {
+    return `line: ${lineAndColStart.line}, characters: ${lineAndColStart.character}-${lineAndColEnd.character}`;
+  } else {
+    return `${printLineNumberAndColumn(
+      inText,
+      startPos,
+    )} through ${printLineNumberAndColumn(inText, endPos)}`;
+  }
+}
+
+function printLineNumberAndColumn(inText, pos) {
+  let lineAndCol = getLineNumberAndColumn(inText, pos);
+  return `line: ${lineAndCol.line}, character: ${lineAndCol.character}`;
+}
+
+function getLineNumberAndColumn(inText, pos) {
+  inText = inText.slice(0);
+  let lineCount = 1;
+  let charsInCurrLine = 0;
+  for (let i = 0; i < pos; i++) {
+    if (inText[i] == "\n") {
+      lineCount++;
+      charsInCurrLine = 0;
+    } else {
+      charsInCurrLine++;
+    }
+  }
+  return { line: lineCount, character: charsInCurrLine };
+}
 /**
  * parse string and output a convinent to use object.
  * ignores macros.
@@ -15,6 +55,15 @@ export function parse(inText) {
  */
 export function parseAndCompile(inText) {
   function compileElement(cursor) {
+    function getLineCol() {
+      return printLineNumberAndColumn(inText, cursor.from);
+    }
+    function printRange() {
+      return printRangeOfPositions(inText, cursor);
+    }
+    function currToken() {
+      return extractCurrentToken(inText, cursor);
+    }
     if (cursor.name !== "Element") {
       throw Error("compileElement() called on a non-Element");
     }
@@ -31,19 +80,16 @@ export function parseAndCompile(inText) {
       while (cursor.nextSibling()) {
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          let errorBegin = cursor.from;
-          let errorEnd = cursor.to;
           // console.error(cursor);
           // console.error(showCursor(cursor));
           // console.error(cursor.name);
           // eslint-disable-next-line no-empty
           while (cursor.parent()) {}
 
+          let badTagName = inText.slice(tagOpenBegin - 1, cursor.to);
+
           throw Error(
-            `Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(
-              tagOpenBegin - 1,
-              errorEnd,
-            )}`,
+            `Invalid DoenetML at ${printRange()}. Error in opening <${tagName}> tag.  Found ${badTagName}`,
           );
         }
 
@@ -55,7 +101,7 @@ export function parseAndCompile(inText) {
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
             throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
+              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at ${printRange()}`,
             );
           }
           attrs[attrName] = true;
@@ -66,7 +112,7 @@ export function parseAndCompile(inText) {
 
           if (attrName in attrs) {
             throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
+              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at ${printRange()}`,
             );
           }
           attrs[attrName] = attrValue;
@@ -108,25 +154,15 @@ export function parseAndCompile(inText) {
           continue;
         } else if (cursor.name === "MismatchedCloseTag") {
           throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
+            `Invalid DoenetML at ${getLineCol()}. Mismatched closing tag.  Expected </${tagName}>.  Found ${currToken()}.`,
           );
         } else {
-          // console.log(`error is at position ${cursor.from}, ${cursor.to}`)
+          // console.log(`error is at ${cursor.from}, ${cursor.to}`)
           // console.log(`error part: ${inText.slice(cursor.from, cursor.to)}`)
           // console.log(`Here is cursor: ${showCursor(cursor)}`)
           // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
           throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Expected a closing </${tagName}> tag.  Instead found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
+            `Invalid DoenetML at ${getLineCol()}. Expected a closing </${tagName}> tag.  Instead found ${currToken()}.`,
           );
         }
       }
@@ -150,7 +186,7 @@ export function parseAndCompile(inText) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
           throw Error(
-            `Invalid DoenetML at positions ${cursor.from} to ${cursor.to}. Error in self-closing <${tagName}/> tag.`,
+            `Invalid DoenetML at ${printRange()}. Error in self-closing <${tagName}/> tag.`,
           );
         }
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -161,7 +197,7 @@ export function parseAndCompile(inText) {
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
             throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
+              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at ${printRange()}`,
             );
           }
           attrs[attrName] = true;
@@ -169,7 +205,7 @@ export function parseAndCompile(inText) {
           cursor.nextSibling();
           if (attrName in attrs) {
             throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
+              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at ${printRange()}`,
             );
           }
 
@@ -214,9 +250,10 @@ export function parseAndCompile(inText) {
       }
     } else {
       throw Error(
-        `Invalid DoenetML at positions ${tc.node.from} to ${
-          tc.node.to
-        }.  Found ${inText.substring(tc.node.from, tc.node.to)}`,
+        `Invalid DoenetML at ${printRangeOfPositions(
+          inText,
+          tc.node.from,
+        )}. Found ${inText.substring(tc.node.from, tc.node.to)}`,
       );
     }
   }
