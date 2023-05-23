@@ -31,7 +31,7 @@ services:
       # Persist VS Code extensions between rebuilds
       # - vscode-extensions:/root/.vscode-server/extensions
       # mount ssh configuration
-      - ~/.ssh:/.ssh
+      # - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
