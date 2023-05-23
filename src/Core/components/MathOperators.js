@@ -648,6 +648,32 @@ export class Mean extends MathBaseOperator {
   }
 }
 
+export class Median extends MathBaseOperator {
+  static componentType = "median";
+
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.isNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isNumericOperator: true } }),
+    };
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          numericOperator: function (inputs) {
+            return me.math.median(inputs);
+          },
+        },
+      }),
+    };
+
+    return stateVariableDefinitions;
+  }
+}
+
 export class Variance extends MathBaseOperator {
   static componentType = "variance";
 
@@ -1074,12 +1100,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
       createStateVariable: "type",
       defaultValue: null,
       toLowerCase: true,
-      validValues: [
-        "operand",
-        "function",
-        "functionargument",
-        "numoperands",
-      ],
+      validValues: ["operand", "function", "functionargument", "numoperands"],
     };
     attributes.operandNumber = {
       createComponentOfType: "number",
