@@ -7,7 +7,7 @@ COPY src ./src
 COPY public ./public
 ARG BUILD_MODE=production
 ARG NODE_OPTIONS
-ENV NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=2046}
+ENV NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=3584}
 RUN npm run build -- --outDir site --mode ${BUILD_MODE}
 
 FROM httpd:2.4.41-alpine

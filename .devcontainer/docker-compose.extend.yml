@@ -37,6 +37,7 @@ services:
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
+      - NODE_OPTIONS=--max-old-space-size=3584
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE
