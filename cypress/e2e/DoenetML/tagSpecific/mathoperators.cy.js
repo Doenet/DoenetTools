@@ -6048,6 +6048,39 @@ describe("Math Operator Tag Tests", function () {
     });
   });
 
+  it("median", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <median name="numbers"><number>3</number><number>17</number><number>5-4</number></median>
+      <median name="sugared">1 4 5 10000</median>
+      <median name="noSymbolic">1 4 5 x+1</median>
+      `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/numbers") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/sugared") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4.5");
+    cy.get(cesc2("#/noSymbolic") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/numbers"].stateValues.value).eq(3);
+      expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(true);
+      expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
+    });
+  });
+
   // TODO: skipping most checks of ugly expressions for now
   it("variance", () => {
     cy.window().then(async (win) => {
