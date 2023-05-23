@@ -133,6 +133,14 @@ export default class Award extends BaseComponent {
       createPrimitiveOfType: "string",
     };
 
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
+    };
+
     attributes.parseScientificNotation = {
       createComponentOfType: "boolean",
       createStateVariable: "parseScientificNotation",
