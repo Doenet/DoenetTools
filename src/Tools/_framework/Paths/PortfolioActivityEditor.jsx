@@ -481,7 +481,12 @@ function SupportFilesControls() {
 
           if (file.fileType == "text/csv") {
             previewImagePath = "/activity_default.jpg";
-            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${file.description}' hasHeader="true" columnTypes='' />`;
+            //Fix the name so it can't break the rules
+            const doenetMLName = file.description
+              .replace(/[^a-zA-Z0-9]/g, "_")
+              .replace(/^([^a-zA-Z])/, "d$1");
+
+            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${doenetMLName}' hasHeader="true" columnTypes='' />`;
           }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
@@ -567,7 +572,11 @@ function SupportFilesControls() {
                             size="sm"
                             name="description"
                             mr="10px"
-                            placeholder="Enter Description Here"
+                            placeholder={
+                              file.fileType == "text/csv"
+                                ? "Enter Name Here"
+                                : "Enter Description Here"
+                            }
                             onBlur={(e) => {
                               fetcher.submit(
                                 {
