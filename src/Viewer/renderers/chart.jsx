@@ -38,7 +38,7 @@ export default React.memo(function Chart(props) {
           .filter((x) => x !== null);
       }
 
-      //     let data = [];
+      let data = [];
 
       for (let colInd of colInds) {
         if (SVs.type === "box") {
@@ -56,7 +56,7 @@ export default React.memo(function Chart(props) {
         }
       }
 
-      Plotly.newPlot(name, {
+      Plotly.newPlot(id, {
         data,
       });
     }
