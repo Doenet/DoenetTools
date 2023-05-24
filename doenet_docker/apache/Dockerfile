@@ -1,12 +1,14 @@
 FROM node:19.8-bullseye AS build
 WORKDIR /build
-COPY package*.json ./
+COPY package-lock.json package.json ./
 RUN npm ci
 COPY index.html vite.config.js ./
 COPY src ./src
 COPY public ./public
-ARG BUILD_MODE
-RUN NODE_OPTIONS=--max-old-space-size=4098 npm run build -- --outDir site --mode ${BUILD_MODE}
+ARG BUILD_MODE=production
+ARG NODE_OPTIONS
+ENV NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=3584}
+RUN npm run build -- --outDir site --mode ${BUILD_MODE}
 
 FROM httpd:2.4.41-alpine
 RUN apk update; \
