@@ -4,7 +4,7 @@
 {
   "name": "DoenetTools",
   "hostRequirements": {
-    "memory": "8gb"
+    "memory": "4gb"
   },
 
   // Update the 'dockerComposeFile' list if you have more compose files or use different names.
