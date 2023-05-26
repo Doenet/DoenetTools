@@ -1,23 +1,16 @@
 # version: '3.9'
+# context is relative to the *primary*
+# docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
+# array).
 services:
   dev:
-    # Do we need auth sock?
     # If you want add a non-root user to your Dockerfile, you can use the "remoteUser"
     # property in devcontainer.json to cause VS Code its sub-processes (terminals, tasks,
     # debugging) to execute as the user. Uncomment the next line if you want the entire
     # container to run as this user instead. Note that, on Linux, you may need to
     # ensure the UID and GID of the container user you create matches your local user.
     # See https://aka.ms/vscode-remote/containers/non-root for details.
-    #
     # user: vscode
-    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer
-    # folder. Note that the path of the Dockerfile and context is relative to the *primary*
-    # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
-    # array). The sample below assumes your primary file is in the root of your project.
-    #
-    # build:
-    #   context: .
-    #   dockerfile: .devcontainer/Dockerfile
     image: lyanthropos/doenet_dev
     volumes:
       # mount daemon for docker in docker control
@@ -30,8 +23,6 @@ services:
       - node_modules:/home/node/workspace/node_modules
       # Persist VS Code extensions between rebuilds
       # - vscode-extensions:/root/.vscode-server/extensions
-      # mount ssh configuration
-      # - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
