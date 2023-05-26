@@ -70,7 +70,7 @@ services:
       - 3306:3306
     volumes:
       - db:/var/lib/mysql
-      - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+      - ./doenet_docker/mysql/db_init:/docker-entrypoint-initdb.d
     restart: on-failure
 
   # for realtime testing
