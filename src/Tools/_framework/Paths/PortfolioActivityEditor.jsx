@@ -5,6 +5,7 @@ import CodeMirror from "../CodeMirror";
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
+import Papa from "papaparse";
 
 import { useSetRecoilState } from "recoil";
 import {
@@ -324,10 +325,30 @@ function SupportFilesControls() {
 
       reader.onabort = () => console.log("file reading was aborted");
       reader.onerror = () => console.log("file reading has failed");
-      reader.onload = async () => {
+      reader.onload = async (event) => {
+        let columnTypes = "";
+        if (file.type == "text/csv") {
+          const dataURL = event.target.result;
+          const csvString = atob(dataURL.split(",")[1]);
+          const parsedData = Papa.parse(csvString, {
+            dynamicTyping: true,
+          }).data;
+          columnTypes = parsedData
+            .slice(1)[0]
+            .reduce((acc, val) => {
+              if (typeof val === "number") {
+                return `${acc}Number `;
+              } else {
+                return `${acc}Text `;
+              }
+            }, "")
+            .trim();
+        }
         const uploadData = new FormData();
         uploadData.append("file", file);
         uploadData.append("doenetId", doenetId);
+        uploadData.append("columnTypes", columnTypes);
+
         let resp = await axios.post("/api/supportFileUpload.php", uploadData);
 
         if (resp.data.success) {
@@ -486,7 +507,7 @@ function SupportFilesControls() {
               .replace(/[^a-zA-Z0-9]/g, "_")
               .replace(/^([^a-zA-Z])/, "d$1");
 
-            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${doenetMLName}' hasHeader="true" columnTypes='' />`;
+            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${doenetMLName}' hasHeader="true" columnTypes='${file.columnTypes}' />`;
           }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {

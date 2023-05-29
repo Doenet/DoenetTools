@@ -891,6 +891,7 @@ CREATE TABLE `support_files` (
   `sizeInBytes` mediumint DEFAULT NULL,
   `widthPixels` int DEFAULT NULL,
   `heightPixels` int DEFAULT NULL,
+  `columnTypes` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `timestamp` datetime DEFAULT NULL,
   `isListed` tinyint(1) NOT NULL DEFAULT '0',
   `isPublic` tinyint(1) NOT NULL DEFAULT '0',
@@ -1106,4 +1107,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-29 16:37:19
+-- Dump completed on 2023-05-29 14:45:00
