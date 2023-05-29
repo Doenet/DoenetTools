@@ -1191,7 +1191,7 @@ export function componentFromAttribute({
     value = { rawString: "" };
   }
 
-  if (attrObj && attrObj.createComponentOfType) {
+  if (attrObj?.createComponentOfType) {
     let newComponent;
     let valueTrimLower = value.rawString.trim().toLowerCase();
 
@@ -1262,7 +1262,7 @@ export function componentFromAttribute({
       attr.ignoreFixed = true;
     }
     return attr;
-  } else if (attrObj && attrObj.createPrimitiveOfType) {
+  } else if (attrObj?.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
       let valueTrimLower = value.rawString.trim().toLowerCase();
@@ -1284,7 +1284,7 @@ export function componentFromAttribute({
       newPrimitive = attrObj.validationFunction(newPrimitive);
     }
     return { primitive: newPrimitive };
-  } else if (attrObj && attrObj.createTargetComponentNames) {
+  } else if (attrObj?.createTargetComponentNames) {
     let newTargets = value.rawString
       .trim()
       .split(/\s+/)
@@ -2675,8 +2675,7 @@ export function createComponentNames({
     if (
       !assignNames &&
       useOriginalNames &&
-      serializedComponent.originalDoenetAttributes &&
-      serializedComponent.originalDoenetAttributes.assignNames
+      serializedComponent.originalDoenetAttributes?.assignNames
     ) {
       assignNames = serializedComponent.originalDoenetAttributes.assignNames;
     }
@@ -3248,6 +3247,29 @@ export function serializedComponentsReviver(key, value) {
   );
 }
 
+// processAssignNames creates component names for an array of components
+// based on instructions on how those names should be assigned.
+// The most common use case is for naming replacements of a composite.
+// If assignNames is specified, those names will be used for the first components.
+// If a name is not assigned for a given component then
+//   - if originalNamesAreConsistent is true, original names of the components are used
+//   - else unique names will be generated for the components
+// Notes on arguments
+// - serializedComponents: array of components to be named (the replacements)
+// - assignNames: an array of names to be given to the components
+//   If an entry of assignNames is an array and that component is itself a composite that assigns names
+//   then that array becomes the assignNames for that composite component
+// - indOffset: offset assignNames by this value (compared to index of serialized components)
+//   and also offset the index used for creating unique names
+// - assignNewNamespaces: if true, also give the components a new namespace
+// - parentName: the way the name of the parent (typically the composite) is used to create the names
+//   depends on parentCreatesNewNamespace
+//   - if parentCreatesNewNamespace, then the entire parent name is used for the namespace of new names
+//   - else the namespace from the parent name (the part before the last slash) is used for the namespace/
+// - parentCreatesNewNamespace: see parentName, above
+// - shadowingComposite: If false, there is apparently some case where we have to create unique names
+//   TODO: figure out the circumstances where this special case occurs
+
 export function processAssignNames({
   assignNames = [],
   assignNewNamespaces = false,
@@ -3265,65 +3287,44 @@ export function processAssignNames({
 
   let numComponents = serializedComponents.length;
 
-  // normalize form so all names are originalNames,
+  // Step 1
+  // normalize form so all names are originalNames and not componentNames,
   // independent of whether the components originated from a copy
+  // (which would have given originalNames but not componentNames)
   // or directly from a serialized state that was already given names
+  // (which would have componentNames but not originalNames)
   moveComponentNamesToOriginalNames(serializedComponents);
+
+  // Step 2
+  // The namespace of a component is the part before the last slash.
+  // We treat targets that are within the original namespace of the components as relative,
+  // so that the references will change if the namespace changes.
+  // However, we treat targets that are outside the original namespace as absolute so they won't change.
 
   let attributesByTargetComponentName = {};
 
-  let originalNamespace = null;
+  for (let ind = 0; ind < numComponents; ind++) {
+    let component = serializedComponents[ind];
 
-  if (originalNamesAreConsistent) {
-    // need to use a component for original name, as parentName is the new name
-    if (numComponents > 0) {
-      // find a component with an original name, i.e., not a string
-      let component = serializedComponents.filter(
-        (x) => typeof x === "object",
-      )[0];
-      if (component && component.originalName) {
-        let lastSlash = component.originalName.lastIndexOf("/");
-        originalNamespace = component.originalName.substring(0, lastSlash);
-      }
-    }
+    if (component.originalName) {
+      let lastSlash = component.originalName.lastIndexOf("/");
+      let originalNamespace = component.originalName.substring(0, lastSlash);
 
-    if (originalNamespace !== null) {
-      for (let component of serializedComponents) {
-        setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({
-          namespace: originalNamespace,
-          components: [component],
-          attributesByTargetComponentName,
-        });
-      }
-    }
-  } else {
-    for (let ind = 0; ind < numComponents; ind++) {
-      let component = serializedComponents[ind];
-
-      if (typeof component !== "object") {
-        continue;
-      }
-
-      originalNamespace = null;
-      // need to use a component for original name, as parentName is the new name
-      if (numComponents > 0 && component.originalName) {
-        let lastSlash = component.originalName.lastIndexOf("/");
-        originalNamespace = component.originalName.substring(0, lastSlash);
-      }
-
-      if (originalNamespace !== null) {
-        setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({
-          namespace: originalNamespace,
-          components: [component],
-          attributesByTargetComponentName,
-        });
-      }
+      setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({
+        namespace: originalNamespace,
+        components: [component],
+        attributesByTargetComponentName,
+      });
     }
   }
 
+  // Step 3
+  // For each component, determine if it should be assigned a name or given a unique name,
+  // and set its prescribedName to that value.
+  // Then create component names for it and its children
+
   let processedComponents = [];
 
-  // don't name strings or primitive numbers
   let numPrimitives = 0;
 
   for (let ind = 0; ind < numComponents; ind++) {
@@ -3332,6 +3333,8 @@ export function processAssignNames({
     let component = serializedComponents[ind];
 
     if (typeof component !== "object") {
+      // don't name strings or primitive numbers
+      // and don't use up an entry from assignNames
       numPrimitives++;
       processedComponents.push(component);
       continue;
@@ -3342,25 +3345,16 @@ export function processAssignNames({
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};
     }
-
-    if (!originalNamesAreConsistent) {
-      // attributesByTargetComponentName = {};
-
-      originalNamespace = null;
-      // need to use a component for original name, as parentName is the new name
-      if (numComponents > 0 && component.originalName) {
-        let lastSlash = component.originalName.lastIndexOf("/");
-        originalNamespace = component.originalName.substring(0, lastSlash);
-      }
+    if (!component.attributes) {
+      component.attributes = {};
     }
 
     if (name) {
-      if (
-        componentInfoObjects.allComponentClasses[component.componentType]
-          .assignNamesSkipOver
-      ) {
-        name = [name];
-      } else if (component.attributes?.assignNamesSkip) {
+      if (component.attributes.assignNamesSkip) {
+        // if component is a composite that itself assigns names to composites,
+        // it could have an assignNamesSkip attribute, which says that we should
+        // recurse to its replacements (possibly multiple times if assignNamesSkip > 1)
+        // before continuing the assign names process
         let numberToSkip = component.attributes.assignNamesSkip.primitive;
         if (numberToSkip > 0) {
           for (let i = 0; i < numberToSkip; i++) {
@@ -3370,39 +3364,52 @@ export function processAssignNames({
       }
     }
 
+    // add a new namespace to component if instructed
     if (assignNewNamespaces) {
-      if (!component.attributes) {
-        component.attributes = {};
-      }
       component.attributes.newNamespace = { primitive: true };
     }
 
+    // If the name is actually an array rather than a name,
+    // then it indicates we should use it for assignNames instead,
+    // assuming the component actually assigns names to replacement
     if (Array.isArray(name)) {
       if (
         componentInfoObjects.allComponentClasses[component.componentType]
           .assignNamesToReplacements
       ) {
-        // give component itself an unreachable name
+        // since we don't have a name for the component itself,
+        // give it an unreachable name (i.e., a unique name)
         let longNameId = parentName + "|assignName|" + indForNames.toString();
         component.doenetAttributes.prescribedName = createUniqueName(
           component.componentType.toLowerCase(),
           longNameId,
         );
 
-        let componentName = parentName;
+        // The prescribed name, created above, does not include namespaces.
+        // The full component name does include namespaces.
+        // Add the appropriate namespace to the prescribed name to create the full name
+
+        let namespaceForComponent = parentName;
         if (!parentCreatesNewNamespace) {
           let lastSlash = parentName.lastIndexOf("/");
-          componentName = parentName.substring(0, lastSlash);
+          namespaceForComponent = parentName.substring(0, lastSlash);
         }
-        componentName += "/" + component.doenetAttributes.prescribedName;
-        component.componentName = componentName;
+        component.componentName =
+          namespaceForComponent +
+          "/" +
+          component.doenetAttributes.prescribedName;
 
+        // The main goal: making the array "name" be the assignNames
         component.doenetAttributes.assignNames = name;
 
         processedComponents.push(component);
+
+        // Nothing more to do with the composite component,
+        // as the assignNames will be used when creating its replacements
         continue;
       } else {
-        // TODO: what to do when try to assign names recursively to non-composite?
+        // If a component doesn't assign names, we can't handle a "name" that is an array
+        // so we just ignore the name
         console.warn(
           `Cannot assign names recursively to ${component.componentType}`,
         );
@@ -3411,12 +3418,16 @@ export function processAssignNames({
     }
 
     if (!name) {
+      // A name was not specified from assignNames.
+      // If originalNamesAreConsistent, we'll try to use the component's originalName.
+      // Otherwise, we'll create a unique (unreachable) name
       if (
         originalNamesAreConsistent &&
         component.originalName &&
         !component.doenetAttributes?.createUniqueName
       ) {
-        name = component.originalName.slice(originalNamespace.length + 1);
+        let lastSlash = component.originalName.lastIndexOf("/");
+        name = component.originalName.slice(lastSlash + 1);
       } else {
         let longNameId = parentName + "|assignName|" + indForNames.toString();
         name = createUniqueName(
@@ -3426,31 +3437,81 @@ export function processAssignNames({
       }
     }
 
+    // The name becomes the component's prescribed name (which doesn't include the namespace)
     component.doenetAttributes.prescribedName = name;
-    // delete component.originalName;
 
-    // even if original names are consistent, we still use component's original assignNames
-    // (we wouldn't use assignNames of the component's children as they should have unique names)
-    if (
-      originalNamesAreConsistent &&
-      !component.doenetAttributes.assignNames &&
-      component.originalDoenetAttributes &&
-      component.originalDoenetAttributes.assignNames
-    ) {
-      component.doenetAttributes.assignNames =
-        component.originalDoenetAttributes.assignNames;
+    // We will call createComponentNames, below, to create the names of the component and its children.
+    // The function createComponentNames uses a namespaceStack to keep track of the namespaces.
+    // To start off with the correct namespace for the component, we create a namespaceStack
+    // corresponding to the desired namespace, which is the namespace from the parent
+    // (including the parent's name as a namespace if parentCreatesNewNamespace)
+
+    let namespacePieces = parentName.split("/");
+    if (!parentCreatesNewNamespace) {
+      namespacePieces.pop();
+    }
+    let namespaceStack = namespacePieces.map((x) => ({
+      namespace: x,
+      componentCounts: {},
+      namesUsed: {},
+    }));
+    if (!(parentName[0] === "/")) {
+      // if parentName doesn't begin with a /
+      // still add a namespace for the root namespace at the beginning
+      namespaceStack.splice(0, 0, {
+        componentCounts: {},
+        namesUsed: {},
+        namespace: "",
+      });
     }
 
-    createComponentNamesFromParentName({
-      parentName,
-      ind: indForNames,
-      component,
-      parentCreatesNewNamespace,
+    // If a component is creating a new namespace,
+    // then the names of its children cannot conflict with other names.
+    // In this case, we can use the original names of the children even if originalNamesAreConsistent is false.
+    let useOriginalNames;
+    if (
+      component.attributes.newNamespace?.primitive ||
+      originalNamesAreConsistent
+    ) {
+      useOriginalNames = true;
+    } else {
+      useOriginalNames = false;
+
+      if (component.children) {
+        // if we aren't using original names, then we need to make unique (unreachable) names for the children
+        markToCreateAllUniqueNames(component.children);
+      }
+    }
+
+    // always mark component attributes to create unique names
+    // TODO: shouldn't this always be done so we wouldn't have to do it here?
+    for (let attrName in component.attributes) {
+      let attribute = component.attributes[attrName];
+      if (attribute.component) {
+        markToCreateAllUniqueNames([attribute.component]);
+      } else if (attribute.childrenForComponent) {
+        markToCreateAllUniqueNames(attribute.childrenForComponent);
+      }
+    }
+
+    // console.log(`before create componentName`);
+    // console.log(deepClone(component));
+    // console.log(useOriginalNames);
+    // console.log(component.attributes.newNamespace);
+
+    createComponentNames({
+      serializedComponents: [component],
+      namespaceStack,
       componentInfoObjects,
+      parentName,
+      useOriginalNames,
       attributesByTargetComponentName,
-      originalNamesAreConsistent,
-      shadowingComposite,
+      indOffset: indForNames,
+      initWithoutShadowingComposite: !shadowingComposite,
     });
+
+    // console.log(`result of create componentName`);
+    // console.log(deepClone(component));
 
     processedComponents.push(component);
   }
@@ -3458,95 +3519,6 @@ export function processAssignNames({
   return {
     serializedComponents: processedComponents,
   };
-}
-
-function createComponentNamesFromParentName({
-  parentName,
-  component,
-  ind,
-  parentCreatesNewNamespace,
-  componentInfoObjects,
-  attributesByTargetComponentName,
-  originalNamesAreConsistent,
-  shadowingComposite,
-}) {
-  let namespacePieces = parentName.split("/");
-
-  if (!parentCreatesNewNamespace) {
-    namespacePieces.pop();
-  }
-
-  let namespaceStack = namespacePieces.map((x) => ({
-    namespace: x,
-    componentCounts: {},
-    namesUsed: {},
-  }));
-
-  if (!(parentName[0] === "/")) {
-    // if componentName doesn't begin with a /
-    // still add a namespace for the root namespace at the beginning
-    namespaceStack.splice(0, 0, {
-      componentCounts: {},
-      namesUsed: {},
-      namespace: "",
-    });
-  }
-
-  if (!component.doenetAttributes) {
-    component.doenetAttributes = {};
-  }
-  if (!component.attributes) {
-    component.attributes = {};
-  }
-
-  // let originalNamespaceForComponentChildren = parentName;
-  // if (!parentCreatesNewNamespace) {
-  //   let lastSlash = parentName.lastIndexOf("/");
-  //   namespaceForComponent = parentName.substring(0, lastSlash);
-  // }
-
-  let useOriginalNames;
-  if (
-    component.attributes.newNamespace?.primitive ||
-    originalNamesAreConsistent
-  ) {
-    useOriginalNames = true;
-  } else {
-    useOriginalNames = false;
-
-    if (component.children) {
-      markToCreateAllUniqueNames(component.children);
-    }
-  }
-
-  // always mark component attributes to create unique names
-  for (let attrName in component.attributes) {
-    let attribute = component.attributes[attrName];
-    if (attribute.component) {
-      markToCreateAllUniqueNames([attribute.component]);
-    } else if (attribute.childrenForComponent) {
-      markToCreateAllUniqueNames(attribute.childrenForComponent);
-    }
-  }
-
-  // console.log(`before create componentName`)
-  // console.log(deepClone(component))
-  // console.log(useOriginalNames);
-  // console.log(component.attributes.newNamespace);
-
-  createComponentNames({
-    serializedComponents: [component],
-    namespaceStack,
-    componentInfoObjects,
-    parentName,
-    useOriginalNames,
-    attributesByTargetComponentName,
-    indOffset: ind,
-    initWithoutShadowingComposite: !shadowingComposite,
-  });
-
-  // console.log(`result of create componentName`)
-  // console.log(deepClone(component))
 }
 
 function setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({
@@ -3719,10 +3691,7 @@ export function markToCreateAllUniqueNames(components) {
         component.doenetAttributes.originalAssignNames =
           component.doenetAttributes.assignNames;
         delete component.doenetAttributes.assignNames;
-      } else if (
-        component.originalDoenetAttributes &&
-        component.originalDoenetAttributes.assignNames
-      ) {
+      } else if (component.originalDoenetAttributes?.assignNames) {
         component.doenetAttributes.createUniqueAssignNames = true;
         component.doenetAttributes.originalAssignNames =
           component.originalDoenetAttributes.assignNames;
