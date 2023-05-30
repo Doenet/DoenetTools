@@ -206,20 +206,14 @@ export function Home() {
       <Center background={blueColor} padding="20px">
         <Flex flexDirection="column">
           <Text fontSize="16px" fontWeight="700" textAlign="left">
-            Doenet Workshop
+            Doenet Office Hours
           </Text>
           <Text maxWidth="800px">
-            From May 22 - May 26, 2023, we will host the second{" "}
-            <Link
-              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023"
-              isExternal
-            >
-              <Text as="u">workshop</Text>
-            </Link>{" "}
-            on developing content and learning experiments in Doenet. It will be
-            held at the University of Minnesota, the workshop for instructors of
-            college STEM courses will be a hands-on introduction to authoring
-            and running experiments, led by the developers of Doenet.
+            Doenet Staff we will be available to help you author learning
+            activities every Thursday at 3:00 PM - 4:00 PM CST on{" "}
+            <Link href="https://zoom.link.here" isExternal>
+              <Text as="u">Zoom</Text>.
+            </Link>
           </Text>
         </Flex>
       </Center>
