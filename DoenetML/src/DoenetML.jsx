@@ -1,3 +1,4 @@
+import "./Doenetml.css";
 import React from "react";
 import PageViewer from "./Viewer/PageViewer.jsx";
 import { RecoilRoot } from "recoil";
@@ -7,6 +8,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DarkmodeController from "./Tools/_framework/DarkmodeController.jsx";
 import VirtualKeyboard from "./Tools/_framework/Footers/VirtualKeyboard";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
+/**
+ * this is a hack for react-mathqill
+ * error: global is not defined
+ */
+window.global = window.global || window;
 
 const theme = extendTheme({
   fonts: {

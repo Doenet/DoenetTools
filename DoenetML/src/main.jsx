@@ -2,13 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import DoenetML from "./DoenetML";
 
-// function CypressTest(props){
-
-//   axios.post('/api/test.php',{}).then((resp) => console.log('>>>resp', resp.data));
-
-//   return <p>test</p>
-// }
-
 let doenetML = `Hi Duane <graph><regularPolygon center="($s, 0)"/></graph><mathinput name='f'/>$f<spreadsheet />
   <video youtube='ZZ5LpwO-An4' name='v'/><callaction target='v' actionName='playVideo' />
   <subsetOfRealsInput /><orbitalDiagramInput /><slider name="s"/><matrixInput />
