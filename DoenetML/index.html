@@ -177,6 +177,13 @@
         width: 18px;
       }
     </style>
+    <script>
+      /**
+       * this is a hack for react-mathqill
+       * error: global is not defined
+       */
+      var global = global || window;
+    </script>
   </head>
   <body>
     <div id="root"></div>
