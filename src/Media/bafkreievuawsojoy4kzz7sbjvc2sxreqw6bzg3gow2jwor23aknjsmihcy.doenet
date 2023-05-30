@@ -4,9 +4,9 @@
  assignNames="external"/>
 </section>
 
-<p>Grab the DoenetML from external graph:</p>
+<p>Grab the DoenetML from external p:</p>
 
-<pre>$(external/_graph1.doenetML)</pre>
+<pre>$(external/p.doenetML)</pre>
 
 <p>DoenetML of single line:</p>
 <pre><displayDoenetML>

@@ -24,39 +24,35 @@ describe("ContentBrowser Tag Tests", function () {
       "Filter by: ",
     );
 
-    cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div").should(
-      "not.exist",
-    );
+    cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div")
+      .eq(1)
+      .find("a")
+      .should("not.exist");
   });
 
   it("Basic example", () => {
     let doenetML = `
     <contentBrowser>
-      <contentBrowserItem>
-        <setup>
-          <label>p</label>
-          </setup>
+      <contentBrowserItem label="p">
         <p name="pp1">The <tag>p</tag> is simple.</p>
         <p name="pp2">Hello!</p>
       </contentBrowserItem>
-      <contentBrowserItem>
+      <contentBrowserItem label="mathInput">
         <title>The <tag>mathInput</tag> component</title>
-        <setup>
-          <label>mathInput</label>
-        </setup>
         <p name="mathinputp1">The <tag>mathInput</tag> let's you input math, but we don't have a video.</p>
         <p name="mathinputp2">Here is a mathInput: <mathInput prefill="x+x"/></p>
       </contentBrowserItem>
-      <contentBrowserItem>
-        <setup>
-          <label>math</label>
-          </setup>
+      <contentBrowserItem label="math">
         <title>The <tag>math</tag> component</title>
         <div>
           <p name="mathp1">The <tag>math</tag> does math.</p>
           <video youtube="tJ4ypc5L6uU" name="mathv" />
         </div>
         <p name="mathp2">Here is a math: <math>x+x</math></p>
+      </contentBrowserItem>
+      <contentBrowserItem>
+        <title>Forgot a label</title>
+        <p name="pUnlabeled">This item does not have a label.</p>
       </contentBrowserItem>
 
     </contentBrowser>
@@ -73,7 +69,7 @@ describe("ContentBrowser Tag Tests", function () {
 
     cy.get(cesc2("#/_contentbrowser1") + " [data-test=initials]").should(
       "have.text",
-      "Filter by: MP",
+      "Filter by: MPU",
     );
 
     cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div")
@@ -305,5 +301,35 @@ describe("ContentBrowser Tag Tests", function () {
     cy.get(cesc2("#/mathp2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "x+x");
+
+    cy.log("select unlabeled");
+
+    cy.get(cesc2("#/_contentbrowser1") + " [data-test=initials] a")
+      .eq(2)
+      .click();
+
+    cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div").should(
+      "contain.text",
+      "Unlabeled",
+    );
+
+    cy.get(cesc2("#/_title3")).should("have.text", "Forgot a label");
+
+    cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div")
+      .eq(1)
+      .find("a")
+      .eq(0)
+      .should("have.text", "Unlabeled");
+
+    cy.get(cesc2("#/_contentbrowser1") + " [data-test=labelPicker] div")
+      .eq(1)
+      .find("a")
+      .eq(1)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pUnlabeled")).should(
+      "have.text",
+      "This item does not have a label.",
+    );
   });
 });

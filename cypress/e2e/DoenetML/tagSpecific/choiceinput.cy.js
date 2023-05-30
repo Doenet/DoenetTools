@@ -3108,4 +3108,98 @@ describe("ChoiceInput Tag Tests", function () {
       );
     }
   });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <p><choiceInput name="ci1" inline><choice>Yes</choice><choice>No</choice></choiceInput>
+      <text copySource="ci1" name="ci1a" /> <boolean copysource="ci1.valueChanged" name="ci1changed" /></p>
+    <p><choiceInput name="ci2" preselectChoice="2"><choice>Yes</choice><choice>No</choice></choiceInput>
+      <text copySource="ci2" name="ci2a" /> <boolean copysource="ci2.valueChanged" name="ci2changed" /></p>
+    <p><choiceInput name="ci3" bindValueTo="$ci1.values" ><choice>Yes</choice><choice>No</choice></choiceInput>
+      <text copySource="ci3" name="ci3a" /> <boolean copysource="ci3.valueChanged" name="ci3changed" /></p>
+    <p><choiceInput name="ci4" inline bindValueTo="$ci2.values"><choice>Yes</choice><choice>No</choice></choiceInput
+      <text copySource="ci4" name="ci4a" /> <boolean copysource="ci4.valueChanged" name="ci4changed" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ci1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ci2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ci3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ci4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ci1a")).should("have.text", "");
+    cy.get(cesc2("#/ci2a")).should("have.text", "No");
+    cy.get(cesc2("#/ci3a")).should("have.text", "");
+    cy.get(cesc2("#/ci4a")).should("have.text", "No");
+
+    cy.log("selecting from first and third marks only them as changed");
+
+    cy.get(cesc2("#/ci1")).select("Yes");
+    cy.get(cesc2("#/ci2") + "_choice1_input").click();
+
+    cy.get(cesc2("#/ci1a")).should("have.text", "Yes");
+    cy.get(cesc2("#/ci2a")).should("have.text", "Yes");
+    cy.get(cesc2("#/ci3a")).should("have.text", "Yes");
+    cy.get(cesc2("#/ci4a")).should("have.text", "Yes");
+
+    cy.get(cesc2("#/ci1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ci2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ci3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ci4changed")).should("have.text", "false");
+
+    // TODO: cannot change choiceInputs from bound values, so can't change third and fourth
+    // Should we add this features?
+  });
+
+  it("label", () => {
+    let doenetML = `
+    <p><choiceInput name="ci1" inline><label>Select an option</label><choice>Yes</choice><choice>No</choice></choiceInput>
+      <copy copySource="ci1" assignNames="ci1a" /> </p>
+    <p><choiceInput name="ci2"><choice>Yes</choice><choice>No</choice><label>Select another option</label></choiceInput>
+      <copy copySource="ci2" assignNames="ci2a" /> </p>
+
+    <p><updateValue target="_label1.hide" newValue="!$_label1.hide" type="boolean" name="toggleLabels"><label>Toggle labels</label></updateValue>
+    <updateValue triggerWith="toggleLabels" target="_label2.hide" newValue="!$_label2.hide" type="boolean" /></p>
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ci1-label")).should("contain.text", "Select an option");
+    cy.get(cesc2("#/ci2-label")).should(
+      "contain.text",
+      "Select another option",
+    );
+
+    cy.log("hide labels");
+    cy.get(cesc2("#/toggleLabels")).click();
+    cy.get(cesc2("#/ci1-label")).should("not.contain.text", "Select an option");
+    cy.get(cesc2("#/ci2-label")).should(
+      "not.contain.text",
+      "Select another option",
+    );
+
+    cy.log("show labels again");
+    cy.get(cesc2("#/toggleLabels")).click();
+    cy.get(cesc2("#/ci1-label")).should("contain.text", "Select an option");
+    cy.get(cesc2("#/ci2-label")).should(
+      "contain.text",
+      "Select another option",
+    );
+  });
 });

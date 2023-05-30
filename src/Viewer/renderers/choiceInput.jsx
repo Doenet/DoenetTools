@@ -148,6 +148,15 @@ export default React.memo(function ChoiceInput(props) {
 
   let disabled = SVs.disabled;
 
+  let label = SVs.label;
+  if (SVs.labelHasLatex) {
+    label = (
+      <MathJax hideUntilTypeset={"first"} inline dynamic>
+        {label}
+      </MathJax>
+    );
+  }
+
   if (SVs.inline) {
     let checkWorkStyle = {
       cursor: "pointer",

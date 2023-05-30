@@ -15,17 +15,10 @@ include 'getFilename.php';
 include 'cidFromSHA.php';
 
 $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
-$isActivityThumbnail = mysqli_real_escape_string($conn, $_POST['isActivityThumbnail']);
-
 
 $success = true;
 $msg = '';
 
-//isActivityThumbnail might not be defined 
-//if it's not then it's zero for false
-if(!isset($_POST['isActivityThumbnail'])){
-    $isActivityThumbnail = '0';
-}
 $uploads_dir = '../media/';
 
 $type = $_FILES['file']['type'];
@@ -33,30 +26,13 @@ $tmp_name = $_FILES['file']['tmp_name'];
 $error = $_FILES['file']['error'];
 $size = $_FILES['file']['size'];
 $original_file_name = $_FILES['file']['name'];
-$description = ''; //Don't automatically fill with file name
-// $description = substr($original_file_name, 0, strrpos($original_file_name, "."));
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
-//Test if user has permission to upload files
-
-// $canUpload = false;
-// $sql = "
-// SELECT canUpload 
-// FROM user 
-// WHERE userId = '$userId'
-// ";
-// $result = $conn->query($sql);
-// $row = $result->fetch_assoc();
-// if ($row['canUpload'] == '1') {
-//     $canUpload = true;
-// }
-
-// if (!$canUpload) {
-//     $success = false;
-//     $msg = "You don't have permission to upload files.";
-// }
-
+if ($type != "image/png" && $type != "image/jpeg"){
+    $success = false;
+    $msg = "Only .png or .jpg files. '$original_file_name' can not be uploaded.";
+}
 //Test if user has space to upload files
 if ($success) {
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
@@ -77,7 +53,7 @@ if ($success) {
     }
 }
 
-$already_have_file = false;
+$activity_had_a_thumbnail_already = false;
 
 if ($success) {
     move_uploaded_file($tmp_name, $tmp_dest);
@@ -97,65 +73,67 @@ if ($success) {
         list($width, $height) = getimagesize($destination);
     }
 
-    //Test if user already has this file in this activity
-    $sql = "
-  SELECT cid
-  FROM support_files 
-  WHERE userId = '$userId'
-  AND cid = '$cid'
-  AND doenetId = '$doenetId'
-  ";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $already_have_file = true;
-        $success = true;
-        $msg = "Already have the file '$original_file_name' in this activity. Not used against your quota.";
-    }
 }
 
 if ($success) {
-    //Test if user has file in another activity
+    //Test if user has a thumbnail row for this activity
     $sql = "
         SELECT cid
         FROM support_files 
         WHERE userId = '$userId'
-        AND cid = '$cid'
-        AND doenetId != '$doenetId'
+        AND doenetId = '$doenetId'
+        AND isActivityThumbnail = '1'
         ";
     $result = $conn->query($sql);
-
     if ($result->num_rows > 0) {
-        $already_have_file = true;
-        $msg =
-            'Found the file in another activity.  Not used against your quota.';
+        $activity_had_a_thumbnail_already = true;
     }
 }
 
 $escapedType = str_replace('\/', '/', $type);
 
-if ($success && !$already_have_file) {
-    //track upload for IPFS upload nanny to upload later
-    $sql = "
-  INSERT INTO ipfs_to_upload 
-  (cid,fileType,sizeInBytes,timestamp)
-  VALUES
-  ('$cid','$escapedType','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-  ";
-    $result = $conn->query($sql);
-}
 
 if ($success) {
-    $sql = "
+    if ($activity_had_a_thumbnail_already){
+        //Update for activity thumbnails once one is already stored
+        $sql = "
+        UPDATE support_files 
+        SET cid = '$cid',
+        fileType = '$escapedType',
+        asFileName = '$original_file_name',
+        sizeInBytes = '$size',
+        widthPixels = '$width',
+        heightPixels = '$height',
+        timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+        WHERE doenetId = '$doenetId'
+        and userId = '$userId'
+        ";
+        $conn->query($sql);
+        
+    }else{
+        //Insert all support files and first activity thumbnail
+        $sql = "
         INSERT INTO support_files 
         (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isActivityThumbnail)
         VALUES
-        ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isActivityThumbnail')
+        ('$userId','$cid','$doenetId','$escapedType','','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'1')
         ";
-    $result = $conn->query($sql);
+        $conn->query($sql);
+
+    }
 }
+//Update activity to have the thumbnail path
+//Note: the browser converts images to jpg before they are sent here
 if ($success) {
-    //   //TODO: test at the top as well for over quota
+    $sql = "
+    UPDATE course_content 
+    SET imagePath = '/media/$cid.jpg'
+    WHERE doenetId = '$doenetId'
+    ";
+    $conn->query($sql);
+}
+
+    if ($success) {
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
         $conn,
         $userId
@@ -169,12 +147,12 @@ $response_arr = [
     'success' => $success,
     'cid' => $cid,
     'fileName' => $newFileName,
-    'description' => $description,
     'asFileName' => $original_file_name,
     'width' => $width,
     'height' => $height,
     'msg' => $msg,
     'userQuotaBytesAvailable' => $userQuotaBytesAvailable,
+    'type' => $type,
 ];
 
 // make it json format

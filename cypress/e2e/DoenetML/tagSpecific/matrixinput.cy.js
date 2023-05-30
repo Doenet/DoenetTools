@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("MatrixInput Tag Tests", function () {
   beforeEach(() => {
@@ -15351,5 +15351,927 @@ describe("MatrixInput Tag Tests", function () {
       "min-width",
       "0px",
     );
+  });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <p><matrixInput name="mi1" /> <math copySource="mi1" name="mi1a" /> <boolean copysource="mi1.valueChanged" name="mi1changed" /> <math copySource="mi1.immediateValue" name="mi1iva" /> <boolean copysource="mi1.immediateValueChanged" name="mi1ivchanged" /></p>
+    <p><matrixInput name="mi2" prefill="(x,y)" /> <math copySource="mi2" name="mi2a" /> <boolean copysource="mi2.valueChanged" name="mi2changed" /> <math copySource="mi2.immediateValue" name="mi2iva" /> <boolean copysource="mi2.immediateValueChanged" name="mi2ivchanged" /></p>
+    <p><matrixInput name="mi3" bindValueTo="$mi1" /> <math copySource="mi3" name="mi3a" /> <boolean copysource="mi3.valueChanged" name="mi3changed" /> <math copySource="mi3.immediateValue" name="mi3iva" /> <boolean copysource="mi3.immediateValueChanged" name="mi3ivchanged" /></p>
+    <p><matrixInput name="mi4">$mi2.immediateValue</matrixInput> <math copySource="mi4" name="mi4a" /> <boolean copysource="mi4.valueChanged" name="mi4changed" /> <math copySource="mi4.immediateValue" name="mi4iva" /> <boolean copysource="mi4.immediateValueChanged" name="mi4ivchanged" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in first marks only first immediate value as changed");
+
+    cy.get(cesc2("#/mi1_component_0_0") + " textarea").type("z", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow").should("contain.text", "[z]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in first marks only first value as changed");
+
+    cy.get(cesc2("#/mi1_component_0_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow").should("contain.text", "[z]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in second marks only second immediate value as changed");
+
+    cy.get(cesc2("#/mi2_component_0_0") + " textarea").type(
+      "{end}{backspace}a",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow").should("contain.text", "[ay]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in second marks only second value as changed");
+
+    cy.get(cesc2("#/mi2_component_0_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow").should("contain.text", "[ay]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks third immediate value as changed");
+
+    cy.get(cesc2("#/mi3_component_0_0") + " textarea").type(
+      "{end}{backspace}b",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow").should("contain.text", "[b]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("press enter in third marks third value as changed");
+
+    cy.get(cesc2("#/mi3_component_0_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow").should("contain.text", "[b]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks fourth immediate value as changed");
+
+    cy.get(cesc2("#/mi4_component_1_0") + " textarea").type(
+      "{end}{backspace}c",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow").should("contain.text", "[ac]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ac]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log("press enter in fourth marks fourth value as changed");
+
+    cy.get(cesc2("#/mi4_component_1_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow").should("contain.text", "[ac]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ac]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ac]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ac]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[b]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ac]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks only third immediate value as changed");
+
+    cy.get(cesc2("#/mi3_component_0_0") + " textarea").type("z", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow").should("contain.text", "[z]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "press enter in third marks first and third value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/mi3_component_0_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow").should("contain.text", "[z]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks only fourth immediate value as changed");
+
+    cy.get(cesc2("#/mi4_component_0_0") + " textarea").type(
+      "{end}{backspace}a",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow").should("contain.text", "[ay]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log(
+      "press enter in fourth marks third and fourth value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/mi4_component_0_0") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow").should("contain.text", "[ay]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[z]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ay]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("adding row to first marks first value/immediateValue as changed");
+    cy.get(cesc("#\\/mi1_rowIncrement")).click();
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow").should(
+      "contain.text",
+      "[\uff3f\uff3f]",
+    );
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "adding column to second marks second value/immediateValue as changed",
+    );
+    cy.get(cesc("#\\/mi2_columnIncrement")).click();
+
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow").should(
+      "contain.text",
+      "[x\uff3fy\uff3f]",
+    );
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x\uff3fy\uff3f]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x\uff3fy\uff3f]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x\uff3fy\uff3f]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x\uff3fy\uff3f]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "adding column to third marks first and third value/immediateValue as changed",
+    );
+    cy.get(cesc("#\\/mi3_columnIncrement")).click();
+
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow").should(
+      "contain.text",
+      "[\uff3f\uff3f]",
+    );
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xy]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "subtracting row from fourth marks second and fourth value/immediateValue as changed",
+    );
+    cy.get(cesc("#\\/mi4_rowDecrement")).click();
+
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow").should("contain.text", "[x]");
+
+    cy.get(cesc2("#/mi1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x]");
+    cy.get(cesc2("#/mi3a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x]");
+
+    cy.get(cesc2("#/mi1iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi2iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x]");
+    cy.get(cesc2("#/mi3iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[\uff3f\uff3f]");
+    cy.get(cesc2("#/mi4iva") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x]");
+
+    cy.get(cesc2("#/mi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/mi4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/mi1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/mi4ivchanged")).should("have.text", "true");
   });
 });

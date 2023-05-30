@@ -20,7 +20,7 @@ export function renameStateVariable({
   // - setValue
   // - useEssentialOrDefaultValue
   // - noChanges
-  // - makeEssential
+  // - setEssentialValue
   // Note: if add additional possibilities to definition result,
   // will have to add them to what is changed here
 

@@ -845,10 +845,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals",
         },
-        // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
+          onlyToSetInInverseDefinition: true,
         },
         displayBlanks: {
           dependencyType: "stateVariable",

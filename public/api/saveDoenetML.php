@@ -84,8 +84,12 @@ try {
             $oldCid = cidFromSHA($SHA);
             
             if ($lastKnownCid != $oldCid) {
-                throw new Exception("YOUR CHANGES TO THE DOCUMENT HAVE NOT BEEN SAVED. This document has been modified since you last saved. " .
-                "Reload the page to view the new version, or open it in a new tab to compare them yourself.");
+                throw new Exception(
+                    "YOUR CHANGES TO THE DOCUMENT HAVE NOT BEEN SAVED. " .
+                    "This document has been modified since you last saved. " .
+                    "Reload the page to view the new version, or open it " .
+                    "in a new tab to compare them yourself. ".
+                    "Content ids mismatched ($oldCid, $lastKnownCid)");
             }
             if ($backup == "1") {
                 $status = rename($path, "../media/$filename.bak");

@@ -89,7 +89,7 @@ export default React.memo(function CobwebPolyline(props) {
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       strokeColor: SVs.selectedStyle.lineColor,

@@ -88,7 +88,7 @@ export default React.memo(function Vector(props) {
     var jsxVectorAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer,
       strokeColor: lineColor,
@@ -613,7 +613,7 @@ export default React.memo(function Vector(props) {
 
       vectorJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         vectorJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

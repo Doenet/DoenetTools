@@ -22,6 +22,7 @@ import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
+import { returnWrapNonLabelsSugarFunction } from "../utils/label";
 
 export default class Function extends InlineComponent {
   static componentType = "function";
@@ -76,13 +77,6 @@ export default class Function extends InlineComponent {
       createStateVariable: "labelIsName",
       defaultValue: false,
       public: true,
-    };
-    attributes.showLabel = {
-      createComponentOfType: "boolean",
-      createStateVariable: "showLabel",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
     };
     attributes.applyStyleToLabel = {
       createComponentOfType: "boolean",
@@ -158,68 +152,10 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapStringOrMultipleNonLabelChildrenWithMath = function ({
-      matchedChildren,
-      componentInfoObjects,
-    }) {
-      // wrap first group of non-label children in <math>
-
-      let componentIsLabel = (x) =>
-        componentInfoObjects.componentIsSpecifiedType(x, "label");
-      let childIsLabel = matchedChildren.map(componentIsLabel);
-
-      let childrenToWrap = [],
-        childrenToNotWrapBegin = [],
-        childrenToNotWrapEnd = [];
-
-      if (childIsLabel.filter((x) => x).length === 0) {
-        childrenToWrap = matchedChildren;
-      } else {
-        if (childIsLabel[0]) {
-          // started with label, find first non-label child
-          let firstNonLabelInd = childIsLabel.indexOf(false);
-          if (firstNonLabelInd !== -1) {
-            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
-            matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsLabel = childIsLabel.slice(firstNonLabelInd);
-          }
-        }
-
-        // now we don't have label at the beginning
-        // find first label ind
-        let firstLabelInd = childIsLabel.indexOf(true);
-        if (firstLabelInd === -1) {
-          childrenToWrap = matchedChildren;
-        } else {
-          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
-          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
-        }
-      }
-
-      // apply if have a single string or multiple children to wrap
-      if (
-        (childrenToWrap.length === 1 &&
-          typeof childrenToWrap[0] !== "string") ||
-        childrenToWrap.length === 0
-      ) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newChildren: [
-          ...childrenToNotWrapBegin,
-          {
-            componentType: "math",
-            children: childrenToWrap,
-          },
-          ...childrenToNotWrapEnd,
-        ],
-      };
-    };
-
     sugarInstructions.push({
-      replacementFunction: wrapStringOrMultipleNonLabelChildrenWithMath,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "math",
+      }),
     });
 
     return sugarInstructions;

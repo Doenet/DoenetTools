@@ -7360,6 +7360,10 @@ export default class Core {
         // TODO: remove all these error checks to speed up process
         // once we're confident bugs have been removed?
 
+        if (upDep.onlyToSetInInverseDefinition) {
+          continue;
+        }
+
         let foundVarChange = false;
 
         if (upDep.markStale) {
@@ -11736,7 +11740,6 @@ export default class Core {
       });
       componentDoenetML = lines.join("\n");
     }
-    componentDoenetML += "\n";
 
     return componentDoenetML;
   }

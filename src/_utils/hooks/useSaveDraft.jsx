@@ -12,11 +12,13 @@ export function useSaveDraft() {
   const addToast = useToast();
   const saveDraft = useRecoilCallback(
     ({ snapshot, set }) =>
-      async ({ pageId, courseId, backup = false }) => {
-        const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const lastKnownCid = await snapshot.getPromise(
-          textEditorLastKnownCidAtom,
-        );
+      async ({ pageId, courseId, backup = false, doenetML, lastKnownCid }) => {
+        if (doenetML == undefined) {
+          doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+        }
+        if (lastKnownCid == undefined) {
+          lastKnownCid = await snapshot.getPromise(textEditorLastKnownCidAtom);
+        }
 
         //Save in localStorage
         // localStorage.setItem(cid,doenetML)
@@ -39,7 +41,7 @@ export function useSaveDraft() {
           const cid = await cidFromText(doenetML);
           set(textEditorLastKnownCidAtom, cid);
 
-          return { success };
+          return { success, cid };
         } catch (error) {
           //addToast(error.message, toastType.ERROR);
           alert(error.message);

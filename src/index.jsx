@@ -1,13 +1,17 @@
 import React from "react";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { createRoot } from "react-dom/client";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "./Core/utils/math";
-import DarkmodeController from "./Tools/_framework/DarkmodeController";
+// import DarkmodeController from "./Tools/_framework/DarkmodeController";
 import {
   loader as communityLoader,
   action as communityAction,
@@ -19,18 +23,12 @@ import {
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
-import {
-  loader as portfolioActivitySettingsLoader,
-  action as portfolioActivitySettingsAction,
-  ErrorBoundry as portfolioActivitySettingsError,
-  PortfolioActivitySettings,
-} from "./Tools/_framework/Paths/PortfolioActivitySettings";
+
 import {
   loader as portfolioLoader,
   action as portfolioAction,
   Portfolio,
 } from "./Tools/_framework/Paths/Portfolio";
-import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap";
 import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
@@ -48,6 +46,17 @@ import {
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
+import {
+  PortfolioActivityEditor,
+  loader as portfolioEditorLoader,
+  action as portfolioEditorAction,
+} from "./Tools/_framework/Paths/PortfolioActivityEditor";
+import {
+  PublicEditor,
+  loader as publicEditorLoader,
+  action as publicEditorAction,
+} from "./Tools/_framework/Paths/PublicEditor";
+// import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
 
 const theme = extendTheme({
   fonts: {
@@ -58,14 +67,19 @@ const theme = extendTheme({
       fontFamily: "Jost",
     },
   },
-  initialColorMode: "light",
-  useSystemColorMode: true,
+  config: {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+    // initialColorMode: "system",
+    // useSystemColorMode: true,
+  },
   colors: {
     doenet: {
       mainBlue: "#1a5a99",
       lightBlue: "#b8d2ea",
       solidLightBlue: "#8fb8de",
       mainGray: "#e3e3e3",
+      mediumGray: "#949494",
       lightGray: "#e7e7e7",
       donutBody: "#eea177",
       donutTopping: "#6d4445",
@@ -131,7 +145,6 @@ const router = createBrowserRouter([
     loader: siteLoader,
     element: (
       <>
-        {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
         <ChakraProvider theme={theme}>
           <SiteHeader />
         </ChakraProvider>
@@ -201,84 +214,107 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/portfolioviewer/:doenetId",
+        path: "portfolioviewer/:doenetId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         element: (
-          <DarkmodeController>
-            <MathJaxContext
-              version={2}
-              config={mathjaxConfig}
-              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-            >
-              <ChakraProvider theme={theme}>
-                <PortfolioActivityViewer />
-              </ChakraProvider>
-            </MathJaxContext>
-          </DarkmodeController>
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <PortfolioActivityViewer />
+            </ChakraProvider>
+          </MathJaxContext>
+          // </DarkmodeController>
+        ),
+      },
+      {
+        path: "portfolioeditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
+
+          //Redirect as an activity can have no pageids
+          return redirect(`/portfolioeditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: "portfolioeditor/:doenetId/:pageId",
+        loader: portfolioEditorLoader,
+        action: portfolioEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PortfolioActivityEditor />
+            {/* <ToolRoot /> */}
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "publiceditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
+
+          //Redirect as an activity can have no pageids
+          return redirect(`/publiceditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+      },
+      {
+        path: "publiceditor/:doenetId/:pageId",
+        loader: publicEditorLoader,
+        action: publicEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PublicEditor />
+            {/* <ToolRoot /> */}
+          </MathJaxContext>
         ),
       },
     ],
   },
-
   {
-    path: "/portfolio/:doenetId/settings",
-    loader: portfolioActivitySettingsLoader,
-    action: portfolioActivitySettingsAction,
-    ErrorBoundary: portfolioActivitySettingsError,
-    element: (
-      <ChakraProvider theme={theme}>
-        <PortfolioActivitySettings />
-      </ChakraProvider>
-    ),
-  },
-  {
-    path: "/portfolioeditor/:doenetId",
-    loader: portfolioEditorMenuCapLoader,
-    // action: portfolioEditorSupportPanelAction,
-    // errorElement: <div>Error!</div>,
-    element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
-    ),
-  },
-  {
-    path: "/public",
+    path: "public",
     loader: editorSupportPanelLoader,
     action: editorSupportPanelAction,
     // errorElement: <div>Error!</div>,
     element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
     ),
   },
   {
     path: "*",
     // errorElement: <div>Error!</div>,
     element: (
-      <DarkmodeController>
-        <MathJaxContext
-          version={2}
-          config={mathjaxConfig}
-          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-        >
-          <ToolRoot />
-        </MathJaxContext>
-      </DarkmodeController>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ToolRoot />
+      </MathJaxContext>
     ),
     // TODO - probably not a good idea long term, this is to populate the site header
     // on the 404 page, but this results in extra network requests when loading
@@ -295,8 +331,8 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <RecoilRoot>
-    <ChakraProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ChakraProvider>
+    {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+
+    <RouterProvider router={router} />
   </RecoilRoot>,
 );

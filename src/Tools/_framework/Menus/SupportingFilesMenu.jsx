@@ -33,7 +33,7 @@ const supportingFilesAndPermissionByDoenetIdAtom = atomFamily({
   default: selectorFamily({
     key: "supportingFilesAndPermissionByDoenetId/Default",
     get: (doenetId) => async () => {
-      let { data } = await axios.get("/api/loadSupprtingFileInfo.php", {
+      let { data } = await axios.get("/api/loadSupportingFileInfo.php", {
         params: { doenetId },
       });
       // console.log("loadSupprtingFileInfo data",data)
