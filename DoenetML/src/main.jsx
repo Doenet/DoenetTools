@@ -103,7 +103,7 @@ let doenetML = `<graph><regularPolygon center="($s, 0)"/></graph><mathinput name
   <codeEditor showResults/><booleanInput asToggleButton="$bool" name="bool"/><booleanInput />
   <textInput /> <textInput expanded /><choiceInput><choice>dog</choice><choice>not dog</choice></choiceInput>
   <choiceInput inline><choice>dog</choice><choice>not dog</choice></choiceInput>
-
+  <ref />
   `;
 //let doenetML = "<graph><regularPolygon /></graph>";
 ReactDOM.createRoot(document.getElementById("root")).render(

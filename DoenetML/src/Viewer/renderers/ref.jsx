@@ -2,8 +2,6 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
-import { itemByDoenetId } from "../../_reactComponents/Course/CourseActions";
 import { getURLFromRef, scrollableContainerAtom } from "../PageViewer";
 import useDoenetRender from "../useDoenetRenderer";
 import styled from "styled-components";
@@ -48,8 +46,6 @@ const RefButton = styled.button`
 export default React.memo(function Ref(props) {
   let { name, id, SVs, children } = useDoenetRender(props);
 
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let { search } = useLocation();
@@ -73,8 +69,6 @@ export default React.memo(function Ref(props) {
     page: SVs.page,
     givenUri: SVs.uri,
     targetName: SVs.targetName,
-    pageToolView,
-    inCourse: Object.keys(itemInCourse).length > 0,
     search,
     id,
   });
