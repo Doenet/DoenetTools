@@ -3280,10 +3280,16 @@ export function processAssignNames({
   indOffset = 0,
   originalNamesAreConsistent = false,
   shadowingComposite = false,
+  compositesParentNameForAssignNames,
 }) {
-  // console.log(`process assign names`)
+  // console.log(`process assign names`);
   // console.log(deepClone(serializedComponents));
-  // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`)
+  // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`);
+  // console.log({
+  //   parentName,
+  //   parentCreatesNewNamespace,
+  //   compositesParentNameForAssignNames,
+  // });
 
   let numComponents = serializedComponents.length;
 
@@ -3401,7 +3407,10 @@ export function processAssignNames({
 
         // The main goal: making the array "name" be the assignNames
         component.doenetAttributes.assignNames = name;
-
+        if (compositesParentNameForAssignNames) {
+          component.doenetAttributes.parentNameForAssignNames =
+            compositesParentNameForAssignNames;
+        }
         processedComponents.push(component);
 
         // Nothing more to do with the composite component,

@@ -167,6 +167,7 @@ export function returnLabelStateVariableDefinitions() {
         dependencyType: "child",
         childGroups: ["labels"],
         variableNames: ["value", "hasLatex", "hidden"],
+        dontRecurseToShadows: true,
       },
       // Note: assuming component has a labelIsName attribute
       // that creates an attribute component and state variable
@@ -177,6 +178,7 @@ export function returnLabelStateVariableDefinitions() {
       labelIsNameAttr: {
         dependencyType: "attributeComponent",
         attributeName: "labelIsName",
+        dontRecurseToShadows: true,
       },
       componentNameAndShadowSourceNames: {
         dependencyType: "stateVariable",
@@ -187,11 +189,11 @@ export function returnLabelStateVariableDefinitions() {
         variableNames: ["label", "labelHasLatex"],
       },
     }),
-    definition({ dependencyValues, essentialValues }) {
+    definition({ dependencyValues, essentialValues, componentName }) {
       let labelChild =
         dependencyValues.labelChild[dependencyValues.labelChild.length - 1];
 
-      if (labelChild && !labelChild.shadowDepth) {
+      if (labelChild) {
         if (labelChild.stateValues.hidden) {
           return {
             setValue: {
@@ -216,12 +218,10 @@ export function returnLabelStateVariableDefinitions() {
         };
       } else if (
         dependencyValues.labelIsName &&
-        !dependencyValues.labelIsNameAttr.shadowDepth
+        dependencyValues.labelIsNameAttr
       ) {
         // find a valid name for a label from the component name
         // or the name of one of its shadow targets,
-        // starting with the shadow depth of labelIsName attribute,
-        // i.e., starting with closest component that had the attribute
 
         let label = "__";
         let cNames = dependencyValues.componentNameAndShadowSourceNames;
@@ -298,7 +298,7 @@ export function returnLabelStateVariableDefinitions() {
       let lastLabelInd = dependencyValues.labelChild.length - 1;
       let labelChild = dependencyValues.labelChild[lastLabelInd];
 
-      if (labelChild && !labelChild.shadowDepth) {
+      if (labelChild) {
         return {
           success: true,
           instructions: [
@@ -312,7 +312,7 @@ export function returnLabelStateVariableDefinitions() {
         };
       } else if (
         dependencyValues.labelIsName &&
-        !dependencyValues.labelIsNameAttr.shadowDepth
+        dependencyValues.labelIsNameAttr
       ) {
         return {
           success: true,

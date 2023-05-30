@@ -5927,4 +5927,238 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/ans") + " textarea").type("7{enter}", { force: true });
     cy.get(cesc("#\\/num")).should("have.text", "47");
   });
+
+  it("copy of copy with new namespace, copy of copy assigns names", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <group name="orig"><text name="t">hello</text></group>
+    
+    <p>copy with new namespace:  <copy source="orig" name="cN" newnamespace /></p>
+    <p>copy of copy: <copy source="cN" name="cNc" assignNames="cNca" /></p>
+
+    <p>copy of copy of copy: <copy source="cNc" name="cNcc" assignNames="(cNcca)" /></p>
+    <p>copy of copy of copy a: <copy source="cNca" name="cNcac" assignNames="cNcaca" /></p>
+    <p>copy of copy of copy nn: <copy source="cNc" name="cNccN" newNamespace /></p>
+    <p>copy of copy of copy a nn: <copy source="cNca" name="cNcacN" newNamespace /></p>
+    
+    <p>piece of copy: <text name="cNt" copySource="cN/t" /></p>
+    <p>piece of copy of copy: <text name="cNcat" copySource="cNca/t" /></p>
+
+    <p>piece of copy of copy of copy: <text name="cNccat" copySource="cNcca/t" /></p>
+    <p>piece of copy of copy of copy a: <text name="cNcacat" copySource="cNcaca/t" /></p>
+    <p>piece of copy of copy of copy nn: <text name="cNccNt" copySource="cNccN/cNca/t" /></p>
+    <p>piece of copy of copy of copy a nn: <text name="cNcacNt" copySource="cNcacN/cNca/t" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcaca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccN/cNca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacN/cNca/t")).should("have.text", "hello");
+
+    cy.get(cesc2("#/cNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacNt")).should("have.text", "hello");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/orig"].componentType).eq("group");
+      expect(stateVariables["/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cN"].componentType).eq("copy");
+      expect(stateVariables["/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcca"].componentType).eq("copy");
+      expect(stateVariables["/cNcca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcaca"].componentType).eq("copy");
+      expect(stateVariables["/cNcaca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcaca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNccN"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNccN/cNca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcacN"].componentType).eq("copy");
+      expect(stateVariables["/cNcacN/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNcacN/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcacN/cNca/t"].stateValues.value).eq("hello");
+    });
+  });
+
+  it("copy of copy with new namespace, copy of copy has new namespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <group name="orig"><text name="t">hello</text></group>
+    
+    <p>copy with new namespace:  <copy source="orig" name="cN" newnamespace /></p>
+    <p>copy of copy: <copy source="cN" name="cNc" newNamespace /></p>
+
+    <p>copy of copy of copy: <copy source="cNc" name="cNcc" assignNames="cNcca" /></p>
+    <p>copy of copy of copy sub: <copy source="cNc/cN" name="cNcsc" assignNames="cNcsca" /></p>
+    <p>copy of copy of copy nn: <copy source="cNc" name="cNccN" newNamespace /></p>
+    <p>copy of copy of copy sub nn: <copy source="cNc/cN" name="cNcscN" newNamespace /></p>
+    
+    <p>piece of copy: <text name="cNt" copySource="cN/t" /></p>
+    <p>piece of copy of copy: <text name="cNcat" copySource="cNc/cN/t" /></p>
+
+    <p>piece of copy of copy of copy: <text name="cNccat" copySource="cNcca/cN/t" /></p>
+    <p>piece of copy of copy of copy a: <text name="cNcacat" copySource="cNcsca/t" /></p>
+    <p>piece of copy of copy of copy nn: <text name="cNccNt" copySource="cNccN/cNc/cN/t" /></p>
+    <p>piece of copy of copy of copy a nn: <text name="cNcacNt" copySource="cNcscN/cN/t" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNc/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcca/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcsca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccN/cNc/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcscN/cN/t")).should("have.text", "hello");
+
+    cy.get(cesc2("#/cNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacNt")).should("have.text", "hello");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/orig"].componentType).eq("group");
+      expect(stateVariables["/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cN"].componentType).eq("copy");
+      expect(stateVariables["/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNc"].componentType).eq("copy");
+      expect(stateVariables["/cNc/cN"].componentType).eq("copy");
+      expect(stateVariables["/cNc/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cNc/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcca"].componentType).eq("copy");
+      expect(stateVariables["/cNcca/cN"].componentType).eq("copy");
+      expect(stateVariables["/cNcca/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcca/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcsca"].componentType).eq("copy");
+      expect(stateVariables["/cNcsca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcsca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNccN"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc/cN"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cNccN/cNc/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcscN"].componentType).eq("copy");
+      expect(stateVariables["/cNcscN/cN"].componentType).eq("copy");
+      expect(stateVariables["/cNcscN/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcscN/cN/t"].stateValues.value).eq("hello");
+    });
+  });
+
+  it("copy of copy with new namespace, copy of copy assigns names and has new namespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <group name="orig"><text name="t">hello</text></group>
+    
+    <p>copy with new namespace:  <copy source="orig" name="cN" newnamespace /></p>
+    <p>copy of copy: <copy source="cN" name="cNc" assignNames="cNca" newNamespace /></p>
+
+    <p>copy of copy of copy: <copy source="cNc" name="cNcc" assignNames="cNcca" /></p>
+    <p>copy of copy of copy sub: <copy source="cNc/cNca" name="cNcsc" assignNames="cNcsca" /></p>
+    <p>copy of copy of copy nn: <copy source="cNc" name="cNccN" newNamespace /></p>
+    <p>copy of copy of copy sub nn: <copy source="cNc/cNca" name="cNcscN" newNamespace /></p>
+    
+    <p>piece of copy: <text name="cNt" copySource="cN/t" /></p>
+    <p>piece of copy of copy: <text name="cNcat" copySource="cNc/cNca/t" /></p>
+
+    <p>piece of copy of copy of copy: <text name="cNccat" copySource="cNcca/cNca/t" /></p>
+    <p>piece of copy of copy of copy a: <text name="cNcacat" copySource="cNcsca/t" /></p>
+    <p>piece of copy of copy of copy nn: <text name="cNccNt" copySource="cNccN/cNc/cNca/t" /></p>
+    <p>piece of copy of copy of copy a nn: <text name="cNcacNt" copySource="cNcscN/cNca/t" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNc/cNca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcca/cNca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcsca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccN/cNc/cNca/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcscN/cNca/t")).should("have.text", "hello");
+
+    cy.get(cesc2("#/cNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacat")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcacNt")).should("have.text", "hello");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/orig"].componentType).eq("group");
+      expect(stateVariables["/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cN"].componentType).eq("copy");
+      expect(stateVariables["/cN/orig"].componentType).eq("group");
+      expect(stateVariables["/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNc"].componentType).eq("copy");
+      expect(stateVariables["/cNc/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNc/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNc/cNca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcca"].componentType).eq("copy");
+      expect(stateVariables["/cNcca/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNcca/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcca/cNca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcsca"].componentType).eq("copy");
+      expect(stateVariables["/cNcsca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcsca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNccN"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNccN/cNc/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNccN/cNc/cNca/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcscN"].componentType).eq("copy");
+      expect(stateVariables["/cNcscN/cNca"].componentType).eq("copy");
+      expect(stateVariables["/cNcscN/cNca/orig"].componentType).eq("group");
+      expect(stateVariables["/cNcscN/cNca/t"].stateValues.value).eq("hello");
+    });
+  });
 });

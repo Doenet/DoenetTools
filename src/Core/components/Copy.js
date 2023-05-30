@@ -519,22 +519,44 @@ export default class Copy extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.linkAttrForDetermineDeps = {
+    stateVariableDefinitions.targetComponentNewNamespace = {
+      stateVariablesDeterminingDependencies: ["targetComponent"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+
+        if (stateValues.targetComponent) {
+          dependencies.targetComponentNewNamespace = {
+            dependencyType: "attributePrimitive",
+            componentName: stateValues.targetComponent.componentName,
+            attributeName: "newNamespace",
+          };
+        }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            targetComponentNewNamespace: Boolean(
+              dependencyValues.targetComponentNewNamespace,
+            ),
+          },
+        };
+      },
+    };
+
+    stateVariableDefinitions.fromCopyTarget = {
       returnDependencies: () => ({
-        linkAttr: {
-          dependencyType: "attributePrimitive",
-          attributeName: "link",
+        fromCopyTarget: {
+          dependencyType: "doenetAttribute",
+          attributeName: "fromCopyTarget",
         },
       }),
       definition({ dependencyValues }) {
-        let linkAttrForDetermineDeps;
-        if (dependencyValues.linkAttr === null) {
-          linkAttrForDetermineDeps = true;
-        } else {
-          linkAttrForDetermineDeps = dependencyValues.linkAttr;
-        }
-
-        return { setValue: { linkAttrForDetermineDeps } };
+        return {
+          setValue: {
+            fromCopyTarget: Boolean(dependencyValues.fromCopyTarget),
+          },
+        };
       },
     };
 
@@ -546,16 +568,31 @@ export default class Copy extends CompositeComponent {
         "targetSubnames",
         "targetSubnamesComponentIndex",
         "obtainPropFromComposite",
-        "linkAttrForDetermineDeps",
+        "fromCopyTarget",
       ],
       additionalStateVariablesDefined: ["addLevelToAssignNames"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
-        let dependencies = {};
+        let dependencies = {
+          fromCopyTarget: {
+            dependencyType: "doenetAttribute",
+            attributeName: "fromCopyTarget",
+          },
+          typeAttr: {
+            dependencyType: "attributePrimitive",
+            attributeName: "createComponentOfType",
+          },
+        };
 
-        let addLevelToAssignNames = false;
+        let compositeTargetWithoutProp = false;
         let useReplacements = false;
 
         if (stateValues.targetComponent !== null) {
+          dependencies.targetComponentNewNamespace = {
+            dependencyType: "attributePrimitive",
+            componentName: stateValues.targetComponent.componentName,
+            attributeName: "newNamespace",
+          };
+
           if (
             (componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
@@ -568,9 +605,14 @@ export default class Copy extends CompositeComponent {
                 stateValues.componentIndex !== null)) &&
             !(stateValues.propName && stateValues.obtainPropFromComposite)
           ) {
-            if (stateValues.linkAttrForDetermineDeps) {
+            if (
+              stateValues.propName ||
+              stateValues.componentIndex !== null ||
+              stateValues.targetSubnames !== null ||
+              stateValues.targetSubnamesComponentIndex !== null ||
+              stateValues.fromCopyTarget
+            ) {
               useReplacements = true;
-
               let targetSubnamesComponentIndex =
                 stateValues.targetSubnamesComponentIndex;
               if (targetSubnamesComponentIndex) {
@@ -586,15 +628,16 @@ export default class Copy extends CompositeComponent {
                 targetSubnames: stateValues.targetSubnames,
                 targetSubnamesComponentIndex,
               };
-            } else {
-              addLevelToAssignNames = true;
+            } else if (!stateValues.targetComponentNewNamespace) {
+              compositeTargetWithoutProp = true;
             }
           }
 
           if (
-            !useReplacements &&
-            (stateValues.componentIndex === null ||
-              stateValues.componentIndex === 1)
+            compositeTargetWithoutProp ||
+            (!useReplacements &&
+              (stateValues.componentIndex === null ||
+                stateValues.componentIndex === 1))
           ) {
             // if we don't have a composite, componentIndex can only match if it is 1
             dependencies.targets = {
@@ -604,9 +647,9 @@ export default class Copy extends CompositeComponent {
           }
         }
 
-        dependencies.addLevelToAssignNames = {
+        dependencies.compositeTargetWithoutProp = {
           dependencyType: "value",
-          value: addLevelToAssignNames,
+          value: compositeTargetWithoutProp,
         };
 
         return dependencies;
@@ -619,10 +662,16 @@ export default class Copy extends CompositeComponent {
             replacementSourceIdentities = [replacementSourceIdentities];
           }
         }
+
+        let addLevelToAssignNames =
+          dependencyValues.compositeTargetWithoutProp &&
+          !dependencyValues.targetComponentNewNamespace &&
+          !dependencyValues.fromCopyTarget;
+
         return {
           setValue: {
             replacementSourceIdentities,
-            addLevelToAssignNames: dependencyValues.addLevelToAssignNames,
+            addLevelToAssignNames,
           },
         };
       },
@@ -1582,15 +1631,27 @@ export default class Copy extends CompositeComponent {
       serializedReplacements[0].doenetAttributes.haveNewNamespaceOnlyFromShadow = true;
     }
 
+    let parentName = component.componentName;
+
+    if (component.doenetAttributes.parentNameForAssignNames) {
+      parentName = component.doenetAttributes.parentNameForAssignNames;
+    }
+
+    let compositesParentNameForAssignNames;
+    if (await component.stateValues.addLevelToAssignNames) {
+      compositesParentNameForAssignNames = parentName;
+    }
+
     let processResult = serializeFunctions.processAssignNames({
       assignNames,
       assignNewNamespaces: component.attributes.assignNewNamespaces?.primitive,
       serializedComponents: serializedReplacements,
-      parentName: component.componentName,
+      parentName,
       parentCreatesNewNamespace: newNamespace,
       indOffset: numNonStringReplacementsSoFar,
       componentInfoObjects,
       originalNamesAreConsistent: newNamespace && !assignNames,
+      compositesParentNameForAssignNames,
     });
 
     serializedReplacements = processResult.serializedComponents;
