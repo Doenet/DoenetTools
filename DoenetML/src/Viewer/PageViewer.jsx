@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { nanoid } from "nanoid";
-import { useToast, toastType } from "@Toast";
 import {
   serializedComponentsReplacer,
   serializedComponentsReviver,
@@ -15,8 +14,6 @@ import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
 import axios from "axios";
 import { returnAllPossibleVariants } from "../Core/utils/returnAllPossibleVariants";
 import { useLocation, useNavigate } from "react-router";
-import { pageToolViewAtom } from "../Tools/_framework/NewToolRoot";
-import { itemByDoenetId } from "../_reactComponents/Course/CourseActions";
 import { darkModeAtom } from "../Tools/_framework/DarkmodeController";
 import { cesc } from "../_utils/url";
 
@@ -30,6 +27,8 @@ export const scrollableContainerAtom = atom({
   default: null,
 });
 
+const toast = (msg) => console.log(msg);
+
 // Two notes about props.flags of PageViewer
 // 1. In Core, flags.allowSaveState implies flags.allowLoadState
 // Rationale: saving state will result in loading a new state if another device changed it,
@@ -38,7 +37,6 @@ export const scrollableContainerAtom = atom({
 // flags.allowLocalState and flags.allowSaveState are set to false
 
 export default function PageViewer(props) {
-  const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(
     ({ snapshot, set }) =>
       async ({
@@ -164,8 +162,6 @@ export default function PageViewer(props) {
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let navigate = useNavigate();
@@ -226,7 +222,7 @@ export default function PageViewer(props) {
           props.saveStateCallback?.();
         } else if (e.data.messageType === "sendToast") {
           console.log(`Sending toast message: ${e.data.args.message}`);
-          toast(e.data.args.message, e.data.args.toastType);
+          toast(e.data.args.message);
         } else if (e.data.messageType === "resolveAction") {
           resolveAction(e.data.args);
         } else if (e.data.messageType === "returnAllStateVariables") {
@@ -550,10 +546,7 @@ export default function PageViewer(props) {
     // console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
     if (newAttemptNumber !== attemptNumber) {
-      toast(
-        `Reverted activity as attempt number changed on other device`,
-        toastType.ERROR,
-      );
+      toast(`Reverted activity as attempt number changed on other device`);
       if (props.updateAttemptNumber) {
         props.updateAttemptNumber(newAttemptNumber);
       } else {
@@ -567,10 +560,7 @@ export default function PageViewer(props) {
       }
     } else {
       // TODO: are there cases where will get an infinite loop here?
-      toast(
-        `Reverted page to state saved on device ${changedOnDevice}`,
-        toastType.ERROR,
-      );
+      toast(`Reverted page to state saved on device ${changedOnDevice}`);
 
       coreId.current = nanoid();
       setPageContentChanged(true);
@@ -683,7 +673,6 @@ export default function PageViewer(props) {
             );
             toast(
               `Reverted page to state saved on device ${result.changedOnDevice}`,
-              toastType.ERROR,
             );
           }
         }
@@ -716,7 +705,7 @@ export default function PageViewer(props) {
       }
     }
 
-    if (!loadedState) {
+    if (!loadedState && props.flags.allowLoadState) {
       // if didn't load state from local storage, try to load from database
 
       // even if allowLoadState is false,
@@ -1012,8 +1001,6 @@ export default function PageViewer(props) {
       page,
       givenUri: uri,
       targetName,
-      pageToolView,
-      inCourse: Object.keys(itemInCourse).length > 0,
       search: location.search,
       id,
     });
