@@ -149,9 +149,24 @@ Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
 });
 
 Cypress.Commands.add(
+  "deletePortfolioActivity",
+  ({ userId, label }) => {
+    cy.task(
+      "queryDb",
+      `DELETE cc
+      FROM course_content AS cc
+      LEFT JOIN course AS c
+      ON cc.courseId = c.courseId
+      WHERE cc.label = '${label}'
+      AND c.portfolioCourseForUserId = '${userId}'
+      `,
+    )
+  },
+);
+
+Cypress.Commands.add(
   "createActivity",
   ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "" }) => {
-    // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
     cy.request("POST", `/cyapi/cypressCreateActivity.php`, {
       courseId,
       doenetId,
@@ -159,9 +174,6 @@ Cypress.Commands.add(
       pageDoenetId,
       doenetML,
     });
-    // .then((resp)=>{
-    //   cy.log(resp.body)
-    // })
   },
 );
 
