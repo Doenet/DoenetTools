@@ -159,6 +159,7 @@ export default function ChakraButton(props) {
         </ButtonStyling>
       </Container> */}
       <Button
+        margin="4px"
         onClick={(e) => {
           handleClick(e);
         }}

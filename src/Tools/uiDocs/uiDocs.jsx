@@ -36,7 +36,15 @@ import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.jsx"
 import Tooltip from "../../_reactComponents/PanelHeaderComponents/Tooltip.jsx";
 import DueDateBar from "../../_reactComponents/PanelHeaderComponents/DueDateBar.jsx";
 import { useState } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  Container,
+  Divider,
+  Heading,
+  Link as ChakraLink,
+  Text,
+} from "@chakra-ui/react";
 import theme from "/home/node/workspace/src/index.jsx";
 
 // === HOW TO ADD TO UI DOCS ===
@@ -58,17 +66,32 @@ import theme from "/home/node/workspace/src/index.jsx";
 //   ]
 // },
 
-const NavBar = styled.div`
-  width: 240px;
-  height: 100vh;
-  position: fixed;
-  background-color: var(--solidLightBlue);
-  color: var(--canvastext);
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  z-index: 1;
-`;
+// const NavBar = styled.div`
+//   width: 240px;
+//   height: 100vh;
+//   position: fixed;
+//   background-color: var(--solidLightBlue);
+//   color: var(--canvastext);
+//   top: 0;
+//   left: 0;
+//   overflow-x: hidden;
+//   z-index: 1;
+// `;
+
+function NavBar({ content }) {
+  const navBarStyle = {
+    width: "240px",
+    height: "100vh",
+    position: "fixed",
+    backgroundColor: "var(--solidLightBlue)",
+    color: "var(--canvastext)",
+    top: "0",
+    left: "0",
+    overflowX: "hidden",
+    zIndex: "1",
+  };
+  return <Box style={navBarStyle}>{content}</Box>;
+}
 const Content = styled.div`
   margin-left: 240px;
 `;
@@ -1595,69 +1618,68 @@ export default function Attempt() {
   //NEW COMPONENT PAGE
   function New() {
     return (
-      <div>
-        <h1>Features of A Standard Doenet Component</h1>
-        <p>
+      <Box>
+        <Heading size="md">Features of A Standard Doenet Component</Heading>
+        <Text>
           These are the guidelines for creating components for user input on
           Doenet. They are guidelines -- you can break them (and should if
           something looks ridiculous), but make sure you have a reason why you
           need to and that you can convince someone else of that reason. Once
           you’ve created or fixed a component, add the documentation for it to
-          this file ../src/Tools/uiDocs.js and update the component spreadsheet
-          <a
+          this file ../src/Tools/uiDocs.js and update the component spreadsheet{" "}
+          <ChakraLink
             href="https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing"
             target="_blank"
             rel="noreferrer"
           >
-            {" "}
             here
-          </a>
+          </ChakraLink>
           .{" "}
-        </p>
-        <hr />
+        </Text>
+        <Divider />
 
-        <h2>Comments on Accessibility</h2>
-        <p>
+        <Heading size="md">Comments on Accessibility</Heading>
+        <Text>
           All clickable elements need to have a focus indicator. Our standard is
           a 2px border that matches the element's current border with a 2px
-          offset. See styling
-          <a
+          offset. See styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
             target="_blank"
             rel="noreferrer"
           >
-            {" "}
-            here{" "}
-          </a>{" "}
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           All clickable elements also need an aria-label. Some elements, like
           buttons, do this for you, so adding an additional aria-label is
           considered bad practice. The naming techniques and accessible name
-          guidance sections will be the most helpful. Read more
-          <a
+          guidance sections will be the most helpful. Read more{" "}
+          <ChakraLink
             href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
             target="_blank"
             rel="noreferrer"
           >
-            {" "}
-            here{" "}
-          </a>
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           All components must follow standard keyboard and aria practices for
           that specific element. Find the element you are working on here and
           add the required keyboard interactions and aria information that it
-          lists. Here is the
-          <a
+          lists. Here is the{" "}
+          <ChakraLink
             href="https://www.w3.org/WAI/ARIA/apg/patterns/"
             target="_blank"
             rel="noreferrer"
           >
-            {" "}
-            link{" "}
-          </a>
-        </p>
+            link
+          </ChakraLink>
+          {"."}
+        </Text>
         <hr />
 
         <h2>States to Consider (* denotes required)</h2>
@@ -1792,7 +1814,7 @@ export default function Attempt() {
           Don’t apply the font to the component, fonts will be called in the
           Tool that loads it
         </p>
-      </div>
+      </Box>
     );
   }
 
@@ -1808,14 +1830,16 @@ export default function Attempt() {
       if (component.props) {
         return component.props.map(
           ({ name, propPreview, propCode, description }) => (
-            <div key={name}>
-              <h3 key={name}>{name}</h3>
-              <p key={name + "code"} style={{ color: "blue" }}>
+            <Box key={name}>
+              <Heading size="sm" key={name}>
+                {name}
+              </Heading>
+              <Text key={name + "code"} style={{ color: "blue" }}>
                 {propPreview}
-              </p>
-              <p key={description}>{description}</p>
+              </Text>
+              <Text key={description}>{description}</Text>
               {React.createElement(display, propCode, children)}
-            </div>
+            </Box>
           ),
         );
       } else {
@@ -1823,25 +1847,25 @@ export default function Attempt() {
       }
     }
     return (
-      <div>
-        <h1>{component.name}</h1>
-        <p style={{ color: "blue" }}>{component.codePreview}</p>
+      <Box>
+        <Heading size="lg">{component.name}</Heading>
+        <Text color="blue">{component.codePreview}</Text>
         {React.createElement(
           display,
           component.req_props,
           component.req_children,
         )}
 
-        <hr />
+        <Divider />
 
-        <h2>Why would I use this?</h2>
-        <p>{component.use}</p>
+        <Heading size="md">Why would I use this?</Heading>
+        <Text>{component.use}</Text>
 
-        <hr />
+        <Divider />
 
-        <h2>Props</h2>
+        <Heading size="md">Props</Heading>
         {Props(component)}
-      </div>
+      </Box>
     );
   }
 
@@ -1849,37 +1873,45 @@ export default function Attempt() {
   function Layout() {
     return (
       <>
-        <NavBar>
-          <div style={{ marginLeft: "10px" }}>
-            <h1>Components</h1>
-            {actionResult == "" ? null : (
-              <>
-                <p data-test="action result">{actionResult}</p>
-                <button
-                  onClick={() => setActionResult("")}
-                  data-test="clear action result"
-                >
-                  Clear actionResult
-                </button>
-              </>
-            )}
-            {/* <SearchBar width='110px'/> */}
-          </div>
-          <h3>
-            <Link to={`new_components`} style={{ color: "black" }}>
-              New Component Guidelines
-            </Link>
-          </h3>
-          <List>
-            {dataStructure.map(({ name, id }) => (
-              <li key={id} data-test={`componentLink${id}`}>
-                <Link to={`component/${id}`} style={{ color: "black" }}>
-                  {name}
-                </Link>
-              </li>
-            ))}
-          </List>
-        </NavBar>
+        <NavBar
+          content={
+            <>
+              <Box marginLeft="10px">
+                <Heading size="md">Components</Heading>
+                {actionResult == "" ? null : (
+                  <>
+                    <p data-test="action result">{actionResult}</p>
+                    <button
+                      onClick={() => setActionResult("")}
+                      data-test="clear action result"
+                    >
+                      Clear actionResult
+                    </button>
+                  </>
+                )}
+                {/* <SearchBar width='110px'/> */}
+              </Box>
+              <Link
+                to={`new_components`}
+                style={{ color: "black", marginLeft: "10px" }}
+              >
+                New Component Guidelines
+              </Link>
+              <List>
+                {dataStructure.map(({ name, id }) => (
+                  <li key={id} data-test={`componentLink${id}`}>
+                    <Link
+                      to={`component/${id}`}
+                      style={{ color: "black", marginLeft: "10px" }}
+                    >
+                      {name}
+                    </Link>
+                  </li>
+                ))}
+              </List>
+            </>
+          }
+        ></NavBar>
         <Content>
           <Outlet />
         </Content>
