@@ -26,6 +26,42 @@ describe("doenetEditor test", function () {
     return false;
   });
 
+  it.only("Portfolio Settings Menu", () => {
+    cy.get('[data-test="Portfolio"]').click();
+
+    cy.log("Create an activity");
+    cy.get('[data-test="Add Activity"]').click();
+
+    cy.get(".cm-content").type(
+      `<p>What is your name? <textinput name="name" /></p>{enter}`,
+    );
+
+    cy.get('[data-test="Portfolio"]').click();
+
+    cy.get(
+      '[data-test="Private Activities"] [data-test="Activity Card"]',
+    ).should("have.length", 1);
+    cy.get(
+      '[data-test="Public Activities"] [data-test="Activity Card"]',
+    ).should("have.length", 0);
+
+    cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').click();
+    cy.get('[data-test="Settings Menu Item"]').click();
+
+
+    cy.get('[data-test="Public Checkbox"]').click();
+
+    cy.get('.chakra-modal__close-btn').click();
+    // cy.get('[data-test="Close Settings Button"]').click();
+
+    cy.get(
+      '[data-test="Private Activities"] [data-test="Activity Card"]',
+    ).should("have.length", 0);
+    cy.get(
+      '[data-test="Public Activities"] [data-test="Activity Card"]',
+    ).should("have.length", 1);
+  });
+
   it("Share activities and remix", () => {
     cy.get('[data-test="Portfolio"]').click();
 
