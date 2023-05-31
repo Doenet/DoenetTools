@@ -125,6 +125,17 @@ function generateNewVariant({
   return nextVariant;
 }
 
+const apiURLs = {
+  loadActivityState: "/api/loadActivityState.php",
+  saveActivityState: "/api/saveActivityState.php",
+  initAssignmentAttempt: "/api/initAssignmentAttempt.php",
+  recordEvent: "/api/recordEvent.php",
+  loadPageState: "/api/loadPageState.php",
+  savePageState: "/api/savePageState.php",
+  saveItemCredit: "/api/saveCreditForItem.php",
+  reportSolutionViewed: "/api/reportSolutionViewed.php",
+};
+
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
@@ -159,6 +170,8 @@ export default function AssignmentViewer() {
   ] = useRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
@@ -467,7 +480,7 @@ export default function AssignmentViewer() {
     [setSuppressMenus, effectivePermissions],
   );
 
-  const setActivityAsCompleted = useRecoilCallback(
+  const setActivityAsCompletedInRecoil = useRecoilCallback(
     ({ set }) =>
       async () => {
         set(itemByDoenetId(doenetId), (prev) => {
@@ -617,6 +630,49 @@ export default function AssignmentViewer() {
         Number(resp.data.newNumberOfAttemptsAllowedAdjustment),
       );
       setRecoilAttemptNumber((was) => was + 1);
+    }
+  }
+
+  async function checkIfCidChanged(cidFromActivity) {
+    // check if cid changed
+    try {
+      let resp = await axios.get("/api/checkForChangedAssignment.php", {
+        params: {
+          currentCid: cidFromActivity,
+          doenetId,
+        },
+      });
+
+      if (resp.data.cidChanged === true) {
+        setCidChanged(true);
+      }
+    } catch (e) {
+      // ignore any errors
+    }
+  }
+
+  async function setActivityAsCompleted(itemWeights) {
+    //Set assignment as completed for the user in the Data Base and Recoil
+    let resp = await axios.get("/api/saveCompleted.php", {
+      params: { doenetId: doenetId, isCompleted: true },
+    });
+    // console.log("resp",resp.data)
+    if (resp.data.success) {
+      setActivityAsCompletedInRecoil();
+
+      //Go to end exam for the specific page
+      setPageToolView((prev) => {
+        return {
+          page: prev.page,
+          tool: "endExam",
+          view: "",
+          params: {
+            doenetId: doenetId,
+            attemptNumber,
+            itemWeights: itemWeights.join(","),
+          },
+        };
+      });
     }
   }
 
@@ -776,7 +832,7 @@ export default function AssignmentViewer() {
       <ActivityViewer
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -797,9 +853,10 @@ export default function AssignmentViewer() {
         pageChangedCallback={pageChanged}
         paginate={paginate}
         showFinishButton={showFinishButton}
-        cidChangedCallback={() => setCidChanged(true)}
+        checkIfCidChanged={checkIfCidChanged}
         setActivityAsCompleted={setActivityAsCompleted}
         // generatedVariantCallback={variantCallback}
+        apiURLs={apiURLs}
       />
     </>
   );
