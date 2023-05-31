@@ -107,7 +107,7 @@ const theme = extendTheme({
         _disabled: {
           bg: "#E2E2E2",
           color: "black",
-          cursor: "none",
+          pointerEvents: "none",
         },
       },
       variants: {
@@ -123,21 +123,23 @@ const theme = extendTheme({
         outline: {
           borderColor: "#2D5994",
           _hover: {
-            bg: "solidLightBlue",
+            bg: "doenet.solidLightBlue",
           },
         },
         ghost: {
           _hover: {
-            bg: "solidLightBlue",
+            bg: "doenet.solidLightBlue",
           },
         },
         link: {
-          color: "solidLightBlue",
+          color: "doenet.mainBlue",
         },
       },
     },
   },
 });
+
+export default theme;
 
 const router = createBrowserRouter([
   {
@@ -304,28 +306,28 @@ const router = createBrowserRouter([
       </MathJaxContext>
     ),
   },
-  {
-    path: "*",
-    // errorElement: <div>Error!</div>,
-    element: (
-      <MathJaxContext
-        version={2}
-        config={mathjaxConfig}
-        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      >
-        <ToolRoot />
-      </MathJaxContext>
-    ),
-    // TODO - probably not a good idea long term, this is to populate the site header
-    // on the 404 page, but this results in extra network requests when loading
-    // ToolRoot content
-    loader: siteLoader,
-    errorElement: (
-      <ChakraProvider theme={theme}>
-        <SiteHeader childComponent={<ErrorPage />} />
-      </ChakraProvider>
-    ),
-  },
+  // {
+  //   path: "*",
+  //   // errorElement: <div>Error!</div>,
+  //   element: (
+  //     <MathJaxContext
+  //       version={2}
+  //       config={mathjaxConfig}
+  //       onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+  //     >
+  //       <ToolRoot />
+  //     </MathJaxContext>
+  //   ),
+  //   // TODO - probably not a good idea long term, this is to populate the site header
+  //   // on the 404 page, but this results in extra network requests when loading
+  //   // ToolRoot content
+  //   loader: siteLoader,
+  //   errorElement: (
+  //     <ChakraProvider theme={theme}>
+  //       <SiteHeader childComponent={<ErrorPage />} />
+  //     </ChakraProvider>
+  //   ),
+  // },
 ]);
 
 const root = createRoot(document.getElementById("root"));

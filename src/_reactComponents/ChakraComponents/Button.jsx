@@ -1,48 +1,49 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { MathJax } from "better-react-mathjax";
+import { Button, ButtonGroup } from "@chakra-ui/react";
 
-const ButtonStyling = styled.button`
-  margin: ${(props) => props.theme.margin};
-  height: 24px;
-  width: ${(props) => props.width};
-  border-style: hidden;
-  // border-color: var(--canvastext);
-  // border-width: 2px;
-  color: white;
-  background-color: ${(props) =>
-    props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
-  border-radius: ${(props) => props.theme.borderRadius};
-  padding: ${(props) => props.theme.padding};
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 20px;
+// const ButtonStyling = styled.button`
+//   margin: ${(props) => props.theme.margin};
+//   height: 24px;
+//   width: ${(props) => props.width};
+//   border-style: hidden;
+//   // border-color: var(--canvastext);
+//   // border-width: 2px;
+//   color: white;
+//   background-color: ${(props) =>
+//     props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
+//   border-radius: ${(props) => props.theme.borderRadius};
+//   padding: ${(props) => props.theme.padding};
+//   cursor: pointer;
+//   font-size: 12px;
+//   border-radius: 20px;
 
-  &:hover {
-    background-color: ${(props) =>
-      props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
-    color: black;
-  }
+//   &:hover {
+//     background-color: ${(props) =>
+//       props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
+//     color: black;
+//   }
 
-  &:focus {
-    outline: 2px solid
-      ${(props) =>
-        props.alert
-          ? "var(--mainRed)"
-          : props.disabled
-          ? "var(--canvastext)"
-          : "var(--mainBlue)"};
-    outline-offset: 2px;
-  }
-`;
+//   &:focus {
+//     outline: 2px solid
+//       ${(props) =>
+//         props.alert
+//           ? "var(--mainRed)"
+//           : props.disabled
+//           ? "var(--canvastext)"
+//           : "var(--mainBlue)"};
+//     outline-offset: 2px;
+//   }
+// `;
 
-ButtonStyling.defaultProps = {
-  theme: {
-    margin: 0,
-    borderRadius: "var(--mainBorderRadius)",
-    padding: "0 10px",
-  },
-};
+// ButtonStyling.defaultProps = {
+//   theme: {
+//     margin: 0,
+//     borderRadius: "var(--mainBorderRadius)",
+//     padding: "0 10px",
+//   },
+// };
 
 const Label = styled.p`
   font-size: 14px;
@@ -57,12 +58,14 @@ const Container = styled.div`
   align-items: center;
 `;
 
-export default function Button(props) {
+export default function ChakraButton(props) {
+  // let isDisabled = props.isDisabled ? "isDisabled" : "";
   //Assume small
   var container = {};
   var align = "flex";
   var button = {
     value: "Button",
+    backgroundColor: "pink",
   };
   // var button = {
   //       margin: '0px',
@@ -105,7 +108,7 @@ export default function Button(props) {
       button.value = props.value;
     } else if (props.icon) {
       icon = props.icon;
-      button.value = "";
+      button.value = props.icon;
     }
     if (props.value && props.valueHasLatex) {
       button.value = (
@@ -120,11 +123,11 @@ export default function Button(props) {
   //   button.backgroundColor = 'var(--mainRed)'
   // }
 
-  if (props.disabled) {
-    button.backgroundColor = "var(--mainGray)";
-    button.color = "var(--canvastext)";
-    button.cursor = "not-allowed";
-  }
+  // if (props.disabled) {
+  // button.backgroundColor = "var(--mainGray)";
+  // button.color = "var(--canvastext)";
+  // button.cursor = "not-allowed";
+  // }
 
   // if (props.value) {
   //     button.value = props.value;
@@ -136,7 +139,7 @@ export default function Button(props) {
 
   return (
     <>
-      <Container style={container} align={align}>
+      {/* <Container style={container} align={align}>
         <Label labelVisible={labelVisible} align={align}>
           {label}
         </Label>
@@ -154,7 +157,15 @@ export default function Button(props) {
         >
           {icon} {button.value}
         </ButtonStyling>
-      </Container>
+      </Container> */}
+      <Button
+        onClick={(e) => {
+          handleClick(e);
+        }}
+        {...props}
+      >
+        {icon} {button.value}
+      </Button>
     </>
   );
 }

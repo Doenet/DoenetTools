@@ -15,7 +15,7 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.jsx";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
+import ChakraButton from "../../_reactComponents/ChakraComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
 import Form from "../../_reactComponents/PanelHeaderComponents/Form.jsx";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.jsx";
@@ -36,6 +36,8 @@ import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.jsx"
 import Tooltip from "../../_reactComponents/PanelHeaderComponents/Tooltip.jsx";
 import DueDateBar from "../../_reactComponents/PanelHeaderComponents/DueDateBar.jsx";
 import { useState } from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+import theme from "/home/node/workspace/src/index.jsx";
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -81,6 +83,8 @@ export default function Attempt() {
   const font = () => {};
   const vertical = () => {};
   const verticalLabel = () => {};
+  const isDisabled = () => {};
+  const isLoading = () => {};
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
@@ -210,18 +214,21 @@ export default function Attempt() {
     {
       name: "Button",
       id: "button",
-      code: Button,
+      code: ChakraButton,
       codePreview: "<Button/>",
       req_props: null,
       req_children: null,
       use: "This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!",
       props: [
         {
-          name: "Width - Menu Panel",
-          propPreview: '<Button width="menu" />',
-          propCode: { width: "menu" },
-          description: "Sets width to fill menu panel width",
+          name: "Variants",
+          propPreview:
+            '<Button variant="outline"/> <Button variant="ghost"/> <Button variant="link"/>',
+          description: "Sets background color to be Doenet's main blue",
+          propCode: { variant: "outline" },
         },
+        { propCode: { variant: "ghost" } },
+        { propCode: { variant: "link" } },
         {
           name: "Value",
           propPreview: '<Button value="This button is amazing!"/>',
@@ -229,38 +236,47 @@ export default function Attempt() {
           description: "Changes the text",
         },
         {
-          name: "Icon",
-          propPreview: "<Button icon={<FontAwesomeIcon icon={faCode}}/>",
-          propCode: { icon: <FontAwesomeIcon icon={faCode} /> },
+          name: "Value - Icon",
+          propPreview: "<Button value={<FontAwesomeIcon icon={faCode}}/>",
+          propCode: { value: <FontAwesomeIcon icon={faCode} /> },
           description:
-            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button",
+            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button",
         },
         {
           name: "Value + Icon",
           propPreview:
-            '<Button icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
-          propCode: { icon: <FontAwesomeIcon icon={faCode} />, value: "code" },
+            '<Button leftIcon={<FontAwesomeIcon icon={faCode}} value="code"/>',
+          propCode: {
+            leftIcon: <FontAwesomeIcon icon={faCode} />,
+            value: "code",
+          },
           description:
-            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button",
+            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button, along with text",
         },
         {
-          name: "Label",
-          propPreview: '<Button label="What: "/>',
-          propCode: { label: "What: " },
-          description: "Adds label to button",
+          name: "Loading",
+          propPreview: "<Button isLoading/>",
+          propCode: { isLoading },
+          description: "If true, the button will show a spinner",
         },
-        {
-          name: "Vertical Label",
-          propPreview: '<Button label="What: " vertical/>',
-          propCode: { label: "What: ", vertical },
-          description: "Adds label to component on top",
-        },
-        {
-          name: "Alert",
-          propPreview: "<Button alert/>",
-          propCode: { alert },
-          description: "Changes to alert mode (color is red)",
-        },
+        // {
+        //   name: "Label",
+        //   propPreview: '<Button label="What: "/>',
+        //   propCode: { label: "What: " },
+        //   description: "Adds label to button",
+        // },
+        // {
+        //   name: "Vertical Label",
+        //   propPreview: '<Button label="What: " vertical/>',
+        //   propCode: { label: "What: ", vertical },
+        //   description: "Adds label to component on top",
+        // },
+        // {
+        //   name: "Alert",
+        //   propPreview: "<Button alert/>",
+        //   propCode: { alert },
+        //   description: "Changes to alert mode (color is red)",
+        // },
         {
           name: "onClick",
           propPreview: '<Button onClick={() => console.log("clicked")} />',
@@ -269,8 +285,8 @@ export default function Attempt() {
         },
         {
           name: "Disabled",
-          propPreview: "<Button disabled />",
-          propCode: { disabled },
+          propPreview: "<Button isDisabled/>",
+          propCode: { isDisabled },
           description: "Makes button not able to be used.",
         },
       ],
@@ -282,9 +298,9 @@ export default function Attempt() {
       codePreview: "<ButtonGroup> <Button/> <Button/> <Button/> </ButtonGroup>",
       req_props: null,
       req_children: [
-        React.createElement(Button),
-        React.createElement(Button),
-        React.createElement(Button),
+        React.createElement(ChakraButton),
+        React.createElement(ChakraButton),
+        React.createElement(ChakraButton),
       ],
       use: "This groups related buttons together.",
       props: [
@@ -1873,14 +1889,16 @@ export default function Attempt() {
 
   //ROUTER SECTION
   return (
-    <Router basename="/src/Tools">
-      <Routes>
-        <Route path="/uiDocs" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path={`new_components`} element={<New />} />
-          <Route path={`component/:componentId`} element={<Components />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ChakraProvider theme={theme}>
+      <Router basename="/src/Tools">
+        <Routes>
+          <Route path="/uiDocs" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path={`new_components`} element={<New />} />
+            <Route path={`component/:componentId`} element={<Components />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ChakraProvider>
   );
 }
