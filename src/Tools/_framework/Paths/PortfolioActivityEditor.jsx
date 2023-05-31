@@ -77,7 +77,6 @@ import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoi
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1368,7 +1367,6 @@ export function PortfolioActivityEditor() {
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
       />
-      <VirtualKeyboard />
 
       <Grid
         background="doenet.lightBlue"

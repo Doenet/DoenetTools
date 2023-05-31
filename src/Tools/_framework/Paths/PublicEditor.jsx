@@ -42,7 +42,6 @@ import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { cidFromText } from "doenetml";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 
@@ -258,8 +257,6 @@ export function PublicEditor() {
 
   return (
     <>
-      <VirtualKeyboard />
-
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
