@@ -33,7 +33,7 @@ $row = $result->fetch_assoc();
 if ($row['canUpload'] == '1'){$canUpload = TRUE;}
 
 $sql = "
-SELECT cid, fileType, description, asFileName, widthPixels, heightPixels
+SELECT cid, fileType, description, asFileName, widthPixels, heightPixels, columnTypes
 FROM support_files
 WHERE doenetId='$doenetId'
 AND isActivityThumbnail='0'
@@ -50,6 +50,7 @@ $result = $conn->query($sql);
             "fileType" => $row['fileType'],
             "width" => $row['widthPixels'],
             "height" => $row['heightPixels'],
+            "columnTypes" => $row['columnTypes'],
             "asFileName" => $row['asFileName'],
             "description" => $row['description'],
         )

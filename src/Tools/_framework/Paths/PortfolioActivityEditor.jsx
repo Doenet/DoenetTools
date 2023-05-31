@@ -5,6 +5,7 @@ import CodeMirror from "../CodeMirror";
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
+import Papa from "papaparse";
 
 import { useSetRecoilState } from "recoil";
 import {
@@ -324,10 +325,30 @@ function SupportFilesControls() {
 
       reader.onabort = () => console.log("file reading was aborted");
       reader.onerror = () => console.log("file reading has failed");
-      reader.onload = async () => {
+      reader.onload = async (event) => {
+        let columnTypes = "";
+        if (file.type == "text/csv") {
+          const dataURL = event.target.result;
+          const csvString = atob(dataURL.split(",")[1]);
+          const parsedData = Papa.parse(csvString, {
+            dynamicTyping: true,
+          }).data;
+          columnTypes = parsedData
+            .slice(1)[0]
+            .reduce((acc, val) => {
+              if (typeof val === "number") {
+                return `${acc}Number `;
+              } else {
+                return `${acc}Text `;
+              }
+            }, "")
+            .trim();
+        }
         const uploadData = new FormData();
         uploadData.append("file", file);
         uploadData.append("doenetId", doenetId);
+        uploadData.append("columnTypes", columnTypes);
+
         let resp = await axios.post("/api/supportFileUpload.php", uploadData);
 
         if (resp.data.success) {
@@ -361,8 +382,7 @@ function SupportFilesControls() {
       onDrop,
       maxFiles: 1,
       maxSize: 1048576,
-      accept: ".jpg,.png",
-      // accept: ".csv,.jpg,.png",
+      accept: ".csv,.jpg,.png",
     });
 
   let handledTooMany = false;
@@ -462,7 +482,7 @@ function SupportFilesControls() {
             </HStack>
 
             <Text color="doenet.mediumGray" fontSize="20pt">
-              Drop an image file here,
+              Drop a file here,
             </Text>
             <Text color="doenet.mediumGray" fontSize="20pt">
               or click to select a file
@@ -476,12 +496,19 @@ function SupportFilesControls() {
         {supportingFiles.map((file, i) => {
           let previewImagePath = `/media/${file.fileName}`;
 
-          let doenetMLCode = `<image source='/media/${file.fileName}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+          let fileNameNoExtension = file.fileName.split(".")[0];
 
-          // if (file.fileType == "text/csv") {
-          //   previewImagePath = "/activity_default.jpg";
-          //   doenetMLCode = `CSV Code HERE`;
-          // }
+          let doenetMLCode = `<image source='doenet:cid=${fileNameNoExtension}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+
+          if (file.fileType == "text/csv") {
+            previewImagePath = "/activity_default.jpg";
+            //Fix the name so it can't break the rules
+            const doenetMLName = file.description
+              .replace(/[^a-zA-Z0-9]/g, "_")
+              .replace(/^([^a-zA-Z])/, "d$1");
+
+            doenetMLCode = `<dataframe source='doenet:cid=${fileNameNoExtension}' name='${doenetMLName}' hasHeader="true" columnTypes='${file.columnTypes}' />`;
+          }
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
@@ -555,14 +582,22 @@ function SupportFilesControls() {
                           </Menu>
                         </Flex>
                         <Text fontSize="xs">
-                          Alt Text Description required to use file
+                          {file.fileType == "text/csv" ? (
+                            <>DoenetML Name needed to use file</>
+                          ) : (
+                            <>Alt Text Description required to use file</>
+                          )}
                         </Text>
                         <InputGroup size="xs">
                           <Input
                             size="sm"
                             name="description"
                             mr="10px"
-                            placeholder="Enter Description Here"
+                            placeholder={
+                              file.fileType == "text/csv"
+                                ? "Enter Name Here"
+                                : "Enter Description Here"
+                            }
                             onBlur={(e) => {
                               fetcher.submit(
                                 {
@@ -657,7 +692,7 @@ function SupportFilesControls() {
                           }}
                         >
                           <EditablePreview />
-                          <EditableInput width="400px" />
+                          <EditableInput width="300px" />
                         </Editable>
                         {/* <Text
                           height="26px"
@@ -670,7 +705,13 @@ function SupportFilesControls() {
                           {file.description}
                         </Text> */}
                         <Text>
-                          {file.fileType} {file.width} x {file.height}
+                          {file.fileType == "text/csv" ? (
+                            <>{file.fileType} </>
+                          ) : (
+                            <>
+                              {file.fileType} {file.width} x {file.height}
+                            </>
+                          )}
                         </Text>
                       </VStack>
                     </GridItem>

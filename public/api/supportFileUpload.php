@@ -15,6 +15,8 @@ include 'getFilename.php';
 include 'cidFromSHA.php';
 
 $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
+$columnTypes = mysqli_real_escape_string($conn, $_POST['columnTypes']);
+
 
 $success = true;
 $msg = '';
@@ -31,10 +33,11 @@ $description = ''; //Don't automatically fill with file name
 
 $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id, $type);
 
-if ($type != "image/png" && $type != "image/jpeg"){
+if ($type != "image/png" && $type != "image/jpeg" && $type != "text/csv"){
     $success = false;
-    $msg = "Only .png or .jpg files. '$original_file_name' can not be uploaded.";
+    $msg = "Only .csv .png or .jpg files. '$original_file_name' can not be uploaded.";
 }
+
 //Test if user has space to upload files
 if ($success) {
     list($userQuotaBytesAvailable, $quotaBytes) = getBytesAvailable(
@@ -127,9 +130,9 @@ if ($success) {
   
     $sql = "
     INSERT INTO support_files 
-    (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isActivityThumbnail)
+    (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,columnTypes,timestamp,isActivityThumbnail)
     VALUES
-    ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'0')
+    ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height','$columnTypes',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'0')
     ";
     $conn->query($sql);
 
@@ -155,6 +158,7 @@ $response_arr = [
     'asFileName' => $original_file_name,
     'width' => $width,
     'height' => $height,
+    'columnTypes' => $columnTypes,
     'msg' => $msg,
     'userQuotaBytesAvailable' => $userQuotaBytesAvailable,
     'type' => $type,
