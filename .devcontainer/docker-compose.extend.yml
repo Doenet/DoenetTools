@@ -31,13 +31,13 @@ services:
       # Persist VS Code extensions between rebuilds
       # - vscode-extensions:/root/.vscode-server/extensions
       # mount ssh configuration
-      # - ~/.ssh:/.ssh
+      - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
-      - NODE_OPTIONS=--max-old-space-size=3584
+      - NODE_OPTIONS=--max-old-space-size=4098
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE
@@ -61,7 +61,6 @@ services:
       dockerfile: ./doenet_docker/apache/Dockerfile
       args:
         - BUILD_MODE=development
-        - NODE_OPTIONS=--max-old-space-size=3584
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
@@ -69,7 +68,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - db:/var/lib/mysql
+      - ./doenet_docker/volumes/db:/var/lib/mysql
       - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
     restart: on-failure
 
@@ -90,4 +89,3 @@ services:
 volumes:
   node_modules:
   vendor:
-  db:
