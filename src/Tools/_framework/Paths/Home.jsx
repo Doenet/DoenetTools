@@ -210,7 +210,7 @@ export function Home() {
           </Text>
           <Text maxWidth="800px">
             Doenet Staff we will be available to help you author learning
-            activities every Thursday at 3:00 PM - 4:00 PM CST on{" "}
+            activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
             <Link
               href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
               isExternal
