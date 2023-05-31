@@ -26,7 +26,7 @@ describe("doenetEditor test", function () {
     return false;
   });
 
-  it.only("Portfolio Settings Menu", () => {
+  it("Portfolio Settings Menu", () => {
     cy.get('[data-test="Portfolio"]').click();
 
     cy.log("Create an activity");
