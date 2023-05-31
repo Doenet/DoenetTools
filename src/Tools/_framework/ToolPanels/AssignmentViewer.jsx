@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer, {
-  saveStateToDBTimerIdAtom,
-} from "../../../Viewer/ActivityViewer";
 import {
   useRecoilValue,
   atom,
@@ -20,12 +17,14 @@ import {
   profileAtom,
 } from "../NewToolRoot";
 import axios from "axios";
-import { retrieveTextFileForCid } from "../../../Core/utils/retrieveTextFile";
 import { prng_alea } from "esm-seedrandom";
 import {
+  ActivityViewer,
+  saveStateToDBTimerIdAtom,
+  retrieveTextFileForCid,
   determineNumberOfActivityVariants,
   parseActivityDefinition,
-} from "../../../_utils/activityUtils";
+} from "doenetml";
 import {
   itemByDoenetId,
   courseIdAtom,

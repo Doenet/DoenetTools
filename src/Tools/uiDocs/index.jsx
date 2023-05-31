@@ -1,7 +1,7 @@
 import { MathJaxContext } from "better-react-mathjax";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { mathjaxConfig } from "../../Core/utils/math.js";
+import { mathjaxConfig } from "doenetml";
 
 import UIDocs from "./uiDocs.jsx";
 

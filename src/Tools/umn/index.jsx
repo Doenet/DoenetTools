@@ -5,7 +5,7 @@ import { RecoilRoot } from "recoil";
 
 import ToolRoot from "../_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
-import { mathjaxConfig } from "../../Core/utils/math";
+import { mathjaxConfig } from "doenetml";
 import DarkmodeController from "../_framework/DarkmodeController";
 
 const root = createRoot(document.getElementById("root"));

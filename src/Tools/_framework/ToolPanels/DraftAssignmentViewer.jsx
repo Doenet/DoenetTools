@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
 import {
   useRecoilValue,
   atom,
@@ -11,7 +10,7 @@ import {
 import { searchParamAtomFamily, profileAtom } from "../NewToolRoot";
 
 import axios from "axios";
-import { returnNumberOfActivityVariantsForCid } from "../../../_utils/activityUtils";
+import { ActivityViewer, returnNumberOfActivityVariantsForCid } from "doenetml";
 import {
   itemByDoenetId,
   courseIdAtom,

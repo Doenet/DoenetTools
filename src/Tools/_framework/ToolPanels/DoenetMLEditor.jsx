@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
 
-import CodeMirror from "../CodeMirror";
+import { CodeMirror } from "doenetml";
 import { courseIdAtom } from "../../../_reactComponents/Course/CourseActions";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 import {

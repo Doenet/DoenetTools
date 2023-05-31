@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import PageViewer, {
+import {
+  PageViewer,
   scrollableContainerAtom,
-} from "../../../Viewer/PageViewer";
+  retrieveTextFileForCid,
+  parseActivityDefinition,
+} from "doenetml";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -12,8 +15,6 @@ import {
 import { searchParamAtomFamily } from "../NewToolRoot";
 import { findFirstPageOfActivity } from "../../../_reactComponents/Course/CourseActions";
 import axios from "axios";
-import { retrieveTextFileForCid } from "../../../Core/utils/retrieveTextFile";
-import { parseActivityDefinition } from "../../../_utils/activityUtils";
 import {
   editorPageIdInitAtom,
   editorViewerErrorStateAtom,

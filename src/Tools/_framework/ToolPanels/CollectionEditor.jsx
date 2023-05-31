@@ -19,12 +19,12 @@ import {
   itemHistoryAtom,
 } from "../ToolHandlers/CourseToolHandler";
 import axios from "axios";
-import { returnAllPossibleVariants } from "../../../Core/utils/returnAllPossibleVariants";
 import { itemType } from "../../../_reactComponents/Sockets";
 import {
+  returnAllPossibleVariants,
   serializedComponentsReplacer,
   serializedComponentsReviver,
-} from "../../../Core/utils/serializedStateProcessing";
+} from "doenetml";
 import { csvGroups } from "../Menus/GroupSettings";
 
 export default function CollectionEditor() {

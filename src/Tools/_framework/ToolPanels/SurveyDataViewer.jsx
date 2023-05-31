@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
 import axios from "axios";
-import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
+import { serializedComponentsReviver } from "doenetml";
 // import { CSVDownload } from 'https://cdn.skypack.dev/react-csv';
 // import reactCSV from 'https://cdn.skypack.dev/react-csv';
 

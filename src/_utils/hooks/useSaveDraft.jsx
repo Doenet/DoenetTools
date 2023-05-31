@@ -6,7 +6,7 @@ import {
   textEditorDoenetMLAtom,
   textEditorLastKnownCidAtom,
 } from "../../_sharedRecoil/EditorViewerRecoil";
-import { cidFromText } from "../../Core/utils/cid";
+import { cidFromText } from "doenetml";
 
 export function useSaveDraft() {
   const addToast = useToast();

@@ -3,7 +3,7 @@ import { useLoaderData, useNavigate } from "react-router";
 import styled from "styled-components";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import PageViewer from "../../../Viewer/PageViewer";
+import { PageViewer } from "doenetml";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,

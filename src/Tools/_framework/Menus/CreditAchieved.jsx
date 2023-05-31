@@ -17,7 +17,7 @@ import {
   activityAttemptNumberSetUpAtom,
   currentPageAtom,
   itemWeightsAtom,
-} from "../../../Viewer/ActivityViewer";
+} from "doenetml";
 import { useLocation, useNavigate } from "react-router";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";

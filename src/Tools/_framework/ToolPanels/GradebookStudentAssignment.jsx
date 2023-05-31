@@ -19,12 +19,10 @@ import {
   searchParamAtomFamily,
   suppressMenusAtom,
 } from "../NewToolRoot";
-import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import axios from "axios";
 import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
-import PageViewer from "../../../Viewer/PageViewer";
+import { ActivityViewer, serializedComponentsReviver } from "doenetml";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';

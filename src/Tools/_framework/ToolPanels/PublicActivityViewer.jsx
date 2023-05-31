@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { ActivityViewer } from "doenetml";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
 

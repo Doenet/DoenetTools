@@ -1,11 +1,11 @@
 import axios from "axios";
-import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
-import { serializedComponentsReplacer } from "../Core/utils/serializedStateProcessing";
 import {
+  serializedComponentsReplacer,
+  retrieveTextFileForCid,
   calculateOrderAndVariants,
   determineNumberOfActivityVariants,
   parseActivityDefinition,
-} from "./activityUtils";
+} from "doenetml";
 
 onmessage = function (e) {
   if (e.data.messageType === "prerenderActivity") {

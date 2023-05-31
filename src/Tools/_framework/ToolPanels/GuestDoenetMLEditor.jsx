@@ -10,7 +10,7 @@ import {
   updateTextEditorDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 
-import CodeMirror from "../CodeMirror";
+import { CodeMirror } from "doenetml";
 
 export default function GuestDoenetMLEditor(props) {
   // console.log(">>>===BuestDoenetMLEditor")

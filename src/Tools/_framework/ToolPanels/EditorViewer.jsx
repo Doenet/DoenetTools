@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import PageViewer, {
-  scrollableContainerAtom,
-} from "../../../Viewer/PageViewer";
+import { PageViewer, scrollableContainerAtom, cidFromText } from "doenetml";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -35,7 +33,6 @@ import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from "../../../_sharedRecoil/PageViewerRecoil";
-import { cidFromText } from "../../../Core/utils/cid";
 
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {

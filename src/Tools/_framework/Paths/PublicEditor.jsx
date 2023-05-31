@@ -11,11 +11,10 @@ import {
   useNavigate,
   useOutletContext,
 } from "react-router";
-import CodeMirror from "../CodeMirror";
 
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-import PageViewer from "../../../Viewer/PageViewer";
+import { PageViewer, CodeMirror } from "doenetml";
 
 import {
   Alert,
@@ -42,7 +41,7 @@ import {
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
-import { cidFromText } from "../../../Core/utils/cid";
+import { cidFromText } from "doenetml";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
