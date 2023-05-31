@@ -20,6 +20,7 @@ import {
   useOutletContext,
   useLoaderData,
   useNavigate,
+  useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
@@ -168,6 +169,7 @@ function PortfolioSettingsDrawer({
 }) {
   // const { pageId, activityData } = useLoaderData();
   // console.log({ doenetId, data });
+  const fetcher = useFetcher();
   let activityData;
   if (doenetId) {
     let publicIndex = data.publicActivities.findIndex(
@@ -207,6 +209,7 @@ function PortfolioSettingsDrawer({
         <DrawerBody>
           {doenetId && (
             <GeneralActivityControls
+              fetcher={fetcher}
               doenetId={doenetId}
               activityData={activityData}
               courseId={courseId}
