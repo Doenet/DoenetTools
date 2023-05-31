@@ -149,6 +149,26 @@ Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
 });
 
 Cypress.Commands.add(
+  "deletePortfolioActivity",
+  ({ userId, label }) => {
+    // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
+    cy.task(
+      "queryDb",
+      `DELETE cc
+      FROM course_content AS cc
+      LEFT JOIN course AS c
+      ON cc.courseId = c.courseId
+      WHERE cc.label = '${label}'
+      AND c.portfolioCourseForUserId = '${userId}'
+      `,
+    )
+    // .then((result) => {
+    //   expect(result[0].totalPointsOrPercent).to.equals(1);
+    // });
+  },
+);
+
+Cypress.Commands.add(
   "createActivity",
   ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "" }) => {
     // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)

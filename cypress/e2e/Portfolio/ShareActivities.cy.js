@@ -22,44 +22,51 @@ describe("Share Activities Using Portfolio", function () {
     return false;
   });
 
-  it.only("Portfolio Settings Menu", () => {
+  it("Portfolio Settings Menu", () => {
     const label = "ShareActivites Portfolio Settings Menu";
-    cy.get('[data-test="Portfolio"]').click();
+    try {
+      cy.get('[data-test="Portfolio"]').click();
 
-    cy.log("Create an activity");
-    cy.get('[data-test="Add Activity"]').click();
+      cy.log("Create an activity");
+      cy.get('[data-test="Add Activity"]').click();
 
-    cy.get(".cm-content").type(
-      `<p>What is your name? <textinput name="name" /></p>{enter}`,
-    );
+      cy.get(".cm-content").type(
+        `<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
 
-    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Preview"]').click();
-    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]').type(label).blur();
+      cy.get('[data-test="Activity Label Editable"] [data-test="Editable Preview"]').click();
+      cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]').type(label).blur();
 
-    cy.get('[data-test="Portfolio"]').click();
+      cy.get('[data-test="Portfolio"]').click();
 
-    // cy.get(
-    //   '[data-test="Private Activities"] [data-test="Activity Card"]',
-    // ).should("have.length", 1);
-    // cy.get(
-    //   '[data-test="Public Activities"] [data-test="Activity Card"]',
-    // ).should("have.length", 0);
+      cy.get(
+        '[data-test="Private Activities"]',
+      ).contains(label);
+      cy.get(
+        '[data-test="Public Activities"]',
+      ).should('not.contain', label);
 
-    // cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').click();
-    // cy.get('[data-test="Settings Menu Item"]').click();
+      cy.get(
+        '[data-test="Private Activities"]',
+      ).contains(label).get('[data-test="Card Menu Button"]').click();
+      cy.get('[data-test="Settings Menu Item"]').click();
 
 
-    // cy.get('[data-test="Public Checkbox"]').click();
+      cy.get('[data-test="Public Checkbox"]').click();
 
-    // cy.get('.chakra-modal__close-btn').click();
-    // // cy.get('[data-test="Close Settings Button"]').click();
+      cy.get('.chakra-modal__close-btn').click();
+      // // cy.get('[data-test="Close Settings Button"]').click(); //TODO use data-test
 
-    // cy.get(
-    //   '[data-test="Private Activities"] [data-test="Activity Card"]',
-    // ).should("have.length", 0);
-    // cy.get(
-    //   '[data-test="Public Activities"] [data-test="Activity Card"]',
-    // ).should("have.length", 1);
+      cy.get(
+        '[data-test="Public Activities"]',
+      ).contains(label);
+      cy.get(
+        '[data-test="Private Activities"]',
+      ).should('not.contain', label);
+    }
+    finally {
+      cy.deletePortfolioActivity({ userId, label })
+    }
   });
 
   it("Share activities and remix", () => {
