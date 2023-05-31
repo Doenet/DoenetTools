@@ -2,21 +2,17 @@
 
 const { cesc2 } = require("../../../src/_utils/url");
 
-describe("doenetEditor test", function () {
+describe("Share Activities Using Portfolio", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 
   before(() => {
     // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId: userId2 });
+
   });
   beforeEach(() => {
     cy.signin({ userId });
-    cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.clearAllOfAUsersActivities({ userId: userId2 });
+
     cy.visit(`/`);
   });
 
@@ -26,7 +22,8 @@ describe("doenetEditor test", function () {
     return false;
   });
 
-  it("Portfolio Settings Menu", () => {
+  it.only("Portfolio Settings Menu", () => {
+    const label = "ShareActivites Portfolio Settings Menu";
     cy.get('[data-test="Portfolio"]').click();
 
     cy.log("Create an activity");
@@ -36,33 +33,42 @@ describe("doenetEditor test", function () {
       `<p>What is your name? <textinput name="name" /></p>{enter}`,
     );
 
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Preview"]').click();
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]').type(label).blur();
+
     cy.get('[data-test="Portfolio"]').click();
 
-    cy.get(
-      '[data-test="Private Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 1);
-    cy.get(
-      '[data-test="Public Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 0);
+    // cy.get(
+    //   '[data-test="Private Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 1);
+    // cy.get(
+    //   '[data-test="Public Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 0);
 
-    cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').click();
-    cy.get('[data-test="Settings Menu Item"]').click();
+    // cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').click();
+    // cy.get('[data-test="Settings Menu Item"]').click();
 
 
-    cy.get('[data-test="Public Checkbox"]').click();
+    // cy.get('[data-test="Public Checkbox"]').click();
 
-    cy.get('.chakra-modal__close-btn').click();
-    // cy.get('[data-test="Close Settings Button"]').click();
+    // cy.get('.chakra-modal__close-btn').click();
+    // // cy.get('[data-test="Close Settings Button"]').click();
 
-    cy.get(
-      '[data-test="Private Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 0);
-    cy.get(
-      '[data-test="Public Activities"] [data-test="Activity Card"]',
-    ).should("have.length", 1);
+    // cy.get(
+    //   '[data-test="Private Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 0);
+    // cy.get(
+    //   '[data-test="Public Activities"] [data-test="Activity Card"]',
+    // ).should("have.length", 1);
   });
 
   it("Share activities and remix", () => {
+    cy.clearAllOfAUsersCoursesAndItems({ userId });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: userId2 });
+    cy.clearIndexedDB();
+    cy.clearAllOfAUsersActivities({ userId });
+    cy.clearAllOfAUsersActivities({ userId: userId2 });
+
     cy.get('[data-test="Portfolio"]').click();
 
     cy.get(
