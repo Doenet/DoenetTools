@@ -1,0 +1,3 @@
+[submodule "DoenetML"]
+	path = DoenetML
+	url = git@github.com:Doenet/DoenetML.git
