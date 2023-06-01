@@ -15,7 +15,7 @@ $examDoenetId = $jwtArray["doenetId"];
 $device = $jwtArray["deviceName"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
+$doenetId = mysqli_real_escape_string($conn, $_POST["activityId"]);
 $cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
@@ -32,7 +32,7 @@ $success = true;
 $message = "";
 if ($doenetId == "") {
     $success = false;
-    $message = "Internal Error: missing doenetId";
+    $message = "Internal Error: missing activityId (doenetId)";
 } elseif ($cid == "") {
     $success = false;
     $message = "Internal Error: missing cid";

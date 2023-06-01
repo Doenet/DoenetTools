@@ -19,7 +19,7 @@ $examDoenetId = array_key_exists('doenetId', $jwtArray)
     : '';
 
 $_POST = json_decode(file_get_contents('php://input'), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
+$doenetId = mysqli_real_escape_string($conn, $_POST['activityId']);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
 $credit = mysqli_real_escape_string($conn, $_POST['credit']);
 $itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
@@ -31,7 +31,7 @@ $message = '';
 
 if ($doenetId == '') {
     $success = false;
-    $message = 'Internal Error: missing doenetId';
+    $message = 'Internal Error: missing activityId (doenetId)';
 } elseif ($attemptNumber == '') {
     $success = false;
     $message = 'Internal Error: missing attemptNumber';
