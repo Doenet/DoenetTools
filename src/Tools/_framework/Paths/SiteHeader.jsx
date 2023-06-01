@@ -179,6 +179,7 @@ export function SiteHeader(props) {
                     </NavLinkTab>
                     <Center
                       cursor="pointer"
+                      data-test="My Courses"
                       fontSize="md"
                       onClick={() => {
                         navigateTo.current = "/course";
