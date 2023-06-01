@@ -1631,6 +1631,7 @@ export default function Attempt() {
             href="https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
             here
           </ChakraLink>
@@ -1647,6 +1648,7 @@ export default function Attempt() {
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
             here
           </ChakraLink>
@@ -1661,6 +1663,7 @@ export default function Attempt() {
             href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
             here
           </ChakraLink>
@@ -1675,6 +1678,7 @@ export default function Attempt() {
             href="https://www.w3.org/WAI/ARIA/apg/patterns/"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
             link
           </ChakraLink>
@@ -1682,88 +1686,94 @@ export default function Attempt() {
         </Text>
         <hr />
 
-        <h2>States to Consider (* denotes required)</h2>
-        <p>
-          *<i>disabled</i> - remove ability for user to interact with component,
-          see styling
-          <a
+        <Heading size="md">States to Consider (* denotes required)</Heading>
+        <Text>
+          *<Text as="i">disabled</Text> - remove ability for user to interact
+          with component, see styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.997keaoy7se2"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <p>
-          *<i>alert</i> - if component requires user's attention, give red
-          #C1292E border, see styling
-          <a
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
+          *<Text as="i">alert</Text> - if component requires user's attention,
+          give red #C1292E border, see styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <hr />
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Divider />
 
-        <h2>Standard Props (* denotes required)</h2>
-        <p>
-          <i>width</i> = menu (235px) is the only option, otherwise the size
-          should be a default based on input (text, icons, ...)
-        </p>
-        <p>
-          <i>value</i> = information expected to be shown on component (text on
-          Button)
-        </p>
-        <p>
-          <i>icon</i> = small image that can be displayed, if it can show text -
-          it can have an icon. More info
-          <a
+        <Heading size="md">Standard Props (* denotes required)</Heading>
+        <Text>
+          <Text as="i">width</Text> = menu (235px) is the only option, otherwise
+          the size should be a default based on input (text, icons, ...)
+        </Text>
+        <Text>
+          <Text as="i">value</Text> = information expected to be shown on
+          component (text on Button)
+        </Text>
+        <Text>
+          <Text as="i">icon</Text> = small image that can be displayed, if it
+          can show text - it can have an icon. More info{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.lsq5rugnowwg"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <p>
-          <i>value + icon</i> = ability to have icon and value together
-        </p>
-        <p>
-          <i>label</i> = text before componenet telling user what it is for,
-          14px font size
-        </p>
-        <p>
-          <i>vertical label</i> = ability to have label stack on top of
-          component, label must be there for vertical label to work
-        </p>
-        <p>
-          <i>placeholder</i> = default shown before user input
-        </p>
-        <p>
-          *<i>margin</i> = default is 0px, make 4px left and right margin with
-          2px bottom margin on label if prop margin
-        </p>
-        <p>
-          *<i>aria-label</i> = built in HTML accessibility requirement
-        </p>
-        <p>
-          <i>onClick</i> = you know what this is, don’t use callback function
-        </p>
-        <p>
-          <i>onChange</i> = okay you probably know this as well, no callback
-          function!
-        </p>
-        <p>
-          <i>onBlur</i> = same idea
-        </p>
-        <p>
-          <i>onKeyDown</i> = same thing here
-        </p>
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
+          <Text as="i">value + icon</Text> = ability to have icon and value
+          together
+        </Text>
+        <Text>
+          <Text as="i">label</Text> = text before componenet telling user what
+          it is for, 14px font size
+        </Text>
+        <Text>
+          <Text as="i">vertical label</Text> = ability to have label stack on
+          top of component, label must be there for vertical label to work
+        </Text>
+        <Text>
+          <Text as="i">placeholder</Text> = default shown before user input
+        </Text>
+        <Text>
+          *<Text as="i">margin</Text> = default is 0px, make 4px left and right
+          margin with 2px bottom margin on label if prop margin
+        </Text>
+        <Text>
+          *<Text as="i">aria-label</Text> = built in HTML accessibility
+          requirement
+        </Text>
+        <Text>
+          <Text as="i">onClick</Text> = you know what this is, don’t use
+          callback function
+        </Text>
+        <Text>
+          <Text as="i">onChange</Text> = okay you probably know this as well, no
+          callback function!
+        </Text>
+        <Text>
+          <Text as="i">onBlur</Text> = same idea
+        </Text>
+        <Text>
+          <Text as="i">onKeyDown</Text> = same thing here
+        </Text>
         {/* <p>
           <i>onHover</i> = you can guess this, see
           <a
@@ -1784,36 +1794,37 @@ export default function Attempt() {
             here{' '}
           </a>
         </p> */}
-        <hr />
+        <Divider />
 
-        <h2>Comments on Styling</h2>
-        <p>
-          Only use the colors found on the
-          <a
+        <Heading size="md">Comments on Styling</Heading>
+        <Text>
+          Only use the colors found on the{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            Style Guide!!{" "}
-          </a>{" "}
+            Style Guide!!
+          </ChakraLink>{" "}
           (Unless you've talked to Clara or Kevin about it...)
-        </p>
-        <p>
-          Give it a border or a color, as shown
-          <a
+        </Text>
+        <Text>
+          Give it a border or a color, as shown{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.53fu07uoic4t"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            here{" "}
-          </a>
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           Don’t apply the font to the component, fonts will be called in the
-          Tool that loads it
-        </p>
+          Tool that loads it.
+        </Text>
       </Box>
     );
   }
