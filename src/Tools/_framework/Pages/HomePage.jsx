@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import styled from "styled-components";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { PageViewer } from "doenetml";
+import DoenetML from "doenetml";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -245,6 +245,7 @@ const BarMenu = styled.div`
 export default function HomePage(props) {
   const loaderData = useLoaderData();
   let navigate = useNavigate();
+  let location = useLocation();
   let checkingCookie = useRef(false);
   const [signedIn, setSignedIn] = useState(null);
   const favorites = loaderData?.carouselData[3];
@@ -445,7 +446,7 @@ export default function HomePage(props) {
                 padding: "20px 0px 20px 0px",
               }}
             >
-              <PageViewer
+              <DoenetML
                 key={`HPpageViewer`}
                 doenetML={doenetML}
                 flags={{
@@ -465,7 +466,8 @@ export default function HomePage(props) {
                 generatedVariantCallback={variantCallback} //TODO:Replace
                 requestedVariantIndex={variantInfo.index}
                 // setIsInErrorState={setIsInErrorState}
-                pageIsActive={true}
+                navigate={navigate}
+                location={location}
               />
             </div>
           </div>

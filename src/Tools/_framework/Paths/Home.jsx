@@ -1,9 +1,14 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import {
+  useLoaderData,
+  useOutletContext,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 // import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import { PageViewer } from "doenetml";
+import DoenetML from "doenetml";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -145,6 +150,9 @@ export function Home() {
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   useEffect(() => {
     document.title = `Home - Doenet`;
@@ -326,7 +334,7 @@ export function Home() {
             justifyContent="center"
             alignItems="center"
           >
-            <PageViewer
+            <DoenetML
               key={`HPpageViewer`}
               doenetML={doenetML}
               flags={{
@@ -346,7 +354,8 @@ export function Home() {
               generatedVariantCallback={variantCallback} //TODO:Replace
               requestedVariantIndex={variantInfo.index}
               // setIsInErrorState={setIsInErrorState}
-              pageIsActive={true}
+              navigate={navigate}
+              location={location}
             />
           </Flex>
         </Flex>

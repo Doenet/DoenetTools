@@ -18,8 +18,7 @@ import {
 } from "../NewToolRoot";
 import axios from "axios";
 import { prng_alea } from "esm-seedrandom";
-import {
-  ActivityViewer,
+import DoenetML, {
   saveStateToDBTimerIdAtom,
   retrieveTextFileForCid,
   determineNumberOfActivityVariants,
@@ -195,7 +194,7 @@ export default function AssignmentViewer() {
   let [itemObj, setItemObj] = useRecoilState(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
-  let { search, hash } = useLocation();
+  let location = useLocation();
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -497,8 +496,8 @@ export default function AssignmentViewer() {
     newAttemptNumber,
     doenetId,
   ) {
-    if (hash && hash !== "#page1") {
-      navigate(search, { replace: true });
+    if (location.hash && location.hash !== "#page1") {
+      navigate(location.search, { replace: true });
     }
 
     // don't attempt to save data from old attempt number
@@ -829,8 +828,7 @@ export default function AssignmentViewer() {
   return (
     <>
       {cidChangedAlert}
-      <ActivityViewer
-        key={`activityViewer${doenetId}`}
+      <DoenetML
         cid={cid}
         activityId={doenetId}
         flags={{
@@ -853,10 +851,14 @@ export default function AssignmentViewer() {
         pageChangedCallback={pageChanged}
         paginate={paginate}
         showFinishButton={showFinishButton}
+        cidChangedCallback={() => setCidChanged(true)}
         checkIfCidChanged={checkIfCidChanged}
         setActivityAsCompleted={setActivityAsCompleted}
         // generatedVariantCallback={variantCallback}
         apiURLs={apiURLs}
+        idsIncludeActivityId={false}
+        location={location}
+        navigate={navigate}
       />
     </>
   );

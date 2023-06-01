@@ -9,12 +9,13 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useLocation,
   useOutletContext,
 } from "react-router";
 
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-import { PageViewer, CodeMirror } from "doenetml";
+import DoenetML, { CodeMirror } from "doenetml";
 
 import {
   Alert,
@@ -191,6 +192,7 @@ export function PublicEditor() {
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -439,7 +441,7 @@ export function PublicEditor() {
             headerHeight={110}
             left={
               <>
-                <PageViewer
+                <DoenetML
                   doenetML={viewerDoenetML}
                   flags={{
                     showCorrectness: true,
@@ -457,7 +459,10 @@ export function PublicEditor() {
                   generatedVariantCallback={variantCallback} //TODO:Replace
                   requestedVariantIndex={variants.index}
                   // setIsInErrorState={setIsInErrorState}
-                  pageIsActive={true}
+                  allowMultipageActivities={false}
+                  idsIncludeActivityId={false}
+                  navigate={navigate}
+                  location={location}
                 />
                 <Box marginBottom="50vh" />
               </>

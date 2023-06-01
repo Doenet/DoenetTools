@@ -10,7 +10,7 @@ import {
 import { searchParamAtomFamily, profileAtom } from "../NewToolRoot";
 
 import axios from "axios";
-import { ActivityViewer, returnNumberOfActivityVariantsForCid } from "doenetml";
+import DoenetML, { returnNumberOfActivityVariantsForCid } from "doenetml";
 import {
   itemByDoenetId,
   courseIdAtom,
@@ -18,6 +18,7 @@ import {
   useSetCourseIdFromDoenetId,
 } from "../../../_reactComponents/Course/CourseActions";
 import { activityVariantPanelAtom } from "../../../_sharedRecoil/PageViewerRecoil";
+import { useLocation, useNavigate } from "react-router";
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
@@ -53,6 +54,9 @@ export default function DraftAssignmentViewer() {
   // let userId = useRef(null);
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
+
+  let location = useLocation();
+  let navigate = useNavigate();
 
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
@@ -178,7 +182,7 @@ export default function DraftAssignmentViewer() {
 
   return (
     <>
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
         doenetId={doenetId}
@@ -198,6 +202,9 @@ export default function DraftAssignmentViewer() {
         requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
         paginate={paginate}
+        idsIncludeActivityId={false}
+        location={location}
+        navigate={navigate}
       />
     </>
   );

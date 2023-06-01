@@ -13,6 +13,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
 } from "recoil";
+import { useLocation, useNavigate } from "react-router";
 
 import {
   pageToolViewAtom,
@@ -21,7 +22,7 @@ import {
 } from "../NewToolRoot";
 import axios from "axios";
 import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
-import { ActivityViewer, serializedComponentsReviver } from "doenetml";
+import DoenetML from "doenetml";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 
@@ -56,6 +57,9 @@ export default function GradebookStudentAssignmentView() {
   );
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let overview = useRecoilValueLoadable(overviewData);
+
+  let location = useLocation();
+  let navigate = useNavigate();
 
   const totalPointsOrPercent = Number(
     assignments.contents[doenetId]?.totalPointsOrPercent,
@@ -295,7 +299,7 @@ export default function GradebookStudentAssignmentView() {
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
     let paginate = attemptsInfo[attemptNumber].paginate;
     dViewer = (
-      <ActivityViewer
+      <DoenetML
         /** REAL below */
         key={`activityViewer${doenetId}`}
         cid={cid}
@@ -330,6 +334,9 @@ export default function GradebookStudentAssignmentView() {
         // generatedVariantCallback={variantCallback}
         // pageChangedCallback={pageChanged}
         paginate={paginate}
+        idsIncludeActivityId={false}
+        location={location}
+        navigate={navigate}
       />
     );
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  PageViewer,
+import DoenetML, {
   scrollableContainerAtom,
   retrieveTextFileForCid,
   parseActivityDefinition,
@@ -23,7 +22,7 @@ import {
   updateTextEditorDoenetMLAtom,
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -48,6 +47,7 @@ export default function EditorViewer() {
   const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
   let location = useLocation();
+  let navigate = useNavigate();
 
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
@@ -220,7 +220,7 @@ export default function EditorViewer() {
   }
 
   return (
-    <PageViewer
+    <DoenetML
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -241,7 +241,10 @@ export default function EditorViewer() {
       generatedVariantCallback={variantCallback} //TODO:Replace
       requestedVariantIndex={variantInfo.index}
       setIsInErrorState={setIsInErrorState}
-      pageIsActive={true}
+      allowMultipageActivities={false}
+      idsIncludeActivityId={false}
+      location={location}
+      navigate={navigate}
     />
   );
 }

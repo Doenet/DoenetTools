@@ -3,11 +3,12 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useLocation,
   // useOutletContext,
 } from "react-router";
 import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-import { PageViewer } from "doenetml";
+import DoenetML from "doenetml";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -97,6 +98,7 @@ export function PortfolioActivityViewer() {
   } = useLoaderData();
 
   const navigate = useNavigate();
+  const location = useLocation();
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -298,7 +300,7 @@ export function PortfolioActivityViewer() {
                 overflow="scroll"
               >
                 <>
-                  <PageViewer
+                  <DoenetML
                     key={`HPpageViewer`}
                     doenetML={doenetML}
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
@@ -319,7 +321,9 @@ export function PortfolioActivityViewer() {
                     generatedVariantCallback={variantCallback} //TODO:Replace
                     requestedVariantIndex={variantInfo.index}
                     // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
+                    idsIncludeActivityId={false}
+                    navigate={navigate}
+                    location={location}
                   />
                   <Box marginBottom="50vh" />
                 </>

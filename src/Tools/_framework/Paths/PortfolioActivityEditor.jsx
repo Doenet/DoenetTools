@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useLocation,
+} from "react-router";
 
 // import styled from "styled-components";
 // import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-import { PageViewer, CodeMirror } from "doenetml";
+import DoenetML, { CodeMirror } from "doenetml";
 
 import { useSetRecoilState } from "recoil";
 import {
@@ -1248,6 +1253,9 @@ export function PortfolioActivityEditor() {
   const [mode, setMode] = useState("Edit");
   let [codeChanged, setCodeChanged] = useState(false);
 
+  let navigate = useNavigate();
+  let location = useLocation();
+
   let controlsTabsLastIndex = useRef(0);
 
   let editorRef = useRef(null);
@@ -1573,7 +1581,7 @@ export function PortfolioActivityEditor() {
               <ResizeableSideBySide
                 left={
                   <>
-                    <PageViewer
+                    <DoenetML
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
@@ -1591,7 +1599,10 @@ export function PortfolioActivityEditor() {
                       generatedVariantCallback={variantCallback} //TODO:Replace
                       requestedVariantIndex={variants.index}
                       // setIsInErrorState={setIsInErrorState}
-                      pageIsActive={true}
+                      allowMultipageActivities={false}
+                      idsIncludeActivityId={false}
+                      navigate={navigate}
+                      location={location}
                     />
                     <Box marginBottom="50vh" />
                   </>
@@ -1664,7 +1675,7 @@ export function PortfolioActivityEditor() {
                     overflow="scroll"
                   >
                     <>
-                      <PageViewer
+                      <DoenetML
                         doenetML={viewerDoenetML}
                         flags={{
                           showCorrectness: true,
@@ -1682,7 +1693,10 @@ export function PortfolioActivityEditor() {
                         generatedVariantCallback={variantCallback} //TODO:Replace
                         requestedVariantIndex={variants.index}
                         // setIsInErrorState={setIsInErrorState}
-                        pageIsActive={true}
+                        allowMultipageActivities={false} // TODO: change once have portfolio multipagers
+                        idsIncludeActivityId={false}
+                        navigate={navigate}
+                        location={location}
                       />
                       <Box marginBottom="50vh" />
                     </>

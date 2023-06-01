@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { PageViewer, scrollableContainerAtom, cidFromText } from "doenetml";
+import DoenetML, { scrollableContainerAtom, cidFromText } from "doenetml";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -28,7 +28,7 @@ import {
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 import axios from "axios";
-import { useLoaderData, useLocation } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -88,6 +88,7 @@ export default function EditorViewer() {
   const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
   let location = useLocation();
+  let navigate = useNavigate();
 
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
@@ -263,7 +264,7 @@ export default function EditorViewer() {
   // console.log('>>>>variantInfo.index',variantInfo.index)
 
   return (
-    <PageViewer
+    <DoenetML
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -283,7 +284,10 @@ export default function EditorViewer() {
       generatedVariantCallback={variantCallback} //TODO:Replace
       requestedVariantIndex={variantInfo.index}
       setIsInErrorState={setIsInErrorState}
-      pageIsActive={true}
+      allowMultipageActivities={false}
+      idsIncludeActivityId={false}
+      location={location}
+      navigate={navigate}
     />
   );
 }

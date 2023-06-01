@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityViewer } from "doenetml";
+import DoenetML from "doenetml";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
+import { useLocation, useNavigate } from "react-router";
 
 import axios from "axios";
 
@@ -9,6 +10,9 @@ export default function Public(props) {
   // console.log(">>>===Content")
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const [cid, setCid] = useState(null);
+
+  let location = useLocation();
+  let navigate = useNavigate();
 
   const [errMsg, setErrMsg] = useState(null);
 
@@ -52,7 +56,7 @@ export default function Public(props) {
 
   return (
     <>
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
         doenetId={doenetId}
@@ -70,6 +74,9 @@ export default function Public(props) {
           allowSaveEvents: false,
         }}
         paginate={true}
+        idsIncludeActivityId={false}
+        location={location}
+        navigate={navigate}
       />
     </>
   );
