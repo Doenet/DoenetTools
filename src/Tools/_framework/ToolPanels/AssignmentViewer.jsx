@@ -19,7 +19,6 @@ import {
 import axios from "axios";
 import { prng_alea } from "esm-seedrandom";
 import DoenetML, {
-  saveStateToDBTimerIdAtom,
   retrieveTextFileForCid,
   determineNumberOfActivityVariants,
   parseActivityDefinition,
@@ -49,6 +48,15 @@ export const creditAchievedAtom = atom({
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
+  },
+});
+
+export const activityStatusAtom = atom({
+  key: "activityStatusAtom",
+  default: {
+    activityAttemptNumberSetUp: 0,
+    currentPage: 0,
+    itemWeights: [],
   },
 });
 
@@ -175,14 +183,6 @@ export default function AssignmentViewer() {
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
-
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        return await snapshot.getPromise(saveStateToDBTimerIdAtom);
-      },
-    [saveStateToDBTimerIdAtom],
-  );
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -500,12 +500,14 @@ export default function AssignmentViewer() {
       navigate(location.search, { replace: true });
     }
 
+    // TODO: can't do this via recoil anymore now that DoenetML is separate.
+    // Do we still need to address this case?
     // don't attempt to save data from old attempt number
     // (which would triggered a reset and error message);
-    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
-    if (oldTimeoutId !== null) {
-      clearTimeout(oldTimeoutId);
-    }
+    // let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    // if (oldTimeoutId !== null) {
+    //   clearTimeout(oldTimeoutId);
+    // }
 
     //Check if cid has changed
 
@@ -608,6 +610,17 @@ export default function AssignmentViewer() {
           creditForAssignment,
           creditForAttempt,
           totalPointsOrPercent,
+        });
+      },
+  );
+
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ activityAttemptNumberSetUp, currentPage, itemWeights }) => {
+        set(activityStatusAtom, {
+          activityAttemptNumberSetUp,
+          currentPage,
+          itemWeights,
         });
       },
   );
@@ -847,6 +860,7 @@ export default function AssignmentViewer() {
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
+        updateActivityStatusCallback={updateActivityStatus}
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}

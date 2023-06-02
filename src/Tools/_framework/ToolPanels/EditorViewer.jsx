@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import DoenetML, { scrollableContainerAtom, cidFromText } from "doenetml";
+import DoenetML, { cidFromText } from "doenetml";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -84,8 +84,6 @@ export default function EditorViewer() {
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const { canUpload } = useRecoilValue(profileAtom);
   const updateViewer = useUpdateViewer();
-
-  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
   let location = useLocation();
   let navigate = useNavigate();
@@ -228,11 +226,6 @@ export default function EditorViewer() {
     }
   }, [location]);
 
-  useEffect(() => {
-    const mainPanel = document.getElementById("mainPanel");
-    setScrollableContainer(mainPanel);
-  }, []);
-
   if (courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
   } else if (effectivePageId !== initializedPageId) {
@@ -243,18 +236,21 @@ export default function EditorViewer() {
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
+  function variantCallback(variantData) {
+    if (variantData.pageVariant) {
+      let { variantInfo: generatedVariantInfo, allPossibleVariants } =
+        variantData.pageVariant;
+      const cleanGeneratedVariant = JSON.parse(
+        JSON.stringify(generatedVariantInfo),
+      );
+      setVariantPanel({
+        index: cleanGeneratedVariant.index,
+        allPossibleVariants,
+      });
+      setVariantInfo({
+        index: cleanGeneratedVariant.index,
+      });
+    }
   }
 
   // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)

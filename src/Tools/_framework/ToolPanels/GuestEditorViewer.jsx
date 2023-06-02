@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import DoenetML, {
-  scrollableContainerAtom,
   retrieveTextFileForCid,
   parseActivityDefinition,
 } from "doenetml";
@@ -43,8 +42,6 @@ export default function EditorViewer() {
   const updateViewer = useUpdateViewer();
 
   const [errMsg, setErrMsg] = useState(null);
-
-  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
   let location = useLocation();
   let navigate = useNavigate();
@@ -152,11 +149,6 @@ export default function EditorViewer() {
     }
   }, [location]);
 
-  useEffect(() => {
-    const mainPanel = document.getElementById("mainPanel");
-    setScrollableContainer(mainPanel);
-  }, []);
-
   let initDoenetML = useRecoilCallback(
     ({ snapshot, set }) =>
       async (pageCid) => {
@@ -195,18 +187,22 @@ export default function EditorViewer() {
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
+  function variantCallback(variantData) {
+    if (variantData.pageVariant) {
+      let { variantInfo: generatedVariantInfo, allPossibleVariants } =
+        variantData.pageVariant;
+      // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+      const cleanGeneratedVariant = JSON.parse(
+        JSON.stringify(generatedVariantInfo),
+      );
+      setVariantPanel({
+        index: cleanGeneratedVariant.index,
+        allPossibleVariants,
+      });
+      setVariantInfo({
+        index: cleanGeneratedVariant.index,
+      });
+    }
   }
 
   // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)

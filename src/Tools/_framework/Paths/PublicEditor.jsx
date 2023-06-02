@@ -246,15 +246,19 @@ export function PublicEditor() {
   });
   // console.log("variants", variants);
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
+  function variantCallback(variantData) {
+    if (variantData.pageVariant) {
+      let { variantInfo: generatedVariantInfo, allPossibleVariants } =
+        variantData.pageVariant;
+      // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+      const cleanGeneratedVariant = JSON.parse(
+        JSON.stringify(generatedVariantInfo),
+      );
+      setVariants({
+        index: cleanGeneratedVariant.index,
+        allPossibleVariants,
+      });
+    }
   }
 
   return (

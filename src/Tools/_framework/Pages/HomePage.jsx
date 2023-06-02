@@ -275,18 +275,22 @@ export default function HomePage(props) {
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
+  function variantCallback(variantData) {
+    if (variantData.pageVariant) {
+      let { variantInfo: generatedVariantInfo, allPossibleVariants } =
+        variantData.pageVariant;
+      // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+      const cleanGeneratedVariant = JSON.parse(
+        JSON.stringify(generatedVariantInfo),
+      );
+      setVariantPanel({
+        index: cleanGeneratedVariant.index,
+        allPossibleVariants,
+      });
+      setVariantInfo({
+        index: cleanGeneratedVariant.index,
+      });
+    }
   }
 
   let signInButton = (

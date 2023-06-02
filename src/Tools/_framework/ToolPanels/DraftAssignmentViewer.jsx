@@ -80,12 +80,15 @@ export default function DraftAssignmentViewer() {
   // const loadProfile = useRecoilValueLoadable(profileAtom);
   // userId.current = loadProfile.contents.userId;
 
-  function variantCallback(variantIndex, numberOfVariants) {
-    // console.log(">>>variantCallback",variantIndex,numberOfVariants)
-    setVariantPanel({
-      index: variantIndex,
-      numberOfVariants,
-    });
+  function variantCallback(variantData) {
+    if (variantData.activityVariant) {
+      let { variantIndex, numberOfVariants } = variantData.activityVariant;
+      // console.log(">>>variantCallback",variantIndex,numberOfVariants)
+      setVariantPanel({
+        index: variantIndex,
+        numberOfVariants,
+      });
+    }
   }
 
   const initializeValues = useRecoilCallback(

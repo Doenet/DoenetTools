@@ -158,18 +158,23 @@ export function Home() {
     document.title = `Home - Doenet`;
   }, []);
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
+  function variantCallback(variantData) {
+    if (variantData.pageVariant) {
+      let { variantInfo: generatedVariantInfo, allPossibleVariants } =
+        variantData.pageVariant;
+
+      // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+      const cleanGeneratedVariant = JSON.parse(
+        JSON.stringify(generatedVariantInfo),
+      );
+      setVariantPanel({
+        index: cleanGeneratedVariant.index,
+        allPossibleVariants,
+      });
+      setVariantInfo({
+        index: cleanGeneratedVariant.index,
+      });
+    }
   }
 
   const grayColor = useColorModeValue("doenet.mainGray", "doenet.lightGray");
