@@ -19,6 +19,7 @@ import {
 } from "../../../_reactComponents/Course/CourseActions";
 import { activityVariantPanelAtom } from "../../../_sharedRecoil/PageViewerRecoil";
 import { useLocation, useNavigate } from "react-router";
+import { apiURLs } from "./AssignmentViewer";
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
@@ -188,7 +189,7 @@ export default function DraftAssignmentViewer() {
       <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -206,6 +207,7 @@ export default function DraftAssignmentViewer() {
         generatedVariantCallback={variantCallback}
         paginate={paginate}
         idsIncludeActivityId={false}
+        apiURLs={apiURLs}
         location={location}
         navigate={navigate}
       />

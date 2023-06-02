@@ -82,6 +82,7 @@ import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoi
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import { apiURLs } from "../ToolPanels/AssignmentViewer";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1605,6 +1606,7 @@ export function PortfolioActivityEditor() {
                       // setIsInErrorState={setIsInErrorState}
                       allowMultipageActivities={false}
                       idsIncludeActivityId={false}
+                      apiURLs={apiURLs}
                       navigate={navigate}
                       location={location}
                     />
@@ -1699,6 +1701,7 @@ export function PortfolioActivityEditor() {
                         // setIsInErrorState={setIsInErrorState}
                         allowMultipageActivities={false} // TODO: change once have portfolio multipagers
                         idsIncludeActivityId={false}
+                        apiURLs={apiURLs}
                         navigate={navigate}
                         location={location}
                       />

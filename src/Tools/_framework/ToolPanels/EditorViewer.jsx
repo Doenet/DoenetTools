@@ -33,6 +33,7 @@ import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from "../../../_sharedRecoil/PageViewerRecoil";
+import { apiURLs } from "./AssignmentViewer";
 
 export const useUpdateViewer = () => {
   const updateViewer = useRecoilCallback(({ snapshot, set }) => async () => {
@@ -282,6 +283,7 @@ export default function EditorViewer() {
       setIsInErrorState={setIsInErrorState}
       allowMultipageActivities={false}
       idsIncludeActivityId={false}
+      apiURLs={apiURLs}
       location={location}
       navigate={navigate}
     />

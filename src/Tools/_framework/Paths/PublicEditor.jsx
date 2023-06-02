@@ -45,6 +45,7 @@ import axios from "axios";
 import { cidFromText } from "doenetml";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
+import { apiURLs } from "../ToolPanels/AssignmentViewer";
 
 //Delete this action???
 export async function action({ params, request }) {
@@ -465,6 +466,7 @@ export function PublicEditor() {
                   // setIsInErrorState={setIsInErrorState}
                   allowMultipageActivities={false}
                   idsIncludeActivityId={false}
+                  apiURLs={apiURLs}
                   navigate={navigate}
                   location={location}
                 />

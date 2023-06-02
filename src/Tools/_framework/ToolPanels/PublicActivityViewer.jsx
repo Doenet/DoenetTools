@@ -5,6 +5,7 @@ import { searchParamAtomFamily } from "../NewToolRoot";
 import { useLocation, useNavigate } from "react-router";
 
 import axios from "axios";
+import { apiURLs } from "./AssignmentViewer";
 
 export default function Public(props) {
   // console.log(">>>===Content")
@@ -59,7 +60,7 @@ export default function Public(props) {
       <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness: true,
           readOnly: false,
@@ -75,6 +76,7 @@ export default function Public(props) {
         }}
         paginate={true}
         idsIncludeActivityId={false}
+        apiURLs={apiURLs}
         location={location}
         navigate={navigate}
       />

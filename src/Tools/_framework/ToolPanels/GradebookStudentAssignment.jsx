@@ -21,7 +21,7 @@ import {
   suppressMenusAtom,
 } from "../NewToolRoot";
 import axios from "axios";
-import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
+import { apiURLs, currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
 import DoenetML from "doenetml";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
@@ -305,7 +305,7 @@ export default function GradebookStudentAssignmentView() {
         cid={cid}
         // cidChanged={cidChanged}
         // doenetML={doenetML}
-        doenetId={doenetId}
+        activityId={doenetId}
         userId={userId}
         forceDisable={true}
         forceShowCorrectness={true}
@@ -335,6 +335,7 @@ export default function GradebookStudentAssignmentView() {
         // pageChangedCallback={pageChanged}
         paginate={paginate}
         idsIncludeActivityId={false}
+        apiURLs={apiURLs}
         location={location}
         navigate={navigate}
       />

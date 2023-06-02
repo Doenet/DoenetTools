@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
+import { apiURLs } from "../ToolPanels/AssignmentViewer";
 // import { Link } from 'react-router-dom';
 // import RouterLogo from '../RouterLogo';
 
@@ -359,6 +360,7 @@ export function Home() {
               generatedVariantCallback={variantCallback} //TODO:Replace
               requestedVariantIndex={variantInfo.index}
               // setIsInErrorState={setIsInErrorState}
+              apiURLs={apiURLs}
               navigate={navigate}
               location={location}
             />

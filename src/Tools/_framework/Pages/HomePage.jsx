@@ -11,6 +11,7 @@ import {
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import RouterLogo from "../RouterLogo";
+import { apiURLs } from "../ToolPanels/AssignmentViewer";
 
 const SectionText = styled.div`
   text-align: center;
@@ -470,6 +471,7 @@ export default function HomePage(props) {
                 generatedVariantCallback={variantCallback} //TODO:Replace
                 requestedVariantIndex={variantInfo.index}
                 // setIsInErrorState={setIsInErrorState}
+                apiURLs={apiURLs}
                 navigate={navigate}
                 location={location}
               />

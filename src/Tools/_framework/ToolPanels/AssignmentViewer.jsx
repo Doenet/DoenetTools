@@ -132,7 +132,7 @@ function generateNewVariant({
   return nextVariant;
 }
 
-const apiURLs = {
+export const apiURLs = {
   loadActivityState: "/api/loadActivityState.php",
   saveActivityState: "/api/saveActivityState.php",
   initAssignmentAttempt: "/api/initAssignmentAttempt.php",

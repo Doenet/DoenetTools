@@ -30,6 +30,7 @@ import {
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
+import { apiURLs } from "../ToolPanels/AssignmentViewer";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -326,6 +327,7 @@ export function PortfolioActivityViewer() {
                     requestedVariantIndex={variantInfo.index}
                     // setIsInErrorState={setIsInErrorState}
                     idsIncludeActivityId={false}
+                    apiURLs={apiURLs}
                     navigate={navigate}
                     location={location}
                   />

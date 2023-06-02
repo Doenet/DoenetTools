@@ -27,6 +27,7 @@ import {
   pageVariantPanelAtom,
 } from "../../../_sharedRecoil/PageViewerRecoil";
 import { useUpdateViewer } from "./EditorViewer";
+import { apiURLs } from "./AssignmentViewer";
 
 export default function EditorViewer() {
   // console.log(">>>>===EditorViewer")
@@ -239,6 +240,7 @@ export default function EditorViewer() {
       setIsInErrorState={setIsInErrorState}
       allowMultipageActivities={false}
       idsIncludeActivityId={false}
+      apiURLs={apiURLs}
       location={location}
       navigate={navigate}
     />
