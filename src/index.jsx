@@ -100,15 +100,14 @@ const theme = extendTheme({
       baseStyle: {
         fontWeight: "normal",
         letterSpacing: ".5px",
-        _focus: {
-          outline: "2px solid #2D5994",
-          outlineOffset: "2px",
-        },
-        _disabled: {
-          bg: "#E2E2E2",
-          color: "black",
-          pointerEvents: "none",
-        },
+        // _focus: {
+        //   outline: "2px solid #2D5994",
+        //   outlineOffset: "2px",
+        // },
+        // _disabled: {
+        //   bg: "#E2E2E2",
+        //   color: "black",
+        // },
       },
       variants: {
         // We can override existing variants
@@ -118,10 +117,14 @@ const theme = extendTheme({
           _hover: {
             bg: "doenet.solidLightBlue",
             color: "black",
+            _disabled: {
+              bg: "doenet.mainBlue",
+              color: "white",
+            },
           },
         },
         outline: {
-          borderColor: "#2D5994",
+          borderColor: "doenet.mainBlue",
           _hover: {
             bg: "doenet.solidLightBlue",
           },

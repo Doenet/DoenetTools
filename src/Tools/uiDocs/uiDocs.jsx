@@ -15,8 +15,8 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.jsx";
-import ChakraButton from "../../_reactComponents/ChakraComponents/Button.jsx";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
+import Button from "../../_reactComponents/ChakraComponents/Button.jsx";
+import ButtonGroup from "../../_reactComponents/ChakraComponents/ButtonGroup.jsx";
 import Form from "../../_reactComponents/PanelHeaderComponents/Form.jsx";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.jsx";
 import TextArea from "../../_reactComponents/PanelHeaderComponents/TextArea.jsx";
@@ -108,6 +108,7 @@ export default function Attempt() {
   const verticalLabel = () => {};
   const isDisabled = () => {};
   const isLoading = () => {};
+  const isAttached = () => {};
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
@@ -237,48 +238,60 @@ export default function Attempt() {
     {
       name: "Button",
       id: "button",
-      code: ChakraButton,
-      codePreview: "<Button/>",
+      code: Button,
+      codePreview: "<Button>Button</Button>",
       req_props: null,
-      req_children: null,
+      req_children: ["Button"],
       use: "This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!",
       props: [
         {
           name: "Variants",
           propPreview:
-            '<Button variant="outline"/> <Button variant="ghost"/> <Button variant="link"/>',
-          description: "Sets background color to be Doenet's main blue",
-          propCode: { variant: "outline" },
+            '<Button variant="solid">Button</Button>  <Button variant="outline">Button</Button>  <Button variant="ghost">Button</Button>  <Button variant="link>Button</Button>',
+          description:
+            "Sets the style of the button (default variant is 'solid')",
+          propCode: { variant: "solid" },
         },
+        { propCode: { variant: "outline" } },
         { propCode: { variant: "ghost" } },
         { propCode: { variant: "link" } },
         {
-          name: "Value",
-          propPreview: '<Button value="This button is amazing!"/>',
-          propCode: { value: "This button is amazing!" },
-          description: "Changes the text",
-        },
-        {
-          name: "Value - Icon",
-          propPreview: "<Button value={<FontAwesomeIcon icon={faCode}}/>",
-          propCode: { value: <FontAwesomeIcon icon={faCode} /> },
-          description:
-            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button",
-        },
-        {
-          name: "Value + Icon",
+          name: "Sizes",
           propPreview:
-            '<Button leftIcon={<FontAwesomeIcon icon={faCode}} value="code"/>',
-          propCode: {
-            leftIcon: <FontAwesomeIcon icon={faCode} />,
-            value: "code",
-          },
+            '<Button size="xs">Button</Button> <Button size="sm">Button</Button> <Button size="md">Button</Button> <Button size="lg">Button</Button>',
+          description: "Sets the size of the button (default size is 'md')",
+          propCode: { size: "xs" },
+        },
+        { propCode: { size: "sm" } },
+        { propCode: { size: "md" } },
+        { propCode: { size: "lg" } },
+        // {
+        //   name: "Value",
+        //   propPreview: '<Button value="This button is amazing!"/>',
+        //   propCode: { value: "This button is amazing!" },
+        //   description: "Changes the text",
+        // },
+        // {
+        //   name: "Value - Icon",
+        //   propPreview: "<Button value={<FontAwesomeIcon icon={faCode}}/>",
+        //   propCode: { value: <FontAwesomeIcon icon={faCode} /> },
+        //   description:
+        //     "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button",
+        // },
+        {
+          name: "Left and Right Icon",
+          propPreview:
+            "    <Button leftIcon={<FontAwesomeIcon icon={faCode} />}>Button</Button> <Button rightIcon={<FontAwesomeIcon icon={faCode} />}>Button</Button>",
           description:
             "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button, along with text",
+          propCode: {
+            leftIcon: <FontAwesomeIcon icon={faCode} />,
+          },
         },
+        { propCode: { rightIcon: <FontAwesomeIcon icon={faCode} /> } },
         {
           name: "Loading",
-          propPreview: "<Button isLoading/>",
+          propPreview: "<Button isLoading>Button</Button>",
           propCode: { isLoading },
           description: "If true, the button will show a spinner",
         },
@@ -302,15 +315,16 @@ export default function Attempt() {
         // },
         {
           name: "onClick",
-          propPreview: '<Button onClick={() => console.log("clicked")} />',
+          propPreview:
+            '<Button onClick={() => console.log("clicked")}>Button</Button>',
           propCode: { onClick: () => console.log("clicked") },
           description: "Function called when button is clicked",
         },
         {
           name: "Disabled",
-          propPreview: "<Button isDisabled/>",
+          propPreview: "<Button isDisabled>Button</Button>",
           propCode: { isDisabled },
-          description: "Makes button not able to be used.",
+          description: "Makes button not able to be used",
         },
       ],
     },
@@ -318,21 +332,54 @@ export default function Attempt() {
       name: "ButtonGroup",
       id: "buttongroup",
       code: ButtonGroup,
-      codePreview: "<ButtonGroup> <Button/> <Button/> <Button/> </ButtonGroup>",
+      codePreview:
+        "<ButtonGroup> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
       req_props: null,
-      req_children: [
-        React.createElement(ChakraButton),
-        React.createElement(ChakraButton),
-        React.createElement(ChakraButton),
-      ],
+      req_children: [<Button>Save</Button>, <Button>Cancel</Button>],
       use: "This groups related buttons together.",
       props: [
         {
-          name: "Vertical",
-          propPreview: "<ButtonGroup vertical />",
-          propCode: { vertical },
-          description: "Makes buttons align vertically",
+          name: "Variant",
+          propPreview:
+            "<ButtonGroup variant='outline'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { variant: "outline" },
+          description: "Sets the variant of all buttons in the ButtonGroup",
         },
+        {
+          name: "Size",
+          propPreview:
+            "<ButtonGroup size: 'sm'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { size: "sm" },
+          description: "Sets the size of all buttons in the ButtonGroup",
+        },
+        {
+          name: "Spacing",
+          propPreview:
+            "<ButtonGroup spacing: '10'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { spacing: 10 },
+          description: "Adds space between the buttons in the ButtonGroup",
+        },
+        {
+          name: "Attached",
+          propPreview:
+            "<ButtonGroup isAttached> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { isAttached },
+          description:
+            "Flush the buttons together by removing the border radius of their children as needed",
+        },
+        {
+          name: "Disabled",
+          propPreview:
+            "<ButtonGroup isDisabled> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { isDisabled },
+          description: "Disables all the buttons in the ButtonGroup",
+        },
+        // {
+        //   name: "Vertical",
+        //   propPreview: "<ButtonGroup vertical />",
+        //   propCode: { vertical },
+        //   description: "Makes buttons align vertically",
+        // },
         // {name: 'Width - Menu Panel',
         // propPreview: '<ActionButtonGroup width="menu" />',
         // propCode: {width: 'menu'},
