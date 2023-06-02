@@ -15,8 +15,8 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.jsx";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
+import Button from "../../_reactComponents/ChakraComponents/Button.jsx";
+import ButtonGroup from "../../_reactComponents/ChakraComponents/ButtonGroup.jsx";
 import Form from "../../_reactComponents/PanelHeaderComponents/Form.jsx";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.jsx";
 import TextArea from "../../_reactComponents/PanelHeaderComponents/TextArea.jsx";
@@ -36,6 +36,16 @@ import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.jsx"
 import Tooltip from "../../_reactComponents/PanelHeaderComponents/Tooltip.jsx";
 import DueDateBar from "../../_reactComponents/PanelHeaderComponents/DueDateBar.jsx";
 import { useState } from "react";
+import {
+  Box,
+  ChakraProvider,
+  Container,
+  Divider,
+  Heading,
+  Link as ChakraLink,
+  Text,
+} from "@chakra-ui/react";
+import theme from "/home/node/workspace/src/theme.jsx";
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -56,17 +66,32 @@ import { useState } from "react";
 //   ]
 // },
 
-const NavBar = styled.div`
-  width: 240px;
-  height: 100vh;
-  position: fixed;
-  background-color: var(--solidLightBlue);
-  color: var(--canvastext);
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  z-index: 1;
-`;
+// const NavBar = styled.div`
+//   width: 240px;
+//   height: 100vh;
+//   position: fixed;
+//   background-color: var(--solidLightBlue);
+//   color: var(--canvastext);
+//   top: 0;
+//   left: 0;
+//   overflow-x: hidden;
+//   z-index: 1;
+// `;
+
+function NavBar({ content }) {
+  const navBarStyle = {
+    width: "240px",
+    height: "100vh",
+    position: "fixed",
+    backgroundColor: "var(--solidLightBlue)",
+    color: "var(--canvastext)",
+    top: "0",
+    left: "0",
+    overflowX: "hidden",
+    zIndex: "1",
+  };
+  return <Box style={navBarStyle}>{content}</Box>;
+}
 const Content = styled.div`
   margin-left: 240px;
 `;
@@ -81,6 +106,9 @@ export default function Attempt() {
   const font = () => {};
   const vertical = () => {};
   const verticalLabel = () => {};
+  const isDisabled = () => {};
+  const isLoading = () => {};
+  const isAttached = () => {};
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
@@ -211,67 +239,92 @@ export default function Attempt() {
       name: "Button",
       id: "button",
       code: Button,
-      codePreview: "<Button/>",
+      codePreview: "<Button>Button</Button>",
       req_props: null,
-      req_children: null,
+      req_children: ["Button"],
       use: "This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!",
       props: [
         {
-          name: "Width - Menu Panel",
-          propPreview: '<Button width="menu" />',
-          propCode: { width: "menu" },
-          description: "Sets width to fill menu panel width",
-        },
-        {
-          name: "Value",
-          propPreview: '<Button value="This button is amazing!"/>',
-          propCode: { value: "This button is amazing!" },
-          description: "Changes the text",
-        },
-        {
-          name: "Icon",
-          propPreview: "<Button icon={<FontAwesomeIcon icon={faCode}}/>",
-          propCode: { icon: <FontAwesomeIcon icon={faCode} /> },
-          description:
-            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button",
-        },
-        {
-          name: "Value + Icon",
+          name: "Variant",
           propPreview:
-            '<Button icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
-          propCode: { icon: <FontAwesomeIcon icon={faCode} />, value: "code" },
+            '<Button variant="solid">Button</Button>  <Button variant="outline">Button</Button>  <Button variant="ghost">Button</Button>  <Button variant="link>Button</Button>',
           description:
-            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button",
+            "Sets the style of the button (default variant is 'solid')",
+          propCode: { variant: "solid" },
         },
+        { propCode: { variant: "outline" } },
+        { propCode: { variant: "ghost" } },
+        { propCode: { variant: "link" } },
         {
-          name: "Label",
-          propPreview: '<Button label="What: "/>',
-          propCode: { label: "What: " },
-          description: "Adds label to button",
+          name: "Size",
+          propPreview:
+            '<Button size="xs">Button</Button> <Button size="sm">Button</Button> <Button size="md">Button</Button> <Button size="lg">Button</Button>',
+          description: "Sets the size of the button (default size is 'md')",
+          propCode: { size: "xs" },
         },
+        { propCode: { size: "sm" } },
+        { propCode: { size: "md" } },
+        { propCode: { size: "lg" } },
+        // {
+        //   name: "Value",
+        //   propPreview: '<Button value="This button is amazing!"/>',
+        //   propCode: { value: "This button is amazing!" },
+        //   description: "Changes the text",
+        // },
+        // {
+        //   name: "Value - Icon",
+        //   propPreview: "<Button value={<FontAwesomeIcon icon={faCode}}/>",
+        //   propCode: { value: <FontAwesomeIcon icon={faCode} /> },
+        //   description:
+        //     "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button",
+        // },
         {
-          name: "Vertical Label",
-          propPreview: '<Button label="What: " vertical/>',
-          propCode: { label: "What: ", vertical },
-          description: "Adds label to component on top",
+          name: "Left and Right Icon",
+          propPreview:
+            "    <Button leftIcon={<FontAwesomeIcon icon={faCode} />}>Button</Button> <Button rightIcon={<FontAwesomeIcon icon={faCode} />}>Button</Button>",
+          description:
+            "See Style Guide for more info on how to use FontAwesomeIcons. Adds icon to button, along with text",
+          propCode: {
+            leftIcon: <FontAwesomeIcon icon={faCode} />,
+          },
         },
+        { propCode: { rightIcon: <FontAwesomeIcon icon={faCode} /> } },
         {
-          name: "Alert",
-          propPreview: "<Button alert/>",
-          propCode: { alert },
-          description: "Changes to alert mode (color is red)",
+          name: "Loading",
+          propPreview: "<Button isLoading>Button</Button>",
+          propCode: { isLoading },
+          description: "If true, the button will show a spinner",
         },
+        // {
+        //   name: "Label",
+        //   propPreview: '<Button label="What: "/>',
+        //   propCode: { label: "What: " },
+        //   description: "Adds label to button",
+        // },
+        // {
+        //   name: "Vertical Label",
+        //   propPreview: '<Button label="What: " vertical/>',
+        //   propCode: { label: "What: ", vertical },
+        //   description: "Adds label to component on top",
+        // },
+        // {
+        //   name: "Alert",
+        //   propPreview: "<Button alert/>",
+        //   propCode: { alert },
+        //   description: "Changes to alert mode (color is red)",
+        // },
         {
           name: "onClick",
-          propPreview: '<Button onClick={() => console.log("clicked")} />',
+          propPreview:
+            '<Button onClick={() => console.log("clicked")}>Button</Button>',
           propCode: { onClick: () => console.log("clicked") },
           description: "Function called when button is clicked",
         },
         {
           name: "Disabled",
-          propPreview: "<Button disabled />",
-          propCode: { disabled },
-          description: "Makes button not able to be used.",
+          propPreview: "<Button isDisabled>Button</Button>",
+          propCode: { isDisabled },
+          description: "Makes button not able to be used",
         },
       ],
     },
@@ -279,21 +332,54 @@ export default function Attempt() {
       name: "ButtonGroup",
       id: "buttongroup",
       code: ButtonGroup,
-      codePreview: "<ButtonGroup> <Button/> <Button/> <Button/> </ButtonGroup>",
+      codePreview:
+        "<ButtonGroup> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
       req_props: null,
-      req_children: [
-        React.createElement(Button),
-        React.createElement(Button),
-        React.createElement(Button),
-      ],
+      req_children: [<Button>Save</Button>, <Button>Cancel</Button>],
       use: "This groups related buttons together.",
       props: [
         {
-          name: "Vertical",
-          propPreview: "<ButtonGroup vertical />",
-          propCode: { vertical },
-          description: "Makes buttons align vertically",
+          name: "Variant",
+          propPreview:
+            "<ButtonGroup variant='outline'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { variant: "outline" },
+          description: "Sets the variant of all buttons in the ButtonGroup",
         },
+        {
+          name: "Size",
+          propPreview:
+            "<ButtonGroup size: 'sm'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { size: "sm" },
+          description: "Sets the size of all buttons in the ButtonGroup",
+        },
+        {
+          name: "Spacing",
+          propPreview:
+            "<ButtonGroup spacing: '10'> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { spacing: 10 },
+          description: "Adds space between the buttons in the ButtonGroup",
+        },
+        {
+          name: "Attached",
+          propPreview:
+            "<ButtonGroup isAttached> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { isAttached },
+          description:
+            "Flush the buttons together by removing the border radius of their children as needed",
+        },
+        {
+          name: "Disabled",
+          propPreview:
+            "<ButtonGroup isDisabled> <Button>Save</Button> <Button>Cancel</Button> </ButtonGroup>",
+          propCode: { isDisabled },
+          description: "Disables all the buttons in the ButtonGroup",
+        },
+        // {
+        //   name: "Vertical",
+        //   propPreview: "<ButtonGroup vertical />",
+        //   propCode: { vertical },
+        //   description: "Makes buttons align vertically",
+        // },
         // {name: 'Width - Menu Panel',
         // propPreview: '<ActionButtonGroup width="menu" />',
         // propCode: {width: 'menu'},
@@ -1579,153 +1665,162 @@ export default function Attempt() {
   //NEW COMPONENT PAGE
   function New() {
     return (
-      <div>
-        <h1>Features of A Standard Doenet Component</h1>
-        <p>
+      <Box>
+        <Heading size="md">Features of A Standard Doenet Component</Heading>
+        <Text>
           These are the guidelines for creating components for user input on
           Doenet. They are guidelines -- you can break them (and should if
           something looks ridiculous), but make sure you have a reason why you
           need to and that you can convince someone else of that reason. Once
           you’ve created or fixed a component, add the documentation for it to
-          this file ../src/Tools/uiDocs.js and update the component spreadsheet
-          <a
+          this file ../src/Tools/uiDocs.js and update the component spreadsheet{" "}
+          <ChakraLink
             href="https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
+          </ChakraLink>
           .{" "}
-        </p>
-        <hr />
+        </Text>
+        <Divider />
 
-        <h2>Comments on Accessibility</h2>
-        <p>
+        <Heading size="md">Comments on Accessibility</Heading>
+        <Text>
           All clickable elements need to have a focus indicator. Our standard is
           a 2px border that matches the element's current border with a 2px
-          offset. See styling
-          <a
+          offset. See styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            here{" "}
-          </a>{" "}
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           All clickable elements also need an aria-label. Some elements, like
           buttons, do this for you, so adding an additional aria-label is
           considered bad practice. The naming techniques and accessible name
-          guidance sections will be the most helpful. Read more
-          <a
+          guidance sections will be the most helpful. Read more{" "}
+          <ChakraLink
             href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            here{" "}
-          </a>
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           All components must follow standard keyboard and aria practices for
           that specific element. Find the element you are working on here and
           add the required keyboard interactions and aria information that it
-          lists. Here is the
-          <a
+          lists. Here is the{" "}
+          <ChakraLink
             href="https://www.w3.org/WAI/ARIA/apg/patterns/"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            link{" "}
-          </a>
-        </p>
+            link
+          </ChakraLink>
+          {"."}
+        </Text>
         <hr />
 
-        <h2>States to Consider (* denotes required)</h2>
-        <p>
-          *<i>disabled</i> - remove ability for user to interact with component,
-          see styling
-          <a
+        <Heading size="md">States to Consider (* denotes required)</Heading>
+        <Text>
+          *<Text as="i">disabled</Text> - remove ability for user to interact
+          with component, see styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.997keaoy7se2"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <p>
-          *<i>alert</i> - if component requires user's attention, give red
-          #C1292E border, see styling
-          <a
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
+          *<Text as="i">alert</Text> - if component requires user's attention,
+          give red #C1292E border, see styling{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.tptn3i5d03g0"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <hr />
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Divider />
 
-        <h2>Standard Props (* denotes required)</h2>
-        <p>
-          <i>width</i> = menu (235px) is the only option, otherwise the size
-          should be a default based on input (text, icons, ...)
-        </p>
-        <p>
-          <i>value</i> = information expected to be shown on component (text on
-          Button)
-        </p>
-        <p>
-          <i>icon</i> = small image that can be displayed, if it can show text -
-          it can have an icon. More info
-          <a
+        <Heading size="md">Standard Props (* denotes required)</Heading>
+        <Text>
+          <Text as="i">width</Text> = menu (235px) is the only option, otherwise
+          the size should be a default based on input (text, icons, ...)
+        </Text>
+        <Text>
+          <Text as="i">value</Text> = information expected to be shown on
+          component (text on Button)
+        </Text>
+        <Text>
+          <Text as="i">icon</Text> = small image that can be displayed, if it
+          can show text - it can have an icon. More info{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.lsq5rugnowwg"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
             here
-          </a>
-        </p>
-        <p>
-          <i>value + icon</i> = ability to have icon and value together
-        </p>
-        <p>
-          <i>label</i> = text before componenet telling user what it is for,
-          14px font size
-        </p>
-        <p>
-          <i>vertical label</i> = ability to have label stack on top of
-          component, label must be there for vertical label to work
-        </p>
-        <p>
-          <i>placeholder</i> = default shown before user input
-        </p>
-        <p>
-          *<i>margin</i> = default is 0px, make 4px left and right margin with
-          2px bottom margin on label if prop margin
-        </p>
-        <p>
-          *<i>aria-label</i> = built in HTML accessibility requirement
-        </p>
-        <p>
-          <i>onClick</i> = you know what this is, don’t use callback function
-        </p>
-        <p>
-          <i>onChange</i> = okay you probably know this as well, no callback
-          function!
-        </p>
-        <p>
-          <i>onBlur</i> = same idea
-        </p>
-        <p>
-          <i>onKeyDown</i> = same thing here
-        </p>
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
+          <Text as="i">value + icon</Text> = ability to have icon and value
+          together
+        </Text>
+        <Text>
+          <Text as="i">label</Text> = text before componenet telling user what
+          it is for, 14px font size
+        </Text>
+        <Text>
+          <Text as="i">vertical label</Text> = ability to have label stack on
+          top of component, label must be there for vertical label to work
+        </Text>
+        <Text>
+          <Text as="i">placeholder</Text> = default shown before user input
+        </Text>
+        <Text>
+          *<Text as="i">margin</Text> = default is 0px, make 4px left and right
+          margin with 2px bottom margin on label if prop margin
+        </Text>
+        <Text>
+          *<Text as="i">aria-label</Text> = built in HTML accessibility
+          requirement
+        </Text>
+        <Text>
+          <Text as="i">onClick</Text> = you know what this is, don’t use
+          callback function
+        </Text>
+        <Text>
+          <Text as="i">onChange</Text> = okay you probably know this as well, no
+          callback function!
+        </Text>
+        <Text>
+          <Text as="i">onBlur</Text> = same idea
+        </Text>
+        <Text>
+          <Text as="i">onKeyDown</Text> = same thing here
+        </Text>
         {/* <p>
           <i>onHover</i> = you can guess this, see
           <a
@@ -1746,37 +1841,38 @@ export default function Attempt() {
             here{' '}
           </a>
         </p> */}
-        <hr />
+        <Divider />
 
-        <h2>Comments on Styling</h2>
-        <p>
-          Only use the colors found on the
-          <a
+        <Heading size="md">Comments on Styling</Heading>
+        <Text>
+          Only use the colors found on the{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.i1tjp0kzqemb"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            Style Guide!!{" "}
-          </a>{" "}
+            Style Guide!!
+          </ChakraLink>{" "}
           (Unless you've talked to Clara or Kevin about it...)
-        </p>
-        <p>
-          Give it a border or a color, as shown
-          <a
+        </Text>
+        <Text>
+          Give it a border or a color, as shown{" "}
+          <ChakraLink
             href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.53fu07uoic4t"
             target="_blank"
             rel="noreferrer"
+            color="doenet.mainBlue"
           >
-            {" "}
-            here{" "}
-          </a>
-        </p>
-        <p>
+            here
+          </ChakraLink>
+          {"."}
+        </Text>
+        <Text>
           Don’t apply the font to the component, fonts will be called in the
-          Tool that loads it
-        </p>
-      </div>
+          Tool that loads it.
+        </Text>
+      </Box>
     );
   }
 
@@ -1792,14 +1888,16 @@ export default function Attempt() {
       if (component.props) {
         return component.props.map(
           ({ name, propPreview, propCode, description }) => (
-            <div key={name}>
-              <h3 key={name}>{name}</h3>
-              <p key={name + "code"} style={{ color: "blue" }}>
+            <Box key={name}>
+              <Heading size="sm" key={name}>
+                {name}
+              </Heading>
+              <Text key={name + "code"} style={{ color: "blue" }}>
                 {propPreview}
-              </p>
-              <p key={description}>{description}</p>
+              </Text>
+              <Text key={description}>{description}</Text>
               {React.createElement(display, propCode, children)}
-            </div>
+            </Box>
           ),
         );
       } else {
@@ -1807,25 +1905,25 @@ export default function Attempt() {
       }
     }
     return (
-      <div>
-        <h1>{component.name}</h1>
-        <p style={{ color: "blue" }}>{component.codePreview}</p>
+      <Box>
+        <Heading size="lg">{component.name}</Heading>
+        <Text color="blue">{component.codePreview}</Text>
         {React.createElement(
           display,
           component.req_props,
           component.req_children,
         )}
 
-        <hr />
+        <Divider />
 
-        <h2>Why would I use this?</h2>
-        <p>{component.use}</p>
+        <Heading size="md">Why would I use this?</Heading>
+        <Text>{component.use}</Text>
 
-        <hr />
+        <Divider />
 
-        <h2>Props</h2>
+        <Heading size="md">Props</Heading>
         {Props(component)}
-      </div>
+      </Box>
     );
   }
 
@@ -1833,37 +1931,45 @@ export default function Attempt() {
   function Layout() {
     return (
       <>
-        <NavBar>
-          <div style={{ marginLeft: "10px" }}>
-            <h1>Components</h1>
-            {actionResult == "" ? null : (
-              <>
-                <p data-test="action result">{actionResult}</p>
-                <button
-                  onClick={() => setActionResult("")}
-                  data-test="clear action result"
-                >
-                  Clear actionResult
-                </button>
-              </>
-            )}
-            {/* <SearchBar width='110px'/> */}
-          </div>
-          <h3>
-            <Link to={`new_components`} style={{ color: "black" }}>
-              New Component Guidelines
-            </Link>
-          </h3>
-          <List>
-            {dataStructure.map(({ name, id }) => (
-              <li key={id} data-test={`componentLink${id}`}>
-                <Link to={`component/${id}`} style={{ color: "black" }}>
-                  {name}
-                </Link>
-              </li>
-            ))}
-          </List>
-        </NavBar>
+        <NavBar
+          content={
+            <>
+              <Box marginLeft="10px">
+                <Heading size="md">Components</Heading>
+                {actionResult == "" ? null : (
+                  <>
+                    <p data-test="action result">{actionResult}</p>
+                    <button
+                      onClick={() => setActionResult("")}
+                      data-test="clear action result"
+                    >
+                      Clear actionResult
+                    </button>
+                  </>
+                )}
+                {/* <SearchBar width='110px'/> */}
+              </Box>
+              <Link
+                to={`new_components`}
+                style={{ color: "black", marginLeft: "10px" }}
+              >
+                New Component Guidelines
+              </Link>
+              <List>
+                {dataStructure.map(({ name, id }) => (
+                  <li key={id} data-test={`componentLink${id}`}>
+                    <Link
+                      to={`component/${id}`}
+                      style={{ color: "black", marginLeft: "10px" }}
+                    >
+                      {name}
+                    </Link>
+                  </li>
+                ))}
+              </List>
+            </>
+          }
+        ></NavBar>
         <Content>
           <Outlet />
         </Content>
@@ -1873,14 +1979,16 @@ export default function Attempt() {
 
   //ROUTER SECTION
   return (
-    <Router basename="/src/Tools">
-      <Routes>
-        <Route path="/uiDocs" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path={`new_components`} element={<New />} />
-          <Route path={`component/:componentId`} element={<Components />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ChakraProvider theme={theme}>
+      <Router basename="/src/Tools">
+        <Routes>
+          <Route path="/uiDocs" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path={`new_components`} element={<New />} />
+            <Route path={`component/:componentId`} element={<Components />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ChakraProvider>
   );
 }
