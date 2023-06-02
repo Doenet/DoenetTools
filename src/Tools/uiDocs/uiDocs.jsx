@@ -45,7 +45,7 @@ import {
   Link as ChakraLink,
   Text,
 } from "@chakra-ui/react";
-import theme from "/home/node/workspace/src/index.jsx";
+import theme from "/home/node/workspace/src/theme.jsx";
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -245,7 +245,7 @@ export default function Attempt() {
       use: "This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!",
       props: [
         {
-          name: "Variants",
+          name: "Variant",
           propPreview:
             '<Button variant="solid">Button</Button>  <Button variant="outline">Button</Button>  <Button variant="ghost">Button</Button>  <Button variant="link>Button</Button>',
           description:
@@ -256,7 +256,7 @@ export default function Attempt() {
         { propCode: { variant: "ghost" } },
         { propCode: { variant: "link" } },
         {
-          name: "Sizes",
+          name: "Size",
           propPreview:
             '<Button size="xs">Button</Button> <Button size="sm">Button</Button> <Button size="md">Button</Button> <Button size="lg">Button</Button>',
           description: "Sets the size of the button (default size is 'md')",
