@@ -12,6 +12,7 @@ import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
+  useRecoilCallback,
 } from "recoil";
 import { useLocation, useNavigate } from "react-router";
 
@@ -21,7 +22,11 @@ import {
   suppressMenusAtom,
 } from "../NewToolRoot";
 import axios from "axios";
-import { apiURLs, currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
+import {
+  activityStatusAtom,
+  apiURLs,
+  currentAttemptNumber,
+} from "../ToolPanels/AssignmentViewer";
 import DoenetML from "doenetml";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
@@ -101,6 +106,17 @@ export default function GradebookStudentAssignmentView() {
       setSuppressMenus([]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ activityAttemptNumberSetUp, currentPage, itemWeights }) => {
+        set(activityStatusAtom, {
+          activityAttemptNumberSetUp,
+          currentPage,
+          itemWeights,
+        });
+      },
+  );
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -329,6 +345,7 @@ export default function GradebookStudentAssignmentView() {
         // requestedVariant={requestedVariant}
         // requestedVariant={variant}
         requestedVariantIndex={requestedVariantIndex}
+        updateActivityStatusCallback={updateActivityStatus}
         // updateAttemptNumber={setRecoilAttemptNumber}
         // updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
