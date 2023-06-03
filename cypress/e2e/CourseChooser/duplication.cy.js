@@ -22,7 +22,7 @@ describe("Duplicate Course", function () {
     return false;
   });
 
-  it("Make a course with one assignment and test the duplicate is the same", () => {
+  it("Make a course with assigned content and test the duplicate is the same", () => {
     const collectionLabel = "CourseDuplication Collection 1"
     const collectionPageLabel1 = "CourseDuplication Page 1"
     const collectionPageLabel2 = "CourseDuplication Page 2"
@@ -80,6 +80,33 @@ describe("Duplicate Course", function () {
 
       cy.get('[data-test="Main Panel"]').click(); //Deselect
 
+      cy.log('add simple content for each page');
+      cy.get('.navigationRow').eq(1).dblclick()
+      cy.get(".cm-content").type(
+        `<title>${collectionPageLabel1}</title>{enter}<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
+      cy.go('back')
+      cy.get('.navigationRow').eq(2).dblclick()
+      cy.get(".cm-content").type(
+        `<title>${collectionPageLabel2}</title>{enter}<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
+      cy.go('back')
+      cy.get('.navigationRow').eq(3).dblclick()
+      cy.get(".cm-content").type(
+        `<title>${collectionPageLabel3}</title>{enter}<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
+      cy.go('back')
+      cy.get('.navigationRow').eq(4).dblclick()
+      cy.get(".cm-content").type(
+        `<title>${collectionPageLabel4}</title>{enter}<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
+      cy.go('back')
+      cy.get('.navigationRow').eq(5).dblclick()
+      cy.get(".cm-content").type(
+        `<title>${collectionPageLabel5}</title>{enter}<p>What is your name? <textinput name="name" /></p>{enter}`,
+      );
+      cy.go('back')
+
       cy.log("Create an activity with only a collection link");
       cy.get('[data-test="Add Activity Button"]').click();
       cy.get('.navigationRow').eq(6).click()
@@ -94,6 +121,9 @@ describe("Duplicate Course", function () {
       cy.get('[data-test="Label Collection"]').clear().type(collectionLinkLabel).blur();
       cy.get('[data-test="Collection Link Selector"]').select(0);
 
+      cy.log("Assign the activity")
+      cy.get('.navigationRow').eq(6).click();
+      cy.get('[data-test="Assign Activity"]').click();
 
       cy.log("duplicate the course and test results")
       cy.get('[data-test="Crumb 0"] ').click();
