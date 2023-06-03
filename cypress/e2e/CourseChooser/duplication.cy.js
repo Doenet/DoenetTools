@@ -26,6 +26,9 @@ describe("Duplicate Course", function () {
     const collectionLabel = "CourseDuplication Collection 1"
     const collectionPageLabel1 = "CourseDuplication Page 1"
     const collectionPageLabel2 = "CourseDuplication Page 2"
+    const collectionPageLabel3 = "CourseDuplication Page 3"
+    const collectionPageLabel4 = "CourseDuplication Page 4"
+    const collectionPageLabel5 = "CourseDuplication Page 5"
     const activityLabel = "CourseDuplication Activity"
     const collectionLinkLabel = "CourseDuplication Collection Link"
     const duplicateCourseLabel = "CourseDuplication Duplicate"
@@ -48,7 +51,15 @@ describe("Duplicate Course", function () {
       cy.get('[data-test="Collection Textfield"]').clear().type(collectionLabel).blur();
       cy.wait(200)
       cy.get('[data-test="Add Page"]').click();
+      cy.wait(200)
       cy.get('[data-test="Add Page"]').click();
+      cy.wait(200)
+      cy.get('[data-test="Add Page"]').click();
+      cy.wait(200)
+      cy.get('[data-test="Add Page"]').click();
+      cy.wait(200)
+      cy.get('[data-test="Add Page"]').click();
+
       cy.get('[data-test="folderToggleOpenIcon"]').click();
       cy.wait(200)
       cy.get('.navigationRow').eq(1).click()
@@ -56,19 +67,30 @@ describe("Duplicate Course", function () {
       cy.wait(100)
       cy.get('.navigationRow').eq(2).click()
       cy.get('[data-test="Label Page"]').clear().type(collectionPageLabel2).blur();
+      cy.wait(100)
+      cy.get('.navigationRow').eq(3).click()
+      cy.get('[data-test="Label Page"]').clear().type(collectionPageLabel3).blur();
+      cy.wait(100)
+      cy.get('.navigationRow').eq(4).click()
+      cy.get('[data-test="Label Page"]').clear().type(collectionPageLabel4).blur();
+      cy.wait(100)
+      cy.get('.navigationRow').eq(5).click()
+      cy.get('[data-test="Label Page"]').clear().type(collectionPageLabel5).blur();
+      cy.wait(100)
+
       cy.get('[data-test="Main Panel"]').click(); //Deselect
 
       cy.log("Create an activity with only a collection link");
       cy.get('[data-test="Add Activity Button"]').click();
-      cy.get('.navigationRow').eq(3).click()
+      cy.get('.navigationRow').eq(6).click()
       cy.get('[data-test="Label Activity"]').type(
         `{selectAll}{backspace}${activityLabel}{enter}`,
       );
       cy.get('[data-test="Add Collection Link"]').click();
-      cy.get('.navigationRow').eq(3).find('[data-test="folderToggleOpenIcon"]').click();
-      cy.get('.navigationRow').eq(4).click();
+      cy.get('.navigationRow').eq(6).find('[data-test="folderToggleOpenIcon"]').click();
+      cy.get('.navigationRow').eq(7).click();
       cy.get('[data-test="Delete Page"]').click();
-      cy.get('.navigationRow').eq(4).click();
+      cy.get('.navigationRow').eq(7).click();
       cy.get('[data-test="Label Collection"]').clear().type(collectionLinkLabel).blur();
       cy.get('[data-test="Collection Link Selector"]').select(0);
 
@@ -86,16 +108,19 @@ describe("Duplicate Course", function () {
       cy.get('#card-label').eq(0).dblclick();
       cy.get('[data-test="Dashboard Content Card"]').click();
       cy.get('.navigationRow').eq(0).find('[data-test="folderToggleOpenIcon"]').click();
-      cy.get('.navigationRow').eq(3).find('[data-test="folderToggleOpenIcon"]').click();
-      cy.get('.navigationRow').eq(4).find('[data-test="folderToggleOpenIcon"]').click();
+      cy.get('.navigationRow').eq(6).find('[data-test="folderToggleOpenIcon"]').click();
+      cy.get('.navigationRow').eq(7).find('[data-test="folderToggleOpenIcon"]').click();
 
       cy.get('.navigationRow').eq(0).contains(collectionLabel);
       cy.get('.navigationRow').eq(1).contains(collectionPageLabel1);
       cy.get('.navigationRow').eq(2).contains(collectionPageLabel2);
-      cy.get('.navigationRow').eq(3).contains(activityLabel);
-      cy.get('.navigationRow').eq(4).contains(collectionLinkLabel);
-      cy.get('.navigationRow').eq(5).contains(`Link to ${collectionPageLabel1}`);
-      cy.get('.navigationRow').eq(6).contains(`Link to ${collectionPageLabel2}`);
+      cy.get('.navigationRow').eq(3).contains(collectionPageLabel3);
+      cy.get('.navigationRow').eq(4).contains(collectionPageLabel4);
+      cy.get('.navigationRow').eq(5).contains(collectionPageLabel5);
+      cy.get('.navigationRow').eq(6).contains(activityLabel);
+      cy.get('.navigationRow').eq(7).contains(collectionLinkLabel);
+      cy.get('.navigationRow').eq(8).contains(`Link to ${collectionPageLabel1}`);
+      cy.get('.navigationRow').eq(9).contains(`Link to ${collectionPageLabel2}`);
     }
     finally {
       // cy.deleteCourse({ courseId })
