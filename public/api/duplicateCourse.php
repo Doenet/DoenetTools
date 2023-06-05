@@ -535,17 +535,39 @@ if ($success) {
             $label = $row['label'];
             $escapedLabel = mysqli_real_escape_string($conn, $label);
             $timeOfLastUpdate = $row['timeOfLastUpdate'];
-            array_push(
-                $insert_to_link_pages,
-                "('$nextCourseId',
-                '$prevToNextDoenetIds[$containingDoenetId]',
-                '$prevToNextDoenetIds[$parentDoenetId]',
-                '$prevToNextDoenetIds[$doenetId]',
-                '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
-                '$prevToNextDoenetIds[$sourcePageDoenetId]',
-                '$escapedLabel',
-                '$timeOfLastUpdate')"
-            );
+
+            //If link page comes from outside of course it will be blank
+            if ($prevToNextDoenetIds[$doenetId] == ""){
+                $nextDoenetId = include 'randomId.php';
+                $nextDoenetId = '_' . $nextDoenetId;
+
+                array_push(
+                    $insert_to_link_pages,
+                    "('$nextCourseId',
+                    '$prevToNextDoenetIds[$containingDoenetId]',
+                    '$prevToNextDoenetIds[$parentDoenetId]',
+                    '$nextDoenetId',
+                    '$sourceCollectionDoenetId',
+                    '$sourcePageDoenetId',
+                    '$escapedLabel',
+                    '$timeOfLastUpdate')"
+                );  
+            }else{
+                array_push(
+                    $insert_to_link_pages,
+                    "('$nextCourseId',
+                    '$prevToNextDoenetIds[$containingDoenetId]',
+                    '$prevToNextDoenetIds[$parentDoenetId]',
+                    '$prevToNextDoenetIds[$doenetId]',
+                    '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
+                    '$prevToNextDoenetIds[$sourcePageDoenetId]',
+                    '$escapedLabel',
+                    '$timeOfLastUpdate')"
+                );
+            }
+
+
+            
         }
     }
     $str_insert_to_link_pages = implode(',', $insert_to_link_pages);
