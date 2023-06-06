@@ -757,6 +757,170 @@ export default class Function extends InlineComponent {
       targetVariableName: "variable1",
     };
 
+    stateVariableDefinitions.mathChildName = {
+      returnDependencies() {
+        return {
+          mathChild: {
+            dependencyType: "child",
+            childGroups: ["maths"],
+          },
+        };
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.mathChild.length > 0) {
+          return {
+            setValue: {
+              mathChildName: dependencyValues.mathChild[0].componentName,
+            },
+          };
+        } else {
+          return { setValue: { mathChildName: null } };
+        }
+      },
+    };
+
+    stateVariableDefinitions.mathChildCreatedBySugar = {
+      stateVariablesDeterminingDependencies: ["mathChildName"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.mathChildName) {
+          return {
+            mathChildCreatedBySugar: {
+              dependencyType: "doenetAttribute",
+              componentName: stateValues.mathChildName,
+              attributeName: "createdFromSugar",
+            },
+          };
+        } else {
+          return {};
+        }
+      },
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            mathChildCreatedBySugar: Boolean(
+              dependencyValues.mathChildCreatedBySugar,
+            ),
+          },
+        };
+      },
+    };
+
+    stateVariableDefinitions.haveNaNChildToReevaluate = {
+      stateVariablesDeterminingDependencies: [
+        "mathChildName",
+        "mathChildCreatedBySugar",
+      ],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+        if (!stateValues.isInterpolatedFunction) {
+          dependencies.variables = {
+            dependencyType: "stateVariable",
+            variableName: "variables",
+          };
+          if (stateValues.mathChildName) {
+            if (stateValues.mathChildCreatedBySugar) {
+              dependencies.mathChildExpressionWithCodes = {
+                dependencyType: "stateVariable",
+                componentName: stateValues.mathChildName,
+                variableName: "expressionWithCodes",
+              };
+              dependencies.mathChildMathChildren = {
+                dependencyType: "child",
+                parentName: stateValues.mathChildName,
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
+              };
+              dependencies.mathChildCodePre = {
+                dependencyType: "stateVariable",
+                componentName: stateValues.mathChildName,
+                variableName: "codePre",
+              };
+            } else {
+              dependencies.mathChild = {
+                dependencyType: "child",
+                childGroups: ["maths"],
+                variableNames: ["value", "fReevaluate", "inputMaths"],
+                variablesOptional: true,
+              };
+            }
+          }
+        }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        let containsNaN = (ast) => {
+          if (typeof ast === "number") {
+            return Number.isNaN(ast);
+          }
+          if (!Array.isArray(ast)) {
+            return false;
+          }
+          return ast.slice(1).some((v) => containsNaN(v));
+        };
+
+        // Have mathChildMathChildren only if the math child was created by sugar.
+        // In this case, the children of the math child were specified as direct
+        // children of the function.
+        // If any of those children is an <evaluate> (i.e., have fReevaluate state variable)
+        // and has a variable in its input that is a function variable,
+        // then when evaluating the function, we would reevaluate the <evaluate>
+        // using the values of the variables passed to the function
+        // In this case, if the value is NaN, set haveNaNChildToReevaluate = true.
+        if (dependencyValues.mathChildMathChildren?.length > 0) {
+          let variables = dependencyValues.variables.map(
+            (x) => x.subscripts_to_strings().tree,
+          );
+
+          // Formula is based on a math child that has math children.
+          // Check to see if any of those children are evaluates whose inputs contain a variable
+          for (let mathGrandChild of dependencyValues.mathChildMathChildren) {
+            if (mathGrandChild.stateValues.fReevaluate) {
+              let inputVariables = mathGrandChild.stateValues.inputMaths.reduce(
+                (a, c) => [...a, ...c.subscripts_to_strings().variables()],
+                [],
+              );
+
+              if (inputVariables.some((invar) => variables.includes(invar))) {
+                // The inputMaths to the <evaluate> contain a function variable.
+                // In this case, we would need to reevaluate this math.
+                // Check to see if its value has a NaN.
+
+                if (containsNaN(mathGrandChild.stateValues.value.tree)) {
+                  return { setValue: { haveNaNChildToReevaluate: true } };
+                }
+              }
+            }
+          }
+        } else if (dependencyValues.mathChild?.[0].stateValues.fReevaluate) {
+          // We have a single mathChild that is an <evaluate>
+          // that was not added via sugar,
+          // i.e., it was a direct child of the <function>.
+
+          let variables = dependencyValues.variables.map(
+            (x) => x.subscripts_to_strings().tree,
+          );
+
+          let mathChild = dependencyValues.mathChild[0];
+          let inputVariables = mathChild.stateValues.inputMaths.reduce(
+            (a, c) => [...a, ...c.subscripts_to_strings().variables()],
+            [],
+          );
+
+          if (inputVariables.some((invar) => variables.includes(invar))) {
+            // The inputMaths to the <evaluate> contain a function variable.
+            // This sole <evaluate> is the only component to the function's formula,
+            // so we need to reevaluate the <evaluate> based on the inputs of the function
+
+            if (containsNaN(mathChild.stateValues.value.tree)) {
+              return { setValue: { haveNaNChildToReevaluate: true } };
+            }
+          }
+        }
+        return { setValue: { haveNaNChildToReevaluate: false } };
+      },
+    };
+
     stateVariableDefinitions.formula = {
       public: true,
       shadowingInstructions: {
@@ -782,16 +946,24 @@ export default class Function extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "isInterpolatedFunction",
         },
+        haveNaNChildToReevaluate: {
+          dependencyType: "stateVariable",
+          variableName: "haveNaNChildToReevaluate",
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.isInterpolatedFunction) {
           return { setValue: { formula: me.fromAst("\uff3f") } };
         } else if (dependencyValues.mathChild.length > 0) {
-          return {
-            setValue: {
-              formula: dependencyValues.mathChild[0].stateValues.value,
-            },
-          };
+          if (dependencyValues.haveNaNChildToReevaluate) {
+            return { setValue: { formula: me.fromAst("\uff3f") } };
+          } else {
+            return {
+              setValue: {
+                formula: dependencyValues.mathChild[0].stateValues.value,
+              },
+            };
+          }
         } else if (
           dependencyValues.functionChild.length > 0 &&
           !usedDefault.functionChild[0].formula
@@ -1007,54 +1179,6 @@ export default class Function extends InlineComponent {
         },
       }),
       definition: computeSplineParamCoeffs,
-    };
-
-    stateVariableDefinitions.mathChildName = {
-      returnDependencies() {
-        return {
-          mathChild: {
-            dependencyType: "child",
-            childGroups: ["maths"],
-          },
-        };
-      },
-      definition({ dependencyValues }) {
-        if (dependencyValues.mathChild.length > 0) {
-          return {
-            setValue: {
-              mathChildName: dependencyValues.mathChild[0].componentName,
-            },
-          };
-        } else {
-          return { setValue: { mathChildName: null } };
-        }
-      },
-    };
-
-    stateVariableDefinitions.mathChildCreatedBySugar = {
-      stateVariablesDeterminingDependencies: ["mathChildName"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.mathChildName) {
-          return {
-            mathChildCreatedBySugar: {
-              dependencyType: "doenetAttribute",
-              componentName: stateValues.mathChildName,
-              attributeName: "createdFromSugar",
-            },
-          };
-        } else {
-          return {};
-        }
-      },
-      definition({ dependencyValues }) {
-        return {
-          setValue: {
-            mathChildCreatedBySugar: Boolean(
-              dependencyValues.mathChildCreatedBySugar,
-            ),
-          },
-        };
-      },
     };
 
     stateVariableDefinitions.symbolicfs = {
@@ -2679,19 +2803,24 @@ export default class Function extends InlineComponent {
           let varString =
             dependencyValues.variables[0].subscripts_to_strings().tree;
 
-          let derivative_formula = dependencyValues.formula
-            .subscripts_to_strings()
-            .derivative(varString);
-
           let derivative_f;
           let haveDerivative = true;
           let derivative;
 
-          try {
-            derivative_f = derivative_formula.subscripts_to_strings().f();
-          } catch (e) {
+          if (dependencyValues.formula.variables().includes("\uFF3F")) {
             haveDerivative = false;
             derivative = () => NaN;
+          } else {
+            let derivative_formula = dependencyValues.formula
+              .subscripts_to_strings()
+              .derivative(varString);
+
+            try {
+              derivative_f = derivative_formula.subscripts_to_strings().f();
+            } catch (e) {
+              haveDerivative = false;
+              derivative = () => NaN;
+            }
           }
 
           if (haveDerivative) {
@@ -2816,13 +2945,16 @@ export default class Function extends InlineComponent {
               } else {
                 minimumAtPreviousRight = false;
 
+                let mindf =
+                  Math.max(Math.abs(fx), Math.abs(fleft), Math.abs(fright)) *
+                  1e-12;
                 // make sure it actually looks like a strict minimum of f(x)
                 if (
-                  fx < fright &&
-                  fx < fleft &&
-                  fx < f(x + result.tol) &&
-                  fx < f(x - result.tol) &&
-                  Number.isFinite(fx)
+                  Number.isFinite(fx) &&
+                  fx < fright - mindf &&
+                  fx < fleft - mindf &&
+                  fx < f(x + result.tol) - mindf &&
+                  fx < f(x - result.tol) - mindf
                 ) {
                   minimaList.push([x, fx]);
                 }
@@ -3409,19 +3541,24 @@ export default class Function extends InlineComponent {
           let varString =
             dependencyValues.variables[0].subscripts_to_strings().tree;
 
-          let derivative_formula = dependencyValues.formula
-            .subscripts_to_strings()
-            .derivative(varString);
-
           let derivative_f;
           let haveDerivative = true;
           let derivative;
 
-          try {
-            derivative_f = derivative_formula.subscripts_to_strings().f();
-          } catch (e) {
+          if (dependencyValues.formula.variables().includes("\uFF3F")) {
             haveDerivative = false;
             derivative = () => NaN;
+          } else {
+            let derivative_formula = dependencyValues.formula
+              .subscripts_to_strings()
+              .derivative(varString);
+
+            try {
+              derivative_f = derivative_formula.subscripts_to_strings().f();
+            } catch (e) {
+              haveDerivative = false;
+              derivative = () => NaN;
+            }
           }
 
           if (haveDerivative) {
@@ -3553,12 +3690,15 @@ export default class Function extends InlineComponent {
                 maximumAtPreviousRight = false;
 
                 // make sure it actually looks like a strict maximum of f(x)
+                let mindf =
+                  Math.max(Math.abs(fx), Math.abs(fleft), Math.abs(fright)) *
+                  1e-12;
                 if (
-                  fx < fright &&
-                  fx < fleft &&
-                  fx < f(x + result.tol) &&
-                  fx < f(x - result.tol) &&
-                  Number.isFinite(fx)
+                  Number.isFinite(fx) &&
+                  fx < fright - mindf &&
+                  fx < fleft - mindf &&
+                  fx < f(x + result.tol) - mindf &&
+                  fx < f(x - result.tol) - mindf
                 ) {
                   maximaList.push([x, -fx]);
                 }

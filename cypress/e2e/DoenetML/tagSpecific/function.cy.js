@@ -9477,4 +9477,66 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/ext2"].stateValues.styleNumber).eq(2);
     });
   });
+
+  it("check bugfix: don't get invalid maxima due having incorrect derivative with function of interpolated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" maxima="(3,4)" />
+      <function name="g" styleNumber="2">$$f(x)-x^4</function>
+      <copy source="g.minima" assignNames="min" />
+      <copy source="g.maxima" assignNames="max1 max2" />
+      <copy source="g.extrema" assignNames="ext1 ext2" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max1"].stateValues.xs).eqls([1, -1]);
+      expect(stateVariables["/max2"]).eq(undefined);
+      expect(stateVariables["/min"]).eq(undefined);
+      expect(stateVariables["/ext1"].stateValues.xs).eqls([1, -1]);
+      expect(stateVariables["/ext2"]).eq(undefined);
+    });
+  });
+
+  it("check bugfix: don't get invalid extrema due to roundoff error with function of interpolated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" maxima="(3,4)" />
+      <function name="g" styleNumber="2">$$f(x)+(x-3)^2</function>
+      <copy source="g.minima" assignNames="min" />
+      <copy source="g.maxima" assignNames="max" />
+      <copy source="g.extrema" assignNames="ext" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max"]).eq(undefined);
+      expect(stateVariables["/min"]).eq(undefined);
+      expect(stateVariables["/ext"]).eq(undefined);
+    });
+  });
 });
