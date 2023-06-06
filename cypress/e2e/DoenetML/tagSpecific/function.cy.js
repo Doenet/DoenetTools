@@ -1,6 +1,6 @@
 import me from "math-expressions";
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -9446,5 +9446,35 @@ describe("Function Tag Tests", function () {
       "have.text",
       "C is a thin white function.",
     );
+  });
+
+  it("extrema shadow style number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" styleNumber="2">x^3-x</function>
+      <point name="max" copySource="f.maximum1" />
+      <point name="min" copySource="f.minimum1" />
+      <copy source="f.extrema" assignNames="ext1 ext2" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/min"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/ext1"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/ext2"].stateValues.styleNumber).eq(2);
+    });
   });
 });

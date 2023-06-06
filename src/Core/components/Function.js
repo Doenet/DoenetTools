@@ -2858,6 +2858,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["styleNumber"],
         addAttributeComponentsShadowingStateVariables:
           returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
@@ -3593,6 +3594,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["styleNumber"],
         addAttributeComponentsShadowingStateVariables:
           returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
@@ -3813,6 +3815,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["styleNumber"],
         addAttributeComponentsShadowingStateVariables:
           returnRoundingAttributeComponentShadowing(),
         returnWrappingComponents(prefix) {
