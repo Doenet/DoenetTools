@@ -2329,9 +2329,13 @@ export async function replacementFromProp({
     let numReplacementsForSource = numComponentsForSource;
 
     if (stateVarObj.isArray) {
-      numReplacementsForSource = arraySize
-        .slice(0, arraySize.length - numWrappingComponents)
-        .reduce((a, c) => a * c, 1);
+      if (arraySize.some((v) => v === 0)) {
+        numReplacementsForSource = 0;
+      } else {
+        numReplacementsForSource = arraySize
+          .slice(0, arraySize.length - numWrappingComponents)
+          .reduce((a, c) => a * c, 1);
+      }
     } else {
       if (arrayKeys.length === 0) {
         // have an undefined array entry
