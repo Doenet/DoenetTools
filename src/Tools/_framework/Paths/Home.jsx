@@ -255,7 +255,20 @@ export function Home() {
                 )
               }
             >
-              <Text fontSize="xs">See Inside</Text>
+              See Inside
+            </Button>
+            <Button
+              // dataTest="Nav to course"
+              size="xs"
+              borderRadius={20}
+              onClick={() =>
+                window.open(
+                  "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+                  "_blank",
+                )
+              }
+            >
+              Documentation
             </Button>
           </Flex>
           <Suspense fallback={"Loading..."}>
