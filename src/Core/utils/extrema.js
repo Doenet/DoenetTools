@@ -1,3 +1,4 @@
+import me from "math-expressions";
 import { find_effective_domain } from "./domain";
 
 export function find_local_global_minima({
@@ -12,6 +13,8 @@ export function find_local_global_minima({
   functionChild,
   numInputs,
   numOutputs,
+  numIntervals = 1000,
+  numRecursions = 0,
   numerics,
 }) {
   if (isInterpolatedFunction) {
@@ -455,7 +458,6 @@ export function find_local_global_minima({
       xscale: xscale,
     });
 
-    let numIntervals = 1000;
     let dx = (maxx - minx) / numIntervals;
 
     let globalMinimum = [-Infinity, Infinity];
@@ -544,6 +546,63 @@ export function find_local_global_minima({
         }
         let x = result.x;
         let fx = result.fx;
+
+        if (
+          (fx > fleft && x - xleft > 2 * result.tol) ||
+          (fx > fright && xright - x > 2 * result.tol)
+        ) {
+          // the minimumization result was larger than one of the endpoints but not close to that endpoint,
+          // indicating some structure in the interval that wasn't resolved
+
+          if (numRecursions < 4) {
+            // recurse with the domain being the current interval intersected with the original domain
+            let subDomainLeft = Math.max(xleft, minx);
+            let subDomainRight = Math.min(xright, maxx);
+            let subDomainLeftOpen = subDomainLeft === minx && openMin;
+            let subDomainRightOpen = subDomainRight === maxx && openMax;
+            let subDomain1 = me.fromAst([
+              "interval",
+              ["tuple", subDomainLeft, subDomainRight],
+              ["tuple", !subDomainLeftOpen, !subDomainRightOpen],
+            ]);
+
+            let recursionResult = find_local_global_minima({
+              domain: [subDomain1],
+              xscale,
+              isInterpolatedFunction,
+              xs,
+              coeffs,
+              numericalf,
+              formula,
+              variables,
+              functionChild,
+              numInputs,
+              numOutputs,
+              numIntervals: 4,
+              numRecursions: numRecursions + 1,
+              numerics,
+            });
+
+            let newLocalMinima = recursionResult.localMinima;
+            if (newLocalMinima[newLocalMinima.length - 1]?.[0] === xright) {
+              newLocalMinima.pop();
+              minimumAtPreviousRight = true;
+            } else {
+              minimumAtPreviousRight = false;
+            }
+            minimaList.push(...newLocalMinima);
+            if (recursionResult.globalMinimum[1] < globalMinimum[1]) {
+              globalMinimum = recursionResult.globalMinimum;
+            }
+            if (
+              recursionResult.globalMinimumCompactifyDomain[1] <
+              globalMinimumCompactifyDomain[1]
+            ) {
+              globalMinimumCompactifyDomain =
+                recursionResult.globalMinimumCompactifyDomain;
+            }
+          }
+        }
 
         if (x >= minx - buffer && x <= maxx + buffer) {
           let atOpenBoundary =
@@ -708,6 +767,18 @@ function finalizeGlobalMinimum({
   openMax,
 }) {
   let fmin = numericalf(minx, true);
+  if (Math.abs(fmin) === Infinity) {
+    // check if it should be plus or minus infinity
+    let f_near_min = numericalf(minx + (maxx - minx) * 1e-12, true);
+    if (f_near_min > 0) {
+      fmin = Infinity;
+    } else if (f_near_min < 0) {
+      fmin = -Infinity;
+    } else {
+      fmin = NaN;
+    }
+  }
+
   if (!openMin && fmin < globalMinimum[1]) {
     globalMinimum = [minx, fmin];
   }
@@ -716,6 +787,17 @@ function finalizeGlobalMinimum({
   }
 
   let fmax = numericalf(maxx, true);
+  if (Math.abs(fmax) === Infinity) {
+    // check if it should be plus or minus infinity
+    let f_near_max = numericalf(maxx - (maxx - minx) * 1e-12, true);
+    if (f_near_max > 0) {
+      fmax = Infinity;
+    } else if (f_near_max < 0) {
+      fmax = -Infinity;
+    } else {
+      fmax = NaN;
+    }
+  }
   if (!openMax && fmax < globalMinimum[1]) {
     globalMinimum = [maxx, fmax];
   }
@@ -733,8 +815,19 @@ function finalizeGlobalMinimum({
   }
 
   if (globalMinimumCompactifyDomain && globalMinimum) {
-    if (globalMinimumCompactifyDomain[1] < globalMinimum[1]) {
-      globalMinimum = null;
+    if (globalMinimumCompactifyDomain[1] === -Infinity) {
+      if (globalMinimum[1] > -Infinity) {
+        globalMinimum = null;
+      }
+    } else {
+      let buffer =
+        Math.max(
+          Math.abs(globalMinimumCompactifyDomain[1]),
+          Math.abs(globalMinimum[1]),
+        ) * 1e-12;
+      if (globalMinimumCompactifyDomain[1] < globalMinimum[1] - buffer) {
+        globalMinimum = null;
+      }
     }
   }
 
