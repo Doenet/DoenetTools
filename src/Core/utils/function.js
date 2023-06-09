@@ -4,6 +4,7 @@ import {
   normalizeMathExpression,
   vectorOperators,
 } from "./math";
+import { find_effective_domain } from "./domain";
 
 export function createFunctionFromDefinition(fDefinition) {
   if (fDefinition.functionType === "formula") {
@@ -440,27 +441,7 @@ export function returnPiecewiseNumericalFunctionFromChildren({
     return () => NaN;
   }
 
-  let minx = -Infinity,
-    maxx = Infinity;
-  let openMin = false,
-    openMax = false;
-  if (domain !== null) {
-    let domain0 = domain[0];
-    if (domain0 !== undefined) {
-      minx = me.fromAst(domain0.tree[1][1]).evaluate_to_constant();
-      if (typeof minx !== "number" || Number.isNaN(minx)) {
-        minx = -Infinity;
-      } else {
-        openMin = !domain0.tree[2][1];
-      }
-      maxx = me.fromAst(domain0.tree[1][2]).evaluate_to_constant();
-      if (typeof maxx !== "number" || Number.isNaN(maxx)) {
-        maxx = Infinity;
-      } else {
-        openMax = !domain0.tree[2][2];
-      }
-    }
-  }
+  let { minx, maxx, openMin, openMax } = find_effective_domain({ domain });
 
   return function (x, overrideDomain = false) {
     if (overrideDomain) {

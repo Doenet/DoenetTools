@@ -10,7 +10,7 @@ export function find_local_global_minima({
   numericalf,
   formula,
   variables,
-  functionChild,
+  functionChildInfoToRecalculateExtrema,
   numInputs,
   numOutputs,
   numIntervals = 1000,
@@ -394,13 +394,11 @@ export function find_local_global_minima({
       globalMinimum,
       globalMinimumCompactifyDomain,
     };
-  } else if (functionChild?.length > 0) {
-    return {
-      localMinima: functionChild[0].stateValues.allMinima,
-      globalMinimum: functionChild[0].stateValues.globalMinimumOption,
-      globalMinimumCompactifyDomain:
-        functionChild[0].stateValues.globalMinimumCompactifyDomainOption,
-    };
+  } else if (functionChildInfoToRecalculateExtrema) {
+    let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
+    argsForRecursion.domain = domain;
+    argsForRecursion.numerics = numerics;
+    return find_local_global_minima(argsForRecursion);
   } else {
     // no function child
 
@@ -547,64 +545,66 @@ export function find_local_global_minima({
         let x = result.x;
         let fx = result.fx;
 
-        if (
-          (fx > fleft && x - xleft > 2 * result.tol) ||
-          (fx > fright && xright - x > 2 * result.tol)
-        ) {
-          // the minimumization result was larger than one of the endpoints but not close to that endpoint,
-          // indicating some structure in the interval that wasn't resolved
+        if (x >= minx - buffer && x <= maxx + buffer) {
+          if (
+            (fx > fleft && x - xleft > 2 * result.tol) ||
+            (fx > fright && xright - x > 2 * result.tol)
+          ) {
+            // the minimumization result was larger than one of the endpoints but not close to that endpoint,
+            // indicating some structure in the interval that wasn't resolved
 
-          if (numRecursions < 4) {
-            // recurse with the domain being the current interval intersected with the original domain
-            let subDomainLeft = Math.max(xleft, minx);
-            let subDomainRight = Math.min(xright, maxx);
-            let subDomainLeftOpen = subDomainLeft === minx && openMin;
-            let subDomainRightOpen = subDomainRight === maxx && openMax;
-            let subDomain1 = me.fromAst([
-              "interval",
-              ["tuple", subDomainLeft, subDomainRight],
-              ["tuple", !subDomainLeftOpen, !subDomainRightOpen],
-            ]);
+            if (numRecursions < 100) {
+              // recurse with the domain being the current interval intersected with the original domain
+              let subDomainLeft = Math.max(xleft, minx);
+              let subDomainRight = Math.min(xright, maxx);
+              let subDomainLeftOpen = subDomainLeft === minx && openMin;
+              let subDomainRightOpen = subDomainRight === maxx && openMax;
+              let subDomain1 = me.fromAst([
+                "interval",
+                ["tuple", subDomainLeft, subDomainRight],
+                ["tuple", !subDomainLeftOpen, !subDomainRightOpen],
+              ]);
 
-            let recursionResult = find_local_global_minima({
-              domain: [subDomain1],
-              xscale,
-              isInterpolatedFunction,
-              xs,
-              coeffs,
-              numericalf,
-              formula,
-              variables,
-              functionChild,
-              numInputs,
-              numOutputs,
-              numIntervals: 4,
-              numRecursions: numRecursions + 1,
-              numerics,
-            });
+              let recursionResult = find_local_global_minima({
+                domain: [subDomain1],
+                xscale,
+                isInterpolatedFunction,
+                xs,
+                coeffs,
+                numericalf,
+                formula,
+                variables,
+                functionChildInfoToRecalculateExtrema,
+                numInputs,
+                numOutputs,
+                numIntervals: 4,
+                numRecursions: numRecursions + 1,
+                numerics,
+              });
 
-            let newLocalMinima = recursionResult.localMinima;
-            if (newLocalMinima[newLocalMinima.length - 1]?.[0] === xright) {
-              newLocalMinima.pop();
-              minimumAtPreviousRight = true;
-            } else {
-              minimumAtPreviousRight = false;
-            }
-            minimaList.push(...newLocalMinima);
-            if (recursionResult.globalMinimum[1] < globalMinimum[1]) {
-              globalMinimum = recursionResult.globalMinimum;
-            }
-            if (
-              recursionResult.globalMinimumCompactifyDomain[1] <
-              globalMinimumCompactifyDomain[1]
-            ) {
-              globalMinimumCompactifyDomain =
-                recursionResult.globalMinimumCompactifyDomain;
+              let newLocalMinima = recursionResult.localMinima;
+              if (newLocalMinima[newLocalMinima.length - 1]?.[0] === xright) {
+                newLocalMinima.pop();
+                minimumAtPreviousRight = true;
+              } else {
+                minimumAtPreviousRight = false;
+              }
+              minimaList.push(...newLocalMinima);
+              if (recursionResult.globalMinimum[1] < globalMinimum[1]) {
+                globalMinimum = recursionResult.globalMinimum;
+              }
+              if (
+                recursionResult.globalMinimumCompactifyDomain[1] <
+                globalMinimumCompactifyDomain[1]
+              ) {
+                globalMinimumCompactifyDomain =
+                  recursionResult.globalMinimumCompactifyDomain;
+              }
+
+              continue;
             }
           }
-        }
 
-        if (x >= minx - buffer && x <= maxx + buffer) {
           let atOpenBoundary =
             (openMin && Math.abs(x - minx) < buffer) ||
             (openMax && Math.abs(x - maxx) < buffer);
@@ -703,7 +703,7 @@ export function find_local_global_maxima({
   numericalf,
   formula,
   variables,
-  functionChild,
+  functionChildInfoToRecalculateExtrema,
   numInputs,
   numOutputs,
   numerics,
@@ -714,13 +714,11 @@ export function find_local_global_maxima({
 
   if (isInterpolatedFunction) {
     coeffsFlip = coeffs.map((cs) => cs.map((v) => -v));
-  } else if (functionChild?.length > 0) {
-    return {
-      localMaxima: functionChild[0].stateValues.allMaxima,
-      globalMaximum: functionChild[0].stateValues.globalMaximumOption,
-      globalMaximumCompactifyDomain:
-        functionChild[0].stateValues.globalMaximumCompactifyDomainOption,
-    };
+  } else if (functionChildInfoToRecalculateExtrema) {
+    let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
+    argsForRecursion.domain = domain;
+    argsForRecursion.numerics = numerics;
+    return find_local_global_maxima(argsForRecursion);
   } else {
     formulaFlip = formula.context.fromAst(["-", formula.tree]);
   }
@@ -757,7 +755,7 @@ export function find_local_global_maxima({
   return { localMaxima, globalMaximum, globalMaximumCompactifyDomain };
 }
 
-function finalizeGlobalMinimum({
+export function finalizeGlobalMinimum({
   numericalf,
   minx,
   openMin,
@@ -766,43 +764,47 @@ function finalizeGlobalMinimum({
   maxx,
   openMax,
 }) {
-  let fmin = numericalf(minx, true);
-  if (Math.abs(fmin) === Infinity) {
-    // check if it should be plus or minus infinity
-    let f_near_min = numericalf(minx + (maxx - minx) * 1e-12, true);
-    if (f_near_min > 0) {
-      fmin = Infinity;
-    } else if (f_near_min < 0) {
-      fmin = -Infinity;
-    } else {
-      fmin = NaN;
+  if (Number.isFinite(minx)) {
+    let fmin = numericalf(minx, true);
+    if (Math.abs(fmin) === Infinity) {
+      // check if it should be plus or minus infinity
+      let f_near_min = numericalf(minx + (maxx - minx) * 1e-12, true);
+      if (f_near_min > 0) {
+        fmin = Infinity;
+      } else if (f_near_min < 0) {
+        fmin = -Infinity;
+      } else {
+        fmin = NaN;
+      }
+    }
+
+    if (!openMin && fmin < globalMinimum[1]) {
+      globalMinimum = [minx, fmin];
+    }
+    if (fmin < globalMinimumCompactifyDomain[1]) {
+      globalMinimumCompactifyDomain = [minx, fmin];
     }
   }
 
-  if (!openMin && fmin < globalMinimum[1]) {
-    globalMinimum = [minx, fmin];
-  }
-  if (fmin < globalMinimumCompactifyDomain[1]) {
-    globalMinimumCompactifyDomain = [minx, fmin];
-  }
-
-  let fmax = numericalf(maxx, true);
-  if (Math.abs(fmax) === Infinity) {
-    // check if it should be plus or minus infinity
-    let f_near_max = numericalf(maxx - (maxx - minx) * 1e-12, true);
-    if (f_near_max > 0) {
-      fmax = Infinity;
-    } else if (f_near_max < 0) {
-      fmax = -Infinity;
-    } else {
-      fmax = NaN;
+  if (Number.isFinite(maxx)) {
+    let fmax = numericalf(maxx, true);
+    if (Math.abs(fmax) === Infinity) {
+      // check if it should be plus or minus infinity
+      let f_near_max = numericalf(maxx - (maxx - minx) * 1e-12, true);
+      if (f_near_max > 0) {
+        fmax = Infinity;
+      } else if (f_near_max < 0) {
+        fmax = -Infinity;
+      } else {
+        fmax = NaN;
+      }
     }
-  }
-  if (!openMax && fmax < globalMinimum[1]) {
-    globalMinimum = [maxx, fmax];
-  }
-  if (fmax < globalMinimumCompactifyDomain[1]) {
-    globalMinimumCompactifyDomain = [maxx, fmax];
+    if (!openMax && fmax < globalMinimum[1]) {
+      globalMinimum = [maxx, fmax];
+    }
+    if (fmax < globalMinimumCompactifyDomain[1]) {
+      globalMinimumCompactifyDomain = [maxx, fmax];
+    }
   }
 
   if (globalMinimum[0] === -Infinity) {

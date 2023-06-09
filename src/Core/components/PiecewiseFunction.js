@@ -1,10 +1,16 @@
 import Function from "./Function";
-import InlineComponent from "./abstract/InlineComponent";
-import GraphicalComponent from "./abstract/GraphicalComponent";
+import subsets, {
+  buildSubsetFromMathExpression,
+  mathExpressionFromSubsetValue,
+} from "../utils/subset-of-reals";
 import me from "math-expressions";
 import { returnPiecewiseNumericalFunctionFromChildren } from "../utils/function";
 import { roundForDisplay } from "../utils/math";
 import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
+import {
+  finalizeGlobalMinimum,
+  find_local_global_minima,
+} from "../utils/extrema";
 
 export default class PiecewiseFunction extends Function {
   static componentType = "piecewiseFunction";
@@ -248,6 +254,7 @@ export default class PiecewiseFunction extends Function {
     delete stateVariableDefinitions.xs;
     delete stateVariableDefinitions.mathChildName;
     delete stateVariableDefinitions.mathChildCreatedBySugar;
+    delete stateVariableDefinitions.haveNaNChildToReevaluate;
 
     // until we build in support for piecewise functions into math-expressions,
     // we cannot represent the symbolicfs
@@ -638,12 +645,32 @@ export default class PiecewiseFunction extends Function {
     };
 
     stateVariableDefinitions.allMinima = {
+      additionalStateVariablesDefined: [
+        "globalMinimumOption",
+        "globalMinimumCompactifyDomainOption",
+      ],
       returnDependencies() {
         return {
           functionChildren: {
             dependencyType: "child",
             childGroups: ["functions"],
-            variableNames: ["allMinima"],
+            variableNames: [
+              "domain",
+              "xscale",
+              "isInterpolatedFunction",
+              "xs",
+              "coeffs",
+              "numericalf",
+              "formula",
+              "variables",
+              "functionChildInfoToRecalculateExtrema",
+              "numInputs",
+              "numOutputs",
+            ],
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain",
           },
           numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
@@ -656,82 +683,53 @@ export default class PiecewiseFunction extends Function {
         };
       },
       definition: function ({ dependencyValues }) {
-        let eps = numerics.eps;
+        let { minimaList, globalMinimum, globalMinimumCompactifyDomain } =
+          find_minima_of_piecewise({
+            functionChildren: dependencyValues.functionChildren,
+            domain: dependencyValues.domain,
+            numericalDomainsOfChildren:
+              dependencyValues.numericalDomainsOfChildren,
+            numericalf: dependencyValues.numericalf,
+            numerics,
+          });
 
-        let minimaList = [];
-
-        let minimaByChild = dependencyValues.functionChildren.map(
-          (functionChild) => functionChild.stateValues.allMinima,
-        );
-
-        let f = dependencyValues.numericalf;
-
-        for (let [
-          ind,
-          childDomain,
-        ] of dependencyValues.numericalDomainsOfChildren.entries()) {
-          if (!childDomain) {
-            continue;
-          }
-
-          let minx = childDomain[0][0];
-          let maxx = childDomain[0][1];
-
-          let childMinima = minimaByChild[ind];
-
-          // will check the endpoints manually, so remove any minima near the endpoints
-          childMinima = childMinima.filter(
-            (minpair) => minpair[0] > minx + eps && minpair[0] < maxx - eps,
-          );
-          minimaList.push(...childMinima);
-
-          // check endpoints
-          let fminx = f(minx);
-          if (fminx < f(minx - eps) && fminx < f(minx + eps)) {
-            if (
-              minimaList.every(
-                (minpair) => minpair[0] < minx - eps || minpair[0] > minx + eps,
-              )
-            ) {
-              minimaList.push([minx, fminx]);
-            }
-          }
-
-          let fmaxx = f(maxx);
-          if (fmaxx < f(maxx - eps) && fmaxx < f(maxx + eps)) {
-            if (
-              minimaList.every(
-                (minpair) => minpair[0] < maxx - eps || minpair[0] > maxx + eps,
-              )
-            ) {
-              minimaList.push([maxx, fmaxx]);
-            }
-          }
-
-          // remove any minima from later function children in the domain (or near the endpoints)
-          for (let [otherInd, otherMinima] of [
-            ...minimaByChild.entries(),
-          ].slice(ind + 1)) {
-            let revisedMinima = otherMinima.filter(
-              (minpair) => minpair[0] < minx - eps || minpair[0] > maxx + eps,
-            );
-            minimaByChild[otherInd] = revisedMinima;
-          }
-        }
-
-        minimaList = minimaList.sort((a, b) => a[0] - b[0]);
-
-        return { setValue: { allMinima: minimaList } };
+        return {
+          setValue: {
+            allMinima: minimaList,
+            globalMinimumOption: globalMinimum,
+            globalMinimumCompactifyDomainOption: globalMinimumCompactifyDomain,
+          },
+        };
       },
     };
 
     stateVariableDefinitions.allMaxima = {
+      additionalStateVariablesDefined: [
+        "globalMaximumOption",
+        "globalMaximumCompactifyDomainOption",
+      ],
       returnDependencies() {
         return {
           functionChildren: {
             dependencyType: "child",
             childGroups: ["functions"],
-            variableNames: ["allMaxima"],
+            variableNames: [
+              "domain",
+              "xscale",
+              "isInterpolatedFunction",
+              "xs",
+              "coeffs",
+              "numericalf",
+              "formula",
+              "variables",
+              "functionChildInfoToRecalculateExtrema",
+              "numInputs",
+              "numOutputs",
+            ],
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain",
           },
           numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
@@ -744,72 +742,50 @@ export default class PiecewiseFunction extends Function {
         };
       },
       definition: function ({ dependencyValues }) {
-        let eps = numerics.eps;
-
-        let maximaList = [];
-
-        let maximaByChild = dependencyValues.functionChildren.map(
-          (functionChild) => functionChild.stateValues.allMaxima,
+        let flippedFunctionChildren = dependencyValues.functionChildren.map(
+          (child) => {
+            let flippedChildStateValues = flip_function_children_stateValues(
+              child.stateValues,
+            );
+            return { stateValues: flippedChildStateValues };
+          },
         );
 
-        let f = dependencyValues.numericalf;
+        let numericalfFlip = (...args) =>
+          -1 * dependencyValues.numericalf(...args);
 
-        for (let [
-          ind,
-          childDomain,
-        ] of dependencyValues.numericalDomainsOfChildren.entries()) {
-          if (!childDomain) {
-            continue;
-          }
+        let { minimaList, globalMinimum, globalMinimumCompactifyDomain } =
+          find_minima_of_piecewise({
+            functionChildren: flippedFunctionChildren,
+            domain: dependencyValues.domain,
+            numericalDomainsOfChildren:
+              dependencyValues.numericalDomainsOfChildren,
+            numericalf: numericalfFlip,
+            numerics,
+          });
 
-          let minx = childDomain[0][0];
-          let maxx = childDomain[0][1];
+        let maximaList = minimaList.map((pt) => [pt[0], -pt[1]]);
 
-          let childMaxima = maximaByChild[ind];
+        let globalMaximum = null,
+          globalMaximumCompactifyDomain = null;
 
-          // will check the endpoints manually, so remove any maxima near the endpoints
-          childMaxima = childMaxima.filter(
-            (maxpair) => maxpair[0] > minx + eps && maxpair[0] < maxx - eps,
-          );
-          maximaList.push(...childMaxima);
-
-          // check endpoints
-          let fminx = f(minx);
-          if (fminx > f(minx - eps) && fminx > f(minx + eps)) {
-            if (
-              maximaList.every(
-                (maxpair) => maxpair[0] < minx - eps || maxpair[0] > minx + eps,
-              )
-            ) {
-              maximaList.push([minx, fminx]);
-            }
-          }
-
-          let fmaxx = f(maxx);
-          if (fmaxx > f(maxx - eps) && fmaxx > f(maxx + eps)) {
-            if (
-              maximaList.every(
-                (maxpair) => maxpair[0] < maxx - eps || maxpair[0] > maxx + eps,
-              )
-            ) {
-              maximaList.push([maxx, fmaxx]);
-            }
-          }
-
-          // remove any maxima from later function children in the domain (or near the endpoints)
-          for (let [otherInd, otherMaxima] of [
-            ...maximaByChild.entries(),
-          ].slice(ind + 1)) {
-            let revisedMaxima = otherMaxima.filter(
-              (maxpair) => maxpair[0] < minx - eps || maxpair[0] > maxx + eps,
-            );
-            maximaByChild[otherInd] = revisedMaxima;
-          }
+        if (globalMinimum) {
+          globalMaximum = [globalMinimum[0], -1 * globalMinimum[1]];
+        }
+        if (globalMinimumCompactifyDomain) {
+          globalMaximumCompactifyDomain = [
+            globalMinimumCompactifyDomain[0],
+            -1 * globalMinimumCompactifyDomain[1],
+          ];
         }
 
-        maximaList = maximaList.sort((a, b) => a[0] - b[0]);
-
-        return { setValue: { allMaxima: maximaList } };
+        return {
+          setValue: {
+            allMaxima: maximaList,
+            globalMaximumOption: globalMaximum,
+            globalMaximumCompactifyDomainOption: globalMaximumCompactifyDomain,
+          },
+        };
       },
     };
 
@@ -829,4 +805,178 @@ export default class PiecewiseFunction extends Function {
 
     return stateVariableDefinitions;
   }
+}
+function find_minima_of_piecewise({
+  functionChildren,
+  domain,
+  numericalDomainsOfChildren,
+  numericalf,
+  numerics,
+}) {
+  let domainUnused;
+
+  if (domain) {
+    domainUnused = buildSubsetFromMathExpression(domain[0]);
+  } else {
+    domainUnused = new subsets.RealLine();
+  }
+
+  let globalMinimum = [-Infinity, Infinity];
+  let globalMinimumCompactifyDomain = [-Infinity, Infinity];
+
+  let eps = numerics.eps;
+
+  let minimaList = [];
+
+  let f = numericalf;
+
+  let endpointsToManuallyCheck = [];
+
+  for (let [ind, childDomain] of numericalDomainsOfChildren.entries()) {
+    if (!childDomain) {
+      continue;
+    }
+
+    let childDomainMathExpr = me.fromAst([
+      "interval",
+      ["tuple", ...childDomain[0]],
+      ["tuple", ...childDomain[1]],
+    ]);
+
+    let childDomainSubset = buildSubsetFromMathExpression(childDomainMathExpr);
+
+    let childDomainToConsider = mathExpressionFromSubsetValue({
+      subsetValue: childDomainSubset.intersect(domainUnused),
+    });
+    domainUnused = domainUnused.setMinus(childDomainSubset);
+
+    // childDomainToConsider could be an empty set, real line, singleton set, interval,
+    // or union of singleton sets and intervals
+    let childDomainPieces = [];
+    if (childDomainToConsider.tree[0] === "union") {
+      childDomainPieces = childDomainToConsider.tree.slice(1);
+    } else {
+      childDomainPieces = [childDomainToConsider.tree];
+    }
+
+    for (let domainPiece of childDomainPieces) {
+      let thisDomain;
+      if (domainPiece === "∅") {
+        continue;
+      } else if (domainPiece === "R") {
+        thisDomain = null;
+      } else if (domainPiece[0] === "set") {
+        // have a singleton piece
+        endpointsToManuallyCheck.push(domainPiece[1]);
+        continue;
+      } else {
+        // have interval
+        thisDomain = domainPiece;
+      }
+
+      let args = {
+        ...functionChildren[ind].stateValues,
+      };
+      args.domain = [me.fromAst(thisDomain)];
+      args.numerics = numerics;
+
+      let subResults = find_local_global_minima(args);
+
+      let childMinima = subResults.localMinima;
+
+      if (thisDomain) {
+        // thisDomain is an interval
+        // We will check endpoints of local minima manually
+        // (as their nature depends on more than one piece).
+        // Remove them from list of local minima and add to list to check
+        let minx = me.fromAst(thisDomain[1][1]).evaluate_to_constant();
+        if (Number.isFinite(minx)) {
+          endpointsToManuallyCheck.push(minx);
+          childMinima = childMinima.filter(
+            (minpair) => minpair[0] > minx + eps,
+          );
+        }
+
+        let maxx = me.fromAst(thisDomain[1][2]).evaluate_to_constant();
+        if (Number.isFinite(maxx)) {
+          endpointsToManuallyCheck.push(maxx);
+          childMinima = childMinima.filter(
+            (minpair) => minpair[0] < maxx - eps,
+          );
+        }
+      }
+
+      minimaList.push(...childMinima);
+
+      if (subResults.globalMinimum?.[1] < globalMinimum[1]) {
+        globalMinimum = subResults.globalMinimum;
+      }
+
+      if (
+        subResults.globalMinimumCompactifyDomain?.[1] <
+        globalMinimumCompactifyDomain[1]
+      ) {
+        globalMinimumCompactifyDomain =
+          subResults.globalMinimumCompactifyDomain;
+      }
+    }
+  }
+
+  // check endpoints
+  for (let ept of endpointsToManuallyCheck) {
+    let x = me.fromAst(ept).evaluate_to_constant();
+
+    if (Number.isFinite(x)) {
+      let fx = f(x);
+      if (fx < f(x - eps) && fx < f(x + eps)) {
+        if (
+          minimaList.every(
+            (minpair) => minpair[0] < x - eps || minpair[0] > x + eps,
+          )
+        ) {
+          minimaList.push([x, fx]);
+        }
+      }
+
+      if (fx < globalMinimum[1]) {
+        globalMinimum = [x, fx];
+      }
+      if (fx < globalMinimumCompactifyDomain[1]) {
+        globalMinimumCompactifyDomain = [x, fx];
+      }
+    }
+  }
+
+  minimaList = minimaList.sort((a, b) => a[0] - b[0]);
+
+  ({ globalMinimum, globalMinimumCompactifyDomain } = finalizeGlobalMinimum({
+    globalMinimum,
+    globalMinimumCompactifyDomain,
+  }));
+  return { minimaList, globalMinimum, globalMinimumCompactifyDomain };
+}
+
+function flip_function_children_stateValues(stateValues) {
+  let flippedStateValues = { ...stateValues };
+
+  flippedStateValues.numericalf = (...args) =>
+    -1 * stateValues.numericalf(...args);
+
+  if (stateValues.isInterpolatedFunction) {
+    flippedStateValues.coeffsFlip = stateValues.coeffs.map((cs) =>
+      cs.map((v) => -v),
+    );
+  } else if (stateValues.functionChildInfoToRecalculateExtrema) {
+    flippedStateValues.functionChildInfoToRecalculateExtrema =
+      flip_function_children_stateValues(
+        stateValues.functionChildInfoToRecalculateExtrema,
+      );
+  } else {
+    flippedStateValues.formula = stateValues.formula.context.fromAst([
+      "-",
+      stateValues.formula.tree,
+    ]);
+  }
+
+  return flippedStateValues;
 }
