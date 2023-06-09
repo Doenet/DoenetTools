@@ -69,6 +69,7 @@ const DriveCard = (props) => {
 
   return (
     <DriveCardContainer
+      data-test="Course Card"
       className="driveCard"
       aria-labelledby="card-label role-label"
       url={imageURL}

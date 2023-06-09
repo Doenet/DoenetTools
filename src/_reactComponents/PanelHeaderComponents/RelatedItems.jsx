@@ -90,6 +90,7 @@ export default function RelatedItems(props) {
         {label}
       </Label>
       <Select
+        data-test={props.dataTest}
         readOnly={read_only}
         width={width}
         size={size}

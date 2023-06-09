@@ -69,7 +69,7 @@ const useSyncedTextfeildState = (syncCB, remoteValue = "") => {
   return [localValue, setLocalValue, sync];
 };
 
-export function EditLabel({ courseId }) {
+export function EditLabel({ courseId, dataTest }) {
   const { modifyCourse, label: recoilLabel } = useCourse(courseId);
   const [localLabel, setLocalLabel, sync] = useSyncedTextfeildState(
     (newLabel) => {
@@ -80,6 +80,7 @@ export function EditLabel({ courseId }) {
 
   return (
     <Textfield
+      dataTest={dataTest}
       label="Label"
       vertical
       width="menu"

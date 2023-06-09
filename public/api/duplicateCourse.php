@@ -251,7 +251,7 @@ if ($success) {
     $prevToNextDoenetIds = [];
     $prevToNextDoenetIds[$courseId] = $nextCourseId; //Need this for parentDoenetIds
     $previous_course_content = [];
-    $assigned_course_content_doenetIds = [];
+    $assignment_course_content_doenetIds = [];
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -265,8 +265,8 @@ if ($success) {
             $isGloballyAssigned = $row['isGloballyAssigned'];
             $isPublic = $row['isPublic'];
             $json = $row['json'];
-            if ($isAssigned == '1') {
-                array_push($assigned_course_content_doenetIds, $doenetId);
+            if ($type == 'activity') {
+                array_push($assignment_course_content_doenetIds, $doenetId);
             }
 
             $nextDoenetId = include 'randomId.php';
@@ -365,6 +365,11 @@ if ($success) {
                     $jsonDefinition
                 );
             }
+        }
+        // if ($type == 'bank') {
+        //     //TODO: what goes here
+        // }
+        if ($type == 'activity'){
             $jsonIds = mine_activity_for_ids(
                 json_decode($jsonDefinition, true)
             );
@@ -427,7 +432,7 @@ if ($success) {
 
 //Move Assignment table
 if ($success) {
-    foreach ($assigned_course_content_doenetIds as $assigned_doenetId) {
+    foreach ($assignment_course_content_doenetIds as $assigned_doenetId) {
         $next_assigned_doenetId = $prevToNextDoenetIds[$assigned_doenetId];
         $sql = "
         INSERT INTO assignment (
@@ -482,6 +487,8 @@ if ($success) {
             WHERE doenetId = '$assigned_doenetId'
         ";
         $result = $conn->query($sql);
+
+    
     }
     //Copy the source page files to the new doenetId files
     // for all activities and collections
@@ -511,15 +518,18 @@ if ($success) {
 if ($success) {
     $sql = "
     SELECT
-    containingDoenetId,
-    parentDoenetId,
-    doenetId,
-    sourceCollectionDoenetId,
-    sourcePageDoenetId,
-    label,
-    timeOfLastUpdate
-    FROM link_pages
-    WHERE courseId = '$courseId'
+    lp.containingDoenetId,
+    lp.parentDoenetId,
+    lp.doenetId,
+    lp.sourceCollectionDoenetId,
+    lp.sourcePageDoenetId,
+    lp.label,
+    lp.timeOfLastUpdate
+    FROM link_pages AS lp
+    JOIN course_content AS cc
+    ON lp.containingDoenetId = cc.doenetId
+    WHERE lp.courseId = '$courseId'
+    AND cc.isDeleted = 0
     ";
     $result = $conn->query($sql);
 
@@ -535,17 +545,20 @@ if ($success) {
             $label = $row['label'];
             $escapedLabel = mysqli_real_escape_string($conn, $label);
             $timeOfLastUpdate = $row['timeOfLastUpdate'];
-            array_push(
-                $insert_to_link_pages,
-                "('$nextCourseId',
-                '$prevToNextDoenetIds[$containingDoenetId]',
-                '$prevToNextDoenetIds[$parentDoenetId]',
-                '$prevToNextDoenetIds[$doenetId]',
-                '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
-                '$prevToNextDoenetIds[$sourcePageDoenetId]',
-                '$escapedLabel',
-                '$timeOfLastUpdate')"
-            );
+            
+            if ($prevToNextDoenetIds[$doenetId] != ""){
+                array_push(
+                    $insert_to_link_pages,
+                    "('$nextCourseId',
+                    '$prevToNextDoenetIds[$containingDoenetId]',
+                    '$prevToNextDoenetIds[$parentDoenetId]',
+                    '$prevToNextDoenetIds[$doenetId]',
+                    '$prevToNextDoenetIds[$sourceCollectionDoenetId]',
+                    '$prevToNextDoenetIds[$sourcePageDoenetId]',
+                    '$escapedLabel',
+                    '$timeOfLastUpdate')"
+                );
+            }
         }
     }
     $str_insert_to_link_pages = implode(',', $insert_to_link_pages);
@@ -556,6 +569,10 @@ if ($success) {
     $str_insert_to_link_pages
     ";
     $result = $conn->query($sql);
+    // if (!$result){
+    //     echo "Insert fail for link_pages\n";
+    //     echo $conn->error;
+    // }
 
     //Copy page files
     foreach ($collection_page_link_ids as $page_link_id) {
