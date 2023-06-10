@@ -26,12 +26,12 @@ export function find_local_global_minima({
       return {
         localMinima: minimaList,
         globalMinimum: null,
-        globalMinimumCompactifyDomain: null,
+        globalInfimum: null,
       };
     }
 
     let globalMinimum = [-Infinity, Infinity];
-    let globalMinimumCompactifyDomain = [-Infinity, Infinity];
+    let globalInfimum = [-Infinity, Infinity];
 
     let minimumAtPreviousRight = false;
 
@@ -63,25 +63,38 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           } else if (Math.abs(x - dx) < eps) {
             minimumAtPreviousRight = true;
           }
         }
-      } else if (c[2] === 0 && c[1] === 0) {
-        // constant segment
-        let xPt = xs[1];
-        if (xPt >= minx - buffer) {
-          if (c[0] < globalMinimum[1]) {
-            let atOpenBoundary = openMin && Math.abs(xPt - minx) < buffer;
-            if (!atOpenBoundary) {
-              globalMinimum = [xPt, c[0]];
+      } else if (c[2] < 0) {
+        if (minx === -Infinity) {
+          // function extends to -infinity as a parabola opening downward
+          globalInfimum = [-Infinity, -Infinity];
+        }
+      } else {
+        // have linear
+        if (c[1] === 0) {
+          // constant segment
+          let xPt = xs[1];
+          if (xPt >= minx - buffer) {
+            if (c[0] < globalMinimum[1]) {
+              let atOpenBoundary = openMin && Math.abs(xPt - minx) < buffer;
+              if (!atOpenBoundary) {
+                globalMinimum = [xPt, c[0]];
+              }
+            }
+            if (c[0] < globalInfimum[1]) {
+              globalInfimum = [xPt, c[0]];
             }
           }
-          if (c[0] < globalMinimumCompactifyDomain[1]) {
-            globalMinimumCompactifyDomain = [xPt, c[0]];
+        } else if (c[1] > 0) {
+          if (minx === -Infinity) {
+            // function extends to -infinity as a line with positive slope
+            globalInfimum = [-Infinity, -Infinity];
           }
         }
       }
@@ -106,12 +119,19 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           } else if (Math.abs(x - dx) < eps) {
             minimumAtPreviousRight = true;
           }
+        }
+      }
+
+      if (c[3] > 0) {
+        if (minx === -Infinity) {
+          // function extends to -Infinity as a cubic with positive slope
+          globalInfimum = [-Infinity, -Infinity];
         }
       }
     }
@@ -140,8 +160,8 @@ export function find_local_global_minima({
                     globalMinimum = pt;
                   }
                 }
-                if (pt[1] < globalMinimumCompactifyDomain[1]) {
-                  globalMinimumCompactifyDomain = pt;
+                if (pt[1] < globalInfimum[1]) {
+                  globalInfimum = pt;
                 }
               } else if (x >= eps && x <= dx - eps) {
                 let pt = [x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]];
@@ -155,8 +175,8 @@ export function find_local_global_minima({
                     globalMinimum = pt;
                   }
                 }
-                if (pt[1] < globalMinimumCompactifyDomain[1]) {
-                  globalMinimumCompactifyDomain = pt;
+                if (pt[1] < globalInfimum[1]) {
+                  globalInfimum = pt;
                 }
               }
               minimumAtPreviousRight = Math.abs(x - dx) < eps;
@@ -171,8 +191,8 @@ export function find_local_global_minima({
 
             if (xs[i + 1] >= minx - buffer && xs[i] <= maxx + buffer) {
               let x1 = Math.max(xs[i], minx);
-              if (c[0] < globalMinimumCompactifyDomain[1]) {
-                globalMinimumCompactifyDomain = [x1, c[0]];
+              if (c[0] < globalInfimum[1]) {
+                globalInfimum = [x1, c[0]];
               }
 
               if (c[0] < globalMinimum[1]) {
@@ -230,8 +250,8 @@ export function find_local_global_minima({
                     globalMinimum = pt;
                   }
                 }
-                if (pt[1] < globalMinimumCompactifyDomain[1]) {
-                  globalMinimumCompactifyDomain = pt;
+                if (pt[1] < globalInfimum[1]) {
+                  globalInfimum = pt;
                 }
               } else if (x >= eps && x <= dx - eps) {
                 let pt = [x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]];
@@ -244,8 +264,8 @@ export function find_local_global_minima({
                     globalMinimum = pt;
                   }
                 }
-                if (pt[1] < globalMinimumCompactifyDomain[1]) {
-                  globalMinimumCompactifyDomain = pt;
+                if (pt[1] < globalInfimum[1]) {
+                  globalInfimum = pt;
                 }
               }
               minimumAtPreviousRight = Math.abs(x - dx) < eps;
@@ -287,8 +307,8 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           } else if (x >= eps) {
             let pt = [
@@ -304,23 +324,36 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           }
         }
-      } else if (c[2] === 0 && c[1] === 0) {
-        // constant segment
-        let xPt = xs[xs.length - 2];
-        if (xPt <= maxx + buffer) {
-          if (c[0] < globalMinimum[1]) {
-            let atOpenBoundary = openMax && Math.abs(xPt - maxx) < buffer;
-            if (!atOpenBoundary) {
-              globalMinimum = [xPt, c[0]];
+      } else if (c[2] < 0) {
+        if (maxx === Infinity) {
+          // function extends to infinity as a parabola opening downward
+          globalInfimum = [Infinity, -Infinity];
+        }
+      } else {
+        // have linear
+        if (c[1] === 0) {
+          // constant segment
+          let xPt = xs[xs.length - 2];
+          if (xPt <= maxx + buffer) {
+            if (c[0] < globalMinimum[1]) {
+              let atOpenBoundary = openMax && Math.abs(xPt - maxx) < buffer;
+              if (!atOpenBoundary) {
+                globalMinimum = [xPt, c[0]];
+              }
+            }
+            if (c[0] < globalInfimum[1]) {
+              globalInfimum = [xPt, c[0]];
             }
           }
-          if (c[0] < globalMinimumCompactifyDomain[1]) {
-            globalMinimumCompactifyDomain = [xPt, c[0]];
+        } else if (c[1] < 0) {
+          if (maxx === Infinity) {
+            // function extends to infinity as a line with negative slope
+            globalInfimum = [Infinity, -Infinity];
           }
         }
       }
@@ -351,8 +384,8 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           } else if (Math.abs(x) < eps) {
             let pt = [
@@ -370,21 +403,28 @@ export function find_local_global_minima({
                 globalMinimum = pt;
               }
             }
-            if (pt[1] < globalMinimumCompactifyDomain[1]) {
-              globalMinimumCompactifyDomain = pt;
+            if (pt[1] < globalInfimum[1]) {
+              globalInfimum = pt;
             }
           }
+        }
+      }
+
+      if (c[3] < 0) {
+        if (maxx === Infinity) {
+          // function extends to Infinity as a cubic with negative slope
+          globalInfimum = [Infinity, -Infinity];
         }
       }
     }
 
     // also check the endpoints
-    ({ globalMinimum, globalMinimumCompactifyDomain } = finalizeGlobalMinimum({
+    ({ globalMinimum, globalInfimum } = finalizeGlobalMinimum({
       numericalf,
       minx,
       openMin,
       globalMinimum,
-      globalMinimumCompactifyDomain,
+      globalInfimum,
       maxx,
       openMax,
     }));
@@ -392,7 +432,7 @@ export function find_local_global_minima({
     return {
       localMinima: minimaList,
       globalMinimum,
-      globalMinimumCompactifyDomain,
+      globalInfimum,
     };
   } else if (functionChildInfoToRecalculateExtrema) {
     let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
@@ -408,7 +448,7 @@ export function find_local_global_minima({
         setValue: {
           localMinima: [],
           globalMinimum: null,
-          globalMinimumCompactifyDomain: null,
+          globalInfimum: null,
         },
       };
     }
@@ -428,7 +468,7 @@ export function find_local_global_minima({
         .derivative(varString);
 
       try {
-        derivative_f = derivative_formula.subscripts_to_strings().f();
+        derivative_f = derivative_formula.f();
       } catch (e) {
         haveDerivative = false;
         derivative = () => NaN;
@@ -460,8 +500,8 @@ export function find_local_global_minima({
 
     let globalMinimum = [-Infinity, Infinity];
     let globalMinimumAtLocalMinimum = false;
-    let globalMinimumCompactifyDomain = [-Infinity, Infinity];
-    let globalMinimumCompactifyDomainAtLocalMinimum = false;
+    let globalInfimum = [-Infinity, Infinity];
+    let globalInfimumAtLocalMinimum = false;
 
     let buffer = 1e-10 * Math.max(Math.abs(minx), Math.abs(maxx));
 
@@ -519,6 +559,10 @@ export function find_local_global_minima({
                 globalMinimum = [x, fx];
                 globalMinimumAtLocalMinimum = true;
               }
+              if (!globalInfimumAtLocalMinimum && fx <= globalInfimum[1]) {
+                globalInfimum = [x, fx];
+                globalInfimumAtLocalMinimum = true;
+              }
             } else {
               addedAtPreviousRightViaDeriv = false;
             }
@@ -528,9 +572,9 @@ export function find_local_global_minima({
             globalMinimum = [x, fx];
             globalMinimumAtLocalMinimum = false;
           }
-          if (fx < globalMinimumCompactifyDomain[1]) {
-            globalMinimumCompactifyDomain = [x, fx];
-            globalMinimumCompactifyDomainAtLocalMinimum = false;
+          if (fx < globalInfimum[1]) {
+            globalInfimum = [x, fx];
+            globalInfimumAtLocalMinimum = false;
           }
         }
       }
@@ -546,9 +590,12 @@ export function find_local_global_minima({
         let fx = result.fx;
 
         if (x >= minx - buffer && x <= maxx + buffer) {
+          let mindf =
+            Math.max(Math.abs(fx), Math.abs(fleft), Math.abs(fright)) * 1e-12;
+
           if (
-            (fx > fleft && x - xleft > 2 * result.tol) ||
-            (fx > fright && xright - x > 2 * result.tol)
+            (fx > fleft + mindf && x - xleft > 2 * result.tol) ||
+            (fx > fright + mindf && xright - x > 2 * result.tol)
           ) {
             // the minimumization result was larger than one of the endpoints but not close to that endpoint,
             // indicating some structure in the interval that wasn't resolved
@@ -593,12 +640,8 @@ export function find_local_global_minima({
               if (recursionResult.globalMinimum[1] < globalMinimum[1]) {
                 globalMinimum = recursionResult.globalMinimum;
               }
-              if (
-                recursionResult.globalMinimumCompactifyDomain[1] <
-                globalMinimumCompactifyDomain[1]
-              ) {
-                globalMinimumCompactifyDomain =
-                  recursionResult.globalMinimumCompactifyDomain;
+              if (recursionResult.globalInfimum[1] < globalInfimum[1]) {
+                globalInfimum = recursionResult.globalInfimum;
               }
 
               continue;
@@ -610,9 +653,6 @@ export function find_local_global_minima({
             (openMax && Math.abs(x - maxx) < buffer);
 
           if (!atOpenBoundary) {
-            let mindf =
-              Math.max(Math.abs(fx), Math.abs(fleft), Math.abs(fright)) * 1e-12;
-
             if (fleft < fx - mindf) {
               if (minimumAtPreviousRight) {
                 if (Number.isFinite(fleft)) {
@@ -625,11 +665,11 @@ export function find_local_global_minima({
                     globalMinimumAtLocalMinimum = true;
                   }
                   if (
-                    !globalMinimumCompactifyDomainAtLocalMinimum &&
-                    fleft <= globalMinimumCompactifyDomain[1]
+                    !globalInfimumAtLocalMinimum &&
+                    fleft <= globalInfimum[1]
                   ) {
-                    globalMinimumCompactifyDomain = [xleft, fleft];
-                    globalMinimumCompactifyDomainAtLocalMinimum = true;
+                    globalInfimum = [xleft, fleft];
+                    globalInfimumAtLocalMinimum = true;
                   }
                 }
               }
@@ -652,12 +692,9 @@ export function find_local_global_minima({
                   globalMinimum = [x, fx];
                   globalMinimumAtLocalMinimum = true;
                 }
-                if (
-                  !globalMinimumCompactifyDomainAtLocalMinimum &&
-                  fx <= globalMinimumCompactifyDomain[1]
-                ) {
-                  globalMinimumCompactifyDomain = [x, fx];
-                  globalMinimumCompactifyDomainAtLocalMinimum = true;
+                if (!globalInfimumAtLocalMinimum && fx <= globalInfimum[1]) {
+                  globalInfimum = [x, fx];
+                  globalInfimumAtLocalMinimum = true;
                 }
               }
             }
@@ -667,21 +704,21 @@ export function find_local_global_minima({
             globalMinimum = [x, fx];
             globalMinimumAtLocalMinimum = false;
           }
-          if (fx < globalMinimumCompactifyDomain[1]) {
-            globalMinimumCompactifyDomain = [x, fx];
-            globalMinimumCompactifyDomainAtLocalMinimum = false;
+          if (fx < globalInfimum[1]) {
+            globalInfimum = [x, fx];
+            globalInfimumAtLocalMinimum = false;
           }
         }
       }
     }
 
     // also check the endpoints
-    ({ globalMinimum, globalMinimumCompactifyDomain } = finalizeGlobalMinimum({
+    ({ globalMinimum, globalInfimum } = finalizeGlobalMinimum({
       numericalf,
       minx,
       openMin,
       globalMinimum,
-      globalMinimumCompactifyDomain,
+      globalInfimum,
       maxx,
       openMax,
     }));
@@ -689,7 +726,7 @@ export function find_local_global_minima({
     return {
       localMinima: minimaList,
       globalMinimum,
-      globalMinimumCompactifyDomain,
+      globalInfimum,
     };
   }
 }
@@ -713,6 +750,13 @@ export function find_local_global_maxima({
   let formulaFlip;
 
   if (isInterpolatedFunction) {
+    if (xs === null) {
+      return {
+        localMaxima: [],
+        globalMaximum: null,
+        globalInfimum: null,
+      };
+    }
     coeffsFlip = coeffs.map((cs) => cs.map((v) => -v));
   } else if (functionChildInfoToRecalculateExtrema) {
     let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
@@ -723,36 +767,32 @@ export function find_local_global_maxima({
     formulaFlip = formula.context.fromAst(["-", formula.tree]);
   }
 
-  let { localMinima, globalMinimum, globalMinimumCompactifyDomain } =
-    find_local_global_minima({
-      domain,
-      xscale,
-      isInterpolatedFunction,
-      xs,
-      coeffs: coeffsFlip,
-      numericalf: numericalfFlip,
-      formula: formulaFlip,
-      variables,
-      numInputs,
-      numOutputs,
-      numerics,
-    });
+  let { localMinima, globalMinimum, globalInfimum } = find_local_global_minima({
+    domain,
+    xscale,
+    isInterpolatedFunction,
+    xs,
+    coeffs: coeffsFlip,
+    numericalf: numericalfFlip,
+    formula: formulaFlip,
+    variables,
+    numInputs,
+    numOutputs,
+    numerics,
+  });
 
   let localMaxima = localMinima.map((pt) => [pt[0], -pt[1]]);
   let globalMaximum = null,
-    globalMaximumCompactifyDomain = null;
+    globalSupremum = null;
 
   if (globalMinimum) {
     globalMaximum = [globalMinimum[0], -1 * globalMinimum[1]];
   }
-  if (globalMinimumCompactifyDomain) {
-    globalMaximumCompactifyDomain = [
-      globalMinimumCompactifyDomain[0],
-      -1 * globalMinimumCompactifyDomain[1],
-    ];
+  if (globalInfimum) {
+    globalSupremum = [globalInfimum[0], -1 * globalInfimum[1]];
   }
 
-  return { localMaxima, globalMaximum, globalMaximumCompactifyDomain };
+  return { localMaxima, globalMaximum, globalSupremum };
 }
 
 export function finalizeGlobalMinimum({
@@ -760,7 +800,7 @@ export function finalizeGlobalMinimum({
   minx,
   openMin,
   globalMinimum,
-  globalMinimumCompactifyDomain,
+  globalInfimum,
   maxx,
   openMax,
 }) {
@@ -781,8 +821,8 @@ export function finalizeGlobalMinimum({
     if (!openMin && fmin < globalMinimum[1]) {
       globalMinimum = [minx, fmin];
     }
-    if (fmin < globalMinimumCompactifyDomain[1]) {
-      globalMinimumCompactifyDomain = [minx, fmin];
+    if (fmin < globalInfimum[1]) {
+      globalInfimum = [minx, fmin];
     }
   }
 
@@ -802,36 +842,34 @@ export function finalizeGlobalMinimum({
     if (!openMax && fmax < globalMinimum[1]) {
       globalMinimum = [maxx, fmax];
     }
-    if (fmax < globalMinimumCompactifyDomain[1]) {
-      globalMinimumCompactifyDomain = [maxx, fmax];
+    if (fmax < globalInfimum[1]) {
+      globalInfimum = [maxx, fmax];
     }
   }
 
-  if (globalMinimum[0] === -Infinity) {
+  if (globalMinimum[1] === Infinity) {
     // never found a global minimum
     globalMinimum = null;
   }
-  if (globalMinimumCompactifyDomain[0] === -Infinity) {
+  if (globalInfimum[1] === Infinity) {
     // never found a global minimum
-    globalMinimumCompactifyDomain = null;
+    globalInfimum = null;
   }
 
-  if (globalMinimumCompactifyDomain && globalMinimum) {
-    if (globalMinimumCompactifyDomain[1] === -Infinity) {
+  if (globalInfimum && globalMinimum) {
+    if (globalInfimum[1] === -Infinity) {
       if (globalMinimum[1] > -Infinity) {
         globalMinimum = null;
       }
     } else {
       let buffer =
-        Math.max(
-          Math.abs(globalMinimumCompactifyDomain[1]),
-          Math.abs(globalMinimum[1]),
-        ) * 1e-12;
-      if (globalMinimumCompactifyDomain[1] < globalMinimum[1] - buffer) {
+        Math.max(Math.abs(globalInfimum[1]), Math.abs(globalMinimum[1])) *
+        1e-12;
+      if (globalInfimum[1] < globalMinimum[1] - buffer) {
         globalMinimum = null;
       }
     }
   }
 
-  return { globalMinimum, globalMinimumCompactifyDomain };
+  return { globalMinimum, globalInfimum };
 }

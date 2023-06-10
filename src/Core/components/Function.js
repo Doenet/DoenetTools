@@ -277,11 +277,12 @@ export default class Function extends InlineComponent {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            isInterpolatedFunction:
+            isInterpolatedFunction: Boolean(
               dependencyValues.through ||
-              dependencyValues.minima ||
-              dependencyValues.maxima ||
-              dependencyValues.extrema,
+                dependencyValues.minima ||
+                dependencyValues.maxima ||
+                dependencyValues.extrema,
+            ),
           },
         };
       },
@@ -2463,7 +2464,7 @@ export default class Function extends InlineComponent {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       additionalStateVariablesDefined: [
         "globalMinimumOption",
-        "globalMinimumCompactifyDomainOption",
+        "globalInfimumOption",
       ],
       returnDependencies({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -2531,7 +2532,7 @@ export default class Function extends InlineComponent {
         }
       },
       definition: function ({ dependencyValues }) {
-        let { localMinima, globalMinimum, globalMinimumCompactifyDomain } =
+        let { localMinima, globalMinimum, globalInfimum } =
           find_local_global_minima({
             domain: dependencyValues.domain,
             xscale: dependencyValues.xscale,
@@ -2552,7 +2553,7 @@ export default class Function extends InlineComponent {
           setValue: {
             allMinima: localMinima,
             globalMinimumOption: globalMinimum,
-            globalMinimumCompactifyDomainOption: globalMinimumCompactifyDomain,
+            globalInfimumOption: globalInfimum,
           },
         };
       },
@@ -2834,7 +2835,7 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.globalMinimumCompactifyDomain = {
+    stateVariableDefinitions.globalInfimum = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -2855,14 +2856,11 @@ export default class Function extends InlineComponent {
         },
       },
       isArray: true,
-      entryPrefixes: [
-        "globalMinimumCompactifyDomainLocation",
-        "globalMinimumCompactifyDomainValue",
-      ],
+      entryPrefixes: ["globalInfimumLocation", "globalInfimumValue"],
       getArrayKeysFromVarName({ arrayEntryPrefix }) {
-        if (arrayEntryPrefix === "globalMinimumCompactifyDomainLocation") {
+        if (arrayEntryPrefix === "globalInfimumLocation") {
           return ["0"];
-        } else if (arrayEntryPrefix === "globalMinimumCompactifyDomainValue") {
+        } else if (arrayEntryPrefix === "globalInfimumValue") {
           return ["1"];
         } else {
           return [];
@@ -2870,33 +2868,33 @@ export default class Function extends InlineComponent {
       },
       arrayVarNameFromArrayKey(arrayKey) {
         if (arrayKey === "0") {
-          return "globalMinimumCompactifyDomainLocation";
+          return "globalInfimumLocation";
         } else if (arrayKey === "1") {
-          return "globalMinimumCompactifyDomainValue";
+          return "globalInfimumValue";
         } else {
           return "invalid";
         }
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
-        if (varName === "globalMinimumCompactifyDomain") {
+        if (varName === "globalInfimum") {
           if (propIndex.length === 1) {
             if (propIndex[0] === 1) {
-              return "globalMinimumCompactifyDomainLocation";
+              return "globalInfimumLocation";
             } else if (propIndex[0] === 2) {
-              return "globalMinimumCompactifyDomainValue";
+              return "globalInfimumValue";
             }
           }
         }
         return null;
       },
       returnArraySizeDependencies: () => ({
-        globalMinimumCompactifyDomainOption: {
+        globalInfimumOption: {
           dependencyType: "stateVariable",
-          variableName: "globalMinimumCompactifyDomainOption",
+          variableName: "globalInfimumOption",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.globalMinimumCompactifyDomainOption) {
+        if (dependencyValues.globalInfimumOption) {
           return [2];
         } else {
           return [0];
@@ -2905,9 +2903,9 @@ export default class Function extends InlineComponent {
       returnArrayDependenciesByKey() {
         return {
           globalDependencies: {
-            globalMinimumCompactifyDomainOption: {
+            globalInfimumOption: {
               dependencyType: "stateVariable",
-              variableName: "globalMinimumCompactifyDomainOption",
+              variableName: "globalInfimumOption",
             },
           },
         };
@@ -2915,8 +2913,7 @@ export default class Function extends InlineComponent {
       arrayDefinitionByKey({ globalDependencyValues }) {
         return {
           setValue: {
-            globalMinimumCompactifyDomain:
-              globalDependencyValues.globalMinimumCompactifyDomainOption,
+            globalInfimum: globalDependencyValues.globalInfimumOption,
           },
         };
       },
@@ -2926,7 +2923,7 @@ export default class Function extends InlineComponent {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       additionalStateVariablesDefined: [
         "globalMaximumOption",
-        "globalMaximumCompactifyDomainOption",
+        "globalSupremumOption",
       ],
       returnDependencies({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
@@ -2994,7 +2991,7 @@ export default class Function extends InlineComponent {
         }
       },
       definition: function ({ dependencyValues }) {
-        let { localMaxima, globalMaximum, globalMaximumCompactifyDomain } =
+        let { localMaxima, globalMaximum, globalSupremum } =
           find_local_global_maxima({
             domain: dependencyValues.domain,
             xscale: dependencyValues.xscale,
@@ -3015,7 +3012,7 @@ export default class Function extends InlineComponent {
           setValue: {
             allMaxima: localMaxima,
             globalMaximumOption: globalMaximum,
-            globalMaximumCompactifyDomainOption: globalMaximumCompactifyDomain,
+            globalSupremumOption: globalSupremum,
           },
         };
       },
@@ -3297,7 +3294,7 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.globalMaximumCompactifyDomain = {
+    stateVariableDefinitions.globalSupremum = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -3318,14 +3315,11 @@ export default class Function extends InlineComponent {
         },
       },
       isArray: true,
-      entryPrefixes: [
-        "globalMaximumCompactifyDomainLocation",
-        "globalMaximumCompactifyDomainValue",
-      ],
+      entryPrefixes: ["globalSupremumLocation", "globalSupremumValue"],
       getArrayKeysFromVarName({ arrayEntryPrefix }) {
-        if (arrayEntryPrefix === "globalMaximumCompactifyDomainLocation") {
+        if (arrayEntryPrefix === "globalSupremumLocation") {
           return ["0"];
-        } else if (arrayEntryPrefix === "globalMaximumCompactifyDomainValue") {
+        } else if (arrayEntryPrefix === "globalSupremumValue") {
           return ["1"];
         } else {
           return [];
@@ -3333,33 +3327,33 @@ export default class Function extends InlineComponent {
       },
       arrayVarNameFromArrayKey(arrayKey) {
         if (arrayKey === "0") {
-          return "globalMaximumCompactifyDomainLocation";
+          return "globalSupremumLocation";
         } else if (arrayKey === "1") {
-          return "globalMaximumCompactifyDomainValue";
+          return "globalSupremumValue";
         } else {
           return "invalid";
         }
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
-        if (varName === "globalMaximumCompactifyDomain") {
+        if (varName === "globalSupremum") {
           if (propIndex.length === 1) {
             if (propIndex[0] === 1) {
-              return "globalMaximumCompactifyDomainLocation";
+              return "globalSupremumLocation";
             } else if (propIndex[0] === 2) {
-              return "globalMaximumCompactifyDomainValue";
+              return "globalSupremumValue";
             }
           }
         }
         return null;
       },
       returnArraySizeDependencies: () => ({
-        globalMaximumCompactifyDomainOption: {
+        globalSupremumOption: {
           dependencyType: "stateVariable",
-          variableName: "globalMaximumCompactifyDomainOption",
+          variableName: "globalSupremumOption",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.globalMaximumCompactifyDomainOption) {
+        if (dependencyValues.globalSupremumOption) {
           return [2];
         } else {
           return [0];
@@ -3368,9 +3362,9 @@ export default class Function extends InlineComponent {
       returnArrayDependenciesByKey() {
         return {
           globalDependencies: {
-            globalMaximumCompactifyDomainOption: {
+            globalSupremumOption: {
               dependencyType: "stateVariable",
-              variableName: "globalMaximumCompactifyDomainOption",
+              variableName: "globalSupremumOption",
             },
           },
         };
@@ -3378,8 +3372,7 @@ export default class Function extends InlineComponent {
       arrayDefinitionByKey({ globalDependencyValues }) {
         return {
           setValue: {
-            globalMaximumCompactifyDomain:
-              globalDependencyValues.globalMaximumCompactifyDomainOption,
+            globalSupremum: globalDependencyValues.globalSupremumOption,
           },
         };
       },

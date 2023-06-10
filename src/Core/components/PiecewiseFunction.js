@@ -647,7 +647,7 @@ export default class PiecewiseFunction extends Function {
     stateVariableDefinitions.allMinima = {
       additionalStateVariablesDefined: [
         "globalMinimumOption",
-        "globalMinimumCompactifyDomainOption",
+        "globalInfimumOption",
       ],
       returnDependencies() {
         return {
@@ -683,7 +683,7 @@ export default class PiecewiseFunction extends Function {
         };
       },
       definition: function ({ dependencyValues }) {
-        let { minimaList, globalMinimum, globalMinimumCompactifyDomain } =
+        let { minimaList, globalMinimum, globalInfimum } =
           find_minima_of_piecewise({
             functionChildren: dependencyValues.functionChildren,
             domain: dependencyValues.domain,
@@ -697,7 +697,7 @@ export default class PiecewiseFunction extends Function {
           setValue: {
             allMinima: minimaList,
             globalMinimumOption: globalMinimum,
-            globalMinimumCompactifyDomainOption: globalMinimumCompactifyDomain,
+            globalInfimumOption: globalInfimum,
           },
         };
       },
@@ -706,7 +706,7 @@ export default class PiecewiseFunction extends Function {
     stateVariableDefinitions.allMaxima = {
       additionalStateVariablesDefined: [
         "globalMaximumOption",
-        "globalMaximumCompactifyDomainOption",
+        "globalSupremumOption",
       ],
       returnDependencies() {
         return {
@@ -754,7 +754,7 @@ export default class PiecewiseFunction extends Function {
         let numericalfFlip = (...args) =>
           -1 * dependencyValues.numericalf(...args);
 
-        let { minimaList, globalMinimum, globalMinimumCompactifyDomain } =
+        let { minimaList, globalMinimum, globalInfimum } =
           find_minima_of_piecewise({
             functionChildren: flippedFunctionChildren,
             domain: dependencyValues.domain,
@@ -767,23 +767,20 @@ export default class PiecewiseFunction extends Function {
         let maximaList = minimaList.map((pt) => [pt[0], -pt[1]]);
 
         let globalMaximum = null,
-          globalMaximumCompactifyDomain = null;
+          globalSupremum = null;
 
         if (globalMinimum) {
           globalMaximum = [globalMinimum[0], -1 * globalMinimum[1]];
         }
-        if (globalMinimumCompactifyDomain) {
-          globalMaximumCompactifyDomain = [
-            globalMinimumCompactifyDomain[0],
-            -1 * globalMinimumCompactifyDomain[1],
-          ];
+        if (globalInfimum) {
+          globalSupremum = [globalInfimum[0], -1 * globalInfimum[1]];
         }
 
         return {
           setValue: {
             allMaxima: maximaList,
             globalMaximumOption: globalMaximum,
-            globalMaximumCompactifyDomainOption: globalMaximumCompactifyDomain,
+            globalSupremumOption: globalSupremum,
           },
         };
       },
@@ -822,7 +819,7 @@ function find_minima_of_piecewise({
   }
 
   let globalMinimum = [-Infinity, Infinity];
-  let globalMinimumCompactifyDomain = [-Infinity, Infinity];
+  let globalInfimum = [-Infinity, Infinity];
 
   let eps = numerics.eps;
 
@@ -912,12 +909,8 @@ function find_minima_of_piecewise({
         globalMinimum = subResults.globalMinimum;
       }
 
-      if (
-        subResults.globalMinimumCompactifyDomain?.[1] <
-        globalMinimumCompactifyDomain[1]
-      ) {
-        globalMinimumCompactifyDomain =
-          subResults.globalMinimumCompactifyDomain;
+      if (subResults.globalInfimum?.[1] < globalInfimum[1]) {
+        globalInfimum = subResults.globalInfimum;
       }
     }
   }
@@ -941,19 +934,19 @@ function find_minima_of_piecewise({
       if (fx < globalMinimum[1]) {
         globalMinimum = [x, fx];
       }
-      if (fx < globalMinimumCompactifyDomain[1]) {
-        globalMinimumCompactifyDomain = [x, fx];
+      if (fx < globalInfimum[1]) {
+        globalInfimum = [x, fx];
       }
     }
   }
 
   minimaList = minimaList.sort((a, b) => a[0] - b[0]);
 
-  ({ globalMinimum, globalMinimumCompactifyDomain } = finalizeGlobalMinimum({
+  ({ globalMinimum, globalInfimum } = finalizeGlobalMinimum({
     globalMinimum,
-    globalMinimumCompactifyDomain,
+    globalInfimum,
   }));
-  return { minimaList, globalMinimum, globalMinimumCompactifyDomain };
+  return { minimaList, globalMinimum, globalInfimum };
 }
 
 function flip_function_children_stateValues(stateValues) {

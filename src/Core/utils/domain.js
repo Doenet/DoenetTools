@@ -21,8 +21,8 @@ export function find_effective_domain({
 
   let minx = -Infinity;
   let maxx = Infinity;
-  let openMin = false,
-    openMax = false;
+  let openMin = true,
+    openMax = true;
 
   if (domain !== null) {
     let domain1 = domain[0];
