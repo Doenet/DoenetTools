@@ -1,4 +1,7 @@
 import me from "math-expressions";
+import subsets, {
+  buildSubsetFromMathExpression,
+} from "./subset-of-reals";
 
 export function find_effective_domain({
   domain,
@@ -56,4 +59,47 @@ export function find_effective_domain({
   }
 
   return { minx, maxx, openMin, openMax };
+}
+
+export function find_effective_domains_piecewise_children({
+  domain,
+  numericalDomainsOfChildren,
+}) {
+  let domainUnused;
+
+  if (domain) {
+    let domainMin = me.fromAst(domain[0].tree[1][1]).evaluate_to_constant();
+    let domainMax = me.fromAst(domain[0].tree[1][2]).evaluate_to_constant();
+
+    if (Number.isNaN(domainMin) || Number.isNaN(domainMax)) {
+      domainUnused = new subsets.RealLine();
+    } else {
+      domainUnused = buildSubsetFromMathExpression(domain[0]);
+    }
+  } else {
+    domainUnused = new subsets.RealLine();
+  }
+
+  let effectiveChildDomains = [];
+
+  for (let childDomain of numericalDomainsOfChildren) {
+    if (!childDomain) {
+      effectiveChildDomains.push(new subsets.EmptySet());
+    } else {
+      let childDomainMathExpr = me.fromAst([
+        "interval",
+        ["tuple", ...childDomain[0]],
+        ["tuple", ...childDomain[1]],
+      ]);
+
+      let childDomainSubset =
+        buildSubsetFromMathExpression(childDomainMathExpr);
+
+      let childDomainToConsider = childDomainSubset.intersect(domainUnused);
+      domainUnused = domainUnused.setMinus(childDomainSubset);
+      effectiveChildDomains.push(childDomainToConsider);
+    }
+  }
+
+  return effectiveChildDomains;
 }

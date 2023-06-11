@@ -280,6 +280,10 @@ class Union extends Subset {
                   if (sub3 instanceof Singleton && sub3.element === gap) {
                     prelimSubsets.splice(ind3, 1);
                     foundSingleton = true;
+                    if (ind3 < ind2) {
+                      // have to shift ind2 as splice an entry in front of it
+                      ind2--;
+                    }
                     break;
                   }
                 }
@@ -800,6 +804,8 @@ export function mathExpressionFromSubsetValue({
   variable,
   displayMode = "intervals",
 }) {
+  // displayMode is either "intervals" or "inequalities"
+
   function subsetToMath(subset) {
     if (subset === null) {
       return "\uff3f";

@@ -98,6 +98,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(f(1e-6)).closeTo(1, 1e-12);
         expect(f(1)).closeTo(1, 1e-12);
         expect(f(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + fsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + fsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + fsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + fsym].stateValues.globalSupremum[1]).eq(1);
       }
 
       for (let gsym of gs) {
@@ -111,6 +116,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(g(1e-6)).closeTo(1, 1e-12);
         expect(g(1)).closeTo(1, 1e-12);
         expect(g(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + gsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + gsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + gsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + gsym].stateValues.globalSupremum[1]).eq(1);
       }
 
       for (let hsym of hs) {
@@ -124,6 +134,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(h(1e-6)).closeTo(1, 1e-12);
         expect(h(1)).closeTo(1, 1e-12);
         expect(h(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + hsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + hsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + hsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + hsym].stateValues.globalSupremum[1]).eq(1);
       }
     });
   });
@@ -218,6 +233,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(f(1e-6)).closeTo(1, 1e-12);
         expect(f(1)).closeTo(1, 1e-12);
         expect(f(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + fsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + fsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + fsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + fsym].stateValues.globalSupremum[1]).eq(1);
       }
 
       for (let gsym of gs) {
@@ -231,6 +251,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(g(1e-6)).closeTo(1, 1e-12);
         expect(g(1)).closeTo(1, 1e-12);
         expect(g(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + gsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + gsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + gsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + gsym].stateValues.globalSupremum[1]).eq(1);
       }
 
       for (let hsym of hs) {
@@ -244,6 +269,11 @@ describe("Piecewise Function Tag Tests", function () {
         expect(h(1e-6)).closeTo(1, 1e-12);
         expect(h(1)).closeTo(1, 1e-12);
         expect(h(2)).closeTo(1, 1e-12);
+
+        expect(stateVariables["/" + hsym].stateValues.globalMinimum[1]).eq(0);
+        expect(stateVariables["/" + hsym].stateValues.globalInfimum[1]).eq(0);
+        expect(stateVariables["/" + hsym].stateValues.globalMaximum[1]).eq(1);
+        expect(stateVariables["/" + hsym].stateValues.globalSupremum[1]).eq(1);
       }
     });
   });
@@ -274,7 +304,7 @@ describe("Piecewise Function Tag Tests", function () {
     <me name="mef">f(t)=$f</me>
     <me name="meg">g(q)=$g</me>
     <me name="meh">h(s)=$h</me>
-    <me name="mek">k(s)=$k</me>
+    <me name="mek">k(u)=$k</me>
     `,
         },
         "*",
@@ -292,7 +322,7 @@ describe("Piecewise Function Tag Tests", function () {
       .should("have.text", "h(s)={sif\u00a00≤s<102−sif\u00a0−10≤s<0");
     cy.get(cesc("#\\/mek") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "k(s)={uif\u00a0u>02−uif\u00a0u<0");
+      .should("have.text", "k(u)={uif\u00a0u>02−uif\u00a0u<0");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -308,6 +338,11 @@ describe("Piecewise Function Tag Tests", function () {
       expect(f(1)).closeTo(1, 1e-12);
       expect(f(2)).closeTo(2, 1e-12);
 
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([-200, 202]);
+
       let g = createFunctionFromDefinition(
         stateVariables["/g"].stateValues.fDefinitions[0],
       );
@@ -318,6 +353,11 @@ describe("Piecewise Function Tag Tests", function () {
       expect(g(1e-6)).closeTo(1e-6, 1e-12);
       expect(g(1)).closeTo(1, 1e-12);
       expect(g(2)).closeTo(2, 1e-12);
+
+      expect(stateVariables["/g"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/g"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/g"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/g"].stateValues.globalSupremum).eqls([-200, 202]);
 
       let h = createFunctionFromDefinition(
         stateVariables["/h"].stateValues.fDefinitions[0],
@@ -334,6 +374,11 @@ describe("Piecewise Function Tag Tests", function () {
       expect(h(9.99999)).closeTo(9.99999, 1e-12);
       expect(h(10)).eqls(NaN);
 
+      expect(stateVariables["/h"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/h"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/h"].stateValues.globalMaximum).eqls([-10, 12]);
+      expect(stateVariables["/h"].stateValues.globalSupremum).eqls([-10, 12]);
+
       let k = createFunctionFromDefinition(
         stateVariables["/k"].stateValues.fDefinitions[0],
       );
@@ -348,6 +393,11 @@ describe("Piecewise Function Tag Tests", function () {
       expect(k(2)).closeTo(2, 1e-12);
       expect(k(10)).closeTo(10, 1e-12);
       expect(k(10.0000001)).eqls(NaN);
+
+      expect(stateVariables["/k"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/k"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/k"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/k"].stateValues.globalSupremum).eqls([-10, 12]);
     });
   });
 
@@ -448,6 +498,26 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/f"].stateValues.maxima).eqls([]);
       expect(stateVariables["/f2"].stateValues.minima).eqls([]);
       expect(stateVariables["/f2"].stateValues.maxima).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([
+        -200,
+        -(200 ** 2),
+      ]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([
+        200,
+        200 ** 2,
+      ]);
+      expect(stateVariables["/f2"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/f2"].stateValues.globalInfimum).eqls([
+        -200,
+        -(200 ** 2),
+      ]);
+      expect(stateVariables["/f2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/f2"].stateValues.globalSupremum).eqls([
+        200,
+        200 ** 2,
+      ]);
     });
 
     cy.get(cesc("#\\/meg") + " .mjx-mrow")
@@ -491,6 +561,26 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/g2"].stateValues.maxima.length).eq(1);
       expect(stateVariables["/g2"].stateValues.maxima[0][0]).closeTo(0, 1e-14);
       expect(stateVariables["/g2"].stateValues.maxima[0][1]).closeTo(0, 1e-14);
+      expect(stateVariables["/g"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/g"].stateValues.globalInfimum).eqls([
+        -199.9,
+        -(199.9 ** 2),
+      ]);
+      expect(stateVariables["/g"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/g"].stateValues.globalSupremum).eqls([
+        200.1,
+        200.1 ** 2,
+      ]);
+      expect(stateVariables["/g2"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/g2"].stateValues.globalInfimum).eqls([
+        -199.9,
+        -(199.9 ** 2),
+      ]);
+      expect(stateVariables["/g2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/g2"].stateValues.globalSupremum).eqls([
+        200.1,
+        200.1 ** 2,
+      ]);
     });
 
     cy.get(cesc("#\\/meh") + " .mjx-mrow")
@@ -537,6 +627,26 @@ describe("Piecewise Function Tag Tests", function () {
         0.01,
         1e-14,
       );
+      expect(stateVariables["/h"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/h"].stateValues.globalInfimum).eqls([
+        -200.1,
+        -(200.1 ** 2),
+      ]);
+      expect(stateVariables["/h"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/h"].stateValues.globalSupremum).eqls([
+        199.9,
+        199.9 ** 2,
+      ]);
+      expect(stateVariables["/h2"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/h2"].stateValues.globalInfimum).eqls([
+        -200.1,
+        -(200.1 ** 2),
+      ]);
+      expect(stateVariables["/h2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/h2"].stateValues.globalSupremum).eqls([
+        199.9,
+        199.9 ** 2,
+      ]);
     });
 
     cy.get(cesc("#\\/mek") + " .mjx-mrow")
@@ -623,6 +733,21 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/k2"].stateValues.maxima[1][1]).closeTo(1, 1e-14);
       expect(stateVariables["/k2"].stateValues.maxima[2][0]).closeTo(1, 1e-14);
       expect(stateVariables["/k2"].stateValues.maxima[2][1]).closeTo(1, 1e-14);
+
+      expect(stateVariables["/k"].stateValues.globalMinimum).eqls([2, 0]);
+      expect(stateVariables["/k"].stateValues.globalInfimum).eqls([2, 0]);
+      expect(stateVariables["/k"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/k"].stateValues.globalSupremum).eqls([
+        201,
+        199 ** 2,
+      ]);
+      expect(stateVariables["/k2"].stateValues.globalMinimum).eqls([2, 0]);
+      expect(stateVariables["/k2"].stateValues.globalInfimum).eqls([2, 0]);
+      expect(stateVariables["/k2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/k2"].stateValues.globalSupremum).eqls([
+        201,
+        199 ** 2,
+      ]);
     });
   });
 
@@ -735,6 +860,21 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/f"].stateValues.maxima).eqls([]);
       expect(stateVariables["/f2"].stateValues.minima).eqls([[0, 0]]);
       expect(stateVariables["/f2"].stateValues.maxima).eqls([]);
+
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([
+        201,
+        200 ** 2 + 1,
+      ]);
+      expect(stateVariables["/f2"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/f2"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/f2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/f2"].stateValues.globalSupremum).eqls([
+        201,
+        200 ** 2 + 1,
+      ]);
     });
 
     cy.get(cesc("#\\/pgmin") + " .mjx-mrow")
@@ -794,6 +934,21 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/g2"].stateValues.minima[2][0]).closeTo(2, 1e-14);
       expect(stateVariables["/g2"].stateValues.minima[2][1]).closeTo(1, 1e-14);
       expect(stateVariables["/g2"].stateValues.maxima).eqls([]);
+
+      expect(stateVariables["/g"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/g"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/g"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/g"].stateValues.globalSupremum).eqls([
+        201,
+        199 ** 2 + 1,
+      ]);
+      expect(stateVariables["/g2"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/g2"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/g2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/g2"].stateValues.globalSupremum).eqls([
+        201,
+        199 ** 2 + 1,
+      ]);
     });
 
     cy.get(cesc("#\\/phmin") + " .mjx-mrow")
@@ -853,6 +1008,17 @@ describe("Piecewise Function Tag Tests", function () {
       expect(stateVariables["/h2"].stateValues.maxima[0][1]).closeTo(1, 1e-8);
       expect(stateVariables["/h2"].stateValues.maxima[1][0]).closeTo(1, 1e-8);
       expect(stateVariables["/h2"].stateValues.maxima[1][1]).closeTo(1, 1e-8);
+
+      expect(stateVariables["/h"].stateValues.globalMinimum).eqls([-2, -4]);
+      expect(stateVariables["/h"].stateValues.globalInfimum).eqls([-2, -4]);
+      expect(stateVariables["/h"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/h"].stateValues.globalSupremum).eqls([-203, 203]);
+      expect(stateVariables["/h2"].stateValues.globalMinimum).eqls([-2, -4]);
+      expect(stateVariables["/h2"].stateValues.globalInfimum).eqls([-2, -4]);
+      expect(stateVariables["/h2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/h2"].stateValues.globalSupremum).eqls([
+        -203, 203,
+      ]);
     });
 
     cy.get(cesc("#\\/pkmin") + " .mjx-mrow")
@@ -940,6 +1106,17 @@ describe("Piecewise Function Tag Tests", function () {
         6.25,
         1e-8,
       );
+
+      expect(stateVariables["/k"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/k"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/k"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/k"].stateValues.globalSupremum).eqls([-203, 203]);
+      expect(stateVariables["/k2"].stateValues.globalMinimum).eqls([0, 0]);
+      expect(stateVariables["/k2"].stateValues.globalInfimum).eqls([0, 0]);
+      expect(stateVariables["/k2"].stateValues.globalMaximum).eqls([]);
+      expect(stateVariables["/k2"].stateValues.globalSupremum).eqls([
+        -203, 203,
+      ]);
     });
   });
 
@@ -950,6 +1127,7 @@ describe("Piecewise Function Tag Tests", function () {
           doenetML: `
     <graph>
     <piecewisefunction name="f" symbolic="false">
+      <function domain="[a,a]">1</function>
       <function domain="(s,t)">x</function>
       <function domain="[1,q)">x^2/10</function>
       <function domain="(z,5)">x^3/100</function>
@@ -973,7 +1151,7 @@ describe("Piecewise Function Tag Tests", function () {
       .eq(0)
       .should(
         "have.text",
-        "f(x)=⎧⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎨⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎩xif\u00a0s<x<tx210if\u00a01≤x<qx3100if\u00a0z<x<5x41000if\u00a08≤x≤10x510000if\u00a020<x<−10",
+        "f(x)=⎧⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎨⎪\n⎪\n⎪\n⎪\n⎪\n⎪\n⎪⎩1if\u00a0x=axif\u00a0s<x<tx210if\u00a01≤x<qx3100if\u00a0z<x<5x41000if\u00a08≤x≤10",
       );
 
     cy.get(cesc("#\\/p7") + " .mjx-mrow")
@@ -1005,6 +1183,11 @@ describe("Piecewise Function Tag Tests", function () {
           expect(f(i)).eqls(NaN);
         }
       }
+
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([8, f(8)]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([8, f(8)]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([10, f(10)]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([10, f(10)]);
     });
   });
 
@@ -1019,6 +1202,9 @@ describe("Piecewise Function Tag Tests", function () {
       <function domain="[sqrt(4), 2]">x^2/10</function>
       <function domain="(sin(5pi/2),3)">x^3/100</function>
     </piecewisefunction>
+    $f.extrema
+    $f.globalMaximum{styleNumber="2"}
+    $f.globalInfimum{styleNumber="3"}
     </graph>
     <me name="mef">f(x)=$f</me>
     `,
@@ -1031,7 +1217,7 @@ describe("Piecewise Function Tag Tests", function () {
       .eq(0)
       .should(
         "have.text",
-        "f(x)=⎧⎪\n⎪⎨⎪\n⎪⎩xif\u00a0x=1x210if\u00a0x=2x3100if\u00a01<x<3",
+        "f(x)=⎧⎪\n⎪⎨⎪\n⎪⎩xif\u00a0x=1x210if\u00a0x=2x3100if\u00a01<x<2\u00a0or\u00a02<x<3",
       );
 
     cy.window().then(async (win) => {
@@ -1050,6 +1236,108 @@ describe("Piecewise Function Tag Tests", function () {
       expect(f(2.9999)).closeTo(2.9999 ** 3 / 100, 1e-14);
       expect(f(3)).eqls(NaN);
       expect(f(4)).eqls(NaN);
+
+      expect(stateVariables["/f"].stateValues.maxima).eqls([[2, 4 / 10]]);
+      expect(stateVariables["/f"].stateValues.minima).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([1, 1]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([1, 1]);
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([1, 1 / 100]);
     });
   });
+
+  it("global extrema, find single points from gaps", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+    <piecewisefunction name="f" domain="(-5,5)">
+      <function domain="(-1,0.1)">3</function>
+      <function domain="(3,4)">1/x-1</function>
+      <function domain="(4,5)">1/x-1</function>
+      <function domain="(-6,Infinity)">-2-(x+4)^2</function>
+    </piecewisefunction>
+    $f.extrema
+    $f.globalMaximum{styleNumber="2"}
+    $f.globalInfimum{styleNumber="3"}
+    </graph>
+    <me name="mef">f(x)=$f</me>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/mef") + " .mjx-mrow")
+      .eq(0)
+      .should(
+        "have.text",
+        "f(x)=⎧⎪⎨⎪⎩3if\u00a0−1<x<0.11x−1if\u00a03<x<4\u00a0or\u00a04<x<5−2−(x+4)2if\u00a0−6<x≤−1\u00a0or\u00a00.1≤x≤3\u00a0or\u00a0x=4\u00a0or\u00a0x≥5"
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f = createFunctionFromDefinition(
+        stateVariables["/f"].stateValues.fDefinitions[0],
+      );
+      expect(f(-5)).eqls(NaN);
+      expect(f(-4.999)).closeTo(-2-(0.999)**2,1E-14);
+      expect(f(-1)).eq(-2-(3)**2);
+      expect(f(-0.999)).eq(3);
+      expect(f(0.0999)).eq(3);
+      expect(f(0.1)).eq(-2-(4.1)**2);
+      expect(f(3)).eq(-2-(7)**2);
+      expect(f(3.001)).eq(1/3.001-1);
+      expect(f(3.999)).eq(1/3.999-1);
+      expect(f(4)).eq(-2-(8)**2);
+      expect(f(4.001)).eq(1/4.001-1);
+      expect(f(4.999)).eq(1/4.999-1);
+      expect(f(5)).eqls(NaN);
+
+      expect(stateVariables["/f"].stateValues.maxima).eqls([[-4, -2]]);
+      expect(stateVariables["/f"].stateValues.minima).eqls([[-1,-2-(3)**2], [3, -2-(7)**2], [4,-2-(8)**2]]);
+      expect(stateVariables["/f"].stateValues.globalMaximum[0]).within(-1,-0.9);
+      expect(stateVariables["/f"].stateValues.globalMaximum[1]).eq(3);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([-1,3]);
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([4,-2-(8)**2]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([4,-2-(8)**2]);
+    });
+  });
+
+  it("latex combines pieces", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+    <piecewisefunction name="f">
+      <function domain="(1,3)">x</function>
+      <function domain="(s,t)">x</function>
+      <function domain="(2,4)">x</function>
+      <function domain="[1,q)">x^2</function>
+      <function domain="[4,5)">x^2</function>
+      <function domain="[b,1)">x^2</function>
+      <function domain="[5,6)">x^2</function>
+      <function domain="(8,9)">x</function>
+    </piecewisefunction>
+    </graph>
+    <me name="mef">f(x)=$f</me>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/mef") + " .mjx-mrow")
+      .eq(0)
+      .should(
+        "have.text",
+        "f(x)=⎧⎨⎩xif\u00a0s<x<t\u00a0or\u00a01<x<4x2if\u00a01≤x<q\u00a0or\u00a0b≤x<1\u00a0or\u00a04≤x<6xif\u00a08<x<9",
+      );
+
+  });
+
 });

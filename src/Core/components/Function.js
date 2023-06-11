@@ -2372,6 +2372,11 @@ export default class Function extends InlineComponent {
         createComponentOfType: "latex",
       },
       returnDependencies: () => ({
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["latex"],
+        },
         formula: {
           dependencyType: "stateVariable",
           variableName: "formula",
@@ -2394,6 +2399,13 @@ export default class Function extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
+        if (dependencyValues.functionChild.length > 0) {
+          return {
+            setValue: {
+              latex: dependencyValues.functionChild[0].stateValues.latex,
+            },
+          };
+        }
         let params = {};
         if (dependencyValues.padZeros) {
           if (Number.isFinite(dependencyValues.displayDecimals)) {
@@ -2444,6 +2456,7 @@ export default class Function extends InlineComponent {
             "numInputs",
             "numOutputs",
           ],
+          variablesOptional: true,
         },
       }),
       definition({ dependencyValues }) {
