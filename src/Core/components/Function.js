@@ -2438,9 +2438,9 @@ export default class Function extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.functionChildInfoToRecalculateExtrema = {
+    stateVariableDefinitions.functionChildrenInfoToCalculateExtrema = {
       returnDependencies: () => ({
-        functionChild: {
+        functionChildren: {
           dependencyType: "child",
           childGroups: ["functions"],
           variableNames: [
@@ -2452,24 +2452,22 @@ export default class Function extends InlineComponent {
             "numericalf",
             "formula",
             "variables",
-            "functionChildInfoToRecalculateExtrema",
+            "functionChildrenInfoToCalculateExtrema",
             "numInputs",
             "numOutputs",
+            "isPiecewiseFunction",
+            "numericalDomainsOfChildren",
           ],
           variablesOptional: true,
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild?.length > 0) {
-          return {
-            setValue: {
-              functionChildInfoToRecalculateExtrema:
-                dependencyValues.functionChild[0].stateValues,
-            },
-          };
-        } else {
-          return { setValue: { functionChildInfoToRecalculateExtrema: null } };
-        }
+        return {
+          setValue: {
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildren,
+          },
+        };
       },
     };
 
@@ -2521,9 +2519,9 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "xscale",
             },
-            functionChildInfoToRecalculateExtrema: {
+            functionChildrenInfoToCalculateExtrema: {
               dependencyType: "stateVariable",
-              variableName: "functionChildInfoToRecalculateExtrema",
+              variableName: "functionChildrenInfoToCalculateExtrema",
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
@@ -2555,8 +2553,8 @@ export default class Function extends InlineComponent {
             numericalf: dependencyValues.numericalf,
             formula: dependencyValues.formula,
             variables: dependencyValues.variables,
-            functionChildInfoToRecalculateExtrema:
-              dependencyValues.functionChildInfoToRecalculateExtrema,
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildrenInfoToCalculateExtrema,
             numInputs: dependencyValues.numInputs,
             numOutputs: dependencyValues.numOutputs,
             numerics,
@@ -2980,9 +2978,9 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "xscale",
             },
-            functionChildInfoToRecalculateExtrema: {
+            functionChildrenInfoToCalculateExtrema: {
               dependencyType: "stateVariable",
-              variableName: "functionChildInfoToRecalculateExtrema",
+              variableName: "functionChildrenInfoToCalculateExtrema",
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
@@ -3014,8 +3012,8 @@ export default class Function extends InlineComponent {
             numericalf: dependencyValues.numericalf,
             formula: dependencyValues.formula,
             variables: dependencyValues.variables,
-            functionChildInfoToRecalculateExtrema:
-              dependencyValues.functionChildInfoToRecalculateExtrema,
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildrenInfoToCalculateExtrema,
             numInputs: dependencyValues.numInputs,
             numOutputs: dependencyValues.numOutputs,
             numerics,

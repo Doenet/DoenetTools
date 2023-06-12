@@ -1,6 +1,6 @@
 import me from "math-expressions";
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -1273,7 +1273,7 @@ describe("Piecewise Function Tag Tests", function () {
       .eq(0)
       .should(
         "have.text",
-        "f(x)=⎧⎪⎨⎪⎩3if\u00a0−1<x<0.11x−1if\u00a03<x<4\u00a0or\u00a04<x<5−2−(x+4)2if\u00a0−6<x≤−1\u00a0or\u00a00.1≤x≤3\u00a0or\u00a0x=4\u00a0or\u00a0x≥5"
+        "f(x)=⎧⎪⎨⎪⎩3if\u00a0−1<x<0.11x−1if\u00a03<x<4\u00a0or\u00a04<x<5−2−(x+4)2if\u00a0−6<x≤−1\u00a0or\u00a00.1≤x≤3\u00a0or\u00a0x=4\u00a0or\u00a0x≥5",
       );
 
     cy.window().then(async (win) => {
@@ -1283,26 +1283,39 @@ describe("Piecewise Function Tag Tests", function () {
         stateVariables["/f"].stateValues.fDefinitions[0],
       );
       expect(f(-5)).eqls(NaN);
-      expect(f(-4.999)).closeTo(-2-(0.999)**2,1E-14);
-      expect(f(-1)).eq(-2-(3)**2);
+      expect(f(-4.999)).closeTo(-2 - 0.999 ** 2, 1e-14);
+      expect(f(-1)).eq(-2 - 3 ** 2);
       expect(f(-0.999)).eq(3);
       expect(f(0.0999)).eq(3);
-      expect(f(0.1)).eq(-2-(4.1)**2);
-      expect(f(3)).eq(-2-(7)**2);
-      expect(f(3.001)).eq(1/3.001-1);
-      expect(f(3.999)).eq(1/3.999-1);
-      expect(f(4)).eq(-2-(8)**2);
-      expect(f(4.001)).eq(1/4.001-1);
-      expect(f(4.999)).eq(1/4.999-1);
+      expect(f(0.1)).eq(-2 - 4.1 ** 2);
+      expect(f(3)).eq(-2 - 7 ** 2);
+      expect(f(3.001)).eq(1 / 3.001 - 1);
+      expect(f(3.999)).eq(1 / 3.999 - 1);
+      expect(f(4)).eq(-2 - 8 ** 2);
+      expect(f(4.001)).eq(1 / 4.001 - 1);
+      expect(f(4.999)).eq(1 / 4.999 - 1);
       expect(f(5)).eqls(NaN);
 
       expect(stateVariables["/f"].stateValues.maxima).eqls([[-4, -2]]);
-      expect(stateVariables["/f"].stateValues.minima).eqls([[-1,-2-(3)**2], [3, -2-(7)**2], [4,-2-(8)**2]]);
-      expect(stateVariables["/f"].stateValues.globalMaximum[0]).within(-1,-0.9);
+      expect(stateVariables["/f"].stateValues.minima).eqls([
+        [-1, -2 - 3 ** 2],
+        [3, -2 - 7 ** 2],
+        [4, -2 - 8 ** 2],
+      ]);
+      expect(stateVariables["/f"].stateValues.globalMaximum[0]).within(
+        -1,
+        -0.9,
+      );
       expect(stateVariables["/f"].stateValues.globalMaximum[1]).eq(3);
-      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([-1,3]);
-      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([4,-2-(8)**2]);
-      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([4,-2-(8)**2]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([-1, 3]);
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([
+        4,
+        -2 - 8 ** 2,
+      ]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([
+        4,
+        -2 - 8 ** 2,
+      ]);
     });
   });
 
@@ -1337,7 +1350,153 @@ describe("Piecewise Function Tag Tests", function () {
         "have.text",
         "f(x)=⎧⎨⎩xif\u00a0s<x<t\u00a0or\u00a01<x<4x2if\u00a01≤x<q\u00a0or\u00a0b≤x<1\u00a0or\u00a04≤x<6xif\u00a08<x<9",
       );
-
   });
 
+  it("extrema of a function with piecewise function child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+    <function name="f">
+    <piecewisefunction domain="(-5,8]">
+      <function domain="(-1,1]">x^2</function>
+      <function domain="(-4,4]">1-x^2/4</function>
+      <function>cos(pi x)</function>
+    </piecewisefunction>
+    </function>
+    $f.extrema
+    $f.globalSupremum{styleNumber="2"}
+    $f.globalMaximum{styleNumber="3"}
+    $f.globalInfimum{styleNumber="4"}
+    $f.globalMinimum{styleNumber="5"}
+    </graph>
+    <me name="mef">f(x)=$f</me>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/mef") + " .mjx-mrow")
+      .eq(0)
+      .should(
+        "have.text",
+        "f(x)=⎧⎪⎨⎪⎩x2if\u00a0−1<x≤11−x24if\u00a0−4<x≤−1\u00a0or\u00a01<x≤4cos(πx)otherwise",
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f"].stateValues.maxima).eqls([
+        [-4, 1],
+        [1, 1],
+        [6, 1],
+        [8, 1],
+      ]);
+      expect(stateVariables["/f"].stateValues.minima).eqls([
+        [0, 0],
+        [4, -3],
+        [5, -1],
+        [7, -1],
+      ]);
+      expect(stateVariables["/f"].stateValues.globalMaximum).eqls([1, 1]);
+      expect(stateVariables["/f"].stateValues.globalSupremum).eqls([-1, 1]);
+      expect(stateVariables["/f"].stateValues.globalMinimum).eqls([4, -3]);
+      expect(stateVariables["/f"].stateValues.globalInfimum).eqls([-4, -3]);
+    });
+  });
+
+  it("extrema of piecewise functions with piecewise function children", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <piecewisefunction name="f1">
+        <function domain="(-Infinity,0)">0</function>
+        <function>x^2</function>
+      </piecewisefunction>
+      $f1.extrema
+    </graph>
+    
+    <graph>
+      <piecewisefunction name="f2">
+        <piecewisefunction copySource="f1" domain="(-3,2]" />
+        <function>1/x</function>
+      </piecewisefunction>
+      $f2.extrema
+    </graph>
+    
+    <graph>
+      <piecewisefunction name="f3">
+        <function domain="(3,Infinity)">9*e^(-(x-3))</function>
+        <function domain="[1,2)">8-x</function>
+        $f1
+      </piecewisefunction>
+      $f3.extrema
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f2 = createFunctionFromDefinition(
+        stateVariables["/f2"].stateValues.fDefinitions[0],
+      );
+
+      expect(f2(-4)).eq(-1 / 4);
+      expect(f2(-3)).eq(-1 / 3);
+      expect(f2(-2)).eq(0);
+      expect(f2(-1)).eq(0);
+      expect(f2(0)).eq(0);
+      expect(f2(1)).eq(1);
+      expect(f2(2)).eq(4);
+      expect(f2(3)).eq(1 / 3);
+      expect(f2(4)).eq(1 / 4);
+
+      expect(stateVariables["/f2"].stateValues.maxima).eqls([[2, 4]]);
+      expect(stateVariables["/f2"].stateValues.minima).eqls([[-3, -1 / 3]]);
+      expect(stateVariables["/f2"].stateValues.globalMaximum).eqls([2, 4]);
+      expect(stateVariables["/f2"].stateValues.globalSupremum).eqls([2, 4]);
+      expect(stateVariables["/f2"].stateValues.globalMinimum).eqls([
+        -3,
+        -1 / 3,
+      ]);
+      expect(stateVariables["/f2"].stateValues.globalInfimum).eqls([
+        -3,
+        -1 / 3,
+      ]);
+
+      let f3 = createFunctionFromDefinition(
+        stateVariables["/f3"].stateValues.fDefinitions[0],
+      );
+
+      expect(f3(-4)).eq(0);
+      expect(f3(0)).eq(0);
+      expect(f3(0.5)).eq(0.25);
+      expect(f3(1)).eq(7);
+      expect(f3(1.5)).eq(6.5);
+      expect(f3(2)).eq(4);
+      expect(f3(3)).eq(9);
+      expect(f3(4)).eq(9 * Math.exp(-1));
+
+      expect(stateVariables["/f3"].stateValues.maxima).eqls([
+        [1, 7],
+        [3, 9],
+      ]);
+      expect(stateVariables["/f3"].stateValues.minima).eqls([[2, 4]]);
+      expect(stateVariables["/f3"].stateValues.globalMaximum).eqls([3, 9]);
+      expect(stateVariables["/f3"].stateValues.globalSupremum).eqls([3, 9]);
+      expect(stateVariables["/f3"].stateValues.globalMinimum[1]).eq(0);
+      expect(stateVariables["/f3"].stateValues.globalInfimum[1]).eq(0);
+    });
+  });
 });

@@ -1,5 +1,9 @@
 import me from "math-expressions";
-import { find_effective_domain } from "./domain";
+import {
+  find_effective_domain,
+  find_effective_domains_piecewise_children,
+} from "./domain";
+import { mathExpressionFromSubsetValue } from "./subset-of-reals";
 
 export function find_local_global_minima({
   domain,
@@ -10,9 +14,11 @@ export function find_local_global_minima({
   numericalf,
   formula,
   variables,
-  functionChildInfoToRecalculateExtrema,
+  functionChildrenInfoToCalculateExtrema,
   numInputs,
   numOutputs,
+  isPiecewiseFunction,
+  numericalDomainsOfChildren,
   numIntervals = 1000,
   numRecursions = 0,
   numerics,
@@ -434,8 +440,18 @@ export function find_local_global_minima({
       globalMinimum,
       globalInfimum,
     };
-  } else if (functionChildInfoToRecalculateExtrema) {
-    let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
+  } else if (isPiecewiseFunction) {
+    return find_minima_of_piecewise({
+      functionChildrenInfoToCalculateExtrema,
+      domain,
+      numericalDomainsOfChildren,
+      numericalf,
+      numerics,
+    });
+  } else if (functionChildrenInfoToCalculateExtrema?.length > 0) {
+    let argsForRecursion = {
+      ...functionChildrenInfoToCalculateExtrema[0].stateValues,
+    };
     argsForRecursion.domain = domain;
     argsForRecursion.numerics = numerics;
     return find_local_global_minima(argsForRecursion);
@@ -621,7 +637,7 @@ export function find_local_global_minima({
                 numericalf,
                 formula,
                 variables,
-                functionChildInfoToRecalculateExtrema,
+                functionChildrenInfoToCalculateExtrema,
                 numInputs,
                 numOutputs,
                 numIntervals: 4,
@@ -740,7 +756,9 @@ export function find_local_global_maxima({
   numericalf,
   formula,
   variables,
-  functionChildInfoToRecalculateExtrema,
+  functionChildrenInfoToCalculateExtrema,
+  isPiecewiseFunction,
+  numericalDomainsOfChildren,
   numInputs,
   numOutputs,
   numerics,
@@ -758,8 +776,18 @@ export function find_local_global_maxima({
       };
     }
     coeffsFlip = coeffs.map((cs) => cs.map((v) => -v));
-  } else if (functionChildInfoToRecalculateExtrema) {
-    let argsForRecursion = { ...functionChildInfoToRecalculateExtrema };
+  } else if (isPiecewiseFunction) {
+    return find_maxima_of_piecewise({
+      functionChildrenInfoToCalculateExtrema,
+      domain,
+      numericalDomainsOfChildren,
+      numericalf,
+      numerics,
+    });
+  } else if (functionChildrenInfoToCalculateExtrema?.length > 0) {
+    let argsForRecursion = {
+      ...functionChildrenInfoToCalculateExtrema[0].stateValues,
+    };
     argsForRecursion.domain = domain;
     argsForRecursion.numerics = numerics;
     return find_local_global_maxima(argsForRecursion);
@@ -872,4 +900,212 @@ export function finalizeGlobalMinimum({
   }
 
   return { globalMinimum, globalInfimum };
+}
+
+export function find_minima_of_piecewise({
+  functionChildrenInfoToCalculateExtrema,
+  domain,
+  numericalDomainsOfChildren,
+  numericalf,
+  numerics,
+}) {
+  let globalMinimum = [-Infinity, Infinity];
+  let globalInfimum = [-Infinity, Infinity];
+
+  let eps = numerics.eps;
+
+  let minimaList = [];
+
+  let f = numericalf;
+
+  let endpointsToManuallyCheck = [];
+
+  let effectiveDomainsOfChildren = find_effective_domains_piecewise_children({
+    domain,
+    numericalDomainsOfChildren,
+  });
+
+  for (let [ind, childDomain] of effectiveDomainsOfChildren.entries()) {
+    // childDomain could be an empty set, real line, singleton set, interval,
+    // or union of singleton sets and intervals
+    let childDomainAsMath = mathExpressionFromSubsetValue({
+      subsetValue: childDomain,
+    });
+
+    let childDomainPieces = [];
+    if (childDomainAsMath.tree[0] === "union") {
+      childDomainPieces = childDomainAsMath.tree.slice(1);
+    } else {
+      childDomainPieces = [childDomainAsMath.tree];
+    }
+
+    for (let domainPiece of childDomainPieces) {
+      let thisDomain;
+      if (domainPiece === "∅") {
+        continue;
+      } else if (domainPiece === "R") {
+        thisDomain = null;
+      } else if (domainPiece[0] === "set") {
+        // have a singleton piece
+        endpointsToManuallyCheck.push(domainPiece[1]);
+        continue;
+      } else {
+        // have interval
+        thisDomain = domainPiece;
+      }
+
+      let args = {
+        ...functionChildrenInfoToCalculateExtrema[ind].stateValues,
+      };
+      if (thisDomain) {
+        args.domain = [me.fromAst(thisDomain)];
+      }
+      args.numerics = numerics;
+
+      let subResults = find_local_global_minima(args);
+
+      let childMinima = subResults.localMinima;
+
+      if (thisDomain) {
+        // thisDomain is an interval
+        // We will check endpoints of local minima manually
+        // (as their nature depends on more than one piece).
+        // Remove them from list of local minima and add to list to check.
+        let minx = me.fromAst(thisDomain[1][1]).evaluate_to_constant();
+        if (Number.isFinite(minx)) {
+          endpointsToManuallyCheck.push(minx);
+          childMinima = childMinima.filter(
+            (minpair) => minpair[0] > minx + eps,
+          );
+        }
+
+        let maxx = me.fromAst(thisDomain[1][2]).evaluate_to_constant();
+        if (Number.isFinite(maxx)) {
+          endpointsToManuallyCheck.push(maxx);
+          childMinima = childMinima.filter(
+            (minpair) => minpair[0] < maxx - eps,
+          );
+        }
+      }
+
+      minimaList.push(...childMinima);
+
+      if (subResults.globalMinimum?.[1] < globalMinimum[1]) {
+        globalMinimum = subResults.globalMinimum;
+      }
+
+      if (subResults.globalInfimum?.[1] < globalInfimum[1]) {
+        globalInfimum = subResults.globalInfimum;
+      }
+    }
+  }
+
+  // check endpoints
+  for (let ept of endpointsToManuallyCheck) {
+    let x = me.fromAst(ept).evaluate_to_constant();
+
+    if (Number.isFinite(x)) {
+      let fx = f(x);
+      // Note: add true to these evaluations of f to ignore domain
+      // so that local minima at edge of closed domain are counted
+      // (to be consistent with how these local minima are calculated for other functions)
+      if (fx < f(x - eps, true) && fx < f(x + eps, true)) {
+        if (
+          minimaList.every(
+            (minpair) => minpair[0] < x - eps || minpair[0] > x + eps,
+          )
+        ) {
+          minimaList.push([x, fx]);
+        }
+      }
+
+      if (fx < globalMinimum[1]) {
+        globalMinimum = [x, fx];
+      }
+      if (fx < globalInfimum[1]) {
+        globalInfimum = [x, fx];
+      }
+    }
+  }
+
+  minimaList = minimaList.sort((a, b) => a[0] - b[0]);
+
+  ({ globalMinimum, globalInfimum } = finalizeGlobalMinimum({
+    globalMinimum,
+    globalInfimum,
+  }));
+  return { localMinima: minimaList, globalMinimum, globalInfimum };
+}
+
+export function find_maxima_of_piecewise({
+  functionChildrenInfoToCalculateExtrema,
+  domain,
+  numericalDomainsOfChildren,
+  numericalf,
+  numerics,
+}) {
+  let flippedFunctionChildren = flip_function_children(
+    functionChildrenInfoToCalculateExtrema,
+  );
+
+  let numericalfFlip = (...args) => -1 * numericalf(...args);
+
+  let { localMinima, globalMinimum, globalInfimum } = find_minima_of_piecewise({
+    functionChildrenInfoToCalculateExtrema: flippedFunctionChildren,
+    domain: domain,
+    numericalDomainsOfChildren: numericalDomainsOfChildren,
+    numericalf: numericalfFlip,
+    numerics,
+  });
+
+  let localMaxima = localMinima.map((pt) => [pt[0], -pt[1]]);
+
+  let globalMaximum = null,
+    globalSupremum = null;
+
+  if (globalMinimum) {
+    globalMaximum = [globalMinimum[0], -1 * globalMinimum[1]];
+  }
+  if (globalInfimum) {
+    globalSupremum = [globalInfimum[0], -1 * globalInfimum[1]];
+  }
+
+  return { localMaxima, globalMaximum, globalSupremum };
+}
+
+function flip_function_children(functionChildren) {
+  let flippedFunctionChildren = [];
+
+  for (let functionChild of functionChildren) {
+    let stateValues = functionChild.stateValues;
+    let flippedStateValues = { ...stateValues };
+
+    flippedStateValues.numericalf = (...args) =>
+      -1 * stateValues.numericalf(...args);
+
+    if (stateValues.isInterpolatedFunction) {
+      flippedStateValues.coeffsFlip = stateValues.coeffs.map((cs) =>
+        cs.map((v) => -v),
+      );
+    } else if (
+      stateValues.isInterpolatedFunction ||
+      stateValues.functionChildrenInfoToCalculateExtrema?.length > 0
+    ) {
+      flippedStateValues.functionChildrenInfoToCalculateExtrema =
+        flip_function_children(
+          stateValues.functionChildrenInfoToCalculateExtrema,
+        );
+    } else {
+      flippedStateValues.formula = stateValues.formula.context.fromAst([
+        "-",
+        stateValues.formula.tree,
+      ]);
+    }
+
+    flippedFunctionChildren.push({
+      stateValues: flippedStateValues,
+    });
+  }
+
+  return flippedFunctionChildren;
 }
