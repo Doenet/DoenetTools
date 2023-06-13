@@ -653,10 +653,10 @@ export function find_local_global_minima({
                 minimumAtPreviousRight = false;
               }
               minimaList.push(...newLocalMinima);
-              if (recursionResult.globalMinimum[1] < globalMinimum[1]) {
+              if (recursionResult.globalMinimum?.[1] < globalMinimum[1]) {
                 globalMinimum = recursionResult.globalMinimum;
               }
-              if (recursionResult.globalInfimum[1] < globalInfimum[1]) {
+              if (recursionResult.globalInfimum?.[1] < globalInfimum[1]) {
                 globalInfimum = recursionResult.globalInfimum;
               }
 
@@ -886,9 +886,7 @@ export function finalizeGlobalMinimum({
 
   if (globalInfimum && globalMinimum) {
     if (globalInfimum[1] === -Infinity) {
-      if (globalMinimum[1] > -Infinity) {
-        globalMinimum = null;
-      }
+      globalMinimum = null;
     } else {
       let buffer =
         Math.max(Math.abs(globalInfimum[1]), Math.abs(globalMinimum[1])) *

@@ -4878,11 +4878,13 @@ describe("Function Tag Tests", function () {
       expect(f.stateValues.maximumLocations).closeTo(2.614, 0.001);
       expect(f.stateValues.maximumValues).closeTo(3.82, 0.001);
 
-      expect(f.stateValues.globalMaximum).eqls([-100, ffun(-100)]);
+      expect(f.stateValues.globalMaximum).eqls([]);
+      expect(f.stateValues.globalSupremum).eqls([-100, ffun(-100)]);
       expect(f.stateValues.globalMinimum[0]).closeTo(-1, 1e-5);
       expect(f.stateValues.globalMinimum[1]).eq(
         ffun(f.stateValues.globalMinimum[0]),
       );
+      expect(f.stateValues.globalInfimum).eqls(f.stateValues.globalMinimum)
     });
   });
 
@@ -4929,7 +4931,7 @@ describe("Function Tag Tests", function () {
       expect(f1.stateValues.extrema[0][1]).eq(2);
       expect(f1.stateValues.globalMaximum).eqls(f1.stateValues.maxima[0]);
       expect(f1.stateValues.globalSupremum).eqls(f1.stateValues.maxima[0]);
-      expect(f1.stateValues.globalMinimum).eqls([-100, f1fun(-100)]);
+      expect(f1.stateValues.globalMinimum).eqls([]);
       expect(f1.stateValues.globalInfimum).eqls([-100, f1fun(-100)]);
 
       expect(f2.stateValues.numMaxima).eq(0);
@@ -4941,7 +4943,7 @@ describe("Function Tag Tests", function () {
       expect(f2.stateValues.extrema[0][1]).eq(3);
       expect(f2.stateValues.globalMinimum).eqls(f2.stateValues.minima[0]);
       expect(f2.stateValues.globalInfimum).eqls(f2.stateValues.minima[0]);
-      expect(f2.stateValues.globalMaximum).eqls([100, f2fun(100)]);
+      expect(f2.stateValues.globalMaximum).eqls([]);
       expect(f2.stateValues.globalSupremum).eqls([100, f2fun(100)]);
 
       expect(f3.stateValues.numMaxima).eq(2);
@@ -5009,7 +5011,7 @@ describe("Function Tag Tests", function () {
       expect(f1.stateValues.globalMaximum[0]).within(0.0131, 2.0131);
       expect(f1.stateValues.globalMaximum[1]).eqls(2);
       expect(f1.stateValues.globalSupremum).eqls(f1.stateValues.globalMaximum);
-      expect(f1.stateValues.globalMinimum).eqls([-100, f1fun(-100)]);
+      expect(f1.stateValues.globalMinimum).eqls([]);
       expect(f1.stateValues.globalInfimum).eqls([-100, f1fun(-100)]);
 
       expect(f2.stateValues.numMaxima).eq(0);
@@ -5021,8 +5023,8 @@ describe("Function Tag Tests", function () {
       );
       expect(f2.stateValues.globalMinimum[1]).eqls(3);
       expect(f2.stateValues.globalInfimum).eqls(f2.stateValues.globalMinimum);
-      expect(f2.stateValues.globalMaximum[1]).eq(Infinity);
-      expect(f2.stateValues.globalSupremum).eqls(f2.stateValues.globalMaximum);
+      expect(f2.stateValues.globalMaximum).eqls([]);
+      expect(f2.stateValues.globalSupremum[1]).eq(Infinity);
 
       expect(f3.stateValues.numMaxima).eq(0);
       expect(f3.stateValues.numMinima).eq(0);
