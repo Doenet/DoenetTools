@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -5031,5 +5031,36 @@ describe("Collect Tag Tests", function () {
       }
       expect(stateVariables["/mean"].stateValues.value).eq(meany);
     });
+  });
+
+  it("collect from source that initially does not exist", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <booleaninput name="bi" />
+
+    <conditionalContent assignNames="g" condition="$bi">
+      <graph>
+        <point>(1,2)</point>
+        <point>(3,4)</point>
+      </graph>
+    </conditionalContent>
+    
+    <collect source="g" componentTypes="point" assignNames="P1 P2" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.get(cesc2("#/bi")).click();
+
+    cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(1,2");
+    cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(3,4");
+
   });
 });
