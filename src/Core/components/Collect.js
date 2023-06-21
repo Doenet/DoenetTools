@@ -343,6 +343,12 @@ export default class Collect extends CompositeComponent {
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(await component.stateValues.collectedComponents)
 
+    workspace.numReplacementsByCollected = [];
+    workspace.collectedNames = [];
+    workspace.replacementNamesByCollected = [];
+    workspace.propVariablesCopiedByCollected = [];
+    workspace.uniqueIdentifiersUsedByCollected = {};
+
     if (!(await component.stateValues.targetComponent)) {
       return { replacements: [] };
     }
@@ -352,10 +358,6 @@ export default class Collect extends CompositeComponent {
     let numReplacementsByCollected = [];
     let numReplacementsSoFar = 0;
     let replacementNamesByCollected = [];
-
-    workspace.propVariablesCopiedByCollected = [];
-
-    workspace.uniqueIdentifiersUsedByCollected = {};
 
     let compositeAttributesObj = this.createAttributesObject();
 
