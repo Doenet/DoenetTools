@@ -39,7 +39,7 @@ export default class CodeEditor extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: { size: 600, isAbsolute: true },
+      defaultValue: { size: `100`, isAbsolute: false },
       forRenderer: true,
       public: true,
     };
@@ -199,6 +199,33 @@ export default class CodeEditor extends BlockComponent {
         }
         let viewerHeight = { size, isAbsolute: true };
         return { setValue: { viewerHeight } };
+      },
+    };
+
+    stateVariableDefinitions.viewerWidth = {
+      returnDependencies: () => ({
+        width: {
+          dependencyType: "stateVariable",
+          variableName: "width",
+        },
+        resultsLocation: {
+          dependencyType: "stateVariable",
+          variableName: "resultsLocation",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let viewerWidth;
+
+        if (
+          dependencyValues.resultsLocation === "left" ||
+          dependencyValues.resultsLocation === "right"
+        ) {
+          viewerWidth = { size: 1000, isAbsolute: true };
+        } else {
+          viewerWidth = dependencyValues.width.size;
+        }
+
+        return { setValue: { viewerWidth } };
       },
     };
 
