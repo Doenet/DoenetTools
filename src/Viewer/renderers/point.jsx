@@ -451,16 +451,21 @@ export default React.memo(function Point(props) {
     let yminAdjusted = ymin + yscale * 0.05;
     let ymaxAdjusted = ymax - yscale * 0.05;
 
-    if (lastPositionFromCore.current[0] < xminAdjusted) {
-      nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
-    } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
-      nearEdgeOfGraph.current[0] = flippedX ? -1 : 1;
-    }
+    if (
+      Number.isFinite(lastPositionFromCore.current[0]) &&
+      Number.isFinite(lastPositionFromCore.current[1])
+    ) {
+      if (lastPositionFromCore.current[0] < xminAdjusted) {
+        nearEdgeOfGraph.current[0] = flippedX ? 1 : -1;
+      } else if (lastPositionFromCore.current[0] > xmaxAdjusted) {
+        nearEdgeOfGraph.current[0] = flippedX ? -1 : 1;
+      }
 
-    if (lastPositionFromCore.current[1] < yminAdjusted) {
-      nearEdgeOfGraph.current[1] = flippedY ? 1 : -1;
-    } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
-      nearEdgeOfGraph.current[1] = flippedY ? -1 : 1;
+      if (lastPositionFromCore.current[1] < yminAdjusted) {
+        nearEdgeOfGraph.current[1] = flippedY ? 1 : -1;
+      } else if (lastPositionFromCore.current[1] > ymaxAdjusted) {
+        nearEdgeOfGraph.current[1] = flippedY ? -1 : 1;
+      }
     }
 
     if (pointJXG.current === null) {

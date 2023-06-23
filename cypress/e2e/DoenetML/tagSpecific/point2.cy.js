@@ -10256,4 +10256,52 @@ describe("Point Tag Tests 2", function () {
     cy.get(cesc2("#/Q3h")).should("have.text", "true");
     cy.get(cesc2("#/R3h")).should("have.text", "false");
   });
+
+  it("handle complex point values in graph", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <point name="C1">(sqrt(-1), 1)</point>
+      <point name="C2">(1, sqrt(-1))</point>
+    </graph>
+
+    <p>$C1{assignNames="C1a"}, $C2{assignNames="C2a"}</p>
+
+    <p><mathinput name="mi1">$C1</mathinput>
+    <mathinput name="mi2">$C2</mathinput></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/C1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(√−1,1)");
+    cy.get(cesc2("#/C2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,√−1)");
+
+    cy.get(cesc2("#/mi1") + " textarea").type(
+      "{end}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}-1{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}-1{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/C2a") + " .mjx-mrow").should("contain.text", "(1,−1)");
+
+    cy.get(cesc2("#/C1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−1,1)");
+    cy.get(cesc2("#/C2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,−1)");
+  });
 });
