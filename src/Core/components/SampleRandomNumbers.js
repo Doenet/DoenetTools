@@ -202,8 +202,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
             to = from + step;
 
             // make sure to isn't excluded, so that have exactly two values
+            let i = 1;
             while (exclude.includes(to)) {
-              to += step;
+              // Note: make sure calculate to using exact same sequence of operations as actual values
+              // so don't have differences due to floating point rounding
+              i++;
+              to = from + i * step;
             }
 
             numDiscreteValues = 2;
