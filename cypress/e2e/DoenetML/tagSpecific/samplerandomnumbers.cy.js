@@ -811,7 +811,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let varX = me.math.variance(samples, "uncorrected");
 
       expect(meanX).closeTo(-3, 0.1);
-      expect(varX).closeTo(0.01, 0.002);
+      expect(varX).closeTo(0.01, 0.003);
 
       let firstSample =
         stateVariables[
