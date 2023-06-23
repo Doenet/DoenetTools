@@ -704,12 +704,34 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "expand",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
+        let value = dependencyValues.value;
+
+        if (
+          dependencyValues.parentNComponentsToDisplayByChild?.[componentName] >
+          0
+        ) {
+          // math is a list inside a mathList that is displaying only a fraction of the list
+          value = me.fromAst(
+            value.tree.slice(
+              0,
+              dependencyValues.parentNComponentsToDisplayByChild[
+                componentName
+              ] + 1,
+            ),
+          );
+        }
+
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let rounded = roundForDisplay({
-          value: dependencyValues.value,
+          value,
           dependencyValues,
         });
 
