@@ -593,8 +593,6 @@ export class MatrixInput extends Input {
           }
         }
 
-        console.log(instructions);
-
         return {
           success: true,
           instructions,

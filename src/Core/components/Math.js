@@ -1561,7 +1561,7 @@ export default class MathComponent extends InlineComponent {
         }
 
         if (!desiredValue) {
-          desiredValue = workspace.desiredMatrix[0];
+          desiredValue = workspace.desiredMatrix["0,0"];
         }
 
         let instructions = [
