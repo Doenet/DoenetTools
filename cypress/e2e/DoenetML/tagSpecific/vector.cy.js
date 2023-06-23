@@ -20129,7 +20129,7 @@ describe("Vector Tag Tests", function () {
       $v2.head{assignNames="v2h"}
     </p>
 
-    <vector copysource="v1" name="v3" displayDecimals="0" ignoreDisplayDigits />
+    <vector copysource="v1" name="v3" displayDecimals="0" />
     
     $v3.displacement{assignNames="v3d"}
     $v3.tail{assignNames="v3t"}
