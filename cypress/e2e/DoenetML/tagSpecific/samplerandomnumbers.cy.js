@@ -1356,6 +1356,433 @@ describe("SampleRandomNumbers Tag Tests", function () {
     });
   });
 
+  it("sample single discrete uniform, no parameters except exclude, get first two non-negative integers", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><aslist>
+    <map>
+      <template><sampleRandomNumbers type="discreteUniform" exclude="0 2" /></template>
+      <sources><sequence length="400" /></sources>
+    </map>
+    </aslist></p>
+
+    <p><aslist>
+      <copy target="_map1" />
+    </aslist></p>
+
+    <copy target="_p1" assignNames = "p" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let samples = stateVariables["/_map1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(samples.length).eq(400);
+
+      for (let sample of samples) {
+        expect([1, 3].includes(sample)).eq(true);
+      }
+
+      let meanX = me.math.mean(samples);
+      let varX = me.math.variance(samples, "uncorrected");
+
+      expect(meanX).closeTo(2, 0.1);
+      expect(varX).closeTo(((2 ** 2 - 1) * 2 ** 2) / 12, 0.1);
+
+      let firstSample =
+        stateVariables[
+          stateVariables[stateVariables["/_map1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ];
+      expect(firstSample.stateValues.mean).closeTo(2, 1e-10);
+      expect(firstSample.stateValues.variance).closeTo(
+        ((2 ** 2 - 1) * 2 ** 2) / 12,
+        1e-10,
+      );
+      expect(firstSample.stateValues.standardDeviation).closeTo(
+        Math.sqrt(((2 ** 2 - 1) * 2 ** 2) / 12),
+        1e-10,
+      );
+
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(copiedSamples).eqls(samples);
+
+      let copiedCopiedSamples = stateVariables[
+        stateVariables["/p"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      expect(copiedCopiedSamples).eqls(samples);
+    });
+  });
+
+  it("sample single discrete uniform, from 0.5 to 4.5, exclude 1.5, 3.5, only to and exclude specified", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><aslist>
+    <map>
+      <template><sampleRandomNumbers type="discreteUniform" to="4.5" exclude="1.5 3.5" /></template>
+      <sources><sequence length="400" /></sources>
+    </map>
+    </aslist></p>
+
+    <p><aslist>
+      <copy target="_map1" />
+    </aslist></p>
+
+    <copy target="_p1" assignNames = "p" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let samples = stateVariables["/_map1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(samples.length).eq(400);
+
+      for (let sample of samples) {
+        expect([0.5, 2.5, 4.5].includes(sample)).eq(true);
+      }
+
+      let meanX = me.math.mean(samples);
+      let varX = me.math.variance(samples, "uncorrected");
+
+      expect(meanX).closeTo(2.5, 0.3);
+      expect(varX).closeTo(((3 ** 2 - 1) * 2 ** 2) / 12, 0.5);
+
+      let firstSample =
+        stateVariables[
+          stateVariables[stateVariables["/_map1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ];
+      expect(firstSample.stateValues.mean).closeTo(2.5, 1e-10);
+      expect(firstSample.stateValues.variance).closeTo(
+        ((3 ** 2 - 1) * 2 ** 2) / 12,
+        1e-10,
+      );
+      expect(firstSample.stateValues.standardDeviation).closeTo(
+        Math.sqrt(((3 ** 2 - 1) * 2 ** 2) / 12),
+        1e-10,
+      );
+
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(copiedSamples).eqls(samples);
+
+      let copiedCopiedSamples = stateVariables[
+        stateVariables["/p"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      expect(copiedCopiedSamples).eqls(samples);
+    });
+  });
+
+  it("sample single discrete uniform, from 6.5 to 9.5 exclude 6.5, 8.6, only from and exclude specified", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><aslist>
+    <map>
+      <template><sampleRandomNumbers type="discreteUniform" from="6.5" exclude="6.5 8.5" /></template>
+      <sources><sequence length="400" /></sources>
+    </map>
+    </aslist></p>
+
+    <p><aslist>
+      <copy target="_map1" />
+    </aslist></p>
+
+    <copy target="_p1" assignNames = "p" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let samples = stateVariables["/_map1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(samples.length).eq(400);
+
+      for (let sample of samples) {
+        expect([7.5, 9.5].includes(sample)).eq(true);
+      }
+
+      let meanX = me.math.mean(samples);
+      let varX = me.math.variance(samples, "uncorrected");
+
+      expect(meanX).closeTo(8.5, 0.1);
+      expect(varX).closeTo(((2 ** 2 - 1) * 2 ** 2) / 12, 0.05);
+
+      let firstSample =
+        stateVariables[
+          stateVariables[stateVariables["/_map1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ];
+      expect(firstSample.stateValues.mean).closeTo(8.5, 1e-10);
+      expect(firstSample.stateValues.variance).closeTo(
+        ((2 ** 2 - 1) * 2 ** 2) / 12,
+        1e-10,
+      );
+      expect(firstSample.stateValues.standardDeviation).closeTo(
+        Math.sqrt(((2 ** 2 - 1) * 2 ** 2) / 12),
+        1e-10,
+      );
+
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(copiedSamples).eqls(samples);
+
+      let copiedCopiedSamples = stateVariables[
+        stateVariables["/p"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      expect(copiedCopiedSamples).eqls(samples);
+    });
+  });
+
+  it("sample five integers from -3 to 5, excluding -2 and 0", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><aslist>
+    <map>
+      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" exclude="-2 0" numSamples="5" /></template>
+      <sources><sequence length="80" /></sources>
+    </map>
+    </aslist></p>
+
+    <p><aslist>
+      <copy target="_map1" />
+    </aslist></p>
+
+    <copy target="_p1" assignNames = "p" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let samples = stateVariables["/_map1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(samples.length).eq(400);
+
+      for (let sample of samples) {
+        expect([-3, -1, 1, 2, 3, 4, 5].includes(sample)).eq(true);
+      }
+
+      let meanX = me.math.mean(samples);
+      let varX = me.math.variance(samples, "uncorrected");
+
+      let firstSample =
+        stateVariables[
+          stateVariables[stateVariables["/_map1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ];
+
+      expect(meanX).closeTo(firstSample.stateValues.mean, 0.5);
+      expect(varX).closeTo(firstSample.stateValues.variance, 1);
+
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(copiedSamples).eqls(samples);
+
+      let copiedCopiedSamples = stateVariables[
+        stateVariables["/p"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      expect(copiedCopiedSamples).eqls(samples);
+    });
+  });
+
+  it("sample 10 odd integers from -3 to 5, excluding 3", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><aslist>
+    <map>
+      <template><sampleRandomNumbers type="discreteUniform" from="-3" to="5" exclude="3" numSamples="10" step="2" /></template>
+      <sources><sequence length="40" /></sources>
+    </map>
+    </aslist></p>
+
+    <p><aslist>
+      <copy target="_map1" />
+    </aslist></p>
+
+    <copy target="_p1" assignNames = "p" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let samples = stateVariables["/_map1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(samples.length).eq(400);
+
+      for (let sample of samples) {
+        expect([-3, -1, 1, 5].includes(sample)).eq(true);
+      }
+
+      let meanX = me.math.mean(samples);
+      let varX = me.math.variance(samples, "uncorrected");
+
+      let firstSample =
+        stateVariables[
+          stateVariables[stateVariables["/_map1"].replacements[0].componentName]
+            .replacements[0].componentName
+        ];
+
+      expect(meanX).closeTo(firstSample.stateValues.mean, 0.5);
+      expect(varX).closeTo(firstSample.stateValues.variance, 1);
+
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
+        (a, c) => [
+          ...a,
+          ...stateVariables[
+            stateVariables[c.componentName].replacements[0].componentName
+          ].replacements.map(
+            (y) => stateVariables[y.componentName].stateValues.value,
+          ),
+        ],
+        [],
+      );
+      expect(copiedSamples).eqls(samples);
+
+      let copiedCopiedSamples = stateVariables[
+        stateVariables["/p"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
+      );
+      expect(copiedCopiedSamples).eqls(samples);
+    });
+  });
+
   it("sampled number does change dynamically", () => {
     cy.window().then(async (win) => {
       win.postMessage(
