@@ -4269,7 +4269,7 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph size="small">
-      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" ignoreDisplayDecimals />
+      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" />
     </graph>
     
     <p name="p1">$l.points.coords</p>

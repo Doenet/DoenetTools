@@ -3562,9 +3562,9 @@ describe("SampleRandomNumbers Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" displayDigits="10" /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
-    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

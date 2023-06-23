@@ -11577,10 +11577,10 @@ describe("Curve Tag Bezier Tests", function () {
     </curve>
   </graph>
   
-  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m $n" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m $n" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m $n" assignNames="V1 V2" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m $n" assignNames="P1 P2" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy prop="controlVectors" source="c" propIndex="$m" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy prop="controlPoints" source="c" propIndex="$m" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" /></aslist></p>
 
   `,
         },
@@ -11705,10 +11705,10 @@ describe("Curve Tag Bezier Tests", function () {
     </curve>
   </graph>
   
-  <p><aslist><copy source="c.controlVectors[$m][$n]" assignNames="V1 V2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy source="c.controlPoints[$m][$n]" assignNames="P1 P2" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy source="c.controlVectors[$m]" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
-  <p><aslist><copy source="c.controlPoints[$m]" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" ignoreDisplayDigits /></aslist></p>
+  <p><aslist><copy source="c.controlVectors[$m][$n]" assignNames="V1 V2" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy source="c.controlPoints[$m][$n]" assignNames="P1 P2" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy source="c.controlVectors[$m]" assignNames="Vb1 Vb2 Vb3" displayDecimals="1" /></aslist></p>
+  <p><aslist><copy source="c.controlPoints[$m]" assignNames="Pb1 Pb2 Pn3" displayDecimals="1" /></aslist></p>
 
   `,
         },

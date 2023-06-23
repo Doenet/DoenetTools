@@ -19,7 +19,7 @@ export function returnRoundingStateVariableDefinitions({
       stateVariable: "displayDigits",
       childsGroupIfSingleMatch,
       childGroupsToStopSingleMatch,
-      includeIgnore: true,
+      ignoreShadowsIfHaveAttribute: "displayDecimals",
       includeListParents,
       additionalAttributeComponent,
     }),
@@ -41,7 +41,7 @@ export function returnRoundingStateVariableDefinitions({
       stateVariable: "displayDecimals",
       childsGroupIfSingleMatch,
       childGroupsToStopSingleMatch,
-      includeIgnore: true,
+      ignoreShadowsIfHaveAttribute: "displayDigits",
       includeListParents,
       additionalAttributeComponent,
     }),
@@ -99,7 +99,7 @@ function roundingDependencies({
   stateVariable,
   childsGroupIfSingleMatch,
   childGroupsToStopSingleMatch,
-  includeIgnore = false,
+  ignoreShadowsIfHaveAttribute = null,
   includeListParents = false,
   additionalAttributeComponent = null,
 }) {
@@ -135,18 +135,16 @@ function roundingDependencies({
       };
     }
 
-    if (includeIgnore) {
-      let ignoreVariable =
-        "ignore" + stateVariable[0].toUpperCase() + stateVariable.slice(1);
-      dependencies.attributeIgnore = {
+    if (ignoreShadowsIfHaveAttribute) {
+      dependencies.attributePromptingIgnore = {
         dependencyType: "attributeComponent",
-        attributeName: ignoreVariable,
+        attributeName: ignoreShadowsIfHaveAttribute,
         variableNames: ["value"],
         dontRecurseToShadowsIfHaveAttribute: stateVariable,
       };
 
       dependencies.attribute.dontRecurseToShadowsIfHaveAttribute =
-        ignoreVariable;
+        ignoreShadowsIfHaveAttribute;
     }
 
     if (additionalAttributeComponent) {
@@ -166,40 +164,28 @@ function roundingDefinition({
   includeListParents,
 }) {
   return function ({ dependencyValues, usedDefault }) {
-    let foundDefaultValue = false;
-    let theDefaultValueFound;
-
     if (includeListParents) {
       if (dependencyValues.fromMathListParent !== null) {
-        if (usedDefault.fromMathListParent) {
-          foundDefaultValue = true;
-          theDefaultValueFound = dependencyValues.fromMathListParent;
-        } else {
-          // Have a mathlist parent that prescribed rounding.
-          // This overrides everything else.
-          return {
-            setValue: {
-              [stateVariable]: dependencyValues.fromMathListParent,
-            },
-          };
-        }
+        // A mathlist parent overrides everything else.
+        return {
+          setValue: {
+            [stateVariable]: dependencyValues.fromMathListParent,
+          },
+        };
       }
 
       if (dependencyValues.fromNumberListParent !== null) {
-        if (usedDefault.fromNumberListParent) {
-          foundDefaultValue = true;
-          theDefaultValueFound = dependencyValues.fromNumberListParent;
-        } else {
-          // Have a numberlist parent that prescribed rounding.
-          // This overrides everything else.
-          return {
-            setValue: {
-              [stateVariable]: dependencyValues.fromNumberListParent,
-            },
-          };
-        }
+        // A numberlist parent overrides everything else.
+        return {
+          setValue: {
+            [stateVariable]: dependencyValues.fromNumberListParent,
+          },
+        };
       }
     }
+
+    let foundDefaultValue = false;
+    let theDefaultValueFound;
 
     if (dependencyValues.attribute) {
       if (usedDefault.attribute?.value) {
@@ -212,8 +198,8 @@ function roundingDefinition({
           },
         };
       }
-    } else if (dependencyValues.attributeIgnore?.stateValues.value) {
-      if (usedDefault.attributeIgnore?.value) {
+    } else if (dependencyValues.attributePromptingIgnore) {
+      if (usedDefault.attributePromptingIgnore?.value) {
         foundDefaultValue = true;
         theDefaultValueFound = valueIfIgnore;
       } else {
@@ -277,14 +263,8 @@ export function returnRoundingAttributes() {
     displayDigits: {
       createComponentOfType: "integer",
     },
-    ignoreDisplayDigits: {
-      createComponentOfType: "boolean",
-    },
     displayDecimals: {
       createComponentOfType: "integer",
-    },
-    ignoreDisplayDecimals: {
-      createComponentOfType: "boolean",
     },
     displaySmallAsZero: {
       createComponentOfType: "number",

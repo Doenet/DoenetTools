@@ -364,6 +364,8 @@ function substituteAttributeDeprecations(serializedComponents) {
     "targetattributestoignorerecursively",
     "sourceattributestoignorerecursively",
     "showlabel",
+    "ignoredisplaydigits",
+    "ignoredisplaydecimals",
   ]);
 
   // Note: use lower case for keys
