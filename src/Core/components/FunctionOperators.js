@@ -1,6 +1,6 @@
 import FunctionBaseOperator from "./abstract/FunctionBaseOperator";
 import me from "math-expressions";
-import { returnNVariables } from "../utils/math";
+import { returnNVariables, vectorOperators } from "../utils/math";
 import { functionOperatorDefinitions } from "../utils/function";
 
 export class ClampFunction extends FunctionBaseOperator {
@@ -558,9 +558,32 @@ export class Derivative extends FunctionBaseOperator {
         return {
           setValue: {
             formulaOperator: function (formula) {
+              let formulaIsVectorValued =
+                Array.isArray(formula.tree) &&
+                vectorOperators.includes(formula.tree[0]);
+
               let value = formula.subscripts_to_strings();
-              for (let variable of dependencyValues.derivVariables) {
-                value = value.derivative(variable.subscripts_to_strings().tree);
+
+              if (formulaIsVectorValued) {
+                let nComponents = formula.tree.length - 1;
+                let derivComps = [];
+                for (let comp = 0; comp < nComponents; comp++) {
+                  let valComp = value.get_component(comp);
+                  for (let variable of dependencyValues.derivVariables) {
+                    valComp = valComp.derivative(
+                      variable.subscripts_to_strings().tree,
+                    );
+                  }
+                  derivComps.push(valComp.tree);
+                }
+
+                value = me.fromAst([value.tree[0], ...derivComps]);
+              } else {
+                for (let variable of dependencyValues.derivVariables) {
+                  value = value.derivative(
+                    variable.subscripts_to_strings().tree,
+                  );
+                }
               }
               return value.strings_to_subscripts();
             },
