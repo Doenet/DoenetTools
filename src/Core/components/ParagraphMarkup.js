@@ -53,6 +53,23 @@ export class Tage extends InlineRenderInlineChildren {
   }
 }
 
+export class Tagc extends InlineRenderInlineChildren {
+  static componentType = "tagc";
+  static rendererType = "tag";
+  static beginTextDelimiter = "</";
+  static endTextDelimiter = ">";
+
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    stateVariableDefinitions.closing = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { closing: true } }),
+    };
+    return stateVariableDefinitions;
+  }
+}
+
 export class Attr extends InlineRenderInlineChildren {
   static componentType = "attr";
   static rendererType = "c";
