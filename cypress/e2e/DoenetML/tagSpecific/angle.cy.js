@@ -3729,16 +3729,16 @@ describe("Angle Tag Tests", function () {
   <angle name="a">1.39372582305929123842034823</angle>
   <angle name="aDig5a" displayDigits="5" copySource="a" />
   <angle name="aDec6a" displayDecimals="6" copySource="a" />
-  <angle name="aDig5b" displayDigits="5" ignoreDisplayDecimals copySource="aDec6a" />
+  <angle name="aDig5b" displayDigits="5" copySource="aDec6a" />
   <angle name="aDec6b" displayDecimals="6" copySource="aDig5a" />
-  <angle name="aDig5c" displayDigits="5" ignoreDisplayDecimals copySource="aDec6b" />
+  <angle name="aDig5c" displayDigits="5" copySource="aDec6b" />
   <angle name="aDec6c" displayDecimals="6" copySource="aDig5b" />
 
   <angle name="aDig5d" displayDigits="5">1.39372582305929123842034823</angle>
   <angle name="aDec6d" displayDecimals="6">1.39372582305929123842034823</angle>
-  <angle name="aDig5e" displayDigits="5" ignoreDisplayDecimals copySource="aDec6d" />
+  <angle name="aDig5e" displayDigits="5" copySource="aDec6d" />
   <angle name="aDec6e" displayDecimals="6" copySource="aDig5d" />
-  <angle name="aDig5f" displayDigits="5" ignoreDisplayDecimals copySource="aDec6e" />
+  <angle name="aDig5f" displayDigits="5" copySource="aDec6e" />
   <angle name="aDec6f" displayDecimals="6" copySource="aDig5e" />
 
   `,

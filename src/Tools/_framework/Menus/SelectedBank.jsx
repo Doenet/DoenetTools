@@ -58,6 +58,7 @@ export default function SelectedBank() {
       <>
         {heading}
         <Textfield
+          dataTest="Collection Textfield"
           label="Label"
           vertical
           width="menu"

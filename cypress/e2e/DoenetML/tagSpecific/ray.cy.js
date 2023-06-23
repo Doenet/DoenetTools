@@ -10725,7 +10725,7 @@ describe("Ray Tag Tests", function () {
       $r2.through{assignNames="r2h"}
     </p>
 
-    <ray copysource="r1" name="r3" displayDecimals="0" ignoreDisplayDigits />
+    <ray copysource="r1" name="r3" displayDecimals="0" />
     
     $r3.direction{assignNames="r3d"}
     $r3.endpoint{assignNames="r3t"}

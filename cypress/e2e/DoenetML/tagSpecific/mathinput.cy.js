@@ -7210,12 +7210,12 @@ describe("MathInput Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>a: <mathinput name="a" displayDecimals="2" ignoreDisplayDigits prefill="sin(2x)"/></p>
+    <p>a: <mathinput name="a" displayDecimals="2" prefill="sin(2x)"/></p>
     <p>a2: <copy source="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy source="a" prop="immediateValue" assignNames="a3" /></p>
 
     <p>b: <math name="b" displayDigits="10">10e^(3y)</math></p>
-    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="8" ignoreDisplayDigits /></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b" displayDecimals="8" /></p>
     <p>b3: <copy source="b2" prop="value" assignNames="b3" /></p>
     <p>b4: <copy source="b2" prop="immediateValue" assignNames="b4" /></p>
     `,
@@ -8764,8 +8764,8 @@ describe("MathInput Tag Tests", function () {
     <p>a: <mathinput name="a" prefill="123.4567891234"/></p>
     <p>a2: <copy source="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy source="a" prop="immediateValue" assignNames="a3" /></p>
-    <p>a4: <copy source="a" prop="value" assignNames="a4" displayDigits="4" /></p>
-    <p>a5: <copy source="a" prop="immediateValue" assignNames="a5" displayDigits="4" /></p>
+    <p>a4: <copy source="a" prop="value" assignNames="a4" displayDigits="4" displayDecimals="2" /></p>
+    <p>a5: <copy source="a" prop="immediateValue" assignNames="a5" displayDigits="4" displayDecimals="2" /></p>
 
     `,
         },
@@ -9113,10 +9113,10 @@ describe("MathInput Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>a: <mathinput name="a" displayDecimals="4" ignoreDisplayDigits prefill="3"/></p>
+    <p>a: <mathinput name="a" displayDecimals="4" prefill="3"/></p>
 
     <p>b: <math name="b" displayDigits="10">5</math></p>
-    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="2" ignoreDisplayDigits /></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="2" /></p>
 
     <graph>
       <point name="p">($a, $b2)</point>

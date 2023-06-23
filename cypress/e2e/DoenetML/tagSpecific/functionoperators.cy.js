@@ -22,7 +22,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="true" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" symbolic="true" displayDecimals="3">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -203,7 +203,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -384,7 +384,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3<label>orig</label></function>
+    <function name="original" displayDecimals="3">x^3<label>orig</label></function>
     <clampfunction name="clamp01"><copy target="original" /><label>clamp 1</label></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /><label>clamp 2</label></clampfunction>
 
@@ -522,7 +522,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" displayDecimals="3">x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 
@@ -704,7 +704,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3">x^3</function>
     <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
 

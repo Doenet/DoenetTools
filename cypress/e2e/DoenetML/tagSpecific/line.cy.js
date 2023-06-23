@@ -11776,10 +11776,10 @@ describe("Line Tag Tests", function () {
     <line name="l" equation="0=528.2340235234x + 2.235980242343224y+0.0486234234" />
     <line name="ldg4" displayDigits="4" copySource="l" />
     <line name="ldc3" displayDecimals="3" copySource="l" />
-    <line name="ldc3dg4" displayDigits="4" copySource="ldc3" />
-    <line name="ldg4dc3" displayDecimals="3" copySource="ldg4" />
-    <line name="ldc3dg5" displayDigits="5" copySource="ldg4dc3" />
-    <line name="ldg4dc4" displayDecimals="4" copySource="ldc3dg4" />
+    <line name="ldc3dg4" displayDigits="4" displayDecimals="3" copySource="ldc3" />
+    <line name="ldg4dc3" displayDecimals="3" displayDigits="4" copySource="ldg4" />
+    <line name="ldg5" displayDigits="5" copySource="ldg4dc3" />
+    <line name="ldc4" displayDecimals="4" copySource="ldc3dg4" />
 
     `,
         },
@@ -11794,22 +11794,22 @@ describe("Line Tag Tests", function () {
       .should("have.text", "0=528.23x+2.24y+0.0486");
     cy.get(cesc("#\\/ldg4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=528.23x+2.236y+0.04862");
+      .should("have.text", "0=528.2x+2.236y+0.04862");
     cy.get(cesc("#\\/ldc3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=528.234x+2.236y+0.0486");
+      .should("have.text", "0=528.234x+2.236y+0.049");
     cy.get(cesc("#\\/ldc3dg4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0=528.234x+2.236y+0.04862");
     cy.get(cesc("#\\/ldg4dc3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "0=528.234x+2.236y+0.04862");
-    cy.get(cesc("#\\/ldc3dg5") + " .mjx-mrow")
+    cy.get(cesc("#\\/ldg5") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=528.234x+2.236y+0.048623");
-    cy.get(cesc("#\\/ldg4dc4") + " .mjx-mrow")
+      .should("have.text", "0=528.23x+2.236y+0.048623");
+    cy.get(cesc("#\\/ldc4") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=528.234x+2.236y+0.04862");
+      .should("have.text", "0=528.234x+2.236y+0.0486");
   });
 
   it("label positioning", () => {

@@ -160,7 +160,9 @@ const CourseInfoPanel = function ({ courseId }) {
           />
         )} */}
       </ActionButtonGroup>
-      {canModifyCourseSettings === "1" && <EditLabel courseId={courseId} />}
+      {canModifyCourseSettings === "1" && (
+        <EditLabel dataTest="Course Label Textfield" courseId={courseId} />
+      )}
       {canModifyCourseSettings === "1" && (
         <EditImageAndColor courseId={courseId} />
       )}

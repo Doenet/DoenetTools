@@ -2318,24 +2318,24 @@ describe("Graph Tag Tests", function () {
     <graph name="g" size="small" xmin="-45.03232523423" xmax="8.2857234234" ymin="-5.582342383823423" ymax="7.83710375032" />
     <graph name="gdg3" displayDigits="5" copySource="g" />
     <graph name="gdc5" displayDecimals="5" copySource="g" />
-    <graph name="gdg3a" displayDigits="5" ignoreDisplayDecimals copySource="gdc5" />
-    <graph name="gdc5a" displayDecimals="5" ignoreDisplayDigits copySource="gdg3" />
-    <graph name="gdg3b" displayDigits="5" ignoreDisplayDecimals copySource="gdc5a" />
-    <graph name="gdc5b" displayDecimals="5" ignoreDisplayDigits copySource="gdg3a" />
+    <graph name="gdg3a" displayDigits="5" copySource="gdc5" />
+    <graph name="gdc5a" displayDecimals="5" copySource="gdg3" />
+    <graph name="gdg3b" displayDigits="5" copySource="gdc5a" />
+    <graph name="gdc5b" displayDecimals="5" copySource="gdg3a" />
 
     <p name="p">$g.xmin, $g.xmax, $g.ymin, $g.ymax</p>
 
     <p name="pdg3">$gdg3.xmin, $gdg3.xmax, $gdg3.ymin, $gdg3.ymax</p>
     <p name="pdg3a">$gdg3a.xmin, $gdg3a.xmax, $gdg3a.ymin, $gdg3a.ymax</p>
     <p name="pdg3b">$gdg3b.xmin, $gdg3b.xmax, $gdg3b.ymin, $gdg3b.ymax</p>
-    <p name="pdg3c">$g{displayDigits="5" ignoreDisplayDecimals}.xmin, $g{displayDigits="5" ignoreDisplayDecimals}.xmax, $g{displayDigits="5" ignoreDisplayDecimals}.ymin, $g{displayDigits="5" ignoreDisplayDecimals}.ymax</p>
-    <p name="pdg3d">$gdc5{displayDigits="5" ignoreDisplayDecimals}.xmin, $gdc5{displayDigits="5" ignoreDisplayDecimals}.xmax, $gdc5{displayDigits="5" ignoreDisplayDecimals}.ymin, $gdc5{displayDigits="5" ignoreDisplayDecimals}.ymax</p>
+    <p name="pdg3c">$g{displayDigits="5"}.xmin, $g{displayDigits="5"}.xmax, $g{displayDigits="5"}.ymin, $g{displayDigits="5"}.ymax</p>
+    <p name="pdg3d">$gdc5{displayDigits="5"}.xmin, $gdc5{displayDigits="5"}.xmax, $gdc5{displayDigits="5"}.ymin, $gdc5{displayDigits="5"}.ymax</p>
 
     <p name="pdc5">$gdc5.xmin, $gdc5.xmax, $gdc5.ymin, $gdc5.ymax</p>
     <p name="pdc5a">$gdc5a.xmin, $gdc5a.xmax, $gdc5a.ymin, $gdc5a.ymax</p>
     <p name="pdc5b">$gdc5b.xmin, $gdc5b.xmax, $gdc5b.ymin, $gdc5b.ymax</p>
-    <p name="pdc5c">$g{displayDecimals="5" ignoreDisplayDigits}.xmin, $g{displayDecimals="5" ignoreDisplayDigits}.xmax, $g{displayDecimals="5" ignoreDisplayDigits}.ymin, $g{displayDecimals="5" ignoreDisplayDigits}.ymax</p>
-    <p name="pdc5d">$gdg3{displayDecimals="5" ignoreDisplayDigits}.xmin, $gdg3{displayDecimals="5" ignoreDisplayDigits}.xmax, $gdg3{displayDecimals="5" ignoreDisplayDigits}.ymin, $gdg3{displayDecimals="5" ignoreDisplayDigits}.ymax</p>
+    <p name="pdc5c">$g{displayDecimals="5"}.xmin, $g{displayDecimals="5"}.xmax, $g{displayDecimals="5"}.ymin, $g{displayDecimals="5"}.ymax</p>
+    <p name="pdc5d">$gdg3{displayDecimals="5"}.xmin, $gdg3{displayDecimals="5"}.xmax, $gdg3{displayDecimals="5"}.ymin, $gdg3{displayDecimals="5"}.ymax</p>
 
     `,
         },
