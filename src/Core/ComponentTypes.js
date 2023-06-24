@@ -111,6 +111,7 @@ import Figure from "./components/Figure";
 import TextListFromString from "./components/TextListFromString";
 import VariantControl from "./components/VariantControl";
 import SelectFromSequence from "./components/SelectFromSequence";
+import SelectFromPrimes from "./components/SelectFromPrimes";
 import Select from "./components/Select";
 import Group from "./components/Group";
 import AnimateFromSequence from "./components/AnimateFromSequence";
@@ -187,6 +188,7 @@ import TextOrInline from "./components/abstract/TextOrInline";
 import SingleCharacterInline from "./components/abstract/SingleCharacterInline";
 import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
+import ListOfNumberLists from "./components/abstract/ListOfNumberLists";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -296,6 +298,7 @@ const componentTypeArray = [
   VariantControl,
   TextListFromString,
   SelectFromSequence,
+  SelectFromPrimes,
   Select,
   Group,
   AnimateFromSequence,
@@ -376,6 +379,7 @@ const componentTypeArray = [
   SingleCharacterInline,
   VariableNameList,
   VariableName,
+  ListOfNumberLists,
 ];
 
 export function allComponentClasses() {
