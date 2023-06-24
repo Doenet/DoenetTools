@@ -4884,7 +4884,7 @@ describe("Function Tag Tests", function () {
       expect(f.stateValues.globalMinimum[1]).eq(
         ffun(f.stateValues.globalMinimum[0]),
       );
-      expect(f.stateValues.globalInfimum).eqls(f.stateValues.globalMinimum)
+      expect(f.stateValues.globalInfimum).eqls(f.stateValues.globalMinimum);
     });
   });
 

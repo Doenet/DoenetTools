@@ -461,11 +461,9 @@ export function find_local_global_minima({
     // calculate only for functions from R -> R
     if (!(numInputs === 1 && numOutputs === 1)) {
       return {
-        setValue: {
-          localMinima: [],
-          globalMinimum: null,
-          globalInfimum: null,
-        },
+        localMinima: [],
+        globalMinimum: null,
+        globalInfimum: null,
       };
     }
 

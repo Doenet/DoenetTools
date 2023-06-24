@@ -1200,7 +1200,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -1363,7 +1363,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -1526,7 +1526,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -1689,7 +1689,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -1852,7 +1852,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -2015,7 +2015,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/u3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/u4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");
@@ -2178,7 +2178,7 @@ describe("SubsetOfReals Tag Tests", function () {
       .should("have.text", "(4,5)∪(5,6)");
     cy.get(cesc("#\\/o3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(4,6)");
+      .should("have.text", "(4,6]");
     cy.get(cesc("#\\/o4") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(4,6]");

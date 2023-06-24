@@ -517,14 +517,16 @@ describe("Function Operator Tag Tests", function () {
   });
 
   it("wrap function", () => {
+    // Note: added domain [-2,2] to reduce time spent calculating all the extrema
+    // when calling returnAllStateVariables1()
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <function name="original" displayDecimals="3">x^3</function>
-    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
-    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrap01" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
 
     <p><aslist>
     <map>
@@ -699,14 +701,16 @@ describe("Function Operator Tag Tests", function () {
   });
 
   it("wrap function, numeric", () => {
+    // Note: added domain [-2,2] to reduce time spent calculating all the extrema
+    // when calling returnAllStateVariables1()
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <function name="original" symbolic="false" displayDecimals="3">x^3</function>
-    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
-    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrap01" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
 
     <p><aslist>
     <map>

@@ -2399,7 +2399,13 @@ export default class Function extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.functionChild.length > 0) {
+        if (
+          dependencyValues.functionChild?.[0]?.componentType ===
+          "piecewiseFunction"
+        ) {
+          // Note: A temporary solution until we can capture a piecewise function in formula (a math-expression).
+          // This solution is not perfect as it ignores any display attributes
+          // from the outer function.
           return {
             setValue: {
               latex: dependencyValues.functionChild[0].stateValues.latex,
