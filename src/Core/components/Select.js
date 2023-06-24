@@ -373,15 +373,15 @@ export default class Select extends CompositeComponent {
 
         let selectedIndices = [];
 
-        let numberUniqueRequired = 1;
+        let numUniqueRequired = 1;
         if (!dependencyValues.withReplacement) {
-          numberUniqueRequired = dependencyValues.numToSelect;
+          numUniqueRequired = dependencyValues.numToSelect;
         }
 
-        if (numberUniqueRequired > dependencyValues.nOptions) {
+        if (numUniqueRequired > dependencyValues.nOptions) {
           throw Error(
             "Cannot select " +
-              numberUniqueRequired +
+              numUniqueRequired +
               " components from only " +
               dependencyValues.nOptions,
           );
