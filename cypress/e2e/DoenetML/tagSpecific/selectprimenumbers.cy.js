@@ -6,7 +6,7 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
-  it("no parameters, select single prime number from 2 to 10", () => {
+  it("no parameters, select single prime number from 2 to 100", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -65,7 +65,12 @@ describe("SelecPrimeNumbers Tag Tests", function () {
           stateVariables[
             stateVariables["/sample" + ind].replacements[0].componentName
           ].stateValues.value;
-        expect([2, 3, 5, 7].includes(num)).eq(true);
+        expect(
+          [
+            2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
+            67, 71, 73, 79, 83, 89, 97,
+          ].includes(num),
+        ).eq(true);
       }
     });
   });
@@ -2505,7 +2510,7 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <booleaninput name='h2' prefill="true" >
       <label>Hide second select</label>
     </booleaninput>
-    <p><selectprimenumbers assignnames="c" hide="$h1" />, <selectprimenumbers assignnames="d" hide="$h2" /></p>
+    <p><selectprimenumbers maxValue="10" assignnames="c" hide="$h1" />, <selectprimenumbers maxValue="10" assignnames="d" hide="$h2" /></p>
     <p><copy target="c" />, <copy target="d" /></p>
     `,
         },

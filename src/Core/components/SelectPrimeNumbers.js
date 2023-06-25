@@ -1,4 +1,3 @@
-import { convertAttributesForComponentType } from "../utils/copy";
 import { enumerateSelectionCombinations } from "../utils/enumeration";
 import {
   checkForExcludedCombination,
@@ -6,6 +5,8 @@ import {
   estimateNumberOfNumberCombinationsExcluded,
   mergeContainingNumberCombinations,
 } from "../utils/excludeCombinations";
+import { createPrimesList } from "../utils/primeNumbers";
+import { sampleFromNumberList } from "../utils/randomNumbers";
 import { processAssignNames } from "../utils/serializedStateProcessing";
 import CompositeComponent from "./abstract/CompositeComponent";
 
@@ -28,7 +29,7 @@ export default class SelectPrimeNumbers extends CompositeComponent {
     attributes.maxValue = {
       createComponentOfType: "integer",
       createStateVariable: "maxValue",
-      defaultValue: 10,
+      defaultValue: 100,
       public: true,
     };
 
@@ -120,9 +121,6 @@ export default class SelectPrimeNumbers extends CompositeComponent {
     };
 
     stateVariableDefinitions.possibleValues = {
-      immutable: true,
-      hasEssential: true,
-      shadowVariable: true,
       returnDependencies: () => ({
         minValue: {
           dependencyType: "stateVariable",
@@ -582,10 +580,10 @@ function makeSelection({ dependencyValues }) {
   let selectedValues;
 
   if (numCombinationsExcluded === 0) {
-    selectedValues = selectValues({
+    selectedValues = sampleFromNumberList({
       possibleValues,
       numUniqueRequired,
-      numToSelect: dependencyValues.numToSelect,
+      numSamples: dependencyValues.numToSelect,
       rng: dependencyValues.variantRng,
     });
   } else {
@@ -629,10 +627,10 @@ function makeSelection({ dependencyValues }) {
     // prob of failure less than 10^(-30)
     let foundValidCombination = false;
     for (let sampnum = 0; sampnum < 200; sampnum++) {
-      selectedValues = selectValues({
+      selectedValues = sampleFromNumberList({
         possibleValues,
         numUniqueRequired,
-        numToSelect: dependencyValues.numToSelect,
+        numSamples: dependencyValues.numToSelect,
         rng: dependencyValues.variantRng,
       });
 
@@ -667,79 +665,4 @@ function makeSelection({ dependencyValues }) {
     setEssentialValue: { selectedValues },
     setValue: { selectedValues },
   };
-}
-
-function selectValues({
-  possibleValues,
-  numUniqueRequired = 1,
-  numToSelect = 1,
-  rng,
-}) {
-  let numPossibleValues = possibleValues.length;
-
-  if (numUniqueRequired === 1) {
-    let selectedValues = [];
-    for (let ind = 0; ind < numToSelect; ind++) {
-      // random number in [0, 1)
-      let rand = rng();
-      // random integer from 0 to numPossibleValues-1
-      let ind = Math.floor(rand * numPossibleValues);
-
-      selectedValues.push(possibleValues[ind]);
-    }
-
-    return selectedValues;
-  }
-
-  // need to select more than one value without replacement
-  // shuffle array and choose first elements
-  // https://stackoverflow.com/a/12646864
-  let shuffledValues = [...possibleValues];
-  for (let i = shuffledValues.length - 1; i > 0; i--) {
-    const rand = rng();
-    const j = Math.floor(rand * (i + 1));
-    [shuffledValues[i], shuffledValues[j]] = [
-      shuffledValues[j],
-      shuffledValues[i],
-    ];
-  }
-
-  let selectedValues = shuffledValues.slice(0, numToSelect);
-
-  return selectedValues;
-}
-
-function createPrimesList({ minValue = 2, maxValue = 100, exclude = [] }) {
-  // Use Sieve of Eratosthenes to generate list of all prime numbers from minValue to maxValue
-  // and exclude values from exclude
-
-  minValue = Math.max(minValue, 2);
-
-  if (
-    !(
-      Number.isFinite(minValue) &&
-      Number.isFinite(maxValue) &&
-      maxValue >= minValue
-    )
-  ) {
-    return [];
-  }
-
-  let valueList = [...Array(maxValue + 1).keys()];
-
-  let sqrtMax = Math.sqrt(maxValue);
-
-  for (let i = 2; i <= sqrtMax; i++) {
-    if (valueList[i]) {
-      for (let j = i * i; j <= maxValue; j += i) {
-        valueList[j] = 0;
-      }
-    }
-  }
-
-  let primes = valueList
-    .slice(minValue)
-    .filter((x) => x && !exclude.includes(x));
-
-  return primes;
 }

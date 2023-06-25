@@ -111,13 +111,14 @@ import Figure from "./components/Figure";
 import TextListFromString from "./components/TextListFromString";
 import VariantControl from "./components/VariantControl";
 import SelectFromSequence from "./components/SelectFromSequence";
-import SelectPrimeNumbers from "./components/SelectPrimeNumbers";
 import Select from "./components/Select";
 import Group from "./components/Group";
 import AnimateFromSequence from "./components/AnimateFromSequence";
 import Evaluate from "./components/Evaluate";
 import SelectRandomNumbers from "./components/SelectRandomNumbers";
 import SampleRandomNumbers from "./components/SampleRandomNumbers";
+import SelectPrimeNumbers from "./components/SelectPrimeNumbers";
+import SamplePrimeNumbers from "./components/SamplePrimeNumbers";
 import Substitute from "./components/Substitute";
 import PeriodicSet from "./components/PeriodicSet";
 import Image from "./components/Image";
@@ -298,13 +299,14 @@ const componentTypeArray = [
   VariantControl,
   TextListFromString,
   SelectFromSequence,
-  SelectPrimeNumbers,
   Select,
   Group,
   AnimateFromSequence,
   Evaluate,
   SelectRandomNumbers,
   SampleRandomNumbers,
+  SelectPrimeNumbers,
+  SamplePrimeNumbers,
   Substitute,
   PeriodicSet,
   Image,
