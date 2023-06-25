@@ -3370,10 +3370,12 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers variantDeterminesSeed /></template>
+      <template><sampleRandomNumbers /></template>
       <sources><sequence length="100" /></sources>
     </map>
     </aslist></p>
+
+    <booleaninput name="bi" /><boolean name="b2" copySource="bi" />
 
     `;
 
@@ -3415,6 +3417,13 @@ describe("SampleRandomNumbers Tag Tests", function () {
       }
     });
 
+    cy.log("interact so changes will be saved to database");
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b2")).should("have.text", "true");
+
+    cy.log("wait for debounce");
+    cy.wait(1500);
+
     cy.reload();
 
     cy.window().then(async (win) => {
@@ -3426,7 +3435,11 @@ describe("SampleRandomNumbers Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+    cy.log("make sure core is up and running");
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b2")).should("have.text", "false");
+
+    cy.log("check that values are unchanged");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
