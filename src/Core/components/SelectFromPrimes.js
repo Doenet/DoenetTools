@@ -226,35 +226,14 @@ export default class SelectFromPrimes extends CompositeComponent {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let newNamespace = component.attributes.newNamespace?.primitive;
-
-    let attributesToConvert = {};
-    if ("fixed" in component.attributes) {
-      attributesToConvert.fixed = component.attributes.fixed;
-    }
-
-    // allow one to override the fixed (default true) attribute
-    // by specifying it on the component
-    let attributesFromComposite = {};
-
-    if (Object.keys(attributesToConvert).length > 0) {
-      attributesFromComposite = convertAttributesForComponentType({
-        attributes: attributesToConvert,
-        componentType: "integer",
-        componentInfoObjects,
-        compositeCreatesNewNamespace: newNamespace,
-        flags,
-      });
-    }
 
     let replacements = [];
 
     for (let value of await component.stateValues.selectedValues) {
       replacements.push({
         componentType: "integer",
-        attributes: attributesFromComposite,
         state: { valuePreRound: value, fixed: true },
       });
     }

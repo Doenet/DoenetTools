@@ -4,6 +4,9 @@ import InlineComponent from "./InlineComponent";
 export default class ListOfNumberLists extends InlineComponent {
   static componentType = "_listOfNumberLists";
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static returnSugarInstructions() {
     let sugarInstructions = [];
 

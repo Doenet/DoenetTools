@@ -19,7 +19,7 @@ export default class Integer extends NumberComponent {
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "number",
+        createComponentOfType: "integer",
       },
       returnDependencies: () => ({
         valuePreRound: {
