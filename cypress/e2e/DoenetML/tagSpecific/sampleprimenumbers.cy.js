@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("SamplePrimeNumbers Tag Tests", function () {
   beforeEach(() => {
@@ -2078,6 +2078,89 @@ describe("SamplePrimeNumbers Tag Tests", function () {
       }
 
       expect(samples2).not.eqls(samples);
+    });
+  });
+
+  it(`resample prime numbers`, () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <text>a</text>
+          <p><aslist><samplePrimeNumbers name="spn1" assignNames="pn1 pn2" numSamples="2" maxValue="1000" /></aslist>,
+          <samplePrimeNumbers name="spn2" assignNames="pn3" minValue="1000" maxValue="10000" />
+          </p>
+
+          <p>
+            <callAction name="resamp1" target="spn1" actionName="resample"><label>Resample first two</label></callAction>
+            <callAction name="resamp2" target="spn2" actionName="resample"><label>Resample last</label></callAction>
+          </p>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let pn1, pn2, pn3;
+    let pn1b, pn2b, pn3b;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      pn1 = stateVariables["/pn1"].stateValues.value;
+      pn2 = stateVariables["/pn2"].stateValues.value;
+      pn3 = stateVariables["/pn3"].stateValues.value;
+
+      expect(pn1).gt(1).lt(1000);
+      expect(pn2).gt(1).lt(1000);
+      expect(pn3).gt(1000).lt(10000);
+
+      cy.get(cesc2("#/pn1")).should("have.text", pn1.toString());
+
+      cy.get(cesc2("#/resamp1")).click();
+
+      cy.get(cesc2("#/pn1")).should("not.have.text", pn1.toString());
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      pn1b = stateVariables["/pn1"].stateValues.value;
+      pn2b = stateVariables["/pn2"].stateValues.value;
+      pn3b = stateVariables["/pn3"].stateValues.value;
+
+      expect(pn1b).gt(1).lt(1000);
+      expect(pn2b).gt(1).lt(1000);
+      expect(pn3b).gt(1000).lt(10000);
+
+      expect(pn1b).not.eq(pn1);
+      expect(pn2b).not.eq(pn2);
+      expect(pn3b).eq(pn3);
+
+      cy.get(cesc2("#/pn3")).should("have.text", pn3.toString());
+
+      cy.get(cesc2("#/resamp2")).click();
+
+      cy.get(cesc2("#/pn3")).should("not.have.text", pn3.toString());
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let pn1c = stateVariables["/pn1"].stateValues.value;
+      let pn2c = stateVariables["/pn2"].stateValues.value;
+      let pn3c = stateVariables["/pn3"].stateValues.value;
+
+      expect(pn1c).gt(1).lt(1000);
+      expect(pn2c).gt(1).lt(1000);
+      expect(pn3c).gt(1000).lt(10000);
+
+      expect(pn1c).eq(pn1b);
+      expect(pn2c).eq(pn2b);
+      expect(pn3c).not.eq(pn3);
     });
   });
 });
