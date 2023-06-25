@@ -119,6 +119,7 @@ export default React.memo(function Vector(props) {
         document.documentElement,
       ).getPropertyValue("--mainGray"),
       layer: pointLayer,
+      showInfoBox: SVs.showCoordsWhenDragging,
     });
 
     // create invisible points at endpoints
@@ -559,6 +560,9 @@ export default React.memo(function Vector(props) {
 
       point2JXG.current.visProp["visible"] = headVisible;
       point2JXG.current.visPropCalc["visible"] = headVisible;
+
+      point1JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+      point2JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
 
       if (
         sourceOfUpdate.sourceInformation &&

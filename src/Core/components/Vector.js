@@ -78,6 +78,14 @@ export default class Vector extends GraphicalComponent {
       public: true,
     };
 
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
+
     return attributes;
   }
 

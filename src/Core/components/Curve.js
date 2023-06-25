@@ -123,6 +123,14 @@ export default class Curve extends GraphicalComponent {
       createComponentOfType: "math",
     };
 
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
+
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
       createStateVariable: "nearestPointAsCurvePrelim",

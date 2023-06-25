@@ -83,6 +83,7 @@ export default React.memo(function Polygon(props) {
       withLabel: false,
       layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       highlight: true,
+      showInfoBox: SVs.showCoordsWhenDragging,
     };
 
     let jsxBorderAttributes = {
@@ -467,6 +468,8 @@ export default React.memo(function Polygon(props) {
         // // let actuallyChangedVisibility = polygonJXG.current.vertices[i].visProp["visible"] !== verticesVisible;
         polygonJXG.current.vertices[i].visProp["visible"] = verticesVisible;
         polygonJXG.current.vertices[i].visPropCalc["visible"] = verticesVisible;
+        polygonJXG.current.vertices[i].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
       }
 
       if (
