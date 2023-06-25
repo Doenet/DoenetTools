@@ -9,8 +9,8 @@ import {
 import { processAssignNames } from "../utils/serializedStateProcessing";
 import CompositeComponent from "./abstract/CompositeComponent";
 
-export default class SelectFromPrimes extends CompositeComponent {
-  static componentType = "selectFromPrimes";
+export default class SelectPrimeNumbers extends CompositeComponent {
+  static componentType = "selectPrimeNumbers";
 
   static assignNamesToReplacements = true;
 
@@ -270,13 +270,13 @@ export default class SelectFromPrimes extends CompositeComponent {
 
         if (!(Number.isInteger(numToSelect) && numToSelect >= 0)) {
           console.log(
-            `cannot determine unique variants of selectFromPrimes as numToSelect isn't a non-negative integer.`,
+            `cannot determine unique variants of selectPrimeNumbers as numToSelect isn't a non-negative integer.`,
           );
           return { success: false };
         }
       } else {
         console.log(
-          `cannot determine unique variants of selectFromPrimes as numToSelect isn't constant number.`,
+          `cannot determine unique variants of selectPrimeNumbers as numToSelect isn't constant number.`,
         );
         return { success: false };
       }
@@ -301,13 +301,13 @@ export default class SelectFromPrimes extends CompositeComponent {
           withReplacement = withReplacementComponent.state.value;
         } else {
           console.log(
-            `cannot determine unique variants of selectFromPrimes as withReplacement isn't constant boolean.`,
+            `cannot determine unique variants of selectPrimeNumbers as withReplacement isn't constant boolean.`,
           );
           return { success: false };
         }
       } else {
         console.log(
-          `cannot determine unique variants of selectFromPrimes as withReplacement isn't constant boolean.`,
+          `cannot determine unique variants of selectPrimeNumbers as withReplacement isn't constant boolean.`,
         );
         return { success: false };
       }
@@ -325,14 +325,14 @@ export default class SelectFromPrimes extends CompositeComponent {
         let minValue = Number(minValueComponent.children[0]);
         if (!Number.isFinite(minValue)) {
           console.log(
-            `cannot determine unique variants of selectFromPrimes as minValue isn't a number.`,
+            `cannot determine unique variants of selectPrimeNumbers as minValue isn't a number.`,
           );
           return { success: false };
         }
         primePars.minValue = minValue;
       } else {
         console.log(
-          `cannot determine unique variants of selectFromPrimes as minValue isn't a constant.`,
+          `cannot determine unique variants of selectPrimeNumbers as minValue isn't a constant.`,
         );
         return { success: false };
       }
@@ -348,14 +348,14 @@ export default class SelectFromPrimes extends CompositeComponent {
         let maxValue = Number(maxValueComponent.children[0]);
         if (!Number.isFinite(maxValue)) {
           console.log(
-            `cannot determine unique variants of selectFromPrimes as maxValue isn't a number.`,
+            `cannot determine unique variants of selectPrimeNumbers as maxValue isn't a number.`,
           );
           return { success: false };
         }
         primePars.maxValue = maxValue;
       } else {
         console.log(
-          `cannot determine unique variants of selectFromPrimes as maxValue isn't a constant.`,
+          `cannot determine unique variants of selectPrimeNumbers as maxValue isn't a constant.`,
         );
         return { success: false };
       }
@@ -363,7 +363,7 @@ export default class SelectFromPrimes extends CompositeComponent {
 
     if (serializedComponent.attributes.excludeCombinations) {
       console.log(
-        "have not implemented unique variants of a selectFromPrimes with excludeCombinations",
+        "have not implemented unique variants of a selectPrimeNumbers with excludeCombinations",
       );
       return { success: false };
     }
@@ -376,7 +376,7 @@ export default class SelectFromPrimes extends CompositeComponent {
         )
       ) {
         console.log(
-          "have not implemented unique variants of a selectFromPrimes with non-constant exclude",
+          "have not implemented unique variants of a selectPrimeNumbers with non-constant exclude",
         );
         return { success: false };
       }
@@ -384,7 +384,7 @@ export default class SelectFromPrimes extends CompositeComponent {
 
       if (!exclude.every(Number.isFinite)) {
         console.log(
-          "have not implemented unique variants of a selectFromPrimes with non-constant exclude",
+          "have not implemented unique variants of a selectPrimeNumbers with non-constant exclude",
         );
         return { success: false };
       }
@@ -411,7 +411,7 @@ export default class SelectFromPrimes extends CompositeComponent {
         sortResults = sortResultsComponent.state.value;
       } else {
         console.log(
-          `cannot determine unique variants of selectFromPrimes as sortResults isn't a constant.`,
+          `cannot determine unique variants of selectPrimeNumbers as sortResults isn't a constant.`,
         );
         return { success: false };
       }
@@ -419,7 +419,7 @@ export default class SelectFromPrimes extends CompositeComponent {
 
     if (sortResults && numToSelect > 1) {
       console.log(
-        "have not implemented unique variants of a selectFromPrimes with sortResults",
+        "have not implemented unique variants of a selectPrimeNumbers with sortResults",
       );
       return { success: false };
     }
@@ -561,7 +561,7 @@ function makeSelection({ dependencyValues }) {
         })
       ) {
         throw Error(
-          "Specified values of selectFromPrimes was an excluded combination",
+          "Specified values of selectPrimeNumbers was an excluded combination",
         );
       }
 
@@ -616,10 +616,12 @@ function makeSelection({ dependencyValues }) {
         numCombinationsExcluded -= numberDuplicated;
 
         if (numCombinationsExcluded > 0.7 * numPossibilities) {
-          throw Error("Excluded over 70% of combinations in selectFromPrimes");
+          throw Error(
+            "Excluded over 70% of combinations in selectPrimeNumbers",
+          );
         }
       } else {
-        throw Error("Excluded over 70% of combinations in selectFromPrimes");
+        throw Error("Excluded over 70% of combinations in selectPrimeNumbers");
       }
     }
 

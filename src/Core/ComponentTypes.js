@@ -111,7 +111,7 @@ import Figure from "./components/Figure";
 import TextListFromString from "./components/TextListFromString";
 import VariantControl from "./components/VariantControl";
 import SelectFromSequence from "./components/SelectFromSequence";
-import SelectFromPrimes from "./components/SelectFromPrimes";
+import SelectPrimeNumbers from "./components/SelectPrimeNumbers";
 import Select from "./components/Select";
 import Group from "./components/Group";
 import AnimateFromSequence from "./components/AnimateFromSequence";
@@ -298,7 +298,7 @@ const componentTypeArray = [
   VariantControl,
   TextListFromString,
   SelectFromSequence,
-  SelectFromPrimes,
+  SelectPrimeNumbers,
   Select,
   Group,
   AnimateFromSequence,

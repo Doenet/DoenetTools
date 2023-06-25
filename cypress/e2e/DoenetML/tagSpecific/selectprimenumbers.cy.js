@@ -1,6 +1,6 @@
 import { cesc } from "../../../../src/_utils/url";
 
-describe("SelectFromPrimes Tag Tests", function () {
+describe("SelecPrimeNumbers Tag Tests", function () {
   beforeEach(() => {
     cy.clearIndexedDB();
     cy.visit("/src/Tools/cypressTest/");
@@ -13,36 +13,36 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes name="sample1"/>
-    <selectfromprimes name="sample2"/>
-    <selectfromprimes name="sample3"/>
-    <selectfromprimes name="sample4"/>
-    <selectfromprimes name="sample5"/>
-    <selectfromprimes name="sample6"/>
-    <selectfromprimes name="sample7"/>
-    <selectfromprimes name="sample8"/>
-    <selectfromprimes name="sample9"/>
-    <selectfromprimes name="sample10"/>
-    <selectfromprimes name="sample11"/>
-    <selectfromprimes name="sample12"/>
-    <selectfromprimes name="sample13"/>
-    <selectfromprimes name="sample14"/>
-    <selectfromprimes name="sample15"/>
-    <selectfromprimes name="sample16"/>
-    <selectfromprimes name="sample17"/>
-    <selectfromprimes name="sample18"/>
-    <selectfromprimes name="sample19"/>
-    <selectfromprimes name="sample20"/>
-    <selectfromprimes name="sample21"/>
-    <selectfromprimes name="sample22"/>
-    <selectfromprimes name="sample23"/>
-    <selectfromprimes name="sample24"/>
-    <selectfromprimes name="sample25"/>
-    <selectfromprimes name="sample26"/>
-    <selectfromprimes name="sample27"/>
-    <selectfromprimes name="sample28"/>
-    <selectfromprimes name="sample29"/>
-    <selectfromprimes name="sample30"/>
+    <selectprimenumbers name="sample1"/>
+    <selectprimenumbers name="sample2"/>
+    <selectprimenumbers name="sample3"/>
+    <selectprimenumbers name="sample4"/>
+    <selectprimenumbers name="sample5"/>
+    <selectprimenumbers name="sample6"/>
+    <selectprimenumbers name="sample7"/>
+    <selectprimenumbers name="sample8"/>
+    <selectprimenumbers name="sample9"/>
+    <selectprimenumbers name="sample10"/>
+    <selectprimenumbers name="sample11"/>
+    <selectprimenumbers name="sample12"/>
+    <selectprimenumbers name="sample13"/>
+    <selectprimenumbers name="sample14"/>
+    <selectprimenumbers name="sample15"/>
+    <selectprimenumbers name="sample16"/>
+    <selectprimenumbers name="sample17"/>
+    <selectprimenumbers name="sample18"/>
+    <selectprimenumbers name="sample19"/>
+    <selectprimenumbers name="sample20"/>
+    <selectprimenumbers name="sample21"/>
+    <selectprimenumbers name="sample22"/>
+    <selectprimenumbers name="sample23"/>
+    <selectprimenumbers name="sample24"/>
+    <selectprimenumbers name="sample25"/>
+    <selectprimenumbers name="sample26"/>
+    <selectprimenumbers name="sample27"/>
+    <selectprimenumbers name="sample28"/>
+    <selectprimenumbers name="sample29"/>
+    <selectprimenumbers name="sample30"/>
     </aslist>
     `,
         },
@@ -77,36 +77,36 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes name="sample1" maxValue="6" />
-    <selectfromprimes name="sample2" maxValue="6" />
-    <selectfromprimes name="sample3" maxValue="6" />
-    <selectfromprimes name="sample4" maxValue="6" />
-    <selectfromprimes name="sample5" maxValue="6" />
-    <selectfromprimes name="sample6" maxValue="6" />
-    <selectfromprimes name="sample7" maxValue="6" />
-    <selectfromprimes name="sample8" maxValue="6" />
-    <selectfromprimes name="sample9" maxValue="6" />
-    <selectfromprimes name="sample10" maxValue="6" />
-    <selectfromprimes name="sample11" maxValue="6" />
-    <selectfromprimes name="sample12" maxValue="6" />
-    <selectfromprimes name="sample13" maxValue="6" />
-    <selectfromprimes name="sample14" maxValue="6" />
-    <selectfromprimes name="sample15" maxValue="6" />
-    <selectfromprimes name="sample16" maxValue="6" />
-    <selectfromprimes name="sample17" maxValue="6" />
-    <selectfromprimes name="sample18" maxValue="6" />
-    <selectfromprimes name="sample19" maxValue="6" />
-    <selectfromprimes name="sample20" maxValue="6" />
-    <selectfromprimes name="sample21" maxValue="6" />
-    <selectfromprimes name="sample22" maxValue="6" />
-    <selectfromprimes name="sample23" maxValue="6" />
-    <selectfromprimes name="sample24" maxValue="6" />
-    <selectfromprimes name="sample25" maxValue="6" />
-    <selectfromprimes name="sample26" maxValue="6" />
-    <selectfromprimes name="sample27" maxValue="6" />
-    <selectfromprimes name="sample28" maxValue="6" />
-    <selectfromprimes name="sample29" maxValue="6" />
-    <selectfromprimes name="sample30" maxValue="6" />
+    <selectprimenumbers name="sample1" maxValue="6" />
+    <selectprimenumbers name="sample2" maxValue="6" />
+    <selectprimenumbers name="sample3" maxValue="6" />
+    <selectprimenumbers name="sample4" maxValue="6" />
+    <selectprimenumbers name="sample5" maxValue="6" />
+    <selectprimenumbers name="sample6" maxValue="6" />
+    <selectprimenumbers name="sample7" maxValue="6" />
+    <selectprimenumbers name="sample8" maxValue="6" />
+    <selectprimenumbers name="sample9" maxValue="6" />
+    <selectprimenumbers name="sample10" maxValue="6" />
+    <selectprimenumbers name="sample11" maxValue="6" />
+    <selectprimenumbers name="sample12" maxValue="6" />
+    <selectprimenumbers name="sample13" maxValue="6" />
+    <selectprimenumbers name="sample14" maxValue="6" />
+    <selectprimenumbers name="sample15" maxValue="6" />
+    <selectprimenumbers name="sample16" maxValue="6" />
+    <selectprimenumbers name="sample17" maxValue="6" />
+    <selectprimenumbers name="sample18" maxValue="6" />
+    <selectprimenumbers name="sample19" maxValue="6" />
+    <selectprimenumbers name="sample20" maxValue="6" />
+    <selectprimenumbers name="sample21" maxValue="6" />
+    <selectprimenumbers name="sample22" maxValue="6" />
+    <selectprimenumbers name="sample23" maxValue="6" />
+    <selectprimenumbers name="sample24" maxValue="6" />
+    <selectprimenumbers name="sample25" maxValue="6" />
+    <selectprimenumbers name="sample26" maxValue="6" />
+    <selectprimenumbers name="sample27" maxValue="6" />
+    <selectprimenumbers name="sample28" maxValue="6" />
+    <selectprimenumbers name="sample29" maxValue="6" />
+    <selectprimenumbers name="sample30" maxValue="6" />
     </aslist>
     `,
         },
@@ -141,36 +141,36 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes name="sample1" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample2" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample3" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample4" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample5" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample6" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample7" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample8" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample9" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample10" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample11" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample12" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample13" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample14" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample15" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample16" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample17" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample18" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample19" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample20" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample21" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample22" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample23" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample24" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample25" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample26" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample27" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample28" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample29" minValue="9" maxValue="39" />
-    <selectfromprimes name="sample30" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample1" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample2" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample3" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample4" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample5" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample6" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample7" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample8" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample9" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample10" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample11" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample12" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample13" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample14" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample15" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample16" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample17" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample18" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample19" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample20" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample21" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample22" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample23" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample24" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample25" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample26" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample27" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample28" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample29" minValue="9" maxValue="39" />
+    <selectprimenumbers name="sample30" minValue="9" maxValue="39" />
     </aslist>
     `,
         },
@@ -205,36 +205,36 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes exclude="19" name="sample1" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample2" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample3" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample4" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample5" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample6" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample7" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample8" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample9" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample10" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample11" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample12" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample13" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample14" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample15" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample16" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample17" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample18" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample19" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample20" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample21" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample22" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample23" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample24" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample25" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample26" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample27" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample28" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample29" minValue="9" maxValue="39" />
-    <selectfromprimes exclude="19" name="sample30" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample1" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample2" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample3" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample4" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample5" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample6" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample7" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample8" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample9" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample10" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample11" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample12" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample13" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample14" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample15" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample16" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample17" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample18" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample19" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample20" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample21" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample22" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample23" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample24" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample25" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample26" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample27" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample28" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample29" minValue="9" maxValue="39" />
+    <selectprimenumbers exclude="19" name="sample30" minValue="9" maxValue="39" />
     </aslist>
     `,
         },
@@ -269,26 +269,26 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" />
     </aslist>
     `,
         },
@@ -328,26 +328,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
     `,
         },
         "*",
@@ -395,26 +395,26 @@ describe("SelectFromPrimes Tag Tests", function () {
     <numberlist name="ec3">1033 1039</numberlist>
     <mathlist name="ec4">1039 1021</mathlist>
 
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="$ec ($e1 1039) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="1031 1049" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     `,
         },
         "*",
@@ -454,26 +454,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
-    <p><aslist><selectfromprimes exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample1" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample2" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample3" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample4" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample5" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample6" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample7" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample8" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample9" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample10" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample11" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample12" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample13" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample14" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample15" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample16" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample17" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample18" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample19" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
+    <p><aslist><selectprimenumbers exclude="19 1031 1036 1037 1038 1049 1050 1061" numToSelect="2" name="sample20" minValue="1020" maxValue="1050" excludecombinations="(1021 1033) (1033 1039) (1039 1021)" /></aslist></p>
     `,
         },
         "*",
@@ -513,26 +513,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample1" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample2" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample3" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample4" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample5" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample6" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample7" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample8" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample9" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample10" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample11" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample12" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample13" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample14" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample15" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample16" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample17" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample18" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample19" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample20" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample1" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample2" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample3" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample4" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample5" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample6" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample7" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample8" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample9" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample10" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample11" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample12" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample13" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample14" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample15" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample16" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample17" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample18" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample19" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample20" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2)" /></aslist></p>
     `,
         },
         "*",
@@ -595,26 +595,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample1" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample2" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample3" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample4" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample5" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample6" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample7" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample8" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample9" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample10" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample11" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample12" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample13" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample14" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample15" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample16" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample17" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample18" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample19" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" withReplacement name="sample20" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample1" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample2" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample3" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample4" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample5" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample6" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample7" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample8" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample9" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample10" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample11" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample12" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample13" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample14" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample15" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample16" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample17" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample18" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample19" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" withReplacement name="sample20" maxValue="5" excludecombinations="(2 2 _) (2 _ 2) (_ 2 2) (5 2 2) (3 2 2) (2 2 2) (_ 2 2) (_ 2 2) (_ 2 2) (2 2 _) (2 _ 2) (2 2 _) (2 5 2) (2 3 2) (2 2 2)" /></aslist></p>
     `,
         },
         "*",
@@ -677,26 +677,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample1" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample2" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample3" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample4" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample5" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample6" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample7" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample8" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample9" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample10" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample11" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample12" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample13" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample14" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample15" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample16" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample17" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample18" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample19" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="4" withReplacement name="sample20" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample1" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample2" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample3" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample4" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample5" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample6" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample7" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample8" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample9" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample10" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample11" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample12" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample13" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample14" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample15" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample16" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample17" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample18" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample19" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="4" withReplacement name="sample20" minValue="3" maxValue="11" excludecombinations="(3 _ _ _) (_ 5 _ _) (_ _ 7 _) (_ _ _ 11)" /></aslist></p>
     `,
         },
         "*",
@@ -740,26 +740,26 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample1" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample2" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample3" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample4" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample5" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample6" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample7" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample8" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample9" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample10" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample11" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample12" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample13" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample14" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample15" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample16" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample17" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample18" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample19" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample20" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample1" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample2" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample3" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample4" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample5" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample6" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample7" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample8" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample9" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample10" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample11" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample12" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample13" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample14" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample15" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample16" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample17" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample18" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample19" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample20" maxValue="5" excludecombinations="(2 _ _) (_ 3 _) (_ _ 5)" /></aslist></p>
     `,
         },
         "*",
@@ -798,7 +798,7 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="3" name="sample1" maxValue="5" excludecombinations="(2 _ _) (_ 2 _) (_ _ 2)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" name="sample1" maxValue="5" excludecombinations="(2 _ _) (_ 2 _) (_ _ 2)" /></aslist></p>
     `,
         },
         "*",
@@ -817,16 +817,16 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample1" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample2" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample3" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample4" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample5" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample6" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample7" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample8" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample9" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
-    <p><aslist><selectfromprimes numToSelect="10" name="sample10" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample1" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample2" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample3" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample4" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample5" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample6" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample7" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample8" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample9" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="10" name="sample10" maxValue="30" excludecombinations="(2 _ _ _ _ _ _ _ _ _) (_ 3 _ _ _ _ _ _ _ _) (_ _ 5 _ _ _ _ _ _ _) (_ _ _ 7 _ _ _ _ _ _) (_ _ _ _ 11 _ _ _ _ _) (_ _ _ _ _ 13 _ _ _ _) (_ _ _ _ _ _ 17 _ _ _) (_ _ _ _ _ _ _ 19 _ _) (_ _ _ _ _ _ _ _ 23 _) (_ _ _ _ _ _ _ _ _ 29)" /></aslist></p>
     `,
         },
         "*",
@@ -862,26 +862,26 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample1" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample2" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample3" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample4" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample5" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample6" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample7" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample8" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample9" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample10" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample11" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample12" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample13" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample14" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample15" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample16" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample17" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample18" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample19" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" numToSelect="5" withReplacement name="sample20" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample1" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample2" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample3" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample4" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample5" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample6" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample7" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample8" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample9" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample10" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample11" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample12" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample13" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample14" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample15" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample16" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample17" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample18" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample19" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" numToSelect="5" withReplacement name="sample20" minValue="1020" maxValue="1050" />
     </aslist>
     `,
         },
@@ -936,26 +936,26 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <aslist>
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample1" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample2" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample3" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample4" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample5" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample6" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample7" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample8" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample9" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample10" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample11" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample12" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample13" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample14" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample15" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample16" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample17" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample18" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample19" numToSelect="$n" minValue="1020" maxValue="1050" />
-    <selectfromprimes exclude="1031 1049" withReplacement name="sample20" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample1" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample2" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample3" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample4" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample5" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample6" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample7" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample8" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample9" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample10" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample11" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample12" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample13" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample14" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample15" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample16" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample17" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample18" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample19" numToSelect="$n" minValue="1020" maxValue="1050" />
+    <selectprimenumbers exclude="1031 1049" withReplacement name="sample20" numToSelect="$n" minValue="1020" maxValue="1050" />
     </aslist>
     <copy name="n2" target="n3" />
     <copy name="n" target="num1" />
@@ -1010,7 +1010,7 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromprimes numToSelect="100" name="sample" maxValue="1000000" />
+    <selectprimenumbers numToSelect="100" name="sample" maxValue="1000000" />
     </aslist>
     `,
         },
@@ -1056,8 +1056,8 @@ describe("SelectFromPrimes Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <p><aslist>
-    <selectfromprimes name="sample1" maxvalue="100" />
-    <selectfromprimes name="sample2" maxvalue="100" />
+    <selectprimenumbers name="sample1" maxvalue="100" />
+    <selectprimenumbers name="sample2" maxvalue="100" />
     </aslist></p>
 
     <p><aslist>
@@ -1203,13 +1203,13 @@ describe("SelectFromPrimes Tag Tests", function () {
     <mathinput prefill="5" name="numToSelect"/>
     <mathinput prefill="3" name="maxnum"/>
     <p><aslist>
-    <selectfromprimes name="sample1" withReplacement maxValue="$maxnum" numToSelect="$numToSelect" />
+    <selectprimenumbers name="sample1" withReplacement maxValue="$maxnum" numToSelect="$numToSelect" />
     </aslist></p>
 
     <mathinput prefill="2" name="numToSelect2"/>
     <mathinput prefill="10" name="maxnum2"/>
     <p><aslist>
-    <selectfromprimes name="sample2" withReplacement maxValue="$maxnum2" numToSelect="$numToSelect2" />
+    <selectprimenumbers name="sample2" withReplacement maxValue="$maxnum2" numToSelect="$numToSelect2" />
     </aslist></p>
     <p><copy prop="value" target="maxnum2" assignNames="maxnum2a" /></p>
     `,
@@ -1295,7 +1295,7 @@ describe("SelectFromPrimes Tag Tests", function () {
     <p name="p1"><aslist>
     <map assignnames="a b c d e f">
       <template newNamespace>
-        <selectfromprimes assignnames="n" maxValue="100" />
+        <selectprimenumbers assignnames="n" maxValue="100" />
       </template>
       <sources>
       <sequence length="$_mathinput1" />
@@ -2409,7 +2409,7 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="20" sortresults="true" withreplacement="true" maxValue="100" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="20" sortresults="true" withreplacement="true" maxValue="100" /></aslist></p>
 
     <p><copy target="_aslist1" /></p>
     <copy target="_p1" />
@@ -2427,7 +2427,7 @@ describe("SelectFromPrimes Tag Tests", function () {
 
       let lastnumber = -20;
       let originalnumbers = stateVariables[
-        "/_selectfromprimes1"
+        "/_selectprimenumbers1"
       ].replacements.map((x) => stateVariables[x.componentName]);
       let secondnumbers = stateVariables[
         stateVariables["/_copy1"].replacements[0].componentName
@@ -2455,7 +2455,7 @@ describe("SelectFromPrimes Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromprimes numToSelect="3" sortresults="true" withreplacement="true" maxValue="10" /></aslist></p>
+    <p><aslist><selectprimenumbers numToSelect="3" sortresults="true" withreplacement="true" maxValue="10" /></aslist></p>
 
     <p><copy target="_aslist1" /></p>
     <copy target="_p1" />
@@ -2473,7 +2473,7 @@ describe("SelectFromPrimes Tag Tests", function () {
 
       let lastnumber = -20;
       let originalnumbers = stateVariables[
-        "/_selectfromprimes1"
+        "/_selectprimenumbers1"
       ].replacements.map((x) => stateVariables[x.componentName]);
       let secondnumbers = stateVariables[
         stateVariables["/_copy1"].replacements[0].componentName
@@ -2492,7 +2492,7 @@ describe("SelectFromPrimes Tag Tests", function () {
     });
   });
 
-  it("selectfromprimes hides dynamically", () => {
+  it("selectprimenumbers hides dynamically", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -2505,7 +2505,7 @@ describe("SelectFromPrimes Tag Tests", function () {
     <booleaninput name='h2' prefill="true" >
       <label>Hide second select</label>
     </booleaninput>
-    <p><selectfromprimes assignnames="c" hide="$h1" />, <selectfromprimes assignnames="d" hide="$h2" /></p>
+    <p><selectprimenumbers assignnames="c" hide="$h1" />, <selectprimenumbers assignnames="d" hide="$h2" /></p>
     <p><copy target="c" />, <copy target="d" /></p>
     `,
         },
@@ -2539,7 +2539,7 @@ describe("SelectFromPrimes Tag Tests", function () {
     });
   });
 
-  it("numToSelect from selectfromprimes", () => {
+  it("numToSelect from selectprimenumbers", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -2547,23 +2547,23 @@ describe("SelectFromPrimes Tag Tests", function () {
     <text>a</text>
 
     <p>n1 = <selectfromsequence from="1" to="5" assignNames="n1" /></p>
-    <p>nums = <aslist><selectfromprimes name="nums1" maxValue="30" numToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
+    <p>nums = <aslist><selectprimenumbers name="nums1" maxValue="30" numToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
     <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
 
     <p>n2 = <selectfromsequence from="1" to="5" assignNames="n2" /></p>
-    <p>nums = <aslist><selectfromprimes name="nums2" maxValue="30" numToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
+    <p>nums = <aslist><selectprimenumbers name="nums2" maxValue="30" numToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
     <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
 
     <p>n3 = <selectfromsequence from="1" to="5" assignNames="n3" /></p>
-    <p>nums = <aslist><selectfromprimes name="nums3" maxValue="30" numToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
+    <p>nums = <aslist><selectprimenumbers name="nums3" maxValue="30" numToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
     <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
 
     <p>n4 = <selectfromsequence from="1" to="5" assignNames="n4" /></p>
-    <p>nums = <aslist><selectfromprimes name="nums4" maxValue="30" numToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
+    <p>nums = <aslist><selectprimenumbers name="nums4" maxValue="30" numToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
     <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
 
     <p>n5 = <selectfromsequence from="1" to="5" assignNames="n5" /></p>
-    <p>nums = <aslist><selectfromprimes name="nums5" maxValue="30" numToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
+    <p>nums = <aslist><selectprimenumbers name="nums5" maxValue="30" numToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
     <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
       `,
         },
