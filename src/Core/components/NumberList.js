@@ -254,10 +254,10 @@ export default class NumberList extends InlineComponent {
       },
       inverseArrayDefinitionByKey({
         desiredStateVariableValues,
-        globalDependencyValues,
         dependencyValuesByKey,
+        globalDependencyValues,
         dependencyNamesByKey,
-        arraySize,
+        workspace,
       }) {
         let instructions = [];
 
@@ -287,6 +287,18 @@ export default class NumberList extends InlineComponent {
                 variableIndex: 1,
               });
             }
+          } else if (globalDependencyValues.numbersShadow !== null) {
+            if (!workspace.desiredNumberShadow) {
+              workspace.desiredNumberShadow = [
+                ...globalDependencyValues.numbersShadow,
+              ];
+            }
+            workspace.desiredNumberShadow[arrayKey] =
+              desiredStateVariableValues.numbers[arrayKey];
+            instructions.push({
+              setDependency: "numbersShadow",
+              desiredValue: workspace.desiredNumberShadow,
+            });
           }
         }
 
@@ -331,6 +343,68 @@ export default class NumberList extends InlineComponent {
         }
 
         return { setValue: { math } };
+      },
+    };
+
+    stateVariableDefinitions.maths = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      isArray: true,
+      entryPrefixes: ["math"],
+      returnArraySizeDependencies: () => ({
+        numComponents: {
+          dependencyType: "stateVariable",
+          variableName: "numComponents",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numComponents];
+      },
+
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            number: {
+              dependencyType: "stateVariable",
+              variableName: `number${Number(arrayKey) + 1}`,
+            },
+          };
+        }
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let maths = {};
+
+        for (let arrayKey of arrayKeys) {
+          maths[arrayKey] = me.fromAst(dependencyValuesByKey[arrayKey].number);
+        }
+
+        return { setValue: { maths } };
+      },
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        dependencyNamesByKey,
+      }) {
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.maths) {
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].number,
+            desiredValue:
+              desiredStateVariableValues.maths[arrayKey].evaluate_to_constant(),
+          });
+        }
+
+        return {
+          success: true,
+          instructions,
+        };
       },
     };
 
@@ -539,6 +613,13 @@ export default class NumberList extends InlineComponent {
   }
 
   static adapters = [
+    {
+      stateVariable: "maths",
+      componentType: "mathList",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
     {
       stateVariable: "math",
       stateVariablesToShadow: Object.keys(

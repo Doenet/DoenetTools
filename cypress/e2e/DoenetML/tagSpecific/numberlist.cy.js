@@ -1195,4 +1195,46 @@ describe("Numberlist Tag Tests", function () {
       expect(stateVariables["/_text2"].stateValues.value).eq("1, 2, 3");
     });
   });
+
+  it("numberlist adapts to mathlist", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <numberlist name="nl"><number>9</number> <number>8</number><number>7</number></numberlist>
+
+    <p><mathlist name="ml">$nl</mathlist></p>
+    <p>Change second math: <mathinput name="mi1">$ml.math2</mathinput></p>
+
+    <p>Change 1st and 3rd math via point: <mathinput name="mi2"><point>($ml.number1,$ml.math3)</point></mathinput></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9,8,7");
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 8, 7");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}3{enter}", { force: true });
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 83, 7");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9,83,7");
+
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{leftarrow}{backspace}{backspace}{backspace}-1,2{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/nl")).should("have.text", "-1, 83, 2");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "−1,83,2");
+  });
 });
