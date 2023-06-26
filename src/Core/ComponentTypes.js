@@ -187,6 +187,7 @@ import TextOrInline from "./components/abstract/TextOrInline";
 import SingleCharacterInline from "./components/abstract/SingleCharacterInline";
 import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
+import DirectionComponent from "./components/abstract/DirectionComponent";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -376,6 +377,7 @@ const componentTypeArray = [
   SingleCharacterInline,
   VariableNameList,
   VariableName,
+  DirectionComponent,
 ];
 
 export function allComponentClasses() {
