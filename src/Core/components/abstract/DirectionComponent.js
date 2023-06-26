@@ -1,3 +1,10 @@
+// This abstract component existly solely to allow different component types
+// to appear in the same attribute that specifies a direction.
+// (If we had a notion of traits with attributes based on a trait, it would be unnecessary.)
+// For a component type to specify a direction, it needs a state variable
+// that is a math-expression vector.
+// Then, one can add an adapter from that state variable to componentType _directionComponent.
+
 import me from "math-expressions";
 import {
   convertValueToMathExpression,
