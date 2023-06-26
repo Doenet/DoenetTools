@@ -399,6 +399,55 @@ export default class LineSegment extends GraphicalComponent {
       },
     };
 
+    stateVariableDefinitions.parallelCoords = {
+      returnDependencies: () => ({
+        endpoints: {
+          dependencyType: "stateVariable",
+          variableName: "endpoints",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let dxTree = [
+          "+",
+          dependencyValues.endpoints[1][0].tree,
+          ["-", dependencyValues.endpoints[0][0].tree],
+        ];
+
+        let dyTree = [
+          "+",
+          dependencyValues.endpoints[1][1].tree,
+          ["-", dependencyValues.endpoints[0][1].tree],
+        ];
+
+        let parallelCoords = me.fromAst(["vector", dxTree, dyTree]);
+
+        return { setValue: { parallelCoords } };
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let x = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(0).tree,
+          dependencyValues.endpoints[0][0].tree,
+        ]);
+
+        let y = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(1).tree,
+          dependencyValues.endpoints[0][1].tree,
+        ]);
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "endpoints",
+              desiredValue: { "1,0": x, "1,1": y },
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.length = {
       public: true,
       isLocation: true,
@@ -681,6 +730,16 @@ export default class LineSegment extends GraphicalComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "parallelCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+  ];
 
   async moveLineSegment({
     point1coords,

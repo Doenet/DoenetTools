@@ -1439,6 +1439,55 @@ export default class Line extends GraphicalComponent {
       },
     };
 
+    stateVariableDefinitions.parallelCoords = {
+      returnDependencies: () => ({
+        points: {
+          dependencyType: "stateVariable",
+          variableName: "points",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let dxTree = [
+          "+",
+          dependencyValues.points[1][0].tree,
+          ["-", dependencyValues.points[0][0].tree],
+        ];
+
+        let dyTree = [
+          "+",
+          dependencyValues.points[1][1].tree,
+          ["-", dependencyValues.points[0][1].tree],
+        ];
+
+        let parallelCoords = me.fromAst(["vector", dxTree, dyTree]);
+
+        return { setValue: { parallelCoords } };
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let x = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(0).tree,
+          dependencyValues.points[0][0].tree,
+        ]);
+
+        let y = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(1).tree,
+          dependencyValues.points[0][1].tree,
+        ]);
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "points",
+              desiredValue: { "1,0": x, "1,1": y },
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.numericalPoints = {
       isArray: true,
       entryPrefixes: ["numericalPoint"],
@@ -1788,6 +1837,13 @@ export default class Line extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "equation",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+    {
+      stateVariable: "parallelCoords",
+      componentType: "_directionComponent",
       stateVariablesToShadow: Object.keys(
         returnRoundingStateVariableDefinitions(),
       ),
