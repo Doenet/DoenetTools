@@ -63,10 +63,6 @@ export default class DirectionComponent extends BaseComponent {
           group: "directions",
           componentTypes: ["_directionComponent"],
         },
-        // {
-        //   group: "maths",
-        //   componentTypes: ["math"],
-        // },
       ],
     );
 
@@ -114,11 +110,6 @@ export default class DirectionComponent extends BaseComponent {
           childGroups: ["directions"],
           variableNames: ["unnormalizedDirection"],
         },
-        // mathChild: {
-        //   dependencyType: "child",
-        //   childGroups: ["maths"],
-        //   variableNames: ["value"],
-        // },
         directionShadow: {
           dependencyType: "stateVariable",
           variableName: "directionShadow",
@@ -130,9 +121,6 @@ export default class DirectionComponent extends BaseComponent {
           unnormalizedDirection =
             dependencyValues.directionChild[0].stateValues
               .unnormalizedDirection;
-          // } else if (dependencyValues.mathChild.length > 0) {
-          //   unnormalizedDirection =
-          //     dependencyValues.mathChild[0].stateValues.value;
         } else {
           unnormalizedDirection = dependencyValues.directionShadow;
         }
@@ -153,15 +141,6 @@ export default class DirectionComponent extends BaseComponent {
               variableIndex: 0,
             },
           ];
-          // } else if (dependencyValues.mathChild.length > 0) {
-          //   instructions = [
-          //     {
-          //       setDependency: "mathChild",
-          //       desiredValue: desiredStateVariableValues.unnormalizedDirection,
-          //       childIndex: 0,
-          //       variableIndex: 0,
-          //     },
-          //   ];
         } else {
           instructions = [
             {

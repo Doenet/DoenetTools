@@ -14442,4 +14442,300 @@ describe("Line Tag Tests", function () {
       );
     });
   });
+
+  it("line through point perpendicular to literal expression", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="A2">(-1,-3)</point>
+    <line name="l2" through="$A2" perpendicularTo="(1,-1)" />
+    $l2.point2{assignNames="B2"}
+  </graph>
+  <copy source="A2" assignNames="A2a" />
+  <copy source="B2" assignNames="B2a" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    let A2x = -1;
+    let A2y = -3;
+    let B2x = A2x - 1 / Math.sqrt(2);
+    let B2y = A2y - 1 / Math.sqrt(2);
+
+    cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move l2 down and to the right");
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      A2x += dx;
+      A2y += dy;
+      B2x += dx;
+      B2y += dy;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l2",
+        args: {
+          point1coords: [A2x, A2y],
+          point2coords: [B2x, B2y],
+        },
+      });
+
+      cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move A2 up and to the right");
+    cy.window().then(async (win) => {
+      let dx = 3,
+        dy = 2;
+
+      A2x += dx;
+      A2y += dy;
+      B2x += dx;
+      B2y += dy;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: A2x, y: A2y },
+      });
+
+      cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move B2 rotates line");
+    cy.window().then(async (win) => {
+      B2x = -4;
+      B2y = 6;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B2",
+        args: { x: B2x, y: B2y },
+      });
+
+      cy.get(cesc2("#/B2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(Math.round(100 * B2x) / 100)},${nInDOM(
+          Math.round(100 * B2y) / 100,
+        )})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+  });
+
+  it("line through point parallel to literal expression", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <point name="A2">(-1,-3)</point>
+    <line name="l2" through="$A2" parallelTo="(1,-1)" />
+    $l2.point2{assignNames="B2"}
+  </graph>
+  <copy source="A2" assignNames="A2a" />
+  <copy source="B2" assignNames="B2a" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    let A2x = -1;
+    let A2y = -3;
+    let B2x = A2x + 1 / Math.sqrt(2);
+    let B2y = A2y - 1 / Math.sqrt(2);
+
+    cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+      "contain.text",
+      `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move l2 down and to the right");
+    cy.window().then(async (win) => {
+      let dx = 0.5,
+        dy = -4;
+
+      A2x += dx;
+      A2y += dy;
+      B2x += dx;
+      B2y += dy;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l2",
+        args: {
+          point1coords: [A2x, A2y],
+          point2coords: [B2x, B2y],
+        },
+      });
+
+      cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move A2 up and to the right");
+    cy.window().then(async (win) => {
+      let dx = 3,
+        dy = 2;
+
+      A2x += dx;
+      A2y += dy;
+      B2x += dx;
+      B2y += dy;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: A2x, y: A2y },
+      });
+
+      cy.get(cesc2("#/A2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(A2x)},${nInDOM(A2y)})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+
+    cy.log("move B2 rotates line");
+    cy.window().then(async (win) => {
+      B2x = -4;
+      B2y = 6;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B2",
+        args: { x: B2x, y: B2y },
+      });
+
+      cy.get(cesc2("#/B2a") + " .mjx-mrow").should(
+        "contain.text",
+        `(${nInDOM(Math.round(100 * B2x) / 100)},${nInDOM(
+          Math.round(100 * B2y) / 100,
+        )})`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/l2"].stateValues.points[0]).eqls([A2x, A2y]);
+      expect(stateVariables["/l2"].stateValues.points[1][0]).closeTo(
+        B2x,
+        1e-12,
+      );
+      expect(stateVariables["/l2"].stateValues.points[1][1]).closeTo(
+        B2y,
+        1e-12,
+      );
+    });
+  });
 });
