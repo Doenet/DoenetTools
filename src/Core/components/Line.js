@@ -165,9 +165,19 @@ export default class Line extends GraphicalComponent {
       returnDependencies: function ({ stateValues }) {
         if (stateValues.equationIdentity === null) {
           return {
-            through: {
+            throughAttr: {
               dependencyType: "attributeComponent",
               attributeName: "through",
+              variableNames: ["numDimensions"],
+            },
+            parallelToAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "parallelTo",
+              variableNames: ["numDimensions"],
+            },
+            perpendicularToAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "perpendicularTo",
               variableNames: ["numDimensions"],
             },
           };
@@ -197,9 +207,23 @@ export default class Line extends GraphicalComponent {
             return { noChanges: ["numDimensions"] };
           }
         } else {
-          if (dependencyValues.through) {
+          if (dependencyValues.throughAttr) {
             let numDimensions =
-              dependencyValues.through.stateValues.numDimensions;
+              dependencyValues.throughAttr.stateValues.numDimensions;
+            return {
+              setValue: { numDimensions },
+              checkForActualChange: { numDimensions: true },
+            };
+          } else if (dependencyValues.parallelToAttr) {
+            let numDimensions =
+              dependencyValues.parallelToAttr.stateValues.numDimensions;
+            return {
+              setValue: { numDimensions },
+              checkForActualChange: { numDimensions: true },
+            };
+          } else if (dependencyValues.perpendicularToAttr) {
+            let numDimensions =
+              dependencyValues.perpendicularToAttr.stateValues.numDimensions;
             return {
               setValue: { numDimensions },
               checkForActualChange: { numDimensions: true },
@@ -804,29 +828,35 @@ export default class Line extends GraphicalComponent {
                       if (dim === "0") {
                         points[arrayKey] = point1;
                       } else {
-                        points[arrayKey] = me.fromAst([
-                          "+",
-                          point1.tree,
-                          dependencyValuesByKey[arrayKey].distForSecondPt *
-                            Math.sign(slope),
-                        ]);
+                        points[arrayKey] = me
+                          .fromAst([
+                            "+",
+                            point1.tree,
+                            dependencyValuesByKey[arrayKey].distForSecondPt *
+                              Math.sign(slope),
+                          ])
+                          .simplify();
                       }
                     } else if (Number.isFinite(slope)) {
                       let theta = Math.atan(slope);
                       if (dim === "0") {
-                        points[arrayKey] = me.fromAst([
-                          "+",
-                          point1.tree,
-                          dependencyValuesByKey[arrayKey].distForSecondPt *
-                            Math.cos(theta),
-                        ]);
+                        points[arrayKey] = me
+                          .fromAst([
+                            "+",
+                            point1.tree,
+                            dependencyValuesByKey[arrayKey].distForSecondPt *
+                              Math.cos(theta),
+                          ])
+                          .simplify();
                       } else {
-                        points[arrayKey] = me.fromAst([
-                          "+",
-                          point1.tree,
-                          dependencyValuesByKey[arrayKey].distForSecondPt *
-                            Math.sin(theta),
-                        ]);
+                        points[arrayKey] = me
+                          .fromAst([
+                            "+",
+                            point1.tree,
+                            dependencyValuesByKey[arrayKey].distForSecondPt *
+                              Math.sin(theta),
+                          ])
+                          .simplify();
                       }
                     } else {
                       points[arrayKey] = me.fromAst("\uff3f");
@@ -844,12 +874,14 @@ export default class Line extends GraphicalComponent {
                     if (!parallelTo.every(Number.isFinite)) {
                       points[arrayKey] = me.fromAst("\uff3f");
                     } else {
-                      points[arrayKey] = me.fromAst([
-                        "+",
-                        point1.tree,
-                        dependencyValuesByKey[arrayKey].distForSecondPt *
-                          parallelTo[dim],
-                      ]);
+                      points[arrayKey] = me
+                        .fromAst([
+                          "+",
+                          point1.tree,
+                          dependencyValuesByKey[arrayKey].distForSecondPt *
+                            parallelTo[dim],
+                        ])
+                        .simplify();
                     }
                   } else {
                     // 0 or 1 points prescribed, perpendicularto prescribed, and on second poitn, in 2D
@@ -868,12 +900,14 @@ export default class Line extends GraphicalComponent {
                         -perpendicularTo[0],
                       ];
 
-                      points[arrayKey] = me.fromAst([
-                        "+",
-                        point1.tree,
-                        dependencyValuesByKey[arrayKey].distForSecondPt *
-                          parallelTo[dim],
-                      ]);
+                      points[arrayKey] = me
+                        .fromAst([
+                          "+",
+                          point1.tree,
+                          dependencyValuesByKey[arrayKey].distForSecondPt *
+                            parallelTo[dim],
+                        ])
+                        .simplify();
                     }
                   }
                 }
@@ -1046,7 +1080,7 @@ export default class Line extends GraphicalComponent {
             if (!workspace.desiredPoint1) {
               workspace.desiredPoint1 = [];
             }
-            for (let dim = 0; dim < arraySize[0]; dim++) {
+            for (let dim = 0; dim < arraySize[1]; dim++) {
               let desiredP1val = desiredStateVariableValues.points["1," + dim];
 
               if (desiredP1val) {
@@ -1445,43 +1479,43 @@ export default class Line extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "points",
         },
+        numDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "numDimensions",
+        },
       }),
       definition({ dependencyValues }) {
-        let dxTree = [
-          "+",
-          dependencyValues.points[1][0].tree,
-          ["-", dependencyValues.points[0][0].tree],
-        ];
+        let parallelCoords = [];
 
-        let dyTree = [
-          "+",
-          dependencyValues.points[1][1].tree,
-          ["-", dependencyValues.points[0][1].tree],
-        ];
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
+          parallelCoords.push([
+            "+",
+            dependencyValues.points[1][dim].tree,
+            ["-", dependencyValues.points[0][dim].tree],
+          ]);
+        }
 
-        let parallelCoords = me.fromAst(["vector", dxTree, dyTree]);
+        parallelCoords = me.fromAst(["vector", ...parallelCoords]).simplify();
 
         return { setValue: { parallelCoords } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        let x = me.fromAst([
-          "+",
-          desiredStateVariableValues.parallelCoords.get_component(0).tree,
-          dependencyValues.points[0][0].tree,
-        ]);
+        let desiredPoints = {};
 
-        let y = me.fromAst([
-          "+",
-          desiredStateVariableValues.parallelCoords.get_component(1).tree,
-          dependencyValues.points[0][1].tree,
-        ]);
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
+          desiredPoints[`1,${dim}`] = me.fromAst([
+            "+",
+            desiredStateVariableValues.parallelCoords.get_component(dim).tree,
+            dependencyValues.points[0][dim].tree,
+          ]);
+        }
 
         return {
           success: true,
           instructions: [
             {
               setDependency: "points",
-              desiredValue: { "1,0": x, "1,1": y },
+              desiredValue: desiredPoints,
             },
           ],
         };
