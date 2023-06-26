@@ -109,7 +109,7 @@ export default class Intersection extends CompositeComponent {
 
     let totNumChildren = numLineChildren + numCircleChildren;
 
-    if (totNumChildren === 0) {
+    if (totNumChildren < 2) {
       return { replacements: [] };
     } else if (totNumChildren > 2) {
       console.warn("Haven't implemented intersection for more than two items");
