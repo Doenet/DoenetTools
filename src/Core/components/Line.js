@@ -46,6 +46,13 @@ export default class Line extends GraphicalComponent {
     attributes.slope = {
       createComponentOfType: "number",
     };
+    attributes.perpendicularTo = {
+      createComponentOfType: "_directionComponent",
+    };
+    attributes.parallelTo = {
+      createComponentOfType: "_directionComponent",
+    };
+
     attributes.variables = {
       createComponentOfType: "_variableNameList",
     };
@@ -254,13 +261,15 @@ export default class Line extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.dForSlope = {
+    // when the second point is determined by slope, parallelTo, or perpendicularTo
+    // distForSecondPt is the (signed) distance from first point to second point
+    stateVariableDefinitions.distForSecondPt = {
       defaultValue: 1,
       hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          dForSlope: true,
+          distForSecondPt: true,
         },
       }),
       inverseDefinition({ desiredStateVariableValues }) {
@@ -268,10 +277,82 @@ export default class Line extends GraphicalComponent {
           success: true,
           instructions: [
             {
-              setEssentialValue: "dForSlope",
-              value: desiredStateVariableValues.dForSlope,
+              setEssentialValue: "distForSecondPt",
+              value: desiredStateVariableValues.distForSecondPt,
             },
           ],
+        };
+      },
+    };
+
+    stateVariableDefinitions.basedOnParallel = {
+      returnDependencies: () => ({
+        parallelToAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "parallelTo",
+          variableNames: ["numDimensions"],
+        },
+        numPointsPrescribed: {
+          dependencyType: "stateVariable",
+          variableName: "numPointsPrescribed",
+        },
+        numDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "numDimensions",
+        },
+        basedOnSlope: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnSlope",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            basedOnParallel:
+              !dependencyValues.basedOnSlope &&
+              dependencyValues.numPointsPrescribed < 2 &&
+              dependencyValues.parallelToAttr?.stateValues.numDimensions ===
+                dependencyValues.numDimensions,
+          },
+        };
+      },
+    };
+
+    stateVariableDefinitions.basedOnPerpendicular = {
+      returnDependencies: () => ({
+        perpendicularToAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "perpendicularTo",
+          variableNames: ["numDimensions"],
+        },
+        numPointsPrescribed: {
+          dependencyType: "stateVariable",
+          variableName: "numPointsPrescribed",
+        },
+        numDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "numDimensions",
+        },
+        basedOnSlope: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnSlope",
+        },
+        basedOnParallel: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnParallel",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            basedOnPerpendicular:
+              !dependencyValues.basedOnSlope &&
+              !dependencyValues.basedOnParallel &&
+              dependencyValues.numPointsPrescribed < 2 &&
+              dependencyValues.perpendicularToAttr?.stateValues
+                .numDimensions === 2 &&
+              dependencyValues.numDimensions === 2,
+          },
         };
       },
     };
@@ -528,6 +609,8 @@ export default class Line extends GraphicalComponent {
         "equationIdentity",
         "numPointsPrescribed",
         "basedOnSlope",
+        "basedOnParallel",
+        "basedOnPerpendicular",
       ],
       returnArraySizeDependencies: () => ({
         numDimensions: {
@@ -552,7 +635,11 @@ export default class Line extends GraphicalComponent {
                 variableNames: ["pointX" + varEnding],
               },
             };
-            if (stateValues.basedOnSlope) {
+            if (
+              stateValues.basedOnSlope ||
+              stateValues.basedOnParallel ||
+              stateValues.basedOnPerpendicular
+            ) {
               if (pointInd === "1") {
                 if (stateValues.numPointsPrescribed === 1) {
                   // need that first prescribed point to calculate second point
@@ -560,14 +647,24 @@ export default class Line extends GraphicalComponent {
                     "pointX1_" + (Number(dim) + 1),
                   );
                 }
-                dependenciesByKey[arrayKey].dForSlope = {
+                dependenciesByKey[arrayKey].distForSecondPt = {
                   dependencyType: "stateVariable",
-                  variableName: "dForSlope",
+                  variableName: "distForSecondPt",
                 };
                 dependenciesByKey[arrayKey].slopeAttr = {
                   dependencyType: "attributeComponent",
                   attributeName: "slope",
                   variableNames: ["value"],
+                };
+                dependenciesByKey[arrayKey].parallelToAttr = {
+                  dependencyType: "attributeComponent",
+                  attributeName: "parallelTo",
+                  variableNames: ["direction"],
+                };
+                dependenciesByKey[arrayKey].perpendicularToAttr = {
+                  dependencyType: "attributeComponent",
+                  attributeName: "perpendicularTo",
+                  variableNames: ["direction"],
                 };
               }
               if (stateValues.numPointsPrescribed === 0) {
@@ -578,7 +675,7 @@ export default class Line extends GraphicalComponent {
                 };
               }
             } else {
-              // not based on slope
+              // not based on slope, parallelTo, or perpendicularTo
               dependenciesByKey[arrayKey].essentialPoint = {
                 dependencyType: "stateVariable",
                 variableName: "essentialPointX" + varEnding,
@@ -597,6 +694,14 @@ export default class Line extends GraphicalComponent {
             basedOnSlope: {
               dependencyType: "stateVariable",
               variableName: "basedOnSlope",
+            },
+            basedOnParallel: {
+              dependencyType: "stateVariable",
+              variableName: "basedOnParallel",
+            },
+            basedOnPerpendicular: {
+              dependencyType: "stateVariable",
+              variableName: "basedOnPerpendicular",
             },
           };
           return { dependenciesByKey, globalDependencies };
@@ -632,7 +737,6 @@ export default class Line extends GraphicalComponent {
         dependencyValuesByKey,
         arrayKeys,
         arraySize,
-        componentName,
       }) {
         // console.log(`array definition of points for ${componentName}`)
         // console.log(globalDependencyValues)
@@ -671,7 +775,11 @@ export default class Line extends GraphicalComponent {
                   "pointX" + varEnding
                 ];
             } else {
-              if (globalDependencyValues.basedOnSlope) {
+              if (
+                globalDependencyValues.basedOnSlope ||
+                globalDependencyValues.basedOnParallel ||
+                globalDependencyValues.basedOnPerpendicular
+              ) {
                 let point1;
                 if (globalDependencyValues.numPointsPrescribed === 1) {
                   point1 =
@@ -686,40 +794,87 @@ export default class Line extends GraphicalComponent {
                   // will get here only if numPointsPrescribed === 0
                   points[arrayKey] = point1;
                 } else {
-                  // 0 or 1 points prescribed, slope prescribed, and on second point, in 2D
-                  let slope =
-                    dependencyValuesByKey[arrayKey].slopeAttr.stateValues.value;
+                  if (globalDependencyValues.basedOnSlope) {
+                    // 0 or 1 points prescribed, slope prescribed, and on second point, in 2D
+                    let slope =
+                      dependencyValuesByKey[arrayKey].slopeAttr.stateValues
+                        .value;
 
-                  if (slope === Infinity || slope === -Infinity) {
-                    if (dim === "0") {
-                      points[arrayKey] = point1;
+                    if (slope === Infinity || slope === -Infinity) {
+                      if (dim === "0") {
+                        points[arrayKey] = point1;
+                      } else {
+                        points[arrayKey] = me.fromAst([
+                          "+",
+                          point1.tree,
+                          dependencyValuesByKey[arrayKey].distForSecondPt *
+                            Math.sign(slope),
+                        ]);
+                      }
+                    } else if (Number.isFinite(slope)) {
+                      let theta = Math.atan(slope);
+                      if (dim === "0") {
+                        points[arrayKey] = me.fromAst([
+                          "+",
+                          point1.tree,
+                          dependencyValuesByKey[arrayKey].distForSecondPt *
+                            Math.cos(theta),
+                        ]);
+                      } else {
+                        points[arrayKey] = me.fromAst([
+                          "+",
+                          point1.tree,
+                          dependencyValuesByKey[arrayKey].distForSecondPt *
+                            Math.sin(theta),
+                        ]);
+                      }
                     } else {
-                      points[arrayKey] = me.fromAst([
-                        "+",
-                        point1.tree,
-                        dependencyValuesByKey[arrayKey].dForSlope *
-                          Math.sign(slope),
-                      ]);
+                      points[arrayKey] = me.fromAst("\uff3f");
                     }
-                  } else if (Number.isFinite(slope)) {
-                    let theta = Math.atan(slope);
-                    if (dim === "0") {
-                      points[arrayKey] = me.fromAst([
-                        "+",
-                        point1.tree,
-                        dependencyValuesByKey[arrayKey].dForSlope *
-                          Math.cos(theta),
-                      ]);
+                  } else if (globalDependencyValues.basedOnParallel) {
+                    // 0 or 1 points prescribed, parallelto prescribed, and on second point
+
+                    // this is a unit vector
+                    let parallelTo = dependencyValuesByKey[
+                      arrayKey
+                    ].parallelToAttr.stateValues.direction.map((v) =>
+                      v.evaluate_to_constant(),
+                    );
+
+                    if (!parallelTo.every(Number.isFinite)) {
+                      points[arrayKey] = me.fromAst("\uff3f");
                     } else {
                       points[arrayKey] = me.fromAst([
                         "+",
                         point1.tree,
-                        dependencyValuesByKey[arrayKey].dForSlope *
-                          Math.sin(theta),
+                        dependencyValuesByKey[arrayKey].distForSecondPt *
+                          parallelTo[dim],
                       ]);
                     }
                   } else {
-                    points[arrayKey] = me.fromAst("\uff3f");
+                    // 0 or 1 points prescribed, perpendicularto prescribed, and on second poitn, in 2D
+                    let perpendicularTo = dependencyValuesByKey[
+                      arrayKey
+                    ].perpendicularToAttr.stateValues.direction.map((v) =>
+                      v.evaluate_to_constant(),
+                    );
+
+                    if (!perpendicularTo.every(Number.isFinite)) {
+                      points[arrayKey] = me.fromAst("\uff3f");
+                    } else {
+                      // this is a unit vector
+                      let parallelTo = [
+                        perpendicularTo[1],
+                        -perpendicularTo[0],
+                      ];
+
+                      points[arrayKey] = me.fromAst([
+                        "+",
+                        point1.tree,
+                        dependencyValuesByKey[arrayKey].distForSecondPt *
+                          parallelTo[dim],
+                      ]);
+                    }
                   }
                 }
               } else {
@@ -742,9 +897,10 @@ export default class Line extends GraphicalComponent {
         initialChange,
         stateValues,
         workspace,
+        arraySize,
       }) {
         // console.log(`inverse array definition of points of line`);
-        // console.log(desiredStateVariableValues)
+        // console.log(desiredStateVariableValues);
         // console.log(JSON.parse(JSON.stringify(stateValues)))
         // console.log(dependencyValuesByKey);
         // console.log(globalDependencyValues);
@@ -879,6 +1035,34 @@ export default class Line extends GraphicalComponent {
 
           let instructions = [];
 
+          if (
+            globalDependencyValues.basedOnSlope ||
+            globalDependencyValues.basedOnParallel ||
+            globalDependencyValues.basedOnPerpendicular
+          ) {
+            // populate workspace.desiredPoint1 to be eithier values from desiredStateVariableValues.points
+            // or the current value of point1
+
+            if (!workspace.desiredPoint1) {
+              workspace.desiredPoint1 = [];
+            }
+            for (let dim = 0; dim < arraySize[0]; dim++) {
+              let desiredP1val = desiredStateVariableValues.points["1," + dim];
+
+              if (desiredP1val) {
+                if (desiredP1val instanceof me.class) {
+                  desiredP1val = desiredP1val.evaluate_to_constant();
+                }
+
+                workspace.desiredPoint1[dim] = desiredP1val;
+              } else if (workspace.desiredPoint1[dim] === undefined) {
+                workspace.desiredPoint1[dim] = (await stateValues.points)[1][
+                  dim
+                ].evaluate_to_constant();
+              }
+            }
+          }
+
           // process in reverse order so x-coordinate and first point
           // are processed last and take precedence
           for (let arrayKey of Object.keys(
@@ -898,7 +1082,11 @@ export default class Line extends GraphicalComponent {
                 desiredValue: desiredStateVariableValues.points[arrayKey],
                 variableIndex: 0,
               });
-            } else if (globalDependencyValues.basedOnSlope) {
+            } else if (
+              globalDependencyValues.basedOnSlope ||
+              globalDependencyValues.basedOnParallel ||
+              globalDependencyValues.basedOnPerpendicular
+            ) {
               if (pointInd === "0") {
                 instructions.push({
                   setDependency: dependencyNamesByKey[arrayKey].essentialPoint,
@@ -906,49 +1094,55 @@ export default class Line extends GraphicalComponent {
                   variableIndex: 0,
                 });
               } else {
-                let val = desiredStateVariableValues.points[arrayKey];
-                if (val instanceof me.class) {
-                  val = val.evaluate_to_constant();
-                }
-
-                if (!workspace.desiredPoint1) {
-                  workspace.desiredPoint1 = [];
-                }
-
-                workspace.desiredPoint1[dim] = val;
-
-                let oDim = dim === "0" ? "1" : "0";
-                if (workspace.desiredPoint1[oDim] === undefined) {
-                  let oVal = (await stateValues.points)[1][
-                    oDim
-                  ].evaluate_to_constant();
-                  workspace.desiredPoint1[oDim] = oVal;
-                }
-
                 if (workspace.desiredPoint1.every(Number.isFinite)) {
-                  let xOther = (
-                    await stateValues.points
-                  )[0][0].evaluate_to_constant();
-                  let yOther = (
-                    await stateValues.points
-                  )[0][1].evaluate_to_constant();
-                  if (Number.isFinite(xOther) && Number.isFinite(yOther)) {
-                    let dx = workspace.desiredPoint1[0] - xOther;
-                    let dy = workspace.desiredPoint1[1] - yOther;
-                    let dForSlope = Math.sqrt(dx * dx + dy * dy);
-                    if (dx !== 0) {
-                      dForSlope *= Math.sign(dx);
+                  let otherPt = (await stateValues.points)[0].map((v) =>
+                    v.evaluate_to_constant(),
+                  );
+                  if (otherPt.every(Number.isFinite)) {
+                    let dx = workspace.desiredPoint1.map(
+                      (v, i) => v - otherPt[i],
+                    );
+                    let distForSecondPt = Math.sqrt(
+                      dx.reduce((a, c) => a + c * c, 0),
+                    );
+
+                    if (globalDependencyValues.basedOnSlope && dx[0] !== 0) {
+                      distForSecondPt *= Math.sign(dx[0]);
                     }
 
                     instructions.push({
-                      setDependency: dependencyNamesByKey[arrayKey].dForSlope,
-                      desiredValue: dForSlope,
+                      setDependency:
+                        dependencyNamesByKey[arrayKey].distForSecondPt,
+                      desiredValue: distForSecondPt,
                     });
-                    instructions.push({
-                      setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
-                      desiredValue: dy / dx,
-                      variableIndex: 0,
-                    });
+                    if (globalDependencyValues.basedOnSlope) {
+                      instructions.push({
+                        setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
+                        desiredValue: dx[1] / dx[0],
+                        variableIndex: 0,
+                      });
+                    } else if (globalDependencyValues.basedOnParallel) {
+                      let unitVect = dx.map((v) => v / distForSecondPt);
+
+                      instructions.push({
+                        setDependency:
+                          dependencyNamesByKey[arrayKey].parallelToAttr,
+                        desiredValue: unitVect.map((v) => me.fromAst(v)),
+                        variableIndex: 0,
+                      });
+                    } else {
+                      // based on perpendicular
+                      let unitVect = dx.map((v) => v / distForSecondPt);
+                      instructions.push({
+                        setDependency:
+                          dependencyNamesByKey[arrayKey].perpendicularToAttr,
+                        desiredValue: [
+                          me.fromAst(-unitVect[1]),
+                          me.fromAst(unitVect[0]),
+                        ],
+                        variableIndex: 0,
+                      });
+                    }
                   }
                 }
               }
@@ -1286,7 +1480,6 @@ export default class Line extends GraphicalComponent {
         globalDependencyValues,
         dependencyValuesByKey,
         arrayKeys,
-        componentName,
       }) {
         // console.log(`array definition by key of numericalPoints of ${componentName}`)
 
@@ -1613,7 +1806,13 @@ export default class Line extends GraphicalComponent {
       "0,0": me.fromAst(point1coords[0]),
       "0,1": me.fromAst(point1coords[1]),
     };
-    if (!(await this.stateValues.basedOnSlope)) {
+    if (
+      !(
+        (await this.stateValues.basedOnSlope) ||
+        (await this.stateValues.basedOnParallel) ||
+        (await this.stateValues.basedOnPerpendicular)
+      )
+    ) {
       desiredPoints["1,0"] = me.fromAst(point2coords[0]);
       desiredPoints["1,1"] = me.fromAst(point2coords[1]);
     }
@@ -1663,7 +1862,13 @@ export default class Line extends GraphicalComponent {
 
     // we will attempt to keep the slope of the line fixed
     // even if one of the points is constrained
-    if (!(await this.stateValues.basedOnSlope)) {
+    if (
+      !(
+        (await this.stateValues.basedOnSlope) ||
+        (await this.stateValues.basedOnParallel) ||
+        (await this.stateValues.basedOnPerpendicular)
+      )
+    ) {
       // based on two points
 
       let numericalPoints = [point1coords, point2coords];
