@@ -221,7 +221,7 @@ export default class SamplePrimeNumbers extends CompositeComponent {
     )) {
       replacements.push({
         componentType: "integer",
-        state: { valuePreRound: value },
+        state: { value },
       });
     }
 

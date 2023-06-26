@@ -232,7 +232,7 @@ export default class SelectPrimeNumbers extends CompositeComponent {
     for (let value of await component.stateValues.selectedValues) {
       replacements.push({
         componentType: "integer",
-        state: { valuePreRound: value, fixed: true },
+        state: { value, fixed: true },
       });
     }
 

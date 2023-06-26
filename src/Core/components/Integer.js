@@ -16,6 +16,11 @@ export default class Integer extends NumberComponent {
       newName: "valuePreRound",
     });
 
+    // Still specify the value of an integer with the essential variable value
+    // Needed so that can creating an integer component from serialized state as:
+    // {componentType: "integer", state: {value: 3}}
+    stateVariableDefinitions.valuePreRound.essentialVarName = "value";
+
     stateVariableDefinitions.value = {
       public: true,
       shadowingInstructions: {
