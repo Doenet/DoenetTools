@@ -28,7 +28,7 @@ export default class Intersection extends CompositeComponent {
     return [
       {
         group: "lines",
-        componentTypes: ["line"],
+        componentTypes: ["line", "lineSegment"],
       },
       {
         group: "circles",
@@ -46,12 +46,11 @@ export default class Intersection extends CompositeComponent {
           dependencyType: "child",
           childGroups: ["lines"],
           variableNames: [
-            "numericalCoeff0",
-            "numericalCoeffvar1",
-            "numericalCoeffvar2",
             "numDimensions",
             "numericalPoints",
+            "numericalEndpoints",
           ],
+          variablesOptional: true,
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -101,32 +100,33 @@ export default class Intersection extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
-    let lineChildren = await component.stateValues.lineChildren;
-    let numLineChildren = lineChildren.length;
+    let lines = (await component.stateValues.lineChildren).map(
+      (x) => x.stateValues,
+    );
+    let numLines = lines.length;
 
-    let circleChildren = await component.stateValues.circleChildren;
-    let numCircleChildren = circleChildren.length;
+    let circles = (await component.stateValues.circleChildren).map(
+      (x) => x.stateValues,
+    );
+    let numCircles = circles.length;
 
-    let totNumChildren = numLineChildren + numCircleChildren;
+    let totNums = numLines + numCircles;
 
-    if (totNumChildren < 2) {
+    if (totNums < 2) {
       return { replacements: [] };
-    } else if (totNumChildren > 2) {
+    } else if (totNums > 2) {
       console.warn("Haven't implemented intersection for more than two items");
       return [];
     }
 
     let serializedReplacements = [];
 
-    if (numCircleChildren === 2) {
-      serializedReplacements = intersectTwoCircles(circleChildren);
-    } else if (numLineChildren === 2) {
-      serializedReplacements = intersectTwoLines(lineChildren);
+    if (numCircles === 2) {
+      serializedReplacements = intersectTwoCircles(circles);
+    } else if (numLines === 2) {
+      serializedReplacements = intersectTwoLines(lines);
     } else {
-      serializedReplacements = intersectLineAndCircle(
-        lineChildren[0],
-        circleChildren[0],
-      );
+      serializedReplacements = intersectLineAndCircle(lines[0], circles[0]);
     }
 
     if (serializedReplacements.length === 0) {
@@ -246,54 +246,82 @@ export default class Intersection extends CompositeComponent {
   }
 }
 
-function intersectTwoLines(lineChildren) {
+function intersectTwoLines(lines) {
   // for now, have only implemented for two lines
   // in 2D with constant coefficients
-  let line1 = lineChildren[0];
-  let line2 = lineChildren[1];
+  let line1 = lines[0];
+  let line2 = lines[1];
 
-  if (
-    line1.stateValues.numDimensions !== 2 ||
-    line2.stateValues.numDimensions !== 2
-  ) {
+  if (line1.numDimensions !== 2 || line2.numDimensions !== 2) {
     console.log("Intersection of lines implemented only in 2D");
     return [];
   }
 
-  // only implement for constant coefficients
-  let a1 = line1.stateValues.numericalCoeffvar1;
-  let b1 = line1.stateValues.numericalCoeffvar2;
-  let c1 = line1.stateValues.numericalCoeff0;
-  let a2 = line2.stateValues.numericalCoeffvar1;
-  let b2 = line2.stateValues.numericalCoeffvar2;
-  let c2 = line2.stateValues.numericalCoeff0;
+  let [[x1, y1], [x2, y2]] = line1.numericalPoints || line1.numericalEndpoints;
+  let [[x3, y3], [x4, y4]] = line2.numericalPoints || line2.numericalEndpoints;
 
   if (
     !(
-      Number.isFinite(a1) &&
-      Number.isFinite(b1) &&
-      Number.isFinite(c1) &&
-      Number.isFinite(a2) &&
-      Number.isFinite(b2) &&
-      Number.isFinite(c2)
+      Number.isFinite(x1) &&
+      Number.isFinite(y1) &&
+      Number.isFinite(x2) &&
+      Number.isFinite(y2) &&
+      Number.isFinite(x3) &&
+      Number.isFinite(y3) &&
+      Number.isFinite(x4) &&
+      Number.isFinite(y4)
     )
   ) {
     console.log(
-      "Intersection of lines implemented only for constant coefficients",
+      "Intersection of circles implemented only for numerical values",
     );
     return [];
   }
 
-  let d = a1 * b2 - a2 * b1;
+  let dx12 = x1 - x2;
+  let dx34 = x3 - x4;
+  let dy12 = y1 - y2;
+  let dy34 = y3 - y4;
 
-  if (Math.abs(d) < 1e-14) {
+  let D = dx12 * dy34 - dx34 * dy12;
+
+  if (Math.abs(D) < 1e-14) {
     // parallel, identical or undefined lines.
     return [];
   }
 
-  // two intersecting lines, return point
-  let x = (c2 * b1 - c1 * b2) / d;
-  let y = (c1 * a2 - c2 * a1) / d;
+  let line1isSegment = Boolean(line1.numericalEndpoints);
+  let line2isSegment = Boolean(line2.numericalEndpoints);
+
+  if (line1isSegment || line2isSegment) {
+    // check if intersection point will lie on the line segment
+
+    let dx13 = x1 - x3;
+    let dy13 = y1 - y3;
+
+    if (line1isSegment) {
+      let num = (dx13 * dy34 - dy13 * dx34) * Math.sign(D);
+      if (num < 0 || num > Math.abs(D)) {
+        // intersection misses line segment 1
+        return [];
+      }
+    }
+
+    if (line2isSegment) {
+      let num = (dx13 * dy12 - dy13 * dx12) * Math.sign(D);
+      if (num < 0 || num > Math.abs(D)) {
+        // intersection misses line segment 2
+        return [];
+      }
+    }
+  }
+
+  let det12 = x1 * y2 - x2 * y1;
+  let det34 = x3 * y4 - x4 * y3;
+
+  let x = (det12 * dx34 - det34 * dx12) / D;
+  let y = (det12 * dy34 - det34 * dy12) / D;
+
   let coords = me.fromAst(["vector", x, y]);
 
   let serializedReplacements = [
@@ -308,12 +336,12 @@ function intersectTwoLines(lineChildren) {
 
 function intersectTwoCircles(circleChildren) {
   let circ1 = circleChildren[0];
-  let r1 = circ1.stateValues.numericalRadius;
-  let [x1, y1] = circ1.stateValues.numericalCenter;
+  let r1 = circ1.numericalRadius;
+  let [x1, y1] = circ1.numericalCenter;
 
   let circ2 = circleChildren[1];
-  let r2 = circ2.stateValues.numericalRadius;
-  let [x2, y2] = circ2.stateValues.numericalCenter;
+  let r2 = circ2.numericalRadius;
+  let [x2, y2] = circ2.numericalCenter;
 
   if (
     !(
@@ -380,14 +408,14 @@ function intersectTwoCircles(circleChildren) {
 }
 
 function intersectLineAndCircle(line, circle) {
-  if (line.stateValues.numDimensions !== 2) {
+  if (line.numDimensions !== 2) {
     console.log("Intersection involving lines implemented only in 2D");
     return [];
   }
 
-  let [[x1, y1], [x2, y2]] = line.stateValues.numericalPoints;
-  let r = circle.stateValues.numericalRadius;
-  let [cx, cy] = circle.stateValues.numericalCenter;
+  let [[x1, y1], [x2, y2]] = line.numericalPoints || line.numericalEndpoints;
+  let r = circle.numericalRadius;
+  let [cx, cy] = circle.numericalCenter;
 
   if (
     !(
@@ -418,6 +446,11 @@ function intersectLineAndCircle(line, circle) {
 
   let dr2 = dx ** 2 + dy ** 2;
 
+  if (dr2 === 0) {
+    // have degenerate line
+    return [];
+  }
+
   let det = x1 * y2 - x2 * y1;
   let det2 = det ** 2;
 
@@ -443,6 +476,35 @@ function intersectLineAndCircle(line, circle) {
 
     intersectionPoints.push([x + xshift, y + yshift]);
     intersectionPoints.push([x - xshift, y - yshift]);
+  }
+
+  if (line.numericalEndpoints) {
+    // have a line segment
+    // need to check in intersections are between endpoints
+
+    intersectionPoints = intersectionPoints.filter((pt) => {
+      let [x, y] = pt;
+      x -= cx;
+      y -= cy;
+
+      if (x2 > x1) {
+        if (x < x1 || x > x2) {
+          return false;
+        }
+      } else if (x2 < x1) {
+        if (x < x2 || x > x1) {
+          return false;
+        }
+      } else if (y2 > y1) {
+        if (y < y1 || y > y2) {
+          return false;
+        }
+      } else if (y < y2 || y > y1) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   let serializedReplacements = intersectionPoints.map((pt) => ({
