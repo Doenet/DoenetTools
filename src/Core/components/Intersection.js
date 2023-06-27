@@ -34,6 +34,10 @@ export default class Intersection extends CompositeComponent {
         group: "circles",
         componentTypes: ["circle"],
       },
+      {
+        group: "polygonsPolylines",
+        componentTypes: ["polygon", "polyline"],
+      },
     ];
   }
 
@@ -75,6 +79,33 @@ export default class Intersection extends CompositeComponent {
       }),
     };
 
+    stateVariableDefinitions.polyChildren = {
+      returnDependencies: () => ({
+        polyChildren: {
+          dependencyType: "child",
+          childGroups: ["polygonsPolylines"],
+          variableNames: ["numDimensions", "numericalVertices"],
+        },
+      }),
+      definition: ({ dependencyValues, componentInfoObjects }) => ({
+        setValue: {
+          polyChildren: dependencyValues.polyChildren.map((child) => {
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "polygon",
+              })
+            ) {
+              child = { ...child };
+              child.stateValues = { ...child.stateValues };
+              child.stateValues.isPolygon = true;
+            }
+            return child;
+          }),
+        },
+      }),
+    };
+
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         lineChildren: {
@@ -84,6 +115,10 @@ export default class Intersection extends CompositeComponent {
         circleChildren: {
           dependencyType: "stateVariable",
           variableName: "circleChildren",
+        },
+        polyChildren: {
+          dependencyType: "stateVariable",
+          variableName: "polyChildren",
         },
       }),
       markStale: () => ({ updateReplacements: true }),
@@ -110,7 +145,12 @@ export default class Intersection extends CompositeComponent {
     );
     let numCircles = circles.length;
 
-    let totNums = numLines + numCircles;
+    let polys = (await component.stateValues.polyChildren).map(
+      (x) => x.stateValues,
+    );
+    let numPolys = polys.length;
+
+    let totNums = numLines + numCircles + numPolys;
 
     if (totNums < 2) {
       return { replacements: [] };
@@ -119,19 +159,38 @@ export default class Intersection extends CompositeComponent {
       return [];
     }
 
-    let serializedReplacements = [];
+    let points = [];
 
     if (numCircles === 2) {
-      serializedReplacements = intersectTwoCircles(circles);
+      points = intersectTwoCircles(circles);
     } else if (numLines === 2) {
-      serializedReplacements = intersectTwoLines(lines);
+      points = intersectTwoLines(lines);
+    } else if (numPolys === 2) {
+      points = intersectTwoPolys(polys);
     } else {
-      serializedReplacements = intersectLineAndCircle(lines[0], circles[0]);
+      if (numCircles === 1) {
+        if (numLines === 1) {
+          points = intersectLineAndCircle(lines[0], circles[0]);
+        } else {
+          points = intersectPolyAndCircle(polys[0], circles[0]);
+        }
+      } else {
+        points = intersectLineAndPoly(lines[0], polys[0]);
+      }
     }
 
-    if (serializedReplacements.length === 0) {
+    if (points.length === 0) {
       return { replacements: [] };
     }
+
+    let serializedReplacements = points.map((pt) => ({
+      componentType: "point",
+      state: {
+        coords: me.fromAst(["vector", ...pt]),
+        draggable: false,
+        fixed: true,
+      },
+    }));
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -322,16 +381,7 @@ function intersectTwoLines(lines) {
   let x = (det12 * dx34 - det34 * dx12) / D;
   let y = (det12 * dy34 - det34 * dy12) / D;
 
-  let coords = me.fromAst(["vector", x, y]);
-
-  let serializedReplacements = [
-    {
-      componentType: "point",
-      state: { coords, draggable: false, fixed: true },
-    },
-  ];
-
-  return serializedReplacements;
+  return [[x, y]];
 }
 
 function intersectTwoCircles(circleChildren) {
@@ -395,16 +445,7 @@ function intersectTwoCircles(circleChildren) {
     intersectionPoints.push([x - D2 * dy, y + D2 * dx]);
   }
 
-  let serializedReplacements = intersectionPoints.map((pt) => ({
-    componentType: "point",
-    state: {
-      coords: me.fromAst(["vector", ...pt]),
-      draggable: false,
-      fixed: true,
-    },
-  }));
-
-  return serializedReplacements;
+  return intersectionPoints;
 }
 
 function intersectLineAndCircle(line, circle) {
@@ -471,7 +512,8 @@ function intersectLineAndCircle(line, circle) {
     intersectionPoints.push([x, y]);
   } else {
     let sqrtD = Math.sqrt(D);
-    let xshift = (Math.sign(dy) * dx * sqrtD) / dr2;
+    let signDy = dy < 0 ? -1 : 1;
+    let xshift = (signDy * dx * sqrtD) / dr2;
     let yshift = (Math.abs(dy) * sqrtD) / dr2;
 
     intersectionPoints.push([x + xshift, y + yshift]);
@@ -507,14 +549,133 @@ function intersectLineAndCircle(line, circle) {
     });
   }
 
-  let serializedReplacements = intersectionPoints.map((pt) => ({
-    componentType: "point",
-    state: {
-      coords: me.fromAst(["vector", ...pt]),
-      draggable: false,
-      fixed: true,
-    },
-  }));
+  return intersectionPoints;
+}
 
-  return serializedReplacements;
+function ptEqual(pt1, pt2) {
+  return pt1[0] === pt2[0] && pt1[1] == pt2[1];
+}
+
+function dedupPts(points) {
+  return points.filter(
+    (pt, ind, arr) => !arr.slice(0, ind).some((pt2) => ptEqual(pt, pt2)),
+  );
+}
+
+function intersectTwoPolys(polys) {
+  let poly1 = polys[0];
+  let poly2 = polys[1];
+
+  if (poly1.numDimensions !== 2 || poly2.numDimensions !== 2) {
+    console.log(
+      "Intersection involving polygons/polylines implemented only in 2D",
+    );
+    return [];
+  }
+
+  let intersectionPts = [];
+
+  let numVertices1 = poly1.numericalVertices.length;
+  let numEdges1 = numVertices1;
+  if (!poly1.isPolygon) {
+    numEdges1--;
+  }
+
+  let numVertices2 = poly2.numericalVertices.length;
+  let numEdges2 = numVertices2;
+  if (!poly2.isPolygon) {
+    numEdges2--;
+  }
+
+  for (let ind1 = 0; ind1 < numEdges1; ind1++) {
+    let ind1a = (ind1 + 1) % numVertices1;
+    let segmentFromPoly1 = {
+      numericalEndpoints: [
+        poly1.numericalVertices[ind1],
+        poly1.numericalVertices[ind1a],
+      ],
+      numDimensions: 2,
+    };
+
+    for (let ind2 = 0; ind2 < numEdges2; ind2++) {
+      let ind2a = (ind2 + 1) % numVertices2;
+      let segmentFromPoly2 = {
+        numericalEndpoints: [
+          poly2.numericalVertices[ind2],
+          poly2.numericalVertices[ind2a],
+        ],
+        numDimensions: 2,
+      };
+
+      intersectionPts.push(
+        ...intersectTwoLines([segmentFromPoly1, segmentFromPoly2]),
+      );
+    }
+  }
+
+  return dedupPts(intersectionPts);
+}
+
+function intersectLineAndPoly(line, poly) {
+  if (line.numDimensions !== 2 || poly.numDimensions !== 2) {
+    console.log(
+      "Intersection involving lines and polygons/polylines implemented only in 2D",
+    );
+    return [];
+  }
+
+  let points = [];
+
+  let numVertices = poly.numericalVertices.length;
+  let numEdges = numVertices;
+  if (!poly.isPolygon) {
+    numEdges--;
+  }
+
+  for (let ind = 0; ind < numEdges; ind++) {
+    let ind2 = (ind + 1) % numVertices;
+    let segmentFromPoly = {
+      numericalEndpoints: [
+        poly.numericalVertices[ind],
+        poly.numericalVertices[ind2],
+      ],
+      numDimensions: 2,
+    };
+
+    points.push(...intersectTwoLines([line, segmentFromPoly]));
+  }
+
+  return dedupPts(points);
+}
+
+function intersectPolyAndCircle(poly, circle) {
+  if (poly.numDimensions !== 2) {
+    console.log(
+      "Intersection involving  polygons/polylines implemented only in 2D",
+    );
+    return [];
+  }
+
+  let points = [];
+
+  let numVertices = poly.numericalVertices.length;
+  let numEdges = numVertices;
+  if (!poly.isPolygon) {
+    numEdges--;
+  }
+
+  for (let ind = 0; ind < numEdges; ind++) {
+    let ind2 = (ind + 1) % numVertices;
+    let segmentFromPoly = {
+      numericalEndpoints: [
+        poly.numericalVertices[ind],
+        poly.numericalVertices[ind2],
+      ],
+      numDimensions: 2,
+    };
+
+    points.push(...intersectLineAndCircle(segmentFromPoly, circle));
+  }
+
+  return dedupPts(points);
 }
