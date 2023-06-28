@@ -296,6 +296,7 @@ export default React.memo(function Curve(props) {
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
         size: 3,
+        showInfoBox: SVs.showCoordsWhenDragging,
       };
       throughPointAlwaysVisible.current = {
         fillcolor: "var(--mainGray)",
@@ -318,6 +319,7 @@ export default React.memo(function Curve(props) {
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + CONTROL_POINT_LAYER_OFFSET,
         size: 2,
+        showInfoBox: SVs.showCoordsWhenDragging,
       };
 
       if (!fixLocation.current) {
@@ -733,6 +735,9 @@ export default React.memo(function Curve(props) {
         controlPointAttributes.current.layer = controlPointLayer;
       }
 
+      throughPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
+      controlPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
+
       let lineColor =
         darkMode === "dark"
           ? SVs.selectedStyle.lineColorDarkMode
@@ -998,12 +1003,17 @@ export default React.memo(function Curve(props) {
         throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [
           ...SVs.numericalThroughPoints[i],
         ]);
+
+        throughPointsJXG.current[i].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
         throughPointsJXG.current[i].needsUpdate = true;
         throughPointsJXG.current[i].update();
         controlPointsJXG.current[i][0].coords.setCoordinates(
           JXG.COORDS_BY_USER,
           [...SVs.numericalControlPoints[i][0]],
         );
+        controlPointsJXG.current[i][0].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
         controlPointsJXG.current[i][0].needsUpdate = true;
         controlPointsJXG.current[i][0].update();
         segmentsJXG.current[i][0].needsUpdate = true;
@@ -1012,6 +1022,8 @@ export default React.memo(function Curve(props) {
           JXG.COORDS_BY_USER,
           [...SVs.numericalControlPoints[i][1]],
         );
+        controlPointsJXG.current[i][1].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
         controlPointsJXG.current[i][1].needsUpdate = true;
         controlPointsJXG.current[i][1].update();
         segmentsJXG.current[i][1].needsUpdate = true;
