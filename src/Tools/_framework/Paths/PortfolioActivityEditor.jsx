@@ -813,40 +813,35 @@ export function GeneralActivityControls({
     }
     console.log("learningOutcomesToSubmit:", learningOutcomesToSubmit);
 
-    // let learningOutcomesToSubmit = learningOutcomes;
-    // if (nextLearningOutcomes) {
-    //   learningOutcomesToSubmit = nextLearningOutcomes;
-    // }
+    let isPublicToSubmit = checkboxIsPublic;
+    if (nextIsPublic) {
+      isPublicToSubmit = nextIsPublic;
+    }
 
-    // let isPublicToSubmit = checkboxIsPublic;
-    // if (nextIsPublic) {
-    //   isPublicToSubmit = nextIsPublic;
-    // }
-
-    // // Turn on/off label error messages and
-    // // use the latest valid label
-    // let labelToSubmit = labelValue;
-    // if (labelValue == "") {
-    //   labelToSubmit = lastAcceptedLabelValue.current;
-    //   setLabelIsInvalid(true);
-    // } else {
-    //   if (labelIsInvalid) {
-    //     setLabelIsInvalid(false);
-    //   }
-    // }
-    // lastAcceptedLabelValue.current = labelToSubmit;
-    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    // fetcher.submit(
-    //   {
-    //     _action: "update general",
-    //     label: labelToSubmit,
-    //     imagePath,
-    //     public: isPublicToSubmit,
-    //     learningOutcomes: serializedLearningOutcomes,
-    //     doenetId,
-    //   },
-    //   { method: "post" },
-    // );
+    // Turn on/off label error messages and
+    // use the latest valid label
+    let labelToSubmit = labelValue;
+    if (labelValue == "") {
+      labelToSubmit = lastAcceptedLabelValue.current;
+      setLabelIsInvalid(true);
+    } else {
+      if (labelIsInvalid) {
+        setLabelIsInvalid(false);
+      }
+    }
+    lastAcceptedLabelValue.current = labelToSubmit;
+    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    fetcher.submit(
+      {
+        _action: "update general",
+        label: labelToSubmit,
+        imagePath,
+        public: isPublicToSubmit,
+        learningOutcomes: serializedLearningOutcomes,
+        doenetId,
+      },
+      { method: "post" },
+    );
   }
 
   const onDrop = useCallback(
@@ -946,9 +941,10 @@ export function GeneralActivityControls({
   if (learningOutcomes == null) {
     learningOutcomes = [""];
   }
-  //Optimistic UI update learningOutcomes to form submission
+  //Optimistic UI update learningOutcomes from form submission
   if (fetcher.formData) {
-    console.log("FORM DATA!");
+    let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
+    learningOutcomes = JSON.parse(serializedLearningOutcomes);
   }
 
   let [labelValue, setLabel] = useState(label);
@@ -961,7 +957,7 @@ export function GeneralActivityControls({
   return (
     <>
       <AlertQueue alerts={alerts} />
-      <Form method="post">
+      <fetcher.Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
           <Box>
@@ -1067,7 +1063,6 @@ export function GeneralActivityControls({
                         nextLearningOutcomes.splice(i, 1);
                       }
 
-                      // setLearningOutcomes(nextLearningOutcomes);
                       saveDataToServer({ nextLearningOutcomes });
                     }}
                   />
@@ -1089,7 +1084,6 @@ export function GeneralActivityControls({
                     nextLearningOutcomes.push("");
                   }
 
-                  // setLearningOutcomes(nextLearningOutcomes);
                   saveDataToServer({ nextLearningOutcomes });
                 }}
               />
@@ -1140,7 +1134,7 @@ export function GeneralActivityControls({
         </FormControl>
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
-      </Form>
+      </fetcher.Form>
     </>
   );
 }
