@@ -800,8 +800,8 @@ export function GeneralActivityControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-    console.log("SAVE! nextLearningOutcomes", nextLearningOutcomes);
+  function saveDataToServer({ nextLearningOutcomes, nextIsPublic, e } = {}) {
+    console.log("SAVE! nextLearningOutcomes", e.currentTarget.value);
     if (!nextLearningOutcomes) {
       console.log("HERE");
     }
@@ -1034,10 +1034,10 @@ export function GeneralActivityControls({
                     size="sm"
                     defaultValue={outcome}
                     data-test={`learning outcome ${i}`}
-                    onBlur={() => saveDataToServer()}
+                    onBlur={(e) => saveDataToServer({ e })}
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer();
+                        saveDataToServer({ e });
                       }
                     }}
                     placeholder={`Learning Outcome #${i + 1}`}
