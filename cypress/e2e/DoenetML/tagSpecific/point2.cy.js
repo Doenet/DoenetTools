@@ -10204,6 +10204,111 @@ describe("Point Tag Tests 2", function () {
     cy.get(cesc2("#/fx2")).should("have.text", "false");
   });
 
+  it("fix location or fixed is comunicated so know math from point can't be changed", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <point name="P" fixLocation="$fl" fixed="$fx" draggable="$dg">(3,4)</point>
+      <point name="Q">(5,6)</point>
+      <point name="M">($P+$Q)/2</point>
+    </graph>
+
+    <p>Fix location: <booleaninput name="fl"/> <boolean copySource="P.fixLocation" name="fl2" /></p>
+    <p>Fixed: <booleaninput name="fx" /> <boolean copySource="P.fixed" name="fx2" /></p>
+    <p>Draggable: <booleaninput name="dg" prefill="true" /> <boolean copySource="P.draggable" name="dg2" /></p>
+    <p><booleaninput name="bi" /> <boolean name="b" copySource="bi" /></p>
+    <p>Midpoint: <math name="Ma" copySource="M" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Ma") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+
+    cy.log("cannot move midpoint point by dragging");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/M",
+        args: { x: 5, y: 6 },
+      });
+    });
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+
+    cy.get(cesc2("#/Ma") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+
+    cy.log("fix location of P");
+    cy.get(cesc2("#/fl")).click();
+    cy.get(cesc2("#/fl2")).should("have.text", "true");
+
+    cy.log("now can move midpoint point by dragging");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/M",
+        args: { x: 5, y: 6 },
+      });
+    });
+
+    cy.get(cesc2("#/Ma") + " .mjx-mrow").should("contain.text", "(5,6)");
+    cy.get(cesc2("#/Ma") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+
+    cy.log("unfix location of P and make not draggable");
+    cy.get(cesc2("#/fl")).click();
+    cy.get(cesc2("#/dg")).click();
+    cy.get(cesc2("#/fl2")).should("have.text", "false");
+    cy.get(cesc2("#/dg2")).should("have.text", "false");
+
+    cy.log("cannot move midpoint point by dragging again");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/M",
+        args: { x: -1, y: -2 },
+      });
+    });
+
+    // since nothing will change, wait for boolean input to change to know core has responded
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+
+    cy.get(cesc2("#/Ma") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+
+    cy.log("fix P and make draggable");
+    cy.get(cesc2("#/fx")).click();
+    cy.get(cesc2("#/dg")).click();
+    cy.get(cesc2("#/fx2")).should("have.text", "true");
+    cy.get(cesc2("#/dg2")).should("have.text", "true");
+
+    cy.log("now can move midpoint point by dragging again");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/M",
+        args: { x: 4, y: 3 },
+      });
+    });
+
+    cy.get(cesc2("#/Ma") + " .mjx-mrow").should("contain.text", "(4,3)");
+    cy.get(cesc2("#/Ma") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,3)");
+  });
+
   it("hideOffGraphIndicator", () => {
     cy.window().then(async (win) => {
       win.postMessage(
