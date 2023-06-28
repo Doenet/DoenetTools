@@ -446,7 +446,6 @@ describe("Share Activities Using Portfolio", function () {
       cy.get(cesc2("#/sol_button")).click();
       cy.get(cesc2("#/ans")).should("not.exist");
     } finally {
-      console.log("Here!");
       cy.deletePortfolioActivity({ userId, label });
     }
   });
