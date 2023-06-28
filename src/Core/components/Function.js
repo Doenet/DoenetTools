@@ -4220,7 +4220,7 @@ export default class Function extends InlineComponent {
 
   static adapters = [
     {
-      stateVariable: "numericalf",
+      stateVariable: "numericalfs",
       componentType: "curve",
       stateVariablesToShadow: ["label", "labelHasLatex"],
     },

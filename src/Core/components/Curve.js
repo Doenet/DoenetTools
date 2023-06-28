@@ -275,30 +275,6 @@ export default class Curve extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.curveType = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        functionChildren: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-        },
-        through: {
-          dependencyType: "attributeComponent",
-          attributeName: "through",
-        },
-      }),
-      definition({ dependencyValues }) {
-        let curveType = "function";
-        if (dependencyValues.through !== null) {
-          curveType = "bezier";
-        } else if (dependencyValues.functionChildren.length > 1) {
-          curveType = "parameterization";
-        }
-
-        return { setValue: { curveType } };
-      },
-    };
-
     // fShadow will be null unless curve was created via an adapter
     // In case of adapter,
     // given the primaryStateVariableForDefinition static variable,
@@ -314,6 +290,69 @@ export default class Curve extends GraphicalComponent {
           fShadow: true,
         },
       }),
+    };
+
+    stateVariableDefinitions.fromVectorValuedFunctionOfDim = {
+      returnDependencies: () => ({
+        functionChildren: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["numOutputs"],
+        },
+        fShadow: {
+          dependencyType: "stateVariable",
+          variableName: "fShadow",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let fromVectorValuedFunctionOfDim = 0;
+
+        if (
+          dependencyValues.functionChildren.length === 1 &&
+          dependencyValues.functionChildren[0].stateValues.numOutputs > 1
+        ) {
+          fromVectorValuedFunctionOfDim =
+            dependencyValues.functionChildren[0].stateValues.numOutputs;
+        } else if (
+          dependencyValues.functionChildren.length === 0 &&
+          dependencyValues.fShadow?.length > 1
+        ) {
+          fromVectorValuedFunctionOfDim = dependencyValues.fShadow.length;
+        }
+
+        return { setValue: { fromVectorValuedFunctionOfDim } };
+      },
+    };
+
+    stateVariableDefinitions.curveType = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        functionChildren: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+        },
+        fromVectorValuedFunctionOfDim: {
+          dependencyType: "stateVariable",
+          variableName: "fromVectorValuedFunctionOfDim",
+        },
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let curveType = "function";
+        if (dependencyValues.through !== null) {
+          curveType = "bezier";
+        } else if (
+          dependencyValues.functionChildren.length > 1 ||
+          dependencyValues.fromVectorValuedFunctionOfDim > 1
+        ) {
+          curveType = "parameterization";
+        }
+
+        return { setValue: { curveType } };
+      },
     };
 
     stateVariableDefinitions.graphXmin = {
@@ -2465,6 +2504,10 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "child",
           childGroups: ["functions"],
         },
+        fromVectorValuedFunctionOfDim: {
+          dependencyType: "stateVariable",
+          variableName: "fromVectorValuedFunctionOfDim",
+        },
         curveType: {
           dependencyType: "stateVariable",
           variableName: "curveType",
@@ -2474,14 +2517,25 @@ export default class Curve extends GraphicalComponent {
         if (dependencyValues.curveType === "bezier") {
           return [2];
         } else {
-          return [Math.max(1, dependencyValues.functionChildren.length)];
+          return [
+            Math.max(
+              1,
+              dependencyValues.functionChildren.length,
+              dependencyValues.fromVectorValuedFunctionOfDim,
+            ),
+          ];
         }
       },
-      returnArrayDependenciesByKey({ arrayKeys }) {
+      stateVariablesDeterminingDependencies: ["fromVectorValuedFunctionOfDim"],
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
         let globalDependencies = {
           curveType: {
             dependencyType: "stateVariable",
             variableName: "curveType",
+          },
+          fromVectorValuedFunctionOfDim: {
+            dependencyType: "stateVariable",
+            variableName: "fromVectorValuedFunctionOfDim",
           },
           numericalThroughPoints: {
             dependencyType: "stateVariable",
@@ -2515,23 +2569,45 @@ export default class Curve extends GraphicalComponent {
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          dependenciesByKey[arrayKey] = {
-            functionChild: {
-              dependencyType: "child",
-              childGroups: ["functions"],
-              variableNames: ["numericalf", "fDefinition"],
-              childIndices: [arrayKey],
-            },
-          };
-          if (Number(arrayKey) === 0) {
-            (dependenciesByKey[arrayKey].fShadow = {
+          if (stateValues.fromVectorValuedFunctionOfDim > 1) {
+            let dim = Number(arrayKey) + 1;
+            dependenciesByKey[arrayKey] = {
+              functionChild: {
+                dependencyType: "child",
+                childGroups: ["functions"],
+                variableNames: [`numericalf${dim}`, `fDefinition${dim}`],
+                childIndices: [0],
+              },
+            };
+
+            globalDependencies.fShadow = {
               dependencyType: "stateVariable",
               variableName: "fShadow",
-            }),
-              (dependenciesByKey[arrayKey].fDefinitionAdapted = {
+            };
+            globalDependencies.fDefinitionsAdapted = {
+              dependencyType: "adapterSourceStateVariable",
+              variableName: "fDefinitions",
+            };
+          } else {
+            dependenciesByKey[arrayKey] = {
+              functionChild: {
+                dependencyType: "child",
+                childGroups: ["functions"],
+                variableNames: ["numericalf", "fDefinition"],
+                childIndices: [arrayKey],
+              },
+            };
+
+            if (Number(arrayKey) === 0) {
+              dependenciesByKey[arrayKey].fShadow = {
+                dependencyType: "stateVariable",
+                variableName: "fShadow",
+              };
+              dependenciesByKey[arrayKey].fDefinitionAdapted = {
                 dependencyType: "adapterSourceStateVariable",
                 variableName: "fDefinition",
-              });
+              };
+            }
           }
         }
         return { globalDependencies, dependenciesByKey };
@@ -2580,22 +2656,34 @@ export default class Curve extends GraphicalComponent {
         for (let arrayKey of arrayKeys) {
           let functionChild = dependencyValuesByKey[arrayKey].functionChild;
           if (functionChild.length === 1) {
-            fs[arrayKey] = functionChild[0].stateValues.numericalf;
-            fDefinitions[arrayKey] = functionChild[0].stateValues.fDefinition;
-          } else {
-            if (
-              Number(arrayKey) === 0 &&
-              dependencyValuesByKey[arrayKey].fShadow
-            ) {
-              fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow;
-              // TODO: ???
+            if (globalDependencyValues.fromVectorValuedFunctionOfDim > 1) {
+              let dim = Number(arrayKey) + 1;
+              fs[arrayKey] = functionChild[0].stateValues[`numericalf${dim}`];
               fDefinitions[arrayKey] =
-                dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+                functionChild[0].stateValues[`fDefinition${dim}`];
             } else {
-              fs[arrayKey] = () => 0;
-              fDefinitions[arrayKey] = {
-                functionType: "zero",
-              };
+              fs[arrayKey] = functionChild[0].stateValues.numericalf;
+              fDefinitions[arrayKey] = functionChild[0].stateValues.fDefinition;
+            }
+          } else {
+            if (globalDependencyValues.fromVectorValuedFunctionOfDim > 1) {
+              fs[arrayKey] = globalDependencyValues.fShadow[arrayKey];
+              fDefinitions[arrayKey] =
+                globalDependencyValues.fDefinitionsAdapted[arrayKey];
+            } else {
+              if (
+                Number(arrayKey) === 0 &&
+                dependencyValuesByKey[arrayKey].fShadow?.[0]
+              ) {
+                fs[arrayKey] = dependencyValuesByKey[arrayKey].fShadow[0];
+                fDefinitions[arrayKey] =
+                  dependencyValuesByKey[arrayKey].fDefinitionAdapted;
+              } else {
+                fs[arrayKey] = () => 0;
+                fDefinitions[arrayKey] = {
+                  functionType: "zero",
+                };
+              }
             }
           }
         }
