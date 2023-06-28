@@ -1,7 +1,7 @@
 export function mergeContainingNumberCombinations(combinations) {
   // combinations is an array of arrays
   // Each combination array contains the numbers to be excluded from a sample.
-  // Some values of a combinattion could be NaN, which indicates they are wildcards and could match anything.
+  // Some values of a combination could be NaN, which indicates they are wildcards and could match anything.
   // For example, [NaN, 9, 8], indicates that a sample with a 9 and 8 in the 2nd and 3rd slot, respectively,
   // is always excluded, independent of the number in the first slot.
   // If the combinations list contains two combinations where one is contained in the other,
