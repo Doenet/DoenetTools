@@ -4746,4 +4746,23 @@ describe("LineSegment Tag Tests", function () {
       expect(stateVariables["/Q"].stateValues.coords).eqls(["vector", x2, y2]);
     });
   });
+
+  it("handle bad endpoints", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <linesegment endpoints="A" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

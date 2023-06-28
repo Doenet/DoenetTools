@@ -12165,6 +12165,25 @@ describe("Line Tag Tests", function () {
     });
   });
 
+  it("handle bad through", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <line through="A" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
+
   it("line perpendicular to another line", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -14176,13 +14195,11 @@ describe("Line Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-
     <point name="A1">(3,5,6)</point>
     <point name="B1">(4,4,7)</point>
     <line name="l1" through="$A1 $B1" />
     <line name="l2" parallelTo="$l1" />
     $l2.points{assignNames="A2 B2"}
-
     `,
         },
         "*",

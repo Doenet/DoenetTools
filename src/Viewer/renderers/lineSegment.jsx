@@ -612,6 +612,9 @@ export default React.memo(function LineSegment(props) {
       point2JXG.current.visProp["visible"] = endpointsVisible;
       point2JXG.current.visPropCalc["visible"] = endpointsVisible;
 
+      point1JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+      point2JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+
       lineSegmentJXG.current.visProp.fixed = fixed.current;
       lineSegmentJXG.current.visProp.highlight = !fixLocation.current;
       lineSegmentJXG.current.isDraggable = !fixLocation.current;

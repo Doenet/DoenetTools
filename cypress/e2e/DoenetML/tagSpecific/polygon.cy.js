@@ -5036,4 +5036,23 @@ describe("Polygon Tag Tests", function () {
       testPolygonCopiedTwice({ vertices });
     });
   });
+
+  it("handle bad vertices", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <polygon vertices="A" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

@@ -10767,4 +10767,23 @@ describe("Ray Tag Tests", function () {
       .eq(0)
       .should("have.text", "(5,624)");
   });
+
+  it("handle bad through/endpoint", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <ray through="A" endpoint="B" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

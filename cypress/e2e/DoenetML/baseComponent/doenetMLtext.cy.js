@@ -104,6 +104,86 @@ A string by itself!`;
     });
   });
 
+  it("doenetML from displayDoenetML, remove preceding spacing in pre", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <pre name="preDoenetML1">
+          <displayDoenetML name="ddml1">
+            <p>A graph of a point</p>
+
+            <graph>
+              <point name="P">(3,4)</point>
+            </graph>
+
+            A string by itself!
+          </displayDoenetML>
+          </pre>
+      
+        <pre name="preDoenetML2">
+          DoenetML A:
+          <displayDoenetML name="ddml2">
+            <graph>
+              <point />
+            </graph>
+          </displayDoenetML>
+          DoenetML B:
+          <displayDoenetML name="ddml3">
+            <p>
+              Hello
+            </p>
+          </displayDoenetML>
+
+        </pre>
+
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let theDoenetML1 = `<p>A graph of a point</p>
+
+<graph>
+  <point name="P">(3,4)</point>
+</graph>
+
+A string by itself!`;
+
+    let thePre1 = `
+${theDoenetML1}
+          `;
+
+    let theDoenetML2 = `<graph>
+  <point />
+</graph>`;
+    let theDoenetML3 = `<p>
+  Hello
+</p>`;
+
+    let thePre2 = `
+          DoenetML A:
+${theDoenetML2}
+          DoenetML B:
+${theDoenetML3}
+
+        `;
+    cy.get(cesc("#\\/preDoenetML1")).should("have.text", thePre1);
+    cy.get(cesc("#\\/preDoenetML2")).should("have.text", thePre2);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ddml1"].stateValues.value).eq(theDoenetML1);
+      expect(stateVariables["/ddml1"].stateValues.text).eq(theDoenetML1);
+      expect(stateVariables["/ddml2"].stateValues.value).eq(theDoenetML2);
+      expect(stateVariables["/ddml2"].stateValues.text).eq(theDoenetML2);
+      expect(stateVariables["/ddml3"].stateValues.value).eq(theDoenetML3);
+      expect(stateVariables["/ddml3"].stateValues.text).eq(theDoenetML3);
+    });
+  });
+
   it("copying displayDoenetML, with or without linking", () => {
     cy.window().then(async (win) => {
       win.postMessage(

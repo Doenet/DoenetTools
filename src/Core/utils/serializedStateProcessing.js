@@ -397,6 +397,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     constraints: ["baseongraph"],
     graph: ["xlabel", "ylabel"],
     conditionalcontent: ["maximumnumbertoshow"],
+    angle: ["draggable"],
   };
 
   for (let component of serializedComponents) {

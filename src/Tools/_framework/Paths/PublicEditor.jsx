@@ -447,7 +447,7 @@ export function PublicEditor() {
                   doenetML={viewerDoenetML}
                   flags={{
                     showCorrectness: true,
-                    solutionDisplayMode: true,
+                    solutionDisplayMode: "button",
                     showFeedback: true,
                     showHints: true,
                     autoSubmit: false,

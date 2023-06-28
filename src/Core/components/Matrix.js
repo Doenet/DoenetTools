@@ -49,31 +49,65 @@ export default class Matrix extends MathComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let replaceRowAndColumnChildren = function ({ matchedChildren }) {
+    let replaceRowAndColumnChildren = function ({
+      matchedChildren,
+      componentInfoObjects,
+    }) {
+      if (matchedChildren.length === 0) {
+        return { success: false };
+      }
+
       let newChildren = [];
 
+      let foundRowsOrColumns = false;
+
       for (let child of matchedChildren) {
+        if (typeof child === "string") {
+          continue;
+        }
         if (!child.doenetAttributes) {
           child.doenetAttributes = {};
         }
         if (child.componentType === "column") {
           child.doenetAttributes.createNameFromComponentType = "column";
           child.componentType = "matrixColumn";
+          foundRowsOrColumns = true;
         } else if (child.componentType === "row") {
           child.doenetAttributes.createNameFromComponentType = "row";
           child.componentType = "matrixRow";
-        }
-        if (child.attributes?.createComponentOfType?.primitive === "column") {
+          foundRowsOrColumns = true;
+        } else if (
+          child.attributes?.createComponentOfType?.primitive === "column"
+        ) {
           child.doenetAttributes.createNameFromComponentType = "column";
           child.attributes.createComponentOfType.primitive = "matrixColumn";
+          foundRowsOrColumns = true;
         } else if (
           child.attributes?.createComponentOfType?.primitive === "row"
         ) {
           child.doenetAttributes.createNameFromComponentType = "row";
           child.attributes.createComponentOfType.primitive = "matrixRow";
+          foundRowsOrColumns = true;
         }
 
         newChildren.push(child);
+      }
+
+      if (!foundRowsOrColumns) {
+        if (
+          matchedChildren.length > 1 ||
+          !componentInfoObjects.componentIsSpecifiedType(
+            matchedChildren[0],
+            "math",
+          )
+        ) {
+          newChildren = [
+            {
+              componentType: "math",
+              children: matchedChildren,
+            },
+          ];
+        }
       }
 
       return {

@@ -27,6 +27,32 @@ export class Pre extends BlockComponent {
     ];
   }
 
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.displayDoenetMLIndices = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["allChildren"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        let displayDoenetMLIndices = [];
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (child.componentType === "displayDoenetML") {
+            displayDoenetMLIndices.push(ind);
+          }
+        }
+
+        return { setValue: { displayDoenetMLIndices } };
+      },
+    };
+
+    return stateVariableDefinitions;
+  }
+
   recordVisibilityChange({ isVisible, actionId }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",

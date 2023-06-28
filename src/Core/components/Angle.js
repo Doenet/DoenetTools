@@ -13,13 +13,6 @@ export default class Angle extends GraphicalComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.draggable = {
-      createComponentOfType: "boolean",
-      createStateVariable: "draggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-    };
     attributes.radius = {
       createComponentOfType: "math",
       createStateVariable: "radius",

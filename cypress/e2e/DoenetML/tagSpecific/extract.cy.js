@@ -2279,4 +2279,19 @@ describe("Extract Tag Tests", function () {
       expect(stateVariables["/e2"].stateValues.value).eq(0.75);
     });
   });
+
+  it("fail gracefully if omit prop", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Nothing here: <extract><math>x</math></extract></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("have.text", "Nothing here: ");
+  });
 });
