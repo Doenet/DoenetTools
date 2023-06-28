@@ -1992,4 +1992,138 @@ describe("Code Editor Tag Tests", function () {
     cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
     cy.get(cesc2("#/ce4ivchanged")).should("have.text", "true");
   });
+
+  it("viewer ratio", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <codeEditor name="ce1" showResults ><graph/></codeEditor>
+          <codeEditor name="ce2" showResults viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce3" showResults resultsLocation="left"><graph/></codeEditor>
+          <codeEditor name="ce4" showResults resultsLocation="left" viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce5" showResults resultsLocation="right" ><graph/></codeEditor>
+          <codeEditor name="ce6" showResults resultsLocation="right" viewerRatio="0.7" ><graph/></codeEditor>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1_editor")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce1_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 200, 20);
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "height", "200px");
+
+    cy.get(cesc2("#/ce2_editor")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce2_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 120, 20);
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "height", "280px");
+
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "width", "425px");
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce3_viewer")).should("have.css", "width", "410px");
+    cy.get(cesc2("#/ce3_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "width", "255px");
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce4_viewer")).should("have.css", "width", "580px");
+    cy.get(cesc2("#/ce4_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "width", "410px");
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce5_viewer")).should("have.css", "width", "425px");
+    cy.get(cesc2("#/ce5_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "width", "240px");
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce6_viewer")).should("have.css", "width", "595px");
+    cy.get(cesc2("#/ce6_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+  });
+
+  it("viewer ratio and change size", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <codeEditor name="ce1" width="600px" height="500px" showResults ><graph/></codeEditor>
+          <codeEditor name="ce2" width="600px" height="500px" showResults viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce3" width="600px" height="500px" showResults resultsLocation="left"><graph/></codeEditor>
+          <codeEditor name="ce4" width="600px" height="500px" showResults resultsLocation="left" viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce5" width="600px" height="500px" showResults resultsLocation="right" ><graph/></codeEditor>
+          <codeEditor name="ce6" width="600px" height="500px" showResults resultsLocation="right" viewerRatio="0.7" ><graph/></codeEditor>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1_editor")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce1_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 250, 20);
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "height", "250px");
+
+    cy.get(cesc2("#/ce2_editor")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce2_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 150, 20);
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "height", "350px");
+
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "width", "300px");
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce3_viewer")).should("have.css", "width", "285px");
+    cy.get(cesc2("#/ce3_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "width", "180px");
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce4_viewer")).should("have.css", "width", "405px");
+    cy.get(cesc2("#/ce4_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "width", "285px");
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce5_viewer")).should("have.css", "width", "300px");
+    cy.get(cesc2("#/ce5_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "width", "165px");
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce6_viewer")).should("have.css", "width", "420px");
+    cy.get(cesc2("#/ce6_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+  });
 });

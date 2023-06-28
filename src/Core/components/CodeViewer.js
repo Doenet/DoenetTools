@@ -141,7 +141,7 @@ export default class CodeViewer extends BlockComponent {
       },
       hasEssential: true,
       forRenderer: true,
-      defaultValue: { size: 600, isAbsolute: true },
+      defaultValue: { size: 100, isAbsolute: false },
       returnDependencies: () => ({
         widthAttr: {
           dependencyType: "attributeComponent",
@@ -150,7 +150,7 @@ export default class CodeViewer extends BlockComponent {
         },
         parentWidth: {
           dependencyType: "parentStateVariable",
-          variableName: "width",
+          variableName: "viewerWidth",
           parentComponentType: "codeEditor",
         },
       }),
