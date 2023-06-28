@@ -800,11 +800,18 @@ export function GeneralActivityControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic, e } = {}) {
-    console.log("SAVE! nextLearningOutcomes", e.currentTarget.value);
-    if (!nextLearningOutcomes) {
-      console.log("HERE");
+  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
+    let learningOutcomesToSubmit = [];
+
+    if (nextLearningOutcomes) {
+      learningOutcomesToSubmit = [...nextLearningOutcomes];
+    } else {
+      const inputs = document.getElementsByName("learning outcomes");
+      for (let input of inputs) {
+        learningOutcomesToSubmit.push(input.value);
+      }
     }
+    console.log("learningOutcomesToSubmit:", learningOutcomesToSubmit);
 
     // let learningOutcomesToSubmit = learningOutcomes;
     // if (nextLearningOutcomes) {
@@ -1032,12 +1039,13 @@ export function GeneralActivityControls({
                 <Flex key={`learningOutcome${i}`} columnGap={4}>
                   <Input
                     size="sm"
+                    name={`learning outcomes`}
                     defaultValue={outcome}
                     data-test={`learning outcome ${i}`}
-                    onBlur={(e) => saveDataToServer({ e })}
+                    onBlur={() => saveDataToServer()}
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer({ e });
+                        saveDataToServer();
                       }
                     }}
                     placeholder={`Learning Outcome #${i + 1}`}
