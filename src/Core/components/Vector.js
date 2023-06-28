@@ -2185,6 +2185,13 @@ export default class Vector extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "displacementCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+    {
+      stateVariable: "displacementCoords",
       componentType: "coords",
       stateVariablesToShadow: Object.keys(
         returnRoundingStateVariableDefinitions(),

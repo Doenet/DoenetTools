@@ -1602,6 +1602,13 @@ export default class MathComponent extends InlineComponent {
       stateVariable: "value",
       substituteForPrimaryStateVariable: "subsetValue",
     },
+    {
+      stateVariable: "value",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
   ];
 
   async moveMath({
