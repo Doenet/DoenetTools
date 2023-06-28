@@ -117,6 +117,8 @@ import AnimateFromSequence from "./components/AnimateFromSequence";
 import Evaluate from "./components/Evaluate";
 import SelectRandomNumbers from "./components/SelectRandomNumbers";
 import SampleRandomNumbers from "./components/SampleRandomNumbers";
+import SelectPrimeNumbers from "./components/SelectPrimeNumbers";
+import SamplePrimeNumbers from "./components/SamplePrimeNumbers";
 import Substitute from "./components/Substitute";
 import PeriodicSet from "./components/PeriodicSet";
 import Image from "./components/Image";
@@ -187,6 +189,7 @@ import TextOrInline from "./components/abstract/TextOrInline";
 import SingleCharacterInline from "./components/abstract/SingleCharacterInline";
 import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
+import ListOfNumberLists from "./components/abstract/ListOfNumberLists";
 import DirectionComponent from "./components/abstract/DirectionComponent";
 
 const componentTypeArray = [
@@ -303,6 +306,8 @@ const componentTypeArray = [
   Evaluate,
   SelectRandomNumbers,
   SampleRandomNumbers,
+  SelectPrimeNumbers,
+  SamplePrimeNumbers,
   Substitute,
   PeriodicSet,
   Image,
@@ -377,6 +382,7 @@ const componentTypeArray = [
   SingleCharacterInline,
   VariableNameList,
   VariableName,
+  ListOfNumberLists,
   DirectionComponent,
 ];
 

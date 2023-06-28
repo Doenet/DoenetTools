@@ -21,6 +21,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -504,12 +506,19 @@ export default class SampleRandomNumbers extends CompositeComponent {
         }
         return dependencies;
       },
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, changes, justUpdatedForNewComponent }) {
         if (dependencyValues.numSamples < 1) {
           return {
             setEssentialValue: { sampledValues: [] },
             setValue: { sampledValues: [] },
           };
+        }
+
+        // if loaded in values from database (justUpdatedForNewComponent)
+        // or just resampled values from action (in which case there will be no changes)
+        // then don't resample the values but just use the current ones
+        if (Object.keys(changes).length === 0 || justUpdatedForNewComponent) {
+          return { useEssentialOrDefaultValue: { sampledValues: true } };
         }
 
         let sampledValues = sampleFromRandomNumbers(dependencyValues);

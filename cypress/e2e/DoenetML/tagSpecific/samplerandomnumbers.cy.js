@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("SampleRandomNumbers Tag Tests", function () {
   beforeEach(() => {
@@ -3797,10 +3797,12 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist>
     <map>
-      <template><sampleRandomNumbers variantDeterminesSeed /></template>
+      <template><sampleRandomNumbers /></template>
       <sources><sequence length="100" /></sources>
     </map>
     </aslist></p>
+
+    <booleaninput name="bi" /><boolean name="b2" copySource="bi" />
 
     `;
 
@@ -3842,6 +3844,13 @@ describe("SampleRandomNumbers Tag Tests", function () {
       }
     });
 
+    cy.log("interact so changes will be saved to database");
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b2")).should("have.text", "true");
+
+    cy.log("wait for debounce");
+    cy.wait(1500);
+
     cy.reload();
 
     cy.window().then(async (win) => {
@@ -3853,7 +3862,11 @@ describe("SampleRandomNumbers Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+    cy.log("make sure core is up and running");
+    cy.get(cesc("#\\/bi")).click();
+    cy.get(cesc("#\\/b2")).should("have.text", "false");
+
+    cy.log("check that values are unchanged");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4041,6 +4054,93 @@ describe("SampleRandomNumbers Tag Tests", function () {
         String(Math.round(n3 * 10 ** 3) / 10 ** 3),
       );
       cy.get(cesc("#\\/n4a")).should("have.text", String(n4) + ".0");
+    });
+  });
+
+  it(`resample random numbers`, () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <text>a</text>
+          <p><aslist><sampleRandomNumbers name="srn1" assignNames="rn1 rn2" numSamples="2" from="1" to="10" /></aslist>,
+          <sampleRandomNumbers name="srn2" assignNames="rn3" from="1000" to="10000" />
+          </p>
+
+          <p>
+            <callAction name="resamp1" target="srn1" actionName="resample"><label>Resample first two</label></callAction>
+            <callAction name="resamp2" target="srn2" actionName="resample"><label>Resample last</label></callAction>
+          </p>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let rn1, rn2, rn3;
+    let rn1b, rn2b, rn3b;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      rn1 = stateVariables["/rn1"].stateValues.value;
+      rn2 = stateVariables["/rn2"].stateValues.value;
+      rn3 = stateVariables["/rn3"].stateValues.value;
+
+      expect(rn1).gt(1).lt(10);
+      expect(rn2).gt(1).lt(10);
+      expect(rn3).gt(1000).lt(10000);
+
+      let rn1Rounded = Math.round(rn1 * 100) / 100;
+
+      cy.get(cesc2("#/rn1")).should("have.text", rn1Rounded.toString());
+
+      cy.get(cesc2("#/resamp1")).click();
+
+      cy.get(cesc2("#/rn1")).should("not.have.text", rn1Rounded.toString());
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      rn1b = stateVariables["/rn1"].stateValues.value;
+      rn2b = stateVariables["/rn2"].stateValues.value;
+      rn3b = stateVariables["/rn3"].stateValues.value;
+
+      expect(rn1b).gt(1).lt(10);
+      expect(rn2b).gt(1).lt(10);
+      expect(rn3b).gt(1000).lt(10000);
+
+      expect(rn1b).not.eq(rn1);
+      expect(rn2b).not.eq(rn2);
+      expect(rn3b).eq(rn3);
+
+      let rn3Rounded = Math.round(rn3 * 100) / 100;
+
+      cy.get(cesc2("#/rn3")).should("have.text", rn3Rounded.toString());
+
+      cy.get(cesc2("#/resamp2")).click();
+
+      cy.get(cesc2("#/rn3")).should("not.have.text", rn3Rounded.toString());
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let rn1c = stateVariables["/rn1"].stateValues.value;
+      let rn2c = stateVariables["/rn2"].stateValues.value;
+      let rn3c = stateVariables["/rn3"].stateValues.value;
+
+      expect(rn1c).gt(1).lt(10);
+      expect(rn2c).gt(1).lt(10);
+      expect(rn3c).gt(1000).lt(10000);
+
+      expect(rn1c).eq(rn1b);
+      expect(rn2c).eq(rn2b);
+      expect(rn3c).not.eq(rn3);
     });
   });
 });

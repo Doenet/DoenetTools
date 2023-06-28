@@ -3854,4 +3854,64 @@ describe("MathList Tag Tests", function () {
       expect(stateVariables["/_text2"].stateValues.value).eq("a, b, c");
     });
   });
+
+  it("mathlist adapts to numberlist", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <mathlist name="ml"><math>9</math> <math>8</math><math>7</math></mathlist>
+
+    <p><numberlist name="nl">$ml</numberlist></p>
+    <p>Change second number: <mathinput name="mi1">$nl.number2</mathinput></p>
+
+    <p>Change 1st and 3rd number via point: <mathinput name="mi2"><point>($nl.number1,$nl.math3)</point></mathinput></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "8");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "7");
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 8, 7");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}3{enter}", { force: true });
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 83, 7");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "83");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "7");
+
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{leftarrow}{backspace}{backspace}{backspace}-1,2{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/nl")).should("have.text", "-1, 83, 2");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "−1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "83");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "2");
+  });
 });
