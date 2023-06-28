@@ -18,6 +18,7 @@
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "test:parallel": "cypress-parallel -s test:all -t 4 -d cypress/e2e/DoenetML",
     "publish:db": "docker compose exec -T -w /var/lib/mysql mysql mysqldump -u root -phelloworld --databases --add-drop-database --add-drop-table doenet_local > ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:db": "docker compose exec -T mysql mysql -u root -phelloworld doenet_local < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:volumes": "docker volume rm doenet_node_modules doenet_vendor",

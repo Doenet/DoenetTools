@@ -2158,7 +2158,7 @@ describe("MathList Tag Tests", function () {
     });
   });
 
-  it("mathlist with merge math list", () => {
+  it("mathlist with merge math lists", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -2669,6 +2669,479 @@ describe("MathList Tag Tests", function () {
       expect(stateVariables["/_mathlist1"].stateValues.math3).eq("h");
       expect(stateVariables["/_mathlist1"].stateValues.math5).eq("j");
     });
+  });
+
+  it("maxNumber with when have one math child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <mathlist maxNumber="3" name="ml">
+      <math name="m">a,b,c,d,e</math>
+    </mathlist>
+
+    <p>All maths from list: <aslist>$ml.maths</aslist></p>
+
+    <p>Copied math: $m</p>
+
+    <p>Copied mathlist: $ml</p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a,b,c");
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a,b,c");
+
+    cy.get(cesc2("#/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+    cy.get(cesc2("#/_p1") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "b");
+    cy.get(cesc2("#/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "c");
+    cy.get(cesc2("#/_p1") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+
+    cy.get(cesc2("#/_p2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a,b,c,d,e");
+
+    cy.get(cesc2("#/_p3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a,b,c");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ml"].stateValues.maths).eqls(["a", "b", "c"]);
+    });
+  });
+
+  it("maxNumber with merge math lists", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+    <mathlist mergeMathLists="$mml" maxNumber="$maxnum" name="ml">
+      <math>1</math>
+      <mathlist mergeMathLists><math>2, 3</math><math>4</math><mathlist>5 6</mathlist></mathlist>
+      <math>7,8,9</math>
+      <mathlist>10 11</mathlist>
+      <math>12, 13, 14, 15</math>
+      <mathlist>16 17 18 19 20</mathlist>
+    </mathlist>
+    <p>Merge math lists: <booleaninput name="mml" /></p>
+    <p>Maximum number: <mathinput name="maxnum" prefill="3" /></p>
+
+    <p name="pmaths">All maths from list: <aslist>$ml.maths</aslist></p>
+
+    <p name="pcopy">Copied mathlist: $ml</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+
+    for (let i = 0; i < 3; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+
+    cy.get(cesc2("#/maxnum") + " textarea").type("{end}{backspace}6{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(5)
+      .should("not.exist");
+
+    for (let i = 0; i < 6; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(6)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(5)
+      .should("not.exist");
+
+    cy.get(cesc2("#/maxnum") + " textarea").type("{end}{backspace}7{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("contain.text", "7,8,9");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(6)
+      .should("not.exist");
+
+    for (let i = 0; i < 6; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(7)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(6)
+      .should("not.exist");
+
+    cy.get(cesc2("#/mml")).click();
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("not.contain.text", "9");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(6)
+      .should("not.exist");
+
+    for (let i = 0; i < 7; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(7)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(6)
+      .should("not.exist");
+
+    cy.get(cesc2("#/maxnum") + " textarea").type("{end}{backspace}13{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("contain.text", "13");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "10");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(7)
+      .should("have.text", "11");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(8)
+      .should("have.text", "12,13");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(9)
+      .should("not.exist");
+
+    for (let i = 0; i < 13; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(13)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "10");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(7)
+      .should("have.text", "11");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(8)
+      .should("have.text", "12,13");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(9)
+      .should("not.exist");
+
+    cy.get(cesc2("#/mml")).click();
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("contain.text", "18");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "10");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(7)
+      .should("have.text", "11");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(8)
+      .should("have.text", "12,13,14,15");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(9)
+      .should("have.text", "16");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(10)
+      .should("have.text", "17");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(11)
+      .should("have.text", "18");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(12)
+      .should("not.exist");
+
+    for (let i = 0; i < 6; i++) {
+      cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(7)
+      .should("have.text", "10");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(8)
+      .should("have.text", "11");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(9)
+      .should("have.text", "12,13,14,15");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(10)
+      .should("have.text", "16");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(11)
+      .should("have.text", "17");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(12)
+      .should("have.text", "18");
+    cy.get(cesc2("#/pmaths") + " .mjx-mrow")
+      .eq(13)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2,3");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "4");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "5");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "6");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(5)
+      .should("have.text", "7,8,9");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "10");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(7)
+      .should("have.text", "11");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(8)
+      .should("have.text", "12,13,14,15");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(9)
+      .should("have.text", "16");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(10)
+      .should("have.text", "17");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(11)
+      .should("have.text", "18");
+    cy.get(cesc2("#/pcopy") + " .mjx-mrow")
+      .eq(12)
+      .should("not.exist");
   });
 
   // TODO: deal with hidden children of a mathlist
