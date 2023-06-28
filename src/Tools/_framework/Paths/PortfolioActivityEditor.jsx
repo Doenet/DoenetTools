@@ -801,40 +801,45 @@ export function GeneralActivityControls({
   let [alerts, setAlerts] = useState([]);
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-    let learningOutcomesToSubmit = learningOutcomes;
-    if (nextLearningOutcomes) {
-      learningOutcomesToSubmit = nextLearningOutcomes;
+    console.log("SAVE! nextLearningOutcomes", nextLearningOutcomes);
+    if (!nextLearningOutcomes) {
+      console.log("HERE");
     }
 
-    let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
-      isPublicToSubmit = nextIsPublic;
-    }
+    // let learningOutcomesToSubmit = learningOutcomes;
+    // if (nextLearningOutcomes) {
+    //   learningOutcomesToSubmit = nextLearningOutcomes;
+    // }
 
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelValue;
-    if (labelValue == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
-    } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
-      }
-    }
-    lastAcceptedLabelValue.current = labelToSubmit;
-    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    fetcher.submit(
-      {
-        _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
-        doenetId,
-      },
-      { method: "post" },
-    );
+    // let isPublicToSubmit = checkboxIsPublic;
+    // if (nextIsPublic) {
+    //   isPublicToSubmit = nextIsPublic;
+    // }
+
+    // // Turn on/off label error messages and
+    // // use the latest valid label
+    // let labelToSubmit = labelValue;
+    // if (labelValue == "") {
+    //   labelToSubmit = lastAcceptedLabelValue.current;
+    //   setLabelIsInvalid(true);
+    // } else {
+    //   if (labelIsInvalid) {
+    //     setLabelIsInvalid(false);
+    //   }
+    // }
+    // lastAcceptedLabelValue.current = labelToSubmit;
+    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    // fetcher.submit(
+    //   {
+    //     _action: "update general",
+    //     label: labelToSubmit,
+    //     imagePath,
+    //     public: isPublicToSubmit,
+    //     learningOutcomes: serializedLearningOutcomes,
+    //     doenetId,
+    //   },
+    //   { method: "post" },
+    // );
   }
 
   const onDrop = useCallback(
@@ -929,25 +934,22 @@ export function GeneralActivityControls({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
+  let learningOutcomes = activityData.learningOutcomes;
+  //Make sure learning outcomes aren't null
+  if (learningOutcomes == null) {
+    learningOutcomes = [""];
+  }
+  //Optimistic UI update learningOutcomes to form submission
+  if (fetcher.formData) {
+    console.log("FORM DATA!");
   }
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
 
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   const { compileActivity, updateAssignItem } = useCourse(courseId);
-
-  //TODO: Cypress is opening the drawer so fast
-  //the activitieData is out of date
-  //We need something like this. But this code sets learningOutcomes too often
-  // useEffect(() => {
-  //   setLearningOutcomes(learningOutcomesInit);
-  // }, [learningOutcomesInit]);
 
   return (
     <>
@@ -1030,26 +1032,12 @@ export function GeneralActivityControls({
                 <Flex key={`learningOutcome${i}`} columnGap={4}>
                   <Input
                     size="sm"
-                    value={outcome}
+                    defaultValue={outcome}
                     data-test={`learning outcome ${i}`}
-                    // width="300px"
-                    onChange={(e) => {
-                      setLearningOutcomes((prev) => {
-                        let next = [...prev];
-                        next[i] = e.target.value;
-                        return next;
-                      });
-                    }}
-                    onBlur={() =>
-                      saveDataToServer({
-                        nextLearningOutcomes: learningOutcomes,
-                      })
-                    }
+                    onBlur={() => saveDataToServer()}
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer({
-                          nextLearningOutcomes: learningOutcomes,
-                        });
+                        saveDataToServer();
                       }
                     }}
                     placeholder={`Learning Outcome #${i + 1}`}
@@ -1071,7 +1059,7 @@ export function GeneralActivityControls({
                         nextLearningOutcomes.splice(i, 1);
                       }
 
-                      setLearningOutcomes(nextLearningOutcomes);
+                      // setLearningOutcomes(nextLearningOutcomes);
                       saveDataToServer({ nextLearningOutcomes });
                     }}
                   />
@@ -1093,7 +1081,7 @@ export function GeneralActivityControls({
                     nextLearningOutcomes.push("");
                   }
 
-                  setLearningOutcomes(nextLearningOutcomes);
+                  // setLearningOutcomes(nextLearningOutcomes);
                   saveDataToServer({ nextLearningOutcomes });
                 }}
               />
