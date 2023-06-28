@@ -9264,6 +9264,19 @@ export default class Core {
     this.updateInfo.componentsToUpdateActionChaining = {};
 
     let id = componentName;
+
+    while (id.substring(0, 3) === "/__") {
+      // if component was has a unreachable component name
+      // check if it is shadowing another component and use that component name instead
+      let comp = this._components[id];
+
+      if (comp.shadows) {
+        id = comp.shadows.componentName;
+      } else {
+        break;
+      }
+    }
+
     if (triggeringAction) {
       id += "|" + triggeringAction;
     }

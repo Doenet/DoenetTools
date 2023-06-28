@@ -17,24 +17,26 @@ export function characterizeOffGraphPoint(coords, board) {
 
   let needIndicator = false;
 
-  if (indicatorCoords[0] < xminAdjusted) {
-    needIndicator = true;
-    indicatorSides[0] = flippedX ? 1 : -1;
-    indicatorCoords[0] = xminAdjusted;
-  } else if (indicatorCoords[0] > xmaxAdjusted) {
-    needIndicator = true;
-    indicatorSides[0] = flippedX ? -1 : 1;
-    indicatorCoords[0] = xmaxAdjusted;
-  }
+  if (indicatorCoords.every((v) => typeof v === "number")) {
+    if (indicatorCoords[0] < xminAdjusted) {
+      needIndicator = true;
+      indicatorSides[0] = flippedX ? 1 : -1;
+      indicatorCoords[0] = xminAdjusted;
+    } else if (indicatorCoords[0] > xmaxAdjusted) {
+      needIndicator = true;
+      indicatorSides[0] = flippedX ? -1 : 1;
+      indicatorCoords[0] = xmaxAdjusted;
+    }
 
-  if (indicatorCoords[1] < yminAdjusted) {
-    needIndicator = true;
-    indicatorSides[1] = flippedY ? 1 : -1;
-    indicatorCoords[1] = yminAdjusted;
-  } else if (indicatorCoords[1] > ymaxAdjusted) {
-    needIndicator = true;
-    indicatorSides[1] = flippedY ? -1 : 1;
-    indicatorCoords[1] = ymaxAdjusted;
+    if (indicatorCoords[1] < yminAdjusted) {
+      needIndicator = true;
+      indicatorSides[1] = flippedY ? 1 : -1;
+      indicatorCoords[1] = yminAdjusted;
+    } else if (indicatorCoords[1] > ymaxAdjusted) {
+      needIndicator = true;
+      indicatorSides[1] = flippedY ? -1 : 1;
+      indicatorCoords[1] = ymaxAdjusted;
+    }
   }
 
   return {

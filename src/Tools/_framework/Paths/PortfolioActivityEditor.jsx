@@ -1621,7 +1621,7 @@ export function PortfolioActivityEditor() {
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
-                        solutionDisplayMode: true,
+                        solutionDisplayMode: "button",
                         showFeedback: true,
                         showHints: true,
                         autoSubmit: false,
@@ -1712,7 +1712,7 @@ export function PortfolioActivityEditor() {
                         doenetML={viewerDoenetML}
                         flags={{
                           showCorrectness: true,
-                          solutionDisplayMode: true,
+                          solutionDisplayMode: "button",
                           showFeedback: true,
                           showHints: true,
                           autoSubmit: false,

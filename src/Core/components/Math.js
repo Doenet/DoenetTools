@@ -506,6 +506,7 @@ export default class MathComponent extends InlineComponent {
     };
 
     stateVariableDefinitions.unnormalizedValue = {
+      isLocation: true,
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
@@ -539,6 +540,7 @@ export default class MathComponent extends InlineComponent {
     };
 
     stateVariableDefinitions.value = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
@@ -957,6 +959,10 @@ export default class MathComponent extends InlineComponent {
         fixed: {
           dependencyType: "stateVariable",
           variableName: "fixed",
+        },
+        fixLocation: {
+          dependencyType: "stateVariable",
+          variableName: "fixLocation",
         },
         codePre: {
           dependencyType: "stateVariable",
@@ -1561,7 +1567,7 @@ export default class MathComponent extends InlineComponent {
         }
 
         if (!desiredValue) {
-          desiredValue = workspace.desiredMatrix[0];
+          desiredValue = workspace.desiredMatrix["0,0"];
         }
 
         let instructions = [
@@ -1595,6 +1601,13 @@ export default class MathComponent extends InlineComponent {
       componentType: "subsetOfReals",
       stateVariable: "value",
       substituteForPrimaryStateVariable: "subsetValue",
+    },
+    {
+      stateVariable: "value",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 
@@ -1977,7 +1990,11 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
 }
 
 function determineCanBeModified({ dependencyValues }) {
-  if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
+  if (
+    !dependencyValues.modifyIndirectly ||
+    dependencyValues.fixed ||
+    dependencyValues.fixLocation
+  ) {
     return {
       setValue: {
         canBeModified: false,

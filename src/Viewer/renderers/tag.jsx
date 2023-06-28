@@ -13,6 +13,8 @@ export default React.memo(function Tag(props) {
 
   if (SVs.selfClosed) {
     close = "/>";
+  } else if (SVs.closing) {
+    open = "</";
   }
 
   return (

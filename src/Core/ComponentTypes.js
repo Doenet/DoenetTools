@@ -22,7 +22,7 @@ import * as Divisions from "./components/Divisions";
 import * as Verbatim from "./components/Verbatim";
 import * as Paginator from "./components/Paginator";
 import * as MatrixInput from "./components/MatrixInput";
-import * as Solutions from "./components/Solutions";
+import * as Solution from "./components/Solution";
 import * as ContentBrowser from "./components/ContentBrowser";
 
 import Document from "./components/Document";
@@ -190,6 +190,7 @@ import SingleCharacterInline from "./components/abstract/SingleCharacterInline";
 import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
 import ListOfNumberLists from "./components/abstract/ListOfNumberLists";
+import DirectionComponent from "./components/abstract/DirectionComponent";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -216,7 +217,7 @@ const componentTypeArray = [
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
   ...Object.values(MatrixInput),
-  ...Object.values(Solutions),
+  ...Object.values(Solution),
   ...Object.values(ContentBrowser),
   Document,
   Text,
@@ -382,6 +383,7 @@ const componentTypeArray = [
   VariableNameList,
   VariableName,
   ListOfNumberLists,
+  DirectionComponent,
 ];
 
 export function allComponentClasses() {

@@ -1,6 +1,6 @@
 import me from "math-expressions";
 import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 function nInDOM(n) {
   if (n < 0) {
@@ -9446,5 +9446,24 @@ describe("Function Tag Tests", function () {
       "have.text",
       "C is a thin white function.",
     );
+  });
+
+  it("handle bad through and other defining attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function through="A" minima="B" maxima="C" extrema="D" throughSlopes="E" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
 });

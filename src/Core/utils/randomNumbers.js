@@ -6,6 +6,7 @@ export function sampleFromRandomNumbers({
   to,
   from,
   step,
+  exclude,
   numDiscreteValues,
   rng,
 }) {
@@ -57,9 +58,25 @@ export function sampleFromRandomNumbers({
     let sampledValues = [];
 
     if (numDiscreteValues > 0) {
+      let indexMap = [...Array(numDiscreteValues).keys()];
+
+      if (exclude.length > 0) {
+        indexMap = [];
+        let numOrigValues = Math.round((to - from) / step + 1);
+        for (let i = 0; i < numOrigValues; i++) {
+          let val = from + i * step;
+          if (!exclude.includes(val)) {
+            indexMap.push(i);
+          }
+        }
+      }
+
       for (let i = 0; i < numSamples; i++) {
         // random integer from 0 to numDiscreteValues-1
         let ind = Math.floor(rng() * numDiscreteValues);
+
+        // adjust for excludes
+        ind = indexMap[ind];
 
         sampledValues.push(from + step * ind);
       }
