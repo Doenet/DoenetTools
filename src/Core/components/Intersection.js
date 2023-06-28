@@ -331,9 +331,7 @@ function intersectTwoLines(lines) {
       Number.isFinite(y4)
     )
   ) {
-    console.log(
-      "Intersection of circles implemented only for numerical values",
-    );
+    console.log("Intersection of lines implemented only for numerical values");
     return [];
   }
 
@@ -651,7 +649,7 @@ function intersectLineAndPoly(line, poly) {
 function intersectPolyAndCircle(poly, circle) {
   if (poly.numDimensions !== 2) {
     console.log(
-      "Intersection involving  polygons/polylines implemented only in 2D",
+      "Intersection involving polygons/polylines implemented only in 2D",
     );
     return [];
   }
