@@ -20180,4 +20180,23 @@ describe("Vector Tag Tests", function () {
       .eq(0)
       .should("have.text", "(5,624)");
   });
+
+  it("handle bad head/tail", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <vector head="A" tail="B" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

@@ -193,7 +193,7 @@ export default class Polyline extends GraphicalComponent {
           let numDimensions =
             dependencyValues.vertices.stateValues.numDimensions;
           return {
-            setValue: { numDimensions },
+            setValue: { numDimensions: Math.max(2, numDimensions) },
             checkForActualChange: { numDimensions: true },
           };
         } else {

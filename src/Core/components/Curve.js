@@ -622,7 +622,7 @@ export default class Curve extends GraphicalComponent {
           let numDimensions =
             dependencyValues.through.stateValues.numDimensions;
           return {
-            setValue: { numDimensions },
+            setValue: { numDimensions: Math.max(2, numDimensions) },
             checkForActualChange: { numDimensions: true },
           };
         } else {

@@ -13,7 +13,7 @@ export default React.memo(function Ray(props) {
 
   const board = useContext(BoardContext);
 
-  let rayJXG = useRef(null);
+  let rayJXG = useRef({});
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
@@ -61,7 +61,7 @@ export default React.memo(function Ray(props) {
       SVs.numericalEndpoint.length !== 2 ||
       SVs.numericalThroughpoint.length !== 2
     ) {
-      rayJXG.current = null;
+      rayJXG.current = {};
 
       return;
     }
@@ -275,11 +275,11 @@ export default React.memo(function Ray(props) {
     rayJXG.current.off("keyfocusout");
     rayJXG.current.off("keydown");
     board.removeObject(rayJXG.current);
-    rayJXG.current = null;
+    rayJXG.current = {};
   }
 
   if (board) {
-    if (rayJXG.current === null) {
+    if (Object.keys(rayJXG.current).length === 0) {
       createRayJXG();
     } else if (
       SVs.numericalEndpoint.length !== 2 ||

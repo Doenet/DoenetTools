@@ -186,7 +186,7 @@ export default class LineSegment extends GraphicalComponent {
           let numDimensions =
             dependencyValues.endpointsAttr.stateValues.numDimensions;
           return {
-            setValue: { numDimensions },
+            setValue: { numDimensions: Math.max(numDimensions, 2) },
             checkForActualChange: { numDimensions: true },
           };
         } else {
