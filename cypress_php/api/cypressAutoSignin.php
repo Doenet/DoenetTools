@@ -10,6 +10,8 @@ include '../api/db_connection.php';
 $message = "";
 $success = TRUE;
 $userId = $_REQUEST['userId'];
+$firstName = $_REQUEST['firstName'];
+$lastName = $_REQUEST['lastName'];
 // $emailaddress = 'devuser@example.com';
 // $userId = 'devuserid';
 
@@ -26,13 +28,19 @@ userId='$userId'";
 $result = $conn->query($sql); 
 
 if ($result->num_rows == 0) {
+if($firstName == '') {
+    $firstName = 'first';
+}
+if($lastName == '') {
+    $lastName = "last";
+}
 $sql = "
 INSERT INTO user
 SET userId='$userId',
 screenName='screen name',
 email='$userId@doenet.org',
-lastName='last',
-firstName='first'
+lastName='$firstName',
+firstName='$lastName'
 ";
 $result = $conn->query($sql); 
 
