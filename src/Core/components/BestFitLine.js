@@ -49,7 +49,9 @@ export default class BestFitLine extends Line {
 
     delete stateVariableDefinitions.numPointsPrescribed;
     delete stateVariableDefinitions.basedOnSlope;
-    delete stateVariableDefinitions.dForSlope;
+    delete stateVariableDefinitions.basedOnParallel;
+    delete stateVariableDefinitions.basedOnPerpendicular;
+    delete stateVariableDefinitions.distForSecondPt;
     delete stateVariableDefinitions.essentialPoint1x;
     delete stateVariableDefinitions.essentialPoint1y;
     delete stateVariableDefinitions.equationIdentity;

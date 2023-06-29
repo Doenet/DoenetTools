@@ -918,7 +918,7 @@ describe("Regular Polygon Tag Tests", function () {
     });
   });
 
-  it("specify sidelength, center for pentegon", () => {
+  it("specify sidelength, center for pentagon", () => {
     setupRegularPolygonScene({
       attributes: {
         numSides: "5",

@@ -726,17 +726,16 @@ export default React.memo(function Curve(props) {
       let segmentLayer, throughPointLayer, controlPointLayer;
 
       if (layerChanged) {
-        segmentLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
-        throughPointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
-        controlPointLayer = 10 * SVs.layer + CONTROL_POINT_LAYER_OFFSET;
         curveJXG.current.setAttribute({ layer: curveLayer });
-        segmentAttributes.current.layer = segmentLayer;
-        throughPointAttributes.current.layer = throughPointLayer;
-        controlPointAttributes.current.layer = controlPointLayer;
+        if (SVs.curveType === "bezier") {
+          segmentLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
+          throughPointLayer = 10 * SVs.layer + VERTEX_LAYER_OFFSET;
+          controlPointLayer = 10 * SVs.layer + CONTROL_POINT_LAYER_OFFSET;
+          segmentAttributes.current.layer = segmentLayer;
+          throughPointAttributes.current.layer = throughPointLayer;
+          controlPointAttributes.current.layer = controlPointLayer;
+        }
       }
-
-      throughPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
-      controlPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
 
       let lineColor =
         darkMode === "dark"
@@ -775,6 +774,9 @@ export default React.memo(function Curve(props) {
         curveJXG.current.Y = createFunctionFromDefinition(SVs.fDefinitions[1]);
         curveJXG.current.minX = () => SVs.parMin;
         curveJXG.current.maxX = () => SVs.parMax;
+
+        throughPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
+        controlPointAttributes.current.showInfoBox = SVs.showCoordsWhenDragging;
       } else {
         let f = createFunctionFromDefinition(SVs.fDefinitions[0]);
         if (SVs.flipFunction) {
