@@ -26,13 +26,14 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import { useFetcher } from "react-router-dom";
+import { useFetcher, useNavigate } from "react-router-dom";
 import { GoKebabVertical } from "react-icons/go";
 
 export function CourseCard({ course }) {
   const fetcher = useFetcher();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const firstField = useRef();
+  const navigate = useNavigate();
 
   //for duplicate form/drawer
   const [newLabel, setNewLabel] = useState();
@@ -63,6 +64,10 @@ export function CourseCard({ course }) {
           objectFit="cover"
           borderTopRadius={3}
           borderBottom="1px solid #000"
+          cursor="pointer"
+          onClick={() => {
+            navigate(`/course?tool=dashboard&courseId=${course.courseId}`);
+          }}
         />
         <Flex h="20%" justifyContent="space-between" alignItems="center" p={2}>
           <Flex flexDirection="column" fontSize="sm">
@@ -74,13 +79,6 @@ export function CourseCard({ course }) {
               <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
             </MenuButton>
             <MenuList zIndex="10">
-              <MenuItem
-                onClick={() => {
-                  //edit still pending (rename label + change background image)
-                }}
-              >
-                Edit
-              </MenuItem>
               <MenuItem onClick={onOpen}>Duplicate</MenuItem>
               <MenuItem
                 onClick={() => {
@@ -91,6 +89,13 @@ export function CourseCard({ course }) {
                 }}
               >
                 Delete
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  //edit still pending (rename label + change background image)
+                }}
+              >
+                Settings
               </MenuItem>
             </MenuList>
           </Menu>

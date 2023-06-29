@@ -60,7 +60,6 @@ export async function loader({ params }) {
 export function Courses() {
   const { courses } = useLoaderData();
   const fetcher = useFetcher();
-  const navigate = useNavigate();
 
   return (
     <>
@@ -83,21 +82,7 @@ export function Courses() {
             p="30px"
           >
             {courses.map((course, index) => (
-              <GridItem
-                key={`course-${index}`}
-                cursor="pointer"
-                tabIndex={index}
-                _focus={{
-                  outline: "black solid 2px",
-                  outlineOffset: "2px",
-                  borderRadius: "5px",
-                }}
-                onDoubleClick={() => {
-                  navigate(
-                    `/course?tool=dashboard&courseId=${course.courseId}`,
-                  );
-                }}
-              >
+              <GridItem key={`course-${course.courseId}`} tabIndex={index}>
                 <CourseCard course={course} />
               </GridItem>
             ))}
