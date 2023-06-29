@@ -790,6 +790,7 @@ export function GeneralActivityControls({
   courseId,
   doenetId,
   activityData,
+  learningOutcomesRef,
 }) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
   if (!isPublic && activityData?.public) {
@@ -805,8 +806,9 @@ export function GeneralActivityControls({
   if (learningOutcomes == null) {
     learningOutcomes = [""];
   }
-
-  const learningOutcomesRef = useRef(learningOutcomes);
+  if (learningOutcomesRef.current == null) {
+    learningOutcomesRef.current = learningOutcomes;
+  }
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = [];
@@ -947,14 +949,14 @@ export function GeneralActivityControls({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   console.log("activityData.learningOutcomes", activityData.learningOutcomes);
-  //Optimistic UI update learningOutcomes from form submission
-  if (fetcher.formData) {
-    let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
-    learningOutcomes = JSON.parse(serializedLearningOutcomes);
-    console.log("fetcher.formData", learningOutcomes);
-  } else {
-    learningOutcomes = learningOutcomesRef.current;
-  }
+  // //Optimistic UI update learningOutcomes from form submission
+  // if (fetcher.formData) {
+  //   let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
+  //   learningOutcomes = JSON.parse(serializedLearningOutcomes);
+  //   console.log("fetcher.formData", learningOutcomes);
+  // } else {
+  learningOutcomes = learningOutcomesRef.current;
+  // }
 
   console.log("learningOutcomes loaded", learningOutcomes);
 
@@ -1180,6 +1182,7 @@ function PortfolioActivitySettingsDrawer({
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
   const fetcher = useFetcher();
+  const learningOutcomesRef = useRef(null);
 
   return (
     <Drawer
@@ -1226,6 +1229,7 @@ function PortfolioActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    learningOutcomesRef={learningOutcomesRef}
                   />
                 </TabPanel>
                 <TabPanel>

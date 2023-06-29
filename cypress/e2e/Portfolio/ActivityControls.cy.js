@@ -71,7 +71,7 @@ describe("doenetEditor test", function () {
     // cy.get('[data-test="add a learning outcome button"]').click();
 
     cy.get('[data-test="Close Settings Button"]').click();
-    cy.wait(3000)
+    // cy.wait(3000)
 
     cy.get('[data-test="Controls Button"]').click();
     //Check the text.
