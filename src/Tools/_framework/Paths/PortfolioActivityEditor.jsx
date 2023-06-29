@@ -799,7 +799,14 @@ export function GeneralActivityControls({
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
-  // const learningOutcomesRef = useRef([]);
+
+  let learningOutcomes = activityData.learningOutcomes;
+  //Make sure learning outcomes aren't null
+  if (learningOutcomes == null) {
+    learningOutcomes = [""];
+  }
+
+  const learningOutcomesRef = useRef(learningOutcomes);
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = [];
@@ -814,7 +821,7 @@ export function GeneralActivityControls({
     }
     console.log("learningOutcomesToSubmit:", learningOutcomesToSubmit);
 
-    // learningOutcomesRef.current = learningOutcomesToSubmit;
+    learningOutcomesRef.current = learningOutcomesToSubmit;
 
     let isPublicToSubmit = checkboxIsPublic;
     if (nextIsPublic) {
@@ -939,17 +946,14 @@ export function GeneralActivityControls({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  let learningOutcomes = activityData.learningOutcomes;
-  //Make sure learning outcomes aren't null
-  if (learningOutcomes == null) {
-    learningOutcomes = [""];
-  }
   console.log("activityData.learningOutcomes", activityData.learningOutcomes);
   //Optimistic UI update learningOutcomes from form submission
   if (fetcher.formData) {
     let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
     learningOutcomes = JSON.parse(serializedLearningOutcomes);
     console.log("fetcher.formData", learningOutcomes);
+  } else {
+    learningOutcomes = learningOutcomesRef.current;
   }
 
   console.log("learningOutcomes loaded", learningOutcomes);

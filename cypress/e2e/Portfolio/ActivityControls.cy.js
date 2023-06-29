@@ -71,7 +71,7 @@ describe("doenetEditor test", function () {
     // cy.get('[data-test="add a learning outcome button"]').click();
 
     cy.get('[data-test="Close Settings Button"]').click();
-    // cy.wait(3000)
+    cy.wait(3000)
 
     cy.get('[data-test="Controls Button"]').click();
     //Check the text.
@@ -79,7 +79,7 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="learning outcome 1"]').should('have.value', learningOutcome2)
     cy.get('[data-test="learning outcome 2"]').should('have.value', learningOutcome3)
     cy.get('[data-test="learning outcome 3"]').should('have.value', learningOutcome4)
-    // cy.get('[data-test="learning outcome 4"]').should('have.value', learningOutcome5)
+    cy.get('[data-test="learning outcome 4"]').should('have.value', learningOutcome5)
 
     //Delete some
     //Add another
