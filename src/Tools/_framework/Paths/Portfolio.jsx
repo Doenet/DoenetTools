@@ -170,6 +170,8 @@ function PortfolioSettingsDrawer({
   // const { pageId, activityData } = useLoaderData();
   // console.log({ doenetId, data });
   const fetcher = useFetcher();
+  const learningOutcomesRef = useRef(null);
+
   let activityData;
   if (doenetId) {
     let publicIndex = data.publicActivities.findIndex(
@@ -213,6 +215,7 @@ function PortfolioSettingsDrawer({
               doenetId={doenetId}
               activityData={activityData}
               courseId={courseId}
+              learningOutcomesRef={learningOutcomesRef}
             />
           )}
         </DrawerBody>
