@@ -5,6 +5,7 @@ import {
   enumeratePermutations,
 } from "../utils/enumeration";
 import { setUpVariantSeedAndRng } from "../utils/variants";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
 
 export default class Choiceinput extends Input {
   constructor(args) {
@@ -37,8 +38,8 @@ export default class Choiceinput extends Input {
 
   static renderChildren = true;
 
-  static variableForPlainMacro = "values";
-  static variableForPlainCopy = "values";
+  static variableForPlainMacro = "selectedValues";
+  static variableForPlainCopy = "selectedValues";
 
   static createsVariants = true;
 
@@ -105,11 +106,22 @@ export default class Choiceinput extends Input {
       fallBackToParentStateVariable: "submitLabelNoCorrectness",
     };
 
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
   static returnChildGroups() {
     return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
       {
         group: "choices",
         componentTypes: ["choice"],
@@ -119,6 +131,9 @@ export default class Choiceinput extends Input {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.inline = {
       public: true,
@@ -152,7 +167,7 @@ export default class Choiceinput extends Input {
       },
     };
 
-    stateVariableDefinitions.numberChoices = {
+    stateVariableDefinitions.numChoices = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -165,7 +180,7 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberChoices: dependencyValues.choiceChildren.length },
+          setValue: { numChoices: dependencyValues.choiceChildren.length },
         };
       },
     };
@@ -197,16 +212,16 @@ export default class Choiceinput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let numberChoices = dependencyValues.choiceChildren.length;
+        let numChoices = dependencyValues.choiceChildren.length;
         let choiceOrder;
         if (!dependencyValues.shuffleOrder) {
-          choiceOrder = [...Array(numberChoices).keys()].map((x) => x + 1);
+          choiceOrder = [...Array(numChoices).keys()].map((x) => x + 1);
         } else {
           // if desiredIndices is specfied, use those
           let desiredChoiceOrder =
             dependencyValues.variants?.desiredVariant?.indices;
           if (desiredChoiceOrder !== undefined) {
-            if (desiredChoiceOrder.length !== numberChoices) {
+            if (desiredChoiceOrder.length !== numChoices) {
               console.warn(
                 "Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.",
               );
@@ -217,15 +232,12 @@ export default class Choiceinput extends Input {
                   "All indices specified for choiceInput must be integers",
                 );
               }
-              if (
-                !desiredChoiceOrder.every((x) => x >= 1 && x <= numberChoices)
-              ) {
+              if (!desiredChoiceOrder.every((x) => x >= 1 && x <= numChoices)) {
                 console.warn(
                   "Ignoring indices specified for choiceInput as some indices out of range.",
                 );
               } else {
                 return {
-                  // makeEssential: ["choiceOrder"],
                   setValue: {
                     choiceOrder: desiredChoiceOrder,
                   },
@@ -240,8 +252,8 @@ export default class Choiceinput extends Input {
 
           // shuffle order every time get new children
           // https://stackoverflow.com/a/12646864
-          choiceOrder = [...Array(numberChoices).keys()].map((x) => x + 1);
-          for (let i = numberChoices - 1; i > 0; i--) {
+          choiceOrder = [...Array(numChoices).keys()].map((x) => x + 1);
+          for (let i = numChoices - 1; i > 0; i--) {
             const rand = variantRng();
             const j = Math.floor(rand * (i + 1));
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
@@ -307,7 +319,7 @@ export default class Choiceinput extends Input {
     stateVariableDefinitions.choiceChildrenOrdered = {
       additionalStateVariablesDefined: [
         {
-          variableName: "numberChoices",
+          variableName: "numChoices",
           public: true,
           shadowingInstructions: {
             createComponentOfType: "number",
@@ -326,7 +338,7 @@ export default class Choiceinput extends Input {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let numberChoices = dependencyValues.choiceChildren.length;
+        let numChoices = dependencyValues.choiceChildren.length;
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(
           (i) => dependencyValues.choiceChildren[i - 1],
         );
@@ -334,7 +346,7 @@ export default class Choiceinput extends Input {
         return {
           setValue: {
             choiceChildrenOrdered,
-            numberChoices,
+            numChoices,
           },
         };
       },
@@ -349,13 +361,13 @@ export default class Choiceinput extends Input {
       entryPrefixes: ["choiceText"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        numberChoices: {
+        numChoices: {
           dependencyType: "stateVariable",
-          variableName: "numberChoices",
+          variableName: "numChoices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
+        return [dependencyValues.numChoices];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -394,13 +406,13 @@ export default class Choiceinput extends Input {
       entryPrefixes: ["choiceMath"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        numberChoices: {
+        numChoices: {
           dependencyType: "stateVariable",
-          variableName: "numberChoices",
+          variableName: "numChoices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
+        return [dependencyValues.numChoices];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -433,13 +445,13 @@ export default class Choiceinput extends Input {
     stateVariableDefinitions.choicePreselects = {
       isArray: true,
       returnArraySizeDependencies: () => ({
-        numberChoices: {
+        numChoices: {
           dependencyType: "stateVariable",
-          variableName: "numberChoices",
+          variableName: "numChoices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
+        return [dependencyValues.numChoices];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -475,13 +487,13 @@ export default class Choiceinput extends Input {
       isArray: true,
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        numberChoices: {
+        numChoices: {
           dependencyType: "stateVariable",
-          variableName: "numberChoices",
+          variableName: "numChoices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
+        return [dependencyValues.numChoices];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -517,13 +529,13 @@ export default class Choiceinput extends Input {
       isArray: true,
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        numberChoices: {
+        numChoices: {
           dependencyType: "stateVariable",
-          variableName: "numberChoices",
+          variableName: "numChoices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
+        return [dependencyValues.numChoices];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -640,6 +652,30 @@ export default class Choiceinput extends Input {
       },
     };
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.allSelectedIndices = {
       hasEssential: true,
       returnDependencies() {
@@ -670,10 +706,15 @@ export default class Choiceinput extends Input {
             attributeName: "bindValueTo",
             variableNames: ["value"],
           },
+          valueChanged: {
+            dependencyType: "stateVariable",
+            variableName: "valueChanged",
+            onlyToSetInInverseDefinition: true,
+          },
         };
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.bindValueTo !== null) {
+        if (dependencyValues.bindValueTo) {
           return {
             setValue: {
               allSelectedIndices: dependencyValues.indicesMatchedByBoundValue,
@@ -687,7 +728,9 @@ export default class Choiceinput extends Input {
                   let ind = dependencyValues.choicePreselects.indexOf(true);
                   if (ind !== -1) {
                     return [ind + 1];
-                  } else if (dependencyValues.preselectChoice !== null) {
+                  } else if (
+                    Number.isInteger(dependencyValues.preselectChoice)
+                  ) {
                     return [dependencyValues.preselectChoice];
                   } else {
                     return [];
@@ -699,17 +742,14 @@ export default class Choiceinput extends Input {
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.bindValueTo === null) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setEssentialValue: "allSelectedIndices",
-                value: desiredStateVariableValues.allSelectedIndices,
-              },
-            ],
-          };
-        } else {
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.bindValueTo) {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
             let choiceChildrenOrdered = dependencyValues.choiceOrder.map(
@@ -725,21 +765,22 @@ export default class Choiceinput extends Input {
             desiredText = selectedTexts.join(", ");
           }
 
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredText,
-                variableIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredText,
+            variableIndex: 0,
+          });
+        } else {
+          instructions.push({
+            setEssentialValue: "allSelectedIndices",
+            value: desiredStateVariableValues.allSelectedIndices,
+          });
         }
+        return { success: true, instructions };
       },
     };
 
-    stateVariableDefinitions.nSelectedIndices = {
+    stateVariableDefinitions.numSelectedIndices = {
       returnDependencies: () => ({
         allSelectedIndices: {
           dependencyType: "stateVariable",
@@ -749,7 +790,7 @@ export default class Choiceinput extends Input {
       definition({ dependencyValues }) {
         return {
           setValue: {
-            nSelectedIndices: dependencyValues.allSelectedIndices.length,
+            numSelectedIndices: dependencyValues.allSelectedIndices.length,
           },
         };
       },
@@ -764,13 +805,13 @@ export default class Choiceinput extends Input {
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nSelectedIndices: {
+        numSelectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "nSelectedIndices",
+          variableName: "numSelectedIndices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSelectedIndices];
+        return [dependencyValues.numSelectedIndices];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -804,13 +845,13 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["selectedValue"],
       returnArraySizeDependencies: () => ({
-        nSelectedIndices: {
+        numSelectedIndices: {
           dependencyType: "stateVariable",
-          variableName: "nSelectedIndices",
+          variableName: "numSelectedIndices",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nSelectedIndices];
+        return [dependencyValues.numSelectedIndices];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -869,9 +910,9 @@ export default class Choiceinput extends Input {
       targetVariableName: "selectedValues",
     };
 
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       isAlias: true,
-      targetVariableName: "nSelectedIndices",
+      targetVariableName: "numSelectedIndices",
     };
 
     stateVariableDefinitions.childIndicesSelected = {
@@ -1044,7 +1085,7 @@ export default class Choiceinput extends Input {
       },
     };
 
-    stateVariableDefinitions.numberFeedbacks = {
+    stateVariableDefinitions.numFeedbacks = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -1057,8 +1098,8 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
-          checkForActualChange: { numberFeedbacks: true },
+          setValue: { numFeedbacks: dependencyValues.allFeedbacks.length },
+          checkForActualChange: { numFeedbacks: true },
         };
       },
     };
@@ -1071,13 +1112,13 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
-        numberFeedbacks: {
+        numFeedbacks: {
           dependencyType: "stateVariable",
-          variableName: "numberFeedbacks",
+          variableName: "numFeedbacks",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberFeedbacks];
+        return [dependencyValues.numFeedbacks];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -1212,11 +1253,11 @@ export default class Choiceinput extends Input {
       });
     }
 
-    let numberOfChoices = 0;
+    let numChoices = 0;
 
     for (let child of serializedComponent.children) {
       if (child.componentType === "choice") {
-        numberOfChoices++;
+        numChoices++;
       } else {
         if (
           componentInfoObjects.isInheritedComponentType({
@@ -1225,15 +1266,15 @@ export default class Choiceinput extends Input {
           }) &&
           child.attributes.createComponentOfType?.primitive === "choice"
         ) {
-          if (child.attributes.nComponents?.primitive !== undefined) {
-            let newChoices = Number(child.attributes.nComponents?.primitive);
+          if (child.attributes.numComponents?.primitive !== undefined) {
+            let newChoices = Number(child.attributes.numComponents?.primitive);
             if (Number.isInteger(newChoices) && newChoices >= 0) {
-              numberOfChoices += newChoices;
+              numChoices += newChoices;
             } else {
               return { success: false };
             }
           } else {
-            numberOfChoices++;
+            numChoices++;
           }
         } else {
           return { success: false };
@@ -1242,7 +1283,7 @@ export default class Choiceinput extends Input {
     }
 
     let numberOfPermutations = 1;
-    for (let i = 2; i <= numberOfChoices; i++) {
+    for (let i = 2; i <= numChoices; i++) {
       numberOfPermutations *= i;
     }
 
@@ -1264,7 +1305,7 @@ export default class Choiceinput extends Input {
         serializedComponent.variants.uniqueVariantData
           .numberOfVariantsByDescendant,
       numberOfPermutations,
-      numberOfChoices,
+      numChoices,
     };
 
     return { success: true, numberOfVariants };
@@ -1303,8 +1344,7 @@ export default class Choiceinput extends Input {
       serializedComponent.variants.descendantVariantComponents;
     let numberOfPermutations =
       serializedComponent.variants.uniqueVariantData.numberOfPermutations;
-    let numberOfChoices =
-      serializedComponent.variants.uniqueVariantData.numberOfChoices;
+    let numChoices = serializedComponent.variants.uniqueVariantData.numChoices;
 
     // treat permutations as another descendant variant component
     let numbersOfOptions = [...numberOfVariantsByDescendant];
@@ -1320,7 +1360,7 @@ export default class Choiceinput extends Input {
     let indicesForEachDescendant = indicesForEachOption;
 
     // choice a permutation based on permutations index
-    let indicesToPermute = [...Array(numberOfChoices).keys()].map((x) => x + 1);
+    let indicesToPermute = [...Array(numChoices).keys()].map((x) => x + 1);
 
     let permutedIndices = enumeratePermutations({
       values: indicesToPermute,

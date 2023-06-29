@@ -3573,18 +3573,18 @@ describe("Math Operator Tag Tests", function () {
       <round>log(31)</round>
       <round>0.5</round>
 
-      <round numberdecimals="1">55.3252326</round>
-      <round numberdecimals="2">log(31)</round>
-      <round numberdecimals="3">0.5555</round>
+      <round numDecimals="1">55.3252326</round>
+      <round numDecimals="2">log(31)</round>
+      <round numDecimals="3">0.5555</round>
 
-      <round numberdigits="3">55.3252326</round>
-      <round numberdigits="4">log(31)</round>
-      <round numberdigits="5">0.555555</round>
+      <round numDigits="3">55.3252326</round>
+      <round numDigits="4">log(31)</round>
+      <round numDigits="5">0.555555</round>
 
-      <round numberdigits="3"><math>sin(55.3252326 x)</math></round>
-      <round numberdigits="3">log(31) exp(3) <number>sin(2)</number></round>
+      <round numDigits="3"><math>sin(55.3252326 x)</math></round>
+      <round numDigits="3">log(31) exp(3) <number>sin(2)</number></round>
 
-      <round numberdecimals="-6"><math>exp(20) pi</math></round>
+      <round numDecimals="-6"><math>exp(20) pi</math></round>
 
       <copy target="_round1" />
       <copy target="_round5" />
@@ -3746,15 +3746,15 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <round numberDigits="6"><math>55.3252326</math></round>
-      <round numberDigits="6"><number>55.3252326</number></round>
-      <round numberDecimals="6"><math>55.3252326</math></round>
-      <round numberDecimals="6"><number>55.3252326</number></round>
+      <round numDigits="6"><math>55.3252326</math></round>
+      <round numDigits="6"><number>55.3252326</number></round>
+      <round numDecimals="6"><math>55.3252326</math></round>
+      <round numDecimals="6"><number>55.3252326</number></round>
 
-      <round numberDigits="6"><math displayDigits="1">55.3252326</math></round>
-      <round numberDigits="6"><number displayDecimals="1">55.3252326</number></round>
-      <round numberDecimals="6"><math displayDigits="1">55.3252326</math></round>
-      <round numberDecimals="6"><number displayDecimals="1">55.3252326</number></round>
+      <round numDigits="6"><math displayDigits="1">55.3252326</math></round>
+      <round numDigits="6"><number displayDecimals="1">55.3252326</number></round>
+      <round numDecimals="6"><math displayDigits="1">55.3252326</math></round>
+      <round numDecimals="6"><number displayDecimals="1">55.3252326</number></round>
 
       <math copysource="_round1" name="r1a" />
       <math copysource="_round2" name="r2a" />
@@ -6045,6 +6045,39 @@ describe("Math Operator Tag Tests", function () {
           ].stateValues.value,
         ).eq(50.5);
       });
+    });
+  });
+
+  it("median", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <median name="numbers"><number>3</number><number>17</number><number>5-4</number></median>
+      <median name="sugared">1 4 5 10000</median>
+      <median name="noSymbolic">1 4 5 x+1</median>
+      `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/numbers") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/sugared") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4.5");
+    cy.get(cesc2("#/noSymbolic") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "NaN");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/numbers"].stateValues.value).eq(3);
+      expect(stateVariables["/numbers"].stateValues.isNumericOperator).eq(true);
+      expect(stateVariables["/numbers"].stateValues.isNumber).eq(true);
     });
   });
 
@@ -13384,7 +13417,7 @@ describe("Math Operator Tag Tests", function () {
       <text>a</text>
       <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
       <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
-      <p>Number of operands: <extractMath type="numberOfOperands" name="numOperands">$expr</extractMath></p>
+      <p>Number of operands: <extractMath type="numOperands" name="numOperands">$expr</extractMath></p>
       <p>First operand: <extractMath type="Operand" name="operand1" operandNumber="1">$expr</extractMath></p>
       <p>Second operand: <extractMath type="Operand" name="operand2" operandNumber="2">$expr</extractMath></p>
       <p>Third operand: <extractMath type="Operand" name="operand3" operandNumber="3">$expr</extractMath></p>
@@ -13400,7 +13433,7 @@ describe("Math Operator Tag Tests", function () {
       <p>Second function argument from second operand: <extractMath type="functionArgument" argumentNumber="2" name="garg2">$operand2</extractMath></p>
       <p>No third function argument from second operand: <extractMath type="functionArgument" argumentNumber="3" name="blank4">$operand2</extractMath></p>
       <p>No function argument from third operand: <extractMath type="functionArgument" name="blank5">$operand3</extractMath></p>
-      <p>Number of operands from first operand: <extractMath type="numberofoperands" name="numOperands1">$operand1</extractMath></p>
+      <p>Number of operands from first operand: <extractMath type="numOperands" name="numOperands1">$operand1</extractMath></p>
       <p>First operand from first operand: <extractMath type="operand" operandNumber="1" name="operand11">$operand1</extractMath></p>
 
 

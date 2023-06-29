@@ -27,7 +27,6 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
-import styled from "styled-components";
 import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
@@ -255,7 +254,11 @@ export function Community() {
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
 
-  if (q) {
+  useEffect(() => {
+    document.title = `Community - Doenet`;
+  }, []);
+
+  if (searchResults) {
     let allMatches = [...searchResults?.activities, ...searchResults?.users];
     const tabs = [
       {
@@ -300,9 +303,13 @@ export function Community() {
           background="doenet.canvas"
         >
           <Text fontSize="24px">
-            Results for
-            <Text as="span" fontSize="24px" fontWeight="700">
-              {" "}
+            Results for{" "}
+            <Text
+              as="span"
+              fontSize="24px"
+              fontWeight="700"
+              data-test="Search Results For"
+            >
               {q}
             </Text>
           </Text>
@@ -360,6 +367,7 @@ export function Community() {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
+                data-test="Results All Matches"
               >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
@@ -422,6 +430,7 @@ export function Community() {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
+                data-test="Results Activities"
               >
                 {searchResults?.activities.map((activityObj) => {
                   const { doenetId, imagePath, label, fullName } = activityObj;
@@ -473,6 +482,7 @@ export function Community() {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
+                data-test="Results Authors"
               >
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;

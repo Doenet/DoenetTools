@@ -266,15 +266,15 @@ export class Round extends MathBaseOperatorOneInput {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.numberDecimals = {
+    attributes.numDecimals = {
       createComponentOfType: "number",
-      createStateVariable: "numberDecimals",
+      createStateVariable: "numDecimals",
       defaultValue: 0,
       public: true,
     };
-    attributes.numberDigits = {
+    attributes.numDigits = {
       createComponentOfType: "number",
-      createStateVariable: "numberDigits",
+      createStateVariable: "numDigits",
       defaultValue: null,
       public: true,
     };
@@ -296,13 +296,13 @@ export class Round extends MathBaseOperatorOneInput {
 
     stateVariableDefinitions.mathOperator = {
       returnDependencies: () => ({
-        numberDecimals: {
+        numDecimals: {
           dependencyType: "stateVariable",
-          variableName: "numberDecimals",
+          variableName: "numDecimals",
         },
-        numberDigits: {
+        numDigits: {
           dependencyType: "stateVariable",
-          variableName: "numberDigits",
+          variableName: "numDigits",
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -314,13 +314,13 @@ export class Round extends MathBaseOperatorOneInput {
               evaluate_functions: true,
             });
 
-            if (dependencyValues.numberDigits !== null) {
+            if (dependencyValues.numDigits !== null) {
               return valueWithNumbers.round_numbers_to_precision(
-                dependencyValues.numberDigits,
+                dependencyValues.numDigits,
               );
             } else {
               return valueWithNumbers.round_numbers_to_decimals(
-                dependencyValues.numberDecimals,
+                dependencyValues.numDecimals,
               );
             }
           },
@@ -639,6 +639,32 @@ export class Mean extends MathBaseOperator {
         setValue: {
           mathOperator: function (inputs) {
             return inputs.reduce((a, c) => a.add(c)).divide(inputs.length);
+          },
+        },
+      }),
+    };
+
+    return stateVariableDefinitions;
+  }
+}
+
+export class Median extends MathBaseOperator {
+  static componentType = "median";
+
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.isNumericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isNumericOperator: true } }),
+    };
+
+    stateVariableDefinitions.numericOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        setValue: {
+          numericOperator: function (inputs) {
+            return me.math.median(inputs);
           },
         },
       }),
@@ -1074,12 +1100,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
       createStateVariable: "type",
       defaultValue: null,
       toLowerCase: true,
-      validValues: [
-        "operand",
-        "function",
-        "functionargument",
-        "numberofoperands",
-      ],
+      validValues: ["operand", "function", "functionargument", "numoperands"],
     };
     attributes.operandNumber = {
       createComponentOfType: "number",
@@ -1220,7 +1241,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
               },
             },
           };
-        } else if (dependencyValues.type === "numberofoperands") {
+        } else if (dependencyValues.type === "numoperands") {
           return {
             setValue: {
               mathOperator: function (value) {

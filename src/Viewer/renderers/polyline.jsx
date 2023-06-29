@@ -22,7 +22,7 @@ export default React.memo(function Polyline(props) {
   let pointsAtDown = useRef(null);
   let pointerIsDown = useRef(false);
   let pointerMovedSinceDown = useRef(false);
-  let previousNVertices = useRef(null);
+  let previousNumVertices = useRef(null);
   let jsxPointAttributes = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
@@ -60,7 +60,7 @@ export default React.memo(function Polyline(props) {
 
   function createPolylineJXG() {
     if (
-      SVs.numericalVertices.length !== SVs.nVertices ||
+      SVs.numericalVertices.length !== SVs.numVertices ||
       SVs.numericalVertices.some((x) => x.length !== 2)
     ) {
       return null;
@@ -86,7 +86,7 @@ export default React.memo(function Polyline(props) {
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
       strokeColor: lineColor,
@@ -112,6 +112,7 @@ export default React.memo(function Polyline(props) {
         document.documentElement,
       ).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
+      showInfoBox: SVs.showCoordsWhenDragging,
     });
     if (verticesFixed.current || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
@@ -130,7 +131,7 @@ export default React.memo(function Polyline(props) {
 
     // create invisible points at endpoints
     pointsJXG.current = [];
-    for (let i = 0; i < SVs.nVertices; i++) {
+    for (let i = 0; i < SVs.numVertices; i++) {
       pointsJXG.current.push(
         board.create(
           "point",
@@ -150,7 +151,7 @@ export default React.memo(function Polyline(props) {
     let newPolylineJXG = board.create("curve", [x, y], jsxPolylineAttributes);
     newPolylineJXG.isDraggable = !fixLocation.current;
 
-    for (let i = 0; i < SVs.nVertices; i++) {
+    for (let i = 0; i < SVs.numVertices; i++) {
       pointsJXG.current[i].on("drag", (e) => dragHandler(i, e));
       pointsJXG.current[i].on("up", () => upHandler(i));
       pointsJXG.current[i].on("keyfocusout", () => keyFocusOutHandler(i));
@@ -166,7 +167,7 @@ export default React.memo(function Polyline(props) {
     newPolylineJXG.on("down", (e) => downHandler(-1, e));
     newPolylineJXG.on("hit", (e) => hitHandler());
 
-    previousNVertices.current = SVs.nVertices;
+    previousNumVertices.current = SVs.numVertices;
 
     return newPolylineJXG;
   }
@@ -193,7 +194,7 @@ export default React.memo(function Polyline(props) {
     board.removeObject(polylineJXG.current);
     polylineJXG.current = null;
 
-    for (let i = 0; i < SVs.nVertices; i++) {
+    for (let i = 0; i < SVs.numVertices; i++) {
       pointsJXG.current[i].off("drag");
       pointsJXG.current[i].off("down");
       pointsJXG.current[i].off("hit");
@@ -257,7 +258,7 @@ export default React.memo(function Polyline(props) {
           },
         });
 
-        for (let j = 0; j < SVs.nVertices; j++) {
+        for (let j = 0; j < SVs.numVertices; j++) {
           pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [
             ...lastPositionsFromCore.current[j],
           ]);
@@ -417,7 +418,7 @@ export default React.memo(function Polyline(props) {
     if (!polylineJXG.current) {
       polylineJXG.current = createPolylineJXG();
     } else if (
-      SVs.numericalVertices.length !== SVs.nVertices ||
+      SVs.numericalVertices.length !== SVs.numVertices ||
       SVs.numericalVertices.some((x) => x.length !== 2)
     ) {
       deletePolylineJXG();
@@ -447,8 +448,8 @@ export default React.memo(function Polyline(props) {
       }
 
       // add or delete points as required and change data array size
-      if (SVs.nVertices > previousNVertices.current) {
-        for (let i = previousNVertices.current; i < SVs.nVertices; i++) {
+      if (SVs.numVertices > previousNumVertices.current) {
+        for (let i = previousNumVertices.current; i < SVs.numVertices; i++) {
           pointsJXG.current.push(
             board.create(
               "point",
@@ -456,7 +457,7 @@ export default React.memo(function Polyline(props) {
               jsxPointAttributes.current,
             ),
           );
-          polylineJXG.current.dataX.length = SVs.nVertices;
+          polylineJXG.current.dataX.length = SVs.numVertices;
 
           pointsJXG.current[i].on("drag", (e) => dragHandler(i, e));
           pointsJXG.current[i].on("up", (e) => upHandler(i));
@@ -465,8 +466,8 @@ export default React.memo(function Polyline(props) {
           pointsJXG.current[i].on("keyfocusout", (e) => keyFocusOutHandler(i));
           pointsJXG.current[i].on("keydown", (e) => keyDownHandler(i, e));
         }
-      } else if (SVs.nVertices < previousNVertices.current) {
-        for (let i = SVs.nVertices; i < previousNVertices.current; i++) {
+      } else if (SVs.numVertices < previousNumVertices.current) {
+        for (let i = SVs.numVertices; i < previousNumVertices.current; i++) {
           let pt = pointsJXG.current.pop();
           pt.off("drag");
           pt.off("down");
@@ -476,16 +477,16 @@ export default React.memo(function Polyline(props) {
           pt.off("keydown");
           board.removeObject(pt);
         }
-        polylineJXG.current.dataX.length = SVs.nVertices;
+        polylineJXG.current.dataX.length = SVs.numVertices;
       }
 
-      previousNVertices.current = SVs.nVertices;
+      previousNumVertices.current = SVs.numVertices;
 
       polylineJXG.current.updateTransformMatrix();
       let shiftX = polylineJXG.current.transformMat[1][0];
       let shiftY = polylineJXG.current.transformMat[2][0];
 
-      for (let i = 0; i < SVs.nVertices; i++) {
+      for (let i = 0; i < SVs.numVertices; i++) {
         pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [
           ...SVs.numericalVertices[i],
         ]);
@@ -502,16 +503,17 @@ export default React.memo(function Polyline(props) {
 
         let pointsVisible = visible && !verticesFixed.current;
 
-        for (let i = 0; i < SVs.nVertices; i++) {
+        for (let i = 0; i < SVs.numVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;
           pointsJXG.current[i].visPropCalc["visible"] = pointsVisible;
+          pointsJXG.current[i].visProp.showinfobox = SVs.showCoordsWhenDragging;
         }
       } else {
         polylineJXG.current.visProp["visible"] = false;
         polylineJXG.current.visPropCalc["visible"] = false;
         // polylineJXG.current.setAttribute({visible: false})
 
-        for (let i = 0; i < SVs.nVertices; i++) {
+        for (let i = 0; i < SVs.numVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = false;
           pointsJXG.current[i].visPropCalc["visible"] = false;
         }
@@ -572,7 +574,7 @@ export default React.memo(function Polyline(props) {
 
       polylineJXG.current.needsUpdate = true;
       polylineJXG.current.update().updateVisibility();
-      for (let i = 0; i < SVs.nVertices; i++) {
+      for (let i = 0; i < SVs.numVertices; i++) {
         if (layerChanged) {
           pointsJXG.current[i].setAttribute({ layer: pointLayer });
         }

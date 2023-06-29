@@ -16,6 +16,7 @@ import {
   palletRef,
   handleRef,
 } from "../../Tools/_framework/Footers/MathInputSelector";
+import { MathJax } from "better-react-mathjax";
 
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { rendererState } from "../useDoenetRenderer";
@@ -318,87 +319,105 @@ export default function MathInput(props) {
       }
     }
 
-    if (SVs.numberOfAttemptsLeft < 0) {
+    if (SVs.numAttemptsLeft < 0) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(no attempts remaining)</span>
         </>
       );
-    } else if (SVs.numberOfAttemptsLeft == 1) {
+    } else if (SVs.numAttemptsLeft == 1) {
       checkWorkButton = (
         <>
           {checkWorkButton}
           <span>(1 attempt remaining)</span>
         </>
       );
-    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+    } else if (Number.isFinite(SVs.numAttemptsLeft)) {
       checkWorkButton = (
         <>
           {checkWorkButton}
-          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+          <span>({SVs.numAttemptsLeft} attempts remaining)</span>
         </>
       );
     }
   }
 
+  let label = SVs.label;
+  if (SVs.labelHasLatex) {
+    label = (
+      <MathJax hideUntilTypeset={"first"} inline dynamic>
+        {label}
+      </MathJax>
+    );
+  }
   return (
     <React.Fragment>
       <a name={id} />
 
       <span id={id}>
-        <div
-          className="mathInputWrapper"
-          style={{ cursor: mathInputWrapperCursor }}
-        >
-          <EditableMathField
-            style={mathInputStyle}
-            latex={rendererValue.current}
-            config={{
-              autoCommands:
-                "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity forall exists",
-              autoOperatorNames:
-                "arg deg det dim exp gcd hom ker lg lim ln log max min" +
-                " Pr" +
-                " cos cosh acos acosh arccos arccosh" +
-                " cot coth acot acoth arccot arccoth" +
-                " csc csch acsc acsch arccsc arccsch" +
-                " sec sech asec asech arcsec arcsech" +
-                " sin sinh asin asinh arcsin arcsinh" +
-                " tan tanh atan atanh arctan arctanh" +
-                " nPr nCr",
-              handlers: {
-                enter: handlePressEnter,
-              },
-              substituteTextarea: function () {
-                textareaRef.current = document.createElement("textarea");
-                textareaRef.current.disabled = SVs.disabled;
-                textareaRef.current.addEventListener(
-                  "focusout",
-                  (e) => {
-                    let keyboard = document.getElementById("keyboard");
-                    if (keyboard?.contains(e.relatedTarget)) {
-                      e.target.focus();
-                    } else {
-                      // remove focus
-                    }
-                  },
-                  false,
-                );
-                return textareaRef.current;
-              },
-            }} //more commands go here
-            onChange={(mField) => {
-              onChangeHandler(mField.latex());
-            }}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            mathquillDidMount={(mf) => {
-              //console.log(">>> MathQuilMounted")
-              setMathField(mf);
-            }}
-          />
-        </div>
+        <label style={{ display: "inline-flex", maxWidth: "100%" }}>
+          {label}
+          <div
+            className="mathInputWrapper"
+            style={{ cursor: mathInputWrapperCursor }}
+          >
+            <EditableMathField
+              style={mathInputStyle}
+              latex={rendererValue.current}
+              config={{
+                autoCommands:
+                  "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity forall exists",
+                autoOperatorNames:
+                  "arg deg det dim exp gcd hom ker lg lim ln log max min" +
+                  " Pr" +
+                  " cos cosh acos acosh arccos arccosh" +
+                  " cot coth acot acoth arccot arccoth" +
+                  " csc csch acsc acsch arccsc arccsch" +
+                  " sec sech asec asech arcsec arcsech" +
+                  " sin sinh asin asinh arcsin arcsinh" +
+                  " tan tanh atan atanh arctan arctanh" +
+                  " nPr nCr",
+                handlers: {
+                  enter: handlePressEnter,
+                },
+                substituteTextarea: function () {
+                  textareaRef.current = document.createElement("textarea");
+                  textareaRef.current.disabled = SVs.disabled;
+                  textareaRef.current.addEventListener(
+                    "focusout",
+                    (e) => {
+                      // apparently there are array-like things in javascript that
+                      // can be converted to real arrays with Array.from()
+                      // https://stackoverflow.com/a/22754453
+                      let keyboards = Array.from(
+                        document.getElementsByClassName("keyboard"),
+                      );
+                      keyboards.forEach((keyboard) => {
+                        if (keyboard?.contains(e.relatedTarget)) {
+                          e.target.focus();
+                        } else {
+                          // remove focus
+                        }
+                      });
+                    },
+                    false,
+                  );
+                  return textareaRef.current;
+                },
+              }} //more commands go here
+              onChange={(mField) => {
+                onChangeHandler(mField.latex());
+              }}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              mathquillDidMount={(mf) => {
+                //console.log(">>> MathQuilMounted")
+                setMathField(mf);
+              }}
+            />
+          </div>
+        </label>
         {checkWorkButton}
       </span>
     </React.Fragment>

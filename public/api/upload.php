@@ -15,10 +15,17 @@ include 'getFilename.php';
 include 'cidFromSHA.php';
 
 $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
+$isActivityThumbnail = mysqli_real_escape_string($conn, $_POST['isActivityThumbnail']);
+
 
 $success = true;
 $msg = '';
 
+//isActivityThumbnail might not be defined 
+//if it's not then it's zero for false
+if(!isset($_POST['isActivityThumbnail'])){
+    $isActivityThumbnail = '0';
+}
 $uploads_dir = '../media/';
 
 $type = $_FILES['file']['type'];
@@ -141,9 +148,9 @@ if ($success && !$already_have_file) {
 if ($success) {
     $sql = "
         INSERT INTO support_files 
-        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
+        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp,isActivityThumbnail)
         VALUES
-        ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+        ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isActivityThumbnail')
         ";
     $result = $conn->query($sql);
 }

@@ -12,14 +12,14 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    delete attributes.numberOfSamples;
+    delete attributes.numSamples;
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.numberToSelect = {
+    attributes.numToSelect = {
       createComponentOfType: "integer",
-      createStateVariable: "numberToSelect",
+      createStateVariable: "numToSelect",
       defaultValue: 1,
       public: true,
     };
@@ -57,9 +57,9 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        numberOfSamples: {
+        numSamples: {
           dependencyType: "stateVariable",
-          variableName: "numberToSelect",
+          variableName: "numToSelect",
         },
         type: {
           dependencyType: "stateVariable",
@@ -77,9 +77,13 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           dependencyType: "stateVariable",
           variableName: "step",
         },
-        nDiscreteValues: {
+        exclude: {
           dependencyType: "stateVariable",
-          variableName: "nDiscreteValues",
+          variableName: "exclude",
+        },
+        numDiscreteValues: {
+          dependencyType: "stateVariable",
+          variableName: "numDiscreteValues",
         },
         mean: {
           dependencyType: "stateVariable",
@@ -100,7 +104,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.numberOfSamples < 1) {
+        if (dependencyValues.numSamples < 1) {
           return {
             setEssentialValue: { selectedValues: [] },
             setValue: { selectedValues: [] },
@@ -113,7 +117,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         ) {
           let desiredValues = dependencyValues.variants.desiredVariant.values;
           if (desiredValues) {
-            if (desiredValues.length !== dependencyValues.numberOfSamples) {
+            if (desiredValues.length !== dependencyValues.numSamples) {
               throw Error(
                 "Number of values specified for selectRandomNumber must match number to select",
               );

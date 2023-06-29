@@ -273,30 +273,30 @@ export default class Polygon extends Polyline {
     // segement between first and last vertex
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalVertices: {
           dependencyType: "stateVariable",
           variableName: "numericalVertices",
         },
-        nVertices: {
+        numVertices: {
           dependencyType: "stateVariable",
-          variableName: "nVertices",
+          variableName: "numVertices",
         },
       }),
       definition({ dependencyValues }) {
-        let nDimensions = dependencyValues.nDimensions;
-        let nVertices = dependencyValues.nVertices;
+        let numDimensions = dependencyValues.numDimensions;
+        let numVertices = dependencyValues.numVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
         let vals = [];
         let prPtx, prPty;
-        let nxPtx = numericalVertices[nVertices - 1]?.[0];
-        let nxPty = numericalVertices[nVertices - 1]?.[1];
+        let nxPtx = numericalVertices[numVertices - 1]?.[0];
+        let nxPty = numericalVertices[numVertices - 1]?.[1];
 
-        for (let i = 0; i < nVertices; i++) {
+        for (let i = 0; i < numVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
@@ -332,7 +332,7 @@ export default class Polygon extends Polyline {
               let yscale = scales[1];
 
               // only implemented in 2D for now
-              if (nDimensions !== 2 || nVertices === 0) {
+              if (numDimensions !== 2 || numVertices === 0) {
                 return {};
               }
 
@@ -343,10 +343,10 @@ export default class Polygon extends Polyline {
               let x2 = variables.x2?.evaluate_to_constant();
 
               let prevPtx, prevPty;
-              let nextPtx = numericalVertices[nVertices - 1][0];
-              let nextPty = numericalVertices[nVertices - 1][1];
+              let nextPtx = numericalVertices[numVertices - 1][0];
+              let nextPty = numericalVertices[numVertices - 1][1];
 
-              for (let i = 0; i < nVertices; i++) {
+              for (let i = 0; i < numVertices; i++) {
                 prevPtx = nextPtx;
                 prevPty = nextPty;
 

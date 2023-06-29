@@ -30,7 +30,7 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", true: "full", false: "none" },
-      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
     };
     attributes.unorderedCompare = {
@@ -63,15 +63,15 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.nSignErrorsMatched = {
+    attributes.numSignErrorsMatched = {
       createComponentOfType: "number",
-      createStateVariable: "nSignErrorsMatched",
+      createStateVariable: "numSignErrorsMatched",
       defaultValue: 0,
       public: true,
     };
-    attributes.nPeriodicSetMatchesRequired = {
+    attributes.numPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
-      createStateVariable: "nPeriodicSetMatchesRequired",
+      createStateVariable: "numPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
     };
@@ -304,13 +304,13 @@ export default class BooleanComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "allowedErrorIsAbsolute",
         },
-        nSignErrorsMatched: {
+        numSignErrorsMatched: {
           dependencyType: "stateVariable",
-          variableName: "nSignErrorsMatched",
+          variableName: "numSignErrorsMatched",
         },
-        nPeriodicSetMatchesRequired: {
+        numPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
-          variableName: "nPeriodicSetMatchesRequired",
+          variableName: "numPeriodicSetMatchesRequired",
         },
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",

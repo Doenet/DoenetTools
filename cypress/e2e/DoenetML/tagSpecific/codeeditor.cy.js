@@ -1462,29 +1462,34 @@ describe("Code Editor Tag Tests", function () {
       cy.get(cesc2("#/_p1")).should("have.text", "");
 
       cy.log("type text in editor");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "<p>Hello!</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Hello!</p>", {
+        delay: 0,
+      });
+
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Hello!</p>\n");
       cy.get(contentAnchor).should("contain.text", "Hello!");
 
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "{ctrl+end}<text name='ti'>$ti</text>{enter}",
+        "{ctrl+end}<text name='ti'>$ti</text>",
         {
           delay: 0,
         },
       );
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
+      cy.get(updateAnchor).click();
+
       cy.get(updateAnchor).click();
 
       cy.get(cesc2("#/_p1")).should(
         "have.text",
         "<p>Hello!</p>\n<text name='ti'>$ti</text>\n",
       );
+
       cy.get(contentAnchor).should("contain.text", "Circular dependency");
 
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
@@ -1550,40 +1555,575 @@ describe("Code Editor Tag Tests", function () {
       let contentAnchor3 = "#" + cesc2(viewer3Name) + "_content";
 
       cy.log("type text in editor 1");
-      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type(
-        "<p>Apple</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("<p>Apple</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
+
       cy.get(updateAnchor1).click();
 
       cy.get(cesc2("#/_p1")).should("have.text", "<p>Apple</p>\n");
       cy.get(contentAnchor1).should("contain.text", "Apple");
 
       cy.log("type text in editor 2");
-      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type(
-        "<p>Banana</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type("<p>Banana</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor2") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor2).click();
 
       cy.get(cesc2("#/_p2")).should("have.text", "<p>Banana</p>\n");
       cy.get(contentAnchor2).should("contain.text", "Banana");
 
       cy.log("type text in editor 3");
-      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type(
-        "<p>Cherry</p>{enter}",
-        {
-          delay: 0,
-        },
-      );
+      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type("<p>Cherry</p>", {
+        delay: 0,
+      });
+      // Note: for some reason, have to type {enter} more slowly
+      cy.get(cesc("#\\/_codeeditor3") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor3).click();
 
       cy.get(cesc2("#/_p3")).should("have.text", "<p>Cherry</p>\n");
       cy.get(contentAnchor3).should("contain.text", "Cherry");
     });
+  });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <codeEditor name="ce1" /> <p><text copySource="ce1" name="ce1a" /> <boolean copysource="ce1.valueChanged" name="ce1changed" /> <text copySource="ce1.immediateValue" name="ce1iva" /> <boolean copysource="ce1.immediateValueChanged" name="ce1ivchanged" /></p>
+    <codeEditor name="ce2" prefill="apple" /> <p><text copySource="ce2" name="ce2a" /> <boolean copysource="ce2.valueChanged" name="ce2changed" /> <text copySource="ce2.immediateValue" name="ce2iva" /> <boolean copysource="ce2.immediateValueChanged" name="ce2ivchanged" /></p>
+    <codeEditor name="ce3" bindValueTo="$ce1" /> <p><text copySource="ce3" name="ce3a" /> <boolean copysource="ce3.valueChanged" name="ce3changed" /> <text copySource="ce3.immediateValue" name="ce3iva" /> <boolean copysource="ce3.immediateValueChanged" name="ce3ivchanged" /></p>
+    <codeEditor name="ce4" bindValueTo="$ce2.immediateValue" /> <p><text copySource="ce4" name="ce4a" /> <boolean copysource="ce4.valueChanged" name="ce4changed" /> <text copySource="ce4.immediateValue" name="ce4iva" /> <boolean copysource="ce4.immediateValueChanged" name="ce4ivchanged" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in first marks only first immediate value as changed");
+
+    cy.get(cesc2("#/ce1") + " .cm-content").type("banana");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("blur in first marks only first value as changed");
+
+    cy.get(cesc2("#/ce1") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in second marks only second immediate value as changed");
+
+    cy.get(cesc2("#/ce2") + " .cm-content")
+      .clear()
+      .type("cherry", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("blur in second marks only second value as changed");
+
+    cy.get(cesc2("#/ce2") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks third immediate value as changed");
+
+    cy.get(cesc2("#/ce3") + " .cm-content")
+      .clear()
+      .type("dragonfruit", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ce3iva")).should("have.text", "dragonfruit");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("blur in third marks third value as changed");
+
+    cy.get(cesc2("#/ce3") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce3a")).should("have.text", "dragonfruit");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks fourth immediate value as changed");
+
+    cy.get(cesc2("#/ce4") + " .cm-content")
+      .clear()
+      .type("eggplant", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ce4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "true");
+
+    cy.log("blur in fourth marks fourth value as changed");
+
+    cy.get(cesc2("#/ce4") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce4a")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2a")).should("have.text", "eggplant");
+    cy.get(cesc2("#/ce3a")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4a")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "eggplant");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "dragonfruit");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "eggplant");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in third marks only third immediate value as changed");
+
+    cy.get(cesc2("#/ce3") + " .cm-content").type("banana");
+
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log(
+      "blur in third marks first and third value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/ce3") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "false");
+
+    cy.log("type in fourth marks only fourth immediate value as changed");
+
+    cy.get(cesc2("#/ce4") + " .cm-content")
+      .clear()
+      .type("cherry", {
+        force: true,
+      });
+
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "apple");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "apple");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "false");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "false");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "false");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "true");
+
+    cy.log(
+      "blur in fourth marks third and fourth value/immediateValue as changed",
+    );
+
+    cy.get(cesc2("#/ce4") + " .cm-content").blur();
+
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2a")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3a")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4a")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce2iva")).should("have.text", "cherry");
+    cy.get(cesc2("#/ce3iva")).should("have.text", "banana");
+    cy.get(cesc2("#/ce4iva")).should("have.text", "cherry");
+
+    cy.get(cesc2("#/ce1changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce2changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce3changed")).should("have.text", "true");
+    cy.get(cesc2("#/ce4changed")).should("have.text", "true");
+
+    cy.get(cesc2("#/ce1ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce2ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce3ivchanged")).should("have.text", "true");
+    cy.get(cesc2("#/ce4ivchanged")).should("have.text", "true");
+  });
+
+  it("viewer ratio", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <codeEditor name="ce1" showResults ><graph/></codeEditor>
+          <codeEditor name="ce2" showResults viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce3" showResults resultsLocation="left"><graph/></codeEditor>
+          <codeEditor name="ce4" showResults resultsLocation="left" viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce5" showResults resultsLocation="right" ><graph/></codeEditor>
+          <codeEditor name="ce6" showResults resultsLocation="right" viewerRatio="0.7" ><graph/></codeEditor>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1_editor")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce1_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 200, 20);
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "height", "200px");
+
+    cy.get(cesc2("#/ce2_editor")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce2_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 120, 20);
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "width", "850px");
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "height", "280px");
+
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "width", "425px");
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce3_viewer")).should("have.css", "width", "410px");
+    cy.get(cesc2("#/ce3_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "width", "255px");
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce4_viewer")).should("have.css", "width", "580px");
+    cy.get(cesc2("#/ce4_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "width", "410px");
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce5_viewer")).should("have.css", "width", "425px");
+    cy.get(cesc2("#/ce5_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "width", "240px");
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "height", "400px");
+    cy.get(cesc2("#/ce6_viewer")).should("have.css", "width", "595px");
+    cy.get(cesc2("#/ce6_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 400, 5);
+  });
+
+  it("viewer ratio and change size", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <codeEditor name="ce1" width="600px" height="500px" showResults ><graph/></codeEditor>
+          <codeEditor name="ce2" width="600px" height="500px" showResults viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce3" width="600px" height="500px" showResults resultsLocation="left"><graph/></codeEditor>
+          <codeEditor name="ce4" width="600px" height="500px" showResults resultsLocation="left" viewerRatio="0.7" ><graph/></codeEditor>
+          <codeEditor name="ce5" width="600px" height="500px" showResults resultsLocation="right" ><graph/></codeEditor>
+          <codeEditor name="ce6" width="600px" height="500px" showResults resultsLocation="right" viewerRatio="0.7" ><graph/></codeEditor>
+      
+          `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ce1_editor")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce1_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 250, 20);
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce1_viewer")).should("have.css", "height", "250px");
+
+    cy.get(cesc2("#/ce2_editor")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce2_editor"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 150, 20);
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "width", "600px");
+    cy.get(cesc2("#/ce2_viewer")).should("have.css", "height", "350px");
+
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "width", "300px");
+    cy.get(cesc2("#/ce3_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce3_viewer")).should("have.css", "width", "285px");
+    cy.get(cesc2("#/ce3_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "width", "180px");
+    cy.get(cesc2("#/ce4_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce4_viewer")).should("have.css", "width", "405px");
+    cy.get(cesc2("#/ce4_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "width", "285px");
+    cy.get(cesc2("#/ce5_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce5_viewer")).should("have.css", "width", "300px");
+    cy.get(cesc2("#/ce5_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
+
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "width", "165px");
+    cy.get(cesc2("#/ce6_editor")).should("have.css", "height", "500px");
+    cy.get(cesc2("#/ce6_viewer")).should("have.css", "width", "420px");
+    cy.get(cesc2("#/ce6_viewer"))
+      .invoke("css", "height")
+      .then((str) => parseInt(str))
+      .should("be.closeTo", 500, 5);
   });
 });

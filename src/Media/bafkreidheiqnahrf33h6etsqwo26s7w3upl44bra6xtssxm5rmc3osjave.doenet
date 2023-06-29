@@ -2,7 +2,7 @@
   <p>a = <selectFromSequence assignNames="a" from="1" to="1000" /></p>
   <p>v = <select assignNames="v">a b c d e f g h i j k l m n o p q r s t u v w x y z</select></p>
 
-  <select numberToSelect="2" assignNames="(o1) (o2)">
+  <select numToSelect="2" assignNames="(o1) (o2)">
     <option>
       <select assignNamesSkip="2">
         <option>

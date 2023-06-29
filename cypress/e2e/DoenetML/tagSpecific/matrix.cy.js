@@ -31,40 +31,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -115,25 +115,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "0, 0");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "0, 0");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "0");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "0");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "0");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "0");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "0");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "0");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -172,13 +172,13 @@ describe("Matrix Tag Tests", function () {
     });
   });
 
-  it("specify nRows, get 1 column, 2x1 matrix of 0s", () => {
+  it("specify numRows, get 1 column, 2x1 matrix of 0s", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <p>A: <matrix name="A" nRows="2" /></p>
+    <p>A: <matrix name="A" numRows="2" /></p>
     <p>Copy 1: <matrix name="A1" copySource="A" /></p>
     <p>Copy 2: <matrix name="A2" copySource="A.value" /></p>
     <p>Copy 3: <copy source="A" assignNames="A3" /></p>
@@ -197,40 +197,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -278,25 +278,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 1");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 1");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "1");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -467,25 +467,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 1");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 1");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "1");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "1");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -844,13 +844,13 @@ describe("Matrix Tag Tests", function () {
     });
   });
 
-  it("specify nColumns, get 1 row, 1x2 matrix of zeros", () => {
+  it("specify numColumns, get 1 row, 1x2 matrix of zeros", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <p>A: <matrix name="A" nColumns="2" /></p>
+    <p>A: <matrix name="A" numColumns="2" /></p>
     <p>Copy 1: <matrix name="A1" copySource="A" /></p>
     <p>Copy 2: <matrix name="A2" copySource="A.value" /></p>
     <p>Copy 3: <copy source="A" assignNames="A3" /></p>
@@ -869,40 +869,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -950,25 +950,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1135,25 +1135,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1508,6 +1508,359 @@ describe("Matrix Tag Tests", function () {
     });
   });
 
+  it("with string/math children get 1x1 matrix", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p>A: <matrix name="A" >2<math>x</math></matrix></p>
+    <p>Copy 1: <matrix name="A1" copySource="A" /></p>
+    <p>Copy 2: <matrix name="A2" copySource="A.value" /></p>
+    <p>Copy 3: <copy source="A" assignNames="A3" /></p>
+    <p>Copy 4: <copy source="A.value" assignNames="A4" /></p>
+    <p>Copy 5: <matrix name="A5">$A</matrix></p>
+    <p>Copy 6: <matrix name="A6">$A.value</matrix></p>
+    <p>Copy 7: <matrix name="A7"><matrix copySource="A1" /></matrix></p>
+    <p>Copy 8: <matrix name="A8"><matrix copySource="A1.value" /></matrix></p>
+    <p>Modify: <matrixInput bindValueTo="$A" name="mi" /></p>
+    <p>Modify copy 1: <matrixInput bindValueTo="$A1" name="mi1" /></p>
+    <p>Modify copy 2: <matrixInput bindValueTo="$A2" name="mi2" /></p>
+    <p>Modify copy 3: <matrixInput bindValueTo="$A3" name="mi3" /></p>
+    <p>Modify copy 4: <matrixInput bindValueTo="$A4" name="mi4" /></p>
+    <p>Modify copy 5: <matrixInput bindValueTo="$A5" name="mi5" /></p>
+    <p>Modify copy 6: <matrixInput bindValueTo="$A6" name="mi6" /></p>
+    <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
+    <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
+    <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
+    </p>
+    <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
+    </p>
+    <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
+    </p>
+    <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
+    </p>
+    <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
+    </p>
+    <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
+    </p>
+    <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
+    </p>
+    <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
+    </p>
+    <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.get(cesc("#\\/A") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+    cy.get(cesc("#\\/A8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2x]");
+
+    cy.get(cesc("#\\/matrixSize")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize1")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize2")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize3")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize4")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize5")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize6")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 1");
+
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
+
+    cy.get(cesc("#\\/numColumns")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "1");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 1, 1],
+        ["tuple", ["tuple", ["*", 2, "x"]]],
+      ];
+      let matrixValue = [[["*", 2, "x"]]];
+      expect(stateVariables["/A"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/A"].stateValues.matrixSize).eqls([1, 1]);
+      expect(stateVariables["/A"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A1"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A2"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A3"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A4"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A5"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A6"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A7"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A8"].stateValues.matrix).eqls(matrixValue);
+    });
+
+    cy.log("change value");
+
+    cy.get(cesc("#\\/mi_component_0_0") + " textarea")
+      .type("{end}{backspace}y{enter}", { force: true })
+      .blur();
+
+    cy.get(cesc("#\\/A") + " .mjx-mrow").should("contain.text", "[2y]");
+
+    cy.get(cesc("#\\/A") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+    cy.get(cesc("#\\/A8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2y]");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 1, 1],
+        ["tuple", ["tuple", ["*", 2, "y"]]],
+      ];
+      let matrixValue = [[["*", 2, "y"]]];
+      expect(stateVariables["/A"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/A"].stateValues.matrixSize).eqls([1, 1]);
+      expect(stateVariables["/A"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A1"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A2"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A3"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A4"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A5"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A6"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A7"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A8"].stateValues.matrix).eqls(matrixValue);
+    });
+
+    cy.log("cannot add rows or columns");
+
+    cy.get(cesc("#\\/mi_rowIncrement")).click();
+    cy.get(cesc("#\\/mi_columnIncrement")).click();
+
+    cy.log("change value so know that core has responded");
+    cy.get(cesc("#\\/mi3_component_0_0") + " textarea")
+      .type("{end}{backspace}z{enter}", { force: true })
+      .blur();
+
+    cy.get(cesc("#\\/A") + " .mjx-mrow").should("contain.text", "[2z]");
+
+    cy.get(cesc("#\\/A") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+    cy.get(cesc("#\\/A8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[2z]");
+
+    cy.get(cesc("#\\/matrixSize")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize1")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize2")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize3")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize4")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize5")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize6")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 1");
+    cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 1");
+
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
+
+    cy.get(cesc("#\\/numColumns")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "1");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "1");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 1, 1],
+        ["tuple", ["tuple", ["*", 2, "z"]]],
+      ];
+      let matrixValue = [[["*", 2, "z"]]];
+      expect(stateVariables["/A"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/A8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi1"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi2"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi3"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi4"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi5"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi6"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi7"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mi8"].stateValues.value).eqls(matrixAst);
+
+      expect(stateVariables["/A"].stateValues.matrixSize).eqls([1, 1]);
+      expect(stateVariables["/A"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A1"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A2"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A3"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A4"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A5"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A6"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A7"].stateValues.matrix).eqls(matrixValue);
+      expect(stateVariables["/A8"].stateValues.matrix).eqls(matrixValue);
+    });
+  });
+
   it("2x3 matrix by rows", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -1537,40 +1890,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -1842,25 +2195,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2497,25 +2850,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3227,40 +3580,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -3532,25 +3885,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4187,25 +4540,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4893,9 +5246,9 @@ describe("Matrix Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>nRows: <mathinput name="mi_nRows" prefill="3" />,
-      nColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
-    <p>A: <matrix name="A" nRows="$mi_nRows" nColumns="$mi_nColumns" >
+    <p>numRows: <mathinput name="mi_nRows" prefill="3" />,
+      numColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
+    <p>A: <matrix name="A" numRows="$mi_nRows" numColumns="$mi_nColumns" >
       <row>a b c</row>
       <row>d e f</row>
     </matrix>
@@ -4918,40 +5271,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -5223,25 +5576,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5667,25 +6020,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5771,25 +6124,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5989,25 +6342,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6162,25 +6515,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6223,9 +6576,9 @@ describe("Matrix Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p>nRows: <mathinput name="mi_nRows" prefill="3" />,
-      nColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
-    <p>A: <matrix name="A" nRows="$mi_nRows" nColumns="$mi_nColumns" >
+    <p>numRows: <mathinput name="mi_nRows" prefill="3" />,
+      numColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
+    <p>A: <matrix name="A" numRows="$mi_nRows" numColumns="$mi_nColumns" >
       <column>a d</column>
       <column>b e</column>
       <column>c f</column>
@@ -6249,40 +6602,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -6554,25 +6907,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6998,25 +7351,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7102,25 +7455,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7320,25 +7673,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "1, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "1, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "1");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "1");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "1");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7493,25 +7846,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "2, 4");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "2, 4");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "2");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "2");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "2");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "4");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "4");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -7555,9 +7908,9 @@ describe("Matrix Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p>Default entry: <mathinput name="de" prefill="1" /></p>
-    <p>nRows: <mathinput name="mi_nRows" prefill="3" />,
-      nColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
-    <p>A: <matrix name="A" nRows="$mi_nRows" nColumns="$mi_nColumns" defaultEntry="$de" >
+    <p>numRows: <mathinput name="mi_nRows" prefill="3" />,
+      numColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
+    <p>A: <matrix name="A" numRows="$mi_nRows" numColumns="$mi_nColumns" defaultEntry="$de" >
       <row>a b c</row>
       <row>d e f</row>
     </matrix>
@@ -7580,40 +7933,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -7661,25 +8014,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8008,25 +8361,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "4, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "4, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "4");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8192,9 +8545,9 @@ describe("Matrix Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p>Default entry: <mathinput name="de" prefill="1" /></p>
-    <p>nRows: <mathinput name="mi_nRows" prefill="3" />,
-      nColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
-    <p>A: <matrix name="A" nRows="$mi_nRows" nColumns="$mi_nColumns" defaultEntry="$de" >
+    <p>numRows: <mathinput name="mi_nRows" prefill="3" />,
+      numColumns: <mathinput name="mi_nColumns" prefill="2" /></p>
+    <p>A: <matrix name="A" numRows="$mi_nRows" numColumns="$mi_nColumns" defaultEntry="$de" >
       <column>a d</column>
       <column>b e</column>
       <column>c f</column>
@@ -8218,40 +8571,40 @@ describe("Matrix Tag Tests", function () {
     <p>Modify copy 7: <matrixInput bindValueTo="$A7" name="mi7" /></p>
     <p>Modify copy 8: <matrixInput bindValueTo="$A8" name="mi8" /></p>
     <p>Size: <numberList copySource="A.matrixSize" name="matrixSize" />, 
-      nRows: <integer copySource="A.nRows" name="nRows" />,
-      nColumns: <integer copySource="A.nColumns" name="nColumns" />
+      numRows: <integer copySource="A.numRows" name="numRows" />,
+      numColumns: <integer copySource="A.numColumns" name="numColumns" />
     </p>
     <p>Size 1: <numberList copySource="A1.matrixSize" name="matrixSize1" />, 
-      nRows 1: <integer copySource="A1.nRows" name="nRows1" />,
-      nColumns 1: <integer copySource="A1.nColumns" name="nColumns1" />
+      numRows 1: <integer copySource="A1.numRows" name="numRows1" />,
+      numColumns 1: <integer copySource="A1.numColumns" name="numColumns1" />
     </p>
     <p>Size 2: <numberList copySource="A2.matrixSize" name="matrixSize2" />, 
-      nRows 2: <integer copySource="A2.nRows" name="nRows2" />,
-      nColumns 2: <integer copySource="A2.nColumns" name="nColumns2" />
+      numRows 2: <integer copySource="A2.numRows" name="numRows2" />,
+      numColumns 2: <integer copySource="A2.numColumns" name="numColumns2" />
     </p>
     <p>Size 3: <numberList copySource="A3.matrixSize" name="matrixSize3" />, 
-      nRows 3: <integer copySource="A3.nRows" name="nRows3" />,
-      nColumns 3: <integer copySource="A3.nColumns" name="nColumns3" />
+      numRows 3: <integer copySource="A3.numRows" name="numRows3" />,
+      numColumns 3: <integer copySource="A3.numColumns" name="numColumns3" />
     </p>
     <p>Size 4: <numberList copySource="A4.matrixSize" name="matrixSize4" />, 
-      nRows 4: <integer copySource="A4.nRows" name="nRows4" />,
-      nColumns 4: <integer copySource="A4.nColumns" name="nColumns4" />
+      numRows 4: <integer copySource="A4.numRows" name="numRows4" />,
+      numColumns 4: <integer copySource="A4.numColumns" name="numColumns4" />
     </p>
     <p>Size 5: <numberList copySource="A5.matrixSize" name="matrixSize5" />, 
-      nRows 5: <integer copySource="A5.nRows" name="nRows5" />,
-      nColumns 5: <integer copySource="A5.nColumns" name="nColumns5" />
+      numRows 5: <integer copySource="A5.numRows" name="numRows5" />,
+      numColumns 5: <integer copySource="A5.numColumns" name="numColumns5" />
     </p>
     <p>Size 6: <numberList copySource="A6.matrixSize" name="matrixSize6" />, 
-      nRows 6: <integer copySource="A6.nRows" name="nRows6" />,
-      nColumns 6: <integer copySource="A6.nColumns" name="nColumns6" />
+      numRows 6: <integer copySource="A6.numRows" name="numRows6" />,
+      numColumns 6: <integer copySource="A6.numColumns" name="numColumns6" />
     </p>
     <p>Size 7: <numberList copySource="A7.matrixSize" name="matrixSize7" />, 
-      nRows 7: <integer copySource="A7.nRows" name="nRows7" />,
-      nColumns 7: <integer copySource="A7.nColumns" name="nColumns7" />
+      numRows 7: <integer copySource="A7.numRows" name="numRows7" />,
+      numColumns 7: <integer copySource="A7.numColumns" name="numColumns7" />
     </p>
     <p>Size 8: <numberList copySource="A8.matrixSize" name="matrixSize8" />, 
-      nRows 8: <integer copySource="A8.nRows" name="nRows8" />,
-      nColumns 8: <integer copySource="A8.nColumns" name="nColumns8" />
+      numRows 8: <integer copySource="A8.numRows" name="numRows8" />,
+      numColumns 8: <integer copySource="A8.numColumns" name="numColumns8" />
     </p>
     `,
         },
@@ -8299,25 +8652,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "3, 2");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "3, 2");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "3");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "3");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "3");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "2");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "2");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "2");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -8646,25 +8999,25 @@ describe("Matrix Tag Tests", function () {
     cy.get(cesc("#\\/matrixSize7")).should("have.text", "4, 3");
     cy.get(cesc("#\\/matrixSize8")).should("have.text", "4, 3");
 
-    cy.get(cesc("#\\/nRows")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows1")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows2")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows3")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows4")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows5")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows6")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows7")).should("have.text", "4");
-    cy.get(cesc("#\\/nRows8")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows1")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows2")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows3")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows4")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows5")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows6")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows7")).should("have.text", "4");
+    cy.get(cesc("#\\/numRows8")).should("have.text", "4");
 
-    cy.get(cesc("#\\/nColumns")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns1")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns2")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns3")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns4")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns5")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns6")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns7")).should("have.text", "3");
-    cy.get(cesc("#\\/nColumns8")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns1")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns2")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns3")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns4")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns5")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns6")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns7")).should("have.text", "3");
+    cy.get(cesc("#\\/numColumns8")).should("have.text", "3");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

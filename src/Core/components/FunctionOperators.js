@@ -1,6 +1,6 @@
 import FunctionBaseOperator from "./abstract/FunctionBaseOperator";
 import me from "math-expressions";
-import { returnNVariables } from "../utils/math";
+import { returnNVariables, vectorOperators } from "../utils/math";
 import { functionOperatorDefinitions } from "../utils/function";
 
 export class ClampFunction extends FunctionBaseOperator {
@@ -212,7 +212,7 @@ export class Derivative extends FunctionBaseOperator {
       },
     };
 
-    stateVariableDefinitions.nInputs = {
+    stateVariableDefinitions.numInputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -220,20 +220,20 @@ export class Derivative extends FunctionBaseOperator {
       stateVariablesDeterminingDependencies: ["haveFunctionChild"],
       returnDependencies({ stateValues }) {
         let dependencies = {
-          nInputsAttr: {
+          numInputsAttr: {
             dependencyType: "attributeComponent",
-            attributeName: "nInputs",
+            attributeName: "numInputs",
             variableNames: ["value"],
           },
           functionChild: {
             dependencyType: "child",
             childGroups: ["functions"],
-            variableNames: ["nInputs"],
+            variableNames: ["numInputs"],
           },
           variablesAttr: {
             dependencyType: "attributeComponent",
             attributeName: "variables",
-            variableNames: ["nComponents"],
+            variableNames: ["numComponents"],
             dontRecurseToShadowsIfHaveAttribute: "variable",
           },
           variableAttr: {
@@ -255,28 +255,29 @@ export class Derivative extends FunctionBaseOperator {
         return dependencies;
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.nInputsAttr !== null) {
-          let nInputs = dependencyValues.nInputsAttr.stateValues.value;
-          if (!(nInputs >= 0)) {
-            nInputs = 1;
+        if (dependencyValues.numInputsAttr !== null) {
+          let numInputs = dependencyValues.numInputsAttr.stateValues.value;
+          if (!(numInputs >= 0)) {
+            numInputs = 1;
           }
-          return { setValue: { nInputs } };
+          return { setValue: { numInputs } };
         } else if (
           dependencyValues.variablesAttr !== null ||
           dependencyValues.variableAttr !== null
         ) {
           return {
             setValue: {
-              nInputs: Math.max(
+              numInputs: Math.max(
                 1,
-                dependencyValues.variablesAttr?.stateValues.nComponents || 0,
+                dependencyValues.variablesAttr?.stateValues.numComponents || 0,
               ),
             },
           };
         } else if (dependencyValues.functionChild.length > 0) {
           return {
             setValue: {
-              nInputs: dependencyValues.functionChild[0].stateValues.nInputs,
+              numInputs:
+                dependencyValues.functionChild[0].stateValues.numInputs,
             },
           };
         } else if (dependencyValues.derivVariablesAttr !== null) {
@@ -288,9 +289,9 @@ export class Derivative extends FunctionBaseOperator {
             ),
           ].length;
 
-          return { setValue: { nInputs: nUniqueDerivVariables } };
+          return { setValue: { numInputs: nUniqueDerivVariables } };
         } else {
-          return { setValue: { nInputs: 1 } };
+          return { setValue: { numInputs: 1 } };
         }
       },
     };
@@ -303,13 +304,13 @@ export class Derivative extends FunctionBaseOperator {
       },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
-        nInputs: {
+        numInputs: {
           dependencyType: "stateVariable",
-          variableName: "nInputs",
+          variableName: "numInputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nInputs];
+        return [dependencyValues.numInputs];
       },
       stateVariablesDeterminingDependencies: ["haveFunctionChild"],
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
@@ -451,7 +452,7 @@ export class Derivative extends FunctionBaseOperator {
       },
     };
 
-    stateVariableDefinitions.nDerivatives = {
+    stateVariableDefinitions.numDerivatives = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -461,7 +462,7 @@ export class Derivative extends FunctionBaseOperator {
           derivVariablesAttr: {
             dependencyType: "attributeComponent",
             attributeName: "derivVariables",
-            variableNames: ["nComponents"],
+            variableNames: ["numComponents"],
             dontRecurseToShadowsIfHaveAttribute: "derivVariable",
           },
         };
@@ -472,12 +473,12 @@ export class Derivative extends FunctionBaseOperator {
         if (dependencyValues.derivVariablesAttr !== null) {
           return {
             setValue: {
-              nDerivatives:
-                dependencyValues.derivVariablesAttr.stateValues.nComponents,
+              numDerivatives:
+                dependencyValues.derivVariablesAttr.stateValues.numComponents,
             },
           };
         } else {
-          return { setValue: { nDerivatives: 1 } };
+          return { setValue: { numDerivatives: 1 } };
         }
       },
     };
@@ -490,13 +491,13 @@ export class Derivative extends FunctionBaseOperator {
       },
       entryPrefixes: ["derivVariable"],
       returnArraySizeDependencies: () => ({
-        nDerivatives: {
+        numDerivatives: {
           dependencyType: "stateVariable",
-          variableName: "nDerivatives",
+          variableName: "numDerivatives",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDerivatives];
+        return [dependencyValues.numDerivatives];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -557,9 +558,32 @@ export class Derivative extends FunctionBaseOperator {
         return {
           setValue: {
             formulaOperator: function (formula) {
+              let formulaIsVectorValued =
+                Array.isArray(formula.tree) &&
+                vectorOperators.includes(formula.tree[0]);
+
               let value = formula.subscripts_to_strings();
-              for (let variable of dependencyValues.derivVariables) {
-                value = value.derivative(variable.subscripts_to_strings().tree);
+
+              if (formulaIsVectorValued) {
+                let nComponents = formula.tree.length - 1;
+                let derivComps = [];
+                for (let comp = 0; comp < nComponents; comp++) {
+                  let valComp = value.get_component(comp);
+                  for (let variable of dependencyValues.derivVariables) {
+                    valComp = valComp.derivative(
+                      variable.subscripts_to_strings().tree,
+                    );
+                  }
+                  derivComps.push(valComp.tree);
+                }
+
+                value = me.fromAst([value.tree[0], ...derivComps]);
+              } else {
+                for (let variable of dependencyValues.derivVariables) {
+                  value = value.derivative(
+                    variable.subscripts_to_strings().tree,
+                  );
+                }
               }
               return value.strings_to_subscripts();
             },

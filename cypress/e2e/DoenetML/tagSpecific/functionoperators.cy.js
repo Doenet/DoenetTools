@@ -22,7 +22,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="true" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" symbolic="true" displayDecimals="3">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -203,7 +203,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
+    <function name="original" symbolic="false" displayDecimals="3">x^3</function>
     <clampfunction name="clamp01"><copy target="original" /></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /></clampfunction>
 
@@ -384,7 +384,7 @@ describe("Function Operator Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3<label>orig</label></function>
+    <function name="original" displayDecimals="3">x^3<label>orig</label></function>
     <clampfunction name="clamp01"><copy target="original" /><label>clamp 1</label></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /><label>clamp 2</label></clampfunction>
 
@@ -517,14 +517,16 @@ describe("Function Operator Tag Tests", function () {
   });
 
   it("wrap function", () => {
+    // Note: added domain [-2,2] to reduce time spent calculating all the extrema
+    // when calling returnAllStateVariables1()
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <function name="original" displayDecimals="3" ignoreDisplayDigits>x^3</function>
-    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
-    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+    <function name="original" displayDecimals="3">x^3</function>
+    <wrapfunctionperiodic name="wrap01" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
 
     <p><aslist>
     <map>
@@ -699,14 +701,16 @@ describe("Function Operator Tag Tests", function () {
   });
 
   it("wrap function, numeric", () => {
+    // Note: added domain [-2,2] to reduce time spent calculating all the extrema
+    // when calling returnAllStateVariables1()
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
-    <function name="original" symbolic="false" displayDecimals="3" ignoreDisplayDigits>x^3</function>
-    <wrapfunctionperiodic name="wrap01"><copy target="original" /></wrapfunctionperiodic>
-    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><copy target="original" /></wrapfunctionperiodic>
+    <function name="original" symbolic="false" displayDecimals="3">x^3</function>
+    <wrapfunctionperiodic name="wrap01" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
+    <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3" domain="[-2,2]"><copy target="original" /></wrapfunctionperiodic>
 
     <p><aslist>
     <map>
@@ -1539,7 +1543,7 @@ describe("Function Operator Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><aslist>
-      <function name="f1" nInputs="3">sin(x+y^2)z</function>
+      <function name="f1" numInputs="3">sin(x+y^2)z</function>
       <function name="f2" variables="z y x">sin(x+y^2)z</function>
       <function name="f3" variables="x y">sin(x+y^2)z</function>
       <function name="f4" variables="x_1 x_2 x_3">sin(x_1+x_2^2)x_3</function>
@@ -2755,6 +2759,293 @@ describe("Function Operator Tag Tests", function () {
     });
   });
 
+  it("derivatives of vector-valued functions", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <function name="f1">(sin(x), cos(x))</function>
+      <function name="f2" variables="y">(e^(2y), y, log(y))</function>
+      <function name="f3">(xyz, xy, xz, yz)</function>
+      <function name="f4" variable="z">(xyz, xy, xz, yz)</function>
+      <derivative name="d1"><function>(x^2, x^3)</function></derivative>
+      <derivative name="d2"><math name="x2">(x^2, x^3)</math></derivative>
+      <derivative name="d2b">$x2</derivative>
+      <derivative name="d2c"><copy source="x2" /></derivative>
+      <derivative name="d3"><function>(x^2sin(z), z^2sin(x))</function></derivative>
+      <derivative name="d4" variables="z">(x^2sin(z),z^2sin(x))</derivative>
+      <math name='var'>z</math><number name="a">2</number>
+      <derivative name="d4b" variable="$var">(x^$a sin($var), $var^$a sin(x))</derivative>
+      <derivative name="d5"><copy source="f1" /></derivative>
+      <derivative name="d5b">$f1</derivative>
+      <derivative name="d6"><copy source="f2" /></derivative>
+      <derivative name="d6b">$f2</derivative>
+      <derivative name="d7"><copy source="f3" /></derivative>
+      <derivative name="d7b">$f3</derivative>
+      <derivative name="d8"><copy source="f4" /></derivative>
+      <derivative name="d8b">$f4</derivative>
+      <derivative variables="q" name="d9"><copy source="f1" /></derivative>
+      <derivative variable="q" name="d10"><copy source="f2" /></derivative>
+      <derivative variables="q" name="d11"><copy source="f3" /></derivative>
+      <derivative variable="q" name="d12"><copy source="f4" /></derivative>
+      <derivative variables="y" name="d13"><copy source="f3" /></derivative>
+      <derivative variable="y" name="d14"><copy source="f4" /></derivative>
+      `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(
+        me
+          .fromAst(stateVariables["/d1"].stateValues.formula)
+          .equals(me.fromText("(2x,3x^2)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d2"].stateValues.formula)
+          .equals(me.fromText("(2x,3x^2)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d2b"].stateValues.formula)
+          .equals(me.fromText("(2x,3x^2)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d2c"].stateValues.formula)
+          .equals(me.fromText("(2x,3x^2)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d3"].stateValues.formula)
+          .equals(me.fromText("(2x sin(z), z^2 cos(x))")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d4"].stateValues.formula)
+          .equals(me.fromText("(x^2cos(z), 2z sin(x))")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d4b"].stateValues.formula)
+          .equals(me.fromText("(x^2cos(z), 2z sin(x))")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d5"].stateValues.formula)
+          .equals(me.fromText("(cos(x),-sin(x))")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d5b"].stateValues.formula)
+          .equals(me.fromText("(cos(x), -sin(x))")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d6"].stateValues.formula)
+          .equals(me.fromText("(2e^(2y),1,1/y)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d6b"].stateValues.formula)
+          .equals(me.fromText("(2e^(2y),1,1/y)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d7"].stateValues.formula)
+          .equals(me.fromText("(yz, y, z, 0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d7b"].stateValues.formula)
+          .equals(me.fromText("(yz, y, z, 0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d8"].stateValues.formula)
+          .equals(me.fromText("(xy, 0, x, y)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d8b"].stateValues.formula)
+          .equals(me.fromText("(xy, 0, x, y)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d9"].stateValues.formula)
+          .equals(me.fromText("(0,0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d10"].stateValues.formula)
+          .equals(me.fromText("(0,0,0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d11"].stateValues.formula)
+          .equals(me.fromText("(0,0,0,0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d12"].stateValues.formula)
+          .equals(me.fromText("(0,0,0,0)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d13"].stateValues.formula)
+          .equals(me.fromText("(xz,x,0,z)")),
+      ).eq(true);
+      expect(
+        me
+          .fromAst(stateVariables["/d14"].stateValues.formula)
+          .equals(me.fromText("(xz,x,0,z)")),
+      ).eq(true);
+
+      let d1_1 = createFunctionFromDefinition(
+        stateVariables["/d1"].stateValues.fDefinitions[0],
+      );
+      let d1_2 = createFunctionFromDefinition(
+        stateVariables["/d1"].stateValues.fDefinitions[1],
+      );
+      let d2_1 = createFunctionFromDefinition(
+        stateVariables["/d2"].stateValues.fDefinitions[0],
+      );
+      let d2_2 = createFunctionFromDefinition(
+        stateVariables["/d2"].stateValues.fDefinitions[1],
+      );
+      let d2b_1 = createFunctionFromDefinition(
+        stateVariables["/d2b"].stateValues.fDefinitions[0],
+      );
+      let d2b_2 = createFunctionFromDefinition(
+        stateVariables["/d2b"].stateValues.fDefinitions[1],
+      );
+      let d2c_1 = createFunctionFromDefinition(
+        stateVariables["/d2c"].stateValues.fDefinitions[0],
+      );
+      let d2c_2 = createFunctionFromDefinition(
+        stateVariables["/d2c"].stateValues.fDefinitions[1],
+      );
+      let d5_1 = createFunctionFromDefinition(
+        stateVariables["/d5"].stateValues.fDefinitions[0],
+      );
+      let d5_2 = createFunctionFromDefinition(
+        stateVariables["/d5"].stateValues.fDefinitions[1],
+      );
+      let d5b_1 = createFunctionFromDefinition(
+        stateVariables["/d5b"].stateValues.fDefinitions[0],
+      );
+      let d5b_2 = createFunctionFromDefinition(
+        stateVariables["/d5b"].stateValues.fDefinitions[1],
+      );
+      let d6_1 = createFunctionFromDefinition(
+        stateVariables["/d6"].stateValues.fDefinitions[0],
+      );
+      let d6_2 = createFunctionFromDefinition(
+        stateVariables["/d6"].stateValues.fDefinitions[1],
+      );
+      let d6_3 = createFunctionFromDefinition(
+        stateVariables["/d6"].stateValues.fDefinitions[2],
+      );
+      let d6b_1 = createFunctionFromDefinition(
+        stateVariables["/d6b"].stateValues.fDefinitions[0],
+      );
+      let d6b_2 = createFunctionFromDefinition(
+        stateVariables["/d6b"].stateValues.fDefinitions[1],
+      );
+      let d6b_3 = createFunctionFromDefinition(
+        stateVariables["/d6b"].stateValues.fDefinitions[2],
+      );
+      let d9_1 = createFunctionFromDefinition(
+        stateVariables["/d9"].stateValues.fDefinitions[0],
+      );
+      let d9_2 = createFunctionFromDefinition(
+        stateVariables["/d9"].stateValues.fDefinitions[1],
+      );
+      let d10_1 = createFunctionFromDefinition(
+        stateVariables["/d10"].stateValues.fDefinitions[0],
+      );
+      let d10_2 = createFunctionFromDefinition(
+        stateVariables["/d10"].stateValues.fDefinitions[1],
+      );
+      let d10_3 = createFunctionFromDefinition(
+        stateVariables["/d10"].stateValues.fDefinitions[2],
+      );
+      let d11_1 = createFunctionFromDefinition(
+        stateVariables["/d11"].stateValues.fDefinitions[0],
+      );
+      let d11_2 = createFunctionFromDefinition(
+        stateVariables["/d11"].stateValues.fDefinitions[1],
+      );
+      let d11_3 = createFunctionFromDefinition(
+        stateVariables["/d11"].stateValues.fDefinitions[2],
+      );
+      let d11_4 = createFunctionFromDefinition(
+        stateVariables["/d11"].stateValues.fDefinitions[3],
+      );
+      let d12_1 = createFunctionFromDefinition(
+        stateVariables["/d12"].stateValues.fDefinitions[0],
+      );
+      let d12_2 = createFunctionFromDefinition(
+        stateVariables["/d12"].stateValues.fDefinitions[1],
+      );
+      let d12_3 = createFunctionFromDefinition(
+        stateVariables["/d12"].stateValues.fDefinitions[2],
+      );
+      let d12_4 = createFunctionFromDefinition(
+        stateVariables["/d12"].stateValues.fDefinitions[3],
+      );
+
+      for (let i = 1; i <= 21; i++) {
+        let x = 0.2 * (i - 11);
+        expect(d1_1(x)).closeTo(2 * x, 1e-10);
+        expect(d1_2(x)).closeTo(3 * x ** 2, 1e-10);
+        expect(d2_1(x)).closeTo(2 * x, 1e-10);
+        expect(d2_2(x)).closeTo(3 * x ** 2, 1e-10);
+        expect(d2b_1(x)).closeTo(2 * x, 1e-10);
+        expect(d2b_2(x)).closeTo(3 * x ** 2, 1e-10);
+        expect(d2c_1(x)).closeTo(2 * x, 1e-10);
+        expect(d2c_2(x)).closeTo(3 * x ** 2, 1e-10);
+        expect(d5_1(x)).closeTo(Math.cos(x), 1e-10);
+        expect(d5_2(x)).closeTo(-Math.sin(x), 1e-10);
+        expect(d5b_1(x)).closeTo(Math.cos(x), 1e-10);
+        expect(d5b_2(x)).closeTo(-Math.sin(x), 1e-10);
+        expect(d6_1(x)).closeTo(2 * Math.exp(2 * x), 1e-10);
+        expect(d6_2(x)).closeTo(1, 1e-10);
+        if (x === 0) {
+          expect(d6_3(x)).eq(Infinity);
+        } else {
+          expect(d6_3(x)).closeTo(1 / x, 1e-10);
+        }
+        expect(d6b_1(x)).closeTo(2 * Math.exp(2 * x), 1e-10);
+        expect(d6b_2(x)).closeTo(1, 1e-10);
+        if (x === 0) {
+          expect(d6b_3(x)).eq(Infinity);
+        } else {
+          expect(d6b_3(x)).closeTo(1 / x, 1e-10);
+        }
+        expect(d9_1(x)).closeTo(0, 1e-10);
+        expect(d9_2(x)).closeTo(0, 1e-10);
+        expect(d10_1(x)).closeTo(0, 1e-10);
+        expect(d10_2(x)).closeTo(0, 1e-10);
+        expect(d10_3(x)).closeTo(0, 1e-10);
+        expect(d11_1(x)).closeTo(0, 1e-10);
+        expect(d11_2(x)).closeTo(0, 1e-10);
+        expect(d11_3(x)).closeTo(0, 1e-10);
+        expect(d11_4(x)).closeTo(0, 1e-10);
+        expect(d12_1(x)).closeTo(0, 1e-10);
+        expect(d12_2(x)).closeTo(0, 1e-10);
+        expect(d12_3(x)).closeTo(0, 1e-10);
+        expect(d12_4(x)).closeTo(0, 1e-10);
+      }
+    });
+  });
+
   // check to make sure fixed bug where wasn't displaying inside <m>
   it("derivative displayed inside <m>", () => {
     cy.window().then(async (win) => {
@@ -3600,17 +3891,17 @@ describe("Function Operator Tag Tests", function () {
     </m></p>
 
 
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+    <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima" target="fp" /></p>
     <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+    <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima" target="fp" /></p>
     <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
 
     <p>To repeat:</p>
-    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+    <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima2" target="fp2" /></p>
     <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
 
-    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+    <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima2" target="fp2" /></p>
     <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
 
 
@@ -3905,17 +4196,17 @@ describe("Function Operator Tag Tests", function () {
 
       <copy target="fp" name="fp2" />
 
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" target="fp" /></p>
+      <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima" target="fp" /></p>
       <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" target="fp" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" target="fp" /></p>
+      <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima" target="fp" /></p>
       <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" target="fp" /></extract></p> 
   
       <p>To repeat:</p>
-      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" target="fp2" /></p>
+      <p>Number of minima of f': <copy prop="numMinima" assignNames="nMinima2" target="fp2" /></p>
       <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" target="fp2" /></extract></p> 
   
-      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" target="fp2" /></p>
+      <p>Number of maxima of f': <copy prop="numMaxima" assignNames="nMaxima2" target="fp2" /></p>
       <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" target="fp2" /></extract></p> 
   
       `,

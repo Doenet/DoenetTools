@@ -501,6 +501,84 @@ describe("Parameterized Curve Tag Tests", function () {
     });
   });
 
+  it("a parameterization, from vector-valued function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+    <function variables="q">(5q^3, 3q^5)</function>
+    </curve>
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for window to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_curve1"].stateValues.curveType).eq(
+        "parameterization",
+      );
+      expect(stateVariables["/_curve1"].stateValues.parMin).eq(-10);
+      expect(stateVariables["/_curve1"].stateValues.parMax).eq(10);
+      let f1 = createFunctionFromDefinition(
+        stateVariables["/_curve1"].stateValues.fDefinitions[0],
+      );
+      let f2 = createFunctionFromDefinition(
+        stateVariables["/_curve1"].stateValues.fDefinitions[1],
+      );
+      expect(f1(-2)).eq(-5 * 8);
+      expect(f1(3)).eq(5 * 27);
+      expect(f2(-2)).eq(-3 * 32);
+      expect(f2(3)).eq(3 * 243);
+    });
+  });
+
+  it("a parameterization, adapted from vector-valued function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <function variables="q">(5q^3, 3q^5)</function>
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for window to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let curveName =
+        stateVariables["/_graph1"].activeChildren[0].componentName;
+      expect(stateVariables[curveName].stateValues.curveType).eq(
+        "parameterization",
+      );
+      expect(stateVariables[curveName].stateValues.parMin).eq(-10);
+      expect(stateVariables[curveName].stateValues.parMax).eq(10);
+      let f1 = createFunctionFromDefinition(
+        stateVariables[curveName].stateValues.fDefinitions[0],
+      );
+      let f2 = createFunctionFromDefinition(
+        stateVariables[curveName].stateValues.fDefinitions[1],
+      );
+      expect(f1(-2)).eq(-5 * 8);
+      expect(f1(3)).eq(5 * 27);
+      expect(f2(-2)).eq(-3 * 32);
+      expect(f2(3)).eq(3 * 243);
+    });
+  });
+
   it("a parameterization, no sugar, label with math", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -748,7 +826,7 @@ describe("Parameterized Curve Tag Tests", function () {
     });
   });
 
-  it("constrain to parametrize curve", () => {
+  it("constrain to parametrized curve", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -853,7 +931,170 @@ describe("Parameterized Curve Tag Tests", function () {
     });
   });
 
-  it("constrain to parametrize curve, different scales from graph", () => {
+  it("constrain to parametrized curve, from vector-valued function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <mathinput prefill="-2"/>
+    <mathinput prefill="2"/>
+    <graph>
+    <curve parMin="$_mathinput1" parMax="$_mathinput2">
+    <function variables="s">(s^3,sin(2s))</function>
+    </curve>
+    
+    <point x='7' y='1'>
+      <constraints>
+        <constrainTo><copy target="_curve1" /></constrainTo>
+      </constraints>
+    </point>
+    
+    </graph>
+    <copy prop="value" target="_mathinput1" assignNames="m1" />
+    <copy prop="value" target="_mathinput2" assignNames="m2" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for window to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(7, 0.5);
+      expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1e-5);
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -2, y: 10 },
+      });
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(0.3, 0.1);
+      expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1e-5);
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -10, y: 2 },
+      });
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(-8, 1e-3);
+      expect(y).closeTo(Math.sin(-4), 1e-3);
+    });
+
+    cy.get(cesc("#\\/_mathinput1") + " textarea").type(
+      "{end}{backspace}{backspace}-1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/m1")).should("contain.text", "−1");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(-1, 1e-3);
+      expect(y).closeTo(Math.sin(-2), 1e-3);
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 10, y: 2 },
+      });
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(8, 1e-3);
+      expect(y).closeTo(Math.sin(4), 1e-3);
+    });
+
+    cy.get(cesc("#\\/_mathinput2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc("#\\/m2")).should("contain.text", "1");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(1, 1e-3);
+      expect(y).closeTo(Math.sin(2), 1e-3);
+    });
+  });
+
+  it("constrain to parametrized curve, from vector-valued function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <function variables="s">(s^3,sin(2s))</function>
+    
+    <point x='7' y='1'>
+      <constraints>
+        <constrainTo><copy target="_function1" /></constrainTo>
+      </constraints>
+    </point>
+    
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for window to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(7, 0.5);
+      expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1e-5);
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -2, y: 10 },
+      });
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(0.3, 0.1);
+      expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1e-5);
+    });
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -10, y: 2 },
+      });
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables["/_point1"].stateValues.xs[0];
+      let y = stateVariables["/_point1"].stateValues.xs[1];
+      expect(x).closeTo(-10, 0.1);
+      expect(y).closeTo(Math.sin(-2 * Math.pow(-x, 1 / 3)), 1e-5);
+    });
+  });
+
+  it("constrain to parametrized curve, different scales from graph", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {

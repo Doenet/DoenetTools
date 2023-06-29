@@ -1438,7 +1438,7 @@ describe("Sort Tag Tests", function () {
   <text>a</text>
 
   <p>Coords for last point: <mathinput name="cs" /></p>
-  <sort assignNames="P1 P2 P3 P4 P5" sortByProp="NDIMENSIONS">
+  <sort assignNames="P1 P2 P3 P4 P5" sortByProp="NUMDIMENSIONS">
     <point>(a,b)</point>
     <point>x</point>
     <point xs="s t u v" />

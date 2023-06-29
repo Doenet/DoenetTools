@@ -43,7 +43,7 @@ describe("factor polynomial tests, old algorithm", function () {
       <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
     </conditionalContent>
     <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
-    <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+    <extractMath type="numOperands" name="numeratorNumOperands">$numerator</extractMath>
     <conditionalContent assignNames="(innerPiece innerOperator)">
       <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
         <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
@@ -74,7 +74,7 @@ describe("factor polynomial tests, old algorithm", function () {
           <isNumber>$denominator</isNumber>
           and
           (
-            <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+            <extractMath type="numOperands">$innerPiece</extractMath> = 3
             or 
             not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
           )
@@ -304,7 +304,7 @@ describe("factor polynomial tests, old algorithm", function () {
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
       <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
-      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <extractMath type="numOperands" name="numeratorNumOperands">$numerator</extractMath>
       <conditionalContent assignNames="(innerPiece innerOperator)">
         <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
           <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
@@ -335,7 +335,7 @@ describe("factor polynomial tests, old algorithm", function () {
             <isNumber>$denominator</isNumber>
             and
             (
-              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              <extractMath type="numOperands">$innerPiece</extractMath> = 3
               or 
               not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
@@ -480,7 +480,7 @@ describe("factor polynomial tests, old algorithm", function () {
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
       <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
-      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <extractMath type="numOperands" name="numeratorNumOperands">$numerator</extractMath>
       <conditionalContent assignNames="(innerPiece innerOperator)">
         <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
           <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
@@ -511,7 +511,7 @@ describe("factor polynomial tests, old algorithm", function () {
             <isNumber>$denominator</isNumber>
             and
             (
-              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              <extractMath type="numOperands">$innerPiece</extractMath> = 3
               or 
               not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
@@ -617,7 +617,7 @@ describe("factor polynomial tests, old algorithm", function () {
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
       <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
-      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <extractMath type="numOperands" name="numeratorNumOperands">$numerator</extractMath>
       <conditionalContent assignNames="(innerPiece innerOperator)">
         <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
           <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
@@ -648,7 +648,7 @@ describe("factor polynomial tests, old algorithm", function () {
             <isNumber>$denominator</isNumber>
             and
             (
-              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              <extractMath type="numOperands">$innerPiece</extractMath> = 3
               or 
               not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
@@ -762,7 +762,7 @@ describe("factor polynomial tests, old algorithm", function () {
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
       <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
-      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <extractMath type="numOperands" name="numeratorNumOperands">$numerator</extractMath>
       <conditionalContent assignNames="(innerPiece innerOperator)">
         <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
           <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
@@ -793,7 +793,7 @@ describe("factor polynomial tests, old algorithm", function () {
             <isNumber>$denominator</isNumber>
             and
             (
-              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              <extractMath type="numOperands">$innerPiece</extractMath> = 3
               or 
               not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )

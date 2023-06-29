@@ -16632,7 +16632,7 @@ describe("Vector Tag Tests", function () {
     <copy target="v5" head="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="tail" assignNames="v0t" />
   <copy target="g0/v0" prop="head" assignNames="v0h" />
@@ -17358,7 +17358,7 @@ describe("Vector Tag Tests", function () {
 
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/vdrag" prop="tail" assignNames="vdragt" />
   <copy target="g0/vdrag" prop="head" assignNames="vdragh" />
@@ -20129,7 +20129,7 @@ describe("Vector Tag Tests", function () {
       $v2.head{assignNames="v2h"}
     </p>
 
-    <vector copysource="v1" name="v3" displayDecimals="0" ignoreDisplayDigits />
+    <vector copysource="v1" name="v3" displayDecimals="0" />
     
     $v3.displacement{assignNames="v3d"}
     $v3.tail{assignNames="v3t"}
@@ -20179,5 +20179,24 @@ describe("Vector Tag Tests", function () {
     cy.get(cesc2("#/v3h") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(5,624)");
+  });
+
+  it("handle bad head/tail", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <vector head="A" tail="B" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
 });

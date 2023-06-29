@@ -22033,4 +22033,23 @@ describe("Circle Tag Tests", function () {
       .eq(0)
       .should("have.text", "(1234.6,0.1235)");
   });
+
+  it("handle bad center/through", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <circle center="A" through="B" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

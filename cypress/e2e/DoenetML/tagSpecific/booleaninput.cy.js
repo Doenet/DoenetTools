@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("BooleanInput Tag Tests", function () {
   beforeEach(() => {
@@ -254,6 +254,7 @@ describe("BooleanInput Tag Tests", function () {
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
     <p>booleaninput based on boolean: <booleaninput prefill="false" bindValueTo="$_boolean1" /></p>
+    <p>Value: <boolean copysource="_booleaninput1" name="bi2" /></p>
     `,
         },
         "*",
@@ -262,9 +263,14 @@ describe("BooleanInput Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "b"); // to wait until loaded
 
-    // cy.get(cesc('#\\/_booleaninput1_input')).should('have.attr', 'checked');
-
     cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
+    cy.get(cesc("#\\/bi2")).should("have.text", "true");
+
+    cy.log("change value");
+    cy.get(cesc("#\\/_booleaninput1")).click();
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "false");
+    cy.get(cesc("#\\/bi2")).should("have.text", "false");
 
     cy.log("values revert if not updatable");
     cy.window().then(async (win) => {
@@ -303,6 +309,142 @@ describe("BooleanInput Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_booleaninput1"].stateValues.value).eq(false);
       expect(stateVariables["/_boolean1"].stateValues.value).eq(false);
+    });
+  });
+
+  it("downstream from booleaninput via child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p>Original boolean: <boolean>true</boolean></p>
+    <p>booleaninput based on boolean: <booleaninput>$_boolean1</booleaninput></p>
+    <p>Copied boolean: <copy target="_boolean1" assignNames="b2" /></p>
+    <p>Copied boolean input: <copy prop="value" target="_booleaninput1" assignNames="b3" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
+    cy.get(cesc("#\\/b2")).should("have.text", "true");
+    cy.get(cesc("#\\/b3")).should("have.text", "true");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_booleaninput1"].stateValues.value).eq(true);
+      expect(stateVariables["/_boolean1"].stateValues.value).eq(true);
+      expect(stateVariables["/b2"].stateValues.value).eq(true);
+      expect(stateVariables["/b3"].stateValues.value).eq(true);
+    });
+
+    cy.log("change value");
+    cy.get(cesc("#\\/_booleaninput1")).click();
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "false");
+    cy.get(cesc("#\\/b2")).should("have.text", "false");
+    cy.get(cesc("#\\/b3")).should("have.text", "false");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_booleaninput1"].stateValues.value).eq(false);
+      expect(stateVariables["/_boolean1"].stateValues.value).eq(false);
+      expect(stateVariables["/b2"].stateValues.value).eq(false);
+      expect(stateVariables["/b3"].stateValues.value).eq(false);
+    });
+
+    cy.log("prefill ignored");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>b</text>
+    <p>Original boolean: <boolean>true</boolean></p>
+    <p>booleaninput based on boolean: <booleaninput prefill="false">$_boolean1</booleaninput></p>
+    <p>Value: <boolean copysource="_booleaninput1" name="bi2" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "b"); // to wait until loaded
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
+    cy.get(cesc("#\\/bi2")).should("have.text", "true");
+
+    cy.log("change value");
+    cy.get(cesc("#\\/_booleaninput1")).click();
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "false");
+    cy.get(cesc("#\\/bi2")).should("have.text", "false");
+
+    cy.log("bindValueTo ignored");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>bb</text>
+    <p>Original boolean: <boolean>true</boolean></p>
+    <p>Not bound: <boolean>false</boolean></p>
+    <p>booleaninput based on boolean: <booleaninput bindValueTo="$_boolean2">$_boolean1</booleaninput></p>
+    <p>Value: <boolean copysource="_booleaninput1" name="bi2" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "bb"); // to wait until loaded
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
+    cy.get(cesc("#\\/_boolean2")).should("have.text", "false");
+    cy.get(cesc("#\\/bi2")).should("have.text", "true");
+
+    cy.log("change value");
+    cy.get(cesc("#\\/_booleaninput1")).click();
+
+    cy.get(cesc("#\\/_boolean1")).should("have.text", "false");
+    cy.get(cesc("#\\/_boolean2")).should("have.text", "false");
+    cy.get(cesc("#\\/bi2")).should("have.text", "false");
+
+    cy.log("values revert if not updatable");
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>c</text>
+    <p>booleaninput based on boolean: <booleaninput>can't <text>update</text></booleaninput></p>
+    <p>Value: <boolean copysource="_booleaninput1" name="bi2" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "c"); // to wait until loaded
+
+    cy.get(cesc("#\\/bi2")).should("have.text", `false`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_booleaninput1"].stateValues.value).eq(false);
+      expect(stateVariables["/bi2"].stateValues.value).eq(false);
+    });
+
+    cy.log("change value, but it reverts");
+    cy.get(cesc("#\\/_booleaninput1")).click();
+
+    cy.get(cesc("#\\/bi2")).should("have.text", `false`);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_booleaninput1"].stateValues.value).eq(false);
+      expect(stateVariables["/bi2"].stateValues.value).eq(false);
     });
   });
 
@@ -457,6 +599,9 @@ describe("BooleanInput Tag Tests", function () {
     <p><booleanInput name="bi" asToggleButton="$atb"><label>Hello <math>a/b</math></label></booleaninput></p>
 
     <copy prop="value" target="atb" assignNames="v" />
+
+    <p><updateValue target="_label1.hide" newValue="!$_label1.hide" type="boolean" name="toggleLabels"><label>Toggle labels</label></updateValue>
+    <updateValue triggerWith="toggleLabels" target="_label2.hide" newValue="!$_label2.hide" type="boolean" /></p>
     `,
         },
         "*",
@@ -495,6 +640,42 @@ describe("BooleanInput Tag Tests", function () {
     cy.get(cesc("#\\/atb_input")).should("be.checked");
     // TODO: how to check the renderer if ToggleButton is selected
     //cy.get(cesc('#\\/bi_input')).should('be.checked');
+    cy.get(cesc("#\\/atb")).should("contain.text", "It is ∫baf(x)dx");
+    cy.get(cesc("#\\/bi")).should("contain.text", "Hello ab");
+
+    cy.log("Test internal values are set to the correct values");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/atb"].stateValues.value).eq(true);
+      expect(stateVariables["/bi"].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(true);
+      expect(stateVariables["/atb"].stateValues.label).eq(
+        "It is \\(\\int_a^b f(x)\\,dx\\)",
+      );
+      expect(stateVariables["/bi"].stateValues.label).eq(
+        "Hello \\(\\frac{a}{b}\\)",
+      );
+    });
+
+    cy.log("hide labels");
+    cy.get(cesc2("#/toggleLabels")).click();
+
+    cy.get(cesc("#\\/atb")).should("not.contain.text", "It is ∫baf(x)dx");
+    cy.get(cesc("#\\/bi")).should("not.contain.text", "Hello ab");
+
+    cy.log("Test internal values are set to the correct values");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/atb"].stateValues.value).eq(true);
+      expect(stateVariables["/bi"].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(true);
+      expect(stateVariables["/atb"].stateValues.label).eq("");
+      expect(stateVariables["/bi"].stateValues.label).eq("");
+    });
+
+    cy.log("show labels again");
+    cy.get(cesc2("#/toggleLabels")).click();
+
     cy.get(cesc("#\\/atb")).should("contain.text", "It is ∫baf(x)dx");
     cy.get(cesc("#\\/bi")).should("contain.text", "Hello ab");
 
@@ -921,5 +1102,182 @@ describe("BooleanInput Tag Tests", function () {
     cy.get(cesc("#\\/disabled1")).click();
     cy.get(cesc("#\\/pDisabled1")).should("have.text", "Disabled 1: true");
     cy.get(cesc("#\\/pDisabled2")).should("have.text", "Disabled 2: true");
+  });
+
+  it("valueChanged", () => {
+    let doenetML = `
+    <p><booleanInput name="bi1" /> <boolean copySource="bi1" name="bi1a" /> <boolean copysource="bi1.valueChanged" name="bi1changed" /></p>
+    <p><booleanInput name="bi2" prefill="true" /> <boolean copySource="bi2" name="bi2a" /> <boolean copysource="bi2.valueChanged" name="bi2changed" /></p>
+    <p><booleanInput name="bi3" bindValueTo="$bi1" /> <boolean copySource="bi3" name="bi3a" /> <boolean copysource="bi3.valueChanged" name="bi3changed" /></p>
+    <p><booleanInput name="bi4">$bi2</booleanInput> <boolean copySource="bi4" name="bi4a" /> <boolean copysource="bi4.valueChanged" name="bi4changed" /></p>
+
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/bi1_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "false");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "false");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "false");
+
+    cy.log("clicking first marks only first as changed");
+
+    cy.get(cesc2("#/bi1")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "true");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "true");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "false");
+
+    cy.log("clicking second marks only second as changed");
+
+    cy.get(cesc2("#/bi2")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("be.checked");
+    cy.get(cesc2("#/bi2_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi3_input")).should("be.checked");
+    cy.get(cesc2("#/bi4_input")).should("not.be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "true");
+    cy.get(cesc2("#/bi2a")).should("have.text", "false");
+    cy.get(cesc2("#/bi3a")).should("have.text", "true");
+    cy.get(cesc2("#/bi4a")).should("have.text", "false");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "false");
+
+    cy.log("clicking third and fourth");
+
+    cy.get(cesc2("#/bi3")).click();
+    cy.get(cesc2("#/bi4")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "false");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "false");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "true");
+
+    cy.log("reload");
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/bi1_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "false");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "false");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "false");
+
+    cy.log("clicking third marks first and third as changed");
+
+    cy.get(cesc2("#/bi3")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "true");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "true");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "false");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "false");
+
+    cy.log("clicking fourth marks only second and fourth as changed");
+
+    cy.get(cesc2("#/bi4")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("be.checked");
+    cy.get(cesc2("#/bi2_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi3_input")).should("be.checked");
+    cy.get(cesc2("#/bi4_input")).should("not.be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "true");
+    cy.get(cesc2("#/bi2a")).should("have.text", "false");
+    cy.get(cesc2("#/bi3a")).should("have.text", "true");
+    cy.get(cesc2("#/bi4a")).should("have.text", "false");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "true");
+
+    cy.log("clicking first and second");
+
+    cy.get(cesc2("#/bi1")).click();
+    cy.get(cesc2("#/bi2")).click();
+
+    cy.get(cesc2("#/bi1_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi2_input")).should("be.checked");
+    cy.get(cesc2("#/bi3_input")).should("not.be.checked");
+    cy.get(cesc2("#/bi4_input")).should("be.checked");
+
+    cy.get(cesc2("#/bi1a")).should("have.text", "false");
+    cy.get(cesc2("#/bi2a")).should("have.text", "true");
+    cy.get(cesc2("#/bi3a")).should("have.text", "false");
+    cy.get(cesc2("#/bi4a")).should("have.text", "true");
+
+    cy.get(cesc2("#/bi1changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi2changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi3changed")).should("have.text", "true");
+    cy.get(cesc2("#/bi4changed")).should("have.text", "true");
   });
 });

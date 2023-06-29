@@ -18,9 +18,9 @@ export default class Input extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     // how many values an input returns
-    stateVariableDefinitions.nValues = {
+    stateVariableDefinitions.numValues = {
       returnDependencies: () => ({}),
-      definition: () => ({ setValue: { nValues: 1 } }),
+      definition: () => ({ setValue: { numValues: 1 } }),
     };
 
     stateVariableDefinitions.answerAncestor = {
@@ -33,7 +33,7 @@ export default class Input extends InlineComponent {
             "justSubmitted",
             "creditAchieved",
             "showCorrectness",
-            "numberOfAttemptsLeft",
+            "numAttemptsLeft",
           ],
         },
       }),
@@ -167,7 +167,7 @@ export default class Input extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.numberOfAttemptsLeft = {
+    stateVariableDefinitions.numAttemptsLeft = {
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
@@ -176,14 +176,14 @@ export default class Input extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let numberOfAttemptsLeft;
+        let numAttemptsLeft;
         if (dependencyValues.answerAncestor) {
-          numberOfAttemptsLeft =
-            dependencyValues.answerAncestor.stateValues.numberOfAttemptsLeft;
+          numAttemptsLeft =
+            dependencyValues.answerAncestor.stateValues.numAttemptsLeft;
         } else {
-          numberOfAttemptsLeft = Infinity;
+          numAttemptsLeft = Infinity;
         }
-        return { setValue: { numberOfAttemptsLeft } };
+        return { setValue: { numAttemptsLeft } };
       },
     };
 

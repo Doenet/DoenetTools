@@ -106,7 +106,12 @@ export default class Evaluate extends MathComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicfs", "numericalfs", "symbolic", "nInputs"],
+            variableNames: [
+              "symbolicfs",
+              "numericalfs",
+              "symbolic",
+              "numInputs",
+            ],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -135,12 +140,12 @@ export default class Evaluate extends MathComponent {
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
           f = returnSymbolicFunctionForEvaluate({
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             symbolicfs: functionComp.stateValues.symbolicfs,
           });
         } else {
           f = returnNumericFunctionForEvaluate({
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             numericalfs: functionComp.stateValues.numericalfs,
           });
         }
@@ -172,7 +177,7 @@ export default class Evaluate extends MathComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicfs", "nInputs"],
+            variableNames: ["symbolicfs", "numInputs"],
           },
         };
       },
@@ -188,7 +193,7 @@ export default class Evaluate extends MathComponent {
         }
 
         let f = returnSymbolicFunctionForEvaluate({
-          nInputs: functionComp.stateValues.nInputs,
+          numInputs: functionComp.stateValues.numInputs,
           symbolicfs: functionComp.stateValues.symbolicfs,
         });
 
@@ -206,7 +211,12 @@ export default class Evaluate extends MathComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicfs", "numericalfs", "symbolic", "nInputs"],
+            variableNames: [
+              "symbolicfs",
+              "numericalfs",
+              "symbolic",
+              "numInputs",
+            ],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -236,12 +246,12 @@ export default class Evaluate extends MathComponent {
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
           fReevaluate = returnSymbolicFunctionForEvaluate({
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             symbolicfs: functionComp.stateValues.symbolicfs,
           });
         } else {
           fReevaluate = returnNumericFunctionForEvaluate({
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             numericalfs: functionComp.stateValues.numericalfs,
           });
         }
@@ -256,7 +266,7 @@ export default class Evaluate extends MathComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["fDefinitions", "symbolic", "nInputs"],
+            variableNames: ["fDefinitions", "symbolic", "numInputs"],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -291,13 +301,13 @@ export default class Evaluate extends MathComponent {
           // Is there a reason to implement a "symbolicForEvaluate" functionType definition?
           fReevaluateDefinition = {
             functionType: "numericForEvaluate",
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             fDefinitions: functionComp.stateValues.fDefinitions,
           };
         } else {
           fReevaluateDefinition = {
             functionType: "numericForEvaluate",
-            nInputs: functionComp.stateValues.nInputs,
+            numInputs: functionComp.stateValues.numInputs,
             fDefinitions: functionComp.stateValues.fDefinitions,
           };
         }

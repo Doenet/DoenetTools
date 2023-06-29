@@ -22,7 +22,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
-    substituteDeprecations(serializedComponents);
+    substituteAttributeDeprecations(serializedComponents);
 
     temporarilyRenameSourceBackToTarget(serializedComponents);
 
@@ -44,6 +44,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
     );
 
     applyMacros(serializedComponents, componentInfoObjects);
+
+    substitutePropertyDeprecations(serializedComponents);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
@@ -311,9 +313,13 @@ export function addDocumentIfItsMissing(serializedComponents) {
   }
 }
 
-function substituteDeprecations(serializedComponents) {
+function substituteAttributeDeprecations(serializedComponents) {
+  // Note: attributes are XML attributes
+  // (which are called props at this point due to parser but will be renamed attributes later)
+  // that are entered as attributes in the component tag
+
   // Note: use lower case for keys
-  let deprecatedPropertySubstitutions = {
+  let deprecatedAttributeSubstitutions = {
     tname: "target",
     triggerwithtnames: "triggerWith",
     updatewithtname: "updateWith",
@@ -329,18 +335,41 @@ function substituteDeprecations(serializedComponents) {
     updatewithtarget: "updateWith",
     targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
     selectforvariantnames: "selectForVariants",
+    numberdecimals: "numDecimals",
+    numberdigits: "numDigits",
+    ndimensions: "numDimensions",
+    ninputs: "numInputs",
+    noutputs: "numOutputs",
+    niterates: "numIterates",
+    nrows: "numRows",
+    ncolumns: "numColumns",
+    nvertices: "numVertices",
+    npoints: "numPoints",
+    nvariants: "numVariants",
+    nsides: "numSides",
+    niterationsrequired: "numIterationsRequired",
+    numberofsamples: "numSamples",
+    numbertoselect: "numToSelect",
+    nawardscredited: "numAwardsCredited",
+    maximumnumber: "maxNumber",
+    nsignerrorsmatched: "numSignErrorsMatched",
+    nperiodicsetmatchesrequired: "numPeriodicSetMatchesRequired",
+    npages: "numPages",
   };
 
   // Note: use lower case
-  let deprecatedPropertyDeletions = new Set([
+  let deprecatedAttributeDeletions = new Set([
     "suppressautoname",
     "suppressautonumber",
     "targetattributestoignorerecursively",
     "sourceattributestoignorerecursively",
+    "showlabel",
+    "ignoredisplaydigits",
+    "ignoredisplaydecimals",
   ]);
 
   // Note: use lower case for keys
-  let deprecatedPropertySubstitutionsComponentSpecific = {
+  let deprecatedAttributeSubstitutionsComponentSpecific = {
     copy: {
       target: "source",
       tname: "source",
@@ -352,15 +381,23 @@ function substituteDeprecations(serializedComponents) {
     summarystatistics: {
       target: "source",
     },
+    answer: {
+      maximumnumberofattempts: "maxNumAttempts",
+    },
+    bestfitline: {
+      points: "data",
+    },
   };
 
   // use lower case
-  let deprecatedPropertyDeletionsComponentSpecific = {
+  let deprecatedAttributeDeletionsComponentSpecific = {
     textinput: ["size"],
     constraintogrid: ["ignoregraphbounds"],
     attracttogrid: ["ignoregraphbounds"],
     constraints: ["baseongraph"],
     graph: ["xlabel", "ylabel"],
+    conditionalcontent: ["maximumnumbertoshow"],
+    angle: ["draggable"],
   };
 
   for (let component of serializedComponents) {
@@ -370,13 +407,14 @@ function substituteDeprecations(serializedComponents) {
 
     if (component.props) {
       let cType = component.componentType;
+      let cTypeLower = cType.toLowerCase();
       let typeSpecificDeps =
-        deprecatedPropertySubstitutionsComponentSpecific[cType.toLowerCase()];
+        deprecatedAttributeSubstitutionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeps) {
         typeSpecificDeps = {};
       }
       let typeSpecificDeletions =
-        deprecatedPropertyDeletionsComponentSpecific[cType.toLowerCase()];
+        deprecatedAttributeDeletionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeletions) {
         typeSpecificDeletions = [];
       }
@@ -399,8 +437,8 @@ function substituteDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (propLower in deprecatedPropertySubstitutions) {
-            let newProp = deprecatedPropertySubstitutions[propLower];
+          } else if (propLower in deprecatedAttributeSubstitutions) {
+            let newProp = deprecatedAttributeSubstitutions[propLower];
 
             console.warn(
               `Attribute ${prop} is deprecated.  Use ${newProp} instead.`,
@@ -423,7 +461,7 @@ function substituteDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (deprecatedPropertyDeletions.has(propLower)) {
+          } else if (deprecatedAttributeDeletions.has(propLower)) {
             console.warn(`Attribute ${prop} is deprecated.  It is ignored.`);
             delete component.props[prop];
 
@@ -437,19 +475,112 @@ function substituteDeprecations(serializedComponents) {
     }
 
     if (component.children) {
-      substituteDeprecations(component.children);
+      substituteAttributeDeprecations(component.children);
+    }
+  }
+}
+
+export const deprecatedPropertySubstitutions = {
+  maximumNumberOfAttempts: "maxNumAttempts",
+  numberFeedbacks: "numFeedbacks",
+  numberOfAttemptsLeft: "numAttemptsLeft",
+  nSubmissions: "numSubmissions",
+  nSubmittedResponses: "numSubmittedResponses",
+  nAwardsCredited: "numAwardsCredited",
+  numberChoices: "numChoices",
+  numberMinima: "numMinima",
+  numberMaxima: "numMaxima",
+  numberExtrema: "numExtrema",
+  numberDecimals: "numDecimals",
+  numberDigits: "numDigits",
+  numberOfSamples: "numSamples",
+  numberToSelect: "numToSelect",
+  numberSolutions: "numSolutions",
+  maximumNumber: "maxNumber",
+  nVertices: "numVertices",
+  nPoints: "numPoints",
+  nSignErrorsMatched: "numSignErrorsMatched",
+  nPeriodicSetMatchesRequired: "numPeriodicSetMatchesRequired",
+  nValues: "numValues",
+  nResponses: "numResponses",
+  nControls: "numControls",
+  nThroughPoints: "numThroughPoints",
+  nComponents: "numComponents",
+  nChildrenToRender: "numChildrenToRender",
+  nSelectedIndices: "numSelectedIndices",
+  nDimensions: "numDimensions",
+  nCases: "numCases",
+  nDiscretizationPoints: "numDiscretizationPoints",
+  nXCriticalPoints: "numXCriticalPoints",
+  nYCriticalPoints: "numYCriticalPoints",
+  nCurvatureChangePoints: "numCurvatureChangePoints",
+  nScoredDescendants: "numScoredDescendants",
+  nInputs: "numInputs",
+  nOutputs: "numOutputs",
+  nIterates: "numIterates",
+  nDerivatives: "numDerivatives",
+  nSources: "numSources",
+  nMatches: "numMatches",
+  nRows: "numRows",
+  nColumns: "numColumns",
+  nPages: "numPages",
+  nOffsets: "numOffsets",
+  nVariants: "numVariants",
+  nSides: "numSides",
+  nItems: "numItems",
+  nLists: "numLists",
+  nIterationsRequired: "numIterationsRequired",
+  nGradedVertices: "numGradedVertices",
+  nCorrectVertices: "numCorrectVertices",
+  nIterateValues: "numIterateValues",
+};
+
+const deprecatedPropertySubstitutionsLowerCase = {};
+Object.keys(deprecatedPropertySubstitutions).forEach(
+  (key) =>
+    (deprecatedPropertySubstitutionsLowerCase[key.toLowerCase()] =
+      deprecatedPropertySubstitutions[key]),
+);
+
+function substitutePropertyDeprecations(serializedComponents) {
+  // Note: properties are public state variables that are referenced
+  // either using dot notation in a source/copysource or in a prop/copyprop
+  // but will be exclusively in prop by this point
+
+  for (let component of serializedComponents) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
+    let propName = component.attributes?.prop?.primitive;
+
+    if (propName) {
+      let propNameLower = propName.toLowerCase();
+
+      if (propNameLower in deprecatedPropertySubstitutionsLowerCase) {
+        let newProp = deprecatedPropertySubstitutionsLowerCase[propNameLower];
+        console.warn(
+          `Property ${propName} is deprecated.  Use ${newProp} instead.`,
+        );
+
+        component.attributes.prop.primitive = newProp;
+      }
+    }
+
+    if (component.children) {
+      substitutePropertyDeprecations(component.children);
     }
   }
 }
 
 function temporarilyRenameSourceBackToTarget(serializedComponents) {
   // Note: use lower case for keys
-  let backwardsDeprecatedPropertySubstitutions = {
+  let backwardsDeprecatedAttributeSubstitutions = {
     copysource: "copyTarget",
   };
 
   // Note: use lower case for keys
-  let backwardsDeprecatedPropertySubstitutionsComponentSpecific = {
+  let backwardsDeprecatedAttributeSubstitutionsComponentSpecific = {
     copy: {
       source: "target",
     },
@@ -466,7 +597,7 @@ function temporarilyRenameSourceBackToTarget(serializedComponents) {
     if (component.props) {
       let cType = component.componentType;
       let typeSpecificDeps =
-        backwardsDeprecatedPropertySubstitutionsComponentSpecific[
+        backwardsDeprecatedAttributeSubstitutionsComponentSpecific[
           cType.toLowerCase()
         ];
       if (!typeSpecificDeps) {
@@ -487,8 +618,8 @@ function temporarilyRenameSourceBackToTarget(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (propLower in backwardsDeprecatedPropertySubstitutions) {
-            let newProp = backwardsDeprecatedPropertySubstitutions[propLower];
+          } else if (propLower in backwardsDeprecatedAttributeSubstitutions) {
+            let newProp = backwardsDeprecatedAttributeSubstitutions[propLower];
 
             component.props[newProp] = component.props[prop];
             delete component.props[prop];
@@ -1274,7 +1405,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
         componentsFromMacro = [newComponent];
 
-        let nComponentsToRemove = 1;
+        let numComponentsToRemove = 1;
         let stringToAddAtEnd = str.substring(firstIndMatched + matchLength);
 
         if (nDollarSigns === 2) {
@@ -1326,9 +1457,9 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
           componentsFromMacro = evaluateResult.componentsFromMacro;
 
-          nComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
+          numComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
           if (!includeFirstInRemaining) {
-            nComponentsToRemove++;
+            numComponentsToRemove++;
           }
 
           // leftover string already included in componentsFromMacro
@@ -1351,7 +1482,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         // splice new replacements into serializedComponents
         serializedComponents.splice(
           componentInd,
-          nComponentsToRemove,
+          numComponentsToRemove,
           ...replacements,
         );
 
@@ -3111,7 +3242,7 @@ export function processAssignNames({
   // console.log(deepClone(serializedComponents));
   // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`)
 
-  let nComponents = serializedComponents.length;
+  let numComponents = serializedComponents.length;
 
   // normalize form so all names are originalNames,
   // independent of whether the components originated from a copy
@@ -3124,7 +3255,7 @@ export function processAssignNames({
 
   if (originalNamesAreConsistent) {
     // need to use a component for original name, as parentName is the new name
-    if (nComponents > 0) {
+    if (numComponents > 0) {
       // find a component with an original name, i.e., not a string
       let component = serializedComponents.filter(
         (x) => typeof x === "object",
@@ -3145,7 +3276,7 @@ export function processAssignNames({
       }
     }
   } else {
-    for (let ind = 0; ind < nComponents; ind++) {
+    for (let ind = 0; ind < numComponents; ind++) {
       let component = serializedComponents[ind];
 
       if (typeof component !== "object") {
@@ -3154,7 +3285,7 @@ export function processAssignNames({
 
       originalNamespace = null;
       // need to use a component for original name, as parentName is the new name
-      if (nComponents > 0 && component.originalName) {
+      if (numComponents > 0 && component.originalName) {
         let lastSlash = component.originalName.lastIndexOf("/");
         originalNamespace = component.originalName.substring(0, lastSlash);
       }
@@ -3174,7 +3305,7 @@ export function processAssignNames({
   // don't name strings or primitive numbers
   let numPrimitives = 0;
 
-  for (let ind = 0; ind < nComponents; ind++) {
+  for (let ind = 0; ind < numComponents; ind++) {
     let indForNames = ind + indOffset;
 
     let component = serializedComponents[ind];
@@ -3196,7 +3327,7 @@ export function processAssignNames({
 
       originalNamespace = null;
       // need to use a component for original name, as parentName is the new name
-      if (nComponents > 0 && component.originalName) {
+      if (numComponents > 0 && component.originalName) {
         let lastSlash = component.originalName.lastIndexOf("/");
         originalNamespace = component.originalName.substring(0, lastSlash);
       }
@@ -3901,18 +4032,18 @@ export function countComponentTypes(serializedComponents) {
   for (let component of serializedComponents) {
     if (typeof component === "object") {
       let cType = component.componentType;
-      let nComponents = 1;
+      let numComponents = 1;
       if (component.attributes?.createComponentOfType?.primitive) {
         cType = component.attributes.createComponentOfType.primitive;
-        nComponents = component.attributes.nComponents?.primitive;
-        if (!(Number.isInteger(nComponents) && nComponents > 0)) {
-          nComponents = 1;
+        numComponents = component.attributes.numComponents?.primitive;
+        if (!(Number.isInteger(numComponents) && numComponents > 0)) {
+          numComponents = 1;
         }
       }
       if (cType in componentTypeCounts) {
-        componentTypeCounts[cType] += nComponents;
+        componentTypeCounts[cType] += numComponents;
       } else {
-        componentTypeCounts[cType] = nComponents;
+        componentTypeCounts[cType] = numComponents;
       }
     }
   }

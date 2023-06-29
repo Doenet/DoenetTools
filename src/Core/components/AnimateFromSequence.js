@@ -96,7 +96,7 @@ export default class AnimateFromSequence extends BaseComponent {
     Object.assign(stateVariableDefinitions, sequenceDefs);
 
     stateVariableDefinitions.possibleValues = {
-      additionalStateVariablesDefined: ["numberValues"],
+      additionalStateVariablesDefined: ["numValues"],
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -129,7 +129,7 @@ export default class AnimateFromSequence extends BaseComponent {
         return {
           setValue: {
             possibleValues,
-            numberValues: possibleValues.length,
+            numValues: possibleValues.length,
           },
         };
       },
@@ -159,7 +159,7 @@ export default class AnimateFromSequence extends BaseComponent {
               value:
                 me.math.mod(
                   desiredStateVariableValues.selectedIndex - 1,
-                  await stateValues.numberValues,
+                  await stateValues.numValues,
                 ) + 1,
             },
           ],
@@ -507,13 +507,13 @@ export default class AnimateFromSequence extends BaseComponent {
       if (!previousValues.animationOn) {
         let newDirection = await this.stateValues.currentAnimationDirection;
         let animationMode = await this.stateValues.animationMode;
-        let numberValues = await this.stateValues.numberValues;
+        let numValues = await this.stateValues.numValues;
         let selectedIndex = await this.stateValues.selectedIndex;
 
         let startIndex = await this.findIndexFromTarget();
 
         if (newDirection === "increase") {
-          if (startIndex === numberValues) {
+          if (startIndex === numValues) {
             // started animation in increasing direction
             // but are at largest value
             if (animationMode === "increase once") {
@@ -538,7 +538,7 @@ export default class AnimateFromSequence extends BaseComponent {
             if (animationMode === "decrease once") {
               // if won't reset automatically,
               // manually reset to end before starting
-              startIndex = numberValues;
+              startIndex = numValues;
             } else if (animationMode === "oscillate") {
               // change direction if oscillating
               newDirection = "increase";
@@ -565,7 +565,7 @@ export default class AnimateFromSequence extends BaseComponent {
           await this.getUpdateInstructionsToSetTargetsToValue(
             (
               await this.stateValues.possibleValues
-            )[me.math.mod(startIndex - 1, numberValues)],
+            )[me.math.mod(startIndex - 1, numValues)],
           );
         updateInstructions.push(...additionalInstructions);
 
@@ -756,7 +756,7 @@ export default class AnimateFromSequence extends BaseComponent {
       }
     } else {
       newSelectedIndex = previousIndex + 1;
-      if (newSelectedIndex >= (await this.stateValues.numberValues)) {
+      if (newSelectedIndex >= (await this.stateValues.numValues)) {
         if (animationMode === "increase once") {
           continueAnimation = false;
         } else if (animationMode === "oscillate") {
@@ -778,9 +778,7 @@ export default class AnimateFromSequence extends BaseComponent {
       await this.getUpdateInstructionsToSetTargetsToValue(
         (
           await this.stateValues.possibleValues
-        )[
-          me.math.mod(newSelectedIndex - 1, await this.stateValues.numberValues)
-        ],
+        )[me.math.mod(newSelectedIndex - 1, await this.stateValues.numValues)],
       );
     updateInstructions.push(...additionalInstructions);
 

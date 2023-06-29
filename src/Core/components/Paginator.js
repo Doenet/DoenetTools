@@ -36,7 +36,7 @@ export class Paginator extends BlockComponent {
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.nPages = {
+    stateVariableDefinitions.numPages = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -49,7 +49,7 @@ export class Paginator extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: { nPages: dependencyValues.children.length },
+          setValue: { numPages: dependencyValues.children.length },
         };
       },
     };
@@ -65,9 +65,9 @@ export class Paginator extends BlockComponent {
           dependencyType: "stateVariable",
           variableName: "initialPage",
         },
-        nPages: {
+        numPages: {
           dependencyType: "stateVariable",
-          variableName: "nPages",
+          variableName: "numPages",
         },
       }),
       definition({ dependencyValues }) {
@@ -81,7 +81,7 @@ export class Paginator extends BlockComponent {
                 } else {
                   return Math.max(
                     1,
-                    Math.min(dependencyValues.nPages, initialPageNumber),
+                    Math.min(dependencyValues.numPages, initialPageNumber),
                   );
                 }
               },
@@ -106,7 +106,7 @@ export class Paginator extends BlockComponent {
 
         desiredPageNumber = Math.max(
           1,
-          Math.min(await stateValues.nPages, desiredPageNumber),
+          Math.min(await stateValues.numPages, desiredPageNumber),
         );
 
         return {
@@ -154,7 +154,7 @@ export class Paginator extends BlockComponent {
 
     let pageNumber = Math.max(
       1,
-      Math.min(await this.stateValues.nPages, number),
+      Math.min(await this.stateValues.numPages, number),
     );
 
     let updateInstructions = [
@@ -306,7 +306,7 @@ export class PaginatorControls extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.nPages = {
+    stateVariableDefinitions.numPages = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["paginatorComponentName"],
       returnDependencies({ stateValues }) {
@@ -317,7 +317,7 @@ export class PaginatorControls extends BlockComponent {
             paginatorNPages: {
               dependencyType: "stateVariable",
               componentName: stateValues.paginatorComponentName,
-              variableName: "nPages",
+              variableName: "numPages",
             },
           };
         }
@@ -325,10 +325,10 @@ export class PaginatorControls extends BlockComponent {
       definition({ dependencyValues }) {
         if ("paginatorNPages" in dependencyValues) {
           return {
-            setValue: { nPages: dependencyValues.paginatorNPages },
+            setValue: { numPages: dependencyValues.paginatorNPages },
           };
         } else {
-          return { setValue: { nPages: 1 } };
+          return { setValue: { numPages: 1 } };
         }
       },
     };

@@ -25,7 +25,7 @@ import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
 import axios from "axios";
 
 export async function loader() {
@@ -59,10 +59,10 @@ export async function loader() {
   return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
 }
 
-function NavLinkTab({ to, children, datatest }) {
+function NavLinkTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
-    <NavLink to={to} end datatest={datatest}>
+    <NavLink to={to} end data-test={dataTest}>
       {({ isActive, isPending }) => {
         // let spinner = null;
         // if (isPending) {
@@ -99,8 +99,9 @@ function NavLinkTab({ to, children, datatest }) {
 export function SiteHeader(props) {
   let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
     useLoaderData();
+  const { childComponent } = props;
 
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
   let location = useLocation();
 
   // const navColor = useColorModeValue("#ffffff", "gray.800");
@@ -162,17 +163,17 @@ export function SiteHeader(props) {
             </GridItem>
             <GridItem area="menus">
               <HStack spacing={8}>
-                <NavLinkTab to="/" datatest="Home">
+                <NavLinkTab to="/" dataTest="Home">
                   Home
                 </NavLinkTab>
-                <NavLinkTab to="community" datatest="Community">
+                <NavLinkTab to="community" dataTest="Community">
                   Community
                 </NavLinkTab>
                 {signedIn && (
                   <>
                     <NavLinkTab
                       to={`portfolio/${portfolioCourseId}`}
-                      datatest="Portfolio"
+                      dataTest="Portfolio"
                     >
                       Portfolio
                     </NavLinkTab>
@@ -180,7 +181,7 @@ export function SiteHeader(props) {
                       My Courses
                     </NavLinkTab>
                     {isAdmin && (
-                      <NavLinkTab to="admin" datatest="Admin">
+                      <NavLinkTab to="admin" dataTest="Admin">
                         Admin
                       </NavLinkTab>
                     )}
@@ -218,6 +219,14 @@ export function SiteHeader(props) {
                           >
                             Dark
                           </Button>
+                          {/* <Button
+                            leftIcon={<FaRobot />}
+                            onClick={() => setColorMode("system")}
+                            // isDisabled={colorMode == ""}
+                            // cursor="not-allowed"
+                          >
+                            Auto
+                          </Button> */}
                         </ButtonGroup>
                       </VStack>
                       <MenuItem as="a" href="/signout">
@@ -229,7 +238,7 @@ export function SiteHeader(props) {
               ) : (
                 <Center h="40px" mr="10px">
                   <Button
-                    datatest="Nav to signin"
+                    data-test="Nav to signin"
                     size="sm"
                     // variant="ghost"
                     variant="outline"
@@ -252,7 +261,7 @@ export function SiteHeader(props) {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
           {/* <Box>test</Box> */}
-          <Outlet context={{ signedIn }} />
+          {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
         </GridItem>
       </Grid>
     </>

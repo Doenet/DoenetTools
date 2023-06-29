@@ -4269,7 +4269,7 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph size="small">
-      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" ignoreDisplayDecimals />
+      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" />
     </graph>
     
     <p name="p1">$l.points.coords</p>
@@ -4592,13 +4592,13 @@ describe("Copy Tag Tests", function () {
       <line name="l" through="(2/3,3/4) (5/8,6/10)" displayDigits="2" />
     </graph>
     
-    <p name="p1"><aslist><copy source="l.points.coords" creatComponentOfType="math" nComponents="2" /></aslist></p>
-    <p name="p2"><aslist><copy source="l.points.x" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p3"><aslist><copy source="l.points.y" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p4"><aslist><copy source="l.points.bad" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p5"><aslist><copy source="l.points.xs[1]" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p6"><aslist><copy source="l.points.xs[2]" createComponentOfType="number" nComponents="2" /></aslist></p>
-    <p name="p7"><aslist><copy source="l.points.xs[3]" createComponentOfType="number" nComponents="2" /></aslist></p>
+    <p name="p1"><aslist><copy source="l.points.coords" creatComponentOfType="math" numComponents="2" /></aslist></p>
+    <p name="p2"><aslist><copy source="l.points.x" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p3"><aslist><copy source="l.points.y" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p4"><aslist><copy source="l.points.bad" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p5"><aslist><copy source="l.points.xs[1]" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p6"><aslist><copy source="l.points.xs[2]" createComponentOfType="number" numComponents="2" /></aslist></p>
+    <p name="p7"><aslist><copy source="l.points.xs[3]" createComponentOfType="number" numComponents="2" /></aslist></p>
 
     <p name="p8"><math copySource="l.points[1].coords" /></p>
     <p name="p9"><number copySource="l.points[1].x" /></p>
@@ -4624,13 +4624,13 @@ describe("Copy Tag Tests", function () {
     <p name="p27"><number copysource="l.points[3].xs[2]" /></p>
     <p name="p28"><number copysource="l.points[3].xs[3]" /></p>
 
-    <p name="p29"><aslist><copy source="l.points.coords.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p30"><aslist><copy source="l.points.x.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p31"><aslist><copy source="l.points.y.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p32"><aslist><copy source="l.points.bad.latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p33"><aslist><copy source="l.points.xs[1].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p34"><aslist><copy source="l.points.xs[2].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
-    <p name="p35"><aslist><copy source="l.points.xs[3].latex" createComponentOfType="text" nComponents="2" /></aslist></p>
+    <p name="p29"><aslist><copy source="l.points.coords.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p30"><aslist><copy source="l.points.x.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p31"><aslist><copy source="l.points.y.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p32"><aslist><copy source="l.points.bad.latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p33"><aslist><copy source="l.points.xs[1].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p34"><aslist><copy source="l.points.xs[2].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
+    <p name="p35"><aslist><copy source="l.points.xs[3].latex" createComponentOfType="text" numComponents="2" /></aslist></p>
     
     <p name="p36"><text copysource="l.points[1].coords.latex" /></p>
     <p name="p37"><text copysource="l.points[1].x.latex" /></p>

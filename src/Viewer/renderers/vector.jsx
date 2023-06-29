@@ -88,7 +88,7 @@ export default React.memo(function Vector(props) {
     var jsxVectorAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer,
       strokeColor: lineColor,
@@ -119,6 +119,7 @@ export default React.memo(function Vector(props) {
         document.documentElement,
       ).getPropertyValue("--mainGray"),
       layer: pointLayer,
+      showInfoBox: SVs.showCoordsWhenDragging,
     });
 
     // create invisible points at endpoints
@@ -560,6 +561,9 @@ export default React.memo(function Vector(props) {
       point2JXG.current.visProp["visible"] = headVisible;
       point2JXG.current.visPropCalc["visible"] = headVisible;
 
+      point1JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+      point2JXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+
       if (
         sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
@@ -613,7 +617,7 @@ export default React.memo(function Vector(props) {
 
       vectorJXG.current.name = SVs.labelForGraph;
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         vectorJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

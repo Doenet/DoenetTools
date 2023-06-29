@@ -166,7 +166,7 @@ export default class LineSegment extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -175,23 +175,23 @@ export default class LineSegment extends GraphicalComponent {
         endpointsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "endpoints",
-          variableNames: ["nDimensions"],
+          variableNames: ["numDimensions"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        // console.log('definition of nDimensions')
+        // console.log('definition of numDimensions')
         // console.log(dependencyValues)
 
         if (dependencyValues.endpointsAttr !== null) {
-          let nDimensions =
-            dependencyValues.endpointsAttr.stateValues.nDimensions;
+          let numDimensions =
+            dependencyValues.endpointsAttr.stateValues.numDimensions;
           return {
-            setValue: { nDimensions },
-            checkForActualChange: { nDimensions: true },
+            setValue: { numDimensions: Math.max(numDimensions, 2) },
+            checkForActualChange: { numDimensions: true },
           };
         } else {
           // line segment through zero points
-          return { setValue: { nDimensions: 2 } };
+          return { setValue: { numDimensions: 2 } };
         }
       },
     };
@@ -217,7 +217,7 @@ export default class LineSegment extends GraphicalComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["endpointX", "endpoint"],
       hasEssential: true,
       set: convertValueToMathExpression,
@@ -290,13 +290,13 @@ export default class LineSegment extends GraphicalComponent {
         return null;
       },
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [2, dependencyValues.nDimensions];
+        return [2, dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -399,6 +399,55 @@ export default class LineSegment extends GraphicalComponent {
       },
     };
 
+    stateVariableDefinitions.parallelCoords = {
+      returnDependencies: () => ({
+        endpoints: {
+          dependencyType: "stateVariable",
+          variableName: "endpoints",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let dxTree = [
+          "+",
+          dependencyValues.endpoints[1][0].tree,
+          ["-", dependencyValues.endpoints[0][0].tree],
+        ];
+
+        let dyTree = [
+          "+",
+          dependencyValues.endpoints[1][1].tree,
+          ["-", dependencyValues.endpoints[0][1].tree],
+        ];
+
+        let parallelCoords = me.fromAst(["vector", dxTree, dyTree]);
+
+        return { setValue: { parallelCoords } };
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        let x = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(0).tree,
+          dependencyValues.endpoints[0][0].tree,
+        ]);
+
+        let y = me.fromAst([
+          "+",
+          desiredStateVariableValues.parallelCoords.get_component(1).tree,
+          dependencyValues.endpoints[0][1].tree,
+        ]);
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "endpoints",
+              desiredValue: { "1,0": x, "1,1": y },
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.length = {
       public: true,
       isLocation: true,
@@ -408,9 +457,9 @@ export default class LineSegment extends GraphicalComponent {
           returnRoundingAttributeComponentShadowing(),
       },
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         endpoints: {
           dependencyType: "stateVariable",
@@ -422,7 +471,7 @@ export default class LineSegment extends GraphicalComponent {
         let epoint1 = dependencyValues.endpoints[0];
         let epoint2 = dependencyValues.endpoints[1];
         let all_numeric = true;
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           let v1 = epoint1[dim].evaluate_to_constant();
           if (!Number.isFinite(v1)) {
             all_numeric = false;
@@ -442,7 +491,7 @@ export default class LineSegment extends GraphicalComponent {
         }
 
         length2 = ["+"];
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           length2.push(["^", ["+", epoint1[dim], ["-", epoint2[dim]]], 2]);
         }
 
@@ -458,7 +507,7 @@ export default class LineSegment extends GraphicalComponent {
         let epoint1 = dependencyValues.endpoints[0];
         let epoint2 = dependencyValues.endpoints[1];
         let all_numeric = true;
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           let v1 = epoint1[dim].evaluate_to_constant();
           if (!Number.isFinite(v1)) {
             all_numeric = false;
@@ -492,7 +541,7 @@ export default class LineSegment extends GraphicalComponent {
           desiredEndpoint2 = [];
         let halfDesiredlength = desiredLength / 2;
 
-        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+        for (let dim = 0; dim < dependencyValues.numDimensions; dim++) {
           desiredEndpoint1.push(
             me.fromAst(midpoint[dim] + dir[dim] * halfDesiredlength),
           );
@@ -518,22 +567,22 @@ export default class LineSegment extends GraphicalComponent {
       entryPrefixes: ["numericalEndpoint"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.nDimensions)) {
+        if (Number.isNaN(dependencyValues.numDimensions)) {
           return [0];
         }
         return [2];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
-          nDimensions: {
+          numDimensions: {
             dependencyType: "stateVariable",
-            variableName: "nDimensions",
+            variableName: "numDimensions",
           },
         };
         let dependenciesByKey = {};
@@ -555,7 +604,7 @@ export default class LineSegment extends GraphicalComponent {
         dependencyValuesByKey,
         arrayKeys,
       }) {
-        if (Number.isNaN(globalDependencyValues.nDimensions)) {
+        if (Number.isNaN(globalDependencyValues.numDimensions)) {
           return {};
         }
 
@@ -563,7 +612,7 @@ export default class LineSegment extends GraphicalComponent {
         for (let arrayKey of arrayKeys) {
           let endpoint = dependencyValuesByKey[arrayKey].endpoint;
           let numericalP = [];
-          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.numDimensions; ind++) {
             let val = endpoint[ind].evaluate_to_constant();
             numericalP.push(val);
           }
@@ -576,9 +625,9 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
         numericalEndpoints: {
           dependencyType: "stateVariable",
@@ -602,7 +651,7 @@ export default class LineSegment extends GraphicalComponent {
         // - constant endpoints and
         // - non-degenerate parameters
         let skip =
-          dependencyValues.nDimensions !== 2 ||
+          dependencyValues.numDimensions !== 2 ||
           !haveConstants ||
           (B1 === A1 && B2 === A2);
 
@@ -662,13 +711,13 @@ export default class LineSegment extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "numericalEndpoints",
         },
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.nDimensions !== 2) {
+        if (dependencyValues.numDimensions !== 2) {
           return { setValue: { slope: NaN } };
         }
 
@@ -681,6 +730,16 @@ export default class LineSegment extends GraphicalComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "parallelCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+  ];
 
   async moveLineSegment({
     point1coords,
@@ -772,16 +831,16 @@ export default class LineSegment extends GraphicalComponent {
       let resultingNumericalPoints = await this.stateValues.numericalEndpoints;
 
       let pointsChanged = [];
-      let nPointsChanged = 0;
+      let numPointsChanged = 0;
 
       for (let [ind, pt] of numericalPoints.entries()) {
         if (!pt.every((v, i) => v === resultingNumericalPoints[ind][i])) {
           pointsChanged.push(ind);
-          nPointsChanged++;
+          numPointsChanged++;
         }
       }
 
-      if (nPointsChanged === 1) {
+      if (numPointsChanged === 1) {
         // One endpoint was altered from the requested location
         // while the other endpoint stayed at the requested location.
         // We interpret this as one endpoint being constrained and the second one being free

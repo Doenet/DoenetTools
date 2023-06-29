@@ -35,8 +35,8 @@ describe("Paginator Tag Tests", function () {
       <label>prev</label>
     </callAction>
     Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
-    of <copy prop="nPages" target="pgn" assignNames="nPages" />
-    <callAction name="nextPage" disabled="$pageNum = $nPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
+    of <copy prop="numPages" target="pgn" assignNames="numPages" />
+    <callAction name="nextPage" disabled="$pageNum = $numPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
       <label>next</label>
     </callAction>
     
@@ -977,7 +977,7 @@ describe("Paginator Tag Tests", function () {
         </option>
         <option>
           <problem newNamespace>
-            <variantControl nVariants="50" />
+            <variantControl numVariants="50" />
             <title>Problem B</title>
             <p>Enter <m>$n</m>.
               <answer name="ans1">
@@ -997,7 +997,7 @@ describe("Paginator Tag Tests", function () {
       </select>
       <select assignNames = "(((problem2) (problem3)))">
         <option>
-          <select numberToSelect="2">
+          <select numToSelect="2">
             <option>
               <problem newNamespace>
                 <title>Problem C</title>
@@ -1013,7 +1013,7 @@ describe("Paginator Tag Tests", function () {
             <option>
               <problem newNamespace>
                 <title>Problem D</title>
-                <variantControl nVariants="50" />
+                <variantControl numVariants="50" />
                 <p>What is <m>2-$n</m>? 
                   <answer name="ans">
                     <mathinput name="input"/>
@@ -1026,11 +1026,11 @@ describe("Paginator Tag Tests", function () {
           </select>
         </option>
         <option>
-          <select numberToSelect="2">
+          <select numToSelect="2">
             <option>
               <problem newNamespace>
                 <title>Problem E</title>
-                <variantcontrol nVariants="3" variantNames="one two three" />
+                <variantcontrol numVariants="3" variantNames="one two three" />
                 <select assignNames="(n)" hide>
                   <option selectForVariants="one"><number>1</number></option>
                   <option selectForVariants="two"><number>2</number></option>
@@ -1047,7 +1047,7 @@ describe("Paginator Tag Tests", function () {
             <option>
               <problem newNamespace>
                 <title>Problem F</title>
-                <variantcontrol nVariants="3" variantNames="four five six" />
+                <variantcontrol numVariants="3" variantNames="four five six" />
                 <select assignNames="(n)" hide>
                   <option selectForVariants="four"><number>4</number></option>
                   <option selectForVariants="five"><number>5</number></option>
@@ -1076,7 +1076,7 @@ describe("Paginator Tag Tests", function () {
       </problem>
       <problem name="problem5" newNamespace>
         <title>Problem H</title>
-        <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
+        <variantControl numVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
         <!-- Note: explicitly don't put fruit in parens to test for previous error -->
         <select assignNames="fruit" hide>
           <option selectForVariants="apple"><text>apple</text></option>
@@ -1622,10 +1622,10 @@ describe("Paginator Tag Tests", function () {
   it("External and internal copies, with variantcontrols in document and problem", () => {
     let doenetML = `
     <text>a</text>
-    <variantControl nVariants="100" />
+    <variantControl numVariants="100" />
     <setup>
       <problem name="problema" newNamespace>
-        <variantControl nVariants="1" />
+        <variantControl numVariants="1" />
         <title>A hard problem</title>
         <p>What is 1+1? <answer><mathinput /><award>2</award></answer></p>
       </problem>
@@ -1786,20 +1786,20 @@ describe("Paginator Tag Tests", function () {
   it("Variantcontrols in document and problem", () => {
     let doenetML = `
     <text>a</text>
-    <variantControl nVariants="100" />
+    <variantControl numVariants="100" />
 
     <paginatorControls paginator="pgn" name="pcontrols" />
 
     <paginator name="pgn">
       <problem>
         <title>Type a number</title>
-        <variantControl nVariants="100" />
+        <variantControl numVariants="100" />
         <selectFromSequence assignNames="a" from="1" to="1000" hide />
         $a: <answer>$a</answer>
       </problem>  
       <problem>
         <title>Type a letter</title>
-        <variantControl nVariants="3" />
+        <variantControl numVariants="3" />
         <select assignNames="b" hide >u v w x y z</select>
         $b: <answer>$b</answer>
       </problem>  
@@ -2128,9 +2128,9 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
 
     <paginator name="pgn">
-      <select numberToSelect="2" assignNames="(problem1) (problem2)">
+      <select numToSelect="2" assignNames="(problem1) (problem2)">
         <option>
-          <problem copyfromuri="doenet:cid=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" />
+          <problem copyfromuri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" />
         </option>
         <option>
           <problem copyfromuri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
@@ -2145,7 +2145,7 @@ describe("Paginator Tag Tests", function () {
     <text>a</text>
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:cid=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem1" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem1" />
       <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem2" />
     </paginator>
     
@@ -2157,7 +2157,7 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
       <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem1" />
-      <copy uri="doenet:cid=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem2" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem2" />
     </paginator>
     
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>

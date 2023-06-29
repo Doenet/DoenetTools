@@ -21,15 +21,17 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.numberOfSamples = {
+    attributes.numSamples = {
       createComponentOfType: "number",
-      createStateVariable: "numberOfSamples",
+      createStateVariable: "numSamples",
       defaultValue: 1,
       public: true,
     };
@@ -82,6 +84,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
       createComponentOfType: "number",
       createStateVariable: "specifiedStep",
       defaultValue: 1,
+    };
+
+    attributes.exclude = {
+      createComponentOfType: "numberList",
+      createStateVariable: "exclude",
+      defaultValue: [],
     };
 
     for (let attrName in returnRoundingAttributes()) {
@@ -143,7 +151,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
           },
         },
         {
-          variableName: "nDiscreteValues",
+          variableName: "numDiscreteValues",
         },
       ],
       returnDependencies: () => ({
@@ -163,17 +171,24 @@ export default class SampleRandomNumbers extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "step",
         },
+        exclude: {
+          dependencyType: "stateVariable",
+          variableName: "exclude",
+        },
       }),
       definition({ dependencyValues }) {
         if (!["discreteuniform", "uniform"].includes(dependencyValues.type)) {
-          return { setValue: { from: null, to: null, nDiscreteValues: null } };
+          return {
+            setValue: { from: null, to: null, numDiscreteValues: null },
+          };
         }
 
         let step = dependencyValues.step;
+        let exclude = dependencyValues.exclude;
 
         let from = dependencyValues.specifiedFrom;
         let to = dependencyValues.specifiedTo;
-        let nDiscreteValues = null;
+        let numDiscreteValues = null;
         if (to === null) {
           if (from === null) {
             from = 0;
@@ -181,8 +196,23 @@ export default class SampleRandomNumbers extends CompositeComponent {
           if (dependencyValues.type === "uniform") {
             to = from + 1;
           } else {
+            // make sure from isn't excluded
+            while (exclude.includes(from)) {
+              from += step;
+            }
+
             to = from + step;
-            nDiscreteValues = 2;
+
+            // make sure to isn't excluded, so that have exactly two values
+            let i = 1;
+            while (exclude.includes(to)) {
+              // Note: make sure calculate to using exact same sequence of operations as actual values
+              // so don't have differences due to floating point rounding
+              i++;
+              to = from + i * step;
+            }
+
+            numDiscreteValues = 2;
           }
         } else {
           if (from === null) {
@@ -190,29 +220,47 @@ export default class SampleRandomNumbers extends CompositeComponent {
               from = 0;
             } else {
               let targetFrom = 0;
-              nDiscreteValues = Math.floor((to - targetFrom) / step + 1);
-              if (nDiscreteValues < 1) {
-                nDiscreteValues = 0;
+              numDiscreteValues = Math.floor((to - targetFrom) / step + 1);
+              if (numDiscreteValues < 1) {
+                numDiscreteValues = 0;
                 from = null;
               } else {
-                from = to - (nDiscreteValues - 1) * step;
+                from = to - (numDiscreteValues - 1) * step;
+
+                let numExcluded = 0;
+                for (let i = 0; i < numDiscreteValues; i++) {
+                  let val = from + i * step;
+                  if (exclude.includes(val)) {
+                    numExcluded++;
+                  }
+                }
+                numDiscreteValues -= numExcluded;
               }
             }
           } else {
             // to and from defined
             // if discrete uniform, adjust to make integer number of steps
             if (dependencyValues.type === "discreteuniform") {
-              nDiscreteValues = Math.floor((to - from) / step + 1);
-              if (nDiscreteValues < 1) {
-                nDiscreteValues = 0;
+              numDiscreteValues = Math.floor((to - from) / step + 1);
+              if (numDiscreteValues < 1) {
+                numDiscreteValues = 0;
               } else {
-                to = from + (nDiscreteValues - 1) * step;
+                to = from + (numDiscreteValues - 1) * step;
+
+                let numExcluded = 0;
+                for (let i = 0; i < numDiscreteValues; i++) {
+                  let val = from + i * step;
+                  if (exclude.includes(val)) {
+                    numExcluded++;
+                  }
+                }
+                numDiscreteValues -= numExcluded;
               }
             }
           }
         }
 
-        return { setValue: { from, to, nDiscreteValues } };
+        return { setValue: { from, to, numDiscreteValues } };
       },
     };
 
@@ -243,6 +291,20 @@ export default class SampleRandomNumbers extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "to",
           };
+          if (stateValues.type === "discreteuniform") {
+            dependencies.exclude = {
+              dependencyType: "stateVariable",
+              variableName: "exclude",
+            };
+            dependencies.step = {
+              dependencyType: "stateVariable",
+              variableName: "step",
+            };
+            dependencies.numDiscreteValues = {
+              dependencyType: "stateVariable",
+              variableName: "numDiscreteValues",
+            };
+          }
         }
 
         return dependencies;
@@ -251,6 +313,24 @@ export default class SampleRandomNumbers extends CompositeComponent {
         let mean;
         if (dependencyValues.type === "gaussian") {
           mean = dependencyValues.specifiedMean;
+        } else if (
+          dependencyValues.type === "discreteuniform" &&
+          dependencyValues.exclude.length > 0
+        ) {
+          // calculate manually in this case
+          mean = 0;
+          let numOrigValues = Math.round(
+            (dependencyValues.to - dependencyValues.from) /
+              dependencyValues.step +
+              1,
+          );
+          for (let i = 0; i < numOrigValues; i++) {
+            let val = dependencyValues.from + i * dependencyValues.step;
+            if (!dependencyValues.exclude.includes(val)) {
+              mean += val;
+            }
+          }
+          mean /= dependencyValues.numDiscreteValues;
         } else {
           mean = (dependencyValues.from + dependencyValues.to) / 2;
         }
@@ -290,13 +370,17 @@ export default class SampleRandomNumbers extends CompositeComponent {
             variableName: "to",
           };
           if (stateValues.type === "discreteuniform") {
+            dependencies.exclude = {
+              dependencyType: "stateVariable",
+              variableName: "exclude",
+            };
             dependencies.step = {
               dependencyType: "stateVariable",
               variableName: "step",
             };
-            dependencies.nDiscreteValues = {
+            dependencies.numDiscreteValues = {
               dependencyType: "stateVariable",
-              variableName: "nDiscreteValues",
+              variableName: "numDiscreteValues",
             };
           }
         }
@@ -315,10 +399,31 @@ export default class SampleRandomNumbers extends CompositeComponent {
             variance = dependencyValues.specifiedVariance;
           }
         } else if (dependencyValues.type === "discreteuniform") {
-          variance =
-            ((dependencyValues.nDiscreteValues ** 2 - 1) *
-              dependencyValues.step ** 2) /
-            12;
+          if (dependencyValues.exclude.length > 0) {
+            // calculate manually in this case
+            let sum = 0;
+            variance = 0;
+            let numOrigValues = Math.round(
+              (dependencyValues.to - dependencyValues.from) /
+                dependencyValues.step +
+                1,
+            );
+            for (let i = 0; i < numOrigValues; i++) {
+              let val = dependencyValues.from + i * dependencyValues.step;
+              if (!dependencyValues.exclude.includes(val)) {
+                sum += val;
+                variance += val * val;
+              }
+            }
+            let N = dependencyValues.numDiscreteValues;
+            variance -= (sum * sum) / N;
+            variance /= N; // use population variance as this isn't a sample, it's the whole distribution
+          } else {
+            variance =
+              ((dependencyValues.numDiscreteValues ** 2 - 1) *
+                dependencyValues.step ** 2) /
+              12;
+          }
         } else {
           // uniform
           variance = (dependencyValues.to - dependencyValues.from) ** 2 / 12;
@@ -349,9 +454,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
       stateVariablesDeterminingDependencies: ["variantDeterminesSeed"],
       returnDependencies({ stateValues, sharedParameters }) {
         let dependencies = {
-          numberOfSamples: {
+          numSamples: {
             dependencyType: "stateVariable",
-            variableName: "numberOfSamples",
+            variableName: "numSamples",
           },
           type: {
             dependencyType: "stateVariable",
@@ -369,9 +474,13 @@ export default class SampleRandomNumbers extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "step",
           },
-          nDiscreteValues: {
+          exclude: {
             dependencyType: "stateVariable",
-            variableName: "nDiscreteValues",
+            variableName: "exclude",
+          },
+          numDiscreteValues: {
+            dependencyType: "stateVariable",
+            variableName: "numDiscreteValues",
           },
           mean: {
             dependencyType: "stateVariable",
@@ -397,12 +506,19 @@ export default class SampleRandomNumbers extends CompositeComponent {
         }
         return dependencies;
       },
-      definition({ dependencyValues }) {
-        if (dependencyValues.numberOfSamples < 1) {
+      definition({ dependencyValues, changes, justUpdatedForNewComponent }) {
+        if (dependencyValues.numSamples < 1) {
           return {
             setEssentialValue: { sampledValues: [] },
             setValue: { sampledValues: [] },
           };
+        }
+
+        // if loaded in values from database (justUpdatedForNewComponent)
+        // or just resampled values from action (in which case there will be no changes)
+        // then don't resample the values but just use the current ones
+        if (Object.keys(changes).length === 0 || justUpdatedForNewComponent) {
+          return { useEssentialOrDefaultValue: { sampledValues: true } };
         }
 
         let sampledValues = sampleFromRandomNumbers(dependencyValues);
@@ -622,13 +738,14 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }) {
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
-      numberOfSamples: await this.stateValues.numberOfSamples,
+      numSamples: await this.stateValues.numSamples,
       standardDeviation: await this.stateValues.standardDeviation,
       mean: await this.stateValues.mean,
       to: await this.stateValues.to,
       from: await this.stateValues.from,
       step: await this.stateValues.step,
-      nDiscreteValues: await this.stateValues.nDiscreteValues,
+      exclude: await this.stateValues.exclude,
+      numDiscreteValues: await this.stateValues.numDiscreteValues,
       rng: (await this.stateValues.variantDeterminesSeed)
         ? this.sharedParameters.variantRng
         : this.sharedParameters.rngWithDateSeed,

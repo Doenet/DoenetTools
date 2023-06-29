@@ -1,12 +1,13 @@
 export function sampleFromRandomNumbers({
   type,
-  numberOfSamples,
+  numSamples,
   standardDeviation,
   mean,
   to,
   from,
   step,
-  nDiscreteValues,
+  exclude,
+  numDiscreteValues,
   rng,
 }) {
   if (type === "gaussian") {
@@ -19,12 +20,12 @@ export function sampleFromRandomNumbers({
         ") for a gaussian random variable.";
       console.warn(message);
 
-      return Array(numberOfSamples).fill(NaN);
+      return Array(numSamples).fill(NaN);
     }
 
     let sampledValues = [];
 
-    for (let i = 0; i < numberOfSamples; i++) {
+    for (let i = 0; i < numSamples; i++) {
       // Standard Normal variate using Box-Muller transform.
       let u = 0,
         v = 0;
@@ -47,7 +48,7 @@ export function sampleFromRandomNumbers({
 
     let diff = to - from;
 
-    for (let i = 0; i < numberOfSamples; i++) {
+    for (let i = 0; i < numSamples; i++) {
       sampledValues.push(from + rng() * diff);
     }
 
@@ -56,10 +57,26 @@ export function sampleFromRandomNumbers({
     // discreteuniform
     let sampledValues = [];
 
-    if (nDiscreteValues > 0) {
-      for (let i = 0; i < numberOfSamples; i++) {
-        // random integer from 0 to nDiscreteValues-1
-        let ind = Math.floor(rng() * nDiscreteValues);
+    if (numDiscreteValues > 0) {
+      let indexMap = [...Array(numDiscreteValues).keys()];
+
+      if (exclude.length > 0) {
+        indexMap = [];
+        let numOrigValues = Math.round((to - from) / step + 1);
+        for (let i = 0; i < numOrigValues; i++) {
+          let val = from + i * step;
+          if (!exclude.includes(val)) {
+            indexMap.push(i);
+          }
+        }
+      }
+
+      for (let i = 0; i < numSamples; i++) {
+        // random integer from 0 to numDiscreteValues-1
+        let ind = Math.floor(rng() * numDiscreteValues);
+
+        // adjust for excludes
+        ind = indexMap[ind];
 
         sampledValues.push(from + step * ind);
       }
@@ -67,4 +84,44 @@ export function sampleFromRandomNumbers({
 
     return sampledValues;
   }
+}
+
+export function sampleFromNumberList({
+  possibleValues,
+  numUniqueRequired = 1,
+  numSamples = 1,
+  rng,
+}) {
+  let numPossibleValues = possibleValues.length;
+
+  if (numUniqueRequired === 1) {
+    let sampledValues = [];
+    for (let ind = 0; ind < numSamples; ind++) {
+      // random number in [0, 1)
+      let rand = rng();
+      // random integer from 0 to numPossibleValues-1
+      let ind = Math.floor(rand * numPossibleValues);
+
+      sampledValues.push(possibleValues[ind]);
+    }
+
+    return sampledValues;
+  }
+
+  // need to select more than one value without replacement
+  // shuffle array and choose first elements
+  // https://stackoverflow.com/a/12646864
+  let shuffledValues = [...possibleValues];
+  for (let i = shuffledValues.length - 1; i > 0; i--) {
+    const rand = rng();
+    const j = Math.floor(rand * (i + 1));
+    [shuffledValues[i], shuffledValues[j]] = [
+      shuffledValues[j],
+      shuffledValues[i],
+    ];
+  }
+
+  let sampledValues = shuffledValues.slice(0, numSamples);
+
+  return sampledValues;
 }

@@ -21,7 +21,7 @@ export default React.memo(function Polygon(props) {
   let pointsAtDown = useRef(null);
   let pointerIsDown = useRef(false);
   let pointerMovedSinceDown = useRef(false);
-  let previousNVertices = useRef(null);
+  let previousNumVertices = useRef(null);
   let jsxPointAttributes = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
@@ -58,7 +58,7 @@ export default React.memo(function Polygon(props) {
   }, [board]);
 
   function createPolygonJXG() {
-    if (!(SVs.nVertices >= 2)) {
+    if (!(SVs.numVertices >= 2)) {
       return null;
     }
 
@@ -83,6 +83,7 @@ export default React.memo(function Polygon(props) {
       withLabel: false,
       layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       highlight: true,
+      showInfoBox: SVs.showCoordsWhenDragging,
     };
 
     let jsxBorderAttributes = {
@@ -102,7 +103,7 @@ export default React.memo(function Polygon(props) {
     let jsxPolygonAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 
@@ -156,7 +157,7 @@ export default React.memo(function Polygon(props) {
 
     board.unsuspendUpdate();
 
-    previousNVertices.current = SVs.nVertices;
+    previousNumVertices.current = SVs.numVertices;
 
     return newPolygonJXG;
   }
@@ -174,7 +175,7 @@ export default React.memo(function Polygon(props) {
   }
 
   function initializePoints(polygon) {
-    for (let i = 0; i < SVs.nVertices; i++) {
+    for (let i = 0; i < SVs.numVertices; i++) {
       let vertex = polygon.vertices[i];
       vertex.off("drag");
       vertex.on("drag", (e) => dragHandler(i, e));
@@ -192,7 +193,7 @@ export default React.memo(function Polygon(props) {
   }
 
   function deletePolygonJXG() {
-    for (let i = 0; i < SVs.nVertices; i++) {
+    for (let i = 0; i < SVs.numVertices; i++) {
       let vertex = polygonJXG.current.vertices[i];
       if (vertex) {
         vertex.off("drag");
@@ -256,7 +257,7 @@ export default React.memo(function Polygon(props) {
           },
         });
 
-        for (let j = 0; j < SVs.nVertices; j++) {
+        for (let j = 0; j < SVs.numVertices; j++) {
           polygonJXG.current.vertices[j].coords.setCoordinates(
             JXG.COORDS_BY_USER,
             [...lastPositionsFromCore.current[j]],
@@ -413,7 +414,7 @@ export default React.memo(function Polygon(props) {
   if (board) {
     if (!polygonJXG.current) {
       polygonJXG.current = createPolygonJXG();
-    } else if (!(SVs.nVertices >= 2)) {
+    } else if (!(SVs.numVertices >= 2)) {
       deletePolygonJXG();
     } else {
       let validCoords = true;
@@ -428,8 +429,8 @@ export default React.memo(function Polygon(props) {
       }
 
       // add or delete points as required and change data array size
-      if (SVs.nVertices > previousNVertices.current) {
-        for (let i = previousNVertices.current; i < SVs.nVertices; i++) {
+      if (SVs.numVertices > previousNumVertices.current) {
+        for (let i = previousNumVertices.current; i < SVs.numVertices; i++) {
           let newPoint = board.create(
             "point",
             [...SVs.numericalVertices[i]],
@@ -438,8 +439,12 @@ export default React.memo(function Polygon(props) {
           polygonJXG.current.addPoints(newPoint);
         }
         initializePoints(polygonJXG.current);
-      } else if (SVs.nVertices < previousNVertices.current) {
-        for (let i = previousNVertices.current - 1; i >= SVs.nVertices; i--) {
+      } else if (SVs.numVertices < previousNumVertices.current) {
+        for (
+          let i = previousNumVertices.current - 1;
+          i >= SVs.numVertices;
+          i--
+        ) {
           polygonJXG.current.vertices[i].off("drag");
           polygonJXG.current.vertices[i].off("down");
           polygonJXG.current.vertices[i].off("hit");
@@ -453,7 +458,7 @@ export default React.memo(function Polygon(props) {
 
       let verticesVisible = !verticesFixed.current && !SVs.hidden;
 
-      for (let i = 0; i < SVs.nVertices; i++) {
+      for (let i = 0; i < SVs.numVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(
           JXG.COORDS_BY_USER,
           [...SVs.numericalVertices[i]],
@@ -463,6 +468,8 @@ export default React.memo(function Polygon(props) {
         // // let actuallyChangedVisibility = polygonJXG.current.vertices[i].visProp["visible"] !== verticesVisible;
         polygonJXG.current.vertices[i].visProp["visible"] = verticesVisible;
         polygonJXG.current.vertices[i].visPropCalc["visible"] = verticesVisible;
+        polygonJXG.current.vertices[i].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
       }
 
       if (
@@ -577,7 +584,7 @@ export default React.memo(function Polygon(props) {
         }
       }
 
-      previousNVertices.current = SVs.nVertices;
+      previousNumVertices.current = SVs.numVertices;
 
       board.updateRenderer();
     }

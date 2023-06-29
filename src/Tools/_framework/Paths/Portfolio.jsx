@@ -1,25 +1,58 @@
 // import axios from 'axios';
-import { Box, Icon, Text, Flex, Wrap } from "@chakra-ui/react";
-import React, { useRef } from "react";
+import {
+  Box,
+  Icon,
+  Text,
+  Flex,
+  Wrap,
+  useDisclosure,
+  Center,
+  DrawerHeader,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerOverlay,
+  Drawer,
+} from "@chakra-ui/react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
-  Form,
   useOutletContext,
   useLoaderData,
+  useNavigate,
+  useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
-import { pageToolViewAtom } from "../NewToolRoot";
-import { useRecoilState } from "recoil";
+import { GeneralActivityControls } from "./PortfolioActivityEditor";
+import axios from "axios";
 
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == "Add Activity") {
+  if (formObj._action == "update general") {
+    //Don't let label be blank
+    let label = formObj?.label?.trim();
+    if (label == "") {
+      label = "Untitled";
+    }
+    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    let response = await axios.post(
+      "/api/updatePortfolioActivitySettings.php",
+      {
+        label,
+        imagePath: formObj.imagePath,
+        public: formObj.public,
+        doenetId: formObj.doenetId,
+        learningOutcomes,
+      },
+    );
+    return true;
+  } else if (formObj?._action == "Add Activity") {
     //Create a portfilio activity and redirect to the editor for it
     let response = await fetch("/api/createPortfolioActivity.php");
 
@@ -126,20 +159,84 @@ const PortfolioGrid = styled.div`
   height: 100vh;
 `;
 
+function PortfolioSettingsDrawer({
+  isOpen,
+  onClose,
+  finalFocusRef,
+  doenetId,
+  data,
+  courseId,
+}) {
+  // const { pageId, activityData } = useLoaderData();
+  // console.log({ doenetId, data });
+  const fetcher = useFetcher();
+  let activityData;
+  if (doenetId) {
+    let publicIndex = data.publicActivities.findIndex(
+      (obj) => obj.doenetId == doenetId,
+    );
+    if (publicIndex != -1) {
+      activityData = data.publicActivities[publicIndex];
+    } else {
+      let privateIndex = data.privateActivities.findIndex(
+        (obj) => obj.doenetId == doenetId,
+      );
+      if (privateIndex != -1) {
+        activityData = data.privateActivities[privateIndex];
+      } else {
+        //Throw error not found
+      }
+    }
+  }
+
+  return (
+    <Drawer
+      isOpen={isOpen}
+      placement="right"
+      onClose={onClose}
+      finalFocusRef={finalFocusRef}
+      size="lg"
+    >
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader>
+          <Center>
+            <Text>Activity Settings</Text>
+          </Center>
+        </DrawerHeader>
+
+        <DrawerBody>
+          {doenetId && (
+            <GeneralActivityControls
+              fetcher={fetcher}
+              doenetId={doenetId}
+              activityData={activityData}
+              courseId={courseId}
+            />
+          )}
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
 export function Portfolio() {
   let context = useOutletContext();
   let data = useLoaderData();
+  const [doenetId, setDoenetId] = useState();
+  const controlsBtnRef = useRef(null);
 
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
+  const navigate = useNavigate();
+  const {
+    isOpen: settingsAreOpen,
+    onOpen: settingsOnOpen,
+    onClose: settingsOnClose,
+  } = useDisclosure();
 
-  let navigateTo = useRef("");
-
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    location.href = newHref;
-  }
+  useEffect(() => {
+    document.title = `Portfolio - Doenet`;
+  }, []);
 
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
@@ -148,6 +245,14 @@ export function Portfolio() {
 
   return (
     <>
+      <PortfolioSettingsDrawer
+        isOpen={settingsAreOpen}
+        onClose={settingsOnClose}
+        finalFocusRef={controlsBtnRef}
+        doenetId={doenetId}
+        data={data}
+        courseId={data.courseId}
+      />
       <PortfolioGrid>
         <Box
           gridRow="1/2"
@@ -170,7 +275,6 @@ export function Portfolio() {
             Portfolio
           </Text>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
-            {/* <Form method="post"> */}
             <Button
               value="Add Activity"
               dataTest="Add Activity"
@@ -180,20 +284,12 @@ export function Portfolio() {
 
                 if (response.ok) {
                   let { doenetId, pageDoenetId } = await response.json();
-                  navigateTo.current = `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-                  setRecoilPageToolView({
-                    page: "portfolioeditor",
-                    tool: "editor",
-                    view: "",
-                    params: { doenetId, pageId: pageDoenetId },
-                  });
+                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
                 } else {
                   throw Error(response.message);
                 }
               }}
             />
-            {/* <input type="hidden" name="_action" value="Add Activity" /> */}
-            {/* </Form> */}
           </div>
         </Box>
         <PublicActivitiesSection data-test="Public Activities">
@@ -225,6 +321,9 @@ export function Portfolio() {
                       fullName={data.fullName}
                       isPublic={true}
                       courseId={data.courseId}
+                      setDoenetId={setDoenetId}
+                      onClose={settingsOnClose}
+                      onOpen={settingsOnOpen}
                     />
                   );
                 })}
@@ -262,6 +361,9 @@ export function Portfolio() {
                       fullName={data.fullName}
                       isPublic={false}
                       courseId={data.courseId}
+                      setDoenetId={setDoenetId}
+                      onClose={settingsOnClose}
+                      onOpen={settingsOnOpen}
                     />
                   );
                 })}

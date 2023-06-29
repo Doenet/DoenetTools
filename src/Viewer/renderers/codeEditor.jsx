@@ -60,7 +60,7 @@ export default React.memo(function CodeEditor(props) {
   }
 
   const editorKey = id + "_editor";
-  const codemirrorKey = id + "_codemirror";
+  const viewerKey = id + "_viewer";
 
   //Received update from core to immediateValue
   //NOTE: currently causes a scrolling issue
@@ -78,13 +78,15 @@ export default React.memo(function CodeEditor(props) {
   let viewer = null;
   let editorWidth = SVs.width;
   let componentWidth = SVs.width;
+  if (SVs.showResults && ["left", "right"].includes(SVs.resultsLocation)) {
+    editorWidth = { size: 100, isAbsolute: false };
+  }
+
   let editorStyle = {
     width: sizeToCSS(editorWidth),
     height: sizeToCSS(editorHeight),
     maxWidth: "100%",
     padding: "0px",
-    // padding: "2px",
-    // border: "1px solid black",
     overflowX: "hidden",
     overflowY: "scroll",
   };
@@ -94,11 +96,11 @@ export default React.memo(function CodeEditor(props) {
       viewer = (
         <>
           <hr style={{ width: sizeToCSS(componentWidth), maxWidth: "100%" }} />
-          <div>{children}</div>
+          <div id={viewerKey}>{children}</div>
         </>
       );
     } else {
-      viewer = <div>{children}</div>;
+      viewer = <div id={viewerKey}>{children}</div>;
     }
   }
 
@@ -109,7 +111,6 @@ export default React.memo(function CodeEditor(props) {
   let editor = (
     <div key={editorKey} id={editorKey} style={editorStyle}>
       <CodeMirror
-        // key = {codemirrorKey}
         editorRef={editorRef}
         setInternalValueTo={updateInternalValueTo.current}
         //TODO: read only isn't working <codeeditor disabled />
@@ -180,7 +181,7 @@ export default React.memo(function CodeEditor(props) {
           border: "var(--mainBorder)",
           borderRadius: "var(--mainBorderRadius)",
           height: sizeToCSS(componentHeight),
-          width: sizeToCSS(componentWidth),
+          width: sizeToCSS(editorWidth),
           maxWidth: "100%",
           display: "flex",
           flexDirection: "column",
@@ -194,11 +195,20 @@ export default React.memo(function CodeEditor(props) {
 
   if (SVs.showResults) {
     if (SVs.resultsLocation === "left") {
+      let viewerPercent = SVs.viewerRatio * 100;
+      let editorPercent = 100 - viewerPercent;
       editorWithViewer = (
-        <div style={{ display: "flex", maxWidth: "100%", margin: "12px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            width: sizeToCSS(componentWidth),
+            maxWidth: "100%",
+            margin: "12px 0",
+          }}
+        >
           <div
             style={{
-              maxWidth: "50%",
+              maxWidth: `${viewerPercent}%`,
               paddingRight: "15px",
               boxSizing: "border-box",
             }}
@@ -207,7 +217,7 @@ export default React.memo(function CodeEditor(props) {
           </div>
           <div
             style={{
-              maxWidth: "50%",
+              width: `${editorPercent}%`,
               boxSizing: "border-box",
             }}
           >
@@ -216,11 +226,20 @@ export default React.memo(function CodeEditor(props) {
         </div>
       );
     } else if (SVs.resultsLocation === "right") {
+      let viewerPercent = SVs.viewerRatio * 100;
+      let editorPercent = 100 - viewerPercent;
       editorWithViewer = (
-        <div style={{ display: "flex", maxWidth: "100%", margin: "12px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            width: sizeToCSS(componentWidth),
+            maxWidth: "100%",
+            margin: "12px 0",
+          }}
+        >
           <div
             style={{
-              maxWidth: "50%",
+              width: `${editorPercent}%`,
               paddingRight: "15px",
               boxSizing: "border-box",
             }}
@@ -229,7 +248,7 @@ export default React.memo(function CodeEditor(props) {
           </div>
           <div
             style={{
-              maxWidth: "50%",
+              width: `${viewerPercent}%`,
               boxSizing: "border-box",
             }}
           >

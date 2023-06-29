@@ -10,6 +10,12 @@ import {
 } from "../utils/sequence";
 import { convertAttributesForComponentType } from "../utils/copy";
 import { returnRoundingAttributes } from "../utils/rounding";
+import {
+  checkForExcludedCombination,
+  estimateNumberOfDuplicateCombinations,
+  estimateNumberOfNumberCombinationsExcluded,
+  mergeContainingNumberCombinations,
+} from "../utils/excludeCombinations";
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectFromSequence";
@@ -23,9 +29,9 @@ export default class SelectFromSequence extends Sequence {
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number",
     };
-    attributes.numberToSelect = {
+    attributes.numToSelect = {
       createComponentOfType: "integer",
-      createStateVariable: "numberToSelect",
+      createStateVariable: "numToSelect",
       defaultValue: 1,
       public: true,
     };
@@ -61,21 +67,22 @@ export default class SelectFromSequence extends Sequence {
           dependencyType: "stateVariable",
           variableName: "type",
         },
-        numberToSelect: {
+        numToSelect: {
           dependencyType: "stateVariable",
-          variableName: "numberToSelect",
+          variableName: "numToSelect",
         },
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.excludeCombinations !== null) {
           let excludedCombinations =
             dependencyValues.excludeCombinations.stateValues.lists
-              .map((x) => x.slice(0, dependencyValues.numberToSelect))
-              .filter((x) => x.length === dependencyValues.numberToSelect);
+              .map((x) => x.slice(0, dependencyValues.numToSelect))
+              .filter((x) => x.length === dependencyValues.numToSelect);
 
           if (dependencyValues.type === "number") {
             while (true) {
-              let result = mergeContainingCombinations(excludedCombinations);
+              let result =
+                mergeContainingNumberCombinations(excludedCombinations);
               if (result.merged) {
                 excludedCombinations = result.combinations;
               } else {
@@ -117,9 +124,9 @@ export default class SelectFromSequence extends Sequence {
         },
       ],
       returnDependencies: ({ sharedParameters }) => ({
-        numberToSelect: {
+        numToSelect: {
           dependencyType: "stateVariable",
-          variableName: "numberToSelect",
+          variableName: "numToSelect",
         },
         withReplacement: {
           dependencyType: "stateVariable",
@@ -269,31 +276,31 @@ export default class SelectFromSequence extends Sequence {
   }
 
   static determineNumberOfUniqueVariants({ serializedComponent }) {
-    let numberToSelect = 1,
+    let numToSelect = 1,
       withReplacement = false;
 
     let sequenceType = serializedComponent.attributes.type.primitive;
 
-    let numberToSelectComponent =
-      serializedComponent.attributes.numberToSelect?.component;
-    if (numberToSelectComponent) {
+    let numToSelectComponent =
+      serializedComponent.attributes.numToSelect?.component;
+    if (numToSelectComponent) {
       // only implemented if have an integer with a single string child
       if (
-        numberToSelectComponent.componentType === "integer" &&
-        numberToSelectComponent.children?.length === 1 &&
-        typeof numberToSelectComponent.children[0] === "string"
+        numToSelectComponent.componentType === "integer" &&
+        numToSelectComponent.children?.length === 1 &&
+        typeof numToSelectComponent.children[0] === "string"
       ) {
-        numberToSelect = Number(numberToSelectComponent.children[0]);
+        numToSelect = Number(numToSelectComponent.children[0]);
 
-        if (!(Number.isInteger(numberToSelect) && numberToSelect >= 0)) {
+        if (!(Number.isInteger(numToSelect) && numToSelect >= 0)) {
           console.log(
-            `cannot determine unique variants of selectFromSequence as numberToSelect isn't a non-negative integer.`,
+            `cannot determine unique variants of selectFromSequence as numToSelect isn't a non-negative integer.`,
           );
           return { success: false };
         }
       } else {
         console.log(
-          `cannot determine unique variants of selectFromSequence as numberToSelect isn't constant number.`,
+          `cannot determine unique variants of selectFromSequence as numToSelect isn't constant number.`,
         );
         return { success: false };
       }
@@ -548,6 +555,39 @@ export default class SelectFromSequence extends Sequence {
       }
     }
 
+    let sortResults;
+
+    let sortResultsComponent =
+      serializedComponent.attributes.sortResults?.component;
+    if (sortResultsComponent) {
+      // only implemented if have a single string child
+
+      if (
+        sortResultsComponent.children?.length === 1 &&
+        typeof sortResultsComponent.children[0] === "string"
+      ) {
+        sortResults = sortResultsComponent.children[0].toLowerCase() === "true";
+      } else if (
+        (!sortResultsComponent.children ||
+          sortResultsComponent.children?.length === 0) &&
+        typeof sortResultsComponent.state?.value === "boolean"
+      ) {
+        sortResults = sortResultsComponent.state.value;
+      } else {
+        console.log(
+          `cannot determine unique variants of selectFromSequence as sortResults isn't a constant.`,
+        );
+        return { success: false };
+      }
+    }
+
+    if (sortResults && numToSelect > 1) {
+      console.log(
+        "have not implemented unique variants of a selectFromSequence with sortResults",
+      );
+      return { success: false };
+    }
+
     sequencePars = calculateSequenceParameters(sequencePars);
 
     let nOptions = sequencePars.length;
@@ -579,7 +619,7 @@ export default class SelectFromSequence extends Sequence {
     let uniqueVariantData = {
       excludeIndices,
       nOptions,
-      numberToSelect,
+      numToSelect,
       withReplacement,
     };
 
@@ -587,11 +627,11 @@ export default class SelectFromSequence extends Sequence {
 
     let numberOfVariants;
 
-    if (withReplacement || numberToSelect === 1) {
-      numberOfVariants = Math.pow(nOptions, numberToSelect);
+    if (withReplacement || numToSelect === 1) {
+      numberOfVariants = Math.pow(nOptions, numToSelect);
     } else {
       numberOfVariants = nOptions;
-      for (let n = nOptions - 1; n > nOptions - numberToSelect; n--) {
+      for (let n = nOptions - 1; n > nOptions - numToSelect; n--) {
         numberOfVariants *= n;
       }
     }
@@ -621,7 +661,7 @@ export default class SelectFromSequence extends Sequence {
     let uniqueVariantData = serializedComponent.variants.uniqueVariantData;
     let excludeIndices = uniqueVariantData.excludeIndices;
     let nOptions = uniqueVariantData.nOptions;
-    let numberToSelect = uniqueVariantData.numberToSelect;
+    let numToSelect = uniqueVariantData.numToSelect;
     let withReplacement = uniqueVariantData.withReplacement;
 
     let getSingleIndex = function (num) {
@@ -635,7 +675,7 @@ export default class SelectFromSequence extends Sequence {
       return ind;
     };
 
-    if (numberToSelect === 1) {
+    if (numToSelect === 1) {
       return {
         success: true,
         desiredVariant: { indices: [getSingleIndex(variantIndex - 1) + 1] },
@@ -643,7 +683,7 @@ export default class SelectFromSequence extends Sequence {
     }
 
     let numbers = enumerateSelectionCombinations({
-      numberOfIndices: numberToSelect,
+      numberOfIndices: numToSelect,
       numberOfOptions: nOptions,
       maxNumber: variantIndex,
       withReplacement,
@@ -657,7 +697,7 @@ function makeSelection({ dependencyValues }) {
   // console.log(`make selection`)
   // console.log(dependencyValues)
 
-  if (dependencyValues.numberToSelect < 1) {
+  if (dependencyValues.numToSelect < 1) {
     return {
       setEssentialValue: {
         selectedValues: [],
@@ -670,15 +710,15 @@ function makeSelection({ dependencyValues }) {
     };
   }
 
-  let numberUniqueRequired = 1;
+  let numUniqueRequired = 1;
   if (!dependencyValues.withReplacement) {
-    numberUniqueRequired = dependencyValues.numberToSelect;
+    numUniqueRequired = dependencyValues.numToSelect;
   }
 
-  if (numberUniqueRequired > dependencyValues.length) {
+  if (numUniqueRequired > dependencyValues.length) {
     throw Error(
       "Cannot select " +
-        numberUniqueRequired +
+        numUniqueRequired +
         " values from a sequence of length " +
         dependencyValues.length,
     );
@@ -691,7 +731,7 @@ function makeSelection({ dependencyValues }) {
   ) {
     let desiredIndices = dependencyValues.variants.desiredVariant.indices;
     if (desiredIndices !== undefined) {
-      if (desiredIndices.length !== dependencyValues.numberToSelect) {
+      if (desiredIndices.length !== dependencyValues.numToSelect) {
         throw Error(
           "Number of indices specified for select must match number to select",
         );
@@ -743,40 +783,24 @@ function makeSelection({ dependencyValues }) {
     }
   }
 
-  let numberCombinationsExcluded = dependencyValues.excludedCombinations.length;
+  let numCombinationsExcluded = dependencyValues.excludedCombinations.length;
 
   if (dependencyValues.type === "number") {
-    // account for fact that an excluded combination with a NaN is a wildcard
-    // this could be an overestimate, as different combinations could match the same value
-    numberCombinationsExcluded = 0;
-    let nValues = dependencyValues.length - dependencyValues.exclude.length;
-    for (let comb of dependencyValues.excludedCombinations) {
-      let numNans = comb.reduce((a, c) => a + (Number.isNaN(c) ? 1 : 0), 0);
-
-      if (numNans > 0) {
-        if (dependencyValues.withReplacement) {
-          numberCombinationsExcluded += Math.pow(nValues, numNans);
-        } else {
-          let n = nValues - dependencyValues.numberToSelect + numNans;
-          let nExcl = n;
-          for (let i = 1; i < numNans; i++) {
-            nExcl *= n - i;
-          }
-          numberCombinationsExcluded += nExcl;
-        }
-      } else {
-        numberCombinationsExcluded += 1;
-      }
-    }
+    numCombinationsExcluded = estimateNumberOfNumberCombinationsExcluded({
+      excludedCombinations: dependencyValues.excludedCombinations,
+      numValues: dependencyValues.length - dependencyValues.exclude.length,
+      withReplacement: dependencyValues.withReplacement,
+      numToSelect: dependencyValues.numToSelect,
+    });
   }
 
   let selectedValues, selectedIndices;
 
-  if (numberCombinationsExcluded === 0) {
+  if (numCombinationsExcluded === 0) {
     let selectedObj = selectValuesAndIndices({
       stateValues: dependencyValues,
-      numberUniqueRequired: numberUniqueRequired,
-      numberToSelect: dependencyValues.numberToSelect,
+      numUniqueRequired: numUniqueRequired,
+      numToSelect: dependencyValues.numToSelect,
       withReplacement: dependencyValues.withReplacement,
       rng: dependencyValues.variantRng,
     });
@@ -784,27 +808,27 @@ function makeSelection({ dependencyValues }) {
     selectedValues = selectedObj.selectedValues;
     selectedIndices = selectedObj.selectedIndices;
   } else {
-    let numberPossibilitiesLowerBound =
+    let numPossibilitiesLowerBound =
       dependencyValues.length - dependencyValues.exclude.length;
 
     if (dependencyValues.withReplacement) {
-      numberPossibilitiesLowerBound = Math.pow(
-        numberPossibilitiesLowerBound,
-        dependencyValues.numberToSelect,
+      numPossibilitiesLowerBound = Math.pow(
+        numPossibilitiesLowerBound,
+        dependencyValues.numToSelect,
       );
     } else {
-      let n = numberPossibilitiesLowerBound;
-      for (let i = 1; i < dependencyValues.numberToSelect; i++) {
-        numberPossibilitiesLowerBound *= n - i;
+      let n = numPossibilitiesLowerBound;
+      for (let i = 1; i < dependencyValues.numToSelect; i++) {
+        numPossibilitiesLowerBound *= n - i;
       }
     }
 
-    if (numberCombinationsExcluded > 0.7 * numberPossibilitiesLowerBound) {
+    if (numCombinationsExcluded > 0.7 * numPossibilitiesLowerBound) {
       // may have excluded over 70% of combinations
       // need to determine actual number of possibilities
       // to see if really have excluded that many combinations
 
-      let numberPossibilities = 0;
+      let numPossibilities = 0;
       for (let index = 0; index < dependencyValues.length; index++) {
         if (
           returnSequenceValueForIndex({
@@ -816,38 +840,38 @@ function makeSelection({ dependencyValues }) {
             type: dependencyValues.type,
           }) !== null
         ) {
-          numberPossibilities++;
+          numPossibilities++;
         }
       }
 
       if (dependencyValues.withReplacement) {
-        numberPossibilities = Math.pow(
-          numberPossibilities,
-          dependencyValues.numberToSelect,
+        numPossibilities = Math.pow(
+          numPossibilities,
+          dependencyValues.numToSelect,
         );
       } else {
-        let n = numberPossibilities;
-        for (let i = 1; i < dependencyValues.numberToSelect; i++) {
-          numberPossibilities *= n - i;
+        let n = numPossibilities;
+        for (let i = 1; i < dependencyValues.numToSelect; i++) {
+          numPossibilities *= n - i;
         }
       }
 
-      if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+      if (numCombinationsExcluded > 0.7 * numPossibilities) {
         if (
           dependencyValues.type === "number" &&
           dependencyValues.excludedCombinations.some((x) =>
             x.some(Number.isNaN),
           )
         ) {
-          let numberDuplicated = estimateNumberOfDuplicateCombinations(
+          let numDuplicated = estimateNumberOfDuplicateCombinations(
             dependencyValues.excludedCombinations,
             dependencyValues.length - dependencyValues.exclude.length,
             dependencyValues.withReplacement,
           );
 
-          numberCombinationsExcluded -= numberDuplicated;
+          numCombinationsExcluded -= numDuplicated;
 
-          if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+          if (numCombinationsExcluded > 0.7 * numPossibilities) {
             throw Error(
               "Excluded over 70% of combinations in selectFromSequence",
             );
@@ -866,8 +890,8 @@ function makeSelection({ dependencyValues }) {
     for (let sampnum = 0; sampnum < 200; sampnum++) {
       let selectedObj = selectValuesAndIndices({
         stateValues: dependencyValues,
-        numberUniqueRequired: numberUniqueRequired,
-        numberToSelect: dependencyValues.numberToSelect,
+        numUniqueRequired: numUniqueRequired,
+        numToSelect: dependencyValues.numToSelect,
         withReplacement: dependencyValues.withReplacement,
         rng: dependencyValues.variantRng,
       });
@@ -928,8 +952,8 @@ function makeSelection({ dependencyValues }) {
 
 function selectValuesAndIndices({
   stateValues,
-  numberUniqueRequired = 1,
-  numberToSelect = 1,
+  numUniqueRequired = 1,
+  numToSelect = 1,
   withReplacement = false,
   rng,
 }) {
@@ -937,7 +961,7 @@ function selectValuesAndIndices({
   let selectedIndices = [];
 
   if (
-    stateValues.exclude.length + numberUniqueRequired <
+    stateValues.exclude.length + numUniqueRequired <
     0.5 * stateValues.length
   ) {
     // the simplest case where the likelihood of getting excluded is less than 50%
@@ -945,7 +969,7 @@ function selectValuesAndIndices({
     // and use rejection method to resample if an excluded is hit
     // or repeat a value when withReplacement=false
 
-    for (let ind = 0; ind < numberToSelect; ind++) {
+    for (let ind = 0; ind < numToSelect; ind++) {
       // with 100 chances with at least 50% success,
       // prob of failure less than 10^(-30)
       let foundValid = false;
@@ -1000,17 +1024,17 @@ function selectValuesAndIndices({
 
   let numPossibleValues = possibleValuesAndIndices.length;
 
-  if (numberUniqueRequired > numPossibleValues) {
+  if (numUniqueRequired > numPossibleValues) {
     throw Error(
       "Cannot select " +
-        numberUniqueRequired +
+        numUniqueRequired +
         " unique values from sequence of length " +
         numPossibleValues,
     );
   }
 
-  if (numberUniqueRequired === 1) {
-    for (let ind = 0; ind < numberToSelect; ind++) {
+  if (numUniqueRequired === 1) {
+    for (let ind = 0; ind < numToSelect; ind++) {
       // random number in [0, 1)
       let rand = rng();
       // random integer from 0 to numPossibleValues-1
@@ -1035,211 +1059,9 @@ function selectValuesAndIndices({
     ];
   }
 
-  let selectedValuesAndIndices = possibleValuesAndIndices.slice(
-    0,
-    numberToSelect,
-  );
+  let selectedValuesAndIndices = possibleValuesAndIndices.slice(0, numToSelect);
   selectedValues = selectedValuesAndIndices.map((x) => x.value);
   selectedIndices = selectedValuesAndIndices.map((x) => x.originalIndex + 1);
 
   return { selectedValues, selectedIndices };
-}
-
-function checkForExcludedCombination({ type, excludedCombinations, values }) {
-  if (type === "math") {
-    return excludedCombinations.some((x) =>
-      x.every((v, i) => v.equals(values[i])),
-    );
-  } else if (type === "number") {
-    // if one entry of excluded combinations is NaN, then it is a wildcard
-    // that will match any value
-    return excludedCombinations.some((x) =>
-      x.every(
-        (v, i) =>
-          Number.isNaN(v) ||
-          Math.abs(v - values[i]) <=
-            1e-14 * Math.max(Math.abs(v), Math.abs(values[i])),
-      ),
-    );
-  } else {
-    return excludedCombinations.some((x) => x.every((v, i) => v === values[i]));
-  }
-}
-
-function mergeContainingCombinations(combinations) {
-  if (combinations.length === 0) {
-    return { merged: false, combinations: [] };
-  }
-
-  let mergedCombinations = [combinations[0]];
-
-  let mergedAtLeastOne = false;
-
-  for (let comb of combinations.slice(1)) {
-    let newCombinations = [];
-    let merged = false;
-
-    for (let oldComb of mergedCombinations) {
-      if (merged) {
-        newCombinations.push(oldComb);
-        continue;
-      }
-      let newComb = [];
-      merged = true;
-      let mergingInto = null;
-      for (let k = 0; k < comb.length; k++) {
-        let v1 = comb[k],
-          v2 = oldComb[k];
-        if (Number.isNaN(v1)) {
-          if (Number.isNaN(v2)) {
-            newComb.push(NaN);
-          } else {
-            // want to merge into 1
-            if (mergingInto === 2) {
-              // already merging into 2, so cannot merge
-              merged = false;
-              break;
-            } else {
-              newComb.push(NaN);
-              mergingInto = 1;
-            }
-          }
-        } else if (Number.isNaN(v2)) {
-          // want to merge into 2
-          if (mergingInto === 1) {
-            // already merging into 1, so cannot merge
-            merged = false;
-            break;
-          } else {
-            newComb.push(NaN);
-            mergingInto = 2;
-          }
-        } else {
-          if (v1 === v2) {
-            newComb.push(v1);
-          } else {
-            merged = false;
-            break;
-          }
-        }
-      }
-
-      if (merged) {
-        newCombinations.push(newComb);
-      } else {
-        newCombinations.push(oldComb);
-      }
-    }
-
-    if (merged) {
-      mergedAtLeastOne = true;
-    } else {
-      newCombinations.push(comb);
-    }
-
-    mergedCombinations = newCombinations;
-  }
-
-  return {
-    merged: mergedAtLeastOne,
-    combinations: mergedCombinations,
-  };
-}
-
-function estimateNumberOfDuplicateCombinations(
-  combinations,
-  nValues,
-  withReplacement,
-) {
-  // if have wildcards, get better estimate of number excluded
-
-  let nCombs = combinations.length;
-
-  if (nCombs === 0) {
-    return 0;
-  }
-
-  let duplicateCombinations = [];
-  for (let i = 0; i < nCombs; i++) {
-    let comb1 = combinations[i];
-    for (let j = i + 1; j < nCombs; j++) {
-      let comb2 = combinations[j];
-      let foundDuplicate = true;
-      let duplicate = [];
-      for (let k = 0; k < comb1.length; k++) {
-        let v1 = comb1[k],
-          v2 = comb2[k];
-        if (Number.isNaN(v1)) {
-          if (Number.isNaN(v2)) {
-            duplicate.push(NaN);
-          } else {
-            duplicate.push(v2);
-          }
-        } else if (Number.isNaN(v2)) {
-          duplicate.push(v1);
-        } else {
-          if (v1 === v2) {
-            duplicate.push(v1);
-          } else {
-            foundDuplicate = false;
-            break;
-          }
-        }
-      }
-
-      if (foundDuplicate) {
-        if (withReplacement) {
-          duplicateCombinations.push(duplicate);
-        } else {
-          let nonNanEntries = duplicate.filter((x) => !Number.isNaN(x));
-          if ([...new Set(nonNanEntries)].length === nonNanEntries.length) {
-            duplicateCombinations.push(duplicate);
-          }
-        }
-      }
-    }
-  }
-
-  // TODO: get a more accurate count of the number of excluded combinations.
-  // This is just a heuristic to reduce the count
-  while (true) {
-    let result = mergeContainingCombinations(duplicateCombinations);
-
-    if (result.merged) {
-      duplicateCombinations = result.combinations;
-    } else {
-      break;
-    }
-  }
-
-  let numberDuplicated = 0;
-
-  if (duplicateCombinations.length > 0) {
-    for (let comb of duplicateCombinations) {
-      let numNans = comb.reduce((a, c) => a + (Number.isNaN(c) ? 1 : 0), 0);
-
-      if (numNans > 0) {
-        if (withReplacement) {
-          numberDuplicated += Math.pow(nValues, numNans);
-        } else {
-          let n = nValues - comb.length + numNans;
-          let nDup = n;
-          for (let i = 1; i < numNans; i++) {
-            nDup *= n - i;
-          }
-          numberDuplicated += nDup;
-        }
-      } else {
-        numberDuplicated += 1;
-      }
-    }
-  }
-
-  numberDuplicated -= estimateNumberOfDuplicateCombinations(
-    duplicateCombinations,
-    nValues,
-    withReplacement,
-  );
-
-  return numberDuplicated;
 }

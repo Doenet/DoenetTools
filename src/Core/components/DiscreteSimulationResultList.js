@@ -140,7 +140,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
       definition({ dependencyValues }) {
         let cells = [];
 
-        let nComponents = 1;
+        let numComponents = 1;
         let haveVector = false;
 
         if (
@@ -148,7 +148,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           Array.isArray(dependencyValues.allIterates[0].tree) &&
           vectorOperators.includes(dependencyValues.allIterates[0].tree[0])
         ) {
-          nComponents = dependencyValues.allIterates[0].tree.length - 1;
+          numComponents = dependencyValues.allIterates[0].tree.length - 1;
           haveVector = true;
         }
 
@@ -156,7 +156,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           let headerRow = [];
           let headerLen = Math.min(
             dependencyValues.headerRow.length,
-            nComponents + 1,
+            numComponents + 1,
           );
           for (let comp = 0; comp < headerLen; comp++) {
             headerRow.push(dependencyValues.headerRow[comp]);
@@ -166,7 +166,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
         for (let [ind, iter] of dependencyValues.allIterates.entries()) {
           let cell = [ind.toString()];
-          for (let comp = 0; comp < nComponents; comp++) {
+          for (let comp = 0; comp < numComponents; comp++) {
             let val = iter;
             if (haveVector) {
               val = val.get_component(comp);

@@ -960,9 +960,13 @@ export class DependencyHandler {
       this.downstreamDependencies[component.componentName][stateVariable];
 
     for (let dependencyName in downDeps) {
-      let { value, changes, usedDefault } = await downDeps[
-        dependencyName
-      ].getValue();
+      let dep = downDeps[dependencyName];
+
+      if (dep.onlyToSetInInverseDefinition) {
+        continue;
+      }
+
+      let { value, changes, usedDefault } = await dep.getValue();
 
       dependencyValues[dependencyName] = value;
       if (Object.keys(changes).length > 0) {
@@ -2686,7 +2690,7 @@ class Dependency {
                 let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
                   arrayEntryPrefix,
                   varEnding: vName.substring(arrayEntryPrefix.length),
-                  nDimensions: arrayStateVarObj.nDimensions,
+                  numDimensions: arrayStateVarObj.numDimensions,
                 });
 
                 if (arrayKeys.length > 0) {
@@ -3342,6 +3346,15 @@ class StateVariableDependency extends Dependency {
     }
     this.originalDownstreamVariableNames = [this.definition.variableName];
 
+    // In order to be allowed to set a value in an inverse definition,
+    // we must create a dependency (as that was we can detect circular dependencies)
+    // However, if the value won't be used in the definition, add the flag onlyToSetInInverseDefinition,
+    // which we prevent its value from being calculated or marked stale
+    // due to this dependency (or included in recursive dependency values)
+    if (this.definition.onlyToSetInInverseDefinition) {
+      this.onlyToSetInInverseDefinition = true;
+    }
+
     if (this.definition.returnAsComponentObject) {
       this.returnSingleComponent = true;
     } else {
@@ -3892,6 +3905,9 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
           for (let dependencyName in downDeps) {
             let dep = downDeps[dependencyName];
+            if (dep.onlyToSetInInverseDefinition) {
+              continue;
+            }
             for (let [cInd, cName] of dep.downstreamComponentNames.entries()) {
               let varNames = [];
               if (

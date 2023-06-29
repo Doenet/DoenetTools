@@ -1,10 +1,16 @@
 import Function from "./Function";
-import InlineComponent from "./abstract/InlineComponent";
-import GraphicalComponent from "./abstract/GraphicalComponent";
+import subsets, {
+  mathExpressionFromSubsetValue,
+} from "../utils/subset-of-reals";
 import me from "math-expressions";
 import { returnPiecewiseNumericalFunctionFromChildren } from "../utils/function";
 import { roundForDisplay } from "../utils/math";
 import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
+import {
+  find_maxima_of_piecewise,
+  find_minima_of_piecewise,
+} from "../utils/extrema";
+import { find_effective_domains_piecewise_children } from "../utils/domain";
 
 export default class PiecewiseFunction extends Function {
   static componentType = "piecewiseFunction";
@@ -12,8 +18,8 @@ export default class PiecewiseFunction extends Function {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    delete attributes.nInputs;
-    delete attributes.nOutputs;
+    delete attributes.numInputs;
+    delete attributes.numOutputs;
     delete attributes.minima;
     delete attributes.maxima;
     delete attributes.extrema;
@@ -47,18 +53,23 @@ export default class PiecewiseFunction extends Function {
 
     delete stateVariableDefinitions.isInterpolatedFunction;
 
-    stateVariableDefinitions.nInputs = {
+    stateVariableDefinitions.isPiecewiseFunction = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isPiecewiseFunction: true } }),
+    };
+
+    stateVariableDefinitions.numInputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
       },
       returnDependencies: () => ({}),
       definition() {
-        return { setValue: { nInputs: 1 } };
+        return { setValue: { numInputs: 1 } };
       },
     };
 
-    stateVariableDefinitions.nOutputs = {
+    stateVariableDefinitions.numOutputs = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -67,24 +78,25 @@ export default class PiecewiseFunction extends Function {
         functionChildren: {
           dependencyType: "child",
           childGroups: ["functions"],
-          variableNames: ["nOutputs"],
+          variableNames: ["numOutputs"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.functionChildren.length > 0) {
           return {
             setValue: {
-              nOutputs:
-                dependencyValues.functionChildren[0].stateValues.nOutputs,
+              numOutputs:
+                dependencyValues.functionChildren[0].stateValues.numOutputs,
             },
           };
         } else {
-          return { setValue: { nOutputs: 1 } };
+          return { setValue: { numOutputs: 1 } };
         }
       },
     };
 
     stateVariableDefinitions.numericalDomainsOfChildren = {
+      additionalStateVariablesDefined: ["childrenWithNonNumericDomains"],
       returnDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
@@ -94,13 +106,11 @@ export default class PiecewiseFunction extends Function {
       }),
       definition({ dependencyValues }) {
         let numericalDomainsOfChildren = [];
+        let childrenWithNonNumericDomains = [];
 
         // We can compute the domain of a function child only if it is real-valued.
         // Otherwise, we assume the domain is all real numbers
-        for (let [
-          ind,
-          functionChild,
-        ] of dependencyValues.functionChildren.entries()) {
+        for (let functionChild of dependencyValues.functionChildren) {
           let fDomain = functionChild.stateValues.domain?.[0];
           if (fDomain) {
             // if fDomain exists, then it must be an interval, i.e., its tree must be of the form
@@ -115,6 +125,10 @@ export default class PiecewiseFunction extends Function {
               .evaluate_to_constant();
             let intervalMinIsClosed = fDomain.tree[2][1];
             let intervalMaxIsClosed = fDomain.tree[2][2];
+
+            childrenWithNonNumericDomains.push(
+              Number.isNaN(intervalMin) || Number.isNaN(intervalMax),
+            );
 
             if (!Number.isFinite(intervalMin) && intervalMin !== -Infinity) {
               numericalDomainsOfChildren.push(null);
@@ -143,7 +157,12 @@ export default class PiecewiseFunction extends Function {
             ]);
           }
         }
-        return { setValue: { numericalDomainsOfChildren } };
+        return {
+          setValue: {
+            numericalDomainsOfChildren,
+            childrenWithNonNumericDomains,
+          },
+        };
       },
     };
 
@@ -239,7 +258,7 @@ export default class PiecewiseFunction extends Function {
       definition: () => ({ setValue: { formula: me.fromAst("\uff3f") } }),
     };
 
-    delete stateVariableDefinitions.nPrescribedPoints;
+    delete stateVariableDefinitions.numPrescribedPoints;
     delete stateVariableDefinitions.prescribedPoints;
     delete stateVariableDefinitions.prescribedMinima;
     delete stateVariableDefinitions.prescribedMaxima;
@@ -248,6 +267,7 @@ export default class PiecewiseFunction extends Function {
     delete stateVariableDefinitions.xs;
     delete stateVariableDefinitions.mathChildName;
     delete stateVariableDefinitions.mathChildCreatedBySugar;
+    delete stateVariableDefinitions.haveNaNChildToReevaluate;
 
     // until we build in support for piecewise functions into math-expressions,
     // we cannot represent the symbolicfs
@@ -255,13 +275,13 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["symbolicf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey() {
         return {};
@@ -281,13 +301,13 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["numericalf"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
       returnArrayDependenciesByKey() {
         return {
@@ -385,15 +405,15 @@ export default class PiecewiseFunction extends Function {
       isArray: true,
       entryPrefixes: ["fDefinition"],
       returnArraySizeDependencies: () => ({
-        nOutputs: {
+        numOutputs: {
           dependencyType: "stateVariable",
-          variableName: "nOutputs",
+          variableName: "numOutputs",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nOutputs];
+        return [dependencyValues.numOutputs];
       },
-      returnArrayDependenciesByKey({ stateValues }) {
+      returnArrayDependenciesByKey() {
         return {
           globalDependencies: {
             functionChildren: {
@@ -418,7 +438,6 @@ export default class PiecewiseFunction extends Function {
       },
       arrayDefinitionByKey: function ({
         globalDependencyValues,
-        usedDefault,
         arrayKeys,
       }) {
         if (globalDependencyValues.functionChildren.length > 0) {
@@ -485,6 +504,14 @@ export default class PiecewiseFunction extends Function {
           childGroups: ["functions"],
           variableNames: ["formula", "variable", "domain"],
         },
+        numericalDomainsOfChildren: {
+          dependencyType: "stateVariable",
+          variableName: "numericalDomainsOfChildren",
+        },
+        childrenWithNonNumericDomains: {
+          dependencyType: "stateVariable",
+          variableName: "childrenWithNonNumericDomains",
+        },
         displayDigits: {
           dependencyType: "stateVariable",
           variableName: "displayDigits",
@@ -515,10 +542,22 @@ export default class PiecewiseFunction extends Function {
           }
         }
 
+        // Latex display ignores domain of the function itself
+        // (to be consistent with other cases of displaying latex of a function)
+        let effectiveDomainsOfChildrenIgnoringDomain =
+          find_effective_domains_piecewise_children({
+            numericalDomainsOfChildren:
+              dependencyValues.numericalDomainsOfChildren,
+          });
+
         let me_infinity = me.fromAst(Infinity);
         let me_minus_infinity = me.fromAst(-Infinity);
 
-        let childrenLatex = [];
+        let formulaLatexByLine = [];
+        let subsetDomainsByLine = [];
+        let nonNumericConditionsByLine = [];
+        let lineContainsNonNumeric = [];
+        let lastNonNumeric = -1;
 
         for (let [
           ind,
@@ -538,98 +577,197 @@ export default class PiecewiseFunction extends Function {
             dependencyValues,
           }).toLatex(toLatexParams);
 
-          let fDomain = functionChild.stateValues.domain?.[0];
-          let intervalMin, intervalMax;
-          let intervalMinIsClosed, intervalMaxIsClosed;
+          let conditionLatex;
 
-          if (fDomain) {
+          let fDomain = functionChild.stateValues.domain?.[0];
+
+          let haveNonNumeric = false;
+
+          if (dependencyValues.childrenWithNonNumericDomains[ind]) {
+            haveNonNumeric = true;
+
             // if fDomain exists, then it must be an interval, i.e., its tree must be of the form
             // ["interval", ["tuple", 1,2], ["tuple", true, false]]
             // where the above represents the interval [1,2)
 
-            intervalMin = me.fromAst(fDomain.tree[1][1]).simplify();
-            intervalMax = me.fromAst(fDomain.tree[1][2]).simplify();
-            intervalMinIsClosed = fDomain.tree[2][1];
-            intervalMaxIsClosed = fDomain.tree[2][2];
-          } else {
-            intervalMin = me_minus_infinity;
-            intervalMax = me_infinity;
-          }
+            let intervalMin = me.fromAst(fDomain.tree[1][1]).simplify();
+            let intervalMax = me.fromAst(fDomain.tree[1][2]).simplify();
+            let intervalMinIsClosed = fDomain.tree[2][1];
+            let intervalMaxIsClosed = fDomain.tree[2][2];
 
-          if (intervalMin.equals(me_minus_infinity)) {
-            if (intervalMax.equals(me_infinity)) {
-              if (ind === 0) {
-                // first child has no conditions, so just return latex for first child
-                return { setValue: { latex: formulaLatex } };
-              }
-
-              childrenLatex.push(`${formulaLatex} & \\text{otherwise}`);
-              break;
-            } else {
+            if (intervalMin.equals(me_minus_infinity)) {
               // only maxx
               let operator = intervalMaxIsClosed ? "\\le" : "<";
               let maxxLatex = roundForDisplay({
                 value: intervalMax,
                 dependencyValues,
               }).toLatex(toLatexParams);
-              childrenLatex.push(
-                `${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${maxxLatex}`,
-              );
-            }
-          } else if (intervalMax.equals(me_infinity)) {
-            // only minx
-            let operator = intervalMinIsClosed ? "\\ge" : ">";
+              conditionLatex = `${functionVariable} ${operator} ${maxxLatex}`;
+            } else if (intervalMax.equals(me_infinity)) {
+              // only minx
+              let operator = intervalMinIsClosed ? "\\ge" : ">";
 
-            let minxLatex = roundForDisplay({
-              value: intervalMin,
-              dependencyValues,
-            }).toLatex(toLatexParams);
-            childrenLatex.push(
-              `${formulaLatex} & \\text{if } ${functionVariable} ${operator} ${minxLatex}`,
-            );
-          } else if (
-            intervalMax.equals(intervalMin) &&
-            intervalMinIsClosed &&
-            intervalMaxIsClosed
-          ) {
-            // single point
-            let maxxLatex = roundForDisplay({
-              value: intervalMax,
-              dependencyValues,
-            }).toLatex(toLatexParams);
-            childrenLatex.push(
-              `${formulaLatex} & \\text{if } ${functionVariable} = ${maxxLatex}`,
-            );
-          } else {
-            // unequal minx and maxx
-            let domainString =
-              "{" +
-              roundForDisplay({
+              let minxLatex = roundForDisplay({
                 value: intervalMin,
                 dependencyValues,
-              }).toLatex(toLatexParams) +
-              "}";
-            if (intervalMinIsClosed) {
-              domainString += " \\le ";
+              }).toLatex(toLatexParams);
+              conditionLatex = `${functionVariable} ${operator} ${minxLatex}`;
+            } else if (
+              intervalMax.equals(intervalMin) &&
+              intervalMinIsClosed &&
+              intervalMaxIsClosed
+            ) {
+              // single point
+              let maxxLatex = roundForDisplay({
+                value: intervalMax,
+                dependencyValues,
+              }).toLatex(toLatexParams);
+              conditionLatex = `${functionVariable} = ${maxxLatex}`;
             } else {
-              domainString += " < ";
-            }
-            domainString += functionVariable;
-            if (intervalMaxIsClosed) {
-              domainString += " \\le ";
-            } else {
-              domainString += " < ";
-            }
-            domainString += roundForDisplay({
-              value: intervalMax,
-              dependencyValues,
-            }).toLatex(toLatexParams);
+              // unequal minx and maxx
+              let domainString =
+                "{" +
+                roundForDisplay({
+                  value: intervalMin,
+                  dependencyValues,
+                }).toLatex(toLatexParams) +
+                "}";
+              if (intervalMinIsClosed) {
+                domainString += " \\le ";
+              } else {
+                domainString += " < ";
+              }
+              domainString += functionVariable;
+              if (intervalMaxIsClosed) {
+                domainString += " \\le ";
+              } else {
+                domainString += " < ";
+              }
+              domainString += roundForDisplay({
+                value: intervalMax,
+                dependencyValues,
+              }).toLatex(toLatexParams);
 
-            childrenLatex.push(`${formulaLatex} & \\text{if } ${domainString}`);
+              conditionLatex = domainString;
+            }
+          } else {
+            // child started with a numerical domain
+
+            if (effectiveDomainsOfChildrenIgnoringDomain[ind].isEmpty()) {
+              continue;
+            }
+
+            if (
+              !fDomain ||
+              (fDomain.tree[1][1] === -Infinity &&
+                fDomain.tree[1][2] === Infinity)
+            ) {
+              if (formulaLatexByLine.length === 0) {
+                // first line has no conditions, so just return latex for first line
+                return { setValue: { latex: formulaLatex } };
+              }
+
+              let indexOfFormula = formulaLatexByLine.lastIndexOf(formulaLatex);
+
+              if (
+                indexOfFormula > lastNonNumeric ||
+                indexOfFormula === formulaLatexByLine.length - 1
+              ) {
+                formulaLatexByLine.splice(indexOfFormula, 1);
+                nonNumericConditionsByLine.splice(indexOfFormula, 1);
+                subsetDomainsByLine.splice(indexOfFormula, 1);
+                lineContainsNonNumeric.splice(indexOfFormula, 1);
+              }
+
+              formulaLatexByLine.push(formulaLatex);
+              subsetDomainsByLine.push([]);
+              nonNumericConditionsByLine.push(["\\text{otherwise}"]);
+
+              break;
+            }
+
+            conditionLatex = latexFromSubsetDomain({
+              subsetDomain: effectiveDomainsOfChildrenIgnoringDomain[ind],
+              dependencyValues,
+              functionVariable,
+              toLatexParams,
+            });
+          }
+
+          let indexOfFormula = formulaLatexByLine.lastIndexOf(formulaLatex);
+          let canCombine = false;
+
+          if (indexOfFormula !== -1 && indexOfFormula >= lastNonNumeric) {
+            canCombine = true;
+            if (
+              haveNonNumeric &&
+              indexOfFormula !== formulaLatexByLine.length - 1
+            ) {
+              // non numeric can only combine with previous
+              canCombine = false;
+            }
+          }
+
+          let indexUsed;
+          if (canCombine) {
+            indexUsed = indexOfFormula;
+          } else {
+            formulaLatexByLine.push(formulaLatex);
+            subsetDomainsByLine.push([]);
+            nonNumericConditionsByLine.push([]);
+            indexUsed = formulaLatexByLine.length - 1;
+          }
+
+          if (haveNonNumeric) {
+            lastNonNumeric = formulaLatexByLine.length - 1;
+            lineContainsNonNumeric[indexUsed] = true;
+            nonNumericConditionsByLine[indexUsed].push(conditionLatex);
+          } else {
+            subsetDomainsByLine[indexUsed].push(
+              effectiveDomainsOfChildrenIgnoringDomain[ind],
+            );
           }
         }
 
-        let latex = childrenLatex.join("\\\\\n    ");
+        let conditionLatexByLine = subsetDomainsByLine.map(
+          (subsetDomains, i) => {
+            if (
+              nonNumericConditionsByLine[i].length === 1 &&
+              nonNumericConditionsByLine[i][0] === "\\text{otherwise}"
+            ) {
+              return "\\text{otherwise}";
+            } else {
+              let conditionLatex = "\\text{if }";
+              if (nonNumericConditionsByLine[i].length > 0) {
+                conditionLatex +=
+                  " " + nonNumericConditionsByLine[i].join(" \\text{ or } ");
+              }
+
+              if (subsetDomains.length > 0) {
+                if (nonNumericConditionsByLine[i].length > 0) {
+                  conditionLatex += " \\text{ or } ";
+                } else {
+                  conditionLatex += " ";
+                }
+                // Simplify the expression for the numerical domain by calculating the combined subset
+                // and reconverting to latex
+                let overallDomain = new subsets.Union(subsetDomains);
+                conditionLatex += latexFromSubsetDomain({
+                  subsetDomain: overallDomain,
+                  dependencyValues,
+                  functionVariable,
+                  toLatexParams,
+                });
+              }
+
+              return conditionLatex;
+            }
+          },
+        );
+
+        let latex = formulaLatexByLine
+          .map((v, i) => `${v} & ${conditionLatexByLine[i]}`)
+          .join("\\\\\n    ");
 
         latex = `\\begin{cases}\n    ${latex}\n\\end{cases}`;
 
@@ -637,13 +775,52 @@ export default class PiecewiseFunction extends Function {
       },
     };
 
+    stateVariableDefinitions.functionChildrenInfoToCalculateExtrema = {
+      returnDependencies: () => ({
+        functionChildren: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: [
+            "domain",
+            "xscale",
+            "isInterpolatedFunction",
+            "xs",
+            "coeffs",
+            "numericalf",
+            "formula",
+            "variables",
+            "functionChildrenInfoToCalculateExtrema",
+            "numInputs",
+            "numOutputs",
+            "numericalDomainsOfChildren",
+          ],
+          variablesOptional: true,
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildren,
+          },
+        };
+      },
+    };
+
     stateVariableDefinitions.allMinima = {
+      additionalStateVariablesDefined: [
+        "globalMinimumOption",
+        "globalInfimumOption",
+      ],
       returnDependencies() {
         return {
-          functionChildren: {
-            dependencyType: "child",
-            childGroups: ["functions"],
-            variableNames: ["allMinima"],
+          functionChildrenInfoToCalculateExtrema: {
+            dependencyType: "stateVariable",
+            variableName: "functionChildrenInfoToCalculateExtrema",
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain",
           },
           numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
@@ -656,82 +833,41 @@ export default class PiecewiseFunction extends Function {
         };
       },
       definition: function ({ dependencyValues }) {
-        let eps = numerics.eps;
+        let { localMinima, globalMinimum, globalInfimum } =
+          find_minima_of_piecewise({
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildrenInfoToCalculateExtrema,
+            domain: dependencyValues.domain,
+            numericalDomainsOfChildren:
+              dependencyValues.numericalDomainsOfChildren,
+            numericalf: dependencyValues.numericalf,
+            numerics,
+          });
 
-        let minimaList = [];
-
-        let minimaByChild = dependencyValues.functionChildren.map(
-          (functionChild) => functionChild.stateValues.allMinima,
-        );
-
-        let f = dependencyValues.numericalf;
-
-        for (let [
-          ind,
-          childDomain,
-        ] of dependencyValues.numericalDomainsOfChildren.entries()) {
-          if (!childDomain) {
-            continue;
-          }
-
-          let minx = childDomain[0][0];
-          let maxx = childDomain[0][1];
-
-          let childMinima = minimaByChild[ind];
-
-          // will check the endpoints manually, so remove any minima near the endpoints
-          childMinima = childMinima.filter(
-            (minpair) => minpair[0] > minx + eps && minpair[0] < maxx - eps,
-          );
-          minimaList.push(...childMinima);
-
-          // check endpoints
-          let fminx = f(minx);
-          if (fminx < f(minx - eps) && fminx < f(minx + eps)) {
-            if (
-              minimaList.every(
-                (minpair) => minpair[0] < minx - eps || minpair[0] > minx + eps,
-              )
-            ) {
-              minimaList.push([minx, fminx]);
-            }
-          }
-
-          let fmaxx = f(maxx);
-          if (fmaxx < f(maxx - eps) && fmaxx < f(maxx + eps)) {
-            if (
-              minimaList.every(
-                (minpair) => minpair[0] < maxx - eps || minpair[0] > maxx + eps,
-              )
-            ) {
-              minimaList.push([maxx, fmaxx]);
-            }
-          }
-
-          // remove any minima from later function children in the domain (or near the endpoints)
-          for (let [otherInd, otherMinima] of [
-            ...minimaByChild.entries(),
-          ].slice(ind + 1)) {
-            let revisedMinima = otherMinima.filter(
-              (minpair) => minpair[0] < minx - eps || minpair[0] > maxx + eps,
-            );
-            minimaByChild[otherInd] = revisedMinima;
-          }
-        }
-
-        minimaList = minimaList.sort((a, b) => a[0] - b[0]);
-
-        return { setValue: { allMinima: minimaList } };
+        return {
+          setValue: {
+            allMinima: localMinima,
+            globalMinimumOption: globalMinimum,
+            globalInfimumOption: globalInfimum,
+          },
+        };
       },
     };
 
     stateVariableDefinitions.allMaxima = {
+      additionalStateVariablesDefined: [
+        "globalMaximumOption",
+        "globalSupremumOption",
+      ],
       returnDependencies() {
         return {
-          functionChildren: {
-            dependencyType: "child",
-            childGroups: ["functions"],
-            variableNames: ["allMaxima"],
+          functionChildrenInfoToCalculateExtrema: {
+            dependencyType: "stateVariable",
+            variableName: "functionChildrenInfoToCalculateExtrema",
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain",
           },
           numericalDomainsOfChildren: {
             dependencyType: "stateVariable",
@@ -744,72 +880,24 @@ export default class PiecewiseFunction extends Function {
         };
       },
       definition: function ({ dependencyValues }) {
-        let eps = numerics.eps;
+        let { localMaxima, globalMaximum, globalSupremum } =
+          find_maxima_of_piecewise({
+            functionChildrenInfoToCalculateExtrema:
+              dependencyValues.functionChildrenInfoToCalculateExtrema,
+            domain: dependencyValues.domain,
+            numericalDomainsOfChildren:
+              dependencyValues.numericalDomainsOfChildren,
+            numericalf: dependencyValues.numericalf,
+            numerics,
+          });
 
-        let maximaList = [];
-
-        let maximaByChild = dependencyValues.functionChildren.map(
-          (functionChild) => functionChild.stateValues.allMaxima,
-        );
-
-        let f = dependencyValues.numericalf;
-
-        for (let [
-          ind,
-          childDomain,
-        ] of dependencyValues.numericalDomainsOfChildren.entries()) {
-          if (!childDomain) {
-            continue;
-          }
-
-          let minx = childDomain[0][0];
-          let maxx = childDomain[0][1];
-
-          let childMaxima = maximaByChild[ind];
-
-          // will check the endpoints manually, so remove any maxima near the endpoints
-          childMaxima = childMaxima.filter(
-            (maxpair) => maxpair[0] > minx + eps && maxpair[0] < maxx - eps,
-          );
-          maximaList.push(...childMaxima);
-
-          // check endpoints
-          let fminx = f(minx);
-          if (fminx > f(minx - eps) && fminx > f(minx + eps)) {
-            if (
-              maximaList.every(
-                (maxpair) => maxpair[0] < minx - eps || maxpair[0] > minx + eps,
-              )
-            ) {
-              maximaList.push([minx, fminx]);
-            }
-          }
-
-          let fmaxx = f(maxx);
-          if (fmaxx > f(maxx - eps) && fmaxx > f(maxx + eps)) {
-            if (
-              maximaList.every(
-                (maxpair) => maxpair[0] < maxx - eps || maxpair[0] > maxx + eps,
-              )
-            ) {
-              maximaList.push([maxx, fmaxx]);
-            }
-          }
-
-          // remove any maxima from later function children in the domain (or near the endpoints)
-          for (let [otherInd, otherMaxima] of [
-            ...maximaByChild.entries(),
-          ].slice(ind + 1)) {
-            let revisedMaxima = otherMaxima.filter(
-              (maxpair) => maxpair[0] < minx - eps || maxpair[0] > maxx + eps,
-            );
-            maximaByChild[otherInd] = revisedMaxima;
-          }
-        }
-
-        maximaList = maximaList.sort((a, b) => a[0] - b[0]);
-
-        return { setValue: { allMaxima: maximaList } };
+        return {
+          setValue: {
+            allMaxima: localMaxima,
+            globalMaximumOption: globalMaximum,
+            globalSupremumOption: globalSupremum,
+          },
+        };
       },
     };
 
@@ -829,4 +917,37 @@ export default class PiecewiseFunction extends Function {
 
     return stateVariableDefinitions;
   }
+}
+
+function latexFromSubsetDomain({
+  subsetDomain,
+  dependencyValues,
+  functionVariable,
+  toLatexParams,
+}) {
+  let childDomainMath = mathExpressionFromSubsetValue({
+    subsetValue: subsetDomain,
+    variable: functionVariable,
+    displayMode: "inequalities",
+  });
+
+  let childDomainLatex;
+
+  if (childDomainMath.tree[0] === "or") {
+    childDomainLatex = childDomainMath.tree
+      .slice(1)
+      .map((subint) =>
+        roundForDisplay({
+          value: me.fromAst(subint),
+          dependencyValues,
+        }).toLatex(toLatexParams),
+      )
+      .join(" \\text{ or }");
+  } else {
+    childDomainLatex = roundForDisplay({
+      value: childDomainMath,
+      dependencyValues,
+    }).toLatex(toLatexParams);
+  }
+  return childDomainLatex;
 }

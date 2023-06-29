@@ -6,19 +6,13 @@ import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
+import { returnWrapNonLabelsSugarFunction } from "../utils/label";
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.draggable = {
-      createComponentOfType: "boolean",
-      createStateVariable: "draggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-    };
     attributes.radius = {
       createComponentOfType: "math",
       createStateVariable: "radius",
@@ -71,64 +65,11 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToRadiansAttribute = function ({
-      matchedChildren,
-      componentInfoObjects,
-    }) {
-      let componentIsLabel = (x) =>
-        componentInfoObjects.componentIsSpecifiedType(x, "label");
-
-      // find first non-label children for radians
-
-      let childIsLabel = matchedChildren.map(componentIsLabel);
-
-      let childrenForRadians = [],
-        otherChildren = [];
-
-      if (childIsLabel.filter((x) => x).length === 0) {
-        childrenForRadians = matchedChildren;
-      } else {
-        if (childIsLabel[0]) {
-          // started with label, find first non-label child
-          let firstNonLabelInd = childIsLabel.indexOf(false);
-          if (firstNonLabelInd !== -1) {
-            otherChildren.push(...matchedChildren.slice(0, firstNonLabelInd));
-            matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsLabel = childIsLabel.slice(firstNonLabelInd);
-          }
-        }
-
-        // now we don't have label at the beginning
-        // find first label ind
-        let firstLabelInd = childIsLabel.indexOf(true);
-        if (firstLabelInd === -1) {
-          childrenForRadians = matchedChildren;
-        } else {
-          childrenForRadians = matchedChildren.slice(0, firstLabelInd);
-          otherChildren.push(...matchedChildren.slice(firstLabelInd));
-        }
-      }
-
-      if (childrenForRadians.length === 0) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newAttributes: {
-          radians: {
-            component: {
-              componentType: "math",
-              children: childrenForRadians,
-            },
-          },
-        },
-        newChildren: otherChildren,
-      };
-    };
-
     sugarInstructions.push({
-      replacementFunction: stringAndMacrosToRadiansAttribute,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "math",
+        createAttributeOfType: "radians",
+      }),
     });
 
     return sugarInstructions;
@@ -159,30 +100,31 @@ export default class Angle extends GraphicalComponent {
       },
     };
 
-    stateVariableDefinitions.nPointsSpecified = {
+    stateVariableDefinitions.numPointsSpecified = {
       returnDependencies: () => ({
         through: {
           dependencyType: "attributeComponent",
           attributeName: "through",
-          variableNames: ["nPoints"],
+          variableNames: ["numPoints"],
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.through !== null) {
           return {
             setValue: {
-              nPointsSpecified: dependencyValues.through.stateValues.nPoints,
+              numPointsSpecified:
+                dependencyValues.through.stateValues.numPoints,
             },
           };
         } else {
-          return { setValue: { nPointsSpecified: 0 } };
+          return { setValue: { numPointsSpecified: 0 } };
         }
       },
     };
 
     stateVariableDefinitions.points = {
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["pointX", "point"],
       stateVariablesDeterminingDependencies: ["betweenLinesName"],
       returnArraySizeDependencies: () => ({}),
@@ -238,9 +180,9 @@ export default class Angle extends GraphicalComponent {
       },
       returnArrayDependenciesByKey({ stateValues }) {
         let globalDependencies = {
-          nPointsSpecified: {
+          numPointsSpecified: {
             dependencyType: "stateVariable",
-            variableName: "nPointsSpecified",
+            variableName: "numPointsSpecified",
           },
           throughAttr: {
             dependencyType: "attributeComponent",
@@ -266,7 +208,7 @@ export default class Angle extends GraphicalComponent {
             childGroups: ["lines"],
             variableNames: [
               "points",
-              "nDimensions",
+              "numDimensions",
               "coeff0",
               "coeffvar1",
               "coeffvar2",
@@ -293,7 +235,7 @@ export default class Angle extends GraphicalComponent {
             return { setValue: { points } };
           } else if (globalDependencyValues.lineChildren.length === 1) {
             let line1 = globalDependencyValues.lineChildren[0];
-            if (line1.stateValues.nDimensions !== 2) {
+            if (line1.stateValues.numDimensions !== 2) {
               let points = {};
               for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 2; j++) {
@@ -411,7 +353,7 @@ export default class Angle extends GraphicalComponent {
           }
         }
 
-        let nPointsSpecified = globalDependencyValues.nPointsSpecified;
+        let numPointsSpecified = globalDependencyValues.numPointsSpecified;
         let prescribedPoints;
         if (globalDependencyValues.throughAttr) {
           prescribedPoints =
@@ -427,17 +369,17 @@ export default class Angle extends GraphicalComponent {
           points[ind + ",1"] = prescribedPoint[1];
         }
 
-        if (nPointsSpecified === 0) {
+        if (numPointsSpecified === 0) {
           points["0,0"] = me.fromAst(1);
           points["0,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 2) {
+        if (numPointsSpecified < 2) {
           points["1,0"] = me.fromAst(0);
           points["1,1"] = me.fromAst(0);
         }
 
-        if (nPointsSpecified < 3) {
+        if (numPointsSpecified < 3) {
           let radians = null;
           if (globalDependencyValues.radiansAttr) {
             radians =
@@ -749,8 +691,8 @@ export default class Angle extends GraphicalComponent {
 
 function calculateLineIntersection(line1, line2) {
   if (
-    line1.stateValues.nDimensions !== 2 ||
-    line2.stateValues.nDimensions !== 2
+    line1.stateValues.numDimensions !== 2 ||
+    line2.stateValues.numDimensions !== 2
   ) {
     console.log("Calculating angle between two lines implemented only in 2D");
     return;

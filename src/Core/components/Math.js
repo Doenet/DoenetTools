@@ -506,6 +506,7 @@ export default class MathComponent extends InlineComponent {
     };
 
     stateVariableDefinitions.unnormalizedValue = {
+      isLocation: true,
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
@@ -539,6 +540,7 @@ export default class MathComponent extends InlineComponent {
     };
 
     stateVariableDefinitions.value = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
@@ -704,12 +706,34 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "expand",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
+        let value = dependencyValues.value;
+
+        if (
+          dependencyValues.parentNComponentsToDisplayByChild?.[componentName] >
+          0
+        ) {
+          // math is a list inside a mathList that is displaying only a fraction of the list
+          value = me.fromAst(
+            value.tree.slice(
+              0,
+              dependencyValues.parentNComponentsToDisplayByChild[
+                componentName
+              ] + 1,
+            ),
+          );
+        }
+
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let rounded = roundForDisplay({
-          value: dependencyValues.value,
+          value,
           dependencyValues,
         });
 
@@ -845,10 +869,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals",
         },
-        // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
+          onlyToSetInInverseDefinition: true,
         },
         displayBlanks: {
           dependencyType: "stateVariable",
@@ -958,6 +982,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "fixed",
         },
+        fixLocation: {
+          dependencyType: "stateVariable",
+          variableName: "fixLocation",
+        },
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre",
@@ -1029,7 +1057,7 @@ export default class MathComponent extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nDimensions = {
+    stateVariableDefinitions.numDimensions = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -1041,30 +1069,30 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let nDimensions = 1;
+        let numDimensions = 1;
 
         let tree = dependencyValues.value.tree;
 
         if (Array.isArray(tree)) {
           if (vectorAndListOperators.includes(tree[0])) {
-            nDimensions = tree.length - 1;
+            numDimensions = tree.length - 1;
           } else if (tree[0] === "matrix") {
             let size = tree[1].slice(1);
 
             if (size[0] === 1) {
-              nDimensions = size[1];
+              numDimensions = size[1];
             } else if (size[1] === 1) {
-              nDimensions = size[0];
+              numDimensions = size[0];
             }
           } else if (
             vectorOperators.includes(tree[1][0]) &&
             ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
           ) {
-            nDimensions = tree[1].length - 1;
+            numDimensions = tree[1].length - 1;
           }
         }
 
-        return { setValue: { nDimensions } };
+        return { setValue: { numDimensions } };
       },
     };
 
@@ -1089,13 +1117,13 @@ export default class MathComponent extends InlineComponent {
       isArray: true,
       entryPrefixes: ["x"],
       returnArraySizeDependencies: () => ({
-        nDimensions: {
+        numDimensions: {
           dependencyType: "stateVariable",
-          variableName: "nDimensions",
+          variableName: "numDimensions",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nDimensions];
+        return [dependencyValues.numDimensions];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -1273,7 +1301,7 @@ export default class MathComponent extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.nRows = {
+    stateVariableDefinitions.numRows = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -1285,11 +1313,11 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nRows: dependencyValues.matrixSize[0] } };
+        return { setValue: { numRows: dependencyValues.matrixSize[0] } };
       },
     };
 
-    stateVariableDefinitions.nColumns = {
+    stateVariableDefinitions.numColumns = {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "integer",
@@ -1301,7 +1329,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
-        return { setValue: { nColumns: dependencyValues.matrixSize[1] } };
+        return { setValue: { numColumns: dependencyValues.matrixSize[1] } };
       },
     };
 
@@ -1327,7 +1355,7 @@ export default class MathComponent extends InlineComponent {
         },
       },
       isArray: true,
-      nDimensions: 2,
+      numDimensions: 2,
       entryPrefixes: ["matrixEntry", "row", "column", "rows", "columns"],
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "matrixEntry") {
@@ -1561,7 +1589,7 @@ export default class MathComponent extends InlineComponent {
         }
 
         if (!desiredValue) {
-          desiredValue = workspace.desiredMatrix[0];
+          desiredValue = workspace.desiredMatrix["0,0"];
         }
 
         let instructions = [
@@ -1595,6 +1623,13 @@ export default class MathComponent extends InlineComponent {
       componentType: "subsetOfReals",
       stateVariable: "value",
       substituteForPrimaryStateVariable: "subsetValue",
+    },
+    {
+      stateVariable: "value",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 
@@ -1977,7 +2012,11 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
 }
 
 function determineCanBeModified({ dependencyValues }) {
-  if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
+  if (
+    !dependencyValues.modifyIndirectly ||
+    dependencyValues.fixed ||
+    dependencyValues.fixLocation
+  ) {
     return {
       setValue: {
         canBeModified: false,

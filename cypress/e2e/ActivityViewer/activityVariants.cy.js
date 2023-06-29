@@ -125,7 +125,7 @@ describe("Activity variants tests", function () {
     <document type="activity">
       <order>
         <page>
-          <variantControl nVariants="3" variantNames="red blue green" />
+          <variantControl numVariants="3" variantNames="red blue green" />
           <text>a</text>
           Enter 
           <select assignNames="color" >
@@ -1054,7 +1054,7 @@ describe("Activity variants tests", function () {
       <order>
         <page>
           <text>a</text>
-          <variantControl nVariants="5" variantsToExclude="a c d" />
+          <variantControl numVariants="5" variantsToExclude="a c d" />
           <select assignNames="(n)">
             <option selectForVariants="a"><number>1</number></option>
             <option selectForVariants="b"><number>2</number></option>
@@ -1065,7 +1065,7 @@ describe("Activity variants tests", function () {
         </page>
         <page>
           <text>b</text>
-          <variantControl nVariants="7" variantsToExclude="b c d f" />
+          <variantControl numVariants="7" variantsToExclude="b c d f" />
           <select assignNames="(l)">
             <option selectForVariants="a"><text>a</text></option>
             <option selectForVariants="b"><text>b</text></option>
@@ -1144,7 +1144,7 @@ describe("Activity variants tests", function () {
       <order>
         <page>
           <text>a</text>
-          <variantControl nVariants="5" variantsToInclude="b e" />
+          <variantControl numVariants="5" variantsToInclude="b e" />
           <select assignNames="(n)">
             <option selectForVariants="a"><number>1</number></option>
             <option selectForVariants="b"><number>2</number></option>
@@ -1155,7 +1155,7 @@ describe("Activity variants tests", function () {
         </page>
         <page>
           <text>b</text>
-          <variantControl nVariants="7" variantsToInclude="a e g" />
+          <variantControl numVariants="7" variantsToInclude="a e g" />
           <select assignNames="(l)">
             <option selectForVariants="a"><text>a</text></option>
             <option selectForVariants="b"><text>b</text></option>
@@ -1235,7 +1235,7 @@ describe("Activity variants tests", function () {
         <page>
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToExclude="a c d" />
+            <variantControl numVariants="5" variantsToExclude="a c d" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>
@@ -1321,7 +1321,7 @@ describe("Activity variants tests", function () {
         <page>
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToInclude="b e" />
+            <variantControl numVariants="5" variantsToInclude="b e" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>
@@ -1408,7 +1408,7 @@ describe("Activity variants tests", function () {
           <variantControl uniqueVariants />
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToExclude="a c d" />
+            <variantControl numVariants="5" variantsToExclude="a c d" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>
@@ -1496,7 +1496,7 @@ describe("Activity variants tests", function () {
           <variantControl uniqueVariants />
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToInclude="b e" />
+            <variantControl numVariants="5" variantsToInclude="b e" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>
@@ -1584,7 +1584,7 @@ describe("Activity variants tests", function () {
           <variantControl uniqueVariants variantsToExclude="b" />
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToExclude="a d" />
+            <variantControl numVariants="5" variantsToExclude="a d" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>
@@ -1680,7 +1680,7 @@ describe("Activity variants tests", function () {
           <variantControl uniqueVariants variantsToInclude="a c" />
           <problem>
             <text>a</text>
-            <variantControl nVariants="5" variantsToInclude="b c e" />
+            <variantControl numVariants="5" variantsToInclude="b c e" />
             <select assignNames="(n)">
               <option selectForVariants="a"><number>1</number></option>
               <option selectForVariants="b"><number>2</number></option>

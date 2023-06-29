@@ -103,38 +103,30 @@ describe("Text Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</p>
+    <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> (or <tagc>text</tagc>?) doesn't <term>do</term> <c>much</c>.</p>
 
     <p name="textOnly"><copy prop="text" target="orig" assignNames="t" /></p>
 
-    <p name="insideText"><text name="t2"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</text></p>
+    <p name="insideText"><text name="t2"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> (or <tagc>text</tagc>?) doesn't <term>do</term> <c>much</c>.</text></p>
     `,
         },
         "*",
       );
     });
 
+    let theText = `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> (or </text>?) doesn't do much.`;
+
     cy.get(cesc("#\\/orig")).should(
       "have.text",
-      `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> doesn't do much.`,
+      `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> (or </text>?) doesn't do much.`,
     );
-    cy.get(cesc("#\\/textOnly")).should(
-      "have.text",
-      `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`,
-    );
-    cy.get(cesc("#\\/insideText")).should(
-      "have.text",
-      `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`,
-    );
+    cy.get(cesc("#\\/textOnly")).should("have.text", theText);
+    cy.get(cesc("#\\/insideText")).should("have.text", theText);
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/t"].stateValues.value).eq(
-        `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`,
-      );
-      expect(stateVariables["/t2"].stateValues.value).eq(
-        `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`,
-      );
+      expect(stateVariables["/t"].stateValues.value).eq(theText);
+      expect(stateVariables["/t2"].stateValues.value).eq(theText);
     });
   });
 

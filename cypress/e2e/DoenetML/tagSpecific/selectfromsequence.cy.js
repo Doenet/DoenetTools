@@ -398,26 +398,26 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample1" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample2" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample3" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample4" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample5" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample6" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample7" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample8" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample9" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample10" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample11" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample12" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample13" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample14" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample15" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample16" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample17" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample18" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample19" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="2" name="sample20" from="-4" to="4" />
     </aslist>
     `,
         },
@@ -457,26 +457,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample1" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample2" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample3" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample4" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample5" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample6" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample7" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample8" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample9" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample10" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample11" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample12" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample13" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample14" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample15" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample16" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample17" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample18" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample19" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample20" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
     `,
         },
         "*",
@@ -524,26 +524,26 @@ describe("SelectFromSequence Tag Tests", function () {
     <numberlist name="ec3">-2 2</numberlist>
     <mathlist name="ec4">2 -4</mathlist>
 
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample3" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample5" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample7" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample9" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample11" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample13" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample15" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample17" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample1" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample2" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample3" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample4" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample5" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample6" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample7" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample8" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample9" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample10" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample11" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample12" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample13" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample14" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample15" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample16" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample17" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample18" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample19" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0" numToSelect="2" name="sample20" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     `,
         },
         "*",
@@ -583,26 +583,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample1" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample3" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample5" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample7" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample9" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample11" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample13" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample15" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample17" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
-    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample1" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample2" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample3" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample4" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample5" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample6" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample7" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample8" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample9" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample10" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample11" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample12" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample13" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample14" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample15" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample16" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample17" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample18" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample19" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numToSelect="2" name="sample20" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
     `,
         },
         "*",
@@ -642,26 +642,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1)" /></aslist></p>
     `,
         },
         "*",
@@ -724,26 +724,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample1" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample2" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample3" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample4" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample5" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample6" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample7" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample8" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample9" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample10" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample11" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample12" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample13" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample14" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample15" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample16" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample17" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample18" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample19" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" withReplacement name="sample20" from="1" to="3" excludecombinations="(1 1 _) (1 _ 1) (_ 1 1) (3 1 1) (2 1 1) (1 1 1) (_ 1 1) (_ 1 1) (_ 1 1) (1 1 _) (1 _ 1) (1 1 _) (1 3 1) (1 2 1) (1 1 1)" /></aslist></p>
     `,
         },
         "*",
@@ -806,26 +806,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample1" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample2" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample3" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample4" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample5" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample6" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample7" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample8" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample9" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample10" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample11" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample12" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample13" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample14" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample15" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample16" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample17" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample18" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample19" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="4" withReplacement name="sample20" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample1" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample2" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample3" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample4" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample5" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample6" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample7" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample8" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample9" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample10" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample11" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample12" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample13" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample14" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample15" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample16" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample17" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample18" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample19" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="4" withReplacement name="sample20" from="0" to="3" excludecombinations="(0 _ _ _) (_ 1 _ _) (_ _ 2 _) (_ _ _ 3)" /></aslist></p>
     `,
         },
         "*",
@@ -869,26 +869,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample2" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample3" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample4" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample5" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample6" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample7" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample8" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample9" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample10" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample11" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample12" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample13" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample14" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample15" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample16" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample17" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample18" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample19" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample20" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample2" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample3" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample4" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample5" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample6" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample7" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample8" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample9" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample10" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample11" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample12" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample13" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample14" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample15" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample16" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample17" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample18" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample19" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample20" from="1" to="3" excludecombinations="(1 _ _) (_ 2 _) (_ _ 3)" /></aslist></p>
     `,
         },
         "*",
@@ -927,7 +927,7 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 1 _) (_ _ 1)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 1 _) (_ _ 1)" /></aslist></p>
     `,
         },
         "*",
@@ -946,16 +946,16 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample1" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample2" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample3" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample4" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample5" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample6" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample7" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample8" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample9" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
-    <p><aslist><selectfromsequence numberToSelect="10" name="sample10" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample1" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample2" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample3" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample4" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample5" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample6" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample7" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample8" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample9" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="10" name="sample10" from="1" to="10" excludecombinations="(1 _ _ _ _ _ _ _ _ _) (_ 2 _ _ _ _ _ _ _ _) (_ _ 3 _ _ _ _ _ _ _) (_ _ _ 4 _ _ _ _ _ _) (_ _ _ _ 5 _ _ _ _ _) (_ _ _ _ _ 6 _ _ _ _) (_ _ _ _ _ _ 7 _ _ _) (_ _ _ _ _ _ _ 8 _ _) (_ _ _ _ _ _ _ _ 9 _) (_ _ _ _ _ _ _ _ _ 10)" /></aslist></p>
     `,
         },
         "*",
@@ -991,26 +991,26 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample1" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample2" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample3" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample4" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample5" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample6" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample7" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample8" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample9" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample10" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample11" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample12" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample13" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample14" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample15" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample16" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample17" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample18" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample19" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample20" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample1" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample2" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample3" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample4" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample5" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample6" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample7" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample8" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample9" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample10" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample11" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample12" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample13" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample14" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample15" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample16" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample17" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample18" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample19" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" numToSelect="5" withReplacement name="sample20" from="-4" to="4" />
     </aslist>
     `,
         },
@@ -1065,26 +1065,26 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <aslist>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample1" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample2" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample3" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample4" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample5" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample6" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample7" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample8" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample9" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample10" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample11" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample12" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample13" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample14" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample15" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample16" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample17" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample18" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample19" numbertoselect="$n" from="-4" to="4" />
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample20" numbertoselect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample1" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample2" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample3" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample4" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample5" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample6" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample7" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample8" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample9" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample10" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample11" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample12" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample13" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample14" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample15" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample16" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample17" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample18" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample19" numToSelect="$n" from="-4" to="4" />
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample20" numToSelect="$n" from="-4" to="4" />
     </aslist>
     <copy name="n2" target="n3" />
     <copy name="n" target="num1" />
@@ -1275,16 +1275,16 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <math>1</math>
-    <mathinput prefill="5" name="numbertoselect"/>
+    <mathinput prefill="5" name="numToSelect"/>
     <mathinput prefill="3" name="maxnum"/>
     <p><aslist>
-    <selectfromsequence name="sample1" withReplacement length="$maxnum" numbertoselect="$numbertoselect" />
+    <selectfromsequence name="sample1" withReplacement length="$maxnum" numToSelect="$numToSelect" />
     </aslist></p>
 
-    <mathinput prefill="2" name="numbertoselect2"/>
+    <mathinput prefill="2" name="numToSelect2"/>
     <mathinput prefill="10" name="maxnum2"/>
     <p><aslist>
-    <selectfromsequence name="sample2" withReplacement length="$maxnum2" numbertoselect="$numbertoselect2" />
+    <selectfromsequence name="sample2" withReplacement length="$maxnum2" numToSelect="$numToSelect2" />
     </aslist></p>
     <p><copy prop="value" target="maxnum2" assignNames="maxnum2a" /></p>
     `,
@@ -1325,14 +1325,14 @@ describe("SelectFromSequence Tag Tests", function () {
     });
 
     cy.log("Nothing changes when change mathinputs");
-    cy.get(cesc("#\\/numbertoselect") + " textarea").type(
+    cy.get(cesc("#\\/numToSelect") + " textarea").type(
       `{end}{backspace}7{enter}`,
       { force: true },
     );
     cy.get(cesc("#\\/maxnum") + " textarea").type(`{end}{backspace}11{enter}`, {
       force: true,
     });
-    cy.get(cesc("#\\/numbertoselect2") + " textarea").type(
+    cy.get(cesc("#\\/numToSelect2") + " textarea").type(
       `{end}{backspace}15{enter}`,
       { force: true },
     );
@@ -2540,7 +2540,7 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <p><aslist>
-      <selectfromsequence name="s" type="math" from="x" step="y" length="3" assignnames="u v w" numbertoselect="6" withReplacement />
+      <selectfromsequence name="s" type="math" from="x" step="y" length="3" assignnames="u v w" numToSelect="6" withReplacement />
     </aslist></p>
     <p><copy name="u2" target="u" /></p>
     <p><copy name="v2" target="v" /></p>
@@ -2609,7 +2609,7 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <p><aslist>
-      <selectfromsequence name="s" newnamespace type="math" from="x" step="y" length="3" assignnames="u v w" numbertoselect="6" withReplacement />
+      <selectfromsequence name="s" newnamespace type="math" from="x" step="y" length="3" assignnames="u v w" numToSelect="6" withReplacement />
     </aslist></p>
     <p><copy name="u2" target="s/u" /></p>
     <p><copy name="v2" target="s/v" /></p>
@@ -2706,26 +2706,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
     `,
         },
         "*",
@@ -2780,26 +2780,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numbertoselect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample1" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample2" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample3" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample4" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample5" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample6" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample7" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample8" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample9" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample10" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample11" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample12" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample13" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample14" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample15" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample16" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample17" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample18" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample19" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="0.1" to="0.3" step="0.1" numToSelect="2" name="sample20" excludecombinations="(0.1 0.3) (0.2 0.3) (0.3 0.1)" /></aslist></p>
     `,
         },
         "*",
@@ -2854,26 +2854,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample3" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample4" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample5" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample6" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample7" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample8" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample9" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample10" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample11" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample12" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample13" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample14" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample15" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample16" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample17" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample18" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample19" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample20" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample1" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample2" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample3" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample4" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample5" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample6" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample7" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample8" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample9" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample10" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample11" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample12" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample13" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample14" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample15" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample16" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample17" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample18" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample19" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample20" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
     `,
         },
         "*",
@@ -2922,26 +2922,26 @@ describe("SelectFromSequence Tag Tests", function () {
     <mathlist name="ec2">x x+y</mathlist>
     <mathlist name="ec3">x+y x+3y</mathlist>
 
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample3" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample4" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample5" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample6" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample7" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample8" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample9" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample10" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample11" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample12" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample13" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample14" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample15" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample16" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample17" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample18" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample19" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numbertoselect="2" name="sample20" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample1" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample2" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample3" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample4" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample5" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample6" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample7" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample8" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample9" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample10" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample11" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample12" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample13" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample14" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample15" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample16" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample17" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample18" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample19" excludecombinations="$ec ($e1 x+3y) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y" numToSelect="2" name="sample20" excludecombinations="$ec2 $ec3 (x+3y $e3)" /></aslist></p>
     `,
         },
         "*",
@@ -2983,26 +2983,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample1" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample2" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample3" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample4" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample5" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample6" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample7" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample8" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample9" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample10" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample11" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample12" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample13" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample14" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample15" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample16" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample17" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample18" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample19" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
-    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample20" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample1" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample2" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample3" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample4" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample5" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample6" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample7" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample8" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample9" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample10" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample11" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample12" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample13" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample14" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample15" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample16" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample17" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample18" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample19" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numToSelect="2" name="sample20" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
     `,
         },
         "*",
@@ -3044,26 +3044,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample1" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample2" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample3" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample4" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample5" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample6" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample7" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample8" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample9" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample10" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample11" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample12" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample13" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample14" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample15" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample16" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample17" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample19" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample1" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample2" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample3" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample4" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample5" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample6" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample7" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample8" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample9" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample10" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample11" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample12" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample13" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample14" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample15" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample16" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample17" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample18" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample19" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample20" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
     `,
         },
         "*",
@@ -3110,26 +3110,26 @@ describe("SelectFromSequence Tag Tests", function () {
     <textlist name="ec2">m v</textlist>
     <textlist name="ec3">s m</textlist>
 
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample1" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample2" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample3" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample4" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample5" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample6" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample7" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample8" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample9" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample10" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample11" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample12" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample13" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample14" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample15" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample16" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample17" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample19" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample1" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample2" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample3" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample4" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample5" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample6" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample7" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample8" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample9" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample10" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample11" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample12" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample13" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample14" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample15" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample16" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample17" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample18" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample19" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numToSelect="2" name="sample20" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     `,
         },
         "*",
@@ -3169,26 +3169,26 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample1" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample2" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample3" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample4" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample5" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample6" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample7" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample8" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample9" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample10" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample11" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample12" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample13" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample14" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample15" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample16" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample17" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample18" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample19" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
-    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample20" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample1" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample2" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample3" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample4" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample5" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample6" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample7" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample8" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample9" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample10" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample11" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample12" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample13" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample14" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample15" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample16" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample17" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample18" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample19" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numToSelect="2" name="sample20" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
     `,
         },
         "*",
@@ -3228,7 +3228,7 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true" from="-20" to="20" /></aslist></p>
+    <p><aslist><selectfromsequence numToSelect="20" sortresults="true" withreplacement="true" from="-20" to="20" /></aslist></p>
 
     <p><copy target="_aslist1" /></p>
     <copy target="_p1" />
@@ -3271,7 +3271,7 @@ describe("SelectFromSequence Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist><selectfromsequence type="letters" numbertoselect="40" sortresults="true" withreplacement="true" from="a" to="bz" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" numToSelect="40" sortresults="true" withreplacement="true" from="a" to="bz" /></aslist></p>
 
     <p><copy target="_aslist1" /></p>
     <copy target="_p1" />
@@ -3487,7 +3487,7 @@ describe("SelectFromSequence Tag Tests", function () {
     });
   });
 
-  it("numberToSelect from selectfromsequence", () => {
+  it("numToSelect from selectfromsequence", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -3495,23 +3495,23 @@ describe("SelectFromSequence Tag Tests", function () {
     <text>a</text>
 
     <p>n1 = <selectFromSequence from="1" to="5" assignNames="n1" /></p>
-    <p>nums = <aslist><selectFromSequence name="nums1" from="1" to="10" numberToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
+    <p>nums = <aslist><selectFromSequence name="nums1" from="1" to="10" numToSelect="$n1" assignNames="a1 b1 c1 d1 e1" /></aslist></p>
     <p name="p1">a1=$a1, b1=$b1, c1=$c1, d1=$d1, e1=$e1</p>
 
     <p>n2 = <selectFromSequence from="1" to="5" assignNames="n2" /></p>
-    <p>nums = <aslist><selectFromSequence name="nums2" from="1" to="10" numberToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
+    <p>nums = <aslist><selectFromSequence name="nums2" from="1" to="10" numToSelect="$n2" assignNames="a2 b2 c2 d2 e2" /></aslist></p>
     <p name="p2">a2=$a2, b2=$b2, c2=$c2, d2=$d2, e2=$e2</p>
 
     <p>n3 = <selectFromSequence from="1" to="5" assignNames="n3" /></p>
-    <p>nums = <aslist><selectFromSequence name="nums3" from="1" to="10" numberToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
+    <p>nums = <aslist><selectFromSequence name="nums3" from="1" to="10" numToSelect="$n3" assignNames="a3 b3 c3 d3 e3" /></aslist></p>
     <p name="p3">a3=$a3, b3=$b3, c3=$c3, d3=$d3, e3=$e3</p>
 
     <p>n4 = <selectFromSequence from="1" to="5" assignNames="n4" /></p>
-    <p>nums = <aslist><selectFromSequence name="nums4" from="1" to="10" numberToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
+    <p>nums = <aslist><selectFromSequence name="nums4" from="1" to="10" numToSelect="$n4" assignNames="a4 b4 c4 d4 e4" /></aslist></p>
     <p name="p4">a4=$a4, b4=$b4, c4=$c4, d4=$d4, e4=$e4</p>
 
     <p>n5 = <selectFromSequence from="1" to="5" assignNames="n5" /></p>
-    <p>nums = <aslist><selectFromSequence name="nums5" from="1" to="10" numberToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
+    <p>nums = <aslist><selectFromSequence name="nums5" from="1" to="10" numToSelect="$n5" assignNames="a5 b5 c5 d5 e5" /></aslist></p>
     <p name="p5">a5=$a5, b5=$b5, c5=$c5, d5=$d5, e5=$e5</p>
       `,
         },
@@ -3595,9 +3595,9 @@ describe("SelectFromSequence Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p><aslist><selectFromSequence assignNames="n1" from="10" to="20" step="0.000001" displayDigits="10" /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n2" from="10" to="20" step="0.000001" displayDigits="3" ignoreDisplayDecimals /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n3" from="10" to="20" step="0.000001" displayDecimals="3" ignoreDisplayDigits /></aslist></p>
-    <p><aslist><selectFromSequence assignNames="n4" from="10" to="20" displayDigits="3" ignoreDisplayDecimals padZeros /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n2" from="10" to="20" step="0.000001" displayDigits="3" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n3" from="10" to="20" step="0.000001" displayDecimals="3" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n4" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
 
     <p><number name="n1a">$n1</number></p>
     <p><number name="n2a">$n2</number></p>

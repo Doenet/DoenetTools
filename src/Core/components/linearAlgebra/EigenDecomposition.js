@@ -54,19 +54,19 @@ export default class EigenDecomposition extends BaseComponent {
           return { setValue: { decomposition: null } };
         }
 
-        let nRows = mathTree[1][1];
-        let nCols = mathTree[1][2];
-        if (!(Number.isInteger(nRows) && nCols === nRows)) {
+        let numRows = mathTree[1][1];
+        let numColumns = mathTree[1][2];
+        if (!(Number.isInteger(numRows) && numColumns === numRows)) {
           return { setValue: { decomposition: null } };
         }
 
         let matrixArray = [];
 
-        for (let rowInd = 0; rowInd < nRows; rowInd++) {
+        for (let rowInd = 0; rowInd < numRows; rowInd++) {
           let row = [];
           let rowOperands = mathTree[2][rowInd + 1] || [];
 
-          for (let colInd = 0; colInd < nCols; colInd++) {
+          for (let colInd = 0; colInd < numColumns; colInd++) {
             let val = rowOperands[colInd + 1];
             if (val === undefined || val === null) {
               return { setValue: { decomposition: null } };
@@ -156,7 +156,7 @@ export default class EigenDecomposition extends BaseComponent {
     stateVariableDefinitions.eigenvectors = {
       isArray: true,
       public: true,
-      nDimensions: 2,
+      numDimensions: 2,
       shadowingInstructions: {
         createComponentOfType: "number",
         addAttributeComponentsShadowingStateVariables:

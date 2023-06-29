@@ -9296,7 +9296,7 @@ describe("Ray Tag Tests", function () {
     <copy target="v5" through="(6,2)" assignNames="v6" />
   </graph>
 
-  <copy tname="g0" assignNames="g1" />
+  <copy target="g0" assignNames="g1" />
 
   <copy target="g0/v0" prop="endpoint" assignNames="v0t" />
   <copy target="g0/v0" prop="through" assignNames="v0h" />
@@ -10725,7 +10725,7 @@ describe("Ray Tag Tests", function () {
       $r2.through{assignNames="r2h"}
     </p>
 
-    <ray copysource="r1" name="r3" displayDecimals="0" ignoreDisplayDigits />
+    <ray copysource="r1" name="r3" displayDecimals="0" />
     
     $r3.direction{assignNames="r3d"}
     $r3.endpoint{assignNames="r3t"}
@@ -10766,5 +10766,24 @@ describe("Ray Tag Tests", function () {
     cy.get(cesc2("#/r3h") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(5,624)");
+  });
+
+  it("handle bad through/endpoint", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <ray through="A" endpoint="B" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
 });

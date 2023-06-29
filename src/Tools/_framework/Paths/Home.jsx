@@ -146,6 +146,10 @@ export function Home() {
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
+  useEffect(() => {
+    document.title = `Home - Doenet`;
+  }, []);
+
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
@@ -202,20 +206,17 @@ export function Home() {
       <Center background={blueColor} padding="20px">
         <Flex flexDirection="column">
           <Text fontSize="16px" fontWeight="700" textAlign="left">
-            Doenet Workshop
+            Doenet Office Hours
           </Text>
           <Text maxWidth="800px">
-            From May 22 - May 26, 2023, we will host the second{" "}
+            Doenet Staff we will be available to help you author learning
+            activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
             <Link
-              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2023"
+              href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
               isExternal
             >
-              <Text as="u">workshop</Text>
-            </Link>{" "}
-            on developing content and learning experiments in Doenet. It will be
-            held at the University of Minnesota, the workshop for instructors of
-            college STEM courses will be a hands-on introduction to authoring
-            and running experiments, led by the developers of Doenet.
+              <Text as="u">Zoom</Text>.
+            </Link>
           </Text>
         </Flex>
       </Center>
@@ -254,7 +255,20 @@ export function Home() {
                 )
               }
             >
-              <Text fontSize="xs">See Inside</Text>
+              See Inside
+            </Button>
+            <Button
+              // dataTest="Nav to course"
+              size="xs"
+              borderRadius={20}
+              onClick={() =>
+                window.open(
+                  "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+                  "_blank",
+                )
+              }
+            >
+              Documentation
             </Button>
           </Flex>
           <Suspense fallback={"Loading..."}>
@@ -280,11 +294,7 @@ export function Home() {
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
       />
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg={blueColor}
-      >
+      <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
           justifyContent="center"
@@ -331,7 +341,7 @@ export function Home() {
               doenetML={doenetML}
               flags={{
                 showCorrectness: true,
-                solutionDisplayMode: true,
+                solutionDisplayMode: "button",
                 showFeedback: true,
                 showHints: true,
                 autoSubmit: false,

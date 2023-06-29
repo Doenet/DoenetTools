@@ -4,12 +4,13 @@ import {
   normalizeMathExpression,
   vectorOperators,
 } from "./math";
+import { find_effective_domain } from "./domain";
 
 export function createFunctionFromDefinition(fDefinition) {
   if (fDefinition.functionType === "formula") {
     return returnNumericalFunctionFromFormula({
       formula: me.fromAst(fDefinition.formula),
-      nInputs: fDefinition.nInputs,
+      numInputs: fDefinition.numInputs,
       variables: fDefinition.variables.map((x) => me.fromAst(x)),
       domain: fDefinition.domain
         ? fDefinition.domain.map((x) => me.fromAst(x))
@@ -34,7 +35,7 @@ export function createFunctionFromDefinition(fDefinition) {
         fDefinition.formulaExpressionWithCodes,
       ),
       evaluateChildrenToReevaluate,
-      nInputs: fDefinition.nInputs,
+      numInputs: fDefinition.numInputs,
       variables: fDefinition.variables.map((x) => me.fromAst(x)),
       domain: fDefinition.domain
         ? fDefinition.domain.map((x) => me.fromAst(x))
@@ -43,14 +44,14 @@ export function createFunctionFromDefinition(fDefinition) {
     });
   } else if (fDefinition.functionType === "numericForEvaluate") {
     return returnNumericFunctionForEvaluate({
-      nInputs: fDefinition.nInputs,
+      numInputs: fDefinition.numInputs,
       numericalfs: fDefinition.fDefinitions.map((fdef) =>
         createFunctionFromDefinition(fdef),
       ),
     });
   } else if (fDefinition.functionType === "bezier") {
     return returnBezierFunctions({
-      nThroughPoints: fDefinition.nThroughPoints,
+      numThroughPoints: fDefinition.numThroughPoints,
       numericalThroughPoints: fDefinition.numericalThroughPoints,
       splineCoeffs: fDefinition.splineCoeffs,
       extrapolateForward: fDefinition.extrapolateForward,
@@ -74,12 +75,12 @@ export function createFunctionFromDefinition(fDefinition) {
       functionOperatorArguments: fDefinition.functionOperatorArguments,
       operatorComposesWithOriginal: fDefinition.operatorComposesWithOriginal,
       originalFDefinition: fDefinition.originalFDefinition,
-      nOutputs: fDefinition.nOutputs,
+      numOutputs: fDefinition.numOutputs,
       component: fDefinition.component,
     });
   } else if (fDefinition.functionType === "ODESolution") {
     return returnODESolutionFunction({
-      nDimensions: fDefinition.nDimensions,
+      numDimensions: fDefinition.numDimensions,
       t0: fDefinition.t0,
       x0s: fDefinition.x0s,
       chunkSize: fDefinition.chunkSize,
@@ -107,7 +108,7 @@ export function createFunctionFromDefinition(fDefinition) {
 
 export function returnNumericalFunctionFromFormula({
   formula,
-  nInputs,
+  numInputs,
   variables,
   domain,
   component = 0,
@@ -134,7 +135,7 @@ export function returnNumericalFunctionFromFormula({
     return () => NaN;
   }
 
-  if (nInputs === 1) {
+  if (numInputs === 1) {
     let varString = variables[0].subscripts_to_strings().tree;
 
     let minx = -Infinity,
@@ -181,7 +182,7 @@ export function returnNumericalFunctionFromFormula({
   }
 
   let varStrings = [];
-  for (let i = 0; i < nInputs; i++) {
+  for (let i = 0; i < numInputs; i++) {
     varStrings.push(variables[i].subscripts_to_strings().tree);
   }
 
@@ -192,7 +193,7 @@ export function returnNumericalFunctionFromFormula({
   if (domain !== null) {
     haveDomain = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let thisDomain = domain[i];
       if (!thisDomain) {
         haveDomain = false;
@@ -224,7 +225,7 @@ export function returnNumericalFunctionFromFormula({
 
   return function (...xs) {
     let fArgs = {};
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let x = xs[i];
       if (isNaN(x)) {
         return NaN;
@@ -254,7 +255,7 @@ export function returnNumericalFunctionFromFormula({
 export function returnNumericalFunctionFromReevaluatedFormula({
   formulaExpressionWithCodes,
   evaluateChildrenToReevaluate,
-  nInputs,
+  numInputs,
   variables,
   domain,
   component = 0,
@@ -284,7 +285,7 @@ export function returnNumericalFunctionFromReevaluatedFormula({
     return () => NaN;
   }
 
-  if (nInputs === 1) {
+  if (numInputs === 1) {
     let varString = variables[0].subscripts_to_strings().tree;
 
     let minx = -Infinity,
@@ -346,7 +347,7 @@ export function returnNumericalFunctionFromReevaluatedFormula({
   }
 
   let varStrings = [];
-  for (let i = 0; i < nInputs; i++) {
+  for (let i = 0; i < numInputs; i++) {
     varStrings.push(variables[i].subscripts_to_strings().tree);
   }
 
@@ -357,7 +358,7 @@ export function returnNumericalFunctionFromReevaluatedFormula({
   if (domain !== null) {
     haveDomain = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let thisDomain = domain[i];
       if (!thisDomain) {
         haveDomain = false;
@@ -389,7 +390,7 @@ export function returnNumericalFunctionFromReevaluatedFormula({
 
   return function (...xs) {
     let fArgs = {};
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let x = xs[i];
       if (isNaN(x)) {
         return NaN;
@@ -440,27 +441,7 @@ export function returnPiecewiseNumericalFunctionFromChildren({
     return () => NaN;
   }
 
-  let minx = -Infinity,
-    maxx = Infinity;
-  let openMin = false,
-    openMax = false;
-  if (domain !== null) {
-    let domain0 = domain[0];
-    if (domain0 !== undefined) {
-      minx = me.fromAst(domain0.tree[1][1]).evaluate_to_constant();
-      if (typeof minx !== "number" || Number.isNaN(minx)) {
-        minx = -Infinity;
-      } else {
-        openMin = !domain0.tree[2][1];
-      }
-      maxx = me.fromAst(domain0.tree[1][2]).evaluate_to_constant();
-      if (typeof maxx !== "number" || Number.isNaN(maxx)) {
-        maxx = Infinity;
-      } else {
-        openMax = !domain0.tree[2][2];
-      }
-    }
-  }
+  let { minx, maxx, openMin, openMax } = find_effective_domain({ domain });
 
   return function (x, overrideDomain = false) {
     if (overrideDomain) {
@@ -498,7 +479,7 @@ export function returnSymbolicFunctionFromFormula({
   simplify,
   expand,
   domain,
-  nInputs,
+  numInputs,
   variables,
   component = 0,
 }) {
@@ -519,7 +500,7 @@ export function returnSymbolicFunctionFromFormula({
 
   let formula_transformed = formula.subscripts_to_strings();
 
-  if (nInputs === 1) {
+  if (numInputs === 1) {
     let varString = variables[0].subscripts_to_strings().tree;
 
     let minx = -Infinity,
@@ -570,7 +551,7 @@ export function returnSymbolicFunctionFromFormula({
   }
 
   let varStrings = [];
-  for (let i = 0; i < nInputs; i++) {
+  for (let i = 0; i < numInputs; i++) {
     varStrings.push(variables[i].subscripts_to_strings().tree);
   }
 
@@ -581,7 +562,7 @@ export function returnSymbolicFunctionFromFormula({
   if (domain !== null) {
     haveDomain = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let thisDomain = domain[i];
       if (!thisDomain) {
         haveDomain = false;
@@ -616,7 +597,7 @@ export function returnSymbolicFunctionFromFormula({
     let foundOutsideDomain = false;
     let allNumeric = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let x = xs[i];
 
       if (haveDomain && allNumeric) {
@@ -657,7 +638,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
   evaluateChildrenToReevaluate,
   simplify,
   expand,
-  nInputs,
+  numInputs,
   variables,
   domain,
   component = 0,
@@ -681,7 +662,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
 
   let formula_transformed = formulaExpressionWithCodes.subscripts_to_strings();
 
-  if (nInputs === 1) {
+  if (numInputs === 1) {
     let varString = variables[0].subscripts_to_strings().tree;
 
     let minx = -Infinity,
@@ -744,7 +725,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
   }
 
   let varStrings = [];
-  for (let i = 0; i < nInputs; i++) {
+  for (let i = 0; i < numInputs; i++) {
     varStrings.push(variables[i].subscripts_to_strings().tree);
   }
 
@@ -755,7 +736,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
   if (domain !== null) {
     haveDomain = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let thisDomain = domain[i];
       if (!thisDomain) {
         haveDomain = false;
@@ -791,7 +772,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
     let foundOutsideDomain = false;
     let allNumeric = true;
 
-    for (let i = 0; i < nInputs; i++) {
+    for (let i = 0; i < numInputs; i++) {
       let x = xs[i];
 
       if (haveDomain && allNumeric) {
@@ -839,7 +820,7 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
   };
 }
 
-export function returnSymbolicFunctionForEvaluate({ symbolicfs, nInputs }) {
+export function returnSymbolicFunctionForEvaluate({ symbolicfs, numInputs }) {
   return function (input) {
     // if have a single input, check if it is a vector
     if (input.length === 1) {
@@ -849,7 +830,7 @@ export function returnSymbolicFunctionForEvaluate({ symbolicfs, nInputs }) {
       }
     }
 
-    if (input.length !== nInputs) {
+    if (input.length !== numInputs) {
       return me.fromAst("\uFF3F");
     }
 
@@ -866,7 +847,7 @@ export function returnSymbolicFunctionForEvaluate({ symbolicfs, nInputs }) {
   };
 }
 
-export function returnNumericFunctionForEvaluate({ numericalfs, nInputs }) {
+export function returnNumericFunctionForEvaluate({ numericalfs, numInputs }) {
   return function (input) {
     // if have a single input, check if it is a vector
     if (input.length === 1) {
@@ -876,7 +857,7 @@ export function returnNumericFunctionForEvaluate({ numericalfs, nInputs }) {
       }
     }
 
-    if (input.length !== nInputs) {
+    if (input.length !== numInputs) {
       return me.fromAst("\uFF3F");
     }
 
@@ -896,7 +877,7 @@ export function returnNumericFunctionForEvaluate({ numericalfs, nInputs }) {
 }
 
 export function returnBezierFunctions({
-  nThroughPoints,
+  numThroughPoints,
   numericalThroughPoints,
   splineCoeffs,
   extrapolateForward,
@@ -905,11 +886,11 @@ export function returnBezierFunctions({
   extrapolateBackwardCoeffs,
   component,
 }) {
-  if (nThroughPoints < 1) {
+  if (numThroughPoints < 1) {
     return () => NaN;
   }
 
-  let len = nThroughPoints - 1;
+  let len = numThroughPoints - 1;
 
   // let firstPointX = numericalThroughPoints[0][component];
   let lastPointX = numericalThroughPoints[len][component];
@@ -1158,14 +1139,14 @@ function returnFunctionOperatorFunction({
   functionOperatorArguments,
   operatorComposesWithOriginal,
   originalFDefinition,
-  nOutputs,
+  numOutputs,
   component,
 }) {
-  // TODO: correctly handle nOutputs > 1
+  // TODO: correctly handle numOutputs > 1
 
   if (operatorComposesWithOriginal) {
     let childFs = [];
-    for (let ind = 0; ind < nOutputs; ind++) {
+    for (let ind = 0; ind < numOutputs; ind++) {
       childFs.push(createFunctionFromDefinition(originalFDefinition, ind));
     }
 
@@ -1258,7 +1239,7 @@ export var functionOperatorDefinitions = {
 };
 
 function returnODESolutionFunction({
-  nDimensions,
+  numDimensions,
   t0,
   x0s,
   chunkSize,

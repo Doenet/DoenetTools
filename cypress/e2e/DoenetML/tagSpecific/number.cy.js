@@ -210,29 +210,29 @@ describe("Number Tag Tests", function () {
       <number name="n1">234234823.34235235324</number>
       <number name="n2">5.4285023408250342</number>
       <number name="n3">0.000000000000005023481340324</number>
-      <copy target="n1" displayDigits='5' ignoreDisplayDecimals assignNames="n1a" />
+      <copy target="n1" displayDigits='5' assignNames="n1a" />
       <copy target="n1" displayDecimals='3' assignNames="n1b" />
-      <copy target="n1" displayDigits='5' displaySmallAsZero="false" assignNames="n1c" />
+      <copy target="n1" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n1c" />
       <copy target="n2" displayDigits='5' assignNames="n2a" />
       <copy target="n2" displayDecimals='3' assignNames="n2b" />
-      <copy target="n2" displayDigits='5' displaySmallAsZero="false" assignNames="n2c" />
+      <copy target="n2" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n2c" />
       <copy target="n3" displayDigits='5' assignNames="n3a" />
       <copy target="n3" displayDecimals='3' assignNames="n3b" />
-      <copy target="n3" displayDigits='5' displaySmallAsZero="false" assignNames="n3c" />
+      <copy target="n3" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3c" />
 
-      <copy target="n1a" displayDigits='5' assignNames="n1aa" />
+      <copy target="n1a" assignNames="n1aa" />
       <copy target="n1a" displayDecimals='3' assignNames="n1ab" />
-      <copy target="n2a" displayDigits='5' assignNames="n2aa" />
+      <copy target="n2a" assignNames="n2aa" />
       <copy target="n2a" displayDecimals='3' assignNames="n2ab" />
-      <copy target="n3a" displayDigits='5' displaySmallAsZero="false" assignNames="n3aa" />
-      <copy target="n3a" displayDecimals='3' displaySmallAsZero="false" ignoreDisplayDigits assignNames="n3ab" />
+      <copy target="n3a" displaySmallAsZero="false" assignNames="n3aa" />
+      <copy target="n3a" displayDecimals='3' displaySmallAsZero="false" assignNames="n3ab" />
 
-      <copy target="n1b" displayDigits='5' ignoreDisplayDecimals assignNames="n1ba" />
-      <copy target="n1b" displayDecimals='3' assignNames="n1bb" />
-      <copy target="n2b" displayDigits='5' assignNames="n2ba" />
-      <copy target="n2b" displayDecimals='3' assignNames="n2bb" />
-      <copy target="n3b" displayDigits='5' displaySmallAsZero="false" assignNames="n3ba" />
-      <copy target="n3b" displayDecimals='3' displaySmallAsZero="false" ignoreDisplayDigits assignNames="n3bb" />
+      <copy target="n1b" assignNames="n1ba" />
+      <copy target="n1b" displayDigits='5'  assignNames="n1bb" />
+      <copy target="n2b" assignNames="n2ba" />
+      <copy target="n2b" displayDigits='5' assignNames="n2bb" />
+      <copy target="n3b" displaySmallAsZero="false" assignNames="n3ba" />
+      <copy target="n3b" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3bb" />
 
       <m name="n1am">$n1a</m>
       <m name="n1bm">$n1b</m>
@@ -269,7 +269,7 @@ describe("Number Tag Tests", function () {
     cy.get(cesc("#\\/n1")).should("have.text", "234234823.34");
     cy.get(cesc("#\\/n1a")).should("have.text", "234230000");
     cy.get(cesc("#\\/n1b")).should("have.text", "234234823.342");
-    cy.get(cesc("#\\/n1c")).should("have.text", "234234823.34");
+    cy.get(cesc("#\\/n1c")).should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1am") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "234230000");
@@ -278,7 +278,7 @@ describe("Number Tag Tests", function () {
       .should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1cm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234234823.34");
+      .should("have.text", "234234823.342");
 
     cy.get(cesc("#\\/n2")).should("have.text", "5.43");
     cy.get(cesc("#\\/n2a")).should("have.text", "5.4285");
@@ -318,13 +318,13 @@ describe("Number Tag Tests", function () {
       .should("have.text", "234234823.342");
 
     cy.get(cesc("#\\/n2aa")).should("have.text", "5.4285");
-    cy.get(cesc("#\\/n2ab")).should("have.text", "5.4285");
+    cy.get(cesc("#\\/n2ab")).should("have.text", "5.429");
     cy.get(cesc("#\\/n2aam") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "5.4285");
     cy.get(cesc("#\\/n2abm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.4285");
+      .should("have.text", "5.429");
 
     cy.get(cesc("#\\/n3aa")).should("have.text", "5.0235 * 10^(-15)");
     cy.get(cesc("#\\/n3ab")).should("have.text", "0");
@@ -335,32 +335,32 @@ describe("Number Tag Tests", function () {
       .eq(0)
       .should("have.text", "0");
 
-    cy.get(cesc("#\\/n1ba")).should("have.text", "234230000");
-    cy.get(cesc("#\\/n1bb")).should("have.text", "234234823.342");
+    cy.get(cesc("#\\/n1ba")).should("have.text", "234234823.342");
+    cy.get(cesc("#\\/n1bb")).should("have.text", "234230000");
     cy.get(cesc("#\\/n1bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234230000");
+      .should("have.text", "234234823.342");
     cy.get(cesc("#\\/n1bbm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "234234823.342");
+      .should("have.text", "234230000");
 
-    cy.get(cesc("#\\/n2ba")).should("have.text", "5.4285");
-    cy.get(cesc("#\\/n2bb")).should("have.text", "5.429");
+    cy.get(cesc("#\\/n2ba")).should("have.text", "5.429");
+    cy.get(cesc("#\\/n2bb")).should("have.text", "5.4285");
     cy.get(cesc("#\\/n2bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.4285");
+      .should("have.text", "5.429");
     cy.get(cesc("#\\/n2bbm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.429");
+      .should("have.text", "5.4285");
 
-    cy.get(cesc("#\\/n3ba")).should("have.text", "5.0235 * 10^(-15)");
-    cy.get(cesc("#\\/n3bb")).should("have.text", "0");
+    cy.get(cesc("#\\/n3ba")).should("have.text", "0");
+    cy.get(cesc("#\\/n3bb")).should("have.text", "5.0235 * 10^(-15)");
     cy.get(cesc("#\\/n3bam") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "5.0235⋅10−15");
+      .should("have.text", "0");
     cy.get(cesc("#\\/n3bbm") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "5.0235⋅10−15");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -523,8 +523,8 @@ describe("Number Tag Tests", function () {
       <copy target="n1" displayDigits='4' displaySmallAsZero assignNames="n1cpad" padZeros />
       <copy target="n2" displayDigits='4' assignNames="n2a" />
       <copy target="n2" displayDigits='4' assignNames="n2apad" padZeros />
-      <copy target="n2" displayDecimals='3' ignoreDisplayDigits assignNames="n2b" />
-      <copy target="n2" displayDecimals='3' ignoreDisplayDigits assignNames="n2bpad" padZeros />
+      <copy target="n2" displayDecimals='3' assignNames="n2b" />
+      <copy target="n2" displayDecimals='3' assignNames="n2bpad" padZeros />
       <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2c" />
       <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2cpad" padZeros />
 
@@ -967,14 +967,14 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><number name="n1" displayDigits="2" ignoreDisplayDecimals>8.5203845251</number>
+  <p><number name="n1" displayDigits="2">8.5203845251</number>
   <copy target="n1" prop="value" assignNames="n1a" />
   <copy target="n1" prop="value" displayDigits="5" assignNames="n1b" />
   <copy target="n1" prop="value" link="false" assignNames="n1c" />
   <copy target="n1" prop="value" link="false" displayDigits="5" assignNames="n1d" />
   </p>
 
-  <p><number name="n2" displayDecimals="0" ignoreDisplayDigits>8.5203845251</number>
+  <p><number name="n2" displayDecimals="0">8.5203845251</number>
   <copy target="n2" prop="value" assignNames="n2a" />
   <copy target="n2" prop="value" displayDecimals="6" assignNames="n2b" />
   <copy target="n2" prop="value" link="false" assignNames="n2c" />
@@ -1034,14 +1034,14 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
   <p><text>a</text></p>
-  <p><number name="m1"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
-    <number name="m1a"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number></number>
-    <number name="m1b"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math>2.8392634947</number>
-    <number name="m1c"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number>2.8392634947</number>
-    <number name="m1d"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math><math displayDigits="2" ignoreDisplayDecimals>2.8392634947</math></number>
-    <number name="m1e"><number displayDigits="2" ignoreDisplayDecimals>8.5203845251</number><math displayDigits="2" ignoreDisplayDecimals>2.8392634947</math></number>
-    <number name="m1f" displayDigits="1"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
-    <number name="m1g" displayDecimals="8"><math displayDigits="2" ignoreDisplayDecimals>8.5203845251</math></number>
+  <p><number name="m1"><math displayDigits="2">8.5203845251</math></number>
+    <number name="m1a"><number displayDigits="2">8.5203845251</number></number>
+    <number name="m1b"><math displayDigits="2">8.5203845251</math>2.8392634947</number>
+    <number name="m1c"><number displayDigits="2">8.5203845251</number>2.8392634947</number>
+    <number name="m1d"><math displayDigits="2">8.5203845251</math><math displayDigits="2">2.8392634947</math></number>
+    <number name="m1e"><number displayDigits="2">8.5203845251</number><math displayDigits="2">2.8392634947</math></number>
+    <number name="m1f" displayDigits="1"><math displayDigits="2">8.5203845251</math></number>
+    <number name="m1g" displayDecimals="8"><math displayDigits="2">8.5203845251</math></number>
   </p>
 
   <p><number name="m1_v" copySource="m1.value" />

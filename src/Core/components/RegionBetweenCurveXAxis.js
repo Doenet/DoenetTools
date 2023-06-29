@@ -86,14 +86,19 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
         functionAttr: {
           dependencyType: "attributeComponent",
           attributeName: "function",
-          variableNames: ["numericalfs", "nInputs", "nOutputs", "fDefinition"],
+          variableNames: [
+            "numericalfs",
+            "numInputs",
+            "numOutputs",
+            "fDefinition",
+          ],
         },
       }),
       definition({ dependencyValues }) {
         if (
           dependencyValues.functionAttr === null ||
-          dependencyValues.functionAttr.stateValues.nInputs !== 1 ||
-          dependencyValues.functionAttr.stateValues.nOutputs !== 1
+          dependencyValues.functionAttr.stateValues.numInputs !== 1 ||
+          dependencyValues.functionAttr.stateValues.numOutputs !== 1
         ) {
           return {
             setValue: {
