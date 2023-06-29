@@ -744,6 +744,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
       to: await this.stateValues.to,
       from: await this.stateValues.from,
       step: await this.stateValues.step,
+      exclude: await this.stateValues.exclude,
       numDiscreteValues: await this.stateValues.numDiscreteValues,
       rng: (await this.stateValues.variantDeterminesSeed)
         ? this.sharedParameters.variantRng
