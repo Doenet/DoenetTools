@@ -799,6 +799,7 @@ export function GeneralActivityControls({
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
+  // const learningOutcomesRef = useRef([]);
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = [];
@@ -812,6 +813,8 @@ export function GeneralActivityControls({
       }
     }
     console.log("learningOutcomesToSubmit:", learningOutcomesToSubmit);
+
+    // learningOutcomesRef.current = learningOutcomesToSubmit;
 
     let isPublicToSubmit = checkboxIsPublic;
     if (nextIsPublic) {
@@ -941,11 +944,15 @@ export function GeneralActivityControls({
   if (learningOutcomes == null) {
     learningOutcomes = [""];
   }
+  console.log("activityData.learningOutcomes", activityData.learningOutcomes);
   //Optimistic UI update learningOutcomes from form submission
   if (fetcher.formData) {
     let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
     learningOutcomes = JSON.parse(serializedLearningOutcomes);
+    console.log("fetcher.formData", learningOutcomes);
   }
+
+  console.log("learningOutcomes loaded", learningOutcomes);
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
@@ -1032,7 +1039,7 @@ export function GeneralActivityControls({
 
             {learningOutcomes.map((outcome, i) => {
               return (
-                <Flex key={`learningOutcome${i}`} columnGap={4}>
+                <Flex key={`learningOutcome${i}${outcome}`} columnGap={4}>
                   <Input
                     size="sm"
                     name={`learning outcomes`}
@@ -1056,13 +1063,28 @@ export function GeneralActivityControls({
                     // background="doenet.mainRed"
                     icon={<HiOutlineX />}
                     onClick={() => {
-                      let nextLearningOutcomes = [...learningOutcomes];
+                      const inputs =
+                        document.getElementsByName("learning outcomes");
+                      let nextLearningOutcomes = [];
+                      for (let input of inputs) {
+                        nextLearningOutcomes.push(input.value);
+                      }
+                      console.log(
+                        "nextLearningOutcomes before slice",
+                        i,
+                        nextLearningOutcomes,
+                      );
                       if (learningOutcomes.length < 2) {
                         nextLearningOutcomes = [""];
                       } else {
                         nextLearningOutcomes.splice(i, 1);
                       }
 
+                      console.log(
+                        "nextLearningOutcomes after slice",
+                        i,
+                        nextLearningOutcomes,
+                      );
                       saveDataToServer({ nextLearningOutcomes });
                     }}
                   />
@@ -1079,7 +1101,12 @@ export function GeneralActivityControls({
                 size="xs"
                 icon={<HiPlus />}
                 onClick={() => {
-                  let nextLearningOutcomes = [...learningOutcomes];
+                  const inputs =
+                    document.getElementsByName("learning outcomes");
+                  let nextLearningOutcomes = [];
+                  for (let input of inputs) {
+                    nextLearningOutcomes.push(input.value);
+                  }
                   if (learningOutcomes.length < 9) {
                     nextLearningOutcomes.push("");
                   }
