@@ -1014,6 +1014,7 @@ export default function PageViewer(props) {
       targetName,
       pageToolView,
       inCourse: Object.keys(itemInCourse).length > 0,
+      pathname: location.pathname,
       search: location.search,
       id,
     });
@@ -1245,6 +1246,7 @@ export function getURLFromRef({
   targetName = "",
   pageToolView = {},
   inCourse = false,
+  pathname = "",
   search = "",
   id = "",
 }) {
@@ -1252,36 +1254,56 @@ export function getURLFromRef({
   let targetForATag = "_blank";
   let haveValidTarget = false;
   let externalUri = false;
+
+  let portfolioModeURI =
+    pathname.substring(0, 10) === "/portfolio" ||
+    pathname.substring(0, 13) === "/publiceditor";
+
   if (cid || doenetId) {
     if (cid) {
       url = `cid=${cid}`;
+      portfolioModeURI = false;
     } else {
-      url = `doenetId=${doenetId}`;
+      if (portfolioModeURI) {
+        url = `/${doenetId}`;
+      } else {
+        url = `doenetId=${doenetId}`;
+      }
     }
     if (variantIndex) {
-      url += `&variant=${variantIndex}`;
+      if (!portfolioModeURI) {
+        url += `&variant=${variantIndex}`;
+      }
     }
 
-    let usePublic = false;
-    if (pageToolView.page === "public") {
-      usePublic = true;
-    } else if (!inCourse) {
-      usePublic = true;
-    }
-    if (usePublic) {
-      if (
-        edit === true ||
-        (edit === null &&
-          pageToolView.page === "public" &&
-          pageToolView.tool === "editor")
-      ) {
-        url = `tool=editor&${url}`;
+    if (portfolioModeURI) {
+      if (edit == true) {
+        url = "/publiceditor" + url;
+      } else {
+        url = "/portfolioviewer" + url;
       }
-      url = `/public?${url}`;
-    } else if (pageToolView.page === "placementexam") {
-      url = `?tool=exam&${url}`;
     } else {
-      url = `?tool=assignment&${url}`;
+      let usePublic = false;
+      if (pageToolView.page === "public") {
+        usePublic = true;
+      } else if (!inCourse) {
+        usePublic = true;
+      }
+      if (usePublic) {
+        if (
+          edit === true ||
+          (edit === null &&
+            pageToolView.page === "public" &&
+            pageToolView.tool === "editor")
+        ) {
+          url = `tool=editor&${url}`;
+        }
+        url = `/public?${url}`;
+      } else if (pageToolView.page === "placementexam") {
+        url = `?tool=exam&${url}`;
+      } else {
+        url = `?tool=assignment&${url}`;
+      }
     }
 
     haveValidTarget = true;
