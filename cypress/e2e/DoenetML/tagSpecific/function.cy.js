@@ -2904,7 +2904,7 @@ describe("Function Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <!--<graph>-->
+    <graph>
     <point>(0.7, 5.43)</point>
     <point>(3,4)</point>
     <point>(5,6)</point>
@@ -2912,7 +2912,7 @@ describe("Function Tag Tests", function () {
     <function through="$_point1 $_point2" maxima="$_point3" minima="$_point4" />
     <copy prop="maxima" target="_function1" />
     <copy prop="minima" target="_function1" />
-    <!--</graph>-->
+    </graph>
 
     <p>Number of maxima: <copy prop="numMaxima" assignNames="numMaxima" target="_function1" /></p>
     <p>Maxima: <math simplify="none"><copy prop="maxima" target="_function1" /></math></p>
@@ -2920,6 +2920,10 @@ describe("Function Tag Tests", function () {
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
     <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
+    <p>Global maximum: <copy prop="globalMaximumValue" assignNames="globalmax" target="_function1" /></p>
+    <p>Global minimum: <copy prop="globalMinimumValue" assignNames="globalmin" target="_function1" /></p>
+    <p>Global supremum: <copy prop="globalSupremumValue" assignNames="globalsup" target="_function1" /></p>
+    <p>Global infimum: <copy prop="globalInfimumValue" assignNames="globalinf" target="_function1" /></p>
     `,
         },
         "*",
@@ -2954,6 +2958,10 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−5,6),(−2.15,7),(3,4),(5,6))");
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+    cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+    cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+    cy.get(cesc2("#/globalinf")).should("have.text", "-∞");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -2986,6 +2994,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-∞");
     });
 
     cy.window().then(async (win) => {
@@ -3021,6 +3033,10 @@ describe("Function Tag Tests", function () {
             "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
           );
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-∞");
     });
 
     cy.window().then(async (win) => {
@@ -3054,6 +3070,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(−1,7),(3,4),(5,6),(6.5,5))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+      cy.get(cesc2("#/globalmin")).should("have.text", "4");
+      cy.get(cesc2("#/globalinf")).should("have.text", "4");
     });
 
     cy.window().then(async (win) => {
@@ -3087,6 +3107,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("＿");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "NaN");
     });
 
     cy.window().then(async (win) => {
@@ -3120,6 +3144,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−7,7),(−5,6),(−1,7),(3,4),(5,6))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-∞");
     });
 
     cy.window().then(async (win) => {
@@ -3153,6 +3181,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((5,6),(8,3))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+      cy.get(cesc2("#/globalmin")).should("have.text", "0");
+      cy.get(cesc2("#/globalinf")).should("have.text", "0");
     });
 
     cy.window().then(async (win) => {
@@ -3186,6 +3218,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((5,6),(6,5),(7,7),(8,6))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "∞");
+      cy.get(cesc2("#/globalmin")).should("have.text", "0");
+      cy.get(cesc2("#/globalinf")).should("have.text", "0");
     });
   });
 
@@ -3213,6 +3249,10 @@ describe("Function Tag Tests", function () {
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
     <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
+    <p>Global maximum: <copy prop="globalMaximumValue" assignNames="globalmax" target="_function1" /></p>
+    <p>Global minimum: <copy prop="globalMinimumValue" assignNames="globalmin" target="_function1" /></p>
+    <p>Global supremum: <copy prop="globalSupremumValue" assignNames="globalsup" target="_function1" /></p>
+    <p>Global infimum: <copy prop="globalInfimumValue" assignNames="globalinf" target="_function1" /></p>
     `,
         },
         "*",
@@ -3247,6 +3287,10 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−2.15,7),(3,4),(5,6))");
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "7");
+    cy.get(cesc2("#/globalsup")).should("have.text", "7");
+    cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+    cy.get(cesc2("#/globalinf")).should("have.text", "2");
 
     cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}2{enter}", {
       force: true,
@@ -3280,6 +3324,10 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "6.99");
+    cy.get(cesc2("#/globalsup")).should("have.text", "6.99");
+    cy.get(cesc2("#/globalmin")).should("have.text", "4");
+    cy.get(cesc2("#/globalinf")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -3312,6 +3360,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1.5,7),(2,2))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "2");
+      cy.get(cesc2("#/globalinf")).should("have.text", "2");
 
       cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}6{enter}", {
         force: true,
@@ -3344,6 +3396,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-3");
     });
 
     cy.window().then(async (win) => {
@@ -3379,6 +3435,10 @@ describe("Function Tag Tests", function () {
             "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
           );
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-3");
 
       cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}1{enter}", {
         force: true,
@@ -3411,6 +3471,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1,7),(3,4),(3.6,5.1))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "4");
+      cy.get(cesc2("#/globalinf")).should("have.text", "4");
     });
   });
 
@@ -3438,6 +3502,10 @@ describe("Function Tag Tests", function () {
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
     <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
+    <p>Global maximum: <copy prop="globalMaximumValue" assignNames="globalmax" target="_function1" /></p>
+    <p>Global minimum: <copy prop="globalMinimumValue" assignNames="globalmin" target="_function1" /></p>
+    <p>Global supremum: <copy prop="globalSupremumValue" assignNames="globalsup" target="_function1" /></p>
+    <p>Global infimum: <copy prop="globalInfimumValue" assignNames="globalinf" target="_function1" /></p>
     `,
         },
         "*",
@@ -3472,6 +3540,10 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("((−2.15,7),(3,4),(5,6))");
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "7");
+    cy.get(cesc2("#/globalsup")).should("have.text", "7");
+    cy.get(cesc2("#/globalmin")).should("have.text", "2");
+    cy.get(cesc2("#/globalinf")).should("have.text", "2");
 
     cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}2{enter}", {
       force: true,
@@ -3505,6 +3577,10 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(3,4)");
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+    cy.get(cesc2("#/globalsup")).should("have.text", "6.99");
+    cy.get(cesc2("#/globalmin")).should("have.text", "4");
+    cy.get(cesc2("#/globalinf")).should("have.text", "4");
 
     cy.window().then(async (win) => {
       await win.callAction1({
@@ -3537,6 +3613,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−1.5,7),(2,2))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "2");
+      cy.get(cesc2("#/globalinf")).should("have.text", "2");
 
       cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}6{enter}", {
         force: true,
@@ -3569,6 +3649,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "-3");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-3");
     });
 
     cy.window().then(async (win) => {
@@ -3604,6 +3688,10 @@ describe("Function Tag Tests", function () {
             "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
           );
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "7");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "-3");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-3");
 
       cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}1{enter}", {
         force: true,
@@ -3636,6 +3724,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("((3,4),(3.6,5.1))");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "7");
+      cy.get(cesc2("#/globalmin")).should("have.text", "4");
+      cy.get(cesc2("#/globalinf")).should("have.text", "4");
     });
   });
 
@@ -3662,6 +3754,10 @@ describe("Function Tag Tests", function () {
     <p>Minima: <math simplify="none"><copy prop="minima" target="_function1" /></math></p>
     <p>Number of extrema: <copy prop="numExtrema" assignNames="numExtrema" target="_function1" /></p>
     <p>Extrema: <math simplify="none"><copy prop="extrema" target="_function1" /></math></p>
+    <p>Global maximum: <copy prop="globalMaximumValue" assignNames="globalmax" target="_function1" /></p>
+    <p>Global minimum: <copy prop="globalMinimumValue" assignNames="globalmin" target="_function1" /></p>
+    <p>Global supremum: <copy prop="globalSupremumValue" assignNames="globalsup" target="_function1" /></p>
+    <p>Global infimum: <copy prop="globalInfimumValue" assignNames="globalinf" target="_function1" /></p>
     `,
         },
         "*",
@@ -3692,6 +3788,11 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(text.trim()).equal("(5,−4)");
       });
+
+    cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+    cy.get(cesc2("#/globalsup")).should("have.text", "2.33");
+    cy.get(cesc2("#/globalmin")).should("have.text", "-4");
+    cy.get(cesc2("#/globalinf")).should("have.text", "-4");
 
     cy.window().then(async (win) => {
       // now move points so that the minimum of the cubic interpolating between
@@ -3731,6 +3832,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,−4)");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalsup")).should("have.text", "12");
+      cy.get(cesc2("#/globalmin")).should("have.text", "-4");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-4");
     });
 
     cy.window().then(async (win) => {
@@ -3776,6 +3881,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,4)");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "4");
+      cy.get(cesc2("#/globalsup")).should("have.text", "4");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-2.33");
     });
 
     cy.window().then(async (win) => {
@@ -3816,6 +3925,10 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("(5,4)");
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "4");
+      cy.get(cesc2("#/globalsup")).should("have.text", "4");
+      cy.get(cesc2("#/globalmin")).should("have.text", "NaN");
+      cy.get(cesc2("#/globalinf")).should("have.text", "-12");
     });
   });
 
@@ -3849,6 +3962,8 @@ describe("Function Tag Tests", function () {
     <p>Extremum values: <copy prop="extremumvalue1" assignNames="extremumvalue1" target="_function1" />,
     <copy prop="extremumvalue2" assignNames="extremumvalue2" target="_function1" />,
     <copy prop="extremumvalue3" assignNames="extremumvalue3" target="_function1" /></p>
+    <p>Global maximum: <copy prop="globalMaximumValue" assignNames="globalmax" target="_function1" /></p>
+    <p>Global minimum: <copy prop="globalMinimumValue" assignNames="globalmin" target="_function1" /></p>
     `,
         },
         "*",
@@ -3923,6 +4038,8 @@ describe("Function Tag Tests", function () {
       .then((text) => {
         expect(Number(text.replace(/−/, "-"))).closeTo(1, 0.01);
       });
+    cy.get(cesc2("#/globalmax")).should("have.text", "1");
+    cy.get(cesc2("#/globalmin")).should("have.text", "0");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3982,6 +4099,8 @@ describe("Function Tag Tests", function () {
           expect(Number(text.replace(/−/, "-"))).closeTo(-1, 0.01);
         });
       cy.get(cesc("#\\/extremumvalue3")).should("not.exist");
+      cy.get(cesc2("#/globalmax")).should("have.text", "1");
+      cy.get(cesc2("#/globalmin")).should("have.text", "-1");
     });
 
     cy.window().then(async (win) => {
@@ -4058,6 +4177,8 @@ describe("Function Tag Tests", function () {
         .then((text) => {
           expect(Number(text.replace(/−/, "-"))).closeTo(-1, 0.01);
         });
+      cy.get(cesc2("#/globalmax")).should("have.text", "0");
+      cy.get(cesc2("#/globalmin")).should("have.text", "-1");
     });
   });
 
@@ -4096,6 +4217,11 @@ describe("Function Tag Tests", function () {
       expect(f.stateValues.numMaxima).eq(0);
       expect(f.stateValues.numMinima).eq(0);
       expect(f.stateValues.numExtrema).eq(0);
+
+      expect(f.stateValues.globalMaximum).eqls([]);
+      expect(f.stateValues.globalSupremum).eqls([]);
+      expect(f.stateValues.globalMinimum).eqls([]);
+      expect(f.stateValues.globalInfimum).eqls([]);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type("10{enter}", {
@@ -4151,6 +4277,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(-1);
+      expect(f.stateValues.globalInfimum[1]).eq(-1);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type(
@@ -4207,6 +4338,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).closeTo(1, 1e-10);
+      expect(f.stateValues.globalSupremum[1]).closeTo(1, 1e-10);
+      expect(f.stateValues.globalMinimum[1]).closeTo(-1, 1e-10);
+      expect(f.stateValues.globalInfimum[1]).closeTo(-1, 1e-10);
     });
   });
 
@@ -4249,6 +4385,10 @@ describe("Function Tag Tests", function () {
       expect(f.stateValues.numMaxima).eq(0);
       expect(f.stateValues.numMinima).eq(0);
       expect(f.stateValues.numExtrema).eq(0);
+      expect(f.stateValues.globalMaximum).eqls([]);
+      expect(f.stateValues.globalSupremum).eqls([]);
+      expect(f.stateValues.globalMinimum).eqls([]);
+      expect(f.stateValues.globalInfimum).eqls([]);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type("10{enter}", {
@@ -4304,6 +4444,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(-1);
+      expect(f.stateValues.globalInfimum[1]).eq(-1);
     });
 
     cy.get(cesc("#\\/xmin") + " textarea").type(
@@ -4364,6 +4509,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(-1);
+      expect(f.stateValues.globalInfimum[1]).eq(-1);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type(
@@ -4420,6 +4570,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(-1);
+      expect(f.stateValues.globalInfimum[1]).eq(-1);
     });
 
     cy.get(cesc("#\\/xmin") + " textarea").type("{end}{backspace}1{enter}", {
@@ -4479,6 +4634,11 @@ describe("Function Tag Tests", function () {
       for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
+
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(-1);
+      expect(f.stateValues.globalInfimum[1]).eq(-1);
     });
   });
 
@@ -4508,9 +4668,13 @@ describe("Function Tag Tests", function () {
 
       let f = stateVariables["/_function1"];
 
-      expect(await f.stateValues.numMaxima).eq(0);
-      expect(await f.stateValues.numMinima).eq(0);
-      expect(await f.stateValues.numExtrema).eq(0);
+      expect(f.stateValues.numMaxima).eq(0);
+      expect(f.stateValues.numMinima).eq(0);
+      expect(f.stateValues.numExtrema).eq(0);
+      expect(f.stateValues.globalMaximum[1]).eq(1);
+      expect(f.stateValues.globalSupremum[1]).eq(1);
+      expect(f.stateValues.globalMinimum[1]).eq(0);
+      expect(f.stateValues.globalInfimum[1]).eq(0);
     });
   });
 
@@ -4532,6 +4696,7 @@ describe("Function Tag Tests", function () {
     <p><aslist><copy prop="minimumValues" target="_function1" /></aslist></p>
     <p><aslist><copy prop="extremumLocations" target="_function1" /></aslist></p>
     <p><aslist><copy prop="extremumValues" target="_function1" /></aslist></p>
+    <p>$_function1.globalMaximum, $_function1.globalSupremum, $_function1.globalMinimum, $_function1.globalInfimum</p>
 
     `,
         },
@@ -4578,6 +4743,10 @@ describe("Function Tag Tests", function () {
           0.000001,
         );
       }
+      expect(f.stateValues.globalMaximum[1]).greaterThan(1e5);
+      expect(f.stateValues.globalSupremum).eqls(f.stateValues.globalMaximum);
+      expect(f.stateValues.globalMinimum[1]).lessThan(-1e5);
+      expect(f.stateValues.globalInfimum).eqls(f.stateValues.globalMinimum);
     });
   });
 
@@ -4588,8 +4757,19 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-    <function through="(-8,7) (-7,2) (-6,2) (-4,3) (-2,5) (8,5) (10,4)" />
-    <copy prop="extrema" target="_function1" />
+    <function name="f1" through="(-8,7) (-7,2) (-6,2) (-4,3) (-2,5) (8,5) (10,4)" />
+    <copy prop="extrema" target="f1" />
+    <function name="f2" styleNumber="2" through="(-8,2) (-7,2) (-6,2) (-4,3) (-2,5) (2,5) (6,4) (8,4)" />
+    <copy prop="extrema" target="f2" />
+    <function name="f3" copySource="f1" domain="(-7.5, 10)" />
+    <copy prop="extrema" target="f3" />
+    <function name="f4" copySource="f1" domain="(-9, 14)" />
+    <copy prop="extrema" target="f4" />
+    <function name="f5" styleNumber="3" through="(-8,2) (-2,5) (2,5) (6,1)" throughSlopes="0 0 0 0" />
+    <copy prop="extrema" target="f5" />
+    <function name="f6" styleNumber="4" through="(-8,2) (-2,5) (2,5) (6,7)" throughSlopes="0 0 0 0" />
+    <copy prop="extrema" target="f6" />
+
     </graph>
     `,
         },
@@ -4603,10 +4783,56 @@ describe("Function Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let f = stateVariables["/_function1"];
-      expect(f.stateValues.numMaxima).eq(0);
-      expect(f.stateValues.numMinima).eq(0);
-      expect(f.stateValues.numExtrema).eq(0);
+      let f1 = stateVariables["/f1"];
+      let f2 = stateVariables["/f2"];
+      let f3 = stateVariables["/f3"];
+      let f4 = stateVariables["/f4"];
+      let f4fun = createFunctionFromDefinition(f4.stateValues.fDefinitions[0]);
+      let f5 = stateVariables["/f5"];
+      let f6 = stateVariables["/f6"];
+
+      expect(f1.stateValues.numMaxima).eq(0);
+      expect(f1.stateValues.numMinima).eq(0);
+      expect(f1.stateValues.numExtrema).eq(0);
+      expect(f1.stateValues.globalMinimum).eqls([]);
+      expect(f1.stateValues.globalInfimum).eqls([Infinity, -Infinity]);
+      expect(f1.stateValues.globalMaximum).eqls([]);
+      expect(f1.stateValues.globalSupremum).eqls([-Infinity, Infinity]);
+      expect(f2.stateValues.numMaxima).eq(0);
+      expect(f2.stateValues.numMinima).eq(0);
+      expect(f2.stateValues.numExtrema).eq(0);
+      expect(f2.stateValues.globalMinimum).eqls([-8, 2]);
+      expect(f2.stateValues.globalInfimum).eqls([-8, 2]);
+      expect(f2.stateValues.globalMaximum).eqls([-2, 5]);
+      expect(f2.stateValues.globalSupremum).eqls([-2, 5]);
+      expect(f3.stateValues.numMaxima).eq(0);
+      expect(f3.stateValues.numMinima).eq(0);
+      expect(f3.stateValues.numExtrema).eq(0);
+      expect(f3.stateValues.globalMinimum).eqls([-7, 2]);
+      expect(f3.stateValues.globalInfimum).eqls([-7, 2]);
+      expect(f3.stateValues.globalMaximum).eqls([-2, 5]);
+      expect(f3.stateValues.globalSupremum).eqls([-2, 5]);
+      expect(f4.stateValues.numMaxima).eq(0);
+      expect(f4.stateValues.numMinima).eq(0);
+      expect(f4.stateValues.numExtrema).eq(0);
+      expect(f4.stateValues.globalMinimum).eqls([]);
+      expect(f4.stateValues.globalInfimum).eqls([14, f4fun(14, true)]);
+      expect(f4.stateValues.globalMaximum).eqls([]);
+      expect(f4.stateValues.globalSupremum).eqls([-9, f4fun(-9, true)]);
+      expect(f5.stateValues.numMaxima).eq(0);
+      expect(f5.stateValues.numMinima).eq(0);
+      expect(f5.stateValues.numExtrema).eq(0);
+      expect(f5.stateValues.globalMinimum).eqls([6, 1]);
+      expect(f5.stateValues.globalInfimum).eqls([6, 1]);
+      expect(f5.stateValues.globalMaximum).eqls([-2, 5]);
+      expect(f5.stateValues.globalSupremum).eqls([-2, 5]);
+      expect(f6.stateValues.numMaxima).eq(0);
+      expect(f6.stateValues.numMinima).eq(0);
+      expect(f6.stateValues.numExtrema).eq(0);
+      expect(f6.stateValues.globalMinimum).eqls([-8, 2]);
+      expect(f6.stateValues.globalInfimum).eqls([-8, 2]);
+      expect(f6.stateValues.globalMaximum).eqls([6, 7]);
+      expect(f6.stateValues.globalSupremum).eqls([6, 7]);
     });
   });
 
@@ -4643,12 +4869,22 @@ describe("Function Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let f = stateVariables["/_function1"];
+      let ffun = createFunctionFromDefinition(f.stateValues.fDefinitions[0]);
+
       expect(f.stateValues.numMaxima).eq(1);
       expect(f.stateValues.numMinima).eq(0);
       expect(f.stateValues.numExtrema).eq(1);
 
       expect(f.stateValues.maximumLocations).closeTo(2.614, 0.001);
       expect(f.stateValues.maximumValues).closeTo(3.82, 0.001);
+
+      expect(f.stateValues.globalMaximum).eqls([]);
+      expect(f.stateValues.globalSupremum).eqls([-100, ffun(-100)]);
+      expect(f.stateValues.globalMinimum[0]).closeTo(-1, 1e-5);
+      expect(f.stateValues.globalMinimum[1]).eq(
+        ffun(f.stateValues.globalMinimum[0]),
+      );
+      expect(f.stateValues.globalInfimum).eqls(f.stateValues.globalMinimum);
     });
   });
 
@@ -4684,43 +4920,44 @@ describe("Function Tag Tests", function () {
       let f1 = stateVariables["/f1"];
       let f2 = stateVariables["/f2"];
       let f3 = stateVariables["/f3"];
+      let f1fun = createFunctionFromDefinition(f1.stateValues.fDefinitions[0]);
+      let f2fun = createFunctionFromDefinition(f2.stateValues.fDefinitions[0]);
       expect(f1.stateValues.numMaxima).eq(1);
       expect(f1.stateValues.numMinima).eq(0);
       expect(f1.stateValues.numExtrema).eq(1);
-      expect((await f1.stateValues.maxima)[0][0]).closeTo(1.0131, 1e-6);
+      expect(f1.stateValues.maxima[0][0]).closeTo(1.0131, 1e-6);
       expect(f1.stateValues.maxima[0][1]).eq(2);
-      expect((await f1.stateValues.extrema)[0][0]).closeTo(1.0131, 1e-6);
+      expect(f1.stateValues.extrema[0][0]).closeTo(1.0131, 1e-6);
       expect(f1.stateValues.extrema[0][1]).eq(2);
+      expect(f1.stateValues.globalMaximum).eqls(f1.stateValues.maxima[0]);
+      expect(f1.stateValues.globalSupremum).eqls(f1.stateValues.maxima[0]);
+      expect(f1.stateValues.globalMinimum).eqls([]);
+      expect(f1.stateValues.globalInfimum).eqls([-100, f1fun(-100)]);
 
       expect(f2.stateValues.numMaxima).eq(0);
       expect(f2.stateValues.numMinima).eq(1);
       expect(f2.stateValues.numExtrema).eq(1);
-      expect((await f2.stateValues.minima)[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f2.stateValues.minima[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f2.stateValues.minima[0][1]).eq(3);
-      expect((await f2.stateValues.extrema)[0][0]).closeTo(-Math.PI, 1e-6);
+      expect(f2.stateValues.extrema[0][0]).closeTo(-Math.PI, 1e-6);
       expect(f2.stateValues.extrema[0][1]).eq(3);
+      expect(f2.stateValues.globalMinimum).eqls(f2.stateValues.minima[0]);
+      expect(f2.stateValues.globalInfimum).eqls(f2.stateValues.minima[0]);
+      expect(f2.stateValues.globalMaximum).eqls([]);
+      expect(f2.stateValues.globalSupremum).eqls([100, f2fun(100)]);
 
       expect(f3.stateValues.numMaxima).eq(2);
       expect(f3.stateValues.numMinima).eq(2);
       expect(f3.stateValues.numExtrema).eq(4);
-      expect((await f3.stateValues.minima)[0][0]).closeTo(
-        (3 * Math.PI) / 6,
-        1e-6,
-      );
+      expect(f3.stateValues.minima[0][0]).closeTo((3 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.minima[0][1]).eq(-8);
       expect(f3.stateValues.minima[1][0]).closeTo((7 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.minima[1][1]).eq(-8);
-      expect((await f3.stateValues.maxima)[0][0]).closeTo(
-        (5 * Math.PI) / 6,
-        1e-6,
-      );
+      expect(f3.stateValues.maxima[0][0]).closeTo((5 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.maxima[0][1]).eq(-5);
       expect(f3.stateValues.maxima[1][0]).closeTo((9 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.maxima[1][1]).eq(-5);
-      expect((await f3.stateValues.extrema)[0][0]).closeTo(
-        (3 * Math.PI) / 6,
-        1e-6,
-      );
+      expect(f3.stateValues.extrema[0][0]).closeTo((3 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.extrema[0][1]).eq(-8);
       expect(f3.stateValues.extrema[1][0]).closeTo((5 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.extrema[1][1]).eq(-5);
@@ -4728,6 +4965,79 @@ describe("Function Tag Tests", function () {
       expect(f3.stateValues.extrema[2][1]).eq(-8);
       expect(f3.stateValues.extrema[3][0]).closeTo((9 * Math.PI) / 6, 1e-6);
       expect(f3.stateValues.extrema[3][1]).eq(-5);
+      expect(f3.stateValues.globalMinimum).eqls(f3.stateValues.minima[0]);
+      expect(f3.stateValues.globalInfimum).eqls(f3.stateValues.minima[0]);
+      expect(f3.stateValues.globalMaximum).eqls(f3.stateValues.maxima[0]);
+      expect(f3.stateValues.globalSupremum).eqls(f3.stateValues.maxima[0]);
+    });
+  });
+
+  it("global extrema, in flat regions too flat for local extrema", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f1">2-(x-1.0131)^100</function>
+    <function name="f2">3+(x+pi)^200</function>
+    <function name="f3" domain="(1,5)">-8+3/(1+exp(-1000sin(3x)))</function>
+
+    <copy prop="extrema" target="f1" />
+    <copy prop="extrema" target="f2" />
+    <copy prop="extrema" target="f3" />
+    </graph>
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f1 = stateVariables["/f1"];
+      let f2 = stateVariables["/f2"];
+      let f3 = stateVariables["/f3"];
+      let f1fun = createFunctionFromDefinition(f1.stateValues.fDefinitions[0]);
+      expect(f1.stateValues.numMaxima).eq(0);
+      expect(f1.stateValues.numMinima).eq(0);
+      expect(f1.stateValues.numExtrema).eq(0);
+      expect(f1.stateValues.globalMaximum[0]).within(0.0131, 2.0131);
+      expect(f1.stateValues.globalMaximum[1]).eqls(2);
+      expect(f1.stateValues.globalSupremum).eqls(f1.stateValues.globalMaximum);
+      expect(f1.stateValues.globalMinimum).eqls([]);
+      expect(f1.stateValues.globalInfimum).eqls([-100, f1fun(-100)]);
+
+      expect(f2.stateValues.numMaxima).eq(0);
+      expect(f2.stateValues.numMinima).eq(0);
+      expect(f2.stateValues.numExtrema).eq(0);
+      expect(f2.stateValues.globalMinimum[0]).within(
+        -Math.PI - 1,
+        -Math.PI + 1,
+      );
+      expect(f2.stateValues.globalMinimum[1]).eqls(3);
+      expect(f2.stateValues.globalInfimum).eqls(f2.stateValues.globalMinimum);
+      expect(f2.stateValues.globalMaximum).eqls([]);
+      expect(f2.stateValues.globalSupremum[1]).eq(Infinity);
+
+      expect(f3.stateValues.numMaxima).eq(0);
+      expect(f3.stateValues.numMinima).eq(0);
+      expect(f3.stateValues.numExtrema).eq(0);
+      expect(f3.stateValues.globalMinimum[0]).within(
+        Math.PI / 3,
+        (2 * Math.PI) / 3,
+      );
+      expect(f3.stateValues.globalMinimum[1]).eqls(-8);
+      expect(f3.stateValues.globalInfimum).eqls(f3.stateValues.globalMinimum);
+      expect(f3.stateValues.globalMaximum[0]).within(1, Math.PI / 3);
+      expect(f3.stateValues.globalMaximum[1]).eqls(-5);
+      expect(f3.stateValues.globalSupremum).eqls(f3.stateValues.globalMaximum);
     });
   });
 
@@ -6769,12 +7079,16 @@ describe("Function Tag Tests", function () {
       <copy assignNames="f1a" target="_function1" />
       <copy assignNames="maximum1 maximum2 maximum3" prop="maxima" target="_function1" />
       <copy assignNames="minimum1 minimum2 minimum3" prop="minima" target="f1a" />
+      <copy prop="globalMaximum" assignNames="globalmax" target="_function1" />
+      <copy prop="globalMinimum" assignNames="globalmin" target="f1a" />
     </graph>
     <graph>
       <copy assignNames="f1b" target="f1a" />
       <copy assignNames="extremum1" prop="extremum1" target="f1b" />
       <copy assignNames="extremum2" prop="extremum2" target="f1b" />
       <copy assignNames="extremum3" prop="extremum3" target="f1b" />
+      <copy prop="globalSupremum" assignNames="globalsup" target="f1b" />
+      <copy prop="globalInfimum" assignNames="globalinf" target="f1b" />
     </graph>
     
     <copy prop="value" target="_mathinput1" assignNames="m1" />
@@ -6807,6 +7121,10 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/extremum1"].stateValues.coords).eqls(min1);
       expect(stateVariables["/extremum2"].stateValues.coords).eqls(max1);
       expect(stateVariables["/extremum3"].stateValues.coords).eqls(min2);
+      expect(stateVariables["/globalmin"].stateValues.coords).eqls(min1);
+      expect(stateVariables["/globalinf"].stateValues.coords).eqls(min1);
+      expect(stateVariables["/globalmax"]).eq(undefined);
+      expect(stateVariables["/globalsup"].stateValues.xs[1]).greaterThan(1e6);
     });
 
     cy.get(cesc("#\\/_mathinput2") + " textarea").type(
@@ -6834,6 +7152,10 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/extremum1"].stateValues.coords).eqls(min1);
       expect(stateVariables["/extremum2"].stateValues.coords).eqls(max1);
       expect(stateVariables["/extremum3"].stateValues.coords).eqls(min2);
+      expect(stateVariables["/globalmin"].stateValues.coords).eqls(min1);
+      expect(stateVariables["/globalinf"].stateValues.coords).eqls(min1);
+      expect(stateVariables["/globalmax"]).eq(undefined);
+      expect(stateVariables["/globalsup"].stateValues.xs[1]).greaterThan(1e6);
     });
 
     cy.get(cesc("#\\/_mathinput1") + " textarea").type(
@@ -6855,6 +7177,10 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/extremum1"].stateValues.coords).eqls(max1);
       expect(stateVariables["/extremum2"]).eq(undefined);
       expect(stateVariables["/extremum3"]).eq(undefined);
+      expect(stateVariables["/globalmax"].stateValues.coords).eqls(max1);
+      expect(stateVariables["/globalsup"].stateValues.coords).eqls(max1);
+      expect(stateVariables["/globalmin"]).eq(undefined);
+      expect(stateVariables["/globalinf"].stateValues.xs[1]).lessThan(-1e6);
     });
   });
 
@@ -9465,5 +9791,525 @@ describe("Function Tag Tests", function () {
 
     // page loads
     cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
+
+  it("extrema shadow style number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" styleNumber="2" domain="[-2,2]">x^3-x</function>
+      <point name="max" copySource="f.maximum1" />
+      <point name="min" copySource="f.minimum1" />
+      <copy source="f.extrema" assignNames="ext1 ext2" />
+      <point name="gmax" copySource="f.globalmaximum" />
+      <point name="gmin" copySource="f.globalminimum" />
+      <point name="sup" copySource="f.globalsupremum" />
+      <point name="inf" copySource="f.globalinfimum" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/min"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/ext1"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/ext2"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/gmax"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/gmin"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/sup"].stateValues.styleNumber).eq(2);
+      expect(stateVariables["/inf"].stateValues.styleNumber).eq(2);
+    });
+  });
+
+  it("check bugfix: don't get invalid maxima due having incorrect derivative with function of interpolated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" maxima="(3,4)" />
+      <function name="g" styleNumber="2">$$f(x)-x^4</function>
+      <copy source="g.minima" assignNames="min" />
+      <copy source="g.maxima" assignNames="max1 max2" />
+      <copy source="g.extrema" assignNames="ext1 ext2" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max1"].stateValues.xs).eqls([1, -1]);
+      expect(stateVariables["/max2"]).eq(undefined);
+      expect(stateVariables["/min"]).eq(undefined);
+      expect(stateVariables["/ext1"].stateValues.xs).eqls([1, -1]);
+      expect(stateVariables["/ext2"]).eq(undefined);
+    });
+  });
+
+  it("check bugfix: don't get invalid extrema due to roundoff error with function of interpolated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f" maxima="(3,4)" />
+      <function name="g" styleNumber="2">$$f(x)+(x-3)^2</function>
+      <copy source="g.minima" assignNames="min" />
+      <copy source="g.maxima" assignNames="max" />
+      <copy source="g.extrema" assignNames="ext" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/max"]).eq(undefined);
+      expect(stateVariables["/min"]).eq(undefined);
+      expect(stateVariables["/ext"]).eq(undefined);
+    });
+  });
+
+  it("global extrema, double well, test all properties", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f">x^4-8x^2+8</function>
+    </graph>
+    <p>min results for f: $f.globalMinimum{assignNames="fmin"}, $f.globalMinimumLocation{assignNames="fminl"}, $f.globalMinimumValue{assignNames="fminv"}, $f.globalMinimum[1]{assignNames="fminla"}, $f.globalMinimum[2]{assignNames="fminva"}</p>
+    <p>min compactify results for f: $f.globalInfimum{assignNames="fmincd"}, $f.globalInfimumLocation{assignNames="fmincdl"}, $f.globalInfimumValue{assignNames="fmincdv"}, $f.globalInfimum[1]{assignNames="fmincdla"}, $f.globalInfimum[2]{assignNames="fmincdva"}</p>
+    <p>max results for f: $f.globalMaximum{assignNames="fmax"}, $f.globalMaximumLocation{assignNames="fmaxl"}, $f.globalMaximumValue{assignNames="fmaxv"}, $f.globalMaximum[1]{assignNames="fmaxla"}, $f.globalMaximum[2]{assignNames="fmaxva"}</p>
+    <p>max compactify results for f: $f.globalSupremum{assignNames="fmaxcd"}, $f.globalSupremumLocation{assignNames="fmaxcdl"}, $f.globalSupremumValue{assignNames="fmaxcdv"}, $f.globalSupremum[1]{assignNames="fmaxcdla"}, $f.globalSupremum[2]{assignNames="fmaxcdva"}</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    let f100 = 100 ** 4 - 8 * 100 ** 2 + 8;
+
+    cy.get(cesc2("#/fmin") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,−8)");
+    cy.get(cesc2("#/fminl")).should("have.text", "-2");
+    cy.get(cesc2("#/fminla")).should("have.text", "-2");
+    cy.get(cesc2("#/fminv")).should("have.text", "-8");
+    cy.get(cesc2("#/fminva")).should("have.text", "-8");
+
+    cy.get(cesc2("#/fmincd") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,−8)");
+    cy.get(cesc2("#/fmincdl")).should("have.text", "-2");
+    cy.get(cesc2("#/fmincdla")).should("have.text", "-2");
+    cy.get(cesc2("#/fmincdv")).should("have.text", "-8");
+    cy.get(cesc2("#/fmincdva")).should("have.text", "-8");
+
+    cy.get(cesc2("#/fmax")).should("not.exist");
+    cy.get(cesc2("#/fmaxl")).should("have.text", "NaN");
+    cy.get(cesc2("#/fmaxla")).should("have.text", "NaN");
+    cy.get(cesc2("#/fmaxv")).should("have.text", "NaN");
+    cy.get(cesc2("#/fmaxva")).should("have.text", "NaN");
+
+    cy.get(cesc2("#/fmaxcd") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", `(−100,${nInDOM(f100)})`);
+    cy.get(cesc2("#/fmaxcdl")).should("have.text", "-100");
+    cy.get(cesc2("#/fmaxcdla")).should("have.text", "-100");
+    cy.get(cesc2("#/fmaxcdv")).should("have.text", f100.toString());
+    cy.get(cesc2("#/fmaxcdva")).should("have.text", f100.toString());
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/fmin"].stateValues.xs).eqls([-2, -8]);
+      expect(stateVariables["/fminl"].stateValues.value).eq(-2);
+      expect(stateVariables["/fminla"].stateValues.value).eq(-2);
+      expect(stateVariables["/fminv"].stateValues.value).eq(-8);
+      expect(stateVariables["/fminva"].stateValues.value).eq(-8);
+
+      expect(stateVariables["/fmincd"].stateValues.xs).eqls([-2, -8]);
+      expect(stateVariables["/fmincdl"].stateValues.value).eq(-2);
+      expect(stateVariables["/fmincdla"].stateValues.value).eq(-2);
+      expect(stateVariables["/fmincdv"].stateValues.value).eq(-8);
+      expect(stateVariables["/fmincdva"].stateValues.value).eq(-8);
+
+      expect(stateVariables["/fmax"]).eq(undefined);
+      assert.isNaN(stateVariables["/fmaxl"].stateValues.value);
+      assert.isNaN(stateVariables["/fmaxla"].stateValues.value);
+      assert.isNaN(stateVariables["/fmaxv"].stateValues.value);
+      assert.isNaN(stateVariables["/fmaxva"].stateValues.value);
+
+      expect(stateVariables["/fmaxcd"].stateValues.xs).eqls([-100, f100]);
+      expect(stateVariables["/fmaxcdl"].stateValues.value).eq(-100);
+      expect(stateVariables["/fmaxcdla"].stateValues.value).eq(-100);
+      expect(stateVariables["/fmaxcdv"].stateValues.value).eq(f100);
+      expect(stateVariables["/fmaxcdva"].stateValues.value).eq(f100);
+    });
+  });
+
+  it("global extrema, double well, different domains", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f1" domain="(-2,Infinity)">x^4-8x^2+8</function>
+      <function name="f2" domain="(-Infinity,2)">x^4-8x^2+8</function>
+      <function name="f3" domain="(0,2]">x^4-8x^2+8</function>
+      <function name="f4" domain="[0,2)">x^4-8x^2+8</function>
+      <function name="f5" domain="(-0.01,2.01)">x^4-8x^2+8</function>
+    </graph>
+    <p>f1: $f1.globalMinimum{assignNames="f1min"}, $f1.globalInfimum{assignNames="f1mincd"}, $f1.globalMaximum{assignNames="f1max"}, $f1.globalSupremum{assignNames="f1maxcd"}</p>
+    <p>f2: $f2.globalMinimum{assignNames="f2min"}, $f2.globalInfimum{assignNames="f2mincd"}, $f2.globalMaximum{assignNames="f2max"}, $f2.globalSupremum{assignNames="f2maxcd"}</p>
+    <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
+    <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
+    <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    let f198 = 198 ** 4 - 8 * 198 ** 2 + 8;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f1min"].stateValues.xs).eqls([2, -8]);
+      expect(stateVariables["/f1mincd"].stateValues.xs).eqls([2, -8]);
+      expect(stateVariables["/f1max"]).eq(undefined);
+      expect(stateVariables["/f1maxcd"].stateValues.xs).eqls([198, f198]);
+
+      expect(stateVariables["/f2min"].stateValues.xs).eqls([-2, -8]);
+      expect(stateVariables["/f2mincd"].stateValues.xs).eqls([-2, -8]);
+      expect(stateVariables["/f2max"]).eq(undefined);
+      expect(stateVariables["/f2maxcd"].stateValues.xs).eqls([-198, f198]);
+
+      expect(stateVariables["/f3min"].stateValues.xs).eqls([2, -8]);
+      expect(stateVariables["/f3mincd"].stateValues.xs).eqls([2, -8]);
+      expect(stateVariables["/f3max"]).eq(undefined);
+      expect(stateVariables["/f3maxcd"].stateValues.xs).eqls([0, 8]);
+
+      expect(stateVariables["/f4min"]).eq(undefined);
+      expect(stateVariables["/f4mincd"].stateValues.xs).eqls([2, -8]);
+      expect(stateVariables["/f4max"].stateValues.xs).eqls([0, 8]);
+      expect(stateVariables["/f4maxcd"].stateValues.xs).eqls([0, 8]);
+
+      expect(stateVariables["/f5min"].stateValues.xs[0]).closeTo(2, 1e-5);
+      expect(stateVariables["/f5min"].stateValues.xs[1]).closeTo(-8, 1e-5);
+      expect(stateVariables["/f5mincd"].stateValues.xs[0]).closeTo(2, 1e-5);
+      expect(stateVariables["/f5mincd"].stateValues.xs[1]).closeTo(-8, 1e-5);
+      expect(stateVariables["/f5max"].stateValues.xs[0]).closeTo(0, 1e-5);
+      expect(stateVariables["/f5max"].stateValues.xs[1]).closeTo(8, 1e-5);
+      expect(stateVariables["/f5maxcd"].stateValues.xs[0]).closeTo(0, 1e-5);
+      expect(stateVariables["/f5maxcd"].stateValues.xs[1]).closeTo(8, 1e-5);
+    });
+  });
+
+  it("global extrema, sin, different domains", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f1" domain="(-3pi/2,5pi/2)">sin(x)</function>
+      <function name="f2" domain="(-pi/2,3pi/2)">sin(x)</function>
+      <function name="f3" domain="(-pi/2,3pi/2]">sin(x)</function>
+      <function name="f4" domain="(-pi/2, pi/2)">sin(x)</function>
+      <function name="f5" domain="[-pi/2, pi/2]">sin(x)</function>
+    </graph>
+    <p>f1: $f1.globalMinimum{assignNames="f1min"}, $f1.globalInfimum{assignNames="f1mincd"}, $f1.globalMaximum{assignNames="f1max"}, $f1.globalSupremum{assignNames="f1maxcd"}</p>
+    <p>f2: $f2.globalMinimum{assignNames="f2min"}, $f2.globalInfimum{assignNames="f2mincd"}, $f2.globalMaximum{assignNames="f2max"}, $f2.globalSupremum{assignNames="f2maxcd"}</p>
+    <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
+    <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
+    <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f1min"].stateValues.xs).eqls([-Math.PI / 2, -1]);
+      expect(stateVariables["/f1mincd"].stateValues.xs).eqls([
+        -Math.PI / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f1max"].stateValues.xs).eqls([Math.PI / 2, 1]);
+      expect(stateVariables["/f1maxcd"].stateValues.xs).eqls([Math.PI / 2, 1]);
+
+      expect(stateVariables["/f2min"]).eq(undefined);
+      expect(stateVariables["/f2mincd"].stateValues.xs).eqls([
+        -Math.PI / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f2max"].stateValues.xs).eqls([Math.PI / 2, 1]);
+      expect(stateVariables["/f2maxcd"].stateValues.xs).eqls([Math.PI / 2, 1]);
+
+      expect(stateVariables["/f3min"].stateValues.xs).eqls([
+        (3 * Math.PI) / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f3mincd"].stateValues.xs).eqls([
+        (3 * Math.PI) / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f3max"].stateValues.xs).eqls([Math.PI / 2, 1]);
+      expect(stateVariables["/f3maxcd"].stateValues.xs).eqls([Math.PI / 2, 1]);
+
+      expect(stateVariables["/f4min"]).eq(undefined);
+      expect(stateVariables["/f4mincd"].stateValues.xs).eqls([
+        -Math.PI / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f4max"]).eq(undefined);
+      expect(stateVariables["/f4maxcd"].stateValues.xs).eqls([Math.PI / 2, 1]);
+
+      expect(stateVariables["/f5min"].stateValues.xs).eqls([-Math.PI / 2, -1]);
+      expect(stateVariables["/f5mincd"].stateValues.xs).eqls([
+        -Math.PI / 2,
+        -1,
+      ]);
+      expect(stateVariables["/f5max"].stateValues.xs).eqls([Math.PI / 2, 1]);
+      expect(stateVariables["/f5maxcd"].stateValues.xs).eqls([Math.PI / 2, 1]);
+    });
+  });
+
+  it("global extrema, 1/x, different domains", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f1">1/x</function>
+      <function name="f2" domain="(0,Infinity)">1/x</function>
+      <function name="f3" domain="(-Infinity,0)">1/x</function>
+      <function name="f4" domain="(-0.1, 100)">1/x</function>
+      <function name="f5" domain="(-1,0)">-1/x</function>
+    </graph>
+    <p>f1: $f1.globalMinimum{assignNames="f1min"}, $f1.globalInfimum{assignNames="f1mincd"}, $f1.globalMaximum{assignNames="f1max"}, $f1.globalSupremum{assignNames="f1maxcd"}</p>
+    <p>f2: $f2.globalMinimum{assignNames="f2min"}, $f2.globalInfimum{assignNames="f2mincd"}, $f2.globalMaximum{assignNames="f2max"}, $f2.globalSupremum{assignNames="f2maxcd"}</p>
+    <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
+    <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
+    <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f1min"].stateValues.xs[0]).within(-1e-6, -1e-300);
+      expect(stateVariables["/f1min"].stateValues.xs[1]).lessThan(-1e6);
+      expect(stateVariables["/f1mincd"].stateValues.xs).eqls(
+        stateVariables["/f1min"].stateValues.xs,
+      );
+      expect(stateVariables["/f1max"].stateValues.xs[0]).within(1e-300, 1e-6);
+      expect(stateVariables["/f1max"].stateValues.xs[1]).greaterThan(1e6);
+      expect(stateVariables["/f1maxcd"].stateValues.xs).eqls(
+        stateVariables["/f1max"].stateValues.xs,
+      );
+
+      expect(stateVariables["/f2min"]).eq(undefined);
+      expect(stateVariables["/f2mincd"].stateValues.xs).eqls([200, 1 / 200]);
+      expect(stateVariables["/f2max"]).eq(undefined);
+      expect(stateVariables["/f2maxcd"].stateValues.xs).eqls([0, Infinity]);
+
+      expect(stateVariables["/f3min"]).eq(undefined);
+      expect(stateVariables["/f3mincd"].stateValues.xs).eqls([0, -Infinity]);
+      expect(stateVariables["/f3max"]).eq(undefined);
+      expect(stateVariables["/f3maxcd"].stateValues.xs).eqls([-200, -1 / 200]);
+
+      expect(stateVariables["/f4min"].stateValues.xs[0]).within(-1e-6, -1e-300);
+      expect(stateVariables["/f4min"].stateValues.xs[1]).lessThan(-1e6);
+      expect(stateVariables["/f4mincd"].stateValues.xs).eqls(
+        stateVariables["/f4min"].stateValues.xs,
+      );
+      expect(stateVariables["/f4max"].stateValues.xs[0]).within(1e-300, 1e-6);
+      expect(stateVariables["/f4max"].stateValues.xs[1]).greaterThan(1e6);
+      expect(stateVariables["/f4maxcd"].stateValues.xs).eqls(
+        stateVariables["/f4max"].stateValues.xs,
+      );
+
+      expect(stateVariables["/f5min"]).eq(undefined);
+      expect(stateVariables["/f5mincd"].stateValues.xs).eqls([-1, 1]);
+      expect(stateVariables["/f5max"]).eq(undefined);
+      expect(stateVariables["/f5maxcd"].stateValues.xs).eqls([0, Infinity]);
+    });
+  });
+
+  it("global extrema, 1/x^2, different domains", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function name="f1">1/x^2</function>
+      <function name="f2" domain="(0,Infinity)">1/x^2</function>
+      <function name="f3" domain="(-Infinity,0)">1/x^2</function>
+      <function name="f4" domain="(-0.1, 100)">1/x^2</function>
+      <function name="f5" domain="(-1,0)">-1/x^2</function>
+    </graph>
+    <p>f1: $f1.globalMinimum{assignNames="f1min"}, $f1.globalInfimum{assignNames="f1mincd"}, $f1.globalMaximum{assignNames="f1max"}, $f1.globalSupremum{assignNames="f1maxcd"}</p>
+    <p>f2: $f2.globalMinimum{assignNames="f2min"}, $f2.globalInfimum{assignNames="f2mincd"}, $f2.globalMaximum{assignNames="f2max"}, $f2.globalSupremum{assignNames="f2maxcd"}</p>
+    <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
+    <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
+    <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f1min"]).eq(undefined);
+      expect(stateVariables["/f1mincd"].stateValues.xs).eqls([-100, 1 / 10000]);
+      expect(stateVariables["/f1max"].stateValues.xs[0]).within(-1e-6, -1e-300);
+      expect(stateVariables["/f1max"].stateValues.xs[1]).greaterThan(1e12);
+      expect(stateVariables["/f1maxcd"].stateValues.xs).eqls(
+        stateVariables["/f1max"].stateValues.xs,
+      );
+
+      expect(stateVariables["/f2min"]).eq(undefined);
+      expect(stateVariables["/f2mincd"].stateValues.xs).eqls([200, 1 / 40000]);
+      expect(stateVariables["/f2max"]).eq(undefined);
+      expect(stateVariables["/f2maxcd"].stateValues.xs).eqls([0, Infinity]);
+
+      expect(stateVariables["/f3min"]).eq(undefined);
+      expect(stateVariables["/f3mincd"].stateValues.xs).eqls([-200, 1 / 40000]);
+      expect(stateVariables["/f3max"]).eq(undefined);
+      expect(stateVariables["/f3maxcd"].stateValues.xs).eqls([0, Infinity]);
+
+      expect(stateVariables["/f4min"]).eq(undefined);
+      expect(stateVariables["/f4mincd"].stateValues.xs).eqls([100, 1 / 10000]);
+      expect(stateVariables["/f4max"].stateValues.xs[0]).within(-1e-6, -1e-300);
+      expect(stateVariables["/f4max"].stateValues.xs[1]).greaterThan(1e12);
+      expect(stateVariables["/f4maxcd"].stateValues.xs).eqls(
+        stateVariables["/f4max"].stateValues.xs,
+      );
+
+      expect(stateVariables["/f5min"]).eq(undefined);
+      expect(stateVariables["/f5mincd"].stateValues.xs).eqls([0, -Infinity]);
+      expect(stateVariables["/f5max"]).eq(undefined);
+      expect(stateVariables["/f5maxcd"].stateValues.xs).eqls([-1, -1]);
+    });
+  });
+
+  it("global extrema of linear interpolated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f1" through="(-8,7) (8,-1)" />
+    <function name="f2" styleNumber="2" through="(-8,-5) (8,3)" />
+    <function name="f3" copySource="f1" domain="(-10, -9)" />
+    <function name="f4" copySource="f1" domain="[-7, 3]" />
+    <function name="f5" copySource="f1" domain="(9, 10]" />
+    <function name="f6" copySource="f2" domain="(-10, -9)" />
+    <function name="f7" copySource="f2" domain="[-7, 3]" />
+    <function name="f8" copySource="f2" domain="(9, 10]" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f1 = stateVariables["/f1"];
+      let f2 = stateVariables["/f2"];
+      let f3 = stateVariables["/f3"];
+      let f4 = stateVariables["/f4"];
+      let f5 = stateVariables["/f5"];
+      let f6 = stateVariables["/f6"];
+      let f7 = stateVariables["/f7"];
+      let f8 = stateVariables["/f8"];
+
+      expect(f1.stateValues.globalMinimum).eqls([]);
+      expect(f1.stateValues.globalInfimum).eqls([Infinity, -Infinity]);
+      expect(f1.stateValues.globalMaximum).eqls([]);
+      expect(f1.stateValues.globalSupremum).eqls([-Infinity, Infinity]);
+      expect(f2.stateValues.globalMinimum).eqls([]);
+      expect(f2.stateValues.globalInfimum).eqls([-Infinity, -Infinity]);
+      expect(f2.stateValues.globalMaximum).eqls([]);
+      expect(f2.stateValues.globalSupremum).eqls([Infinity, Infinity]);
+      expect(f3.stateValues.globalMinimum).eqls([]);
+      expect(f3.stateValues.globalInfimum).eqls([-9, 7.5]);
+      expect(f3.stateValues.globalMaximum).eqls([]);
+      expect(f3.stateValues.globalSupremum).eqls([-10, 8]);
+      expect(f4.stateValues.globalMinimum).eqls([3, 1.5]);
+      expect(f4.stateValues.globalInfimum).eqls([3, 1.5]);
+      expect(f4.stateValues.globalMaximum).eqls([-7, 6.5]);
+      expect(f4.stateValues.globalSupremum).eqls([-7, 6.5]);
+      expect(f5.stateValues.globalMinimum).eqls([10, -2]);
+      expect(f5.stateValues.globalInfimum).eqls([10, -2]);
+      expect(f5.stateValues.globalMaximum).eqls([]);
+      expect(f5.stateValues.globalSupremum).eqls([9, -1.5]);
+      expect(f6.stateValues.globalMinimum).eqls([]);
+      expect(f6.stateValues.globalInfimum).eqls([-10, -6]);
+      expect(f6.stateValues.globalMaximum).eqls([]);
+      expect(f6.stateValues.globalSupremum).eqls([-9, -5.5]);
+      expect(f7.stateValues.globalMinimum).eqls([-7, -4.5]);
+      expect(f7.stateValues.globalInfimum).eqls([-7, -4.5]);
+      expect(f7.stateValues.globalMaximum).eqls([3, 0.5]);
+      expect(f7.stateValues.globalSupremum).eqls([3, 0.5]);
+      expect(f8.stateValues.globalMinimum).eqls([]);
+      expect(f8.stateValues.globalInfimum).eqls([9, 3.5]);
+      expect(f8.stateValues.globalMaximum).eqls([10, 4]);
+      expect(f8.stateValues.globalSupremum).eqls([10, 4]);
+    });
   });
 });

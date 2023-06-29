@@ -280,6 +280,10 @@ class Union extends Subset {
                   if (sub3 instanceof Singleton && sub3.element === gap) {
                     prelimSubsets.splice(ind3, 1);
                     foundSingleton = true;
+                    if (ind3 < ind2) {
+                      // have to shift ind2 as splice an entry in front of it
+                      ind2--;
+                    }
                     break;
                   }
                 }
@@ -792,5 +796,164 @@ function buildSubsetFromIntervals(tree, variable) {
 }
 
 export function buildSubsetFromMathExpression(expr, variable) {
-  return buildSubsetFromIntervals(expr.to_intervals().tree, variable.tree);
+  return buildSubsetFromIntervals(expr.to_intervals().tree, variable?.tree);
+}
+
+export function mathExpressionFromSubsetValue({
+  subsetValue,
+  variable,
+  displayMode = "intervals",
+}) {
+  // displayMode is either "intervals" or "inequalities"
+
+  function subsetToMath(subset) {
+    if (subset === null) {
+      return "\uff3f";
+    }
+
+    if (displayMode === "intervals") {
+      if (subset.closedInterval) {
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", true, true],
+        ];
+      } else if (subset.openClosedInterval) {
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", false, true],
+        ];
+      } else if (subset.closedOpenInterval) {
+        return [
+          "interval",
+          ["tuple", subset.left, subset.right],
+          ["tuple", true, false],
+        ];
+      } else {
+        return subset.toMathExpression().tree;
+      }
+    } else {
+      if (subset.closedInterval) {
+        return [
+          "lts",
+          ["tuple", subset.left, variable, subset.right],
+          ["tuple", false, false],
+        ];
+      } else if (subset.openClosedInterval) {
+        if (subset.left === -Infinity) {
+          return ["le", variable, subset.right];
+        } else {
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", true, false],
+          ];
+        }
+      } else if (subset.closedOpenInterval) {
+        if (subset.right === Infinity) {
+          return ["ge", variable, subset.left];
+        } else {
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", false, true],
+          ];
+        }
+      } else if (subset instanceof OpenInterval) {
+        if (subset.left === -Infinity) {
+          return ["<", variable, subset.right];
+        } else if (subset.right === Infinity) {
+          return [">", variable, subset.left];
+        } else {
+          return [
+            "lts",
+            ["tuple", subset.left, variable, subset.right],
+            ["tuple", true, true],
+          ];
+        }
+      } else if (subset instanceof Singleton) {
+        return ["=", variable, subset.element];
+      } else if (subset.isEmpty()) {
+        return ["in", variable, "∅"];
+      } else if (subset instanceof RealLine) {
+        return ["in", variable, "R"];
+      } else {
+        return null;
+      }
+    }
+  }
+
+  let expression;
+
+  // merge any singletons to create closed intervals
+  if (subsetValue instanceof Union) {
+    let singletons = subsetValue.subsets.filter((x) => x instanceof Singleton);
+
+    let intervals = subsetValue.subsets.filter(
+      (x) => x instanceof OpenInterval,
+    );
+
+    for (let ind1 = 0; ind1 < singletons.length; ind1++) {
+      let x = singletons[ind1].element;
+
+      for (let ind2 = 0; ind2 < intervals.length; ind2++) {
+        let interval = intervals[ind2];
+
+        if (x === interval.left) {
+          if (interval.openClosedInterval) {
+            interval.closedInterval = true;
+            delete interval.openClosedInterval;
+          } else {
+            interval = {
+              left: interval.left,
+              right: interval.right,
+              closedOpenInterval: true,
+            };
+            intervals.splice(ind2, 1, interval);
+          }
+          singletons.splice(ind1, 1);
+          ind1--;
+          // break;
+        } else if (x === interval.right) {
+          if (interval.closedOpenInterval) {
+            interval.closedInterval = true;
+            delete interval.closedOpenInterval;
+          } else {
+            interval = {
+              left: interval.left,
+              right: interval.right,
+              openClosedInterval: true,
+            };
+            intervals.splice(ind2, 1, interval);
+          }
+          singletons.splice(ind1, 1);
+          ind1--;
+          // break;
+        }
+      }
+    }
+
+    let mathSubsets = [...intervals, ...singletons]
+      .sort(
+        (a, b) =>
+          (a.left === undefined ? a.element : a.left) -
+          (b.left === undefined ? b.element : b.left),
+      )
+      .map((x) => subsetToMath(x));
+
+    if (mathSubsets.length > 1) {
+      if (displayMode === "intervals") {
+        expression = me.fromAst(["union", ...mathSubsets]);
+      } else {
+        expression = me.fromAst(["or", ...mathSubsets]);
+      }
+    } else {
+      expression = me.fromAst(mathSubsets[0]);
+    }
+  } else {
+    expression = me.fromAst(subsetToMath(subsetValue));
+  }
+
+  return expression;
 }

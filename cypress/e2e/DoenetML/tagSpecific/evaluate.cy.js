@@ -8559,28 +8559,28 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/ga"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/h"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN+1");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/ha"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN+1");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/pg"))
       .find(".mjx-mrow")

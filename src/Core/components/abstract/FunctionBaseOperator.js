@@ -42,6 +42,7 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.prescribedExtrema;
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
+    delete stateVariableDefinitions.functionChildrenInfoToCalculateExtrema;
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
@@ -657,12 +658,21 @@ export default class FunctionOperator extends Function {
       },
     };
 
+    // remove function child dependency from latex
+    let originalLatexReturnDeps =
+      stateVariableDefinitions.latex.returnDependencies;
+    stateVariableDefinitions.latex.returnDependencies = function (args) {
+      let dependencies = originalLatexReturnDeps(args);
+      delete dependencies.functionChild;
+      return dependencies;
+    };
+
     // remove function child dependency from minima
     let originalAllMinimaReturnDeps =
       stateVariableDefinitions.allMinima.returnDependencies;
     stateVariableDefinitions.allMinima.returnDependencies = function (args) {
       let dependencies = originalAllMinimaReturnDeps(args);
-      delete dependencies.functionChild;
+      delete dependencies.functionChildrenInfoToCalculateExtrema;
       return dependencies;
     };
 
@@ -671,7 +681,7 @@ export default class FunctionOperator extends Function {
       stateVariableDefinitions.allMaxima.returnDependencies;
     stateVariableDefinitions.allMaxima.returnDependencies = function (args) {
       let dependencies = originalAllMaximaReturnDeps(args);
-      delete dependencies.functionChild;
+      delete dependencies.functionChildrenInfoToCalculateExtrema;
       return dependencies;
     };
 
