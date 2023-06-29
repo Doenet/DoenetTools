@@ -84,7 +84,6 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
 
   //Don't let label be blank
   let label = formObj?.label?.trim();
@@ -92,7 +91,6 @@ export async function action({ params, request }) {
     label = "Untitled";
   }
 
-  // console.log("formObj", formObj, params.doenetId);
   if (formObj._action == "update label") {
     let response = await fetch(
       `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
@@ -821,7 +819,6 @@ export function GeneralActivityControls({
         learningOutcomesToSubmit.push(input.value);
       }
     }
-    console.log("learningOutcomesToSubmit:", learningOutcomesToSubmit);
 
     learningOutcomesRef.current = learningOutcomesToSubmit;
 
@@ -948,7 +945,6 @@ export function GeneralActivityControls({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  console.log("activityData.learningOutcomes", activityData.learningOutcomes);
   // //Optimistic UI update learningOutcomes from form submission
   // if (fetcher.formData) {
   //   let serializedLearningOutcomes = fetcher.formData.get("learningOutcomes");
@@ -957,8 +953,6 @@ export function GeneralActivityControls({
   // } else {
   learningOutcomes = learningOutcomesRef.current;
   // }
-
-  console.log("learningOutcomes loaded", learningOutcomes);
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
@@ -1075,22 +1069,12 @@ export function GeneralActivityControls({
                       for (let input of inputs) {
                         nextLearningOutcomes.push(input.value);
                       }
-                      console.log(
-                        "nextLearningOutcomes before slice",
-                        i,
-                        nextLearningOutcomes,
-                      );
                       if (learningOutcomes.length < 2) {
                         nextLearningOutcomes = [""];
                       } else {
                         nextLearningOutcomes.splice(i, 1);
                       }
 
-                      console.log(
-                        "nextLearningOutcomes after slice",
-                        i,
-                        nextLearningOutcomes,
-                      );
                       saveDataToServer({ nextLearningOutcomes });
                     }}
                   />
@@ -1413,10 +1397,8 @@ export function PortfolioActivityEditor() {
   variants.allPossibleVariants.forEach((variant) => {
     variantOptions.push({ value: variant, label: variant });
   });
-  // console.log("variants", variants);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
       JSON.stringify(generatedVariantInfo),
     );
