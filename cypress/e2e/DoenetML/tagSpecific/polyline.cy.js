@@ -4701,4 +4701,23 @@ describe("Polyline Tag Tests", function () {
       testPolylineCopiedTwice({ vertices });
     });
   });
+
+  it("handle bad vertices", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <polyline vertices="A" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

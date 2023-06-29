@@ -341,7 +341,7 @@ export function Home() {
               doenetML={doenetML}
               flags={{
                 showCorrectness: true,
-                solutionDisplayMode: true,
+                solutionDisplayMode: "button",
                 showFeedback: true,
                 showHints: true,
                 autoSubmit: false,

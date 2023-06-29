@@ -1388,6 +1388,58 @@ export default class Ray extends GraphicalComponent {
       },
     };
 
+    stateVariableDefinitions.directionCoords = {
+      isLocation: true,
+      returnDependencies: () => ({
+        direction: {
+          dependencyType: "stateVariable",
+          variableName: "direction",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let coordsAst = [];
+        for (let v of dependencyValues.direction) {
+          if (v) {
+            coordsAst.push(v.tree);
+          } else {
+            coordsAst.push("\uff3f");
+          }
+        }
+        if (coordsAst.length > 1) {
+          coordsAst = ["vector", ...coordsAst];
+        } else if (coordsAst.length === 1) {
+          coordsAst = coordsAst[0];
+        } else {
+          coordsAst = "\uff3f";
+        }
+
+        return { setValue: { directionCoords: me.fromAst(coordsAst) } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let coordsAst = desiredStateVariableValues.directionCoords.tree;
+        let newDirection;
+
+        if (
+          Array.isArray(coordsAst) &&
+          vectorOperators.includes(coordsAst[0])
+        ) {
+          newDirection = coordsAst.slice(1).map((x) => me.fromAst(x));
+        } else {
+          newDirection = [desiredStateVariableValues.directionCoords];
+        }
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "direction",
+              desiredValue: newDirection,
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         numDimensions: {
@@ -1467,6 +1519,16 @@ export default class Ray extends GraphicalComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "directionCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+  ];
 
   async moveRay({
     endpointcoords,

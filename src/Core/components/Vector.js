@@ -78,6 +78,14 @@ export default class Vector extends GraphicalComponent {
       public: true,
     };
 
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
+
     return attributes;
   }
 
@@ -2175,6 +2183,13 @@ export default class Vector extends GraphicalComponent {
   }
 
   static adapters = [
+    {
+      stateVariable: "displacementCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
     {
       stateVariable: "displacementCoords",
       componentType: "coords",

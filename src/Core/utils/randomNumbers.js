@@ -6,6 +6,7 @@ export function sampleFromRandomNumbers({
   to,
   from,
   step,
+  exclude,
   numDiscreteValues,
   rng,
 }) {
@@ -57,9 +58,25 @@ export function sampleFromRandomNumbers({
     let sampledValues = [];
 
     if (numDiscreteValues > 0) {
+      let indexMap = [...Array(numDiscreteValues).keys()];
+
+      if (exclude.length > 0) {
+        indexMap = [];
+        let numOrigValues = Math.round((to - from) / step + 1);
+        for (let i = 0; i < numOrigValues; i++) {
+          let val = from + i * step;
+          if (!exclude.includes(val)) {
+            indexMap.push(i);
+          }
+        }
+      }
+
       for (let i = 0; i < numSamples; i++) {
         // random integer from 0 to numDiscreteValues-1
         let ind = Math.floor(rng() * numDiscreteValues);
+
+        // adjust for excludes
+        ind = indexMap[ind];
 
         sampledValues.push(from + step * ind);
       }
@@ -67,4 +84,44 @@ export function sampleFromRandomNumbers({
 
     return sampledValues;
   }
+}
+
+export function sampleFromNumberList({
+  possibleValues,
+  numUniqueRequired = 1,
+  numSamples = 1,
+  rng,
+}) {
+  let numPossibleValues = possibleValues.length;
+
+  if (numUniqueRequired === 1) {
+    let sampledValues = [];
+    for (let ind = 0; ind < numSamples; ind++) {
+      // random number in [0, 1)
+      let rand = rng();
+      // random integer from 0 to numPossibleValues-1
+      let ind = Math.floor(rand * numPossibleValues);
+
+      sampledValues.push(possibleValues[ind]);
+    }
+
+    return sampledValues;
+  }
+
+  // need to select more than one value without replacement
+  // shuffle array and choose first elements
+  // https://stackoverflow.com/a/12646864
+  let shuffledValues = [...possibleValues];
+  for (let i = shuffledValues.length - 1; i > 0; i--) {
+    const rand = rng();
+    const j = Math.floor(rand * (i + 1));
+    [shuffledValues[i], shuffledValues[j]] = [
+      shuffledValues[j],
+      shuffledValues[i],
+    ];
+  }
+
+  let sampledValues = shuffledValues.slice(0, numSamples);
+
+  return sampledValues;
 }

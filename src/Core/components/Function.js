@@ -1040,9 +1040,9 @@ export default class Function extends InlineComponent {
         return { dependenciesByKey };
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-        // console.log('array definition of prescribed points')
+        // console.log("array definition of prescribed points");
         // console.log(dependencyValuesByKey);
-        // console.log(arrayKeys)
+        // console.log(arrayKeys);
 
         let prescribedPoints = {};
 
@@ -1062,8 +1062,8 @@ export default class Function extends InlineComponent {
             }
 
             prescribedPoints[arrayKey] = {
-              x: point[0],
-              y: point[1],
+              x: point[0] || me.fromAst("\uff3f"),
+              y: point[1] || me.fromAst("\uff3f"),
               slope,
             };
           }
@@ -3855,7 +3855,7 @@ export default class Function extends InlineComponent {
 
   static adapters = [
     {
-      stateVariable: "numericalf",
+      stateVariable: "numericalfs",
       componentType: "curve",
       stateVariablesToShadow: ["label", "labelHasLatex"],
     },

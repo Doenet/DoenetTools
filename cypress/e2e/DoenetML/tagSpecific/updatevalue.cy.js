@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("UpdateValue Tag Tests", function () {
   beforeEach(() => {
@@ -1360,6 +1360,108 @@ describe("UpdateValue Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("9x");
         });
+    });
+  });
+
+  it("update triggered when objects clicked, trigger with unnamed copies", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <setup>
+      <point name="P">(-1,2)</point>
+    </setup>
+    <graph>
+      $P
+    </graph>
+    <graph>
+      $P{assignNames="P2"}
+    </graph>
+    <graph>
+      <point copySource="P" />
+    </graph>
+
+    <math name="x">x</math>
+    
+    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsClicked="P" />
+
+    <p><booleaninput name="bi" /><boolean name="bi2" copySource="bi" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let PcopyName =
+        stateVariables["/_graph1"].activeChildren[0].componentName;
+
+      cy.get(cesc2("#/x") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "x");
+
+      cy.get(cesc("#\\/trip")).should("not.exist");
+
+      cy.log("clicking unnamed copy triggers update");
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "pointClicked",
+          componentName: PcopyName,
+          args: { name: PcopyName },
+        });
+      });
+      cy.get(cesc2("#/x")).should("contain.text", "3x");
+      cy.get(cesc2("#/x") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3x");
+
+      cy.log("clicking copy with an assignNames does not trigger update");
+
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "pointClicked",
+          componentName: "/P2",
+          args: { name: "/P2" },
+        });
+      });
+      cy.get(cesc2("#/bi")).click();
+      cy.get(cesc2("#/bi2")).should("have.text", "true"); // to make sure core responded
+
+      cy.get(cesc2("#/x") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3x");
+
+      cy.log("clicking point with copySource does not trigger update");
+
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "pointClicked",
+          componentName: "/_point2",
+          args: { name: "/_point2" },
+        });
+      });
+      cy.get(cesc2("#/bi")).click();
+      cy.get(cesc2("#/bi2")).should("have.text", "false"); // to make sure core responded
+
+      cy.get(cesc2("#/x") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3x");
+
+      cy.log("clicking unnamed copy triggers update again");
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "pointClicked",
+          componentName: PcopyName,
+          args: { name: PcopyName },
+        });
+      });
+      cy.get(cesc2("#/x")).should("contain.text", "9x");
+      cy.get(cesc2("#/x") + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "9x");
     });
   });
 

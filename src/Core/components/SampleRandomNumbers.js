@@ -21,6 +21,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static processWhenJustUpdatedForNewComponent = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -82,6 +84,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
       createComponentOfType: "number",
       createStateVariable: "specifiedStep",
       defaultValue: 1,
+    };
+
+    attributes.exclude = {
+      createComponentOfType: "numberList",
+      createStateVariable: "exclude",
+      defaultValue: [],
     };
 
     for (let attrName in returnRoundingAttributes()) {
@@ -163,6 +171,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "step",
         },
+        exclude: {
+          dependencyType: "stateVariable",
+          variableName: "exclude",
+        },
       }),
       definition({ dependencyValues }) {
         if (!["discreteuniform", "uniform"].includes(dependencyValues.type)) {
@@ -172,6 +184,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
         }
 
         let step = dependencyValues.step;
+        let exclude = dependencyValues.exclude;
 
         let from = dependencyValues.specifiedFrom;
         let to = dependencyValues.specifiedTo;
@@ -183,7 +196,22 @@ export default class SampleRandomNumbers extends CompositeComponent {
           if (dependencyValues.type === "uniform") {
             to = from + 1;
           } else {
+            // make sure from isn't excluded
+            while (exclude.includes(from)) {
+              from += step;
+            }
+
             to = from + step;
+
+            // make sure to isn't excluded, so that have exactly two values
+            let i = 1;
+            while (exclude.includes(to)) {
+              // Note: make sure calculate to using exact same sequence of operations as actual values
+              // so don't have differences due to floating point rounding
+              i++;
+              to = from + i * step;
+            }
+
             numDiscreteValues = 2;
           }
         } else {
@@ -198,6 +226,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
                 from = null;
               } else {
                 from = to - (numDiscreteValues - 1) * step;
+
+                let numExcluded = 0;
+                for (let i = 0; i < numDiscreteValues; i++) {
+                  let val = from + i * step;
+                  if (exclude.includes(val)) {
+                    numExcluded++;
+                  }
+                }
+                numDiscreteValues -= numExcluded;
               }
             }
           } else {
@@ -209,6 +246,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
                 numDiscreteValues = 0;
               } else {
                 to = from + (numDiscreteValues - 1) * step;
+
+                let numExcluded = 0;
+                for (let i = 0; i < numDiscreteValues; i++) {
+                  let val = from + i * step;
+                  if (exclude.includes(val)) {
+                    numExcluded++;
+                  }
+                }
+                numDiscreteValues -= numExcluded;
               }
             }
           }
@@ -245,6 +291,20 @@ export default class SampleRandomNumbers extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "to",
           };
+          if (stateValues.type === "discreteuniform") {
+            dependencies.exclude = {
+              dependencyType: "stateVariable",
+              variableName: "exclude",
+            };
+            dependencies.step = {
+              dependencyType: "stateVariable",
+              variableName: "step",
+            };
+            dependencies.numDiscreteValues = {
+              dependencyType: "stateVariable",
+              variableName: "numDiscreteValues",
+            };
+          }
         }
 
         return dependencies;
@@ -253,6 +313,24 @@ export default class SampleRandomNumbers extends CompositeComponent {
         let mean;
         if (dependencyValues.type === "gaussian") {
           mean = dependencyValues.specifiedMean;
+        } else if (
+          dependencyValues.type === "discreteuniform" &&
+          dependencyValues.exclude.length > 0
+        ) {
+          // calculate manually in this case
+          mean = 0;
+          let numOrigValues = Math.round(
+            (dependencyValues.to - dependencyValues.from) /
+              dependencyValues.step +
+              1,
+          );
+          for (let i = 0; i < numOrigValues; i++) {
+            let val = dependencyValues.from + i * dependencyValues.step;
+            if (!dependencyValues.exclude.includes(val)) {
+              mean += val;
+            }
+          }
+          mean /= dependencyValues.numDiscreteValues;
         } else {
           mean = (dependencyValues.from + dependencyValues.to) / 2;
         }
@@ -292,6 +370,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
             variableName: "to",
           };
           if (stateValues.type === "discreteuniform") {
+            dependencies.exclude = {
+              dependencyType: "stateVariable",
+              variableName: "exclude",
+            };
             dependencies.step = {
               dependencyType: "stateVariable",
               variableName: "step",
@@ -317,10 +399,31 @@ export default class SampleRandomNumbers extends CompositeComponent {
             variance = dependencyValues.specifiedVariance;
           }
         } else if (dependencyValues.type === "discreteuniform") {
-          variance =
-            ((dependencyValues.numDiscreteValues ** 2 - 1) *
-              dependencyValues.step ** 2) /
-            12;
+          if (dependencyValues.exclude.length > 0) {
+            // calculate manually in this case
+            let sum = 0;
+            variance = 0;
+            let numOrigValues = Math.round(
+              (dependencyValues.to - dependencyValues.from) /
+                dependencyValues.step +
+                1,
+            );
+            for (let i = 0; i < numOrigValues; i++) {
+              let val = dependencyValues.from + i * dependencyValues.step;
+              if (!dependencyValues.exclude.includes(val)) {
+                sum += val;
+                variance += val * val;
+              }
+            }
+            let N = dependencyValues.numDiscreteValues;
+            variance -= (sum * sum) / N;
+            variance /= N; // use population variance as this isn't a sample, it's the whole distribution
+          } else {
+            variance =
+              ((dependencyValues.numDiscreteValues ** 2 - 1) *
+                dependencyValues.step ** 2) /
+              12;
+          }
         } else {
           // uniform
           variance = (dependencyValues.to - dependencyValues.from) ** 2 / 12;
@@ -371,6 +474,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "step",
           },
+          exclude: {
+            dependencyType: "stateVariable",
+            variableName: "exclude",
+          },
           numDiscreteValues: {
             dependencyType: "stateVariable",
             variableName: "numDiscreteValues",
@@ -399,12 +506,19 @@ export default class SampleRandomNumbers extends CompositeComponent {
         }
         return dependencies;
       },
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, changes, justUpdatedForNewComponent }) {
         if (dependencyValues.numSamples < 1) {
           return {
             setEssentialValue: { sampledValues: [] },
             setValue: { sampledValues: [] },
           };
+        }
+
+        // if loaded in values from database (justUpdatedForNewComponent)
+        // or just resampled values from action (in which case there will be no changes)
+        // then don't resample the values but just use the current ones
+        if (Object.keys(changes).length === 0 || justUpdatedForNewComponent) {
+          return { useEssentialOrDefaultValue: { sampledValues: true } };
         }
 
         let sampledValues = sampleFromRandomNumbers(dependencyValues);

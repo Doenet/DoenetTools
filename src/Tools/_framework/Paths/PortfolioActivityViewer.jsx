@@ -306,7 +306,7 @@ export function PortfolioActivityViewer() {
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
                     flags={{
                       showCorrectness: true,
-                      solutionDisplayMode: true,
+                      solutionDisplayMode: "button",
                       showFeedback: true,
                       showHints: true,
                       autoSubmit: false,

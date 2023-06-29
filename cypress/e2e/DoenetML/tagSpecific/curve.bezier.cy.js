@@ -12437,4 +12437,23 @@ describe("Curve Tag Bezier Tests", function () {
       ]);
     });
   });
+
+  it("handle bad through", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <curve through="A" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
 });

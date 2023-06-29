@@ -9774,6 +9774,25 @@ describe("Function Tag Tests", function () {
     );
   });
 
+  it("handle bad through and other defining attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function through="A" minima="B" maxima="C" extrema="D" throughSlopes="E" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // page loads
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
+
   it("extrema shadow style number", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -9887,7 +9906,6 @@ describe("Function Tag Tests", function () {
     <p>min compactify results for f: $f.globalInfimum{assignNames="fmincd"}, $f.globalInfimumLocation{assignNames="fmincdl"}, $f.globalInfimumValue{assignNames="fmincdv"}, $f.globalInfimum[1]{assignNames="fmincdla"}, $f.globalInfimum[2]{assignNames="fmincdva"}</p>
     <p>max results for f: $f.globalMaximum{assignNames="fmax"}, $f.globalMaximumLocation{assignNames="fmaxl"}, $f.globalMaximumValue{assignNames="fmaxv"}, $f.globalMaximum[1]{assignNames="fmaxla"}, $f.globalMaximum[2]{assignNames="fmaxva"}</p>
     <p>max compactify results for f: $f.globalSupremum{assignNames="fmaxcd"}, $f.globalSupremumLocation{assignNames="fmaxcdl"}, $f.globalSupremumValue{assignNames="fmaxcdv"}, $f.globalSupremum[1]{assignNames="fmaxcdla"}, $f.globalSupremum[2]{assignNames="fmaxcdva"}</p>
-
     `,
         },
         "*",
@@ -9975,7 +9993,6 @@ describe("Function Tag Tests", function () {
     <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
     <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
     <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
-
     `,
         },
         "*",
@@ -10038,7 +10055,6 @@ describe("Function Tag Tests", function () {
     <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
     <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
     <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
-
     `,
         },
         "*",
@@ -10113,7 +10129,6 @@ describe("Function Tag Tests", function () {
     <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
     <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
     <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
-
     `,
         },
         "*",
@@ -10182,7 +10197,6 @@ describe("Function Tag Tests", function () {
     <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
     <p>f4: $f4.globalMinimum{assignNames="f4min"}, $f4.globalInfimum{assignNames="f4mincd"}, $f4.globalMaximum{assignNames="f4max"}, $f4.globalSupremum{assignNames="f4maxcd"}</p>
     <p>f5: $f5.globalMinimum{assignNames="f5min"}, $f5.globalInfimum{assignNames="f5mincd"}, $f5.globalMaximum{assignNames="f5max"}, $f5.globalSupremum{assignNames="f5maxcd"}</p>
-
     `,
         },
         "*",
@@ -10242,7 +10256,6 @@ describe("Function Tag Tests", function () {
     <function name="f6" copySource="f2" domain="(-10, -9)" />
     <function name="f7" copySource="f2" domain="[-7, 3]" />
     <function name="f8" copySource="f2" domain="(9, 10]" />
-
     </graph>
     `,
         },

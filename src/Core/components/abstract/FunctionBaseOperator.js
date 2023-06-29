@@ -239,10 +239,10 @@ export default class FunctionOperator extends Function {
               domain: globalDependencyValues.domain,
               component: arrayKey,
             });
-            return {
-              setValue: { symbolicfs },
-            };
           }
+          return {
+            setValue: { symbolicfs },
+          };
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
           if (globalDependencyValues.functionChild.length === 0) {
             if (globalDependencyValues.mathChild.length === 0) {
@@ -396,10 +396,10 @@ export default class FunctionOperator extends Function {
               domain: globalDependencyValues.domain,
               component: arrayKey,
             });
-            return {
-              setValue: { numericalfs },
-            };
           }
+          return {
+            setValue: { numericalfs },
+          };
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
           if (globalDependencyValues.functionChild.length === 0) {
             if (globalDependencyValues.mathChild.length === 0) {
