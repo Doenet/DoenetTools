@@ -44,7 +44,7 @@ describe("doenetEditor test", function () {
 
   })
 
-  it.only("Learning Outcomes", () => {
+  it("Learning Outcomes", () => {
     const learningOutcome1 = "One, two, buckle my shoe";
     const learningOutcome2 = "Three, four, shut the door";
     const learningOutcome3 = "Five, six, pick up sticks";
@@ -81,9 +81,24 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="learning outcome 3"]').should('have.value', learningOutcome4)
     cy.get('[data-test="learning outcome 4"]').should('have.value', learningOutcome5)
 
-    //Delete some
-    //Add another
+    //Delete 2nd entry
+    cy.get('[data-test="delete learning outcome 1 button"]').click();
+    //Check the text.
+    cy.get('[data-test="learning outcome 0"]').should('have.value', learningOutcome1)
+    cy.get('[data-test="learning outcome 1"]').should('have.value', learningOutcome3)
+    cy.get('[data-test="learning outcome 2"]').should('have.value', learningOutcome4)
+    cy.get('[data-test="learning outcome 3"]').should('have.value', learningOutcome5)
+    cy.get('[data-test="learning outcome 4"]').should('not.exist')
 
+    //Add another
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="learning outcome 4"]').type(learningOutcome2);
+    //Check the text.
+    cy.get('[data-test="learning outcome 0"]').should('have.value', learningOutcome1)
+    cy.get('[data-test="learning outcome 1"]').should('have.value', learningOutcome3)
+    cy.get('[data-test="learning outcome 2"]').should('have.value', learningOutcome4)
+    cy.get('[data-test="learning outcome 3"]').should('have.value', learningOutcome5)
+    cy.get('[data-test="learning outcome 4"]').should('have.value', learningOutcome2)
   })
 
 
