@@ -534,6 +534,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       set: convertValueToMathExpression,
+      hasEssential: true,
       defaultValue: me.fromAst("\uff3f"), // long underscore
       definition: calculateMathValue,
       inverseDefinition: invertMath,

@@ -1208,6 +1208,7 @@ export default class Answer extends InlineComponent {
         },
       },
       isArray: true,
+      allowExtraArrayKeysInInverse: true,
       entryPrefixes: ["submittedResponse"],
       defaultValueByArrayKey: () => "\uFF3F",
       hasEssential: true,

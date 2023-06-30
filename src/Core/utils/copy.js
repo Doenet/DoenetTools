@@ -561,7 +561,7 @@ export async function verifyReplacementsMatchSpecifiedType({
         })[0];
 
         let stateVarObj = target.state[propVariable];
-        if (stateVarObj.isArray || stateVarObj.isArrayEntry) {
+        if (stateVarObj?.isArray || stateVarObj?.isArrayEntry) {
           let arrayStateVarObj, arrayKeys;
           if (stateVarObj.isArray) {
             arrayStateVarObj = stateVarObj;
