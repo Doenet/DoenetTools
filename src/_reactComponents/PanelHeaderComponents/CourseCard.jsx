@@ -24,9 +24,11 @@ import {
   FormControl,
   FormHelperText,
   FormErrorMessage,
+  Card,
+  CardBody,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import { useFetcher, useNavigate } from "react-router-dom";
+import { Link, useFetcher, useNavigate } from "react-router-dom";
 import { GoKebabVertical } from "react-icons/go";
 
 export function CourseCard({ course }) {
@@ -57,50 +59,67 @@ export function CourseCard({ course }) {
 
   return (
     <>
-      <Box h="250px" w="210px" border="1px solid #000" borderRadius={5}>
-        <Image
-          h="80%"
-          src={`/drive_pictures/${course.image}`}
-          objectFit="cover"
-          borderTopRadius={3}
-          borderBottom="1px solid #000"
-          cursor="pointer"
-          onClick={() => {
-            navigate(`/course?tool=dashboard&courseId=${course.courseId}`);
-          }}
-        />
-        <Flex h="20%" justifyContent="space-between" alignItems="center" p={2}>
-          <Flex flexDirection="column" fontSize="sm">
-            <Text fontWeight="bold">{course.label}</Text>
-            <Text>{course.roleLabel}</Text>
+      <Card width="200px" height="200px" p="0" m="0" data-test="Course Card">
+        <Link to={`/course?tool=dashboard&courseId=${course.courseId}`}>
+          <Image
+            data-test="Card Image Link"
+            height="134px"
+            width="200px"
+            src={`/drive_pictures/${course.image}`}
+            objectFit="cover"
+            borderTopRadius="md"
+            cursor="pointer"
+          />
+        </Link>
+        <CardBody p="1">
+          <Flex columnGap="2px">
+            <Flex
+              flexDirection="column"
+              fontSize="sm"
+              rowGap="10px"
+              p="1"
+              width="170px"
+            >
+              <Text
+                data-test="Course Label"
+                height="20px"
+                lineHeight="1.1"
+                fontWeight="700"
+                noOfLines={2}
+                textAlign="left"
+              >
+                {course.label}
+              </Text>
+              <Text data-test="Course Role">{course.roleLabel}</Text>
+            </Flex>
+            <Menu>
+              <MenuButton height="30px" data-test="Card Menu Button">
+                <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+              </MenuButton>
+              <MenuList zIndex="10">
+                <MenuItem onClick={onOpen}>Duplicate</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    fetcher.submit(
+                      { _action: "Delete", courseId: course.courseId },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Delete
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    //edit still pending (rename label + change background image)
+                  }}
+                >
+                  Settings
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </Flex>
-          <Menu>
-            <MenuButton height="30px">
-              <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
-            </MenuButton>
-            <MenuList zIndex="10">
-              <MenuItem onClick={onOpen}>Duplicate</MenuItem>
-              <MenuItem
-                onClick={() => {
-                  fetcher.submit(
-                    { _action: "Delete", courseId: course.courseId },
-                    { method: "post" },
-                  );
-                }}
-              >
-                Delete
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  //edit still pending (rename label + change background image)
-                }}
-              >
-                Settings
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Flex>
-      </Box>
+        </CardBody>
+      </Card>
 
       <Drawer
         isOpen={isOpen}
