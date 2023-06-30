@@ -92,31 +92,35 @@ export function CourseCard({ course }) {
               </Text>
               <Text data-test="Course Role">{course.roleLabel}</Text>
             </Flex>
-            <Menu>
-              <MenuButton height="30px" data-test="Card Menu Button">
-                <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
-              </MenuButton>
-              <MenuList zIndex="10">
-                <MenuItem onClick={onOpen}>Duplicate</MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    fetcher.submit(
-                      { _action: "Delete", courseId: course.courseId },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Delete
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    //edit still pending (rename label + change background image)
-                  }}
-                >
-                  Settings
-                </MenuItem>
-              </MenuList>
-            </Menu>
+            {course.canModifyCourseSettings == "1" && (
+              <Menu>
+                <MenuButton height="30px" data-test="Card Menu Button">
+                  <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+                </MenuButton>
+                <MenuList zIndex="10">
+                  <MenuItem onClick={onOpen}>Duplicate</MenuItem>
+                  {course.canModifyCourseSettings == "1" && (
+                    <MenuItem
+                      onClick={() => {
+                        fetcher.submit(
+                          { _action: "Delete", courseId: course.courseId },
+                          { method: "post" },
+                        );
+                      }}
+                    >
+                      Delete
+                    </MenuItem>
+                  )}
+                  <MenuItem
+                    onClick={() => {
+                      //edit still pending (rename label + change background image)
+                    }}
+                  >
+                    Settings
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            )}
           </Flex>
         </CardBody>
       </Card>
@@ -126,11 +130,14 @@ export function CourseCard({ course }) {
         placement="right"
         initialFocusRef={firstField}
         onClose={onClose}
+        size="lg"
       >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Duplicate Course</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">
+            Duplicate &quot;{course.label}&quot;
+          </DrawerHeader>
           <DrawerBody>
             <Stack spacing="24px">
               <FormControl isRequired isInvalid={!newLabel}>
@@ -152,7 +159,7 @@ export function CourseCard({ course }) {
                 <Input
                   placeholder="Select source course start date"
                   size="md"
-                  type="datetime-local"
+                  type="date"
                   onChange={(e) => setStartDate(e.currentTarget.value)}
                 />
                 <FormHelperText>
@@ -165,7 +172,7 @@ export function CourseCard({ course }) {
                 <Input
                   placeholder="Select new course end date"
                   size="md"
-                  type="datetime-local"
+                  type="date"
                   onChange={(e) => setEndDate(e.currentTarget.value)}
                 />
                 {!areValidDates && (

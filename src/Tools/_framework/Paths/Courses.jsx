@@ -11,10 +11,8 @@ import {
 
 import React from "react";
 import { useLoaderData, useFetcher } from "react-router-dom";
-import { GoPlus } from "react-icons/go";
 import axios from "axios";
 import { CourseCard } from "../../../_reactComponents/PanelHeaderComponents/CourseCard";
-import { useNavigate } from "react-router-dom";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -89,7 +87,7 @@ export function Courses() {
 
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
-              dataTest="Add Course"
+              data-test="Add Course"
               size="xs"
               onClick={() => {
                 fetcher.submit(
