@@ -310,6 +310,8 @@ export async function verifyReplacementsMatchSpecifiedType({
   componentInfoObjects,
   compositeAttributesObj,
   flags,
+  components,
+  publicCaseInsensitiveAliasSubstitutions,
 }) {
   if (
     !component.attributes.createComponentOfType?.primitive &&
@@ -521,6 +523,90 @@ export async function verifyReplacementsMatchSpecifiedType({
         attributes: attributesFromComposite,
         uniqueIdentifier,
       });
+    }
+
+    // If we require a single replacement but had none,
+    // then attempt to link the empty replacement to a state variable
+    // from the target (by adding a downstreamDependencies to the replacement).
+    // The most relevant scenario is where we are trying to copy
+    // an array state variable or an array entry state variable
+    // that currently is empty, but want the ability to
+    // set the future value of this state variable (and make it non-empty)
+    // via the copy we are now creating.
+    // Since we don't see a use case for non-arrays,
+    // this is only implemented for arrays
+    if (replacementTypes.length === 0 && requiredLength === 1) {
+      let targetInactive = await component.stateValues.targetInactive;
+
+      let propName = (
+        await component.stateValues.effectivePropNameBySource
+      )?.[0];
+
+      if (propName && !targetInactive) {
+        let replacementSources = await component.stateValues
+          .replacementSourceIdentities;
+
+        if (replacementSources === undefined) {
+          // check if based on extract
+          replacementSources = await component.stateValues.sourceComponents;
+        }
+
+        let replacementSource = replacementSources[0];
+
+        let target = components[replacementSource.componentName];
+
+        let propVariable = publicCaseInsensitiveAliasSubstitutions({
+          stateVariables: [propName],
+          componentClass: target.constructor,
+        })[0];
+
+        let stateVarObj = target.state[propVariable];
+        if (stateVarObj.isArray || stateVarObj.isArrayEntry) {
+          let arrayStateVarObj, arrayKeys;
+          if (stateVarObj.isArray) {
+            arrayStateVarObj = stateVarObj;
+            let arraySize = await stateVarObj.arraySize;
+            arrayKeys = stateVarObj.getAllArrayKeys(arraySize);
+          } else {
+            arrayStateVarObj = target.state[stateVarObj.arrayStateVariable];
+            // use getArrayKeysFromVarName without specifying arraySize
+            // so that get keys for the entry that might occur
+            // if the array size were increased
+            arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+              arrayEntryPrefix: stateVarObj.entryPrefix,
+              varEnding: stateVarObj.varEnding,
+              numDimensions: arrayStateVarObj.numDimensions,
+            });
+          }
+
+          // want the prop variable corresponding to just the first entry
+          // of the array or the array entry
+          propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(
+            arrayKeys[0] ||
+              Array(arrayStateVarObj.numDimensions).fill("0").join(","),
+          );
+        } else {
+          // Since we don't currently see a use case for non-arrays,
+          // we are setting stateVarObj to undefined
+          // so that dependencies are not added
+          stateVarObj = undefined;
+        }
+
+        if (stateVarObj) {
+          replacements[0].downstreamDependencies = {
+            [replacementSource.componentName]: [
+              {
+                dependencyType: "referenceShadow",
+                compositeName: component.componentName,
+                propVariable,
+                additionalStateVariableShadowing:
+                  stateVarObj.shadowingInstructions
+                    .addStateVariablesShadowingStateVariables,
+              },
+            ],
+          };
+        }
+      }
     }
 
     if (wrapExistingReplacements) {
