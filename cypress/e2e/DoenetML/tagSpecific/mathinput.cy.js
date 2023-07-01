@@ -4154,6 +4154,7 @@ describe("MathInput Tag Tests", function () {
       { force: true },
     );
 
+    cy.get(cesc("#\\/_math1") + " .mjx-mrow").should("contain.text", "y");
     cy.get(cesc("#\\/_math1"))
       .find(".mjx-mrow")
       .eq(0)
@@ -15624,5 +15625,174 @@ describe("MathInput Tag Tests", function () {
         "Hello \\(\\frac{a}{b}\\)",
       );
     });
+  });
+
+  it("bound to fixed math", () => {
+    // Verify that fixed bug
+    // where deleting the mathinput contents wasn't restored on enter
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" fixed>1</math>
+    <p><mathinput name="mi1">$m</mathinput>
+    <math name="mi1v" copySource="mi1.value" />,
+    <math name="mi1iv" copySource="mi1.immediateValue" />,
+    <text name="mi1rv" copySource="mi1.rawRendererValue" /></p>
+    <p><mathinput name="mi2" bindValueTo="$m" />
+    <math name="mi2v" copySource="mi2.value" />,
+    <math name="mi2iv" copySource="mi2.immediateValue" />,
+    <text name="mi2rv" copySource="mi2.rawRendererValue" /></p>
+     `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+
+    cy.get(cesc2("#/mi1v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1rv")).should("have.text", "1");
+    cy.get(cesc2(`#/mi1`) + ` .mq-editable-field`).should("have.text", "1");
+
+    cy.get(cesc2("#/mi2v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2rv")).should("have.text", "1");
+    cy.get(cesc2(`#/mi2`) + ` .mq-editable-field`).should("have.text", "1");
+
+    cy.log("Delete contents from mathinput 1");
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}{backspace}", {
+      force: true,
+    });
+    cy.get(cesc2("#/mi1rv")).should("have.text", "");
+    cy.get(cesc2("#/mi1v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2(`#/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
+      });
+
+    cy.log("Contents of mathinput 1 restored on enter");
+    cy.get(cesc2("#/mi1") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/mi1rv")).should("have.text", "1");
+    cy.get(cesc2("#/mi1v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2(`#/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1");
+      });
+
+    cy.log("Add contents to mathinput 1");
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}2", { force: true });
+    cy.get(cesc2("#/mi1rv")).should("have.text", "12");
+    cy.get(cesc2("#/mi1v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "12");
+    cy.get(cesc2(`#/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("12");
+      });
+
+    cy.log("Contents of mathinput 1 restored on enter");
+    cy.get(cesc2("#/mi1") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/mi1rv")).should("have.text", "1");
+    cy.get(cesc2("#/mi1v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi1iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2(`#/mi1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1");
+      });
+
+    cy.log("Delete contents from mathinput 2");
+    cy.get(cesc2("#/mi2") + " textarea").type("{end}{backspace}", {
+      force: true,
+    });
+    cy.get(cesc2("#/mi2rv")).should("have.text", "");
+    cy.get(cesc2("#/mi2v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2(`#/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
+      });
+
+    cy.log("Contents of mathinput 2 restored on enter");
+    cy.get(cesc2("#/mi2") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/mi2rv")).should("have.text", "1");
+    cy.get(cesc2("#/mi2v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2(`#/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1");
+      });
+
+    cy.log("Add contents to mathinput 2");
+    cy.get(cesc2("#/mi2") + " textarea").type("{end}2", { force: true });
+    cy.get(cesc2("#/mi2rv")).should("have.text", "12");
+    cy.get(cesc2("#/mi2v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "12");
+    cy.get(cesc2(`#/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("12");
+      });
+
+    cy.log("Contents of mathinput 2 restored on enter");
+    cy.get(cesc2("#/mi2") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/mi2rv")).should("have.text", "1");
+    cy.get(cesc2("#/mi2v") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mi2iv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2(`#/mi2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("1");
+      });
   });
 });
