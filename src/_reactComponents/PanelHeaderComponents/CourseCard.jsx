@@ -33,12 +33,22 @@ import { GoKebabVertical } from "react-icons/go";
 
 export function CourseCard({ course }) {
   const fetcher = useFetcher();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: duplicateIsOpen,
+    onOpen: duplicateOnOpen,
+    onClose: duplicateOnClose,
+  } = useDisclosure();
+  const {
+    isOpen: settingsIsOpen,
+    onOpen: settingsOnOpen,
+    onClose: settingsOnClose,
+  } = useDisclosure();
   const firstField = useRef();
-  const navigate = useNavigate();
 
   //for duplicate form/drawer
   const [newLabel, setNewLabel] = useState();
+  const [settingsRenameLabel, setSettingsRenameLabel] = useState();
+
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [areValidDates, setAreValidDates] = useState(true);
@@ -98,26 +108,18 @@ export function CourseCard({ course }) {
                   <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
                 </MenuButton>
                 <MenuList zIndex="10">
-                  <MenuItem onClick={onOpen}>Duplicate</MenuItem>
-                  {course.canModifyCourseSettings == "1" && (
-                    <MenuItem
-                      onClick={() => {
-                        fetcher.submit(
-                          { _action: "Delete", courseId: course.courseId },
-                          { method: "post" },
-                        );
-                      }}
-                    >
-                      Delete
-                    </MenuItem>
-                  )}
+                  <MenuItem onClick={duplicateOnOpen}>Duplicate</MenuItem>
                   <MenuItem
                     onClick={() => {
-                      //edit still pending (rename label + change background image)
+                      fetcher.submit(
+                        { _action: "Delete", courseId: course.courseId },
+                        { method: "post" },
+                      );
                     }}
                   >
-                    Settings
+                    Delete
                   </MenuItem>
+                  <MenuItem onClick={settingsOnOpen}>Settings</MenuItem>
                 </MenuList>
               </Menu>
             )}
@@ -126,10 +128,10 @@ export function CourseCard({ course }) {
       </Card>
 
       <Drawer
-        isOpen={isOpen}
+        isOpen={duplicateIsOpen}
         placement="right"
         initialFocusRef={firstField}
-        onClose={onClose}
+        onClose={duplicateOnClose}
         size="lg"
       >
         <DrawerOverlay />
@@ -185,7 +187,7 @@ export function CourseCard({ course }) {
           </DrawerBody>
 
           <DrawerFooter borderTopWidth="1px">
-            <Button variant="outline" mr={3} onClick={onClose}>
+            <Button variant="outline" mr={3} onClick={duplicateOnClose}>
               Cancel
             </Button>
             <Button
@@ -200,7 +202,62 @@ export function CourseCard({ course }) {
                   },
                   { method: "post" },
                 );
-                onClose();
+                duplicateOnClose();
+              }}
+            >
+              Submit
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer
+        isOpen={settingsIsOpen}
+        placement="right"
+        onClose={settingsOnClose}
+        size="lg"
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader borderBottomWidth="1px">
+            Settings for &quot;{course.label}&quot;
+          </DrawerHeader>
+          <DrawerBody>
+            <Stack spacing="24px">
+              <FormControl isRequired isInvalid={!settingsRenameLabel}>
+                <FormLabel htmlFor="username">New Course Label</FormLabel>
+                <Input
+                  id="label"
+                  placeholder="Please enter a new course label"
+                  onChange={(e) =>
+                    setSettingsRenameLabel(e.currentTarget.value)
+                  }
+                />
+                {!settingsRenameLabel && (
+                  <FormErrorMessage>Course label is required.</FormErrorMessage>
+                )}
+              </FormControl>
+            </Stack>
+          </DrawerBody>
+
+          <DrawerFooter borderTopWidth="1px">
+            <Button variant="outline" mr={3} onClick={settingsOnClose}>
+              Cancel
+            </Button>
+            <Button
+              isDisabled={!settingsRenameLabel || !areValidDates}
+              onClick={() => {
+                fetcher.submit(
+                  {
+                    _action: "settings",
+                    courseId: course.courseId,
+                    settingsRenameLabel: settingsRenameLabel,
+                    dateDifference,
+                  },
+                  { method: "post" },
+                );
+                settingsOnClose();
               }}
             >
               Submit
