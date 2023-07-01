@@ -2,7 +2,7 @@ import { cesc, cesc2 } from "../../../../src/_utils/url";
 import {
   runRegularPolygonTests,
   setupRegularPolygonScene,
-} from "./regularPolygon.cy";
+} from "../../../support/utils/regularPolygon";
 
 describe("Regular Polygon Tag Tests 3", function () {
   beforeEach(() => {
