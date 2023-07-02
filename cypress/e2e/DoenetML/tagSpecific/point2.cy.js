@@ -10362,6 +10362,79 @@ describe("Point Tag Tests 2", function () {
     cy.get(cesc2("#/R3h")).should("have.text", "false");
   });
 
+  it("point can handle matrix-vector multiplication", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <matrix name="A">
+      <row>0 -1</row>
+      <row>1 0</row>
+    </matrix>
+    <graph>
+      <point name="P">(1,2)</point>
+      <point name="Q">$A$P</point>
+    </graph>
+    <point copySource="P" name="Pa" />
+    <point copySource="Q" name="Qa" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+    cy.get(cesc2("#/Qa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,1)");
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: -3 },
+      });
+    });
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should("contain.text", "(4,−3)");
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,−3)");
+    cy.get(cesc2("#/Qa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+  });
+
+  it("point with matrix for coords correctly gives NaN numerical xs", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P"><matrix>
+        <row>0 -1</row>
+        <row>1 0</row>
+      </matrix></point>
+    </graph>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.numericalXs).eqls([NaN]);
+    });
+  });
+
   it("handle complex point values in graph", () => {
     cy.window().then(async (win) => {
       win.postMessage(

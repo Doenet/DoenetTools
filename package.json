@@ -70,7 +70,7 @@
     "json-stringify-deterministic": "^1.0.1",
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.4",
-    "math-expressions": "^2.0.0-alpha63",
+    "math-expressions": "^2.0.0-alpha64",
     "nanoid": "^3.1.31",
     "papaparse": "^5.4.1",
     "plotly.js-dist-min": "^2.20.0",
