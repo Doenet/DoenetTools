@@ -141,6 +141,7 @@ export default function PageViewer(props) {
   const rendererClasses = useRef({});
   const coreInfo = useRef(null);
   const coreCreated = useRef(false);
+  const coreCreationInProgress = useRef(false);
   const coreId = useRef(null);
 
   const resolveAllStateVariables = useRef(null);
@@ -152,6 +153,7 @@ export default function PageViewer(props) {
   const animationInfo = useRef({});
 
   const resolveActionPromises = useRef({});
+  const lastSkippedAction = useRef(null);
 
   const prefixForIds = props.prefixForIds || "";
 
@@ -200,7 +202,15 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          coreCreationInProgress.current = false;
           preventMoreAnimations.current = false;
+          for (let actionArgs of actionsBeforeCoreCreated.current) {
+            // Note: we protect against the possibility that core is terminated before posting message
+            coreWorker.current?.postMessage({
+              messageType: "requestAction",
+              args: actionArgs,
+            });
+          }
           setStage("coreCreated");
           props.coreCreatedCallback?.(coreWorker.current);
         } else if (e.data.messageType === "initializeRenderers") {
@@ -282,7 +292,7 @@ export default function PageViewer(props) {
         componentName,
         args,
       }) {
-        await callAction({
+        return await callAction({
           action: { actionName, componentName },
           args,
         });
@@ -356,6 +366,8 @@ export default function PageViewer(props) {
     preventMoreAnimations.current = true;
     coreWorker.current.terminate();
     coreWorker.current = null;
+    coreCreated.current = false;
+    coreCreationInProgress.current = false;
     for (let id in animationInfo.current) {
       cancelAnimationFrame(id);
     }
@@ -368,41 +380,128 @@ export default function PageViewer(props) {
     baseVariableValue,
     componentName,
     rendererType,
+    promiseResolve,
   }) {
+    // Note: the reason we check both the renderer class and .type
+    // is that if the renderer was memoized, then the renderer class itself in on .type,
+    // Otherwise, the renderer class is the value of the rendererClasses entry.
     let ignoreActionsWithoutCore =
       rendererClasses.current[rendererType]?.ignoreActionsWithoutCore ||
       rendererClasses.current[rendererType]?.type?.ignoreActionsWithoutCore;
-    if (coreCreated.current || !ignoreActionsWithoutCore?.(action.actionName)) {
-      let actionId = nanoid();
-      args = { ...args };
-      args.actionId = actionId;
+    if (
+      !coreCreated.current &&
+      (ignoreActionsWithoutCore?.(action.actionName) ||
+        !coreCreationInProgress.current)
+    ) {
+      // The action is being skipped because core has not been created
+      // and either the action must be ignored without core or core isn't actually
+      // in the process of being created (relevant case is that core has been terminated)
 
-      if (baseVariableValue !== undefined && componentName) {
-        updateRendererUpdatesToIgnore({
-          coreId: coreId.current,
-          componentName,
-          baseVariableValue,
-          actionId,
-        });
+      if (promiseResolve) {
+        // if were given promiseResolve, then action was called from resolveAction
+        // where the return value is being ignored.
+        // Resolve promise as false as action will be skipped
+        promiseResolve(false);
+        return;
+      } else {
+        // Action was called normally where it is expecting a promise to be returned.
+        // A promise resolved as false indicates action was skipped.
+        return Promise.resolve(false);
       }
+    }
 
-      let actionArgs = {
-        actionName: action.actionName,
-        componentName: action.componentName,
-        args,
-      };
+    if (lastSkippedAction.current) {
+      // we are for sure skipping the lastSkippedAction,
+      // so resolve its promise as false
+      lastSkippedAction.current.promiseResolve(false);
+      lastSkippedAction.current = null;
+    }
 
-      // Note: it is possible that core has been terminated
+    if (args?.skippable) {
+      let nActionsInProgress = Object.keys(
+        resolveActionPromises.current,
+      ).length;
+
+      if (nActionsInProgress > 0) {
+        // Since another action is currently in progress,
+        // we will (at least initially) skip this skippable action.
+        // If the currently running action is resolved while this action
+        // is still the last skipped action, then this action might be executed.
+
+        // If promiseResolve is undefined, then it's the original call of thise action.
+        // Create a promise that will be returned.
+        // It will be resolved with false when this action is definitely skipped,
+        // or it will be resolved with true if this action ends up being executed.
+        let newPromise;
+        if (!promiseResolve) {
+          newPromise = new Promise((resolve, reject) => {
+            promiseResolve = resolve;
+          });
+        }
+
+        lastSkippedAction.current = {
+          action,
+          args,
+          baseVariableValue,
+          componentName,
+          rendererType,
+          promiseResolve,
+        };
+
+        if (newPromise) {
+          return newPromise;
+        } else {
+          // if we don't have a newPromise, that means that we were given a promiseResolve
+          // as an argument to callAction,
+          // which happens when we are being called from within resolveAction
+          // and the return value is ignored
+          return;
+        }
+      }
+    }
+
+    let actionId = nanoid();
+    args = { ...args };
+    args.actionId = actionId;
+
+    if (baseVariableValue !== undefined && componentName) {
+      // Update the bookkeping variables for the optimistic UI that will tell the renderer
+      // whether or not to ignore the information core sends when it finishes the action
+      updateRendererUpdatesToIgnore({
+        coreId: coreId.current,
+        componentName,
+        baseVariableValue,
+        actionId,
+      });
+    }
+
+    let actionArgs = {
+      actionName: action.actionName,
+      componentName: action.componentName,
+      args,
+    };
+
+    if (coreCreated.current) {
+      // Note: it is possible that core has been terminated, so we need the question mark
       coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs,
       });
+    } else {
+      // If core has not yet been created,
+      // queue the action to be sent once core is created
+      actionsBeforeCoreCreated.current.push(actionArgs);
+    }
 
-      if (!coreCreated.current) {
-        actionsBeforeCoreCreated.current.push(actionArgs);
-        // console.log('actions before core created', actionsBeforeCoreCreated.current)
-      }
-
+    if (promiseResolve) {
+      // If we were sent promiseResolve as an argument,
+      // then the promise for this action has already been returned to the original caller
+      // and we are just being called inside resolveAction
+      // (where the return is being ignored).
+      // Simply set it up so that promiseResolve will be called when the action is resolved
+      resolveActionPromises.current[actionId] = promiseResolve;
+      return;
+    } else {
       return new Promise((resolve, reject) => {
         resolveActionPromises.current[actionId] = resolve;
       });
@@ -530,6 +629,9 @@ export default function PageViewer(props) {
             stateValues,
             childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
+            // Note: the reason we check both the renderer class and .type
+            // is that if the renderer was memoized, then the renderer class itself in on .type,
+            // Otherwise, the renderer class is the value of the rendererClasses entry.
             baseStateVariable:
               rendererClasses.current[rendererType]?.baseStateVariable ||
               rendererClasses.current[rendererType]?.type?.baseStateVariable,
@@ -544,8 +646,14 @@ export default function PageViewer(props) {
 
   function resolveAction({ actionId }) {
     if (actionId) {
-      resolveActionPromises.current[actionId]?.();
+      resolveActionPromises.current[actionId]?.(true);
       delete resolveActionPromises.current[actionId];
+
+      if (lastSkippedAction.current) {
+        let actionToCall = lastSkippedAction.current;
+        lastSkippedAction.current = null;
+        callAction(actionToCall);
+      }
     }
   }
 
@@ -899,6 +1007,10 @@ export default function PageViewer(props) {
     if (coreWorker.current) {
       terminateCoreAndAnimations();
     }
+
+    actionsBeforeCoreCreated.current = [];
+    resolveActionPromises.current = {};
+
     // console.log(`send message to create core ${pageNumber}`)
     coreWorker.current = new Worker(
       new URL("../Core/CoreWorker.js", import.meta.url),
@@ -931,14 +1043,7 @@ export default function PageViewer(props) {
     });
 
     setStage("waitingOnCore");
-
-    for (let actionArgs of actionsBeforeCoreCreated.current) {
-      // Note: we protect against the possibility that core is terminated before posting message
-      coreWorker.current?.postMessage({
-        messageType: "requestAction",
-        args: actionArgs,
-      });
-    }
+    coreCreationInProgress.current = true;
   }
 
   function requestAnimationFrame({ action, actionArgs, delay, animationId }) {
@@ -1143,6 +1248,7 @@ export default function PageViewer(props) {
     coreInfo.current = null;
     setDocumentRenderer(null);
     coreCreated.current = false;
+    coreCreationInProgress.current = false;
 
     setStage("wait");
 
