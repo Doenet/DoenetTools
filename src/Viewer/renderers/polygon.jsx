@@ -252,8 +252,8 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           },
         });
 
@@ -273,8 +273,8 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
             sourceDetails: { vertex: i },
           },
         });
