@@ -30,6 +30,8 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useFetcher, useNavigate } from "react-router-dom";
 import { GoKebabVertical } from "react-icons/go";
+import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
+import { useRecoilState } from "recoil";
 
 export function CourseCard({ course }) {
   const fetcher = useFetcher();
@@ -54,6 +56,20 @@ export function CourseCard({ course }) {
   const [areValidDates, setAreValidDates] = useState(true);
   const [dateDifference, setDateDifference] = useState();
 
+  const navigate = useNavigate();
+
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef("");
+
+  if (navigateTo.current != "") {
+    const newHref = navigateTo.current;
+    navigateTo.current = "";
+    location.href = newHref;
+    navigate(newHref);
+  }
+
   useEffect(() => {
     let sourceStart = new Date(startDate);
     let newEnd = new Date(endDate);
@@ -70,17 +86,26 @@ export function CourseCard({ course }) {
   return (
     <>
       <Card width="200px" height="200px" p="0" m="0" data-test="Course Card">
-        <Link to={`/course?tool=dashboard&courseId=${course.courseId}`}>
-          <Image
-            data-test="Card Image Link"
-            height="134px"
-            width="200px"
-            src={`/drive_pictures/${course.image}`}
-            objectFit="cover"
-            borderTopRadius="md"
-            cursor="pointer"
-          />
-        </Link>
+        {/* <Link to={`/course?tool=dashboard&courseId=${course.courseId}`}> */}
+        <Image
+          data-test="Card Image Link"
+          height="134px"
+          width="200px"
+          src={`/drive_pictures/${course.image}`}
+          objectFit="cover"
+          borderTopRadius="md"
+          cursor="pointer"
+          onClick={() => {
+            navigateTo.current = `/course?tool=dashboard&courseId=${course.courseId}`;
+            setRecoilPageToolView({
+              page: "course",
+              tool: "dashboard",
+              view: "",
+              params: { courseId: course.courseId },
+            });
+          }}
+        />
+        {/* </Link> */}
         <CardBody p="1">
           <Flex columnGap="2px">
             <Flex
