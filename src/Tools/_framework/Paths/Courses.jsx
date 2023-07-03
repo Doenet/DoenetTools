@@ -51,13 +51,13 @@ export async function action({ request }) {
     if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Rename") {
-    let { data } = await axios.get("/api/renameCourseItem.php", {
-      courseId: formObj.courseId,
-      doenetId: formObj.doenetId,
-      newLabel: formObj.newLabel,
-      type: formObj.type,
-    });
-    if (!data.success) throw Error(data.message);
+    // let { data } = await axios.get("/api/renameCourseItem.php", {
+    //   courseId: formObj.courseId,
+    //   doenetId: formObj.doenetId,
+    //   newLabel: formObj.newLabel,
+    //   type: formObj.type,
+    // });
+    // if (!data.success) throw Error(data.message);
     return true;
   }
 }
@@ -85,6 +85,21 @@ export function Courses() {
   } = useDisclosure();
 
   const [activeCourse, setActiveCourse] = useState({});
+
+  let optimisticCourses = [...courses];
+
+  //Optimistic UI
+  if (fetcher.formData) {
+    const action = fetcher.formData.get("_action");
+    if (action == "Rename") {
+      const courseId = fetcher.formData.get("courseId");
+      const newLabel = fetcher.formData.get("newLabel");
+      let index = optimisticCourses.findIndex(
+        (course) => course.courseId == courseId,
+      );
+      optimisticCourses[index].label = newLabel;
+    }
+  }
 
   return (
     <>
@@ -151,7 +166,7 @@ export function Courses() {
             width="100%"
           >
             <Wrap overflow="visible" p="10px">
-              {courses.map((course, index) => (
+              {optimisticCourses.map((course, index) => (
                 <CourseCard
                   course={course}
                   key={`course-${course.courseId}`}
@@ -279,54 +294,59 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
 }
 
 function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
+  const [newLabel, setNewLabel] = useState("Untitled Course");
+
+  useEffect(() => {
+    if (activeCourse.label) {
+      setNewLabel(activeCourse.label);
+    }
+  }, [activeCourse.label]);
+
+  function handleLabelUpdate({ newLabel }) {
+    if (newLabel != "") {
+      fetcher.submit(
+        {
+          _action: "Rename",
+          courseId: activeCourse.courseId,
+          newLabel,
+        },
+        { method: "post" },
+      );
+    }
+  }
+
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="lg">
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader borderBottomWidth="1px">
-          Settings for &quot;{activeCourse.label}&quot;
+          Settings for &quot;{activeCourse?.label}&quot;
         </DrawerHeader>
         <DrawerBody>
-          {/* <Stack spacing="24px">
-              <FormControl isRequired isInvalid={!settingsRenameLabel}>
-                <FormLabel htmlFor="username">New Course Label</FormLabel>
-                <Input
-                  id="label"
-                  placeholder="Please enter a new course label"
-                  onChange={(e) =>
-                    setSettingsRenameLabel(e.currentTarget.value)
+          <Stack spacing="24px">
+            <FormControl isRequired isInvalid={!newLabel}>
+              <FormLabel htmlFor="username">New Course Label</FormLabel>
+              <Input
+                id="label"
+                value={newLabel}
+                placeholder="Please enter a new course label"
+                onChange={(e) => setNewLabel(e.currentTarget.value)}
+                onBlur={() => {
+                  handleLabelUpdate({ newLabel });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleLabelUpdate({ newLabel });
                   }
-                />
-                {!settingsRenameLabel && (
-                  <FormErrorMessage>Course label is required.</FormErrorMessage>
-                )}
-              </FormControl>
-            </Stack> */}
+                }}
+              />
+              {!newLabel && (
+                <FormErrorMessage>Course label is required.</FormErrorMessage>
+              )}
+            </FormControl>
+          </Stack>
         </DrawerBody>
-
-        <DrawerFooter borderTopWidth="1px">
-          {/* <Button variant="outline" mr={3} onClick={settingsOnClose}>
-              Cancel
-            </Button>
-            <Button
-              isDisabled={!settingsRenameLabel || !areValidDates}
-              onClick={() => {
-                fetcher.submit(
-                  {
-                    _action: "settings",
-                    courseId: course.courseId,
-                    settingsRenameLabel: settingsRenameLabel,
-                    dateDifference,
-                  },
-                  { method: "post" },
-                );
-                settingsOnClose();
-              }}
-            >
-              Submit
-            </Button> */}
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );

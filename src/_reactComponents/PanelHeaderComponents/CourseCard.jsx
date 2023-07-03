@@ -25,9 +25,6 @@ export function CourseCard({
 }) {
   const fetcher = useFetcher();
 
-  // //for duplicate form/drawer
-  // const [settingsRenameLabel, setSettingsRenameLabel] = useState();
-
   const navigate = useNavigate();
 
   const [recoilPageToolView, setRecoilPageToolView] =
