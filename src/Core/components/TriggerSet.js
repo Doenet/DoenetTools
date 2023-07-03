@@ -140,8 +140,6 @@ export default class triggerSet extends InlineComponent {
       }
     }
 
-    this.coreFunctions.resolveAction({ actionId });
-
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
       actionId,
@@ -159,8 +157,6 @@ export default class triggerSet extends InlineComponent {
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
       return await this.triggerActions({ actionId, skipRendererUpdate: true });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

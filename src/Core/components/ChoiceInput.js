@@ -1225,8 +1225,6 @@ export default class Choiceinput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -548,8 +548,6 @@ export default class CodeEditor extends BlockComponent {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -637,8 +635,6 @@ export default class CodeEditor extends BlockComponent {
           });
       }
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async updateComponents() {
@@ -660,7 +656,7 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -669,6 +665,5 @@ export default class CodeEditor extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

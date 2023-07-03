@@ -148,7 +148,6 @@ export class Paginator extends BlockComponent {
     skipRendererUpdate = false,
   }) {
     if (!Number.isInteger(number)) {
-      this.coreFunctions.resolveAction({ actionId });
       return;
     }
 
@@ -186,7 +185,7 @@ export class Paginator extends BlockComponent {
     });
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -195,7 +194,6 @@ export class Paginator extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

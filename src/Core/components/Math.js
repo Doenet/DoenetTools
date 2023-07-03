@@ -1671,8 +1671,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async mathFocused({
@@ -1690,8 +1688,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

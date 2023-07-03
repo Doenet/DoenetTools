@@ -1270,8 +1270,6 @@ export default class Point extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async pointFocused({
@@ -1289,7 +1287,5 @@ export default class Point extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

@@ -405,8 +405,6 @@ export default class UpdateValue extends InlineComponent {
       !(await this.stateValues.insideTriggerSet)
     ) {
       return await this.updateValue({ actionId, skipRendererUpdate: true });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

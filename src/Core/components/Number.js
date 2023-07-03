@@ -992,8 +992,6 @@ export default class NumberComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async numberFocused({
@@ -1011,7 +1009,5 @@ export default class NumberComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

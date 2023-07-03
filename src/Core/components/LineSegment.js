@@ -753,12 +753,12 @@ export default class LineSegment extends GraphicalComponent {
     if (point1coords === undefined || point2coords === undefined) {
       // single point dragged
       if (!(await this.stateValues.endpointsDraggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     } else {
       // whole line segment dragged
       if (!(await this.stateValues.draggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     }
 
@@ -916,8 +916,6 @@ export default class LineSegment extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async lineSegmentFocused({
@@ -935,7 +933,5 @@ export default class LineSegment extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

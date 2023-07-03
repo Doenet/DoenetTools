@@ -780,8 +780,6 @@ export default class MathInput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -891,11 +889,7 @@ export default class MathInput extends Input {
           sourceInformation,
           skipRendererUpdate,
         });
-      } else {
-        this.coreFunctions.resolveAction({ actionId });
       }
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

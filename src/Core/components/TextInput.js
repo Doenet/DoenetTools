@@ -462,8 +462,6 @@ export default class Textinput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -537,8 +535,6 @@ export default class Textinput extends Input {
         });
       }
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async moveInput({

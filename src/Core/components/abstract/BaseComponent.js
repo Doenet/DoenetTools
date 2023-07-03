@@ -1487,9 +1487,7 @@ export default class BaseComponent {
   async copyDoenetMLToClipboard({ actionId }) {
     let doenetML = await this.stateValues.doenetML;
 
-    if (!doenetML) {
-      this.coreFunctions.resolveAction({ actionId });
-    } else {
+    if (doenetML) {
       this.coreFunctions.copyToClipboard(doenetML, actionId);
     }
   }

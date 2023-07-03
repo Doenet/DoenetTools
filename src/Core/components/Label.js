@@ -467,8 +467,6 @@ export default class Label extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async labelFocused({
@@ -486,7 +484,5 @@ export default class Label extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
