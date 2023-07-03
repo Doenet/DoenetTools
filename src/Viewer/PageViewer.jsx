@@ -246,6 +246,8 @@ export default function PageViewer(props) {
           copyToClipboard(e.data.args);
         } else if (e.data.messageType === "navigateToTarget") {
           navigateToTarget(e.data.args);
+        } else if (e.data.messageType === "navigateToHash") {
+          navigate(e.data.args.hash);
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -321,6 +323,7 @@ export default function PageViewer(props) {
             componentName: anchor
               .substring(prefixForIds.length)
               .replaceAll("\\/", "/"),
+            hash,
           },
         });
       }
