@@ -27,6 +27,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useFetcher } from "react-router-dom";
 import axios from "axios";
 import { CourseCard } from "../../../_reactComponents/PanelHeaderComponents/CourseCard";
+import ColorImagePicker from "../../../_reactComponents/PanelHeaderComponents/ColorImagePicker";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -51,11 +52,32 @@ export async function action({ request }) {
     if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Rename") {
+    // let { data } = await axios.post("/api/modifyCourse.php", {
     let resp = await axios.post("/api/modifyCourse.php", {
-      // let { data } = await axios.post("/api/modifyCourse.php", {
       courseId: formObj.courseId,
       label: formObj.newLabel,
     });
+    //TODO: modifyCourse.php doesn't respond with data.success
+    // console.log(resp);
+    // if (!data.success) throw Error(data.message);
+    return true;
+  } else if (formObj?._action == "Update Image") {
+    // let { data } = await axios.post("/api/modifyCourse.php", {
+
+    let resp = await axios.post("/api/modifyCourse.php", {
+      courseId: formObj.courseId,
+      image: formObj.image,
+      color: "none",
+    });
+    return true;
+  } else if (formObj?._action == "Update Color") {
+    // let { data } = await axios.post("/api/modifyCourse.php", {
+
+    let resp = await axios.post("/api/modifyCourse.php", {
+      courseId: formObj.courseId,
+      color: formObj.color,
+    });
+
     //TODO: modifyCourse.php doesn't respond with data.success
     // console.log(resp);
     // if (!data.success) throw Error(data.message);
@@ -346,6 +368,35 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 <FormErrorMessage>Course label is required.</FormErrorMessage>
               )}
             </FormControl>
+
+            <ColorImagePicker
+              initialImage={activeCourse?.image}
+              initialColor={activeCourse?.color}
+              imageCallback={(image) => {
+                console.log("image", image);
+                fetcher.submit(
+                  {
+                    _action: "Update Image",
+                    courseId: activeCourse.courseId,
+                    image,
+                  },
+                  { method: "post" },
+                );
+                // modifyCourse({ image: newImage, color: "none" });
+              }}
+              colorCallback={(color) => {
+                console.log("color", color);
+                fetcher.submit(
+                  {
+                    _action: "Update Color",
+                    courseId: activeCourse.courseId,
+                    color,
+                  },
+                  { method: "post" },
+                );
+                // modifyCourse({ color: newColor, image: "none" });
+              }}
+            />
           </Stack>
         </DrawerBody>
       </DrawerContent>

@@ -10,6 +10,7 @@ import {
   MenuItem,
   Card,
   CardBody,
+  Box,
 } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { useFetcher, useNavigate } from "react-router-dom";
@@ -39,28 +40,50 @@ export function CourseCard({
     navigate(newHref);
   }
 
+  console.log("course", course);
+
   return (
     <>
       <Card width="200px" height="200px" p="0" m="0" data-test="Course Card">
         {/* <Link to={`/course?tool=dashboard&courseId=${course.courseId}`}> */}
-        <Image
-          data-test="Card Image Link"
-          height="134px"
-          width="200px"
-          src={`/drive_pictures/${course.image}`}
-          objectFit="cover"
-          borderTopRadius="md"
-          cursor="pointer"
-          onClick={() => {
-            navigateTo.current = `/course?tool=dashboard&courseId=${course.courseId}`;
-            setRecoilPageToolView({
-              page: "course",
-              tool: "dashboard",
-              view: "",
-              params: { courseId: course.courseId },
-            });
-          }}
-        />
+        {course.color == "none" ? (
+          <Image
+            data-test="Card Image Link"
+            height="134px"
+            width="200px"
+            src={`/drive_pictures/${course.image}`}
+            objectFit="cover"
+            borderTopRadius="md"
+            cursor="pointer"
+            onClick={() => {
+              navigateTo.current = `/course?tool=dashboard&courseId=${course.courseId}`;
+              setRecoilPageToolView({
+                page: "course",
+                tool: "dashboard",
+                view: "",
+                params: { courseId: course.courseId },
+              });
+            }}
+          />
+        ) : (
+          <Box
+            data-test="Card Color Link"
+            height="134px"
+            width="200px"
+            background={`#${course.color}`}
+            borderTopRadius="md"
+            cursor="pointer"
+            onClick={() => {
+              navigateTo.current = `/course?tool=dashboard&courseId=${course.courseId}`;
+              setRecoilPageToolView({
+                page: "course",
+                tool: "dashboard",
+                view: "",
+                params: { courseId: course.courseId },
+              });
+            }}
+          />
+        )}
         {/* </Link> */}
         <CardBody p="1">
           <Flex columnGap="2px">
