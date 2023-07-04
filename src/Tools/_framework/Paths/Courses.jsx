@@ -121,6 +121,22 @@ export function Courses() {
         (course) => course.courseId == courseId,
       );
       optimisticCourses[index].label = newLabel;
+    } else if (action == "Update Image") {
+      const courseId = fetcher.formData.get("courseId");
+      const image = fetcher.formData.get("image");
+      const color = fetcher.formData.get("color");
+      let index = optimisticCourses.findIndex(
+        (course) => course.courseId == courseId,
+      );
+      optimisticCourses[index].image = image;
+      optimisticCourses[index].color = color;
+    } else if (action == "Update Color") {
+      const courseId = fetcher.formData.get("courseId");
+      const color = fetcher.formData.get("color");
+      let index = optimisticCourses.findIndex(
+        (course) => course.courseId == courseId,
+      );
+      optimisticCourses[index].color = color;
     }
   }
 
@@ -373,7 +389,6 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
               initialImage={activeCourse?.image}
               initialColor={activeCourse?.color}
               imageCallback={(image) => {
-                console.log("image", image);
                 fetcher.submit(
                   {
                     _action: "Update Image",
@@ -385,7 +400,6 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 // modifyCourse({ image: newImage, color: "none" });
               }}
               colorCallback={(color) => {
-                console.log("color", color);
                 fetcher.submit(
                   {
                     _action: "Update Color",

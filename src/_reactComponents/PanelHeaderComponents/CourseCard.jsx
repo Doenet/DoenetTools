@@ -40,8 +40,6 @@ export function CourseCard({
     navigate(newHref);
   }
 
-  console.log("course", course);
-
   return (
     <>
       <Card width="200px" height="200px" p="0" m="0" data-test="Course Card">
