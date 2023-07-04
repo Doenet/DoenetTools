@@ -51,12 +51,13 @@ export async function action({ request }) {
     if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Rename") {
-    // let { data } = await axios.get("/api/renameCourseItem.php", {
-    //   courseId: formObj.courseId,
-    //   doenetId: formObj.doenetId,
-    //   newLabel: formObj.newLabel,
-    //   type: formObj.type,
-    // });
+    let resp = await axios.post("/api/modifyCourse.php", {
+      // let { data } = await axios.post("/api/modifyCourse.php", {
+      courseId: formObj.courseId,
+      label: formObj.newLabel,
+    });
+    //TODO: modifyCourse.php doesn't respond with data.success
+    // console.log(resp);
     // if (!data.success) throw Error(data.message);
     return true;
   }
@@ -226,7 +227,7 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
             <FormControl isRequired isInvalid={!newLabel}>
               <FormLabel htmlFor="username">New Course Label</FormLabel>
               <Input
-                // ref={firstField}
+                ref={firstField}
                 id="label"
                 placeholder="Please enter a new course label"
                 onChange={(e) => setNewLabel(e.currentTarget.value)}
