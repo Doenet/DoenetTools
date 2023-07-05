@@ -380,175 +380,87 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
         </DrawerHeader>
         <DrawerBody>
           <Stack spacing="24px">
-            <FormLabel>Color or Image</FormLabel>
-            <Popover offset={[200, 5]} width="800px">
-              <PopoverTrigger>
-                {activeCourse.color == "none" ? (
-                  <Image
-                    data-test="Card Image Link"
-                    height="134px"
-                    width="200px"
-                    src={`/drive_pictures/${activeCourse.image}`}
-                    objectFit="cover"
-                    borderTopRadius="md"
-                    cursor="pointer"
-                  />
-                ) : (
-                  <Box
-                    data-test="Card Color Link"
-                    height="134px"
-                    width="200px"
-                    background={`#${activeCourse.color}`}
-                    borderTopRadius="md"
-                    cursor="pointer"
-                  />
-                )}
-              </PopoverTrigger>
-              <PopoverContent width="600px">
-                {/* <PopoverArrow /> */}
-                <PopoverBody>
-                  <SimpleGrid
-                    columns={6}
-                    spacing={3}
-                    width="560px"
-                    // background="blue.400"
-                    m="10px"
-                  >
-                    {driveColors.map((item) => {
-                      return (
-                        <Box
-                          key={`courseimage${item.Color}`}
-                          data-test="Card Color Link"
-                          height="80px"
-                          width="80px"
-                          background={`#${item.Color}`}
-                          cursor="pointer"
-                          onClick={() => {
-                            fetcher.submit(
-                              {
-                                _action: "Update Color",
-                                courseId: activeCourse.courseId,
-                                color: item.Color,
-                              },
-                              { method: "post" },
-                            );
-                          }}
-                        />
-                      );
-                    })}
-                    {driveImages.map((item) => {
-                      return (
-                        <Image
-                          key={`courseimage${item.Image}`}
-                          data-test="Card Image Link"
-                          cursor="pointer"
-                          height="80px"
-                          width="80px"
-                          src={`/drive_pictures/${item.Image}`}
-                          objectFit="cover"
-                          onClick={() => {
-                            fetcher.submit(
-                              {
-                                _action: "Update Image",
-                                courseId: activeCourse.courseId,
-                                image: item.Image,
-                                color: "none",
-                              },
-                              { method: "post" },
-                            );
-                          }}
-                        />
-                      );
-                    })}
-                  </SimpleGrid>
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
-            {/* <Menu>
-              <MenuButton>
-                {activeCourse.color == "none" ? (
-                  <Image
-                    data-test="Card Image Link"
-                    height="134px"
-                    width="200px"
-                    src={`/drive_pictures/${activeCourse.image}`}
-                    objectFit="cover"
-                    borderTopRadius="md"
-                    cursor="pointer"
-                  />
-                ) : (
-                  <Box
-                    data-test="Card Color Link"
-                    height="134px"
-                    width="200px"
-                    background={`#${activeCourse.color}`}
-                    borderTopRadius="md"
-                    cursor="pointer"
-                  />
-                )}
-              </MenuButton>
-              <MenuList>
-                {driveColors.map((item) => {
-                  return (
-                    <MenuItem
-                      onClick={() => alert(item.Color)}
-                      key={`courseimage${item.Color}`}
-                    >
-                      <Box
-                        data-test="Card Color Link"
-                        height="40px"
-                        width="40px"
-                        background={`#${item.Color}`}
-                      />
-                      &nbsp;{item.Name}
-                    </MenuItem>
-                  );
-                })}
-                {driveImages.map((item) => {
-                  return (
-                    <MenuItem
-                      key={`courseimage${item.Image}`}
-                      onClick={() => alert(item.Image)}
-                    >
-                      <Image
-                        data-test="Card Image Link"
-                        height="40px"
-                        width="40px"
-                        src={`/drive_pictures/${item.Image}`}
-                        objectFit="cover"
-                      />
-                      &nbsp;{item.Name}
-                    </MenuItem>
-                  );
-                })}
-              </MenuList>
-            </Menu> */}
-            {/* <ColorImagePicker
-              initialImage={activeCourse?.image}
-              initialColor={activeCourse?.color}
-              // imageCallback={(image) => {
-              // fetcher.submit(
-              //   {
-              //     _action: "Update Image",
-              //     courseId: activeCourse.courseId,
-              //     image,
-              //   },
-              //   { method: "post" },
-              // );
-              //   // modifyCourse({ image: newImage, color: "none" });
-              // }}
-              // colorCallback={(color) => {
-              //   fetcher.submit(
-              //     {
-              //       _action: "Update Color",
-              //       courseId: activeCourse.courseId,
-              //       color,
-              //     },
-              //     { method: "post" },
-              //   );
-              // modifyCourse({ color: newColor, image: "none" });
-              // }}
-            /> */}
+            <Box>
+              <FormLabel>Color or Image</FormLabel>
+              <Popover offset={[200, 8]} width="800px">
+                <PopoverTrigger>
+                  {activeCourse.color == "none" ? (
+                    <Image
+                      data-test="Card Image Link"
+                      height="134px"
+                      width="200px"
+                      src={`/drive_pictures/${activeCourse.image}`}
+                      objectFit="cover"
+                      borderTopRadius="md"
+                      cursor="pointer"
+                    />
+                  ) : (
+                    <Box
+                      data-test="Card Color Link"
+                      height="134px"
+                      width="200px"
+                      background={`#${activeCourse.color}`}
+                      borderTopRadius="md"
+                      cursor="pointer"
+                    />
+                  )}
+                </PopoverTrigger>
+                <PopoverContent width="600px" background="doenet.lightGray">
+                  <PopoverArrow bg="doenet.lightGray" />
+                  <PopoverBody>
+                    <SimpleGrid columns={6} spacing={3} width="560px" m="10px">
+                      {driveColors.map((item) => {
+                        return (
+                          <Box
+                            key={`courseimage${item.Color}`}
+                            data-test="Card Color Link"
+                            height="80px"
+                            width="80px"
+                            background={`#${item.Color}`}
+                            cursor="pointer"
+                            onClick={() => {
+                              fetcher.submit(
+                                {
+                                  _action: "Update Color",
+                                  courseId: activeCourse.courseId,
+                                  color: item.Color,
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                          />
+                        );
+                      })}
+                      {driveImages.map((item) => {
+                        return (
+                          <Image
+                            key={`courseimage${item.Image}`}
+                            data-test="Card Image Link"
+                            cursor="pointer"
+                            height="80px"
+                            width="80px"
+                            src={`/drive_pictures/${item.Image}`}
+                            objectFit="cover"
+                            onClick={() => {
+                              fetcher.submit(
+                                {
+                                  _action: "Update Image",
+                                  courseId: activeCourse.courseId,
+                                  image: item.Image,
+                                  color: "none",
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                          />
+                        );
+                      })}
+                    </SimpleGrid>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </Box>
+
             <FormControl isRequired isInvalid={!newLabel}>
               <FormLabel htmlFor="username">New Course Label</FormLabel>
               <Input
