@@ -324,6 +324,62 @@ describe("ref Tag Tests", function () {
     });
   });
 
+  it("ref into descendant of aside opens aside", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Goto:
+    <ref name="toAside" target="/inside">Paragraph inside aside</ref>
+    </p>
+    <lorem generateParagraphs="10" />
+
+    <aside name="aside">
+      <title name="asideTitle">The aside</title>
+      <lorem generateParagraphs="1" />
+      <section>
+        <title>Section inside the aside</title>
+        <p name="inside">Paragraph inside the section inside the aside.</p>
+      </section>
+    </aside>
+
+    <lorem generateParagraphs="10" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+
+    cy.log("Aside closed at the beginning");
+    cy.get(cesc("#\\/inside")).should("not.exist");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(false);
+    });
+
+    cy.log("clicking link opens aside");
+    cy.get(cesc("#\\/toAside")).click();
+
+    cy.get(cesc("#\\/inside")).should(
+      "have.text",
+      "Paragraph inside the section inside the aside.",
+    );
+
+    cy.get(cesc("#\\/inside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(-1).lt(1);
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(true);
+    });
+  });
+
   it("navigate to target action opens aside", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -362,6 +418,62 @@ describe("ref Tag Tests", function () {
     cy.get(cesc("#\\/go")).click();
 
     cy.get(cesc("#\\/inside")).should("have.text", "Inside the aside");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(true);
+    });
+  });
+
+  it("navigate to target action to paragraph inside aside opens aside", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <ref name="toAside" target="/inside" hide>Aside</ref>
+    <p>
+    <callAction target="toAside" actionName="navigateToTarget" name="go"><label>Go to aside</label></callAction>
+    </p>
+    <lorem generateParagraphs="2" />
+
+    <aside name="aside">
+      <title name="asideTitle">The aside</title>
+      <lorem generateParagraphs="1" />
+      <section>
+        <title>Section inside the aside</title>
+        <p name="inside">Paragraph inside the section inside the aside.</p>
+      </section>
+    </aside>
+
+    <lorem generateParagraphs="10" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+
+    cy.log("Aside closed at the beginning");
+    cy.get(cesc("#\\/inside")).should("not.exist");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(false);
+    });
+
+    cy.log("clicking action opens aside");
+    cy.get(cesc("#\\/go")).click();
+
+    cy.get(cesc("#\\/inside")).should(
+      "have.text",
+      "Paragraph inside the section inside the aside.",
+    );
+
+    cy.get(cesc("#\\/inside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top).gt(-1).lt(1);
+    });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/aside"].stateValues.open).eq(true);

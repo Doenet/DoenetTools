@@ -11609,13 +11609,39 @@ export default class Core {
     }
   }
 
-  handleNavigatingToComponent(componentName) {
+  async handleNavigatingToComponent({ componentName, hash }) {
     let component = this._components[componentName];
-    if (component?.actions?.revealSection) {
-      this.requestAction({
-        componentName: component.componentName,
-        actionName: "revealSection",
-      });
+    if (component) {
+      let componentAndAncestors = [
+        componentName,
+        ...component.ancestors.map((x) => x.componentName),
+      ];
+      let openedParent = false;
+      for (let cName of componentAndAncestors) {
+        let comp = this._components[cName];
+        if (comp.actions?.revealSection) {
+          let isOpen = await comp.stateValues.open;
+
+          if (isOpen === false) {
+            await this.performAction({
+              componentName: cName,
+              actionName: "revealSection",
+            });
+            if (cName !== componentName) {
+              openedParent = true;
+            }
+          }
+        }
+      }
+      if (openedParent) {
+        // If just opened parent, then we couldn't have navigated to target yet
+        // as the target didn't exist in the DOM when the parent was closed.
+        // Navigate to the specified hash now.
+        postMessage({
+          messageType: "navigateToHash",
+          args: { hash },
+        });
+      }
     }
   }
 
