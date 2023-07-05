@@ -21,6 +21,19 @@ import {
   DrawerOverlay,
   Drawer,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Image,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
+  SimpleGrid,
 } from "@chakra-ui/react";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -28,6 +41,7 @@ import { useLoaderData, useFetcher } from "react-router-dom";
 import axios from "axios";
 import { CourseCard } from "../../../_reactComponents/PanelHeaderComponents/CourseCard";
 import ColorImagePicker from "../../../_reactComponents/PanelHeaderComponents/ColorImagePicker";
+import { driveColors, driveImages } from "../../../_reactComponents/Drive/util";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -154,6 +168,7 @@ export function Courses() {
         isOpen={settingsIsOpen}
         onClose={settingsOnClose}
       />
+
       <Grid
         templateAreas={`"siteHeader" 
         "courseCards"`}
@@ -333,6 +348,8 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
 }
 
 function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
+  console.log("CourseSettingsDrawer activeCourse", activeCourse);
+
   const [newLabel, setNewLabel] = useState("Untitled Course");
 
   useEffect(() => {
@@ -364,6 +381,175 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
         </DrawerHeader>
         <DrawerBody>
           <Stack spacing="24px">
+            <FormLabel>Color or Image</FormLabel>
+            <Popover offset={[40, 5]}>
+              <PopoverTrigger>
+                {activeCourse.color == "none" ? (
+                  <Image
+                    data-test="Card Image Link"
+                    height="134px"
+                    width="200px"
+                    src={`/drive_pictures/${activeCourse.image}`}
+                    objectFit="cover"
+                    borderTopRadius="md"
+                    cursor="pointer"
+                  />
+                ) : (
+                  <Box
+                    data-test="Card Color Link"
+                    height="134px"
+                    width="200px"
+                    background={`#${activeCourse.color}`}
+                    borderTopRadius="md"
+                    cursor="pointer"
+                  />
+                )}
+              </PopoverTrigger>
+              <PopoverContent>
+                {/* <PopoverArrow /> */}
+                <PopoverBody>
+                  <SimpleGrid
+                    columns={6}
+                    spacing={3}
+                    width="560px"
+                    background="blue.400"
+                    m="10px"
+                  >
+                    {driveColors.map((item) => {
+                      return (
+                        <Box
+                          key={`courseimage${item.Color}`}
+                          data-test="Card Color Link"
+                          height="80px"
+                          width="80px"
+                          background={`#${item.Color}`}
+                          cursor="pointer"
+                          onClick={() => {
+                            fetcher.submit(
+                              {
+                                _action: "Update Color",
+                                courseId: activeCourse.courseId,
+                                color: item.Color,
+                              },
+                              { method: "post" },
+                            );
+                          }}
+                        />
+                      );
+                    })}
+                    {driveImages.map((item) => {
+                      return (
+                        <Image
+                          key={`courseimage${item.Image}`}
+                          data-test="Card Image Link"
+                          cursor="pointer"
+                          height="80px"
+                          width="80px"
+                          src={`/drive_pictures/${item.Image}`}
+                          objectFit="cover"
+                          onClick={() => {
+                            fetcher.submit(
+                              {
+                                _action: "Update Image",
+                                courseId: activeCourse.courseId,
+                                image: item.Image,
+                                color: "none",
+                              },
+                              { method: "post" },
+                            );
+                          }}
+                        />
+                      );
+                    })}
+                  </SimpleGrid>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+            {/* <Menu>
+              <MenuButton>
+                {activeCourse.color == "none" ? (
+                  <Image
+                    data-test="Card Image Link"
+                    height="134px"
+                    width="200px"
+                    src={`/drive_pictures/${activeCourse.image}`}
+                    objectFit="cover"
+                    borderTopRadius="md"
+                    cursor="pointer"
+                  />
+                ) : (
+                  <Box
+                    data-test="Card Color Link"
+                    height="134px"
+                    width="200px"
+                    background={`#${activeCourse.color}`}
+                    borderTopRadius="md"
+                    cursor="pointer"
+                  />
+                )}
+              </MenuButton>
+              <MenuList>
+                {driveColors.map((item) => {
+                  return (
+                    <MenuItem
+                      onClick={() => alert(item.Color)}
+                      key={`courseimage${item.Color}`}
+                    >
+                      <Box
+                        data-test="Card Color Link"
+                        height="40px"
+                        width="40px"
+                        background={`#${item.Color}`}
+                      />
+                      &nbsp;{item.Name}
+                    </MenuItem>
+                  );
+                })}
+                {driveImages.map((item) => {
+                  return (
+                    <MenuItem
+                      key={`courseimage${item.Image}`}
+                      onClick={() => alert(item.Image)}
+                    >
+                      <Image
+                        data-test="Card Image Link"
+                        height="40px"
+                        width="40px"
+                        src={`/drive_pictures/${item.Image}`}
+                        objectFit="cover"
+                      />
+                      &nbsp;{item.Name}
+                    </MenuItem>
+                  );
+                })}
+              </MenuList>
+            </Menu> */}
+            <ColorImagePicker
+              initialImage={activeCourse?.image}
+              initialColor={activeCourse?.color}
+              // imageCallback={(image) => {
+              // fetcher.submit(
+              //   {
+              //     _action: "Update Image",
+              //     courseId: activeCourse.courseId,
+              //     image,
+              //   },
+              //   { method: "post" },
+              // );
+              //   // modifyCourse({ image: newImage, color: "none" });
+              // }}
+              // colorCallback={(color) => {
+              //   fetcher.submit(
+              //     {
+              //       _action: "Update Color",
+              //       courseId: activeCourse.courseId,
+              //       color,
+              //     },
+              //     { method: "post" },
+              //   );
+              // modifyCourse({ color: newColor, image: "none" });
+              // }}
+            />
             <FormControl isRequired isInvalid={!newLabel}>
               <FormLabel htmlFor="username">New Course Label</FormLabel>
               <Input
@@ -384,400 +570,9 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 <FormErrorMessage>Course label is required.</FormErrorMessage>
               )}
             </FormControl>
-
-            <ColorImagePicker
-              initialImage={activeCourse?.image}
-              initialColor={activeCourse?.color}
-              imageCallback={(image) => {
-                fetcher.submit(
-                  {
-                    _action: "Update Image",
-                    courseId: activeCourse.courseId,
-                    image,
-                  },
-                  { method: "post" },
-                );
-                // modifyCourse({ image: newImage, color: "none" });
-              }}
-              colorCallback={(color) => {
-                fetcher.submit(
-                  {
-                    _action: "Update Color",
-                    courseId: activeCourse.courseId,
-                    color,
-                  },
-                  { method: "post" },
-                );
-                // modifyCourse({ color: newColor, image: "none" });
-              }}
-            />
           </Stack>
         </DrawerBody>
       </DrawerContent>
     </Drawer>
   );
 }
-
-// export function GeneralActivityControls({
-//   fetcher,
-//   courseId,
-//   doenetId,
-//   activityData,
-// }) {
-//   let { isPublic, label, imagePath: dataImagePath } = activityData;
-//   if (!isPublic && activityData?.public) {
-//     isPublic = activityData.public;
-//   }
-
-//   let numberOfFilesUploading = useRef(0);
-//   let [imagePath, setImagePath] = useState(dataImagePath);
-//   let [alerts, setAlerts] = useState([]);
-
-//   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-//     let learningOutcomesToSubmit = learningOutcomes;
-//     if (nextLearningOutcomes) {
-//       learningOutcomesToSubmit = nextLearningOutcomes;
-//     }
-
-//     let isPublicToSubmit = checkboxIsPublic;
-//     if (nextIsPublic) {
-//       isPublicToSubmit = nextIsPublic;
-//     }
-
-//     // Turn on/off label error messages and
-//     // use the latest valid label
-//     let labelToSubmit = labelValue;
-//     if (labelValue == "") {
-//       labelToSubmit = lastAcceptedLabelValue.current;
-//       setLabelIsInvalid(true);
-//     } else {
-//       if (labelIsInvalid) {
-//         setLabelIsInvalid(false);
-//       }
-//     }
-//     lastAcceptedLabelValue.current = labelToSubmit;
-//     let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-//     fetcher.submit(
-//       {
-//         _action: "update general",
-//         label: labelToSubmit,
-//         imagePath,
-//         public: isPublicToSubmit,
-//         learningOutcomes: serializedLearningOutcomes,
-//         doenetId,
-//       },
-//       { method: "post" },
-//     );
-//   }
-
-//   const onDrop = useCallback(
-//     async (files) => {
-//       let success = true;
-//       const file = files[0];
-//       if (files.length > 1) {
-//         success = false;
-//         //Should we just grab the first one and ignore the rest
-//         console.log("Only one file upload allowed!");
-//       }
-
-//       //Only upload one batch at a time
-//       if (numberOfFilesUploading.current > 0) {
-//         console.log(
-//           "Already uploading files.  Please wait before sending more.",
-//         );
-//         success = false;
-//       }
-
-//       //If any settings aren't right then abort
-//       if (!success) {
-//         return;
-//       }
-
-//       numberOfFilesUploading.current = 1;
-
-//       let image = await window.BrowserImageResizer.readAndCompressImage(file, {
-//         quality: 0.9,
-//         maxWidth: 350,
-//         maxHeight: 234,
-//         debug: true,
-//       });
-//       // const convertToBase64 = (blob) => {
-//       //   return new Promise((resolve) => {
-//       //     var reader = new FileReader();
-//       //     reader.onload = function () {
-//       //       resolve(reader.result);
-//       //     };
-//       //     reader.readAsDataURL(blob);
-//       //   });
-//       // };
-//       // let base64Image = await convertToBase64(image);
-//       // console.log("image",image)
-//       // console.log("base64Image",base64Image)
-
-//       //Upload files
-//       const reader = new FileReader();
-//       reader.readAsDataURL(image); //This one could be used with image source to preview image
-
-//       reader.onabort = () => {};
-//       reader.onerror = () => {};
-//       reader.onload = () => {
-//         const uploadData = new FormData();
-//         // uploadData.append('file',file);
-//         uploadData.append("file", image);
-//         uploadData.append("doenetId", doenetId);
-
-//         axios
-//           .post("/api/activityThumbnailUpload.php", uploadData)
-//           .then((resp) => {
-//             let { data } = resp;
-//             // console.log("RESPONSE data>", data);
-
-//             //uploads are finished clear it out
-//             numberOfFilesUploading.current = 0;
-//             let { success, cid, msg, asFileName } = data;
-//             if (success) {
-//               setImagePath(`/media/${cid}.jpg`);
-//               //Refresh images in portfolio
-//               fetcher.submit(
-//                 {
-//                   _action: "noop",
-//                 },
-//                 { method: "post" },
-//               );
-//               setAlerts([
-//                 {
-//                   type: "success",
-//                   id: cid,
-//                   title: "Activity thumbnail updated!",
-//                 },
-//               ]);
-//             } else {
-//               setAlerts([{ type: "error", id: cid, title: msg }]);
-//             }
-//           });
-//       };
-//     },
-//     [doenetId],
-//   );
-
-//   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-//   let learningOutcomesInit = activityData.learningOutcomes;
-//   if (learningOutcomesInit == null) {
-//     learningOutcomesInit = [""];
-//   }
-
-//   let [labelValue, setLabel] = useState(label);
-//   let lastAcceptedLabelValue = useRef(label);
-//   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
-
-//   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-//   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
-//   const { compileActivity, updateAssignItem } = useCourse(courseId);
-
-//   //TODO: Cypress is opening the drawer so fast
-//   //the activitieData is out of date
-//   //We need something like this. But this code sets learningOutcomes too often
-//   // useEffect(() => {
-//   //   setLearningOutcomes(learningOutcomesInit);
-//   // }, [learningOutcomesInit]);
-
-//   return (
-//     <>
-//       <AlertQueue alerts={alerts} />
-//       <Form method="post">
-//         <FormControl>
-//           <FormLabel>Thumbnail</FormLabel>
-//           <Box>
-//             {isDragActive ? (
-//               <VStack
-//                 spacing={4}
-//                 p="24px"
-//                 border="2px dashed #949494"
-//                 borderRadius="lg"
-//                 width="90%"
-//                 {...getRootProps()}
-//               >
-//                 <input {...getInputProps()} />
-
-//                 <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-//                 <Text color="#949494" fontSize="24pt">
-//                   Drop Image Here
-//                 </Text>
-//               </VStack>
-//             ) : (
-//               <Card
-//                 width="180px"
-//                 height="120px"
-//                 p="0"
-//                 m="0"
-//                 cursor="pointer"
-//                 {...getRootProps()}
-//               >
-//                 <input {...getInputProps()} />
-
-//                 <Image
-//                   height="120px"
-//                   maxWidth="180px"
-//                   src={imagePath}
-//                   alt="Activity Card Image"
-//                   borderTopRadius="md"
-//                   objectFit="cover"
-//                 />
-//               </Card>
-//             )}
-//           </Box>
-//         </FormControl>
-
-//         <FormControl isRequired isInvalid={labelIsInvalid}>
-//           <FormLabel mt="16px">Label</FormLabel>
-
-//           <Input
-//             name="label"
-//             size="sm"
-//             // width="392px"
-//             width="100%"
-//             placeholder="Activity 1"
-//             data-test="Activity Label"
-//             value={labelValue}
-//             onChange={(e) => {
-//               setLabel(e.target.value);
-//             }}
-//             onBlur={saveDataToServer}
-//             onKeyDown={(e) => {
-//               if (e.key == "Enter") {
-//                 saveDataToServer();
-//               }
-//             }}
-//           />
-//           <FormErrorMessage>
-//             Error - A label for the activity is required.
-//           </FormErrorMessage>
-//         </FormControl>
-//         <FormControl>
-//           <Flex flexDirection="column" width="100%" rowGap={6}>
-//             <FormLabel mt="16px">Learning Outcomes</FormLabel>
-
-//             {learningOutcomes.map((outcome, i) => {
-//               return (
-//                 <Flex key={`learningOutcome${i}`} columnGap={4}>
-//                   <Input
-//                     size="sm"
-//                     value={outcome}
-//                     data-test={`learning outcome ${i}`}
-//                     // width="300px"
-//                     onChange={(e) => {
-//                       setLearningOutcomes((prev) => {
-//                         let next = [...prev];
-//                         next[i] = e.target.value;
-//                         return next;
-//                       });
-//                     }}
-//                     onBlur={() =>
-//                       saveDataToServer({
-//                         nextLearningOutcomes: learningOutcomes,
-//                       })
-//                     }
-//                     onKeyDown={(e) => {
-//                       if (e.key == "Enter") {
-//                         saveDataToServer({
-//                           nextLearningOutcomes: learningOutcomes,
-//                         });
-//                       }
-//                     }}
-//                     placeholder={`Learning Outcome #${i + 1}`}
-//                     data-text={`Learning Outcome #${i}`}
-//                   />
-//                   <IconButton
-//                     variant="outline"
-//                     data-test={`delete learning outcome ${i} button`}
-//                     size="sm"
-//                     color="doenet.mainRed"
-//                     borderColor="doenet.mainRed"
-//                     // background="doenet.mainRed"
-//                     icon={<HiOutlineX />}
-//                     onClick={() => {
-//                       let nextLearningOutcomes = [...learningOutcomes];
-//                       if (learningOutcomes.length < 2) {
-//                         nextLearningOutcomes = [""];
-//                       } else {
-//                         nextLearningOutcomes.splice(i, 1);
-//                       }
-
-//                       setLearningOutcomes(nextLearningOutcomes);
-//                       saveDataToServer({ nextLearningOutcomes });
-//                     }}
-//                   />
-//                 </Flex>
-//               );
-//             })}
-
-//             <Center>
-//               <IconButton
-//                 isDisabled={learningOutcomes.length > 9}
-//                 data-test={`add a learning outcome button`}
-//                 variant="outline"
-//                 width="80%"
-//                 size="xs"
-//                 icon={<HiPlus />}
-//                 onClick={() => {
-//                   let nextLearningOutcomes = [...learningOutcomes];
-//                   if (learningOutcomes.length < 9) {
-//                     nextLearningOutcomes.push("");
-//                   }
-
-//                   setLearningOutcomes(nextLearningOutcomes);
-//                   saveDataToServer({ nextLearningOutcomes });
-//                 }}
-//               />
-//             </Center>
-//           </Flex>
-//         </FormControl>
-//         <FormControl>
-//           <FormLabel mt="16px">Visibility</FormLabel>
-
-//           <Checkbox
-//             size="lg"
-//             data-test="Public Checkbox"
-//             name="public"
-//             value="on"
-//             isChecked={checkboxIsPublic == "1"}
-//             onChange={(e) => {
-//               let nextIsPublic = "0";
-//               if (e.target.checked) {
-//                 nextIsPublic = "1";
-//                 //Process making activity public here
-//                 compileActivity({
-//                   activityDoenetId: doenetId,
-//                   isAssigned: true,
-//                   courseId,
-//                   activity: {
-//                     version: activityData.version,
-//                     isSinglePage: true,
-//                     content: activityData.content,
-//                   },
-//                   // successCallback: () => {
-//                   //   addToast('Activity Assigned.', toastType.INFO);
-//                   // },
-//                 });
-//                 updateAssignItem({
-//                   doenetId,
-//                   isAssigned: true,
-//                   successCallback: () => {
-//                     //addToast(assignActivityToast, toastType.INFO);
-//                   },
-//                 });
-//               }
-//               setCheckboxIsPublic(nextIsPublic);
-//               saveDataToServer({ nextIsPublic });
-//             }}
-//           >
-//             Public
-//           </Checkbox>
-//         </FormControl>
-//         <input type="hidden" name="imagePath" value={imagePath} />
-//         <input type="hidden" name="_action" value="update general" />
-//       </Form>
-//     </>
-//   );
-// }
