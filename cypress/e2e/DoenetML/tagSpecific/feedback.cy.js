@@ -2938,4 +2938,110 @@ describe("Feedback Tag Tests", function () {
     cy.get(cesc("#\\/_li2") + " .mjx-mrow").should("contain.text", "y");
     cy.get(cesc("#\\/fb")).should("have.text", "You answered at least twice");
   });
+
+  it("feedback from numSubmissions", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p><answer name="ans">x</answer></p>
+  <feedback condition="$ans.numSubmissions > 1">
+    <p name="pSub">You answered more than once!</p>
+  </feedback>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/ans"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputCorrect = cesc2("#" + mathinputName + "_correct");
+      let mathinputIncorrect = cesc2("#" + mathinputName + "_incorrect");
+
+      cy.log("Test value displayed in browser");
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get(cesc2("#/pSub")).should("not.exist");
+
+      cy.log("Submit first time");
+      cy.get(mathinputAnchor).type(`x{enter}`, { force: true });
+      cy.get(mathinputCorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should("not.exist");
+
+      cy.log("Submit second time");
+      cy.get(mathinputAnchor).type(`{end}{backspace}y{enter}`, { force: true });
+      cy.get(mathinputIncorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should(
+        "have.text",
+        "You answered more than once!",
+      );
+
+      cy.log("Submit third time");
+      cy.get(mathinputAnchor).type(`{end}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputCorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should(
+        "have.text",
+        "You answered more than once!",
+      );
+    });
+  });
+
+  it("feedback with deprecation shim for nSubmissions", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p><answer name="ans">x</answer></p>
+  <feedback condition="$ans.nSubmissions > 1">
+    <p name="pSub">You answered more than once!</p>
+  </feedback>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/ans"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputCorrect = cesc2("#" + mathinputName + "_correct");
+      let mathinputIncorrect = cesc2("#" + mathinputName + "_incorrect");
+
+      cy.log("Test value displayed in browser");
+      // cy.get(mathinputAnchor).should('have.value', '');
+      cy.get(cesc2("#/pSub")).should("not.exist");
+
+      cy.log("Submit first time");
+      cy.get(mathinputAnchor).type(`x{enter}`, { force: true });
+      cy.get(mathinputCorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should("not.exist");
+
+      cy.log("Submit second time");
+      cy.get(mathinputAnchor).type(`{end}{backspace}y{enter}`, { force: true });
+      cy.get(mathinputIncorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should(
+        "have.text",
+        "You answered more than once!",
+      );
+
+      cy.log("Submit third time");
+      cy.get(mathinputAnchor).type(`{end}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputCorrect).should("be.visible");
+      cy.get(cesc2("#/pSub")).should(
+        "have.text",
+        "You answered more than once!",
+      );
+    });
+  });
 });
