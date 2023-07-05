@@ -23,54 +23,65 @@ describe("Share Activities Using Portfolio", function () {
 
   it("Portfolio Settings Menu", () => {
     const label = "ShareActivites Portfolio Settings Menu";
-    try {
-      cy.get('[data-test="Portfolio"]').click();
+    cy.deletePortfolioActivity({ userId, label });
 
-      cy.log("Create an activity");
-      cy.get('[data-test="Add Activity"]').click();
+    cy.get('[data-test="Portfolio"]').click();
 
-      cy.get(".cm-content").type(
-        `<p>What is your name? <textinput name="name" /></p>{enter}`,
-      );
+    cy.log("Create an activity");
+    cy.get('[data-test="Add Activity"]').click();
 
-      cy.get(
-        '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
-      ).click();
-      cy.get(
-        '[data-test="Activity Label Editable"] [data-test="Editable Input"]',
-      )
-        .type(label)
-        .blur();
+    cy.get(".cm-content").type(
+      `<p>What is your name? <textinput name="name" /></p>{enter}`,
+    );
 
-      cy.get('[data-test="Portfolio"]').click();
+    cy.get(
+      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
+    ).click();
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
+      .type(label)
+      .blur();
 
-      cy.get('[data-test="Private Activities"]').contains(label);
-      cy.get('[data-test="Public Activities"]').should("not.contain", label);
+    cy.get('[data-test="Portfolio"]').click();
 
-      cy.get('[data-test="Private Activities"]')
-        .contains(label)
-        .get('[data-test="Card Menu Button"]')
-        .click();
-      cy.get('[data-test="Settings Menu Item"]').click();
+    cy.get('[data-test="Private Activities"]').contains(label);
+    cy.get('[data-test="Public Activities"]').should("not.contain", label);
 
-      cy.get('[data-test="Public Checkbox"]').click();
+    cy.get('[data-test="Private Activities"]')
+      .contains(label)
+      .parent()
+      .parent()
+      .find('[data-test="Card Menu Button"]')
+      .click()
+      .parent()
+      .find('[data-test="Settings Menu Item"]')
+      .click();
 
-      cy.get(".chakra-modal__close-btn").click();
-      // // cy.get('[data-test="Close Settings Button"]').click(); //TODO use data-test
+    cy.get('[data-test="Public Checkbox"]').click();
 
-      cy.get('[data-test="Public Activities"]').contains(label);
-      cy.get('[data-test="Private Activities"]').should("not.contain", label);
-    } finally {
-      cy.deletePortfolioActivity({ userId, label });
-    }
+    cy.get(".chakra-modal__close-btn").click();
+    // // cy.get('[data-test="Close Settings Button"]').click(); //TODO use data-test
+
+    cy.get('[data-test="Public Activities"]').contains(label);
+    cy.get('[data-test="Private Activities"]').should("not.contain", label);
   });
 
   it("Share activities and remix", () => {
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId: userId2 });
-    cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.clearAllOfAUsersActivities({ userId: userId2 });
+    let labelPrefix = "Share activities and remix";
+    let helloLabel = `${labelPrefix}: Hello!`;
+    let stayPrivateLabel = `${labelPrefix}: Stay private`;
+
+    // Note: create unique user ids for this test
+    // so that can clear out all content for these ids
+    // without affecting other tests that may be running in parallel
+    let user1 = "cyShareActUser1";
+    let user2 = "cyShareActUser2";
+    cy.signin({ userId: user2, firstName: "C", lastName: "D" });
+    cy.signin({ userId: user1, firstName: "A", lastName: "B" });
+    cy.visit(`/`);
+    cy.clearAllOfAUsersCoursesAndItems({ userId: user1 });
+    cy.clearAllOfAUsersCoursesAndItems({ userId: user2 });
+    cy.clearAllOfAUsersActivities({ userId: user1 });
+    cy.clearAllOfAUsersActivities({ userId: user2 });
 
     cy.get('[data-test="Portfolio"]').click();
 
@@ -144,11 +155,11 @@ describe("Share Activities Using Portfolio", function () {
     ).click();
     cy.get('[data-test="Settings Menu Item"]').click();
 
-    cy.get('[data-test="Activity Label"]').clear().type("Hello!").blur();
+    cy.get('[data-test="Activity Label"]').clear().type(helloLabel).blur();
 
     cy.get('[data-test="Public Activities"] [data-test="Activity Card"]')
       .eq(0)
-      .should("contain.text", "Hello!");
+      .should("contain.text", helloLabel);
 
     cy.get(".chakra-modal__close-btn").click(); //Couldn't figure out data-test on this one
 
@@ -174,7 +185,10 @@ describe("Share Activities Using Portfolio", function () {
 
     cy.get('[data-test="Controls Button"]').click();
 
-    cy.get('[data-test="Activity Label"]').clear().type("Stay private").blur();
+    cy.get('[data-test="Activity Label"]')
+      .clear()
+      .type(stayPrivateLabel)
+      .blur();
     cy.get(".chakra-modal__close-btn").click();
 
     cy.get('[data-test="Portfolio"]').click();
@@ -187,17 +201,17 @@ describe("Share Activities Using Portfolio", function () {
     ).should("have.length", 1);
 
     cy.log("Log on as other user");
-    cy.signin({ userId: userId2 });
+    cy.signin({ userId: user2 });
 
     cy.visit(`/`);
 
     cy.log("Cannot find private activity Stay Private");
     cy.get('[data-test="Community"]').click();
-    cy.get('[data-test="Search"]').type("Stay Private{enter}");
+    cy.get('[data-test="Search"]').type(`${stayPrivateLabel}{enter}`);
 
     cy.get('[data-test="Search Results For"]').should(
       "have.text",
-      "Stay Private",
+      stayPrivateLabel,
     );
     cy.get('[data-test="Search Results"] [data-test="Activity Card"]').should(
       "have.length",
@@ -208,8 +222,8 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Search"]')
       .clear()
       .should("have.value", "")
-      .type("Hello!{enter}");
-    cy.get('[data-test="Search Results For"]').should("have.text", "Hello!");
+      .type(`${helloLabel}{enter}`);
+    cy.get('[data-test="Search Results For"]').should("have.text", helloLabel);
 
     cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"] ')
       .eq(0)
@@ -279,7 +293,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, Dad!");
 
     cy.log("Log back in as first user");
-    cy.signin({ userId });
+    cy.signin({ userId: user1 });
     cy.visit(`/`);
 
     cy.log("Verify activity is unchanged with draft content");
@@ -300,13 +314,13 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, Sis!");
 
     cy.log("Log back in as second user");
-    cy.signin({ userId: userId2 });
+    cy.signin({ userId: user2 });
     cy.visit(`/`);
 
     cy.log("Find new version of public activity Hello!");
     cy.get('[data-test="Community"]').click();
 
-    cy.get('[data-test="Search"]').type("Hello!{enter}");
+    cy.get('[data-test="Search"]').type(`${helloLabel}{enter}`);
     cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"] ')
       .eq(0)
       .click();
@@ -371,82 +385,210 @@ describe("Share Activities Using Portfolio", function () {
 
   it("View solution in portfolio", () => {
     const label = "View solution in portfolio";
-    try {
-      cy.get('[data-test="Portfolio"]').click();
+    cy.deletePortfolioActivity({ userId, label });
 
-      cy.log("Create an activity with a solution");
-      cy.get('[data-test="Add Activity"]').click();
+    cy.get('[data-test="Portfolio"]').click();
 
-      cy.get(".cm-content").type(
-        `<p>What is 1+1?</p>{enter}<solution name="sol"><number name="ans">2</number></solution>`,
-      );
+    cy.log("Create an activity with a solution");
+    cy.get('[data-test="Add Activity"]').click();
 
-      cy.get(
-        '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
-      ).click();
-      cy.get(
-        '[data-test="Activity Label Editable"] [data-test="Editable Input"]',
-      )
-        .type(label)
-        .blur();
+    cy.get(".cm-content").type(
+      `<p>What is 1+1?</p>{enter}<solution name="sol"><number name="ans">2</number></solution>`,
+    );
 
-      cy.get('[data-test="Viewer Update Button"]').click();
+    cy.get(
+      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
+    ).click();
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
+      .type(label)
+      .blur();
 
-      cy.get(cesc2("#/_p1")).should("have.text", "What is 1+1?");
+    cy.get('[data-test="Viewer Update Button"]').click();
 
-      cy.get(cesc2("#/ans")).should("not.exist");
+    cy.get(cesc2("#/_p1")).should("have.text", "What is 1+1?");
 
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("have.text", "2");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("not.exist");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("have.text", "2");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("not.exist");
+    cy.get(cesc2("#/ans")).should("not.exist");
 
-      cy.get('[data-test="Portfolio"]').click();
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("have.text", "2");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("not.exist");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("have.text", "2");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("not.exist");
 
-      cy.get('[data-test="Private Activities"]').contains(label);
-      cy.get('[data-test="Public Activities"]').should("not.contain", label);
+    cy.get('[data-test="Portfolio"]').click();
 
-      cy.get('[data-test="Private Activities"]')
-        .contains(label)
-        .get('[data-test="Card Menu Button"]')
-        .click();
-      cy.get('[data-test="Settings Menu Item"]').click();
+    cy.get('[data-test="Private Activities"]')
+      .contains(label)
+      .parent()
+      .parent()
+      .find('[data-test="Card Menu Button"]')
+      .click()
+      .parent()
+      .find('[data-test="Settings Menu Item"]')
+      .click();
 
-      cy.get('[data-test="Public Checkbox"]').click();
+    cy.get('[data-test="Public Checkbox"]').click();
 
-      cy.get(".chakra-modal__close-btn").click();
-      // // cy.get('[data-test="Close Settings Button"]').click(); //TODO use data-test
+    cy.get(".chakra-modal__close-btn").click();
+    // // cy.get('[data-test="Close Settings Button"]').click(); //TODO use data-test
 
-      cy.get('[data-test="Public Activities"]').contains(label);
-      cy.get('[data-test="Private Activities"]').should("not.contain", label);
+    cy.get('[data-test="Public Activities"]').contains(label);
+    cy.get('[data-test="Private Activities"]').should("not.contain", label);
 
-      cy.get("[data-test=Community").click();
-      cy.get("[data-test=Search]").type(label + "{enter}");
+    cy.get("[data-test=Community").click();
+    cy.get("[data-test=Search]").type(label + "{enter}");
 
-      cy.get('[data-test="Results All Matches"]')
-        .contains(label)
-        .get('[data-test="Card Image Link"]')
-        .eq(0)
-        .click();
+    cy.get('[data-test="Results All Matches"]')
+      .contains(label)
+      .get('[data-test="Card Image Link"]')
+      .eq(0)
+      .click();
 
-      cy.get(cesc2("#/_p1")).should("have.text", "What is 1+1?");
+    cy.get(cesc2("#/_p1")).should("have.text", "What is 1+1?");
 
-      cy.get(cesc2("#/ans")).should("not.exist");
+    cy.get(cesc2("#/ans")).should("not.exist");
 
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("have.text", "2");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("not.exist");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("have.text", "2");
-      cy.get(cesc2("#/sol_button")).click();
-      cy.get(cesc2("#/ans")).should("not.exist");
-    } finally {
-      cy.deletePortfolioActivity({ userId, label });
-    }
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("have.text", "2");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("not.exist");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("have.text", "2");
+    cy.get(cesc2("#/sol_button")).click();
+    cy.get(cesc2("#/ans")).should("not.exist");
+  });
+
+  it("Links in portfolios", () => {
+    const label1 = "Links in portfolios: linking page";
+    const label2 = "Links in portfolios: linked page";
+    cy.deletePortfolioActivity({ userId, label: label1 });
+    cy.deletePortfolioActivity({ userId, label: label2 });
+
+    cy.get('[data-test="Portfolio"]').click();
+
+    cy.log("Create an activity that will be linked to");
+    cy.get('[data-test="Add Activity"]').click();
+
+    cy.get(".cm-content").type(`<p name="theP">Link to this page!</p>`);
+
+    let linkedDoenetId;
+
+    cy.url().then((url) => {
+      linkedDoenetId = url.match(/portfolioeditor\/(\w*)/)[1];
+    });
+
+    cy.get(
+      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
+    ).click();
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
+      .type(label2)
+      .blur();
+
+    cy.get('[data-test="Portfolio"]').click();
+
+    cy.get('[data-test="Private Activities"]')
+      .contains(label2)
+      .parent()
+      .parent()
+      .find('[data-test="Card Menu Button"]')
+      .click()
+      .parent()
+      .find('[data-test="Make Public Menu Item"]')
+      .click();
+
+    cy.get('[data-test="Public Activities"]').contains(label2);
+    cy.get('[data-test="Private Activities"]').should("not.contain", label2);
+
+    cy.log("Create an activity that will link to other activity");
+    cy.get('[data-test="Add Activity"]')
+      .click()
+      .then(() => {
+        cy.get(".cm-content").type(
+          `<p>We have a <ref name="toDoc" uri="doenet:doenetId=${linkedDoenetId}">link to the activity</ref>.</p>
+<p>We have a <ref name="toDocEdit" uri="doenet:doenetId=${linkedDoenetId}&edit=true">edit link to the activity</ref>.</p>`,
+        );
+      });
+
+    cy.get(
+      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
+    ).click();
+    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
+      .type(label1)
+      .blur();
+
+    cy.get('[data-test="Viewer Update Button"]').click();
+
+    cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "portfolioviewer");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
+
+    cy.go("back");
+
+    cy.get(cesc2("#/toDocEdit")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "portfolioeditor");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
+
+    cy.go("back");
+
+    cy.get('[data-test="Portfolio"]').click();
+
+    cy.get('[data-test="Private Activities"]')
+      .contains(label1)
+      .parent()
+      .parent()
+      .find('[data-test="Card Menu Button"]')
+      .click()
+      .parent()
+      .find('[data-test="Make Public Menu Item"]')
+      .click();
+
+    cy.log("Test links from community page");
+    cy.get("[data-test=Community").click();
+    cy.get("[data-test=Search]").type(label1 + "{enter}");
+
+    cy.get('[data-test="Results All Matches"]')
+      .contains(label1)
+      .get('[data-test="Card Image Link"]')
+      .eq(0)
+      .click();
+
+    cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "portfolioviewer");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
+
+    cy.go("back");
+
+    cy.get(cesc2("#/toDocEdit")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "portfolioeditor");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
+
+    cy.log("Log on as other user");
+    cy.signin({ userId: userId2 });
+
+    cy.visit(`/`);
+
+    cy.log("Test links from community page");
+    cy.get("[data-test=Community").click();
+    cy.get("[data-test=Search]").type(label1 + "{enter}");
+
+    cy.get('[data-test="Results All Matches"]')
+      .contains(label1)
+      .get('[data-test="Card Image Link"]')
+      .eq(0)
+      .click();
+
+    cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "portfolioviewer");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
+
+    cy.go("back");
+
+    cy.log("Edit link should go to public editor");
+    cy.get(cesc2("#/toDocEdit")).invoke("removeAttr", "target").click();
+    cy.url().should("contain", "publiceditor");
+    cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
   });
 });

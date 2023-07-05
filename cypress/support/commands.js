@@ -87,12 +87,17 @@ Cypress.Commands.add("setUserUpload", ({ userId, newValue = "1" }) => {
   );
 });
 
-Cypress.Commands.add("signin", ({ userId }) => {
-  cy.request(`/cyapi/cypressAutoSignin.php?userId=${userId}`);
-  // .then((resp)=>{
-  //   cy.log("signin",resp.body)
-  // })
-});
+Cypress.Commands.add(
+  "signin",
+  ({ userId, firstName = "first", lastName = "last" }) => {
+    cy.request(
+      `/cyapi/cypressAutoSignin.php?userId=${userId}&firstName=${firstName}&lastName=${lastName}`,
+    );
+    // .then((resp)=>{
+    //   cy.log("signin",resp.body)
+    // })
+  },
+);
 
 Cypress.Commands.add(
   "saveDoenetML",
@@ -148,21 +153,18 @@ Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
   // })
 });
 
-Cypress.Commands.add(
-  "deletePortfolioActivity",
-  ({ userId, label }) => {
-    cy.task(
-      "queryDb",
-      `DELETE cc
+Cypress.Commands.add("deletePortfolioActivity", ({ userId, label }) => {
+  cy.task(
+    "queryDb",
+    `DELETE cc
       FROM course_content AS cc
       LEFT JOIN course AS c
       ON cc.courseId = c.courseId
       WHERE cc.label = '${label}'
       AND c.portfolioCourseForUserId = '${userId}'
       `,
-    )
-  },
-);
+  );
+});
 
 Cypress.Commands.add(
   "createActivity",

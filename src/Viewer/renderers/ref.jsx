@@ -52,7 +52,7 @@ export default React.memo(function Ref(props) {
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
-  let { search } = useLocation();
+  let { search, pathname } = useLocation();
   let navigate = useNavigate();
 
   if (SVs.hidden) {
@@ -75,6 +75,7 @@ export default React.memo(function Ref(props) {
     targetName: SVs.targetName,
     pageToolView,
     inCourse: Object.keys(itemInCourse).length > 0,
+    pathname,
     search,
     id,
   });
