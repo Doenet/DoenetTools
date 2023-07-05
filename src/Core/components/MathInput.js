@@ -830,26 +830,12 @@ export default class MathInput extends Input {
           },
         ];
 
-        if (immediateValue.tree !== "\uff3f") {
-          updateInstructions.push({
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "rawRendererValue",
-            valueOfStateVariable: "valueForDisplay",
-          });
-        } else {
-          // since have invalid math,
-          // don't update rawRendererValue,
-          // but only update lastValueForDisplay to keep it in sync
-          // (lastValueForDisplay is also update if set rawRendererValue to math
-          // as above)
-          updateInstructions.push({
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "lastValueForDisplay",
-            valueOfStateVariable: "valueForDisplay",
-          });
-        }
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          valueOfStateVariable: "valueForDisplay",
+        });
 
         let event = {
           verb: "answered",
