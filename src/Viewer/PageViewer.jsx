@@ -358,7 +358,7 @@ export default function PageViewer(props) {
   useEffect(() => {
     callAction({
       action: { actionName: "setTheme" },
-      args: { theme: darkMode },
+      args: { theme: darkMode, doNotIgnore: true },
     });
   }, [darkMode]);
 
@@ -372,6 +372,7 @@ export default function PageViewer(props) {
       cancelAnimationFrame(id);
     }
     animationInfo.current = {};
+    actionsBeforeCoreCreated.current = [];
   }
 
   async function callAction({
@@ -391,11 +392,14 @@ export default function PageViewer(props) {
     if (
       !coreCreated.current &&
       (ignoreActionsWithoutCore?.(action.actionName) ||
-        !coreCreationInProgress.current)
+        !coreCreationInProgress.current) &&
+      !args?.doNotIgnore
     ) {
       // The action is being skipped because core has not been created
       // and either the action must be ignored without core or core isn't actually
-      // in the process of being created (relevant case is that core has been terminated)
+      // in the process of being created (relevant case is that core has been terminated).
+      // Also, don't ignore if the doNotIgnore argument has been set
+      // (used for actions called directly from PageViewer for initialization)
 
       if (promiseResolve) {
         // if were given promiseResolve, then action was called from resolveAction
@@ -809,6 +813,7 @@ export default function PageViewer(props) {
               componentName:
                 localInfo.rendererState.__componentNeedingUpdateValue,
             },
+            args: { doNotIgnore: true },
           });
         }
 
@@ -1011,7 +1016,6 @@ export default function PageViewer(props) {
       terminateCoreAndAnimations();
     }
 
-    actionsBeforeCoreCreated.current = [];
     resolveActionPromises.current = {};
 
     // console.log(`send message to create core ${pageNumber}`)
