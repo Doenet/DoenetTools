@@ -2518,6 +2518,9 @@ export default class Core {
       componentInfoObjects: this.componentInfoObjects,
       compositeAttributesObj: component.constructor.createAttributesObject(),
       flags: this.flags,
+      components: this._components,
+      publicCaseInsensitiveAliasSubstitutions:
+        this.publicCaseInsensitiveAliasSubstitutions.bind(this),
     });
 
     serializedReplacements = verificationResult.replacements;
@@ -3552,6 +3555,7 @@ export default class Core {
         stateVarDef.inverseDefinition = async function ({
           desiredStateVariableValues,
           dependencyValues,
+          usedDefault,
           stateValues,
           workspace,
         }) {
@@ -3684,9 +3688,24 @@ export default class Core {
           setDefault = true;
         }
 
+        let targetVariableIsArray =
+          targetComponent.state[redefineDependencies.propVariable].isArray;
+
         if (stateDef.set) {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
-            let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
+            let targetVariable = dependencyValues.targetVariable;
+            if (
+              targetVariable === undefined ||
+              (targetVariableIsArray && targetVariable.length === 0)
+            ) {
+              // allow for case where we depend on array entry that does not yet exist
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true,
+                },
+              };
+            }
+            let valueFromTarget = stateDef.set(targetVariable);
             if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
@@ -3704,19 +3723,30 @@ export default class Core {
           };
         } else {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            let targetVariable = dependencyValues.targetVariable;
+            if (
+              targetVariable === undefined ||
+              (targetVariableIsArray && targetVariable.length === 0)
+            ) {
+              // allow for case where we depend on array entry that does not yet exist
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true,
+                },
+              };
+            }
             if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
                   [primaryStateVariableForDefinition]: {
-                    defaultValue: dependencyValues.targetVariable,
+                    defaultValue: targetVariable,
                   },
                 },
               };
             }
             return {
               setValue: {
-                [primaryStateVariableForDefinition]:
-                  dependencyValues.targetVariable,
+                [primaryStateVariableForDefinition]: targetVariable,
               },
             };
           };
@@ -5404,16 +5434,16 @@ export default class Core {
 
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
 
-        // only include array keys that exist
-        // unless given a Javascript array
-        let newDesiredStateVariableValues = {};
-        for (let vName in args.desiredStateVariableValues) {
-          if (Array.isArray(args.desiredStateVariableValues[vName])) {
-            newDesiredStateVariableValues[vName] =
-              args.desiredStateVariableValues[vName];
-          } else {
+        if (!stateVarObj.allowExtraArrayKeysInInverse) {
+          // by default, inverseArrayDefinitionByKey does not need to be
+          // programmed defensively against arrayKeys that don't exist
+          // as they are filtered out here.
+          // However, if allowExtraArrayKeysInInverse, then we skip this
+          // filtering to allow the possibility that the array size
+          // could be changed.
+          let newDesiredStateVariableValues = {};
+          for (let vName in args.desiredStateVariableValues) {
             newDesiredStateVariableValues[vName] = {};
-
             for (let key in args.desiredStateVariableValues[vName]) {
               if (args.arrayKeys.includes(key)) {
                 newDesiredStateVariableValues[vName][key] =
@@ -5421,25 +5451,8 @@ export default class Core {
               }
             }
           }
+          args.desiredStateVariableValues = newDesiredStateVariableValues;
         }
-        args.desiredStateVariableValues = newDesiredStateVariableValues;
-
-        // args.arraySize = stateVarObj.arraySize;
-
-        // let arrayKeysToInvert = [];
-        // for (let arrayKey of args.arrayKeys) {
-        //   // only invert if
-        //   // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
-        //   if (foundAllDependencyValuesForKey[arrayKey]) {
-        //     arrayKeysToInvert.push(arrayKey);
-        //   }
-        // }
-
-        // if (arrayKeysToInvert.length === 0) {
-        //   return {};
-        // }
-
-        // args.arrayKeys = arrayKeysToInvert;
 
         let result = stateVarObj.inverseArrayDefinitionByKey(args);
         // console.log(`result of inverse definition of array`)
@@ -10523,6 +10536,23 @@ export default class Core {
               if (depStateVarObj.isArrayEntry) {
                 let arrayKeys = await depStateVarObj.arrayKeys;
 
+                if (arrayKeys.length === 0) {
+                  // To allow for the possibility of setting array components
+                  // that don't yet exist, we recompute the array keys
+                  // under the scenario that we ignore the array size.
+                  // Unless allowExtraArrayKeysInInverse is set, any extra keys will be
+                  // filtered out, so add them only in this case.
+                  let depArrayStateVarObj =
+                    this._components[dComponentName].state[arrayStateVariable];
+                  if (depArrayStateVarObj.allowExtraArrayKeysInInverse) {
+                    arrayKeys = depArrayStateVarObj.getArrayKeysFromVarName({
+                      arrayEntryPrefix: depStateVarObj.entryPrefix,
+                      varEnding: depStateVarObj.varEnding,
+                      numDimensions: depArrayStateVarObj.numDimensions,
+                    });
+                  }
+                }
+
                 if (arrayKeys.length === 1) {
                   arrayInstructionInProgress.desiredValue[arrayKeys[0]] =
                     newInstruction.desiredValue;
@@ -10537,10 +10567,24 @@ export default class Core {
                   depStateVarObj.numDimensions === 1 ||
                   !Array.isArray(newInstruction.desiredValue)
                 ) {
-                  Object.assign(
-                    arrayInstructionInProgress.desiredValue,
-                    newInstruction.desiredValue,
-                  );
+                  if (
+                    typeof newInstruction.desiredValue === "object" &&
+                    !(newInstruction.desiredValue instanceof me.class)
+                  ) {
+                    Object.assign(
+                      arrayInstructionInProgress.desiredValue,
+                      newInstruction.desiredValue,
+                    );
+                  } else {
+                    // If the desired value isn't a non math-expression object,
+                    // then it is clearly not in the form {arrayKey:value}.
+                    // Since we don't have an arrayKey, just set the first array key in the array.
+                    let firstArrayKey = Array(depStateVarObj.numDimensions)
+                      .fill("0")
+                      .join(",");
+                    arrayInstructionInProgress.desiredValue[firstArrayKey] =
+                      newInstruction.desiredValue;
+                  }
                 } else {
                   // need to convert multidimensional array (newInstruction.desiredValue)
                   // to an object with multidimesional arrayKeys

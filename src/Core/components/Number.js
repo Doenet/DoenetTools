@@ -335,6 +335,7 @@ export default class NumberComponent extends InlineComponent {
         },
       },
       hasEssential: true,
+      defaultValue: NaN,
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.singleNumberOrStringChild) {
