@@ -153,7 +153,7 @@ export default function PageViewer(props) {
   const animationInfo = useRef({});
 
   const resolveActionPromises = useRef({});
-  const lastSkippedAction = useRef(null);
+  const actionTentativelySkipped = useRef(null);
 
   const prefixForIds = props.prefixForIds || "";
 
@@ -383,7 +383,7 @@ export default function PageViewer(props) {
     promiseResolve,
   }) {
     // Note: the reason we check both the renderer class and .type
-    // is that if the renderer was memoized, then the renderer class itself in on .type,
+    // is that if the renderer was memoized, then the renderer class itself is on .type,
     // Otherwise, the renderer class is the value of the rendererClasses entry.
     let ignoreActionsWithoutCore =
       rendererClasses.current[rendererType]?.ignoreActionsWithoutCore ||
@@ -410,11 +410,11 @@ export default function PageViewer(props) {
       }
     }
 
-    if (lastSkippedAction.current) {
-      // we are for sure skipping the lastSkippedAction,
+    if (actionTentativelySkipped.current) {
+      // we are for sure skipping the actionTentativelySkipped,
       // so resolve its promise as false
-      lastSkippedAction.current.promiseResolve(false);
-      lastSkippedAction.current = null;
+      actionTentativelySkipped.current.promiseResolve(false);
+      actionTentativelySkipped.current = null;
     }
 
     if (args?.skippable) {
@@ -439,7 +439,7 @@ export default function PageViewer(props) {
           });
         }
 
-        lastSkippedAction.current = {
+        actionTentativelySkipped.current = {
           action,
           args,
           baseVariableValue,
@@ -630,7 +630,7 @@ export default function PageViewer(props) {
             childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
             // Note: the reason we check both the renderer class and .type
-            // is that if the renderer was memoized, then the renderer class itself in on .type,
+            // is that if the renderer was memoized, then the renderer class itself is on .type,
             // Otherwise, the renderer class is the value of the rendererClasses entry.
             baseStateVariable:
               rendererClasses.current[rendererType]?.baseStateVariable ||
@@ -649,9 +649,12 @@ export default function PageViewer(props) {
       resolveActionPromises.current[actionId]?.(true);
       delete resolveActionPromises.current[actionId];
 
-      if (lastSkippedAction.current) {
-        let actionToCall = lastSkippedAction.current;
-        lastSkippedAction.current = null;
+      if (
+        actionTentativelySkipped.current &&
+        Object.keys(resolveActionPromises.current).length === 0
+      ) {
+        let actionToCall = actionTentativelySkipped.current;
+        actionTentativelySkipped.current = null;
         callAction(actionToCall);
       }
     }
