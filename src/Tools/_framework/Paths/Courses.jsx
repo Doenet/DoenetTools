@@ -121,7 +121,7 @@ export function Courses() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
-  const [activeCourse, setActiveCourse] = useState({});
+  const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
   let optimisticCourses = [...courses];
 
@@ -157,13 +157,13 @@ export function Courses() {
   return (
     <>
       <DuplicateDrawer
-        activeCourse={activeCourse}
+        activeCourse={optimisticCourses[activeCourseIndex]}
         fetcher={fetcher}
         isOpen={duplicateIsOpen}
         onClose={duplicateOnClose}
       />
       <CourseSettingsDrawer
-        activeCourse={activeCourse}
+        activeCourse={optimisticCourses[activeCourseIndex]}
         fetcher={fetcher}
         isOpen={settingsIsOpen}
         onClose={settingsOnClose}
@@ -225,7 +225,8 @@ export function Courses() {
                   course={course}
                   key={`course-${course.courseId}`}
                   tabIndex={index}
-                  setActiveCourse={setActiveCourse}
+                  index={index}
+                  setActiveCourseIndex={setActiveCourseIndex}
                   duplicateOnOpen={duplicateOnOpen}
                   settingsOnOpen={settingsOnOpen}
                 />
@@ -348,8 +349,6 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
 }
 
 function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
-  console.log("CourseSettingsDrawer activeCourse", activeCourse);
-
   const [newLabel, setNewLabel] = useState("Untitled Course");
 
   useEffect(() => {
@@ -382,7 +381,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
         <DrawerBody>
           <Stack spacing="24px">
             <FormLabel>Color or Image</FormLabel>
-            <Popover offset={[40, 5]}>
+            <Popover offset={[200, 5]} width="800px">
               <PopoverTrigger>
                 {activeCourse.color == "none" ? (
                   <Image
@@ -405,14 +404,14 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                   />
                 )}
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent width="600px">
                 {/* <PopoverArrow /> */}
                 <PopoverBody>
                   <SimpleGrid
                     columns={6}
                     spacing={3}
                     width="560px"
-                    background="blue.400"
+                    // background="blue.400"
                     m="10px"
                   >
                     {driveColors.map((item) => {
@@ -524,7 +523,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 })}
               </MenuList>
             </Menu> */}
-            <ColorImagePicker
+            {/* <ColorImagePicker
               initialImage={activeCourse?.image}
               initialColor={activeCourse?.color}
               // imageCallback={(image) => {
@@ -549,7 +548,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
               //   );
               // modifyCourse({ color: newColor, image: "none" });
               // }}
-            />
+            /> */}
             <FormControl isRequired isInvalid={!newLabel}>
               <FormLabel htmlFor="username">New Course Label</FormLabel>
               <Input

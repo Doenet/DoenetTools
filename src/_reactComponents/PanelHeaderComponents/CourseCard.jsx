@@ -20,7 +20,8 @@ import { useRecoilState } from "recoil";
 
 export function CourseCard({
   course,
-  setActiveCourse,
+  index,
+  setActiveCourseIndex,
   duplicateOnOpen,
   settingsOnOpen,
 }) {
@@ -112,7 +113,7 @@ export function CourseCard({
                 <MenuList zIndex="10">
                   <MenuItem
                     onClick={() => {
-                      setActiveCourse(course);
+                      setActiveCourseIndex(index);
                       duplicateOnOpen();
                     }}
                   >
@@ -130,7 +131,7 @@ export function CourseCard({
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      setActiveCourse(course);
+                      setActiveCourseIndex(index);
                       settingsOnOpen();
                     }}
                   >
