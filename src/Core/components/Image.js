@@ -472,7 +472,7 @@ export default class Image extends BlockComponent {
     });
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -481,7 +481,6 @@ export default class Image extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async imageClicked({
@@ -499,8 +498,6 @@ export default class Image extends BlockComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async imageFocused({
@@ -518,7 +515,5 @@ export default class Image extends BlockComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

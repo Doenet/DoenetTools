@@ -319,32 +319,32 @@ export default class Ref extends InlineComponent {
 
   async navigateToTarget({ actionId }) {
     if (await this.stateValues.disabled) {
-      this.coreFunctions.resolveAction({ actionId });
-    } else {
-      let cid = await this.stateValues.cid;
-      let doenetId = await this.stateValues.doenetId;
-      let variantIndex = await this.stateValues.variantIndex;
-      let edit = await this.stateValues.edit;
-      let hash = await this.stateValues.hash;
-      let page = await this.stateValues.page;
-      let uri = await this.stateValues.uri;
-      let targetName = await this.stateValues.targetName;
-
-      let effectiveName = this.componentOrAdaptedName;
-
-      this.coreFunctions.navigateToTarget({
-        cid,
-        doenetId,
-        variantIndex,
-        edit,
-        hash,
-        page,
-        uri,
-        targetName,
-        actionId,
-        componentName: this.componentName,
-        effectiveName,
-      });
+      return;
     }
+
+    let cid = await this.stateValues.cid;
+    let doenetId = await this.stateValues.doenetId;
+    let variantIndex = await this.stateValues.variantIndex;
+    let edit = await this.stateValues.edit;
+    let hash = await this.stateValues.hash;
+    let page = await this.stateValues.page;
+    let uri = await this.stateValues.uri;
+    let targetName = await this.stateValues.targetName;
+
+    let effectiveName = this.componentOrAdaptedName;
+
+    this.coreFunctions.navigateToTarget({
+      cid,
+      doenetId,
+      variantIndex,
+      edit,
+      hash,
+      page,
+      uri,
+      targetName,
+      actionId,
+      componentName: this.componentName,
+      effectiveName,
+    });
   }
 }

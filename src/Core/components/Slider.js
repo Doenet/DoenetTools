@@ -694,8 +694,6 @@ export default class Slider extends BaseComponent {
           },
         });
       }
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 }

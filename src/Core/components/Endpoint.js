@@ -55,8 +55,6 @@ export default class Endpoint extends Point {
           },
         },
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 }

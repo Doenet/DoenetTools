@@ -213,8 +213,6 @@ export default class CallAction extends InlineComponent {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -231,8 +229,6 @@ export default class CallAction extends InlineComponent {
       !(await this.stateValues.insideTriggerSet)
     ) {
       return await this.callAction({ actionId });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

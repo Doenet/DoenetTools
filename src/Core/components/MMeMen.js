@@ -305,8 +305,6 @@ export class M extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async mathFocused({
@@ -324,8 +322,6 @@ export class M extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

@@ -9207,7 +9207,14 @@ export default class Core {
         if (!args) {
           args = {};
         }
-        return await action(args);
+        await action(args);
+        if (args.actionId) {
+          // Note: we no longer rely on the component to make sure resolve action is always called
+          // but always explicitly call resolve action after an action.
+          return this.resolveAction({ actionId: args.actionId });
+        } else {
+          return;
+        }
       }
     }
 

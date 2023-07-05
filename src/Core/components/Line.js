@@ -2053,8 +2053,6 @@ export default class Line extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async lineFocused({
@@ -2072,8 +2070,6 @@ export default class Line extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

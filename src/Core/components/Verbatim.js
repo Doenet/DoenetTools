@@ -53,7 +53,7 @@ export class Pre extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -62,7 +62,6 @@ export class Pre extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 
@@ -137,7 +136,7 @@ export class DisplayDoenetML extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -146,6 +145,5 @@ export class DisplayDoenetML extends InlineComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
