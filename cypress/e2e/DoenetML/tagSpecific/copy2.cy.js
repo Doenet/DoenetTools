@@ -2740,7 +2740,7 @@ describe("Copy Tag Tests", function () {
       
         <copy name="cp1" source="g" assignNames="g4" />
         
-        <graph copySource="cp1" name="g5" newNamespace>
+        <graph copySource="g4" name="g5" newNamespace>
           <circle name="c" />
         </graph>
         

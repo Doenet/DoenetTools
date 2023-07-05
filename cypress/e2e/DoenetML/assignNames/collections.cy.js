@@ -30,7 +30,7 @@ describe("Collection assignName Tests", function () {
   <p>v: <copy target="v" assignNames="vshadow" /></p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="a1 b1" />
+    <copy name="cp1" target="cl1" assignNames="(a1 b1)" />
   </graph>
 
   <p>a1: <copy target="a1" prop="coords" assignNames="a1shadow" /></p>
@@ -1047,7 +1047,7 @@ describe("Collection assignName Tests", function () {
   <p name="pw">w: <copy target="w" assignNames="wshadow" /></p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="a1 b1 c1" />
+    <copy name="cp1" target="cl1" assignNames="(a1 b1 c1)" />
   </graph>
 
   <p>a1: <copy target="a1" prop="coords" assignNames="a1shadow" /></p>
@@ -4068,7 +4068,7 @@ describe("Collection assignName Tests", function () {
   <p>p3: <copy target="p3" prop="coords" assignNames="p3shadow" /></p>
   <p>p4: <copy target="p4" prop="coords" assignNames="p4shadow" /></p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
+  <copy name="allpoints2" target="allpoints" assignNames="(q1 q2 q3 q4 q5 q6)"/>
 
   <p>q1: <copy target="q1" prop="coords" assignNames="q1shadow" /></p>
   <p>q2: <copy target="q2" prop="coords" assignNames="q2shadow" /></p>
@@ -4086,7 +4086,7 @@ describe("Collection assignName Tests", function () {
   <p>x15: <copy target="x15" assignNames="x15shadow" /></p>
   <p>x16: <copy target="x16" assignNames="x16shadow" /></p>
 
-  <copy name="allxs2" target="allxs1" assignNames="x21 x22 x23 x24"/>
+  <copy name="allxs2" target="allxs1" assignNames="(x21 x22 x23 x24)"/>
 
   <p>x21: <copy target="x21" assignNames="x21shadow" /></p>
   <p>x22: <copy target="x22" assignNames="x22shadow" /></p>
@@ -8800,7 +8800,7 @@ describe("Collection assignName Tests", function () {
   <p>p3: <copy target="p3" prop="coords" assignNames="p3shadow" /></p>
   <p>p4: <copy target="p4" prop="coords" assignNames="p4shadow" /></p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
+  <copy name="allpoints2" target="allpoints" assignNames="(q1 q2 q3 q4 q5 q6)"/>
 
   <p>q1: <copy target="q1" prop="coords" assignNames="q1shadow" /></p>
   <p>q2: <copy target="q2" prop="coords" assignNames="q2shadow" /></p>
@@ -8820,7 +8820,7 @@ describe("Collection assignName Tests", function () {
   <p>xs17: <copy target="xs17" assignNames="xs17shadow" /></p>
   <p>xs18: <copy target="xs18" assignNames="xs18shadow" /></p>
 
-  <copy name="allxs2" target="allxs1" assignNames="xs21 xs22 xs23 xs24 xs25 xs26"/>
+  <copy name="allxs2" target="allxs1" assignNames="(xs21 xs22 xs23 xs24 xs25 xs26)"/>
 
   <p>xs21: <copy target="xs21" assignNames="xs21shadow" /></p>
   <p>xs22: <copy target="xs22" assignNames="xs22shadow" /></p>

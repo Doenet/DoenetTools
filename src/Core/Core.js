@@ -2210,11 +2210,12 @@ export default class Core {
     }
 
     if (
-      component.shadows &&
-      this.componentInfoObjects.isCompositeComponent({
-        componentType: component.componentType,
-        includeNonStandard: false,
-      })
+      component.shadows
+      //&&
+      // this.componentInfoObjects.isCompositeComponent({
+      //   componentType: component.componentType,
+      //   includeNonStandard: false,
+      // })
     ) {
       return await this.expandShadowingComposite(component);
     }
@@ -2372,6 +2373,17 @@ export default class Core {
     let compositeAttributesObj =
       compositeMediatingTheShadow.constructor.createAttributesObject();
 
+    let attributesToConvert = {};
+    if (component.attributes.isResponse) {
+      // TODO: is isResponse the only attribute to convert?
+      attributesToConvert.isResponse = component.attributes.isResponse;
+    }
+    // Object.assign(attributesToConvert, compositeMediatingTheShadow.attributes);
+
+    // console.log(component.attributes);
+    // console.log(compositeMediatingTheShadow.attributes);
+    // console.log("attributesToConvert:", Object.keys(attributesToConvert));
+
     for (let repl of serializedReplacements) {
       if (typeof repl !== "object") {
         continue;
@@ -2382,7 +2394,7 @@ export default class Core {
         repl.attributes = {};
       }
       let attributesFromComposite = convertAttributesForComponentType({
-        attributes: compositeMediatingTheShadow.attributes,
+        attributes: attributesToConvert,
         componentType: repl.componentType,
         componentInfoObjects: this.componentInfoObjects,
         compositeAttributesObj,
@@ -2409,13 +2421,30 @@ export default class Core {
         this._components[
           compositeMediatingTheShadow.doenetAttributes.targetComponentName
         ];
-      let nonCompositeTargetWithNewNamespace;
+      let targetWithNewNamespace;
       if (target) {
-        nonCompositeTargetWithNewNamespace =
-          !this.componentInfoObjects.isCompositeComponent({
-            componentType: target.componentType,
+        targetWithNewNamespace =
+          // !this.componentInfoObjects.isCompositeComponent({
+          //   componentType: target.componentType,
+          //   includeNonStandard: false,
+          // }) &&
+          target.attributes.newNamespace?.primitive;
+        let recursiveTarget = target;
+        while (
+          !targetWithNewNamespace &&
+          this.componentInfoObjects.isCompositeComponent({
+            componentType: recursiveTarget.componentType,
             includeNonStandard: false,
-          }) && target.attributes.newNamespace?.primitive;
+          })
+        ) {
+          if (recursiveTarget.replacements.length === 1) {
+            recursiveTarget = recursiveTarget.replacements[0];
+            targetWithNewNamespace =
+              recursiveTarget.attributes.newNamespace?.primitive;
+          } else {
+            break;
+          }
+        }
       }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
@@ -2436,7 +2465,7 @@ export default class Core {
 
       let originalNamesAreConsistent =
         newNamespace ||
-        nonCompositeTargetWithNewNamespace ||
+        targetWithNewNamespace ||
         mediatingNewNamespace ||
         assignNewNamespaces;
 
@@ -2459,6 +2488,7 @@ export default class Core {
         assignNames,
         serializedComponents: serializedReplacements,
         parentName,
+        parentNameForUniqueNames: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
@@ -2490,6 +2520,7 @@ export default class Core {
           assignNames,
           serializedComponents: newReplacements,
           parentName,
+          parentNameForUniqueNames: component.componentName,
           parentCreatesNewNamespace:
             compositeMediatingTheShadow.attributes.assignNewNamespaces
               ?.primitive,
@@ -7687,7 +7718,7 @@ export default class Core {
 
   registerComponent(component) {
     if (component.componentName in this._components) {
-      throw Error(`Duplicate componentName: ${component.componentName}`);
+      throw Error(`Duplicate component name: ${component.componentName}`);
     }
     this._components[component.componentName] = component;
   }

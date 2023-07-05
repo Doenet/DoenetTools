@@ -748,8 +748,15 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
           if (!component.doenetAttributes) {
             component.doenetAttributes = {};
           }
-          if (!haveComposite) {
-            component.props.createComponentOfType = originalType;
+          component.props.createComponentOfType = originalType;
+          if (haveComposite) {
+            // We want the name to become the name of the composite replacement,
+            // however, we can't use assignNames, as assignNames may also have been specified.
+            // So, we create a special attribute for this situation
+            // to give the name to the composite replacement
+            // while allowing assignnames to be used to name the composite replacement's replacements
+            component.doenetAttributes.nameBecomesAssignNamesForCompositeReplacement = true;
+          } else {
             component.doenetAttributes.nameBecomesAssignNames = true;
           }
           component.componentType = "copy";
@@ -765,7 +772,6 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
 
           component.doenetAttributes.fromCopyTarget = true;
           component.doenetAttributes.createNameFromComponentType = originalType;
-          component.props.assignNamesSkip = "1";
         } else if (lowerCaseProp === "copyfromuri") {
           if (foundCopyFromURI) {
             throw Error(
@@ -798,8 +804,15 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
           if (!component.doenetAttributes) {
             component.doenetAttributes = {};
           }
-          if (!haveComposite) {
-            component.props.createComponentOfType = originalType;
+          component.props.createComponentOfType = originalType;
+          if (haveComposite) {
+            // We want the name to become the name of the composite replacement,
+            // however, we can't use assignNames, as assignNames may also have been specified.
+            // So, we create a special attribute for this situation
+            // to give the name to the composite replacement
+            // while allowing assignnames to be used to name the composite replacement's replacements
+            component.doenetAttributes.nameBecomesAssignNamesForCompositeReplacement = true;
+          } else {
             component.doenetAttributes.nameBecomesAssignNames = true;
           }
           component.componentType = "copy";
@@ -814,7 +827,6 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
           delete component.props[prop];
           component.doenetAttributes.fromCopyFromURI = true;
           component.doenetAttributes.createNameFromComponentType = originalType;
-          component.props.assignNamesSkip = "1";
         } else if (lowerCaseProp === "assignnames" && !haveComposite) {
           if (foundCopyTarget || foundCopyFromURI) {
             if (haveAnyComposite) {
@@ -862,6 +874,17 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             component.props.prop = component.props[prop];
             delete component.props[prop];
             foundCopyProp = true;
+          }
+        }
+        if (!foundCopyProp && haveComposite) {
+          for (let prop of Object.keys(component.props)) {
+            let lowerCaseProp = prop.toLowerCase();
+            // If the component was given an assignnames, we want that assignnames to apply
+            // to the replacements of the composite replacement.
+            // To accomplish this, we add another level to assignnames.
+            if (lowerCaseProp === "assignnames") {
+              component.props[prop] = "(" + component.props[prop] + ")";
+            }
           }
         }
       }
@@ -2771,19 +2794,27 @@ export function createComponentNames({
       }
     }
 
-    if (doenetAttributes.nameBecomesAssignNames) {
+    if (
+      doenetAttributes.nameBecomesAssignNames ||
+      doenetAttributes.nameBecomesAssignNamesForCompositeReplacement
+    ) {
       if (newNamespace) {
         // delete newNamespace from target but make it assignNewNamespaces
         attributes.assignNewNamespaces = { primitive: true };
         delete attributes.newNamespace;
         newNamespace = false;
       }
-      assignNames = doenetAttributes.assignNames = [prescribedName];
+      if (doenetAttributes.nameBecomesAssignNamesForCompositeReplacement) {
+        doenetAttributes.assignNamesForCompositeReplacement = prescribedName;
+      } else {
+        assignNames = doenetAttributes.assignNames = [prescribedName];
+      }
 
       // delete nameBecomesAssignNames so that copies
       // or further applications of createComponentNames
       // do not repeat this process and make assignNames be the randomly generated name
       delete doenetAttributes.nameBecomesAssignNames;
+      delete doenetAttributes.nameBecomesAssignNamesForCompositeReplacement;
 
       // create unique name for copy
       let longNameId = parentName + "|createUniqueName|";
@@ -3273,8 +3304,10 @@ export function serializedComponentsReviver(key, value) {
 export function processAssignNames({
   assignNames = [],
   assignNewNamespaces = false,
+  assignNamesForCompositeReplacement,
   serializedComponents,
   parentName,
+  parentNameForUniqueNames,
   parentCreatesNewNamespace,
   componentInfoObjects,
   indOffset = 0,
@@ -3285,6 +3318,7 @@ export function processAssignNames({
   // console.log(`process assign names`);
   // console.log(deepClone(serializedComponents));
   // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`);
+  // console.log(assignNames);
   // console.log({
   //   parentName,
   //   parentCreatesNewNamespace,
@@ -3383,13 +3417,21 @@ export function processAssignNames({
         componentInfoObjects.allComponentClasses[component.componentType]
           .assignNamesToReplacements
       ) {
-        // since we don't have a name for the component itself,
-        // give it an unreachable name (i.e., a unique name)
-        let longNameId = parentName + "|assignName|" + indForNames.toString();
-        component.doenetAttributes.prescribedName = createUniqueName(
-          component.componentType.toLowerCase(),
-          longNameId,
-        );
+        if (assignNamesForCompositeReplacement) {
+          component.doenetAttributes.prescribedName =
+            assignNamesForCompositeReplacement;
+        } else {
+          // since we don't have a name for the component itself,
+          // give it an unreachable name (i.e., a unique name)
+          let longNameId = parentName + "|assignName|" + indForNames.toString();
+          if (parentNameForUniqueNames) {
+            longNameId = parentNameForUniqueNames + longNameId;
+          }
+          component.doenetAttributes.prescribedName = createUniqueName(
+            component.componentType.toLowerCase(),
+            longNameId,
+          );
+        }
 
         // The prescribed name, created above, does not include namespaces.
         // The full component name does include namespaces.
@@ -3439,6 +3481,9 @@ export function processAssignNames({
         name = component.originalName.slice(lastSlash + 1);
       } else {
         let longNameId = parentName + "|assignName|" + indForNames.toString();
+        if (parentNameForUniqueNames) {
+          longNameId = parentNameForUniqueNames + longNameId;
+        }
         name = createUniqueName(
           component.componentType.toLowerCase(),
           longNameId,
@@ -3923,7 +3968,12 @@ export function extractComponentNamesAndIndices(
       if (serializedComponent.doenetAttributes?.fromCopyTarget) {
         let lastSlash = componentName.lastIndexOf("/");
         let originalName = componentName.slice(lastSlash + 1);
-        let newName = serializedComponent.doenetAttributes.assignNames[0];
+        let newName =
+          serializedComponent.doenetAttributes
+            .assignNamesForCompositeReplacement;
+        if (!newName) {
+          newName = serializedComponent.doenetAttributes.assignNames[0];
+        }
         componentName = componentName.replace(originalName, newName);
         nameSubstitutions[originalName] = newName;
       }

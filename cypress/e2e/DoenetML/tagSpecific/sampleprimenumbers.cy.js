@@ -12,18 +12,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers/></template>
       <sources><sequence length="50" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      <copy source="_map1" />
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    <copy source="p2" assignNames = "p3" />
     `,
         },
         "*",
@@ -35,13 +35,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(50);
@@ -55,18 +52,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         ).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -80,18 +74,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="5" maxValue="20" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      <copy source="_map1" />
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    <copy source="p2" assignNames = "p3" />
     `,
         },
         "*",
@@ -103,16 +97,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -120,21 +108,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect([2, 3, 5, 7, 11, 13, 17, 19].includes(sample)).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -148,18 +130,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="5" minValue="50" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      <copy source="_map1" />
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    <copy source="p2" assignNames = "p3" />
     `,
         },
         "*",
@@ -171,16 +153,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -190,21 +166,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         );
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -218,18 +188,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="10" minValue="10000" maxValue="100000" /></template>
       <sources><sequence length="5" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      <copy source="_map1" />
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    <copy source="p2" assignNames = "p3" />
     `,
         },
         "*",
@@ -241,16 +211,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -271,21 +235,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(isprime).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -299,15 +257,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
       <samplePrimeNumbers name="samples" numSamples="50" minValue="1900" maxValue="2000" exclude="1931 1979 1997" />
     </aslist></p>
 
-    <p><aslist>
+    <p name="p2"><aslist>
       <copy source="samples" />
     </aslist></p>
 
-    <copy source="_p1" assignNames = "p" />
+    <copy source="p2" assignNames = "p3" />
     `,
         },
         "*",
@@ -338,7 +296,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -365,7 +323,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <samplePrimeNumbers  name="sample2" exclude="$ml_exclude" maxValue="50" numSamples="$numSamples2" />
     </aslist></p>
     <p>
-      <copy prop="value" target="numSamples2" assignNames="numSamples2a" />
+      <copy prop="value" source="numSamples2" assignNames="numSamples2a" />
     </p>
     `,
         },
@@ -502,17 +460,17 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
-    <p name="p3"><copy target="_aslist1" /></p>
+    <p name="p2"><aslist><copy source="_map1" /></aslist></p>
+    <p name="p3"><copy source="_aslist1" /></p>
 
-    <copy name="p4" target="p1" />
-    <copy name="p5" target="p2" />
-    <copy name="p6" target="p3" />
+    <copy name="p4" source="p1" />
+    <copy name="p5" source="p2" />
+    <copy name="p6" source="p3" />
 
-    <copy name="p7" target="p4" />
-    <copy name="p8" target="p5" />
-    <copy name="p9" target="p6" />
-    <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
+    <copy name="p7" source="p4" />
+    <copy name="p8" source="p5" />
+    <copy name="p9" source="p6" />
+    <p><copy prop="value" source="_mathinput1" assignNames="m1" /></p>
     `,
         },
         "*",
@@ -1610,9 +1568,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="u"/></p>
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="v"/></p>
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="w"/></p>
-    <p><copy assignNames="u2" target="u" /></p>
-    <p><copy assignNames="v2" target="v" /></p>
-    <p><copy assignNames="w2" target="w" /></p>
+    <p><copy assignNames="u2" source="u" /></p>
+    <p><copy assignNames="v2" source="v" /></p>
+    <p><copy assignNames="w2" source="w" /></p>
     `,
         },
         "*",
@@ -1653,9 +1611,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><aslist>
       <samplePrimeNumbers name="s" minvalue="175" maxValue="205" assignnames="u v w" numSamples="6"  />
     </aslist></p>
-    <p><copy assignNames="u2" target="u" /></p>
-    <p><copy assignNames="v2" target="v" /></p>
-    <p><copy assignNames="w2" target="w" /></p>
+    <p><copy assignNames="u2" source="u" /></p>
+    <p><copy assignNames="v2" source="v" /></p>
+    <p><copy assignNames="w2" source="w" /></p>
     `,
         },
         "*",
@@ -1720,9 +1678,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><aslist>
       <samplePrimeNumbers name="s" newnamespace minValue="175" maxValue="205" assignnames="u v w" numSamples="6"  />
     </aslist></p>
-    <p><copy assignNames="u2" target="s/u" /></p>
-    <p><copy assignNames="v2" target="s/v" /></p>
-    <p><copy assignNames="w2" target="s/w" /></p>
+    <p><copy assignNames="u2" source="s/u" /></p>
+    <p><copy assignNames="v2" source="s/v" /></p>
+    <p><copy assignNames="w2" source="s/w" /></p>
     `,
         },
         "*",
@@ -1781,7 +1739,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
   it(`different numbers when reload page if don't save state`, () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers /></template>
       <sources><sequence length="100" /></sources>
@@ -1806,13 +1764,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -1843,13 +1798,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2.length).eq(100);
@@ -1869,7 +1821,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
   it("same numbers when reload if save state", () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers  /></template>
       <sources><sequence length="100" /></sources>
@@ -1901,13 +1853,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -1948,13 +1897,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2).eqls(samples);
@@ -1964,7 +1910,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
   it("same numbers for given variant if variantDeterminesSeed", () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers variantDeterminesSeed /></template>
       <sources><sequence length="100" /></sources>
@@ -1990,13 +1936,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -2028,13 +1971,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2).eqls(samples);
@@ -2057,13 +1997,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2.length).eq(100);

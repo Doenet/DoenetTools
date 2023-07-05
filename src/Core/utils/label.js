@@ -189,7 +189,7 @@ export function returnLabelStateVariableDefinitions() {
         variableNames: ["label", "labelHasLatex"],
       },
     }),
-    definition({ dependencyValues, essentialValues, componentName }) {
+    definition({ dependencyValues, essentialValues }) {
       let labelChild =
         dependencyValues.labelChild[dependencyValues.labelChild.length - 1];
 

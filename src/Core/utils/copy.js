@@ -625,10 +625,12 @@ export async function verifyReplacementsMatchSpecifiedType({
 
     replacements = processResult.serializedComponents;
 
-    workspace.numReplacementsBySource.push(replacements.length);
-    workspace.numNonStringReplacementsBySource.push(
-      replacements.filter((x) => typeof x !== "string").length,
-    );
+    if (!wrapExistingReplacements) {
+      workspace.numReplacementsBySource.push(replacements.length);
+      workspace.numNonStringReplacementsBySource.push(
+        replacements.filter((x) => typeof x !== "string").length,
+      );
+    }
 
     if (replacementChanges) {
       replacementChanges = [];

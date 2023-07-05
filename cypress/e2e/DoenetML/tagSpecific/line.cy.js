@@ -3518,7 +3518,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -3961,7 +3961,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -8015,7 +8015,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -8666,7 +8666,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -9535,7 +9535,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -10188,7 +10188,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>
@@ -10816,7 +10816,7 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="point1" target="l" assignNames="A" />
     <copy prop="point2" target="l" assignNames="B" />  
   </graph>

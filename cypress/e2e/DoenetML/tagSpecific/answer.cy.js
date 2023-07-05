@@ -31547,6 +31547,18 @@ describe("Answer Tag Tests", function () {
     });
 
     cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/def_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/short_cr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/def_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2("#/short_sr") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
 
     cy.get(cesc2("#/def") + " textarea")
       .type("1.23456789", { force: true })

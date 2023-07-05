@@ -504,7 +504,7 @@ describe("Conditional Content Tag Tests", function () {
     
     <p name="pb">$b</p>
 
-    <p name="p2" ><copy target="_conditionalcontent1" assignNames="c d" /></p>
+    <p name="p2" ><copy target="_conditionalcontent1" assignNames="(c d)" /></p>
 
     <p name="pc">$c</p>
     
@@ -622,7 +622,7 @@ describe("Conditional Content Tag Tests", function () {
 
     <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
 
-    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
+    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="((b))" /></p>
 
     <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
 
@@ -716,7 +716,7 @@ describe("Conditional Content Tag Tests", function () {
 
     <p name="pa1">a1: <copy target="a" assignNames="a1" /></p>
 
-    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="b" /></p>
+    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
 
     <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
 
@@ -816,7 +816,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>c1: <copy target="c" assignNames="c1" /></p>
     <p>d1: <copy target="d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="cp1" target="_conditionalcontent1" assignNames="(e f g h i)" /></p>
+    <p>copy: <copy name="cp1" target="_conditionalcontent1" assignNames="((e f g h i))" /></p>
 
     <p>e1: <copy target="e" assignNames="e1" /></p>
     <p>f1: <copy target="f" assignNames="f1" /></p>
@@ -824,7 +824,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>h1: <copy target="h" assignNames="h1" /></p>
     <p>i1: <copy target="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy target="cp1" assignNames="(j k l)" /></p>
+    <p>copied copy: <copy target="cp1" assignNames="(((j k l)))" /></p>
 
     <p>j1: <copy target="j" assignNames="j1" /></p>
     <p>k1: <copy target="k" assignNames="k1" /></p>
@@ -1200,7 +1200,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>c1: <copy target="s1/c" assignNames="c1" /></p>
     <p>d1: <copy target="s1/d" assignNames="d1" /></p>
 
-    <p>copy: <copy name="s2" target="s1" assignNames="(e f g h i)" /></p>
+    <p>copy: <copy name="s2" target="s1" assignNames="((e f g h i))" /></p>
 
     <p>e1: <copy target="e" assignNames="e1" /></p>
     <p>f1: <copy target="f" assignNames="f1" /></p>
@@ -1208,7 +1208,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>h1: <copy target="h" assignNames="h1" /></p>
     <p>i1: <copy target="i" assignNames="i1" /></p>
 
-    <p>copied copy: <copy name="s3" target="s2" assignNames="(j k l)" newNamespace /></p>
+    <p>copied copy: <copy name="s3" target="s2" assignNames="(((j k l)))" newNamespace /></p>
 
     <p>j1: <copy target="s3/j" assignNames="j1" /></p>
     <p>k1: <copy target="s3/k" assignNames="k1" /></p>

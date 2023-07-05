@@ -99,26 +99,26 @@ describe("Copy Tag Tests", function () {
     <math modifyIndirectly="false">x</math>
     <copy name="cr1" assignNames="r1" source="_math1"/>
     <copy name="cr2" assignNames="r2" modifyIndirectly="true" source="_math1"/>
-    <copy name="cr3" assignNames="r3" modifyIndirectly="true" source="cr1"/>
-    <copy name="cr4" assignNames="r4" source="cr2"/>
-    <copy name="cr5" assignNames="r5" source="cr3"/>
-    <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="false" />
-    <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="false" />
+    <copy name="cr3" assignNames="(r3)" modifyIndirectly="true" source="cr1"/>
+    <copy name="cr4" assignNames="(r4)" source="cr2"/>
+    <copy name="cr5" assignNames="((r5))" source="cr3"/>
+    <copy name="cr6" assignNames="(r6)" source="cr2" modifyIndirectly="false" />
+    <copy name="cr7" assignNames="((r7))" source="cr3" modifyIndirectly="false" />
 
     <point labelIsName name="A">(1,2)</point>
     <copy name="cA2" assignNames="A2" source="A"/>
     <copy name="cB" assignNames="B" source="A" labelIsName />
     <copy name="cB2" assignNames="B2" source="A" />
-    <copy name="cC" assignNames="C" source="cB" labelIsName/>
-    <copy name="cC2" assignNames="C2" source="cB"/>
+    <copy name="cC" assignNames="(C)" source="cB" labelIsName/>
+    <copy name="cC2" assignNames="(C2)" source="cB"/>
     <copy name="cC3" assignNames="C3" source="B" labelIsName/>
     <copy name="cC4" assignNames="C4" source="B"/>
-    <copy name="cD" assignNames="D" source="cC" labelIsName/>
-    <copy name="cD2" assignNames="D2" source="cC"/>
+    <copy name="cD" assignNames="((D))" source="cC" labelIsName/>
+    <copy name="cD2" assignNames="((D2))" source="cC"/>
     <copy name="cD3" assignNames="D3" source="C" labelIsName/>
     <copy name="cD4" assignNames="D4" source="C"/>
-    <copy name="cD5" assignNames="D5" source="cC2" labelIsName/>
-    <copy name="cD6" assignNames="D6" source="cC2"/>
+    <copy name="cD5" assignNames="((D5))" source="cC2" labelIsName/>
+    <copy name="cD6" assignNames="((D6))" source="cC2"/>
     <copy name="cD7" assignNames="D7" source="C2" labelIsName/>
     <copy name="cD8" assignNames="D8" source="C2"/>
     `,
@@ -263,11 +263,11 @@ describe("Copy Tag Tests", function () {
     <math modifyIndirectly="3 &gt; 4">x</math>
     <copy name="cr1" assignNames="r1" source="_math1"/>
     <copy name="cr2" assignNames="r2" modifyIndirectly="3&lt;4" source="_math1"/>
-    <copy name="cr3" assignNames="r3" modifyIndirectly="3&lt;4" source="cr1"/>
-    <copy name="cr4" assignNames="r4" source="cr2"/>
-    <copy name="cr5" assignNames="r5" source="cr3"/>
-    <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="3&gt;4" />
-    <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="3&gt;4" />
+    <copy name="cr3" assignNames="(r3)" modifyIndirectly="3&lt;4" source="cr1"/>
+    <copy name="cr4" assignNames="(r4)" source="cr2"/>
+    <copy name="cr5" assignNames="((r5))" source="cr3"/>
+    <copy name="cr6" assignNames="(r6)" source="cr2" modifyIndirectly="3&gt;4" />
+    <copy name="cr7" assignNames="((r7))" source="cr3" modifyIndirectly="3&gt;4" />
 
 
     `,
@@ -1088,7 +1088,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     <graph>
-    <copy source="cd1" assignNames="d2" />
+    <copy source="cd1" assignNames="(d2)" />
     </graph>
 
     <copy source="_vector1" assignNames="v1a" />
@@ -1315,7 +1315,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     <graph>
-    <copy source="cd1" assignNames="d2" />
+    <copy source="cd1" assignNames="(d2)" />
     </graph>
 
     <copy source="_vector1" assignNames="v1a" />
@@ -3815,7 +3815,7 @@ describe("Copy Tag Tests", function () {
 
     <p name="forVerb"><conditionalContent assignNames="(verb)">
       <case condition="$b"><text>skip</text></case>
-      <else>$jump</else>
+      <else>$jump{assignNamesSkip="1"}</else>
     </conditionalContent></p>
 
     <copy source="verb" assignNames="verb2" />
@@ -3828,6 +3828,14 @@ describe("Copy Tag Tests", function () {
     // to wait for page to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
+    cy.get(cesc("#\\/forVerb")).should("have.text", "jump");
+    cy.get(cesc("#\\/verb2")).should("have.text", "jump");
+
+    cy.get(cesc("#\\/b")).click();
+    cy.get(cesc("#\\/forVerb")).should("have.text", "skip");
+    cy.get(cesc("#\\/verb2")).should("have.text", "skip");
+
+    cy.get(cesc("#\\/b")).click();
     cy.get(cesc("#\\/forVerb")).should("have.text", "jump");
     cy.get(cesc("#\\/verb2")).should("have.text", "jump");
 
@@ -3863,6 +3871,14 @@ describe("Copy Tag Tests", function () {
     // to wait for page to load
     cy.get(cesc("#\\/_text1")).should("have.text", "a");
 
+    cy.get(cesc("#\\/forVerb")).should("have.text", "jump");
+    cy.get(cesc("#\\/verb2")).should("have.text", "jump");
+
+    cy.get(cesc("#\\/b")).click();
+    cy.get(cesc("#\\/forVerb")).should("have.text", "skip");
+    cy.get(cesc("#\\/verb2")).should("have.text", "skip");
+
+    cy.get(cesc("#\\/b")).click();
     cy.get(cesc("#\\/forVerb")).should("have.text", "jump");
     cy.get(cesc("#\\/verb2")).should("have.text", "jump");
 
@@ -6395,14 +6411,14 @@ describe("Copy Tag Tests", function () {
     <copy source="twoxa" assignNames="twoxe" />
     <copy source="twoxa" link="false" assignNames="twoxf" />
     
-    <copy source="ctwox" assignNames="twoxg" />
-    <copy source="ctwox" link="false" assignNames="twoxh" />
+    <copy source="ctwox" assignNames="(twoxg)" />
+    <copy source="ctwox" link="false" assignNames="(twoxh)" />
 
     <copy source="twoxb" assignNames="twoxi" />
     <copy source="twoxb" link="false" assignNames="twoxj" />
     
-    <copy source="c2twox" assignNames="twoxk" />
-    <copy source="c2twox" link="false" assignNames="twoxl" />
+    <copy source="c2twox" assignNames="(twoxk)" />
+    <copy source="c2twox" link="false" assignNames="(twoxl)" />
   
     `,
         },
@@ -7706,21 +7722,21 @@ describe("Copy Tag Tests", function () {
     </section>
     
     <section name="section2" newNamespace>
-      <copy source='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='../section1/_map1' link='false' assignNames='((p1) (p2) (p3) (p4))' />
     </section>
 
     <section name="section3">
-      <copy source='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='section1/_map1' link='false' assignNames='((p1) (p2) (p3) (p4))' />
     </section>
 
     <copy source='section1' link='false' assignNames="section4" />
     
     <section name="section5" newNamespace>
-      <copy source='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='../section1/_map1' assignNames='((p1) (p2) (p3) (p4))' />
     </section>
 
     <section name="section6">
-      <copy source='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
+      <copy source='section1/_map1' assignNames='((p1a) (p2a) (p3a) (p4a))' />
     </section>
 
     <copy source='section1' assignNames="section7" />
@@ -9403,7 +9419,7 @@ describe("Copy Tag Tests", function () {
       <section><copy name="c1" source="_p1" newNamespace /></section>
       
       <copy name="c2" source="c1" />
-      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c3" source="c1" assignNames="c1a" />
       <copy name="c4" source="c1" newNamespace />
       <copy name="c5" source="c1" newNamespace assignNames="c1a" />
       <copy name="c6" source="c3" newNamespace />
@@ -9428,9 +9444,9 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c1/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c1/_number3")).should("have.text", "3");
 
-    cy.get(cesc2("#/c3/_number1")).should("have.text", "1");
-    cy.get(cesc2("#/c3/_number2")).should("have.text", "2");
-    cy.get(cesc2("#/c3/_number3")).should("have.text", "3");
+    cy.get(cesc2("#/c1a/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c1a/_number3")).should("have.text", "3");
 
     cy.get(cesc2("#/c4/c1/_number1")).should("have.text", "1");
     cy.get(cesc2("#/c4/c1/_number2")).should("have.text", "2");
@@ -9440,20 +9456,26 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c5/c1a/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c5/c1a/_number3")).should("have.text", "3");
 
-    cy.get(cesc2("#/c6/c3/_number1")).should("have.text", "1");
-    cy.get(cesc2("#/c6/c3/_number2")).should("have.text", "2");
-    cy.get(cesc2("#/c6/c3/_number3")).should("have.text", "3");
+    cy.get(cesc2("#/c6/c1a/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c6/c1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c6/c1a/_number3")).should("have.text", "3");
 
     cy.get(cesc2("#/c9/c1/_number1")).should("have.text", "1");
     cy.get(cesc2("#/c9/c1/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c9/c1/_number3")).should("have.text", "3");
 
+    cy.get(cesc2("#/c10/c1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c10/c1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c10/c1/_number3")).should("have.text", "3");
+
     cy.get(cesc2("#/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c1/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1a/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c4/c1/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c5/c1a/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c6/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c6/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c9/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c10/c1/_p1")).should("have.text", "values: 1 2 3");
 
     cy.get(cesc2("#/_section1"))
       .invoke("text")
@@ -9464,6 +9486,11 @@ describe("Copy Tag Tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/c9/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
       });
     cy.get(cesc2("#/c10/s1b"))
       .invoke("text")
@@ -9566,7 +9593,7 @@ describe("Copy Tag Tests", function () {
         expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
 
-        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        // c10s's grandchildren should have retained their original names
         let c10sChildName = stateVariables[c10s].activeChildren.filter(
           (x) => x.componentName,
         )[0].componentName;
@@ -9574,9 +9601,9 @@ describe("Copy Tag Tests", function () {
           .filter((x) => x.componentName)
           .map((x) => x.componentName);
 
-        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__");
+        expect(c10sGrandChildNames[0]).eq("/c10/c1/_number1");
+        expect(c10sGrandChildNames[1]).eq("/c10/c1/_number2");
+        expect(c10sGrandChildNames[2]).eq("/c10/c1/_number3");
         expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
         expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
@@ -9689,7 +9716,7 @@ describe("Copy Tag Tests", function () {
       <section><copy name="c1" source="_p1" newNamespace /></section>
       
       <copy name="c2" source="c1" />
-      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c3" source="c1" assignNames="c1a" />
       <copy name="c4" source="c1" newNamespace />
       <copy name="c5" source="c1" newNamespace assignNames="c1a" />
       <copy name="c6" source="c3" newNamespace />
@@ -9714,9 +9741,9 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c1/n2")).should("have.text", "2");
     cy.get(cesc2("#/c1/n3")).should("have.text", "3");
 
-    cy.get(cesc2("#/c3/n1")).should("have.text", "1");
-    cy.get(cesc2("#/c3/n2")).should("have.text", "2");
-    cy.get(cesc2("#/c3/n3")).should("have.text", "3");
+    cy.get(cesc2("#/c1a/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c1a/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c1a/n3")).should("have.text", "3");
 
     cy.get(cesc2("#/c4/c1/n1")).should("have.text", "1");
     cy.get(cesc2("#/c4/c1/n2")).should("have.text", "2");
@@ -9726,20 +9753,26 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c5/c1a/n2")).should("have.text", "2");
     cy.get(cesc2("#/c5/c1a/n3")).should("have.text", "3");
 
-    cy.get(cesc2("#/c6/c3/n1")).should("have.text", "1");
-    cy.get(cesc2("#/c6/c3/n2")).should("have.text", "2");
-    cy.get(cesc2("#/c6/c3/n3")).should("have.text", "3");
+    cy.get(cesc2("#/c6/c1a/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c6/c1a/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c6/c1a/n3")).should("have.text", "3");
 
     cy.get(cesc2("#/c9/c1/n1")).should("have.text", "1");
     cy.get(cesc2("#/c9/c1/n2")).should("have.text", "2");
     cy.get(cesc2("#/c9/c1/n3")).should("have.text", "3");
 
+    cy.get(cesc2("#/c10/c1/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c10/c1/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c10/c1/n3")).should("have.text", "3");
+
     cy.get(cesc2("#/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c1/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1a/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c4/c1/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c5/c1a/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c6/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c6/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c9/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c10/c1/_p1")).should("have.text", "values: 1 2 3");
 
     cy.get(cesc2("#/_section1"))
       .invoke("text")
@@ -9750,6 +9783,11 @@ describe("Copy Tag Tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/c9/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
       });
     cy.get(cesc2("#/c10/s1b"))
       .invoke("text")
@@ -9850,7 +9888,7 @@ describe("Copy Tag Tests", function () {
         expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
 
-        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        // c10s's grandchildren should have retained their original names
         let c10sChildName = stateVariables[c10s].activeChildren.filter(
           (x) => x.componentName,
         )[0].componentName;
@@ -9858,9 +9896,9 @@ describe("Copy Tag Tests", function () {
           .filter((x) => x.componentName)
           .map((x) => x.componentName);
 
-        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__");
+        expect(c10sGrandChildNames[0]).eq("/c10/c1/n1");
+        expect(c10sGrandChildNames[1]).eq("/c10/c1/n2");
+        expect(c10sGrandChildNames[2]).eq("/c10/c1/n3");
         expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
         expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
@@ -9962,6 +10000,207 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("copy with newNamespace retains original names, even with group that assigns name to just one number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p>values: <group name="grp" assignNames="n1"><number>1</number> <number>2</number></group> <number>3</number></p>
+      
+      <section><copy name="c1" source="_p1" newNamespace /></section>
+      
+      <copy name="c2" source="c1" />
+      <copy name="c3" source="c1" assignNames="c1a" />
+      <copy name="c4" source="c1" newNamespace />
+      <copy name="c5" source="c1" newNamespace assignNames="c1a" />
+      <copy name="c6" source="c3" newNamespace />
+      
+      <copy name="c7" source="_section1" />
+      <copy name="c8" source="_section1" assignNames="s1a" />
+      <copy name="c9" source="_section1" newNamespace />
+      <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
+    
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/n1")).should("have.text", "1");
+    cy.get(cesc2("#/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c1/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c1a/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c4/c1/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c4/c1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c4/c1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c5/c1a/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c5/c1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c5/c1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c6/c1a/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c6/c1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c6/c1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c9/c1/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c9/c1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c9/c1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/c10/c1/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c10/c1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c10/c1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c4/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c5/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c6/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c9/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c10/c1/_p1")).should("have.text", "values: 1 2 3");
+
+    cy.get(cesc2("#/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/s1a"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/c9/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/c10/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let c2p =
+        stateVariables[stateVariables["/c2"].replacements[0].componentName]
+          .replacements[0].componentName;
+      let c7s = stateVariables["/c7"].replacements[0].componentName;
+      let c8s = stateVariables["/c8"].replacements[0].componentName;
+      let c9s = stateVariables["/c9"].replacements[0].componentName;
+      let c10s = stateVariables["/c10"].replacements[0].componentName;
+
+      cy.get(cesc2("#" + c2p)).should("have.text", "values: 1 2 3");
+      cy.get(cesc2("#" + c7s))
+        .invoke("text")
+        .then((text) => {
+          expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null;
+        });
+      cy.get(cesc2("#" + c8s))
+        .invoke("text")
+        .then((text) => {
+          expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
+        });
+      cy.get(cesc2("#" + c9s))
+        .invoke("text")
+        .then((text) => {
+          expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
+        });
+      cy.get(cesc2("#" + c10s))
+        .invoke("text")
+        .then((text) => {
+          expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
+        });
+      // put in window just so happens after above
+      cy.window().then(async (win) => {
+        expect(stateVariables["/c1/n1"].stateValues.value).eq(1);
+        expect(stateVariables["/c1/_number2"].stateValues.value).eq(2);
+        expect(stateVariables["/c1/_number3"].stateValues.value).eq(3);
+
+        // c2p's children should have gotten unique names (so begin with two underscores)
+        let c2pChildNames = stateVariables[c2p].activeChildren
+          .filter((x) => x.componentName)
+          .map((x) => x.componentName);
+        expect(c2pChildNames[0].slice(0, 3)).eq("/__");
+        expect(c2pChildNames[1].slice(0, 3)).eq("/__");
+        expect(c2pChildNames[2].slice(0, 3)).eq("/__");
+        expect(stateVariables[c2pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c2pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c2pChildNames[2]].stateValues.value).eq(3);
+
+        // c7s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c7sChildName = stateVariables[c7s].activeChildren.filter(
+          (x) => x.componentName,
+        )[0].componentName;
+        let c7sGrandChildNames = stateVariables[c7sChildName].activeChildren
+          .filter((x) => x.componentName)
+          .map((x) => x.componentName);
+
+        expect(c7sGrandChildNames[0].slice(0, 3)).eq("/__");
+        expect(c7sGrandChildNames[1].slice(0, 3)).eq("/__");
+        expect(c7sGrandChildNames[2].slice(0, 3)).eq("/__");
+        expect(stateVariables[c7sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c7sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c7sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c8s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c8sChildName = stateVariables[c8s].activeChildren.filter(
+          (x) => x.componentName,
+        )[0].componentName;
+        let c8sGrandChildNames = stateVariables[c8sChildName].activeChildren
+          .filter((x) => x.componentName)
+          .map((x) => x.componentName);
+
+        expect(c8sGrandChildNames[0].slice(0, 3)).eq("/__");
+        expect(c8sGrandChildNames[1].slice(0, 3)).eq("/__");
+        expect(c8sGrandChildNames[2].slice(0, 3)).eq("/__");
+        expect(stateVariables[c8sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c8sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c8sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c9s's grandchildren should have retained their original names
+        let c9sChildName = stateVariables[c9s].activeChildren.filter(
+          (x) => x.componentName,
+        )[0].componentName;
+        let c9sGrandChildNames = stateVariables[c9sChildName].activeChildren
+          .filter((x) => x.componentName)
+          .map((x) => x.componentName);
+
+        expect(c9sGrandChildNames[0]).eq("/c9/c1/n1");
+        expect(c9sGrandChildNames[1]).eq("/c9/c1/_number2");
+        expect(c9sGrandChildNames[2]).eq("/c9/c1/_number3");
+        expect(stateVariables[c9sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c10s's grandchildren should have retained their original names
+        let c10sChildName = stateVariables[c10s].activeChildren.filter(
+          (x) => x.componentName,
+        )[0].componentName;
+        let c10sGrandChildNames = stateVariables[c10sChildName].activeChildren
+          .filter((x) => x.componentName)
+          .map((x) => x.componentName);
+
+        expect(c10sGrandChildNames[0]).eq("/c10/c1/n1");
+        expect(c10sGrandChildNames[1]).eq("/c10/c1/_number2");
+        expect(c10sGrandChildNames[2]).eq("/c10/c1/_number3");
+        expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
+      });
+    });
+  });
+
   it("copy with newNamespace retains original names, even with group that has new namespace", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -9973,7 +10212,7 @@ describe("Copy Tag Tests", function () {
       <section><copy name="c1" source="_p1" newNamespace /></section>
       
       <copy name="c2" source="c1" />
-      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c3" source="c1" assignNames="c1a" />
       <copy name="c4" source="c1" newNamespace />
       <copy name="c5" source="c1" newNamespace assignNames="c1a" />
       <copy name="c6" source="c3" newNamespace />
@@ -9998,9 +10237,9 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c1/grp/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c1/_number1")).should("have.text", "3");
 
-    cy.get(cesc2("#/c3/grp/_number1")).should("have.text", "1");
-    cy.get(cesc2("#/c3/grp/_number2")).should("have.text", "2");
-    cy.get(cesc2("#/c3/_number1")).should("have.text", "3");
+    cy.get(cesc2("#/c1a/grp/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c1a/grp/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c1a/_number1")).should("have.text", "3");
 
     cy.get(cesc2("#/c4/c1/grp/_number1")).should("have.text", "1");
     cy.get(cesc2("#/c4/c1/grp/_number2")).should("have.text", "2");
@@ -10010,20 +10249,26 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c5/c1a/grp/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c5/c1a/_number1")).should("have.text", "3");
 
-    cy.get(cesc2("#/c6/c3/grp/_number1")).should("have.text", "1");
-    cy.get(cesc2("#/c6/c3/grp/_number2")).should("have.text", "2");
-    cy.get(cesc2("#/c6/c3/_number1")).should("have.text", "3");
+    cy.get(cesc2("#/c6/c1a/grp/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c6/c1a/grp/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c6/c1a/_number1")).should("have.text", "3");
 
     cy.get(cesc2("#/c9/c1/grp/_number1")).should("have.text", "1");
     cy.get(cesc2("#/c9/c1/grp/_number2")).should("have.text", "2");
     cy.get(cesc2("#/c9/c1/_number1")).should("have.text", "3");
 
+    cy.get(cesc2("#/c10/c1/grp/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/c10/c1/grp/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/c10/c1/_number1")).should("have.text", "3");
+
     cy.get(cesc2("#/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c1/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1a/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c4/c1/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c5/c1a/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c6/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c6/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c9/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c10/c1/_p1")).should("have.text", "values: 1 2 3");
 
     cy.get(cesc2("#/_section1"))
       .invoke("text")
@@ -10034,6 +10279,11 @@ describe("Copy Tag Tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
+      });
+    cy.get(cesc2("#/c9/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
       });
     cy.get(cesc2("#/c10/s1b"))
       .invoke("text")
@@ -10135,7 +10385,7 @@ describe("Copy Tag Tests", function () {
         expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
 
-        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        // c10s's grandchildren should have retained their original names
         let c10sChildName = stateVariables[c10s].activeChildren.filter(
           (x) => x.componentName,
         )[0].componentName;
@@ -10143,9 +10393,9 @@ describe("Copy Tag Tests", function () {
           .filter((x) => x.componentName)
           .map((x) => x.componentName);
 
-        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__");
+        expect(c10sGrandChildNames[0]).eq("/c10/c1/grp/_number1");
+        expect(c10sGrandChildNames[1]).eq("/c10/c1/grp/_number2");
+        expect(c10sGrandChildNames[2]).eq("/c10/c1/_number1");
         expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
         expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
@@ -10254,7 +10504,7 @@ describe("Copy Tag Tests", function () {
       <section><copy name="c1" source="_p1" newNamespace /></section>
       
       <copy name="c2" source="c1" />
-      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c3" source="c1" assignNames="c1a" />
       <copy name="c4" source="c1" newNamespace />
       <copy name="c5" source="c1" newNamespace assignNames="c1a" />
       <copy name="c6" source="c3" newNamespace />
@@ -10263,7 +10513,6 @@ describe("Copy Tag Tests", function () {
       <copy name="c8" source="_section1" assignNames="s1a" />
       <copy name="c9" source="_section1" newNamespace />
       <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
-      <copy name="c11" source="_section1" newNamespace assignNames="grp" />
     
     `,
         },
@@ -10280,9 +10529,9 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c1/grp/n2")).should("have.text", "2");
     cy.get(cesc2("#/c1/n1")).should("have.text", "3");
 
-    cy.get(cesc2("#/c3/grp/n1")).should("have.text", "1");
-    cy.get(cesc2("#/c3/grp/n2")).should("have.text", "2");
-    cy.get(cesc2("#/c3/n1")).should("have.text", "3");
+    cy.get(cesc2("#/c1a/grp/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c1a/grp/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c1a/n1")).should("have.text", "3");
 
     cy.get(cesc2("#/c4/c1/grp/n1")).should("have.text", "1");
     cy.get(cesc2("#/c4/c1/grp/n2")).should("have.text", "2");
@@ -10292,20 +10541,26 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c5/c1a/grp/n2")).should("have.text", "2");
     cy.get(cesc2("#/c5/c1a/n1")).should("have.text", "3");
 
-    cy.get(cesc2("#/c6/c3/grp/n1")).should("have.text", "1");
-    cy.get(cesc2("#/c6/c3/grp/n2")).should("have.text", "2");
-    cy.get(cesc2("#/c6/c3/n1")).should("have.text", "3");
+    cy.get(cesc2("#/c6/c1a/grp/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c6/c1a/grp/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c6/c1a/n1")).should("have.text", "3");
 
     cy.get(cesc2("#/c9/c1/grp/n1")).should("have.text", "1");
     cy.get(cesc2("#/c9/c1/grp/n2")).should("have.text", "2");
     cy.get(cesc2("#/c9/c1/n1")).should("have.text", "3");
 
+    cy.get(cesc2("#/c10/c1/grp/n1")).should("have.text", "1");
+    cy.get(cesc2("#/c10/c1/grp/n2")).should("have.text", "2");
+    cy.get(cesc2("#/c10/c1/n1")).should("have.text", "3");
+
     cy.get(cesc2("#/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c1/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c1a/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c4/c1/_p1")).should("have.text", "values: 1 2 3");
     cy.get(cesc2("#/c5/c1a/_p1")).should("have.text", "values: 1 2 3");
-    cy.get(cesc2("#/c6/c3/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c6/c1a/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c9/c1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/c10/c1/_p1")).should("have.text", "values: 1 2 3");
 
     cy.get(cesc2("#/_section1"))
       .invoke("text")
@@ -10317,15 +10572,15 @@ describe("Copy Tag Tests", function () {
       .then((text) => {
         expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null;
       });
+    cy.get(cesc2("#/c9/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null;
+      });
     cy.get(cesc2("#/c10/s1b"))
       .invoke("text")
       .then((text) => {
         expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
-      });
-    cy.get(cesc2("#/c11/grp"))
-      .invoke("text")
-      .then((text) => {
-        expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null;
       });
 
     cy.window().then(async (win) => {
@@ -10337,7 +10592,6 @@ describe("Copy Tag Tests", function () {
       let c8s = stateVariables["/c8"].replacements[0].componentName;
       let c9s = stateVariables["/c9"].replacements[0].componentName;
       let c10s = stateVariables["/c10"].replacements[0].componentName;
-      let c11s = stateVariables["/c11"].replacements[0].componentName;
 
       cy.get(cesc2("#" + c2p)).should("have.text", "values: 1 2 3");
       cy.get(cesc2("#" + c7s))
@@ -10359,11 +10613,6 @@ describe("Copy Tag Tests", function () {
         .invoke("text")
         .then((text) => {
           expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
-        });
-      cy.get(cesc2("#" + c11s))
-        .invoke("text")
-        .then((text) => {
-          expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null;
         });
 
       // put in window just so happens after above
@@ -10428,7 +10677,7 @@ describe("Copy Tag Tests", function () {
         expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
 
-        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        // c10s's grandchildren should have retained their original names
         let c10sChildName = stateVariables[c10s].activeChildren.filter(
           (x) => x.componentName,
         )[0].componentName;
@@ -10436,27 +10685,12 @@ describe("Copy Tag Tests", function () {
           .filter((x) => x.componentName)
           .map((x) => x.componentName);
 
-        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__");
-        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__");
+        expect(c10sGrandChildNames[0]).eq("/c10/c1/grp/n1");
+        expect(c10sGrandChildNames[1]).eq("/c10/c1/grp/n2");
+        expect(c10sGrandChildNames[2]).eq("/c10/c1/n1");
         expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
         expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
         expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
-
-        // c11s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
-        let c11sChildName = stateVariables[c11s].activeChildren.filter(
-          (x) => x.componentName,
-        )[0].componentName;
-        let c11sGrandChildNames = stateVariables[c11sChildName].activeChildren
-          .filter((x) => x.componentName)
-          .map((x) => x.componentName);
-
-        expect(c11sGrandChildNames[0].slice(0, 7)).eq("/c11/__");
-        expect(c11sGrandChildNames[1].slice(0, 7)).eq("/c11/__");
-        expect(c11sGrandChildNames[2].slice(0, 7)).eq("/c11/__");
-        expect(stateVariables[c11sGrandChildNames[0]].stateValues.value).eq(1);
-        expect(stateVariables[c11sGrandChildNames[1]].stateValues.value).eq(2);
-        expect(stateVariables[c11sGrandChildNames[2]].stateValues.value).eq(3);
       });
     });
   });
@@ -10611,7 +10845,6 @@ describe("Copy Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
       <group name="grp" newNamespace><number name="num1">1</number> <number name="num2">2</number></group>
 
       <p><copy source="grp" assignNames="(num2)" /></p>
@@ -10625,6 +10858,24 @@ describe("Copy Tag Tests", function () {
 
     cy.document().should("contain.text", "Duplicate componentName");
     cy.document().should("contain.text", "num2");
+  });
+
+  it("copy p with newNamespace, does not avoid name collision when assignnames", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <p name="p"><text name="hello">Hello</text></p>
+      <copy name="c" source="p" newNamespace assignNames="hello" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.document().should("contain.text", "Duplicate component name");
+    cy.document().should("contain.text", "hello");
   });
 
   it("copy componentIndex", () => {

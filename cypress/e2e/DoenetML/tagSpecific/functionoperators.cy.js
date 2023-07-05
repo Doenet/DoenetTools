@@ -81,14 +81,18 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables["/m4"].replacements.reduce(
+      let map4Replacements = stateVariables[
+        stateVariables["/m4"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables["/m5"].replacements.reduce(
+      let map5Replacements = stateVariables[
+        stateVariables["/m5"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -262,14 +266,18 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables["/m4"].replacements.reduce(
+      let map4Replacements = stateVariables[
+        stateVariables["/m4"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables["/m5"].replacements.reduce(
+      let map5Replacements = stateVariables[
+        stateVariables["/m5"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -583,14 +591,18 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables["/m4"].replacements.reduce(
+      let map4Replacements = stateVariables[
+        stateVariables["/m4"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables["/m5"].replacements.reduce(
+      let map5Replacements = stateVariables[
+        stateVariables["/m5"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -767,14 +779,18 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables["/m4"].replacements.reduce(
+      let map4Replacements = stateVariables[
+        stateVariables["/m4"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables["/m5"].replacements.reduce(
+      let map5Replacements = stateVariables[
+        stateVariables["/m5"].replacements[0].componentName
+      ].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );

@@ -277,8 +277,8 @@ describe("Spreadsheet Tag Tests", function () {
 
   <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
   <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" source="C1" assignNames="ss1b" />
-  <copy name="C2a" source="C2" assignNames="ss2b" />
+  <copy name="C1a" source="C1" assignNames="(ss1b)" />
+  <copy name="C2a" source="C2" assignNames="(ss2b)" />
   `,
         },
         "*",
@@ -522,8 +522,8 @@ describe("Spreadsheet Tag Tests", function () {
 
   <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
   <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" source="C1" assignNames="ss1b" />
-  <copy name="C2a" source="C2" assignNames="ss2b" />
+  <copy name="C1a" source="C1" assignNames="(ss1b)" />
+  <copy name="C2a" source="C2" assignNames="(ss2b)" />
   `,
         },
         "*",
