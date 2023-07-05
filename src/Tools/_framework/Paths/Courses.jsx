@@ -386,6 +386,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 <PopoverTrigger>
                   {activeCourse.color == "none" ? (
                     <Image
+                      tabIndex={0} //FYI Need tabIndex or toggle doesn't work in popover
                       data-test="Card Image Link"
                       height="134px"
                       width="200px"
@@ -396,6 +397,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                     />
                   ) : (
                     <Box
+                      tabIndex={0}
                       data-test="Card Color Link"
                       height="134px"
                       width="200px"
@@ -405,8 +407,8 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                     />
                   )}
                 </PopoverTrigger>
-                <PopoverContent width="600px" background="doenet.lightGray">
-                  <PopoverArrow bg="doenet.lightGray" />
+                <PopoverContent width="600px" bg="doenet.canvas">
+                  <PopoverArrow bg="doenet.canvas" />
                   <PopoverBody>
                     <SimpleGrid columns={6} spacing={3} width="560px" m="10px">
                       {driveColors.map((item) => {
