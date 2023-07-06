@@ -507,28 +507,40 @@ describe("Select Tag Tests", function () {
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noresample1"].replacements[0].componentName
+            stateVariables[
+              stateVariables["/noresample1"].replacements[0].componentName
+            ].replacements[0].componentName
           ].replacements[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noresample2"].replacements[0].componentName
+            stateVariables[
+              stateVariables["/noresample2"].replacements[0].componentName
+            ].replacements[0].componentName
           ].replacements[0].componentName
         ].stateValues.value,
       ).eq(x2);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noreresample1"].replacements[0].componentName
+            stateVariables[
+              stateVariables[
+                stateVariables["/noreresample1"].replacements[0].componentName
+              ].replacements[0].componentName
+            ].replacements[0].componentName
           ].replacements[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noreresample2"].replacements[0].componentName
+            stateVariables[
+              stateVariables[
+                stateVariables["/noreresample2"].replacements[0].componentName
+              ].replacements[0].componentName
+            ].replacements[0].componentName
           ].replacements[0].componentName
         ].stateValues.value,
       ).eq(x2);
@@ -550,14 +562,18 @@ describe("Select Tag Tests", function () {
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noreresamplelist"].replacements[0].componentName
+            stateVariables[
+              stateVariables["/noreresamplelist"].replacements[0].componentName
+            ].replacements[0].componentName
           ].activeChildren[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables["/noreresamplelist"].replacements[0].componentName
+            stateVariables[
+              stateVariables["/noreresamplelist"].replacements[0].componentName
+            ].replacements[0].componentName
           ].activeChildren[1].componentName
         ].stateValues.value,
       ).eq(x2);
@@ -584,7 +600,9 @@ describe("Select Tag Tests", function () {
         stateVariables[
           stateVariables[
             stateVariables[
-              stateVariables["/noreresamplep"].replacements[0].componentName
+              stateVariables[
+                stateVariables["/noreresamplep"].replacements[0].componentName
+              ].replacements[0].componentName
             ].activeChildren[1].componentName
           ].activeChildren[0].componentName
         ].stateValues.value,
@@ -593,7 +611,9 @@ describe("Select Tag Tests", function () {
         stateVariables[
           stateVariables[
             stateVariables[
-              stateVariables["/noreresamplep"].replacements[0].componentName
+              stateVariables[
+                stateVariables["/noreresamplep"].replacements[0].componentName
+              ].replacements[0].componentName
             ].activeChildren[1].componentName
           ].activeChildren[1].componentName
         ].stateValues.value,
@@ -621,7 +641,7 @@ describe("Select Tag Tests", function () {
     </aslist>
     </p>
 
-    <p name="pchoices2">Selected choices: <aslist><copy name="noresample" target="sample1" assignNames="((w1)) ((w2)) ((w3)) ((w4)) ((w5)) ((w6)) ((w7))" /></aslist></p>
+    <p name="pchoices2">Selected choices: <aslist><select name="noresample" copysource="sample1" assignNames="((w1)) ((w2)) ((w3)) ((w4)) ((w5)) ((w6)) ((w7))" /></aslist></p>
 
     <copy name="pchoices3" target="pchoices" />
 
@@ -809,13 +829,13 @@ describe("Select Tag Tests", function () {
     <p name="p2"><aslist><copy target="_map1" /></aslist></p>
     <p name="p3"><copy target="_aslist1" /></p>
 
-    <copy name="p4" target="p1" />
-    <copy name="p5" target="p2" />
-    <copy name="p6" target="p3" />
+    <copy name="p4" target="p1" assignNames="p1a" />
+    <copy name="p5" target="p2" assignNames="p2a" />
+    <copy name="p6" target="p3" assignNames="p3a" />
 
-    <copy name="p7" target="p4" />
-    <copy name="p8" target="p5" />
-    <copy name="p9" target="p6" />
+    <copy name="p7" target="p1a" />
+    <copy name="p8" target="p2a" />
+    <copy name="p9" target="p3a" />
     <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
     `,
         },
@@ -2771,8 +2791,10 @@ describe("Select Tag Tests", function () {
 
       let x3 =
         stateVariables[
-          stateVariables[stateVariables["/x3"].replacements[0].componentName]
-            .replacements[0].componentName
+          stateVariables[
+            stateVariables[stateVariables["/x3"].replacements[0].componentName]
+              .replacements[0].componentName
+          ].replacements[0].componentName
         ].stateValues.value;
       expect(x3).eq(expectedx);
     });
@@ -2877,20 +2899,26 @@ describe("Select Tag Tests", function () {
 
       let x3 =
         stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[0].componentName]
-            .replacements[0].componentName
+          stateVariables[
+            stateVariables[stateVariables["/s2"].replacements[0].componentName]
+              .replacements[0].componentName
+          ].replacements[0].componentName
         ].stateValues.value;
       expect(x3).eq(x);
       let y3 =
         stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[1].componentName]
-            .replacements[0].componentName
+          stateVariables[
+            stateVariables[stateVariables["/s2"].replacements[0].componentName]
+              .replacements[1].componentName
+          ].replacements[0].componentName
         ].stateValues.value;
       expect(y3).eq(y);
       let z3 =
         stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[2].componentName]
-            .replacements[0].componentName
+          stateVariables[
+            stateVariables[stateVariables["/s2"].replacements[0].componentName]
+              .replacements[2].componentName
+          ].replacements[0].componentName
         ].stateValues.value;
       expect(z3).eq(z);
     });
@@ -3597,70 +3625,98 @@ describe("Select Tag Tests", function () {
           .stateValues.value,
         stateVariables[stateVariables["/qr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let r3s = [
         stateVariables[stateVariables["/rq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/rr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let s3s = [
         stateVariables[stateVariables["/sq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/sr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let t3s = [
         stateVariables[stateVariables["/tq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/tr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let u3s = [
         stateVariables[stateVariables["/uq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/ur"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let v3s = [
         stateVariables[stateVariables["/vq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/vr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/vq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/vr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let w3s = [
         stateVariables[stateVariables["/wq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/wr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/wq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/wr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
 
       expect(q3s).eqls(qs);
@@ -3789,49 +3845,63 @@ describe("Select Tag Tests", function () {
       expect(v2s).eqls(vs);
       expect(w2s).eqls(ws);
 
-      let q3s = stateVariables["/q3"].replacements
+      let q3s = stateVariables[
+        stateVariables["/q3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let r3s = stateVariables["/r3"].replacements
+      let r3s = stateVariables[
+        stateVariables["/r3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let s3s = stateVariables["/s3"].replacements
+      let s3s = stateVariables[
+        stateVariables["/s3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let t3s = stateVariables["/t3"].replacements
+      let t3s = stateVariables[
+        stateVariables["/t3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let u3s = stateVariables["/u3"].replacements
+      let u3s = stateVariables[
+        stateVariables["/u3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let v3s = stateVariables["/v3"].replacements
+      let v3s = stateVariables[
+        stateVariables["/v3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let w3s = stateVariables["/w3"].replacements
+      let w3s = stateVariables[
+        stateVariables["/w3"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
@@ -3852,70 +3922,98 @@ describe("Select Tag Tests", function () {
           .stateValues.value,
         stateVariables[stateVariables["/qr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/qq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/qr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let r4s = [
         stateVariables[stateVariables["/rq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/rr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/rq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/rr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let s4s = [
         stateVariables[stateVariables["/sq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/sr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/sq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/sr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let t4s = [
         stateVariables[stateVariables["/tq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/tr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/tq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/tr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let u4s = [
         stateVariables[stateVariables["/uq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/ur"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/uq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/ur2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let v4s = [
         stateVariables[stateVariables["/vq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/vr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/vq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/vr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
       let w4s = [
         stateVariables[stateVariables["/wq"].replacements[0].componentName]
           .stateValues.value,
         stateVariables[stateVariables["/wr"].replacements[0].componentName]
           .stateValues.value,
-        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/wq2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
+        stateVariables[
+          stateVariables[stateVariables["/wr2"].replacements[0].componentName]
+            .replacements[0].componentName
+        ].stateValues.value,
       ];
 
       expect(q4s).eqls(qs);
@@ -4321,35 +4419,45 @@ describe("Select Tag Tests", function () {
             : x.stateValues.value,
         );
 
-      let q2s = stateVariables["/q2"].replacements
+      let q2s = stateVariables[
+        stateVariables["/q2"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let r2s = stateVariables["/r2"].replacements
+      let r2s = stateVariables[
+        stateVariables["/r2"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let s2s = stateVariables["/s2"].replacements
+      let s2s = stateVariables[
+        stateVariables["/s2"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let t2s = stateVariables["/t2"].replacements
+      let t2s = stateVariables[
+        stateVariables["/t2"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
             ? stateVariables[x.replacements[0].componentName].stateValues.value
             : x.stateValues.value,
         );
-      let u2s = stateVariables["/u2"].replacements
+      let u2s = stateVariables[
+        stateVariables["/u2"].replacements[0].componentName
+      ].replacements
         .map((x) => stateVariables[x.componentName])
         .map((x) =>
           x.replacements
@@ -4593,15 +4701,15 @@ describe("Select Tag Tests", function () {
     <select assignnames="(a b c d)">
     <option>
       <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
-      <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" target="q" /></math>
-      <copy target="a/w" />
-      <copy target="b/q" />
+      <math simplify newNamespace><math name="q">z</math> + 2<copy assignNames="v" target="q" /></math>
+      <copy target="a/w" assignNamesSkip="1" />
+      <copy target="b/q" assignNamesSkip="1" />
     </option>
     <option>
       <math name="h2" newNamespace><math name="w">u</math><math>v</math></math>
-      <math simplify newNamespace><math name="q">t</math> + 2<copy name="v" target="q" /></math>
-      <copy target="a/w" />
-      <copy target="b/q" />
+      <math simplify newNamespace><math name="q">t</math> + 2<copy assignNames="v" target="q" /></math>
+      <copy target="a/w" assignNamesSkip="1" />
+      <copy target="b/q" assignNamesSkip="1" />
     </option>
     </select>
     
@@ -5087,10 +5195,10 @@ describe("Select Tag Tests", function () {
 
     <p name="pa1">a1: <copy target="a" assignNames="((a11) (a12))" /></p>
 
-    <p name="ppieces" >pieces: <copy target="_select1" assignNames="(b c)" /></p>
+    <p name="ppieces" >pieces: <select copySource="_select1" assignNames="(b c)" /></p>
   
-    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
-    <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
+    <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
+    <p name="pc1">c1: <copy target="c" assignNames="(c1)" /></p>
   
     
     `,

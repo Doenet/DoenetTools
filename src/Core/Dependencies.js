@@ -4614,7 +4614,12 @@ class ChildDependency extends Dependency {
       activeChildrenIndices = [];
 
       for (let [ind, child] of allActiveChildrenMatched.entries()) {
-        if (!child.shadows) {
+        if (
+          !(
+            child.shadows &&
+            child.shadows.compositeName === parent?.shadows?.compositeName
+          )
+        ) {
           activeChildrenMatched.push(child);
           activeChildrenIndices.push(allActiveChildrenIndices[ind]);
         }

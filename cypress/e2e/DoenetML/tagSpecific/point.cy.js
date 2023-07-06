@@ -7972,7 +7972,7 @@ describe("Point Tag Tests", function () {
   </graph>
   
   <graph>
-  <point name="p7"><copy target="_copy1" assignNames="p8" /></point>
+  <point name="p7"><copy target="_copy1" assignNames="(p8)" /></point>
   </graph>
   <copy prop="coords" target="p1" assignNames="coords1" />
   `,

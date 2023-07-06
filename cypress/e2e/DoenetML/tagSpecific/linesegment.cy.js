@@ -1228,7 +1228,7 @@ describe("LineSegment Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="endpoint1" target="l" assignNames="A" />
     <copy prop="endpoint2" target="l" assignNames="B" />  
   </graph>
@@ -1664,7 +1664,7 @@ describe("LineSegment Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g4">
-    <copy target="../g2/_copy1" assignNames="l" />
+    <copy target="../g2/_copy1" assignNames="(l)" />
     <copy prop="endpoint1" target="l" assignNames="A" />
     <copy prop="endpoint2" target="l" assignNames="B" />  
   </graph>

@@ -2475,10 +2475,20 @@ export default class Core {
       }
 
       let parentName = component.componentName;
+      let parentCreatesNewNamespace = newNamespace;
       if (component.doenetAttributes.parentNameForAssignNames) {
         parentName = component.doenetAttributes.parentNameForAssignNames;
+        parentCreatesNewNamespace =
+          this._components[parentName].attributes.newNamespace?.primitive;
       }
 
+      // If we added a level to assignNames, that means that this composite won't be assigning names
+      // but that we are delegating that to the next composite.
+      // But, we want to use the current parent name for assigning name
+      // (which is particularly relevant when parentCreatesNewNamespace, as parent name becomes the new namespace).
+      // We set compositesParentNameForAssignNames to the current parent name.
+      // Since we've added a level to assignNames, each name will be an array
+      // and processAssignNames will set parentNameForAssignNames to be compositesParentNameForAssignNames
       let compositesParentNameForAssignNames;
       if (await component.stateValues.addLevelToAssignNames) {
         compositesParentNameForAssignNames = parentName;
@@ -2489,7 +2499,7 @@ export default class Core {
         serializedComponents: serializedReplacements,
         parentName,
         parentNameForUniqueNames: component.componentName,
-        parentCreatesNewNamespace: newNamespace,
+        parentCreatesNewNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
         shadowingComposite: true,
@@ -7750,7 +7760,19 @@ export default class Core {
 
     for (let childName in component.allChildren) {
       let unproxiedChild = this._components[childName];
-      this.setAncestors(unproxiedChild, ancestorsForChildren);
+      // Note: when add and deleting replacements of shadowed composites,
+      // it is possible that we end up processing the defining children of ancestors of the composite
+      // while we were delaying processing the defining children of the composite's parent,
+      // which could lead to an attempt to set the ancestors of that composite's parent's children
+      // while the booking variable allChildren is in an inconsistent state.
+      // To avoid an error, we don't set ancestors in the case
+      // (See test "references to internal and external components, inconsistent new namespaces"
+      // from conditionalcontent.cy.js for an example that triggered the need for this check.)
+      // TODO: can we avoid the need for this check by preventing the algorithm from
+      // attempting to set ancestors in this case?
+      if (unproxiedChild) {
+        this.setAncestors(unproxiedChild, ancestorsForChildren);
+      }
     }
 
     for (let attrName in component.attributes) {
@@ -8867,11 +8889,21 @@ export default class Core {
           }
 
           let parentName = shadowingComponent.componentName;
+          let parentCreatesNewNamespace = shadowingNewNamespace;
           if (shadowingComponent.doenetAttributes.parentNameForAssignNames) {
             parentName =
               shadowingComponent.doenetAttributes.parentNameForAssignNames;
+            parentCreatesNewNamespace =
+              this._components[parentName].attributes.newNamespace?.primitive;
           }
 
+          // If we added a level to assignNames, that means that this composite won't be assigning names
+          // but that we are delegating that to the next composite.
+          // But, we want to use the current parent name for assigning name
+          // (which is particularly relevant when parentCreatesNewNamespace, as parent name becomes the new namespace).
+          // We set compositesParentNameForAssignNames to the current parent name.
+          // Since we've added a level to assignNames, each name will be an array
+          // and processAssignNames will set parentNameForAssignNames to be compositesParentNameForAssignNames
           let compositesParentNameForAssignNames;
           if (await shadowingComponent.stateValues.addLevelToAssignNames) {
             compositesParentNameForAssignNames = parentName;
@@ -8881,7 +8913,7 @@ export default class Core {
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName,
-            parentCreatesNewNamespace: shadowingNewNamespace,
+            parentCreatesNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
             compositesParentNameForAssignNames,

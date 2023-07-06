@@ -3470,9 +3470,19 @@ export function processAssignNames({
 
     if (!name) {
       // A name was not specified from assignNames.
-      // If originalNamesAreConsistent, we'll try to use the component's originalName.
+      // If assignNamesForCompositeReplacement was specified and have a composite,
+      // then use assignNamesForCompositeReplacement for the composite's name.
+      // Else if originalNamesAreConsistent, we'll try to use the component's originalName.
       // Otherwise, we'll create a unique (unreachable) name
       if (
+        componentInfoObjects.isCompositeComponent({
+          componentType: component.componentType,
+          includeNonStandard: true,
+        }) &&
+        assignNamesForCompositeReplacement
+      ) {
+        name = assignNamesForCompositeReplacement;
+      } else if (
         originalNamesAreConsistent &&
         component.originalName &&
         !component.doenetAttributes?.createUniqueName
