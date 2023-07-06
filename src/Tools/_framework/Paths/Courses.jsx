@@ -109,6 +109,8 @@ export async function loader({ params }) {
 export function Courses() {
   const { courses } = useLoaderData();
   const fetcher = useFetcher();
+  // console.log(fetcher.data); //Use this for error messages from the server
+
   const {
     isOpen: duplicateIsOpen,
     onOpen: duplicateOnOpen,
@@ -350,15 +352,23 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
 
 function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
   const [newLabel, setNewLabel] = useState("Untitled Course");
+  const lastGoodLabel = useRef(null);
 
+  //If the data source changes update the label state
   useEffect(() => {
     if (activeCourse.label) {
       setNewLabel(activeCourse.label);
+      lastGoodLabel.current = activeCourse.label;
     }
   }, [activeCourse.label]);
 
   function handleLabelUpdate({ newLabel }) {
-    if (newLabel != "") {
+    if (newLabel == "") {
+      //If user is submitting the label blank
+      //then reset it to the last known good value
+      setNewLabel(lastGoodLabel.current);
+    } else {
+      lastGoodLabel.current = activeCourse.label;
       fetcher.submit(
         {
           _action: "Rename",
