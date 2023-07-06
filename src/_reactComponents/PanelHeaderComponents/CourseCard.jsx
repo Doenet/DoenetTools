@@ -24,6 +24,7 @@ export function CourseCard({
   setActiveCourseIndex,
   duplicateOnOpen,
   settingsOnOpen,
+  onOpenDeleteAlert,
 }) {
   const fetcher = useFetcher();
 
@@ -121,10 +122,8 @@ export function CourseCard({
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      fetcher.submit(
-                        { _action: "Delete", courseId: course.courseId },
-                        { method: "post" },
-                      );
+                      setActiveCourseIndex(index);
+                      onOpenDeleteAlert();
                     }}
                   >
                     Delete

@@ -21,26 +21,25 @@ import {
   DrawerOverlay,
   Drawer,
   useDisclosure,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Image,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
   PopoverBody,
   SimpleGrid,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from "@chakra-ui/react";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useFetcher } from "react-router-dom";
 import axios from "axios";
 import { CourseCard } from "../../../_reactComponents/PanelHeaderComponents/CourseCard";
-import ColorImagePicker from "../../../_reactComponents/PanelHeaderComponents/ColorImagePicker";
 import { driveColors, driveImages } from "../../../_reactComponents/Drive/util";
 
 export async function action({ request }) {
@@ -123,6 +122,13 @@ export function Courses() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isDeleteAlertOpen,
+    onOpen: onOpenDeleteAlert,
+    onClose: onCloseDeleteAlert,
+  } = useDisclosure();
+  const cancelDeleteAlertRef = React.useRef();
+
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
   let optimisticCourses = [...courses];
@@ -158,6 +164,48 @@ export function Courses() {
 
   return (
     <>
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelDeleteAlertRef}
+        onClose={onCloseDeleteAlert}
+        isOpen={isDeleteAlertOpen}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Course &quot;{optimisticCourses[activeCourseIndex].label}
+              &quot;
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure? You can&apos;t undo this action afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelDeleteAlertRef} onClick={onCloseDeleteAlert}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  onCloseDeleteAlert();
+                  fetcher.submit(
+                    {
+                      _action: "Delete",
+                      courseId: optimisticCourses[activeCourseIndex].courseId,
+                    },
+                    { method: "post" },
+                  );
+                }}
+                ml={3}
+              >
+                Delete Course
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
       <DuplicateDrawer
         activeCourse={optimisticCourses[activeCourseIndex]}
         fetcher={fetcher}
@@ -200,6 +248,7 @@ export function Courses() {
               <Button
                 data-test="Add Course"
                 size="xs"
+                colorScheme="blue"
                 onClick={() => {
                   fetcher.submit(
                     { _action: "Create New Course" },
@@ -231,6 +280,7 @@ export function Courses() {
                   setActiveCourseIndex={setActiveCourseIndex}
                   duplicateOnOpen={duplicateOnOpen}
                   settingsOnOpen={settingsOnOpen}
+                  onOpenDeleteAlert={onOpenDeleteAlert}
                 />
               ))}
             </Wrap>
