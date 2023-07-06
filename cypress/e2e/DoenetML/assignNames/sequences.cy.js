@@ -22,14 +22,14 @@ describe("sequence and map assignName Tests", function () {
   <p name="pb">b: <copy name="cpb" target="b" /></p>
 
   <p name="s2"><aslist>
-  <copy name="cpall" target="_sequence1" assignNames="a1 b1 c1" />
+  <sequence name="cpall" copytarget="_sequence1" assignNames="a1 b1 c1" />
   </aslist></p>
   <p name="pa1">a1: <copy name="cpa1" target="a1" /></p>
   <p name="pb1">b1: <copy name="cpb1" target="b1" /></p>
   <p name="pc1">c1: <copy name="cpc1" target="c1" /></p>
 
   <p name="s3"><aslist>
-  <copy name="cpall2" target="cpall" assignNames="a2 b2 c2 d2 e2" />
+  <sequence name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" />
   </aslist></p>
   <p name="pa2">a2: <copy name="cpa2" target="a2" /></p>
   <p name="pb2">b2: <copy name="cpb2" target="b2" /></p>
@@ -38,7 +38,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pe2">e2: <copy name="cpe2" target="e2" /></p>
 
   <p name="s4"><aslist>
-  <copy name="cpall3" target="cpall2" assignNames="a3 b3 c3 d3" />
+  <sequence name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" />
   </aslist></p>
   <p name="pa3">a3: <copy name="cpa3" target="a3" /></p>
   <p name="pb3">b3: <copy name="cpb3" target="b3" /></p>
@@ -589,7 +589,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pbv">b/v: <copy name="cpbv" target="b/v" /></p>
 
 
-  <p name="m2"><copy name="cpall" target="_map1" assignNames="a1 b1 c1" /></p>
+  <p name="m2"><map name="cpall" copytarget="_map1" assignNames="a1 b1 c1" /></p>
   <p name="pa1">a1: <copy name="cpa1" target="a1" /></p>
   <p name="pb1">b1: <copy name="cpb1" target="b1" /></p>
   <p name="pc1">c1: <copy name="cpc1" target="c1" /></p>
@@ -603,7 +603,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pcv1">c1/v: <copy name="cpcv1" target="c1/v" /></p>
 
 
-  <p name="m3"><copy name="cpall2" target="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
+  <p name="m3"><map name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
   <p name="pa2">a2: <copy name="cpa2" target="a2" /></p>
   <p name="pb2">b2: <copy name="cpb2" target="b2" /></p>
   <p name="pc2">c2: <copy name="cpc2" target="c2" /></p>
@@ -623,7 +623,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pev2">e2/v: <copy name="cpev2" target="e2/v" /></p>
 
 
-  <p name="m4"><copy name="cpall3" target="cpall2" assignNames="a3 b3 c3 d3" /></p>
+  <p name="m4"><map name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" /></p>
   <p name="pa3">a3: <copy name="cpa3" target="a3" /></p>
   <p name="pb3">b3: <copy name="cpb3" target="b3" /></p>
   <p name="pc3">c3: <copy name="cpc3" target="c3" /></p>

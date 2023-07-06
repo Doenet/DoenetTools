@@ -368,7 +368,7 @@ describe("ChoiceInput Tag Tests", function () {
       </choiceinput>
       <copy name="copy" target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
       <copy name="copy2" inline="false" target="ci1" assignNames="ci3" createComponentOfType="choiceinput" />
-      <copy name="copy3" inline="false" target="copy" assignNames="ci4" createComponentOfType="choiceinput" />
+      <copy name="copy3" inline="false" target="ci2" assignNames="ci4" createComponentOfType="choiceinput" />
   
       <p>Selected values: <aslist>
       <copy prop='selectedvalue' target="ci1" />

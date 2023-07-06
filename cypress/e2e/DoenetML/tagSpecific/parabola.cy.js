@@ -27,7 +27,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignnames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 
@@ -1658,7 +1658,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignnames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 
@@ -3290,7 +3290,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignnames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 
@@ -4964,7 +4964,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignnames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 
@@ -7276,7 +7276,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignnames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 
@@ -10369,7 +10369,7 @@ describe("Parabola Tag Tests", function () {
     </graph>
     <graph name="g2">
     <copy name="p2" target="_parabola1" />
-    <copy name="v2" target="v" />
+    <copy assignames="v2" target="v" />
     </graph>
     <copy name="g3" target="g2"/>
 

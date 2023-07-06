@@ -290,7 +290,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         ).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.map(
+      let copiedSamples = stateVariables[
+        stateVariables["/_copy1"].replacements[0].componentName
+      ].replacements.map(
         (y) => stateVariables[y.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
@@ -463,13 +465,13 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p name="p2"><aslist><copy source="_map1" /></aslist></p>
     <p name="p3"><copy source="_aslist1" /></p>
 
-    <copy name="p4" source="p1" />
-    <copy name="p5" source="p2" />
-    <copy name="p6" source="p3" />
+    <copy name="p4" target="p1" assignNames="p1a" />
+    <copy name="p5" target="p2" assignNames="p2a" />
+    <copy name="p6" target="p3" assignNames="p3a" />
 
-    <copy name="p7" source="p4" />
-    <copy name="p8" source="p5" />
-    <copy name="p9" source="p6" />
+    <copy name="p7" target="p1a" />
+    <copy name="p8" target="p2a" />
+    <copy name="p9" target="p3a" />
     <p><copy prop="value" source="_mathinput1" assignNames="m1" /></p>
     `,
         },

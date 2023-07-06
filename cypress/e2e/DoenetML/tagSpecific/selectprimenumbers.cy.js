@@ -1066,18 +1066,18 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     </aslist></p>
 
     <p><aslist>
-    <copy name="noresample1" target="sample1" />
-    <copy name="noresample2" target="sample2" />
-    <copy name="noreresample1" target="noresample1" />
-    <copy name="noreresample2" target="noresample2" />
+    <copy assignNames="noresample1" target="sample1" />
+    <copy assignNames="noresample2" target="sample2" />
+    <copy assignNames="noreresample1" target="noresample1" />
+    <copy assignNames="noreresample2" target="noresample2" />
     </aslist></p>
 
     <p><copy name="noresamplelist" target="_aslist1" /></p>
 
-    <p><copy name="noreresamplelist" target="noresamplelist" /></p>
+    <p><copy assignNames="noreresamplelist" target="noresamplelist" /></p>
 
     <copy name="noresamplep" target="_p1" />
-    <copy name="noreresamplep" target="noresamplep" />
+    <copy assignNames="noreresamplep" target="noresamplep" />
     `,
         },
         "*",
@@ -1311,13 +1311,13 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <p name="p2"><aslist><copy target="_map1" /></aslist></p>
     <p name="p3"><copy target="_aslist1" /></p>
 
-    <copy name="p4" target="p1" />
-    <copy name="p5" target="p2" />
-    <copy name="p6" target="p3" />
+    <copy name="p4" target="p1" assignNames="p1a" />
+    <copy name="p5" target="p2" assignNames="p2a" />
+    <copy name="p6" target="p3" assignNames="p3a" />
 
-    <copy name="p7" target="p4" />
-    <copy name="p8" target="p5" />
-    <copy name="p9" target="p6" />
+    <copy name="p7" target="p1a" />
+    <copy name="p8" target="p2a" />
+    <copy name="p9" target="p3a" />
     <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
     `,
         },

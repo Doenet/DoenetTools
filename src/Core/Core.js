@@ -1558,6 +1558,10 @@ export default class Core {
           // newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
           newComponent.shadows = shadowInfo;
 
+          if (dep.firstLevelReplacement) {
+            newComponent.firstLevelReplacement = true;
+          }
+
           let shadowedComponent = this._components[name];
           if (!shadowedComponent.shadowedBy) {
             shadowedComponent.shadowedBy = [];
@@ -2375,10 +2379,32 @@ export default class Core {
 
     let attributesToConvert = {};
     if (component.attributes.isResponse) {
-      // TODO: is isResponse the only attribute to convert?
+      // We include a special case of copying isResponse from
+      // the shadowing composite.
+      // Rationale: we have added isResponse to the default sourceAttributesToIgnore
+      // attribute of copy, so that copies of responses are not responses.
+      // However, if an award has sourcesAreResponses set, then we want
+      // copies of the award to also set those sources to be responses.
+      // The award accomplishes this through preprocessSerializedChildren,
+      // which adds isResponse to copies of those targets.
+      // Those copies are the shadowing composites, and we want those
+      // isResponse attributes to be added to their replacements,
+      // circumventing the intent of the default sourceAttributesToIgnore=["isResponse"]
+      // TODO: this effect is quite confusing and unduly complicated.
+      // Can/should we give up this functionality for the sake of simplicity?
+      // A test that fails without this intervention is
+      // "full answer tag, copied in awards, shorter form" from answer.cy.js
       attributesToConvert.isResponse = component.attributes.isResponse;
     }
-    // Object.assign(attributesToConvert, compositeMediatingTheShadow.attributes);
+
+    // if the shadowing component is a first level replacement of compositeMediatingTheShadow,
+    // then the attributes of compositeMediatingTheShadow should be passed on
+    if (component.firstLevelReplacement) {
+      Object.assign(
+        attributesToConvert,
+        compositeMediatingTheShadow.attributes,
+      );
+    }
 
     // console.log(component.attributes);
     // console.log(compositeMediatingTheShadow.attributes);
@@ -2423,6 +2449,7 @@ export default class Core {
         ];
       let targetWithNewNamespace;
       if (target) {
+        console.log({ target });
         targetWithNewNamespace =
           // !this.componentInfoObjects.isCompositeComponent({
           //   componentType: target.componentType,
@@ -2439,6 +2466,7 @@ export default class Core {
         ) {
           if (recursiveTarget.replacements.length === 1) {
             recursiveTarget = recursiveTarget.replacements[0];
+            console.log({ recursiveTarget });
             targetWithNewNamespace =
               recursiveTarget.attributes.newNamespace?.primitive;
           } else {
@@ -2446,6 +2474,9 @@ export default class Core {
           }
         }
       }
+
+      console.log("As a test, setting targetWithNewNamespace to false!!!!!");
+      targetWithNewNamespace = false;
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2463,6 +2494,12 @@ export default class Core {
       // it is possible that those names will collide with the original names
       // but we don't protect against that.
 
+      console.log({
+        newNamespace,
+        targetWithNewNamespace,
+        mediatingNewNamespace,
+        assignNewNamespaces,
+      });
       let originalNamesAreConsistent =
         newNamespace ||
         targetWithNewNamespace ||

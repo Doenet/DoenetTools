@@ -1814,13 +1814,13 @@ describe("Sequence Tag Tests", function () {
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "8");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "0");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "0");
 
     cy.get(cesc("#\\/a2") + " textarea")
       .type("{end}{backspace}9{enter}", { force: true })
@@ -1828,16 +1828,16 @@ describe("Sequence Tag Tests", function () {
     cy.get(cesc("#\\/a3") + " .mjx-mrow").should("contain.text", "9");
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "9");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "0");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "9");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "0");
 
     cy.get(cesc("#\\/b2") + " textarea")
-      .type("2{enter}", { force: true })
+      .type("{end}{backspace}2{enter}", { force: true })
       .blur();
     cy.get(cesc("#\\/b3") + " .mjx-mrow").should("contain.text", "2");
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
@@ -1854,11 +1854,11 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "");
-    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "9");
     cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "9");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "2");
@@ -1884,14 +1884,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "0, 3, 6");
-    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "0");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "3");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "3");
+      .should("have.text", "2");
 
     cy.get(cesc("#\\/a2") + " textarea")
       .type("{end}{backspace}8{enter}", { force: true })
@@ -1899,13 +1899,13 @@ describe("Sequence Tag Tests", function () {
     cy.get(cesc("#\\/a3") + " .mjx-mrow").should("contain.text", "8");
     cy.get(cesc("#\\/thelist")).should("have.text", "0, 3, 6");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "8");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "3");
+      .should("have.text", "2");
 
     cy.get(cesc("#\\/b2") + " textarea")
       .type("{end}{backspace}7{enter}", { force: true })
