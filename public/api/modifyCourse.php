@@ -13,7 +13,12 @@ $userId = $jwtArray['userId'];
 
 //required unless data is passed in application/x-www-form-urlencoded or multipart/form-data
 $_POST = json_decode(file_get_contents('php://input'), true);
-if (array_key_exists('courseId', $_POST)) {
+try {
+
+
+    if (!array_key_exists('courseId', $_POST)) {
+        throw new Exception("No courseId sent.");
+    }
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 
     $permissions = permissionsAndSettingsForOneCourseFunction(
@@ -21,47 +26,52 @@ if (array_key_exists('courseId', $_POST)) {
         $userId,
         $courseId
     );
-    $allowed = $permissions['canModifyCourseSettings'] == '1';
-
-    if (array_key_exists('defaultRole', $_POST)) {
-        $allowed = $allowed && $permissions['canManageUsers'];
+    if ($permissions['canModifyCourseSettings'] != '1'){
+        throw new Exception("You don't have permission to make course changes.");
     }
 
-    if ($allowed) {
-        $settings = ['image', 'color', 'label', 'defaultRoleId','canAutoEnroll'];
-        $segments = [];
-        foreach ($settings as $setting) {
-            if (array_key_exists($setting, $_POST)) {
-                $sanitizedNewValue = mysqli_real_escape_string(
-                    $conn,
-                    $_POST[$setting]
-                );
-                array_push($segments, "$setting = '$sanitizedNewValue'");
-            }
+    $settings = ['image', 'color', 'label', 'defaultRoleId','canAutoEnroll'];
+    $segments = [];
+    foreach ($settings as $setting) {
+        if (array_key_exists($setting, $_POST)) {
+            $sanitizedNewValue = mysqli_real_escape_string(
+                $conn,
+                $_POST[$setting]
+            );
+            array_push($segments, "$setting = '$sanitizedNewValue'");
         }
-        $updates = implode(',', $segments);
-
-        $sql = "UPDATE course 
-            SET
-            $updates
-            WHERE 
-            courseId ='$courseId'
-        ";
-
-        $result = $conn->query($sql);
-
-        if ($result == true) {
-            http_response_code(202);
-        } else {
-            http_response_code(500);
-        }
-    } else {
-        http_response_code(403); //User if forbidden from operation
     }
-} else {
-    http_response_code(400); //post missing data
+    $updates = implode(',', $segments);
+
+    $sql = "UPDATE course 
+        SET
+        $updates
+        WHERE 
+        courseId ='$courseId'
+    ";
+
+    $result = $conn->query($sql);
+
+    if (!$result){
+        throw new Exception("Update Failed");
+    }
+
+        http_response_code(202);
+        $response_arr = [
+            'success' => true,
+        ];
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+
+    http_response_code(400);
+
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
 }
-
-$conn->close();
 
 ?>

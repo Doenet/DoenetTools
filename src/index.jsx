@@ -214,6 +214,8 @@ const router = createBrowserRouter([
         path: "courses",
         loader: courseLoader,
         action: courseAction,
+        errorElement: <div>Error!</div>,
+
         element: (
           <ChakraProvider theme={theme}>
             <Courses />
@@ -322,7 +324,6 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    // errorElement: <div>Error!</div>,
     element: (
       <MathJaxContext
         version={2}
