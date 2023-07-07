@@ -815,12 +815,12 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation({
+  async startAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -835,12 +835,12 @@ export default class AnimateFromSequence extends BaseComponent {
     });
   }
 
-  stopAnimation({
+  async stopAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -860,7 +860,7 @@ export default class AnimateFromSequence extends BaseComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",

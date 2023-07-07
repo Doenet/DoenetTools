@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("AnimateFromSequence Tag Tests", function () {
   beforeEach(() => {
@@ -1035,6 +1035,50 @@ describe("AnimateFromSequence Tag Tests", function () {
       cy.get(cesc("#\\/a")).should("have.text", `${lastValue}`);
       cy.get(cesc("#\\/a2")).should("have.text", `${lastValue}`);
     });
+  });
+
+  it("call animation actions immediate update display of animationOn", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <p>value: <number name="a">1</number></p>
+
+  <p name="pAnOn">Animation on: $x.animationOn</p>
+
+  <animateFromSequence name="x" animationMode='increase' target='a' animationInterval='1000000' />
+
+  <callAction target="x" actionName="startAnimation" name="start" >
+    <label>start</label>
+  </callAction>
+  <callAction target="x" actionName="stopAnimation" name="stop" >
+    <label>stop</label>
+  </callAction>
+  <callAction target="x" actionName="toggleAnimation" name="toggle" >
+    <label>toggle</label>
+  </callAction>
+
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/a")).should("have.text", "1");
+    cy.get(cesc2("#/pAnOn")).should("have.text", "Animation on: false");
+
+    cy.get(cesc2("#/start_button")).click();
+    cy.get(cesc2("#/pAnOn")).should("have.text", "Animation on: true");
+
+    cy.get(cesc2("#/stop_button")).click();
+    cy.get(cesc2("#/pAnOn")).should("have.text", "Animation on: false");
+
+    cy.get(cesc2("#/toggle_button")).click();
+    cy.get(cesc2("#/pAnOn")).should("have.text", "Animation on: true");
+
+    cy.get(cesc2("#/toggle_button")).click();
+    cy.get(cesc2("#/pAnOn")).should("have.text", "Animation on: false");
   });
 
   it("animate componentIndex", () => {

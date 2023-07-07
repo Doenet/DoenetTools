@@ -367,7 +367,7 @@ export default class Video extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  recordVideoStarted({
+  async recordVideoStarted({
     beginTime,
     duration,
     rate,
@@ -387,7 +387,7 @@ export default class Video extends BlockComponent {
         rate: rate,
       },
     });
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -487,7 +487,7 @@ export default class Video extends BlockComponent {
     });
   }
 
-  recordVideoPaused({
+  async recordVideoPaused({
     endTime,
     duration,
     actionId,
@@ -505,7 +505,7 @@ export default class Video extends BlockComponent {
         endingPoint: endTime,
       },
     });
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -536,7 +536,7 @@ export default class Video extends BlockComponent {
     });
   }
 
-  recordVideoCompleted({
+  async recordVideoCompleted({
     duration,
     actionId,
     sourceInformation = {},
@@ -550,7 +550,7 @@ export default class Video extends BlockComponent {
         duration: duration,
       },
     });
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -577,13 +577,13 @@ export default class Video extends BlockComponent {
     });
   }
 
-  recordVideoReady({
+  async recordVideoReady({
     duration,
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -648,13 +648,13 @@ export default class Video extends BlockComponent {
     });
   }
 
-  setTime({
+  async setTime({
     time,
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
