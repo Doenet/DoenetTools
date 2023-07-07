@@ -402,6 +402,7 @@ export function PublicEditor() {
                   <Button
                     data-test="Remix Button"
                     size="xs"
+                    colorScheme="blue"
                     onClick={async () => {
                       let resp = await axios.get(
                         `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
@@ -420,6 +421,7 @@ export function PublicEditor() {
                   <Button
                     data-test="Nav to signin"
                     size="xs"
+                    colorScheme="blue"
                     onClick={() => {
                       navigateTo.current = "/signin";
                       setRecoilPageToolView({

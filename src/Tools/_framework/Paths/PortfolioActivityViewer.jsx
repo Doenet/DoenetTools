@@ -207,6 +207,7 @@ export function PortfolioActivityViewer() {
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
                   <Button
                     size="xs"
+                    colorScheme="blue"
                     data-test="See Inside"
                     onClick={() => {
                       navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
@@ -219,6 +220,7 @@ export function PortfolioActivityViewer() {
                       <Button
                         data-test="Remix Button"
                         size="xs"
+                        colorScheme="blue"
                         onClick={async () => {
                           let resp = await axios.get(
                             `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
@@ -237,6 +239,7 @@ export function PortfolioActivityViewer() {
                   ) : (
                     <Button
                       dataTest="Nav to signin"
+                      colorScheme="blue"
                       size="xs"
                       onClick={() => {
                         navigateTo.current = "/signin";

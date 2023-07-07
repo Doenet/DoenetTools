@@ -379,6 +379,7 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
           </Button>
           <Button
             isDisabled={!newLabel || !areValidDates}
+            colorScheme="blue"
             onClick={() => {
               fetcher.submit(
                 {

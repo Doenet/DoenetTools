@@ -36,8 +36,10 @@ export default function Searchbar({ name = "q", defaultValue, dataTest }) {
             size="sm"
             borderLeftRadius={0}
             borderRightRadius={5}
-            border="1px solid #949494"
-            bg="doenet.mainBlue"
+            colorScheme="blue"
+
+            // border="1px solid #949494"
+            // bg="doenet.mainBlue"
           >
             Search
           </Button>

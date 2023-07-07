@@ -1,5 +1,6 @@
 // import axios from 'axios';
 import {
+  Button,
   Box,
   Icon,
   Text,
@@ -23,7 +24,6 @@ import {
   useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
@@ -276,8 +276,9 @@ export function Portfolio() {
           </Text>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
-              value="Add Activity"
               dataTest="Add Activity"
+              size="xs"
+              colorScheme="blue"
               onClick={async () => {
                 //Create a portfilio activity and redirect to the editor for it
                 let response = await fetch("/api/createPortfolioActivity.php");
@@ -289,7 +290,9 @@ export function Portfolio() {
                   throw Error(response.message);
                 }
               }}
-            />
+            >
+              Add Activity
+            </Button>
           </div>
         </Box>
         <PublicActivitiesSection data-test="Public Activities">
