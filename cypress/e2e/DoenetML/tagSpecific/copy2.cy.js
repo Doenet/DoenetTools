@@ -3365,6 +3365,177 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("add children with copySource, recreated replacements include added children", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <mathinput name="n" prefill="1" />
+
+    <conditionalContent assignNames="(g1)">
+      <case condition="$n>1">
+        <graph newNamespace>
+          <point name="P">(3,4)</point>
+        </graph>
+      </case>
+      <else>
+        <graph newnamespace>
+          <point name="P">(5,6)</point>
+        </graph>
+      </else>
+    </conditionalContent>
+    
+    <graph copySource="g1" name="g2" newNamespace>
+      <point name="Q">(7,8)</point>
+    </graph>
+
+    <p name="pP">g2/P: $(g2/P)</p>
+    <p name="pQ">g2/Q: $(g2/Q)</p>
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/pP") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc2("#/pQ") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,8)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/g1/P");
+      expect(stateVariables["/g1/P"].stateValues.xs).eqls([5, 6]);
+      expect(stateVariables["/g2"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2"].activeChildren[1].componentName).eq("/g2/Q");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([5, 6]);
+      expect(stateVariables["/g2/Q"].stateValues.xs).eqls([7, 8]);
+    });
+
+    cy.log("move points");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g1/P",
+        args: { x: 10, y: 9 },
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2/Q",
+        args: { x: 8, y: 4 },
+      });
+    });
+
+    cy.get(cesc2("#/pQ") + " .mjx-mrow").should("contain.text", "(8,4)");
+    cy.get(cesc2("#/pP") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(10,9)");
+    cy.get(cesc2("#/pQ") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(8,4)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/g1/P");
+      expect(stateVariables["/g1/P"].stateValues.xs).eqls([10, 9]);
+      expect(stateVariables["/g2"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2"].activeChildren[1].componentName).eq("/g2/Q");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([10, 9]);
+      expect(stateVariables["/g2/Q"].stateValues.xs).eqls([8, 4]);
+    });
+
+    cy.log("switch to second option from conditional content");
+    cy.get(cesc2("#/n") + " textarea").type("{end}2{enter}", { force: true });
+
+    cy.get(cesc2("#/pP") + " .mjx-mrow").should("contain.text", "(3,4)");
+    cy.get(cesc2("#/pP") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/pQ") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,8)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/g1/P");
+      expect(stateVariables["/g1/P"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/g2"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2"].activeChildren[1].componentName).eq("/g2/Q");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/g2/Q"].stateValues.xs).eqls([7, 8]);
+    });
+
+    cy.log("move new points");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g1/P",
+        args: { x: 6, y: 1 },
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2/Q",
+        args: { x: 9, y: 3 },
+      });
+    });
+
+    cy.get(cesc2("#/pQ") + " .mjx-mrow").should("contain.text", "(9,3)");
+    cy.get(cesc2("#/pP") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,1)");
+    cy.get(cesc2("#/pQ") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,3)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/g1/P");
+      expect(stateVariables["/g1/P"].stateValues.xs).eqls([6, 1]);
+      expect(stateVariables["/g2"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2"].activeChildren[1].componentName).eq("/g2/Q");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([6, 1]);
+      expect(stateVariables["/g2/Q"].stateValues.xs).eqls([9, 3]);
+    });
+
+    cy.log("switch back to first option from conditional content");
+    cy.get(cesc2("#/n") + " textarea").type(
+      "{end}{backspace}{backspace}0{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/pP") + " .mjx-mrow").should("contain.text", "(5,6)");
+    cy.get(cesc2("#/pP") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+    cy.get(cesc2("#/pQ") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(7,8)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/g1/P");
+      expect(stateVariables["/g1/P"].stateValues.xs).eqls([5, 6]);
+      expect(stateVariables["/g2"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2"].activeChildren[1].componentName).eq("/g2/Q");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([5, 6]);
+      expect(stateVariables["/g2/Q"].stateValues.xs).eqls([7, 8]);
+    });
+  });
+
   it("dot and array notation", () => {
     cy.window().then(async (win) => {
       win.postMessage(
