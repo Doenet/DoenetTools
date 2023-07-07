@@ -174,7 +174,7 @@ export function Courses() {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Course &quot;{optimisticCourses[activeCourseIndex].label}
+              Delete Course &quot;{optimisticCourses[activeCourseIndex]?.label}
               &quot;
             </AlertDialogHeader>
 
@@ -183,11 +183,16 @@ export function Courses() {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelDeleteAlertRef} onClick={onCloseDeleteAlert}>
+              <Button
+                ref={cancelDeleteAlertRef}
+                onClick={onCloseDeleteAlert}
+                data-test="Course Delete Cancel Button"
+              >
                 Cancel
               </Button>
               <Button
                 colorScheme="red"
+                data-test="Course Delete Button"
                 onClick={() => {
                   onCloseDeleteAlert();
                   fetcher.submit(
@@ -325,15 +330,16 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader borderBottomWidth="1px">
-          Duplicate &quot;{activeCourse.label}&quot;
+          Duplicate &quot;{activeCourse?.label}&quot;
         </DrawerHeader>
         <DrawerBody>
           test
           <Stack spacing="24px">
             <FormControl isRequired isInvalid={!newLabel}>
-              <FormLabel htmlFor="username">New Course Label</FormLabel>
+              <FormLabel>New Course Label</FormLabel>
               <Input
                 ref={firstField}
+                data-test="Duplicate Course Label Textfield"
                 id="label"
                 placeholder="Please enter a new course label"
                 onChange={(e) => setNewLabel(e.currentTarget.value)}
@@ -350,6 +356,7 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 placeholder="Select source course start date"
                 size="md"
                 type="date"
+                data-test="Duplicate Course Start Date"
                 onChange={(e) => setStartDate(e.currentTarget.value)}
               />
               <FormHelperText>
@@ -363,6 +370,7 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                 placeholder="Select new course end date"
                 size="md"
                 type="date"
+                data-test="Duplicate Course End Date"
                 onChange={(e) => setEndDate(e.currentTarget.value)}
               />
               {!areValidDates && (
@@ -374,12 +382,18 @@ function DuplicateDrawer({ activeCourse, fetcher, isOpen, onClose }) {
           </Stack>
         </DrawerBody>
         <DrawerFooter borderTopWidth="1px">
-          <Button variant="outline" mr={3} onClick={onClose}>
+          <Button
+            variant="outline"
+            mr={3}
+            onClick={onClose}
+            data-test="Duplicate Cancel Button"
+          >
             Cancel
           </Button>
           <Button
             isDisabled={!newLabel || !areValidDates}
             colorScheme="blue"
+            data-test="Duplicate Submit Button"
             onClick={() => {
               fetcher.submit(
                 {
@@ -407,11 +421,11 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
 
   //If the data source changes update the label state
   useEffect(() => {
-    if (activeCourse.label) {
-      setNewLabel(activeCourse.label);
-      lastGoodLabel.current = activeCourse.label;
+    if (activeCourse?.label) {
+      setNewLabel(activeCourse?.label);
+      lastGoodLabel.current = activeCourse?.label;
     }
-  }, [activeCourse.label]);
+  }, [activeCourse?.label]);
 
   function handleLabelUpdate({ newLabel }) {
     if (newLabel == "") {
@@ -419,7 +433,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
       //then reset it to the last known good value
       setNewLabel(lastGoodLabel.current);
     } else {
-      lastGoodLabel.current = activeCourse.label;
+      lastGoodLabel.current = activeCourse?.label;
       fetcher.submit(
         {
           _action: "Rename",
@@ -445,13 +459,13 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
               <FormLabel>Color or Image</FormLabel>
               <Popover offset={[200, 8]} width="800px">
                 <PopoverTrigger>
-                  {activeCourse.color == "none" ? (
+                  {activeCourse?.color == "none" ? (
                     <Image
                       tabIndex={0} //FYI Need tabIndex or toggle doesn't work in popover
                       data-test="Card Image Link"
                       height="134px"
                       width="200px"
-                      src={`/drive_pictures/${activeCourse.image}`}
+                      src={`/drive_pictures/${activeCourse?.image}`}
                       objectFit="cover"
                       borderTopRadius="md"
                       cursor="pointer"
@@ -462,7 +476,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                       data-test="Card Color Link"
                       height="134px"
                       width="200px"
-                      background={`#${activeCourse.color}`}
+                      background={`#${activeCourse?.color}`}
                       borderTopRadius="md"
                       cursor="pointer"
                     />

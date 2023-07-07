@@ -34,9 +34,9 @@ export default function Searchbar({ name = "q", defaultValue, dataTest }) {
           <Button
             type="submit"
             size="sm"
+            colorScheme="blue"
             borderLeftRadius={0}
             borderRightRadius={5}
-            colorScheme="blue"
 
             // border="1px solid #949494"
             // bg="doenet.mainBlue"

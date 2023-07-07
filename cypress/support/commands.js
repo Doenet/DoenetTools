@@ -137,15 +137,40 @@ Cypress.Commands.add("clearCoursePeople", ({ courseId }) => {
   // })
 });
 
-Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
+Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId, label }) => {
   cy.request("POST", `/cyapi/cypressCreateCourse.php`, {
     userId,
     courseId,
     studentUserId,
+    label
   });
   // .then((resp)=>{
   //   cy.log(resp.body)
   // })
+});
+
+Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
+  if (courseId) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE courseId="${courseId}"
+    `,
+    );
+  } else if (label) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE label="${label}"
+    `,
+    );
+  }
+
+
 });
 
 Cypress.Commands.add(

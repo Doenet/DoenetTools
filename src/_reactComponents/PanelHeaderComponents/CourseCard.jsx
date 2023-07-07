@@ -113,6 +113,7 @@ export function CourseCard({
                 </MenuButton>
                 <MenuList zIndex="10">
                   <MenuItem
+                    data-test="Course Duplicate MenuItem"
                     onClick={() => {
                       setActiveCourseIndex(index);
                       duplicateOnOpen();
@@ -121,6 +122,7 @@ export function CourseCard({
                     Duplicate
                   </MenuItem>
                   <MenuItem
+                    data-test="Course Delete MenuItem"
                     onClick={() => {
                       setActiveCourseIndex(index);
                       onOpenDeleteAlert();
@@ -129,6 +131,7 @@ export function CourseCard({
                     Delete
                   </MenuItem>
                   <MenuItem
+                    data-test="Course Settings MenuItem"
                     onClick={() => {
                       setActiveCourseIndex(index);
                       settingsOnOpen();
