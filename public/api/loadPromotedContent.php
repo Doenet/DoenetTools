@@ -40,6 +40,8 @@ try {
         throw new Exception("Failure loading promoted content. - " . $conn->error);
     }
     while ($row = $result->fetch_assoc()) {
+        $row['currentlyFeatured'] = $row['currentlyFeatured'] == '1' ? true : false;
+        $row['homepage'] = $row['homepage'] == '1' ? true : false;
         if ($promotedGroups[$row['groupName']]) {
             // add to existing list for this group if it was found in the list of rows so far
             array_push($promotedGroups[$row['groupName']], $row);

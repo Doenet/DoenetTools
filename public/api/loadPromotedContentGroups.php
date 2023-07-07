@@ -36,6 +36,8 @@ try {
     } else {
         $promotedGroups = [];
         while ($row = $result->fetch_assoc()) {
+            $row['currentlyFeatured'] = $row['currentlyFeatured'] == '1' ? true : false;
+            $row['homepage'] = $row['homepage'] == '1' ? true : false;
             $promotedGroups[] = $row;
         }
     }
