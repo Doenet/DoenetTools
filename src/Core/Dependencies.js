@@ -6085,7 +6085,10 @@ class ReplacementDependency extends Dependency {
     }
 
     if (this.componentIndex !== undefined) {
-      let theReplacement = replacements[this.componentIndex - 1];
+      let nonStringReplacements = replacements.filter(
+        (x) => typeof x !== "string",
+      );
+      let theReplacement = nonStringReplacements[this.componentIndex - 1];
       if (theReplacement) {
         replacements = [theReplacement];
       } else {

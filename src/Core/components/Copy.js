@@ -557,10 +557,15 @@ export default class Copy extends CompositeComponent {
 
         if (stateValues.targetComponent !== null) {
           if (
-            componentInfoObjects.isCompositeComponent({
+            (componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false,
-            }) &&
+            }) ||
+              (componentInfoObjects.isCompositeComponent({
+                componentType: stateValues.targetComponent.componentType,
+                includeNonStandard: true,
+              }) &&
+                stateValues.componentIndex !== null)) &&
             !(stateValues.propName && stateValues.obtainPropFromComposite)
           ) {
             if (stateValues.linkAttrForDetermineDeps) {
