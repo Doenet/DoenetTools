@@ -300,8 +300,6 @@ export default class BooleanInput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -1774,8 +1774,6 @@ export default class Ray extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async rayFocused({
@@ -1793,7 +1791,5 @@ export default class Ray extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

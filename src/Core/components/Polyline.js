@@ -623,12 +623,12 @@ export default class Polyline extends GraphicalComponent {
     if (numVerticesMoved === 1) {
       // single vertex dragged
       if (!(await this.stateValues.verticesDraggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     } else {
       // whole polyline dragged
       if (!(await this.stateValues.draggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     }
 
@@ -824,8 +824,6 @@ export default class Polyline extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async polylineFocused({
@@ -843,7 +841,5 @@ export default class Polyline extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

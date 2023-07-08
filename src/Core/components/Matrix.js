@@ -452,6 +452,8 @@ export default class Matrix extends MathComponent {
           variableName: "matrixSizePre",
         },
       }),
+      hasEssential: true,
+      defaultValue: me.fromAst(["matrix", ["tuple", 0, 0], ["tuple"]]), // 0x0 matrix
       definition({ dependencyValues }) {
         let matrixValues = ["tuple"];
         for (let i = 0; i < dependencyValues.matrixSizePre[0]; i++) {

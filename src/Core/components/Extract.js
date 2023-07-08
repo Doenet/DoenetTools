@@ -296,6 +296,8 @@ export default class Extract extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log(`serialized replacements for ${component.componentName}`)
@@ -608,6 +610,8 @@ export default class Extract extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log("replacementChanges");

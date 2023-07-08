@@ -1177,6 +1177,8 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         flags,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1219,6 +1221,8 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         flags,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1305,6 +1309,8 @@ export default class Copy extends CompositeComponent {
         workspace,
         componentInfoObjects,
         compositeAttributesObj,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1421,6 +1427,8 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log(`serialized replacements for ${component.componentName}`)
@@ -1735,6 +1743,8 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           flags,
+          components,
+          publicCaseInsensitiveAliasSubstitutions,
         });
 
         // Note: this has to run after verify,
@@ -1772,6 +1782,8 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           flags,
+          components,
+          publicCaseInsensitiveAliasSubstitutions,
         });
 
         replacementChanges = verificationResult.replacementChanges;
@@ -2180,6 +2192,8 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // Note: this has to run after verify,

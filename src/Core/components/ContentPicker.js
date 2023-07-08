@@ -244,12 +244,10 @@ export default class ContentPicker extends BlockComponent {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      return this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -258,6 +256,5 @@ export default class ContentPicker extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

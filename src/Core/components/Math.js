@@ -534,6 +534,7 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       set: convertValueToMathExpression,
+      hasEssential: true,
       defaultValue: me.fromAst("\uff3f"), // long underscore
       definition: calculateMathValue,
       inverseDefinition: invertMath,
@@ -1671,8 +1672,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async mathFocused({
@@ -1690,8 +1689,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

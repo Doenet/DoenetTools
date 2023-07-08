@@ -570,6 +570,15 @@ function substitutePropertyDeprecations(serializedComponents) {
     if (component.children) {
       substitutePropertyDeprecations(component.children);
     }
+
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let attrComp = component.attributes[attrName].component;
+        if (attrComp) {
+          substitutePropertyDeprecations([attrComp]);
+        }
+      }
+    }
   }
 }
 

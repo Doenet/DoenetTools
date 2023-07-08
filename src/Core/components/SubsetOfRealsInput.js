@@ -505,8 +505,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
         }
       }
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async deletePoint({
@@ -1436,7 +1434,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
     });
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -1445,7 +1443,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

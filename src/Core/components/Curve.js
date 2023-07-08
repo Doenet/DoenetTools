@@ -3680,8 +3680,6 @@ export default class Curve extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async curveFocused({
@@ -3699,8 +3697,6 @@ export default class Curve extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

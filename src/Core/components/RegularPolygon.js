@@ -1776,7 +1776,7 @@ export default class RegularPolygon extends Polygon {
       // single vertex dragged
 
       if (!(await this.stateValues.verticesDraggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
 
       // Since the case where drag the entire regular polygon is complicated,
@@ -1836,7 +1836,7 @@ export default class RegularPolygon extends Polygon {
 
     // whole polyline dragged
     if (!(await this.stateValues.draggable)) {
-      return await this.coreFunctions.resolveAction({ actionId });
+      return;
     }
 
     // In order to detect if one of the points used to defined the regular polygon is constrained

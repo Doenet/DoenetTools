@@ -2134,8 +2134,6 @@ export class MatrixInput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -2159,8 +2157,6 @@ export class MatrixInput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -3048,8 +3044,6 @@ export default class MatrixComponentInput extends BaseComponent {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -3148,8 +3142,6 @@ export default class MatrixComponentInput extends BaseComponent {
           skipRendererUpdate,
         });
       }
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 }

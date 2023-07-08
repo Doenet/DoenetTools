@@ -1,4 +1,3 @@
-import me from "math-expressions";
 import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("ChoiceInput Tag Tests", function () {
@@ -3161,7 +3160,10 @@ describe("ChoiceInput Tag Tests", function () {
   });
 
   it("label", () => {
-    let doenetML = `
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
     <p><choiceInput name="ci1" inline><label>Select an option</label><choice>Yes</choice><choice>No</choice></choiceInput>
       <copy copySource="ci1" assignNames="ci1a" /> </p>
     <p><choiceInput name="ci2"><choice>Yes</choice><choice>No</choice><label>Select another option</label></choiceInput>
@@ -3169,12 +3171,7 @@ describe("ChoiceInput Tag Tests", function () {
 
     <p><updateValue target="_label1.hide" newValue="!$_label1.hide" type="boolean" name="toggleLabels"><label>Toggle labels</label></updateValue>
     <updateValue triggerWith="toggleLabels" target="_label2.hide" newValue="!$_label2.hide" type="boolean" /></p>
-    `;
-
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML,
+    `,
         },
         "*",
       );
@@ -3201,5 +3198,993 @@ describe("ChoiceInput Tag Tests", function () {
       "contain.text",
       "Select another option",
     );
+  });
+
+  it("change choice input from copied value, text", () => {
+    let doenetML = `
+  <choiceinput name="ci">
+    <choice>yes</choice>
+    <choice>no</choice>
+    <choice>maybe</choice>
+  </choiceinput>
+  
+  <p>Change from text of ci: <textinput name="fromTextCi"><text copySource="ci" /></textinput></p>
+  <p>Change from text of ci.selectedValue: <textinput name="fromTextSelectedValue"><text copySource="ci.selectedValue" /></textinput></p>
+  <p>Change from macro of &dollar;ci: <textinput name="fromMacroCi">$ci</textinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue: <textinput name="fromMacroSelectedValue">$ci.selectedValue</textinput></p>
+  <p>Change from math of ci.selectedIndices: <mathinput name="fromMathSelectedIndices"><math copySource="ci.selectedIndices" /></mathinput></p>
+  <p>Change from math of ci.selectedIndex: <mathinput name="fromMathSelectedIndex"><math copySource="ci.selectedIndex" /></mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndices: <mathinput name="fromMacroSelectedIndices">$ci.selectedIndices</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex: <mathinput name="fromMacroSelectedIndex">$ci.selectedIndex</mathinput></p>
+
+  <p name="p">Selected value: <text copySource="ci" name="selectedValue" /></p>
+  <booleaninput name="bi" /> <boolean name="b" copySource="bi" />
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("typing in wrong value doesn't do anything");
+    cy.get(cesc2("#/fromTextCi") + "_input").type("nothing{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("Select value from text ci");
+    cy.get(cesc2("#/fromTextCi") + "_input").type("maybe{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: maybe");
+
+    cy.log("Change value from text ci.selectedValue");
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: no");
+
+    cy.log("Invalid value into text ci.selectedValue does nothing");
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input")
+      .clear()
+      .type("bad{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: no");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+    cy.get(cesc2("#/fromMacroCi") + "_input")
+      .clear()
+      .type("yes{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+    cy.get(cesc2("#/fromMacroCi") + "_input").should("have.value", "yes");
+
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input")
+      .clear()
+      .type("no{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "no",
+    );
+    cy.get(cesc2("#/fromMacroCi") + "_input").should("have.value", "yes");
+
+    cy.log(
+      "Change value from text ci.selectedValue works after starting afresh",
+    );
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input")
+      .clear()
+      .type("maybe{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: maybe");
+
+    cy.log("Textinputs from macros are now attached");
+    cy.get(cesc2("#/fromMacroCi") + "_input").should("have.value", "maybe");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "maybe",
+    );
+
+    cy.log("We can now change from macros");
+    cy.get(cesc2("#/fromMacroCi") + "_input")
+      .clear()
+      .type("yes{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: yes");
+
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: no");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log(
+      "Change value from math ci.selectedIndices works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndices") + " textarea").type("3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: maybe");
+
+    cy.log(
+      "Invalid value into from math ci.selectedIndex deselects all options",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}4{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("Enter valid value into from math ci.selectedIndex");
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}3{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: maybe");
+
+    cy.log("Enter value into from macro ci.selectedIndices");
+    cy.get(cesc2("#/fromMacroSelectedIndices") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: no");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: yes");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+
+    cy.get(cesc2("#/fromMacroSelectedIndices") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: ");
+
+    cy.log(
+      "can add value into from math ci.selectedIndex even after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected value: no");
+  });
+
+  it("change choice input from copied value, text, select multiple", () => {
+    let doenetML = `
+  <choiceinput name="ci" selectMultiple>
+    <choice>yes</choice>
+    <choice>no</choice>
+    <choice>maybe</choice>
+  </choiceinput>
+  
+  <p>Change from text of ci.selectedValue: <textinput name="fromTextSelectedValue"><text copySource="ci.selectedValue" /></textinput></p>
+  <p>Change from text of ci.selectedValue2: <textinput name="fromTextSelectedValue2"><text copySource="ci.selectedValue2" /></textinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue: <textinput name="fromMacroSelectedValue">$ci.selectedValue</textinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue2: <textinput name="fromMacroSelectedValue2">$ci.selectedValue2</textinput></p>
+  <p>Change from math of ci.selectedIndex: <mathinput name="fromMathSelectedIndex"><math copySource="ci.selectedIndex" /></mathinput></p>
+  <p>Change from math of ci.selectedIndex2: <mathinput name="fromMathSelectedIndex2"><math copySource="ci.selectedIndex2" /></mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex: <mathinput name="fromMacroSelectedIndex">$ci.selectedIndex</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex2: <mathinput name="fromMacroSelectedIndex2">$ci.selectedIndex2</mathinput></p>
+
+  <p name="p">Selected values: <aslist>$ci.selectedValues</aslist></p>
+  <booleaninput name="bi" /> <boolean name="b" copySource="bi" />
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("typing in wrong value doesn't do anything");
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input").type("nothing{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Select value from text ci.selectedValue");
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input").type("maybe{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: maybe");
+
+    cy.log("Add second value from text ci.selectedValue2");
+    cy.get(cesc2("#/fromTextSelectedValue2") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no, maybe");
+
+    cy.log("Invalid value into text ci.selectedValue does nothing");
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input")
+      .clear()
+      .type("bad{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no, maybe");
+
+    cy.log(
+      "Repeat first value from text ci.selectedValue2 reduces to one value",
+    );
+    cy.get(cesc2("#/fromTextSelectedValue2") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no");
+
+    cy.log("Add second value from text ci.selectedValue2");
+    cy.get(cesc2("#/fromTextSelectedValue2") + "_input")
+      .clear()
+      .type("yes{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes, no");
+
+    cy.log(
+      "Repeat second value from text ci.selectedValue reduces to one value",
+    );
+    cy.get(cesc2("#/fromTextSelectedValue") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input")
+      .clear()
+      .type("yes{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "yes",
+    );
+
+    cy.get(cesc2("#/fromMacroSelectedValue2") + "_input")
+      .clear()
+      .type("no{enter}");
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+    cy.get(cesc2("#/fromMacroSelectedValue2") + "_input").should(
+      "have.value",
+      "no",
+    );
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "yes",
+    );
+
+    cy.log(
+      "Change value from text ci.selectedValue2 works after starting afresh",
+    );
+    cy.get(cesc2("#/fromTextSelectedValue2") + "_input")
+      .clear()
+      .type("maybe{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: maybe");
+
+    cy.log("Textinput from first macro is now attached");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "maybe",
+    );
+    cy.get(cesc2("#/fromMacroSelectedValue2") + "_input").should(
+      "have.value",
+      "no",
+    );
+    cy.log("Add second value from text ci.selectedValue2");
+    cy.get(cesc2("#/fromTextSelectedValue2") + "_input")
+      .clear()
+      .type("yes{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes, maybe");
+    cy.log("Textinputs from both macros are now attached");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input").should(
+      "have.value",
+      "yes",
+    );
+    cy.get(cesc2("#/fromMacroSelectedValue2") + "_input").should(
+      "have.value",
+      "maybe",
+    );
+
+    cy.log("We can now change from macros");
+    cy.get(cesc2("#/fromMacroSelectedValue") + "_input")
+      .clear()
+      .type("no{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no, maybe");
+
+    cy.get(cesc2("#/fromMacroSelectedValue2") + "_input")
+      .clear()
+      .type("yes{enter}");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes, no");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log(
+      "Change value from math ci.selectedIndex works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type("3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: maybe");
+
+    cy.log("Invalid value into from math ci.selectedIndex is reverted");
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}4{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: maybe");
+
+    cy.log("Enter valid value into from math ci.selectedIndex2");
+    cy.get(cesc2("#/fromMathSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes, maybe");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no, maybe");
+
+    cy.log("Enter value into from macro ci.selectedIndex2");
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes, no");
+
+    cy.log(
+      "Enter repeated value into from macro ci.selectedIndex2 selects just one",
+    );
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: yes");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Enter value into from macro ci.selectedIndex2");
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log(
+      "can add value into from math ci.selectedIndex2 even after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex2") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: no");
+  });
+
+  it("change choice input from copied value, math", () => {
+    let doenetML = `
+  <choiceinput name="ci">
+    <choice><math>x</math></choice>
+    <choice><math>y</math></choice>
+    <choice><math>z</math></choice>
+  </choiceinput>
+  
+  <p>Change from math of ci: <mathinput name="fromMathCi"><math copySource="ci" /></mathinput></p>
+  <p>Change from math of ci.selectedValue: <mathinput name="fromMathSelectedValue"><math copySource="ci.selectedValue" /></mathinput></p>
+  <p>Change from macro of &dollar;ci: <mathinput name="fromMacroCi">$ci</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue: <mathinput name="fromMacroSelectedValue">$ci.selectedValue</mathinput></p>
+  <p>Change from math of ci.selectedIndices: <mathinput name="fromMathSelectedIndices"><math copySource="ci.selectedIndices" /></mathinput></p>
+  <p>Change from math of ci.selectedIndex: <mathinput name="fromMathSelectedIndex"><math copySource="ci.selectedIndex" /></mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndices: <mathinput name="fromMacroSelectedIndices">$ci.selectedIndices</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex: <mathinput name="fromMacroSelectedIndex">$ci.selectedIndex</mathinput></p>
+
+  <p name="p">Selected value: <math copySource="ci" name="selectedValue" /></p>
+  <booleaninput name="bi" /> <boolean name="b" copySource="bi" />
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("typing in wrong value doesn't do anything");
+    cy.get(cesc2("#/fromMathCi") + " textarea").type("a{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("Select value from math ci");
+    cy.get(cesc2("#/fromMathCi") + " textarea").type("z{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Change value from math ci.selectedValue");
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "y");
+
+    cy.log("Invalid value into math ci.selectedValue does nothing");
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type(
+      "{end}{backspace}bad{enter}",
+      { force: true },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "y");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("Cannot change value from macros after starting afresh");
+    cy.get(cesc2("#/fromMacroCi") + " textarea").type("x{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2(`#/fromMacroCi`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("x");
+      });
+
+    cy.get(cesc2("#/fromMacroSelectedValue") + " textarea").type("y{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+    cy.get(cesc2(`#/fromMacroCi`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("x");
+      });
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("y");
+      });
+
+    cy.log(
+      "Change value from math ci.selectedValue works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type("z{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Mathinputs from macros are now attached");
+    cy.get(cesc2(`#/fromMacroCi`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("z");
+      });
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("z");
+      });
+
+    cy.log("We can now change from macros");
+    cy.get(cesc2("#/fromMacroCi") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "x");
+
+    cy.get(cesc2("#/fromMacroSelectedValue") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "y");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log(
+      "Change value from math ci.selectedIndices works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndices") + " textarea").type("3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log(
+      "Invalid value into from math ci.selectedIndex deselects all options",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}4{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should(
+      "contain.text",
+      "\uff3f",
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("Enter valid value into from math ci.selectedIndex");
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}3{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Enter value into from macro ci.selectedIndices");
+    cy.get(cesc2("#/fromMacroSelectedIndices") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "y");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "x");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("Cannot change value from macros after starting afresh");
+
+    cy.get(cesc2("#/fromMacroSelectedIndices") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.log(
+      "can add value into from math ci.selectedIndex even after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/selectedValue") + " .mjx-mrow").should("have.text", "y");
+  });
+
+  it("change choice input from copied value, math, select multiple", () => {
+    let doenetML = `
+  <choiceinput name="ci" selectMultiple>
+    <choice><math>x</math></choice>
+    <choice><math>y</math></choice>
+    <choice><math>z</math></choice>
+  </choiceinput>
+  
+  <p>Change from math of ci.selectedValue: <mathinput name="fromMathSelectedValue"><math copySource="ci.selectedValue" /></mathinput></p>
+  <p>Change from math of ci.selectedValue2: <mathinput name="fromMathSelectedValue2"><math copySource="ci.selectedValue2" /></mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue: <mathinput name="fromMacroSelectedValue">$ci.selectedValue</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedValue2: <mathinput name="fromMacroSelectedValue2">$ci.selectedValue2</mathinput></p>
+  <p>Change from math of ci.selectedIndex: <mathinput name="fromMathSelectedIndex"><math copySource="ci.selectedIndex" /></mathinput></p>
+  <p>Change from math of ci.selectedIndex2: <mathinput name="fromMathSelectedIndex2"><math copySource="ci.selectedIndex2" /></mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex: <mathinput name="fromMacroSelectedIndex">$ci.selectedIndex</mathinput></p>
+  <p>Change from macro of &dollar;ci.selectedIndex2: <mathinput name="fromMacroSelectedIndex2">$ci.selectedIndex2</mathinput></p>
+
+  <p name="p">Selected values: <aslist>$ci.selectedValues</aslist></p>
+  <booleaninput name="bi" /> <boolean name="b" copySource="bi" />
+    `;
+
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("typing in wrong value doesn't do anything");
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type(
+      "nothing{enter}",
+      { force: true },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Select value from math ci.selectedValue");
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type("z{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Add second value from math ci.selectedValue2");
+    cy.get(cesc2("#/fromMathSelectedValue2") + " textarea").type("y{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "yz");
+
+    cy.log("Invalid value into math ci.selectedValue does nothing");
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type("bad{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "yz");
+
+    cy.log(
+      "Repeat first value from math ci.selectedValue2 reduces to one value",
+    );
+    cy.get(cesc2("#/fromMathSelectedValue2") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "y");
+
+    cy.log("Add second value from math ci.selectedValue2");
+    cy.get(cesc2("#/fromMathSelectedValue2") + " textarea").type("x{enter}"),
+      { force: true };
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "xy");
+
+    cy.log(
+      "Repeat second value from math ci.selectedValue reduces to one value",
+    );
+    cy.get(cesc2("#/fromMathSelectedValue") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "y");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+    cy.get(cesc2("#/fromMacroSelectedValue") + " textarea").type("x{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("x");
+      });
+
+    cy.get(cesc2("#/fromMacroSelectedValue2") + " textarea").type("y{enter}", {
+      force: true,
+    });
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+    cy.get(cesc2(`#/fromMacroSelectedValue2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("y");
+      });
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("x");
+      });
+
+    cy.log(
+      "Change value from math ci.selectedValue2 works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedValue2") + " textarea").type("z{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Mathinput from first macro is now attached");
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("z");
+      });
+    cy.get(cesc2(`#/fromMacroSelectedValue2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("y");
+      });
+
+    cy.log("Add second value from math ci.selectedValue2");
+    cy.get(cesc2("#/fromMathSelectedValue2") + " textarea").type("x{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "xz");
+    cy.log("Mathinputs from both macros are now attached");
+    cy.get(cesc2(`#/fromMacroSelectedValue`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("x");
+      });
+    cy.get(cesc2(`#/fromMacroSelectedValue2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("z");
+      });
+
+    cy.log("We can now change from macros");
+    cy.get(cesc2("#/fromMacroSelectedValue") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "yz");
+
+    cy.get(cesc2("#/fromMacroSelectedValue2") + " textarea").type(
+      "{end}{backspace}x{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "xy");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log(
+      "Change value from math ci.selectedIndex works after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type("3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Invalid value into from math ci.selectedIndex is reverted");
+    cy.get(cesc2("#/fromMathSelectedIndex") + " textarea").type(
+      "{end}{backspace}4{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "z");
+
+    cy.log("Enter valid value into from math ci.selectedIndex2");
+    cy.get(cesc2("#/fromMathSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "xz");
+
+    cy.log("Enter value into from macro ci.selectedIndex");
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "yz");
+
+    cy.log("Enter value into from macro ci.selectedIndex2");
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "xy");
+
+    cy.log(
+      "Enter repeated value into from macro ci.selectedIndex2 selects just one",
+    );
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "x");
+
+    cy.reload();
+    cy.window().then(async (win) => {
+      win.postMessage({ doenetML }, "*");
+    });
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Cannot change value from macros after starting afresh");
+
+    cy.get(cesc2("#/fromMacroSelectedIndex") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log("Enter value into from macro ci.selectedIndex2");
+    cy.get(cesc2("#/fromMacroSelectedIndex2") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      {
+        force: true,
+      },
+    );
+    // since nothing will change, wait for core to respond to booleaninput change
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/p")).should("have.text", "Selected values: ");
+
+    cy.log(
+      "can add value into from math ci.selectedIndex2 even after starting afresh",
+    );
+    cy.get(cesc2("#/fromMathSelectedIndex2") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      {
+        force: true,
+      },
+    );
+    cy.get(cesc2("#/p") + " .mjx-mrow").should("have.text", "y");
   });
 });

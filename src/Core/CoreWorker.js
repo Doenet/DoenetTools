@@ -32,7 +32,7 @@ onmessage = function (e) {
       postMessage({ messageType: "terminated" });
     });
   } else if (e.data.messageType === "navigatingToComponent") {
-    core.handleNavigatingToComponent(e.data.args.componentName);
+    core.handleNavigatingToComponent(e.data.args);
   } else if (e.data.messageType === "submitAllAnswers") {
     core.requestAction({
       componentName: core.documentName,

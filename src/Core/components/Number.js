@@ -335,6 +335,7 @@ export default class NumberComponent extends InlineComponent {
         },
       },
       hasEssential: true,
+      defaultValue: NaN,
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
         if (stateValues.singleNumberOrStringChild) {
@@ -549,20 +550,6 @@ export default class NumberComponent extends InlineComponent {
                 (typeof number?.re === "number" &&
                   typeof number?.im === "number"))
             ) {
-              if (
-                number.re === Infinity ||
-                number.re === -Infinity ||
-                number.im === Infinity ||
-                number.im === -Infinity
-              ) {
-                // if start with Infinity*i, evaluate_to_constant makes it Infinity+Infinity*i,
-                // but if start with Infinity+Infinity*i, evaluate_to_constant makes is NaN+NaN*i
-                // To make sure displayed value (which has one more pass through evaluate_to_constant)
-                // and value match, pass through evaluate_to_constant a second time in this case
-                number = numberToMathExpression(number).evaluate_to_constant();
-              } else if (number.im === 0) {
-                number = number.re;
-              }
               return { setValue: { value: number } };
             }
           }
@@ -1006,8 +993,6 @@ export default class NumberComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async numberFocused({
@@ -1025,7 +1010,5 @@ export default class NumberComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
