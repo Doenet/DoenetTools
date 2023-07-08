@@ -1,21 +1,12 @@
 describe("Duplicate Course", function () {
   const userId = "cyuserId";
-  const studentUserId = "cyStudentUserId";
-  const courseId = "courseid1";
-  const doenetId = "activity1id";
-  const pageDoenetId = "_page1id";
-  const activity1label = "Activity 1";
-  const activity1DoenetML = "This is Activity 1";
   const defaultCourseLabel = "Untitled Course"
 
 
   before(() => {
     cy.signin({ userId });
     cy.visit("/")
-    // cy.clearAllOfAUsersCoursesAndItems({ userId });
-    // cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
-    // cy.createCourse({ userId, courseId, studentUserId });
-    // cy.createActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId });
+
   });
 
   Cypress.on("uncaught:exception", (err, runnable) => {
@@ -35,13 +26,11 @@ describe("Duplicate Course", function () {
     const collectionPageLabel5 = "CourseDuplication Page 5"
     const activityLabel = "CourseDuplication Activity"
     const collectionLinkLabel = "CourseDuplication Collection Link"
-    // const duplicateCourseLabel = "CourseDuplication Duplicate"
 
     cy.log("Clean up from the last run")
 
     cy.deleteCourse({ label: sourceCourseLabel })
     cy.deleteCourse({ label: duplicateCourseLabel })
-    cy.deleteCourse({ label: defaultCourseLabel }) //TEMP - DELETE ME!!!
 
     cy.get('[data-test="My Courses"]').click();
     cy.get('[data-test="Add Course"]').click();
@@ -56,7 +45,6 @@ describe("Duplicate Course", function () {
       .find('[data-test="Card Menu Button"]').click()
       .parent()
       .find('[data-test="Course Settings MenuItem"]').click();
-    // cy.get('[data-test="Course Settings MenuItem"]').click();
     cy.get('#label').clear().type(sourceCourseLabel).blur();
     cy.get('.chakra-modal__close-btn').click();
 

@@ -462,7 +462,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                   {activeCourse?.color == "none" ? (
                     <Image
                       tabIndex={0} //FYI Need tabIndex or toggle doesn't work in popover
-                      data-test="Card Image Link"
+                      data-test="Choose Image Trigger"
                       height="134px"
                       width="200px"
                       src={`/drive_pictures/${activeCourse?.image}`}
@@ -473,7 +473,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                   ) : (
                     <Box
                       tabIndex={0}
-                      data-test="Card Color Link"
+                      data-test="Choose Color Trigger"
                       height="134px"
                       width="200px"
                       background={`#${activeCourse?.color}`}
@@ -490,7 +490,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                         return (
                           <Box
                             key={`courseimage${item.Color}`}
-                            data-test="Card Color Link"
+                            data-test={`Card Color ${item.Color}`}
                             height="80px"
                             width="80px"
                             background={`#${item.Color}`}
@@ -512,7 +512,7 @@ function CourseSettingsDrawer({ activeCourse, fetcher, isOpen, onClose }) {
                         return (
                           <Image
                             key={`courseimage${item.Image}`}
-                            data-test="Card Image Link"
+                            data-test={`Card Image ${item.Image}`}
                             cursor="pointer"
                             height="80px"
                             width="80px"
