@@ -1,0 +1,35 @@
+<p>Intended target: <text name="hi">Hello</text></p>
+
+<p>Five copies:
+  $(hi{name="c1"})
+  $(/hi{name="c2"})
+  $(../hi{name="c3"})
+  $(../../hi{name="c4"})
+  $(../../../hi{name="c5"})
+</p>
+
+<section name="s" newNamespace><title>New namespace</title>
+  <p>Local target: <text name="hi">Hola</text></p>
+  <p>Copy of local: $(hi{name="l1"})</p>
+  <p>Fives copies of base:
+    $(/hi{name="c1"})
+    $(../hi{name="c2"})
+    $(../../hi{name="c3"})
+    $(../../../hi{name="c4"})
+    $(../../../../hi{name="c5"})
+  </p>
+
+  <subsection name="s" newNamespace><title>Another new namespace</title>
+    <p>Local target: <text name="hi">Marhaban</text></p>
+    <p>Copy of local: $(hi{name="l1"})</p>
+    <p>Copy of middle: $(../hi{name="m1"})</p>
+    <p>Fives copies of base:
+      $(/hi{name="c1"})
+      $(../../hi{name="c2"})
+      $(../../../hi{name="c3"})
+      $(../../../../hi{name="c4"})
+      $(../../../../../hi{name="c5"})
+    </p>
+  </subsection>
+
+</section>

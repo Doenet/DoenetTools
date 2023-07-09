@@ -1109,11 +1109,12 @@ export default class BaseComponent {
 
     let parametersForChildren = { ...parameters };
 
-    let sourceAttributesToIgnore;
-    if (parameters.sourceAttributesToIgnore) {
-      sourceAttributesToIgnore = parameters.sourceAttributesToIgnore;
+    let primitiveSourceAttributesToIgnore;
+    if (parameters.primitiveSourceAttributesToIgnore) {
+      primitiveSourceAttributesToIgnore =
+        parameters.primitiveSourceAttributesToIgnore;
     } else {
-      sourceAttributesToIgnore = [];
+      primitiveSourceAttributesToIgnore = [];
     }
 
     if (includeDefiningChildren) {
@@ -1152,7 +1153,7 @@ export default class BaseComponent {
       } else {
         // copy others if copy all or not set to be ignored
         if (
-          !sourceAttributesToIgnore.includes(attrName) ||
+          !primitiveSourceAttributesToIgnore.includes(attrName) ||
           parameters.copyAll
         ) {
           serializedComponent.attributes[attrName] = JSON.parse(

@@ -466,7 +466,7 @@ export default class Collect extends CompositeComponent {
 
       let serializedCopy = [
         await collectedComponent.serialize({
-          sourceAttributesToIgnore,
+          primitiveSourceAttributesToIgnore: sourceAttributesToIgnore,
         }),
       ];
 

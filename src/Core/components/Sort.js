@@ -315,7 +315,7 @@ export default class Sort extends CompositeComponent {
 
         replacements.push(
           await replacementSource.serialize({
-            sourceAttributesToIgnore: ["isResponse"],
+            primitiveSourceAttributesToIgnore: ["isResponse"],
           }),
         );
       }

@@ -2344,7 +2344,7 @@ export default class Core {
       if (typeof repl === "object") {
         serializedReplacements.push(
           await repl.serialize({
-            sourceAttributesToIgnore,
+            primitiveSourceAttributesToIgnore: sourceAttributesToIgnore,
           }),
         );
       } else {
@@ -2381,30 +2381,32 @@ export default class Core {
     if (component.attributes.isResponse) {
       // We include a special case of copying isResponse from
       // the shadowing composite.
-      // Rationale: we have added isResponse to the default sourceAttributesToIgnore
-      // attribute of copy, so that copies of responses are not responses.
+      // Rationale: when we serialize a component to copy it,
+      // we set primitiveSourceAttributesToIgnore=sourceAttributesToIgnore, above,
+      // which by default is ["isResponse"]
+      // so that isResponse, is not, in general copied.
+      // (We don't want copies of responses to be responses.)
       // However, if an award has sourcesAreResponses set, then we want
       // copies of the award to also set those sources to be responses.
       // The award accomplishes this through preprocessSerializedChildren,
       // which adds isResponse to copies of those targets.
       // Those copies are the shadowing composites, and we want those
-      // isResponse attributes to be added to their replacements,
-      // circumventing the intent of the default sourceAttributesToIgnore=["isResponse"]
-      // TODO: this effect is quite confusing and unduly complicated.
+      // isResponse attributes to be added to their replacements.
+      // TODO: Is this too confusing?
       // Can/should we give up this functionality for the sake of simplicity?
       // A test that fails without this intervention is
       // "full answer tag, copied in awards, shorter form" from answer.cy.js
       attributesToConvert.isResponse = component.attributes.isResponse;
     }
 
-    // if the shadowing component is a first level replacement of compositeMediatingTheShadow,
-    // then the attributes of compositeMediatingTheShadow should be passed on
-    if (component.firstLevelReplacement) {
-      Object.assign(
-        attributesToConvert,
-        compositeMediatingTheShadow.attributes,
-      );
-    }
+    // // if the shadowing component is a first level replacement of compositeMediatingTheShadow,
+    // // then the attributes of compositeMediatingTheShadow should be passed on
+    // if (component.firstLevelReplacement) {
+    //   Object.assign(
+    //     attributesToConvert,
+    //     compositeMediatingTheShadow.attributes,
+    //   );
+    // }
 
     // console.log(component.attributes);
     // console.log(compositeMediatingTheShadow.attributes);
@@ -2443,40 +2445,38 @@ export default class Core {
         compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let assignNewNamespaces =
         compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+
+      // cehck if the component that created the namespace for the shadowing composite
+      // is a replacement of the composite mediating the shadow
+      let namespaceFromReplacementOfMediating = false;
+      let lastSlash = component.componentName.lastIndexOf("/");
+      let nameForNamespaceOfShadowing = component.componentName.slice(
+        0,
+        lastSlash,
+      );
+      let componentCreatingNamespace =
+        this._components[nameForNamespaceOfShadowing];
+
+      if (componentCreatingNamespace) {
+        let compositeOfNamespaceCreator =
+          componentCreatingNamespace.replacementOf;
+        while (compositeOfNamespaceCreator) {
+          if (
+            compositeOfNamespaceCreator.componentName ===
+            compositeMediatingTheShadow.componentName
+          ) {
+            namespaceFromReplacementOfMediating = true;
+            break;
+          }
+          compositeOfNamespaceCreator =
+            compositeOfNamespaceCreator.replacementOf;
+        }
+      }
+
       let target =
         this._components[
           compositeMediatingTheShadow.doenetAttributes.targetComponentName
         ];
-      let targetWithNewNamespace;
-      if (target) {
-        console.log({ target });
-        targetWithNewNamespace =
-          // !this.componentInfoObjects.isCompositeComponent({
-          //   componentType: target.componentType,
-          //   includeNonStandard: false,
-          // }) &&
-          target.attributes.newNamespace?.primitive;
-        let recursiveTarget = target;
-        while (
-          !targetWithNewNamespace &&
-          this.componentInfoObjects.isCompositeComponent({
-            componentType: recursiveTarget.componentType,
-            includeNonStandard: false,
-          })
-        ) {
-          if (recursiveTarget.replacements.length === 1) {
-            recursiveTarget = recursiveTarget.replacements[0];
-            console.log({ recursiveTarget });
-            targetWithNewNamespace =
-              recursiveTarget.attributes.newNamespace?.primitive;
-          } else {
-            break;
-          }
-        }
-      }
-
-      console.log("As a test, setting targetWithNewNamespace to false!!!!!");
-      targetWithNewNamespace = false;
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2486,8 +2486,9 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure (with an exception, see below)
       // that we won't create any duplicate names.
-      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // If the component shadowing has a newNamespace,
       // or the composite mediating the shadow has a new namespace or assigns a new namespaces,
+      // or the namespace of the composite shadowing was due to the composite mediating the shadow
       // that will, in most cases, be enough to prevent name collisions.
 
       // If the composite mediating the shadow also assign names (or subnames)
@@ -2496,13 +2497,13 @@ export default class Core {
 
       console.log({
         newNamespace,
-        targetWithNewNamespace,
+        namespaceFromReplacementOfMediating,
         mediatingNewNamespace,
         assignNewNamespaces,
       });
       let originalNamesAreConsistent =
         newNamespace ||
-        targetWithNewNamespace ||
+        namespaceFromReplacementOfMediating ||
         mediatingNewNamespace ||
         assignNewNamespaces;
 
@@ -7858,7 +7859,7 @@ export default class Core {
           if (typeof child === "object") {
             shadowingSerializeChildren.push(
               await child.serialize({
-                sourceAttributesToIgnore,
+                primitiveSourceAttributesToIgnore: sourceAttributesToIgnore,
               }),
             );
           } else {
@@ -8861,7 +8862,7 @@ export default class Core {
           if (typeof repl === "object") {
             newSerializedReplacements.push(
               await repl.serialize({
-                sourceAttributesToIgnore,
+                primitiveSourceAttributesToIgnore: sourceAttributesToIgnore,
               }),
             );
           } else {

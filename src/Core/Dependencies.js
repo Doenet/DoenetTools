@@ -7675,153 +7675,11 @@ class AttributePrimitiveDependency extends StateVariableDependency {
     this.attributeName = this.definition.attributeName;
 
     if (this.definition.parentName) {
-      this.parentName = this.definition.parentName;
-      this.specifiedComponentName = this.parentName;
+      this.componentName = this.definition.parentName;
+      this.specifiedComponentName = this.componentName;
     } else {
-      this.parentName = this.upstreamComponentName;
+      this.componentName = this.upstreamComponentName;
     }
-
-    this.dontRecurseToShadows = this.definition.dontRecurseToShadows;
-    this.dontRecurseToShadowsIfHaveAttribute =
-      this.definition.dontRecurseToShadowsIfHaveAttribute;
-  }
-
-  async determineDownstreamComponents() {
-    let parent = this.dependencyHandler._components[this.parentName];
-
-    if (!parent) {
-      let dependenciesMissingComponent =
-        this.dependencyHandler.updateTriggers
-          .dependenciesMissingComponentBySpecifiedName[this.parentName];
-      if (!dependenciesMissingComponent) {
-        dependenciesMissingComponent =
-          this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[
-            this.parentName
-          ] = [];
-      }
-      if (!dependenciesMissingComponent.includes(this)) {
-        dependenciesMissingComponent.push(this);
-      }
-
-      for (let varName of this.upstreamVariableNames) {
-        await this.dependencyHandler.addBlocker({
-          blockerComponentName: this.parentName,
-          blockerType: "componentIdentity",
-          componentNameBlocked: this.upstreamComponentName,
-          typeBlocked: "recalculateDownstreamComponents",
-          stateVariableBlocked: varName,
-          dependencyBlocked: this.dependencyName,
-        });
-
-        await this.dependencyHandler.addBlocker({
-          blockerComponentName: this.upstreamComponentName,
-          blockerType: "recalculateDownstreamComponents",
-          blockerStateVariable: varName,
-          blockerDependency: this.dependencyName,
-          componentNameBlocked: this.upstreamComponentName,
-          typeBlocked: "stateVariable",
-          stateVariableBlocked: varName,
-        });
-      }
-
-      return {
-        success: false,
-        downstreamComponentNames: [],
-        downstreamComponentTypes: [],
-      };
-    }
-
-    let attribute = parent.attributes[this.attributeName];
-
-    if (attribute?.primitive) {
-      // have an attribute that is a primative
-
-      return {
-        success: true,
-        downstreamComponentNames: [parent.componentName],
-        downstreamComponentTypes: [],
-      };
-    }
-
-    // if don't have an attribute primitive,
-    // check if shadows a component with that attribute component
-
-    if (this.dontRecurseToShadows) {
-      return {
-        success: true,
-        downstreamComponentNames: [],
-        downstreamComponentTypes: [],
-      };
-    }
-
-    let comp = parent;
-
-    while (comp.shadows) {
-      let shadows = comp.shadows;
-      let propVariable = comp.shadows.propVariable;
-      let fromPlainMacro = comp.doenetAttributes.fromPlainMacro;
-
-      if (
-        this.dontRecurseToShadowsIfHaveAttribute &&
-        comp.attributes[this.dontRecurseToShadowsIfHaveAttribute]
-      ) {
-        break;
-      }
-
-      comp = this.dependencyHandler._components[shadows.componentName];
-
-      if (!comp) {
-        break;
-      }
-
-      // if a prop variable was created from a plain macro that is marked as returning the same type
-      // then treat it like a regular copy (as if there was no prop variable)
-      // and shadow all attributes
-      if (
-        propVariable &&
-        !(fromPlainMacro && comp.constructor.plainMacroReturnsSameType)
-      ) {
-        if (
-          !(
-            comp.state[
-              propVariable
-            ]?.shadowingInstructions?.attributesToShadow?.includes(
-              this.attributeName,
-            ) ||
-            comp.constructor.createAttributesObject()[this.attributeName]
-              ?.propagateToProps
-          )
-        ) {
-          break;
-        }
-      } else {
-        let composite =
-          this.dependencyHandler._components[shadows.compositeName];
-        if ("sourceAttributesToIgnore" in composite.state) {
-          let sourceAttributesToIgnore = await composite.stateValues
-            .sourceAttributesToIgnore;
-          if (sourceAttributesToIgnore.includes(this.attributeName)) {
-            break;
-          }
-        }
-      }
-
-      attribute = comp.attributes[this.attributeName];
-
-      if (attribute?.primitive) {
-        return {
-          success: true,
-          downstreamComponentNames: [comp.componentName],
-          downstreamComponentTypes: [],
-        };
-      }
-    }
-
-    return {
-      success: true,
-      downstreamComponentNames: [],
-      downstreamComponentTypes: [],
-    };
   }
 
   async getValue() {
@@ -7834,11 +7692,10 @@ class AttributePrimitiveDependency extends StateVariableDependency {
     }
 
     if (this.downstreamComponentNames.length === 1) {
-      let parentOrShadowSource =
-        this.dependencyHandler.components[this.downstreamComponentNames[0]];
+      let parent = this.dependencyHandler.components[this.componentName];
 
-      if (parentOrShadowSource) {
-        value = parentOrShadowSource.attributes[this.attributeName];
+      if (parent) {
+        value = parent.attributes[this.attributeName];
         if (value) {
           value = value.primitive;
         } else {

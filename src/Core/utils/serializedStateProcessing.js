@@ -700,6 +700,13 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
   serializedComponents,
   isCompositeComponent,
 ) {
+  // Convert <ctype copySource="name" /> essentially into <copy source="name" createComponentOfType="ctype" />
+  // and <ctype copyFromURI="theuri" /> essentially into <copy uri="theuri" createComponentOfType="ctype" />
+  // (except we currently have the technical debt where
+  // copySource is internally copyTarget and source is internally target)
+  // Also, add createNameFromComponentType=ctype so that, if no name was provided,
+  // the automatically generated name for the copy's replacement will be of the form /_ctype1
+
   for (let component of serializedComponents) {
     if (component.props) {
       let foundCopyTarget = false;
@@ -707,10 +714,6 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
       let foundAssignNames = false;
       let originalType = component.componentType;
       let haveComposite = isCompositeComponent({
-        componentType: originalType,
-        includeNonStandard: false,
-      });
-      let haveAnyComposite = isCompositeComponent({
         componentType: originalType,
         includeNonStandard: true,
       });
@@ -725,45 +728,29 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             );
           } else if (foundCopyFromURI) {
             throw Error(
-              `Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
+              `Cannot combine copySource and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
                 component,
               )}`,
             );
           } else if (foundAssignNames) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
+            // Note: foundAssignNames is not set if haveComposite
+            throw Error(
+              `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
+                component,
+              )}`,
+            );
           }
           foundCopyTarget = true;
           if (!component.doenetAttributes) {
             component.doenetAttributes = {};
           }
           component.props.createComponentOfType = originalType;
-          if (haveComposite) {
-            // We want the name to become the name of the composite replacement,
-            // however, we can't use assignNames, as assignNames may also have been specified.
-            // So, we create a special attribute for this situation
-            // to give the name to the composite replacement
-            // while allowing assignnames to be used to name the composite replacement's replacements
-            component.doenetAttributes.nameBecomesAssignNamesForCompositeReplacement = true;
-          } else {
-            component.doenetAttributes.nameBecomesAssignNames = true;
-          }
+
           component.componentType = "copy";
           component.props.target = component.props[prop];
           if (typeof component.props.target !== "string") {
             throw Error(
-              `Must specify value for copyTarget.  Found in component of type ${originalType}${indexRangeString(
+              `Must specify value for copySource.  Found in component of type ${originalType}${indexRangeString(
                 component,
               )}`,
             );
@@ -781,40 +768,23 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             );
           } else if (foundCopyTarget) {
             throw Error(
-              `Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
+              `Cannot combine copySource and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
                 component,
               )}`,
             );
           } else if (foundAssignNames) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyFromURI.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
+            // Note: foundAssignNames is not set if haveComposite
+            throw Error(
+              `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
+                component,
+              )}`,
+            );
           }
           foundCopyFromURI = true;
           if (!component.doenetAttributes) {
             component.doenetAttributes = {};
           }
           component.props.createComponentOfType = originalType;
-          if (haveComposite) {
-            // We want the name to become the name of the composite replacement,
-            // however, we can't use assignNames, as assignNames may also have been specified.
-            // So, we create a special attribute for this situation
-            // to give the name to the composite replacement
-            // while allowing assignnames to be used to name the composite replacement's replacements
-            component.doenetAttributes.nameBecomesAssignNamesForCompositeReplacement = true;
-          } else {
-            component.doenetAttributes.nameBecomesAssignNames = true;
-          }
           component.componentType = "copy";
           component.props.uri = component.props[prop];
           if (typeof component.props.uri !== "string") {
@@ -829,19 +799,11 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
           component.doenetAttributes.createNameFromComponentType = originalType;
         } else if (lowerCaseProp === "assignnames" && !haveComposite) {
           if (foundCopyTarget || foundCopyFromURI) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
+            throw Error(
+              `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
+                component,
+              )}`,
+            );
           }
           foundAssignNames = true;
         }
@@ -874,17 +836,6 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             component.props.prop = component.props[prop];
             delete component.props[prop];
             foundCopyProp = true;
-          }
-        }
-        if (!foundCopyProp && haveComposite) {
-          for (let prop of Object.keys(component.props)) {
-            let lowerCaseProp = prop.toLowerCase();
-            // If the component was given an assignnames, we want that assignnames to apply
-            // to the replacements of the composite replacement.
-            // To accomplish this, we add another level to assignnames.
-            if (lowerCaseProp === "assignnames") {
-              component.props[prop] = "(" + component.props[prop] + ")";
-            }
           }
         }
       }
@@ -1001,10 +952,6 @@ function breakUpTargetIntoPropsAndIndices(
                 component.doenetAttributes,
                 newComponent.doenetAttributes,
               );
-              if (!component.doenetAttributes.createNameFromComponentType) {
-                component.doenetAttributes.createNameFromComponentType =
-                  component.componentType;
-              }
               component.componentType = newComponent.componentType;
 
               if (
@@ -1077,7 +1024,7 @@ function breakUpTargetIntoPropsAndIndices(
             if (component.componentType === "copy") {
               console.warn(`invalid copy source: ${originalSource}`);
             } else {
-              console.warn(`invalid target: ${originalSource}`);
+              console.warn(`invalid source: ${originalSource}`);
             }
           }
         } else {
@@ -1560,6 +1507,7 @@ function createComponentFromExtendedSource({
     componentType: "copy",
     doenetAttributes: { target: sourceName },
     attributes: {},
+    props: {},
   };
 
   if (componentIndex) {
@@ -1583,7 +1531,7 @@ function createComponentFromExtendedSource({
       if (subNameObj.subNameComponentIndex !== undefined) {
         if (sourceSubnamesComponentIndex.length < sourceSubnames - 1) {
           // TODO: NaN will presumably make it not return anything
-          // When we enable recursing to composites, we'll need a staregy to skip subname component index
+          // When we enable recursing to composites, we'll need a strategy to skip subname component index
           sourceSubnamesComponentIndex.push(
             ...Array[
               sourceSubnames - 1 - sourceSubnamesComponentIndex.length
@@ -1626,7 +1574,10 @@ function createComponentFromExtendedSource({
     Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
     if (attributesResult.assignNames) {
-      newComponent.props = { assignNames: attributesResult.assignNames };
+      newComponent.props.assignNames = attributesResult.assignNames;
+    }
+    if (attributesResult.name) {
+      newComponent.props.name = attributesResult.name;
     }
   }
 
@@ -1639,6 +1590,7 @@ function createComponentFromExtendedSource({
         attributes: {},
         doenetAttributes: {},
         children: [newComponent],
+        props: {},
       };
     }
 
@@ -1668,7 +1620,10 @@ function createComponentFromExtendedSource({
       Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
       if (attributesResult.assignNames) {
-        newComponent.props = { assignNames: attributesResult.assignNames };
+        newComponent.props.assignNames = attributesResult.assignNames;
+      }
+      if (attributesResult.name) {
+        newComponent.props.name = attributesResult.name;
       }
     }
 
@@ -1710,7 +1665,7 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
     };
   }
 
-  let assignNames;
+  let assignNames, name;
   if (componentsForAttributes[0].props) {
     for (let prop in componentsForAttributes[0].props) {
       if (prop.toLowerCase() === "assignnames") {
@@ -1722,11 +1677,20 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
         } else {
           assignNames = componentsForAttributes[0].props[prop];
         }
+      } else if (prop.toLowerCase() === "name") {
+        if (name) {
+          return {
+            success: false,
+            message: "Error in macro: cannot repeat name",
+          };
+        } else {
+          name = componentsForAttributes[0].props[prop];
+        }
       }
     }
   }
 
-  return { success: true, newAttributes, assignNames };
+  return { success: true, newAttributes, assignNames, name };
 }
 
 function findFirstFullMacroInString(str) {
@@ -2752,9 +2716,19 @@ export function createComponentNames({
     }
 
     if (newNamespace) {
-      // newNamespace was specified
-      // put in attributes as boolean
-      attributes.newNamespace = { primitive: newNamespace };
+      if (
+        serializedComponent.componentType === "copy" ||
+        serializedComponent.componentType === "extract"
+      ) {
+        // a newNamespace on a copy assigns a new namespace to its replacements
+        attributes.assignNewNamespaces = { primitive: true };
+        delete attributes.newNamespace;
+        newNamespace = false;
+      } else {
+        // newNamespace was specified
+        // put in attributes as boolean
+        attributes.newNamespace = { primitive: newNamespace };
+      }
     }
 
     let count = currentNamespace.componentCounts[componentType];
@@ -2794,27 +2768,43 @@ export function createComponentNames({
       }
     }
 
+    // For copies/extracts, we convert the name to be assignNames so that it applies to the replacement
+    // rather than the copy/extract itself, and then we give the copy a randomly generated name.
     if (
-      doenetAttributes.nameBecomesAssignNames ||
-      doenetAttributes.nameBecomesAssignNamesForCompositeReplacement
+      (serializedComponent.componentType === "copy" ||
+        serializedComponent.componentType === "extract") &&
+      !doenetAttributes.convertedAssignNames
     ) {
-      if (newNamespace) {
-        // delete newNamespace from target but make it assignNewNamespaces
-        attributes.assignNewNamespaces = { primitive: true };
-        delete attributes.newNamespace;
-        newNamespace = false;
-      }
-      if (doenetAttributes.nameBecomesAssignNamesForCompositeReplacement) {
-        doenetAttributes.assignNamesForCompositeReplacement = prescribedName;
+      if (
+        doenetAttributes.createNameFromComponentType ||
+        prescribedName[0] !== "_"
+      ) {
+        // If createNameFromComponentType, then the prescribedName always applies to the replacement,
+        // given that it was generated from the componentType of the replacement
+        if (assignNames) {
+          // Since we already have an assignNames, add a level to them so that they ignore this copy
+          // and will be used for the replacements of the composite replacement of copy.
+          // Also use prescribedName to name this composite replacement of copy.
+          assignNames = doenetAttributes.assignNames = [assignNames];
+          doenetAttributes.assignNamesForCompositeReplacement = prescribedName;
+        } else {
+          assignNames = doenetAttributes.assignNames = [prescribedName];
+        }
       } else {
-        assignNames = doenetAttributes.assignNames = [prescribedName];
+        // If createNameFromComponentType was not set and we have an automatically generated name,
+        // don't apply that to the replacement, as it is based off of the copy component type.
+
+        if (assignNames) {
+          // Since we already have an assignNames, add a level to them so that they ignore this copy
+          // and will be used for the replacements of the composite replacement of copy.
+          assignNames = doenetAttributes.assignNames = [assignNames];
+        }
       }
 
-      // delete nameBecomesAssignNames so that copies
+      // record fact that converted assignNames so that copies
       // or further applications of createComponentNames
       // do not repeat this process and make assignNames be the randomly generated name
-      delete doenetAttributes.nameBecomesAssignNames;
-      delete doenetAttributes.nameBecomesAssignNamesForCompositeReplacement;
+      doenetAttributes.convertedAssignNames = true;
 
       // create unique name for copy
       let longNameId = parentName + "|createUniqueName|";
@@ -2829,7 +2819,10 @@ export function createComponentNames({
         longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
       }
 
-      prescribedName = createUniqueName("copy", longNameId);
+      prescribedName = createUniqueName(
+        serializedComponent.componentType,
+        longNameId,
+      );
     }
 
     componentName += prescribedName;
@@ -2844,23 +2837,6 @@ export function createComponentNames({
         );
       }
       currentNamespace.namesUsed[prescribedName] = true;
-    }
-
-    // if newNamespace is false,
-    // then register assignNames as belonging to current namespace
-    if (!newNamespace) {
-      if (assignNames) {
-        for (let name of flattenDeep(assignNames)) {
-          if (name in currentNamespace.namesUsed) {
-            throw Error(
-              `Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${componentType}${indexRangeString(
-                serializedComponent,
-              )}`,
-            );
-          }
-          currentNamespace.namesUsed[name] = true;
-        }
-      }
     }
 
     if (
@@ -3390,16 +3366,23 @@ export function processAssignNames({
     }
 
     if (name) {
+      let numToSkip = 0;
       if (component.attributes.assignNamesSkip) {
         // if component is a composite that itself assigns names to composites,
         // it could have an assignNamesSkip attribute, which says that we should
         // recurse to its replacements (possibly multiple times if assignNamesSkip > 1)
         // before continuing the assign names process
-        let numberToSkip = component.attributes.assignNamesSkip.primitive;
-        if (numberToSkip > 0) {
-          for (let i = 0; i < numberToSkip; i++) {
-            name = [name];
-          }
+        numToSkip += component.attributes.assignNamesSkip.primitive;
+      }
+      if (
+        component.componentType === "copy" ||
+        component.componentType === "extract"
+      ) {
+        numToSkip += 1;
+      }
+      if (numToSkip > 0) {
+        for (let i = 0; i < numToSkip; i++) {
+          name = [name];
         }
       }
     }

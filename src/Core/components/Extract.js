@@ -342,8 +342,14 @@ export default class Extract extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
+    let assignNames = component.doenetAttributes.assignNames;
+
+    if (Array.isArray(assignNames?.[0])) {
+      assignNames = assignNames[0];
+    }
+
     let processResult = processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
+      assignNames,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,

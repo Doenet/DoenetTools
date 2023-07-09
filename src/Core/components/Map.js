@@ -325,26 +325,27 @@ export default class Map extends CompositeComponent {
   }) {
     let replacements = [deepClone(await component.stateValues.template)];
     let newNamespace = component.attributes.newNamespace?.primitive;
+    let compositeAttributesObj = this.createAttributesObject();
 
-    if ("isResponse" in component.attributes) {
-      // pass isResponse to replacements
+    // pass isResponse to replacements
+    // (only isResponse will be copied, as it is only attribute with leaveRaw)
 
-      let attributesFromComposite = convertAttributesForComponentType({
-        attributes: { isResponse: component.attributes.isResponse },
-        componentType: replacements[0].componentType,
-        componentInfoObjects,
-        compositeCreatesNewNamespace: newNamespace,
-        flags,
-      });
-      if (!replacements[0].attributes) {
-        replacements[0].attributes = {};
-      }
-
-      Object.assign(replacements[0].attributes, attributesFromComposite);
+    let attributesFromComposite = convertAttributesForComponentType({
+      attributes: component.attributes,
+      componentType: replacements[0].componentType,
+      componentInfoObjects,
+      compositeAttributesObj,
+      compositeCreatesNewNamespace: newNamespace,
+      flags,
+    });
+    if (!replacements[0].attributes) {
+      replacements[0].attributes = {};
     }
 
+    Object.assign(replacements[0].attributes, attributesFromComposite);
+
     if (
-      !replacements[0].attributes?.newNamespace?.primitive &&
+      !replacements[0].attributes.newNamespace?.primitive &&
       replacements[0].children
     ) {
       markToCreateAllUniqueNames(replacements[0].children);
@@ -395,7 +396,7 @@ export default class Map extends CompositeComponent {
 
         let serializedComponents = [deepClone(template)];
 
-        // pass isResponse to template
+        // pass isResponse to replacements
         // (only isResponse will be copied, as it is only attribute with leaveRaw)
 
         let attributesFromComposite = {};
