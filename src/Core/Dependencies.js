@@ -4636,7 +4636,10 @@ class ChildDependency extends Dependency {
         let ind = 0;
         while (ind < activeChildrenIndices.length) {
           let activeInd = activeChildrenIndices[ind];
-          for (let compositeInfo of parent.compositeReplacementActiveRange) {
+          for (let [
+            compositeInd,
+            compositeInfo,
+          ] of parent.compositeReplacementActiveRange.entries()) {
             if (
               compositeInfo.firstInd <= activeInd &&
               compositeInfo.lastInd >= activeInd
@@ -4656,11 +4659,33 @@ class ChildDependency extends Dependency {
                 }
               }
 
+              let displayWithCommas = compositeInfo.displayWithCommas;
+
+              // if we have multiple composites with the same indices,
+              // displayWithCommas should be determined by the last composite
+              let nextCompositeInd = compositeInd + 1;
+              let nextCompositeInfo =
+                parent.compositeReplacementActiveRange[nextCompositeInd];
+              while (nextCompositeInfo) {
+                if (
+                  nextCompositeInfo.firstInd === compositeInfo.firstInd &&
+                  nextCompositeInfo.lastInd === compositeInfo.lastInd
+                ) {
+                  displayWithCommas = nextCompositeInfo.displayWithCommas;
+                  nextCompositeInd = nextCompositeInd + 1;
+                  nextCompositeInfo =
+                    parent.compositeReplacementActiveRange[nextCompositeInd];
+                } else {
+                  break;
+                }
+              }
+
               this.compositeReplacementRange.push({
                 compositeName: compositeInfo.compositeName,
                 target: compositeInfo.target,
                 firstInd,
                 lastInd,
+                displayWithCommas,
               });
 
               ind++;

@@ -1241,7 +1241,32 @@ export function componentFromAttribute({
     return attr;
   } else if (attrObj?.createPrimitiveOfType) {
     let newPrimitive;
-    if (attrObj.createPrimitiveOfType === "boolean") {
+    if (value.primitive !== undefined) {
+      newPrimitive = value.primitive;
+      // Just in case to be careful, we'll make sure the newPrimitive is of the correct type
+      if (attrObj.createPrimitiveOfType === "boolean") {
+        newPrimitive = Boolean(newPrimitive);
+      } else if (attrObj.createPrimitiveOfType === "number") {
+        newPrimitive = Number(newPrimitive);
+      } else if (attrObj.createPrimitiveOfType === "integer") {
+        newPrimitive = Math.round(Number(newPrimitive));
+      } else if (attrObj.createPrimitiveOfType === "stringArray") {
+        if (Array.isArray(newPrimitive)) {
+          newPrimitive = newPrimitive.map((x) => x.toString());
+        } else {
+          newPrimitive = [];
+        }
+      } else if (attrObj.createPrimitiveOfType === "numberArray") {
+        if (Array.isArray(newPrimitive)) {
+          newPrimitive = newPrimitive.map((x) => Number(x));
+        } else {
+          newPrimitive = [];
+        }
+      } else {
+        // else assume string
+        newPrimitive = newPrimitive.toString();
+      }
+    } else if (attrObj.createPrimitiveOfType === "boolean") {
       let valueTrimLower = value.rawString.trim().toLowerCase();
       newPrimitive = valueTrimLower === "true";
     } else if (attrObj.createPrimitiveOfType === "number") {

@@ -1908,7 +1908,7 @@ describe("Map Tag Tests", function () {
         let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[0])
+          .find(map1mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -1916,7 +1916,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[0])
+          .find(map2mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -1924,7 +1924,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[0])
+          .find(map3mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -1932,7 +1932,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[0])
+          .find(map4mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -1940,7 +1940,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[0])
+          .find(map5mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -1948,7 +1948,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[0])
+          .find(map6mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2036,7 +2036,7 @@ describe("Map Tag Tests", function () {
         let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[0])
+          .find(map1mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2044,7 +2044,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[1])
+          .find(map1mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2052,7 +2052,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("4");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[0])
+          .find(map2mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2060,7 +2060,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[1])
+          .find(map2mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2068,7 +2068,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("4");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[0])
+          .find(map3mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2076,7 +2076,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[1])
+          .find(map3mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2084,7 +2084,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("4");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[0])
+          .find(map4mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2092,7 +2092,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[1])
+          .find(map4mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2100,7 +2100,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("4");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[0])
+          .find(map5mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2108,7 +2108,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[1])
+          .find(map5mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2116,7 +2116,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("4");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[0])
+          .find(map6mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2124,7 +2124,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("1");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[1])
+          .find(map6mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2178,7 +2178,7 @@ describe("Map Tag Tests", function () {
         let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[0])
+          .find(map1mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2186,7 +2186,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[1])
+          .find(map1mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2194,7 +2194,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[0])
+          .find(map2mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2202,7 +2202,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[1])
+          .find(map2mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2210,7 +2210,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[0])
+          .find(map3mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2218,7 +2218,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[1])
+          .find(map3mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2226,7 +2226,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[0])
+          .find(map4mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2234,7 +2234,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[1])
+          .find(map4mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2242,7 +2242,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[0])
+          .find(map5mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2250,7 +2250,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[1])
+          .find(map5mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2258,7 +2258,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[0])
+          .find(map6mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2266,7 +2266,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[1])
+          .find(map6mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2354,7 +2354,7 @@ describe("Map Tag Tests", function () {
         let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[0])
+          .find(map1mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2362,7 +2362,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[1])
+          .find(map1mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2370,7 +2370,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(cesc2("#/_p1"))
-          .children(map1mathAnchors[2])
+          .find(map1mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2378,7 +2378,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[0])
+          .find(map2mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2386,7 +2386,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[1])
+          .find(map2mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2394,7 +2394,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(cesc2("#/_p2"))
-          .children(map2mathAnchors[2])
+          .find(map2mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2402,7 +2402,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[0])
+          .find(map3mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2410,7 +2410,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[1])
+          .find(map3mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2418,7 +2418,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(cesc2("#/_p3"))
-          .children(map3mathAnchors[2])
+          .find(map3mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2426,7 +2426,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[0])
+          .find(map4mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2434,7 +2434,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[1])
+          .find(map4mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2442,7 +2442,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(p4Anchor)
-          .children(map4mathAnchors[2])
+          .find(map4mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2450,7 +2450,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[0])
+          .find(map5mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2458,7 +2458,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[1])
+          .find(map5mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2466,7 +2466,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(p5Anchor)
-          .children(map5mathAnchors[2])
+          .find(map5mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2474,7 +2474,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("25");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[0])
+          .find(map6mathAnchors[0])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2482,7 +2482,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("9");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[1])
+          .find(map6mathAnchors[1])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -2490,7 +2490,7 @@ describe("Map Tag Tests", function () {
             expect(text.trim()).equal("16");
           });
         cy.get(p6Anchor)
-          .children(map6mathAnchors[2])
+          .find(map6mathAnchors[2])
           .find(".mjx-mrow")
           .eq(0)
           .invoke("text")
@@ -4403,6 +4403,283 @@ describe("Map Tag Tests", function () {
 
     cy.get(cesc("#\\/m1")).should("have.text", "map 1: ");
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1 hi2 hi3 hi4 ");
+  });
+
+  it("map does not display with commas by default", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p name="pdefault">
+        <map name="default" >
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pnocommas">
+        <map name="nocommas" displayWithCommas="false">
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pwithcommas">
+        <map name="withcommas" displayWithCommas>
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pdefault2">$default</p>
+      <p name="pnocommas2">$nocommas</p>
+      <p name="pwithcommas2">$withcommas</p>
+      <p name="pnocommas3">$withcommas{displayWithCommas="false"}</p>
+      <p name="pwithcommas3">$default{displayWithCommas="true"}</p>
+      <p name="pwithcommas3a">$nocommas{displayWithCommas="true"}</p>
+      <p name="pdefault4" copysource="pdefault" />
+      <p name="pnocommas4" copysource="pnocommas" />
+      <p name="pwithcommas4" copysource="pwithcommas" />
+      <p name="pdefault5" copysource="pdefault2" />
+      <p name="pnocommas5" copysource="pnocommas2" />
+      <p name="pwithcommas5" copysource="pwithcommas2" />
+      <p name="pnocommas6" copysource="pnocommas3" />
+      <p name="pwithcommas6" copysource="pwithcommas3" />
+      <p name="pwithcommas6a" copysource="pwithcommas3a" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/default"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pdefault2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pdefault4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pdefault5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/nocommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+
+    cy.get(cesc2("#/withcommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas3a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas6a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(
+        stateVariables["/pdefault"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pdefault2"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pdefault4"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pdefault5"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas2"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas3"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas4"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas5"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas6"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pwithcommas"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas2"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas3"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas3a"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas4"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas5"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas6"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas6a"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+    });
   });
 
   it("properly create unique name to avoid duplicate names", () => {

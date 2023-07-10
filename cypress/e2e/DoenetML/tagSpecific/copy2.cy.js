@@ -6852,6 +6852,251 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("displayWithCommas when copy array prop", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    <p name="default">Default: $ci.choiceTexts</p>
+    <p name="nocommas">No commas: $ci.choiceTexts{displayWithCommas="false"}</p>
+    <p name="withcommas">With commas: $ci.choiceTexts{displayWithCommas="true"}</p>
+    <p name="default2" copySource="default" />
+    <p name="nocommas2" copySource="nocommas" />
+    <p name="withcommas2" copySource="withcommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should("have.text", "Default: yes, no, maybe");
+    cy.get(cesc2("#/nocommas")).should("have.text", "No commas: yesnomaybe");
+    cy.get(cesc2("#/withcommas")).should(
+      "have.text",
+      "With commas: yes, no, maybe",
+    );
+    cy.get(cesc2("#/default2")).should("have.text", "Default: yes, no, maybe");
+    cy.get(cesc2("#/nocommas2")).should("have.text", "No commas: yesnomaybe");
+    cy.get(cesc2("#/withcommas2")).should(
+      "have.text",
+      "With commas: yes, no, maybe",
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/default"].stateValues.text).eq(
+        "Default: yes, no, maybe",
+      );
+      expect(stateVariables["/nocommas"].stateValues.text).eq(
+        "No commas: yesnomaybe",
+      );
+      expect(stateVariables["/withcommas"].stateValues.text).eq(
+        "With commas: yes, no, maybe",
+      );
+      expect(stateVariables["/default2"].stateValues.text).eq(
+        "Default: yes, no, maybe",
+      );
+      expect(stateVariables["/nocommas2"].stateValues.text).eq(
+        "No commas: yesnomaybe",
+      );
+      expect(stateVariables["/withcommas2"].stateValues.text).eq(
+        "With commas: yes, no, maybe",
+      );
+    });
+  });
+
+  it("displayWithCommas when copy array prop, multiple stacked props", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <line name="l" through="(1,2) (3,4)" />
+
+    <p name="default">Default: $l.points.x</p>
+    <p name="nocommas">No commas: $l.points.x{displayWithCommas="false"}</p>
+    <p name="withcommas">With commas: $l.points.x{displayWithCommas="true"}</p>
+    <p name="default2" copySource="default" />
+    <p name="nocommas2" copySource="nocommas" />
+    <p name="withcommas2" copySource="withcommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/nocommas")).should("contain.text", "13");
+    cy.get(cesc2("#/withcommas")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/default2")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/nocommas2")).should("contain.text", "13");
+    cy.get(cesc2("#/withcommas2")).should("contain.text", "1, 3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/default"].stateValues.text).eq("Default: 1, 3");
+      expect(stateVariables["/nocommas"].stateValues.text).eq("No commas: 13");
+      expect(stateVariables["/withcommas"].stateValues.text).eq(
+        "With commas: 1, 3",
+      );
+      expect(stateVariables["/default2"].stateValues.text).eq("Default: 1, 3");
+      expect(stateVariables["/nocommas2"].stateValues.text).eq("No commas: 13");
+      expect(stateVariables["/withcommas2"].stateValues.text).eq(
+        "With commas: 1, 3",
+      );
+    });
+  });
+
+  it("displayWithCommas when copy array prop, aslist overrides", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    
+    Override no commas: <aslist name="nocommas">$ci.choiceTexts{displayWithCommas="false"}</aslist>
+    Copy: <aslist name="nocommas2" copySource="nocommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Override no commas: yes, no, maybe",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Copy: yes, no, maybe",
+    );
+  });
+
+  it("displayWithCommas when copy array prop, test renderers", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    In document: $ci.choiceTexts
+    <alert name="in_alert">$ci.choiceTexts</alert>
+    <blockquote name="in_blockquote">$ci.choiceTexts</blockquote>
+    <c name="in_c">$ci.choiceTexts</c>
+    <caption name="in_caption">$ci.choiceTexts</caption>
+    <cell name="in_cell">$ci.choiceTexts</cell>
+    <choice name="in_choice">$ci.choiceTexts</choice>
+    <span name="in_span">$ci.choiceTexts</span>
+    <em name="in_em">$ci.choiceTexts</em>
+    <feedback name="in_feedback">$ci.choiceTexts</feedback>
+    <footnote name="in_footnote">$ci.choiceTexts</footnote>
+    <hint name="in_hint_w_title"><title>A title</title>$ci.choiceTexts</hint>
+    <hint name="in_hint_wo_title">$ci.choiceTexts</hint>
+    <label name="in_label">$ci.choiceTexts</label>
+    <ol>
+      <li name="in_li">$ci.choiceTexts</li>
+    </ol>
+    <ul>
+      <li name="in_li2">$ci.choiceTexts</li>
+    </ul>
+    <p name="in_p">$ci.choiceTexts</p>
+    <pre name="in_pre">$ci.choiceTexts</pre>
+    <p name="in_q"><q>$ci.choiceTexts</q></p>
+    <section name="in_section_w_title"><title name="sec_title">Title: $ci.choiceTexts</title>Text: $ci.choiceTexts</section>
+    <section name="in_section_wo_title">$ci.choiceTexts</section>
+    <solution name="in_solution">$ci.choiceTexts</solution>
+    <p name="in_sq"><sq>$ci.choiceTexts</sq></p>
+    <text name="in_text">$ci.choiceTexts</text>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "In document: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_alert")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_blockquote")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_c")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_caption")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_cell")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_choice")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_span")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_em")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_feedback")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_footnote")).click();
+    cy.get(cesc2("#/in_footnote")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_hint_w_title")).click();
+    cy.get(cesc2("#/in_hint_w_title")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_hint_wo_title")).click();
+    cy.get(cesc2("#/in_hint_wo_title")).should(
+      "contain.text",
+      "yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_label")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_li")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_li2")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_p")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_pre")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_q")).should("have.text", "“yes, no, maybe”");
+    cy.get(cesc2("#/in_section_w_title")).should(
+      "contain.text",
+      "Title: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_section_w_title")).should(
+      "contain.text",
+      "Text: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_section_wo_title")).should(
+      "contain.text",
+      "yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_solution")).click();
+    cy.get(cesc2("#/in_solution")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_sq")).should("have.text", "‘yes, no, maybe’");
+    cy.get(cesc2("#/in_text")).should("have.text", "yes, no, maybe");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/in_alert"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_c"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_caption"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_cell"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_choice"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_em"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_footnote"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_label"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_p"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_text"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/sec_title"].stateValues.text).eq(
+        "Title: yes, no, maybe",
+      );
+    });
+  });
+
   it("copy number from external content multiple ways, change attributes", () => {
     cy.window().then(async (win) => {
       win.postMessage(

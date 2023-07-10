@@ -1,6 +1,7 @@
 import BaseComponent from "./abstract/BaseComponent";
 import me from "math-expressions";
 import { preprocessMathInverseDefinition, textToAst } from "../utils/math";
+import { textFromChildren } from "../utils/text";
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
@@ -273,16 +274,7 @@ export default class Cell extends BaseComponent {
             },
           };
         }
-        let text = "";
-        for (let child of dependencyValues.children) {
-          if (typeof child === "object") {
-            if (child.stateValues.text) {
-              text += child.stateValues.text;
-            }
-          } else {
-            text += child.toString();
-          }
-        }
+        let text = textFromChildren(dependencyValues.children);
 
         return { setValue: { text } };
       },

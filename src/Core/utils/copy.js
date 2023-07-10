@@ -231,6 +231,7 @@ export function convertAttributesForComponentType({
   componentType,
   componentInfoObjects,
   compositeAttributesObj = {},
+  dontSkipAttributes = [],
   compositeCreatesNewNamespace,
 }) {
   let newClass = componentInfoObjects.allComponentClasses[componentType];
@@ -245,10 +246,12 @@ export function convertAttributesForComponentType({
   for (let attrName in attributes) {
     if (
       attrName in compositeAttributesObj &&
-      !compositeAttributesObj[attrName].leaveRaw
+      !compositeAttributesObj[attrName].leaveRaw &&
+      !dontSkipAttributes.includes(attrName)
     ) {
       // skip any attributes in the composite itself
       // unless specifically marked to not be processed for the composite
+      // or argument is passed in to not skip
       continue;
     }
 

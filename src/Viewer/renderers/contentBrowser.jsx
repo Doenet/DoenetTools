@@ -4,6 +4,7 @@ import VisibilitySensor from "react-visibility-sensor-v2";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { cesc } from "../../_utils/url";
+import { addCommasForCompositeRanges } from "./utils/composites";
 
 export default React.memo(function ContentBrowser(props) {
   let { name, id, SVs, children, actions, callAction } =
@@ -143,6 +144,15 @@ export default React.memo(function ContentBrowser(props) {
       </div>
     </div>
   );
+
+  if (SVs._compositeReplacementActiveRange) {
+    children = addCommasForCompositeRanges({
+      children,
+      compositeReplacementActiveRange: SVs._compositeReplacementActiveRange,
+      startInd: 0,
+      endInd: children.length - 1,
+    });
+  }
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
