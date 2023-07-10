@@ -842,6 +842,11 @@ export default class Core {
             }
           }
 
+          if (component.compositeReplacementActiveRange) {
+            stateValuesForRenderer._compositeReplacementActiveRange =
+              component.compositeReplacementActiveRange;
+          }
+
           let newRendererState = {
             componentName,
             stateValues: stateValuesForRenderer,
@@ -913,6 +918,11 @@ export default class Core {
           alwaysUpdate = true;
         }
       }
+    }
+
+    if (component.compositeReplacementActiveRange) {
+      stateValuesForRenderer._compositeReplacementActiveRange =
+        component.compositeReplacementActiveRange;
     }
 
     if (alwaysUpdate) {
@@ -2704,6 +2714,7 @@ export default class Core {
           target: await child.stateValues.target,
           firstInd: childInd,
           lastInd: childInd + replacements.length - 1,
+          displayWithCommas: await child.stateValues.displayWithCommas,
         });
 
         parent.activeChildren.splice(childInd, 1, ...replacements);

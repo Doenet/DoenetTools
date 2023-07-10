@@ -101,6 +101,13 @@ export default class Copy extends CompositeComponent {
       createStateVariable: "removeEmptyArrayEntries",
       defaultValue: false,
     };
+
+    attributes.displayWithCommas = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "displayWithCommas",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 

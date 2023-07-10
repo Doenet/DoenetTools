@@ -1982,6 +1982,56 @@ describe("Sequence Tag Tests", function () {
     });
   });
 
+  it("sequence displays with commas by default", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p name="pdefault"><sequence name="default" /></p>
+    <p name="pnocommas"><sequence displayWithCommas="false" name="nocommas" /></p>
+    <p name="pwithcommas"><sequence displayWithCommas name="withcommas" /></p>
+    <p name="pnocommas2">$default{displayWithCommas="false"}</p>
+    <p name="pwithcommas2">$nocommas{displayWithCommas="true"}</p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+
+    cy.get(cesc2("#/nocommas")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas2")).should("have.text", "12345678910");
+
+    cy.get(cesc2("#/withcommas")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+    cy.get(cesc2("#/pwithcommas2")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/pdefault"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pnocommas"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas2"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pwithcommas"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas2"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+    });
+  });
+
   it("rounding", () => {
     cy.window().then(async (win) => {
       win.postMessage(

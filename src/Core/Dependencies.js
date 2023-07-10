@@ -4661,6 +4661,7 @@ class ChildDependency extends Dependency {
                 target: compositeInfo.target,
                 firstInd,
                 lastInd,
+                displayWithCommas: compositeInfo.displayWithCommas,
               });
 
               ind++;

@@ -4405,6 +4405,114 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1 hi2 hi3 hi4 ");
   });
 
+  it("map does not display with commas by default", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p name="pdefault">
+        <map name="default" >
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pnocommas">
+        <map name="nocommas" displayWithCommas="false">
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pwithcommas">
+        <map name="withcommas" displayWithCommas>
+          <template>
+            <number>$v^2</number>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pnocommas2">$default{displayWithCommas="false"}</p>
+      <p name="pwithcommas2">$nocommas{displayWithCommas="true"}</p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/default"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/nocommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+
+    cy.get(cesc2("#/withcommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
+        ),
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(
+        stateVariables["/pdefault"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100"),
+        expect(
+          stateVariables["/pnocommas"].stateValues.text
+            .replace(/\s+/g, " ")
+            .trim(),
+        ).eq("1 4 9 16 25 36 49 64 81 100"),
+        expect(
+          stateVariables["/pnocommas2"].stateValues.text
+            .replace(/\s+/g, " ")
+            .trim(),
+        ).eq("1 4 9 16 25 36 49 64 81 100"),
+        expect(
+          stateVariables["/pwithcommas"].stateValues.text
+            .replace(/, \s*/g, ", ")
+            .trim(),
+        ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      expect(
+        stateVariables["/pwithcommas2"].stateValues.text
+          .replace(/, \s*/g, ", ")
+          .trim(),
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+    });
+  });
+
   it("properly create unique name to avoid duplicate names", () => {
     cy.window().then(async (win) => {
       win.postMessage(

@@ -8,6 +8,7 @@ import {
   returnSelectedStyleStateVariableDefinition,
   returnTextStyleDescriptionDefinitions,
 } from "../utils/style";
+import { textFromChildren } from "../utils/text";
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
 
@@ -56,6 +57,12 @@ export default class Text extends InlineComponent {
       createStateVariable: "isLatex",
       defaultValue: false,
       public: true,
+    };
+
+    attributes.displayCommasBetweenCompositeReplacements = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "displayCommasBetweenCompositeReplacements",
+      defaultValue: true,
     };
 
     Object.assign(attributes, returnAnchorAttributes());
@@ -112,10 +119,16 @@ export default class Text extends InlineComponent {
           childGroups: ["textLike"],
           variableNames: ["text"],
         },
+        displayCommasBetweenCompositeReplacements: {
+          dependencyType: "stateVariable",
+          variableName: "displayCommasBetweenCompositeReplacements",
+        },
       }),
       defaultValue: "",
       set: (x) => (x === null ? "" : String(x)),
       definition: function ({ dependencyValues }) {
+        console.log(dependencyValues);
+
         if (dependencyValues.textLikeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -123,14 +136,12 @@ export default class Text extends InlineComponent {
             },
           };
         }
-        let value = "";
-        for (let comp of dependencyValues.textLikeChildren) {
-          if (typeof comp === "string") {
-            value += comp;
-          } else {
-            value += comp.stateValues.text;
-          }
-        }
+
+        let value = textFromChildren(
+          dependencyValues.textLikeChildren,
+          dependencyValues.displayCommasBetweenCompositeReplacements,
+        );
+
         return { setValue: { value } };
       },
       inverseDefinition: function ({

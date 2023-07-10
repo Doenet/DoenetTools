@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment as thoughtBubble } from "@fortawesome/free-regular-svg-icons";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import styled from "styled-components";
+import { addCommasForCompositeRanges } from "./utils/composites";
 const FeedbackStyling = styled.aside`
   background-color: var(--canvas);
   margin: 0px 4px 12px 4px;
@@ -54,6 +55,15 @@ export default React.memo(function Feedback(props) {
   }
 
   let icon = <FontAwesomeIcon icon={thoughtBubble} />;
+
+  if (SVs._compositeReplacementActiveRange) {
+    children = addCommasForCompositeRanges({
+      children,
+      compositeReplacementActiveRange: SVs._compositeReplacementActiveRange,
+      startInd: 0,
+      endInd: children.length - 1,
+    });
+  }
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
