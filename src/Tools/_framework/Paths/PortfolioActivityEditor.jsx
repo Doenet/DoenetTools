@@ -46,10 +46,19 @@ import {
   InputGroup,
   InputRightElement,
   Link,
+  List,
+  ListIcon,
+  ListItem,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Progress,
   // Spinner,
   Select,
@@ -58,14 +67,20 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tag,
   Text,
   Tooltip,
+  UnorderedList,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
-import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
+import {
+  MdCheckCircle,
+  MdModeEditOutline,
+  MdOutlineCloudUpload,
+} from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
@@ -1683,7 +1698,7 @@ export function PortfolioActivityEditor() {
                       w="100%"
                       boxSizing="border-box"
                       background="doenet.canvas"
-                      height={`calc(100vh - 132px)`}
+                      height={`calc(100vh - 164px)`}
                       overflowY="scroll"
                       borderRight="solid 1px"
                       borderTop="solid 1px"
@@ -1706,6 +1721,89 @@ export function PortfolioActivityEditor() {
                           }, 3000); //3 seconds
                         }}
                       />
+                    </Box>
+
+                    <Box bg="doenet.mainGray" h="32px" w="100%">
+                      <HStack
+                        ml="0px"
+                        // ml="33px"
+                        h="32px"
+                        bg="doenet.mainGray"
+                        // bg="doenet.canvas"
+                        pl="10px"
+                        pt="1px"
+                      >
+                        <Popover offset={[119, 5]}>
+                          <PopoverTrigger>
+                            <Tag tabIndex="0" cursor="pointer" size="md">
+                              2 Warnings
+                            </Tag>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontWeight="semibold">
+                              Warnings
+                            </PopoverHeader>
+                            <PopoverBody>
+                              <List spacing={2}>
+                                <ListItem>
+                                  <ListIcon
+                                    as={MdCheckCircle}
+                                    color="yellow.400"
+                                  />
+                                  Lorem ipsum dolor sit amet
+                                </ListItem>
+                                <ListItem>
+                                  <ListIcon
+                                    as={MdCheckCircle}
+                                    color="yellow.400"
+                                  />
+                                  Consectetur adipiscing elit
+                                </ListItem>
+                              </List>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+
+                        <Popover offset={[119, 5]}>
+                          <PopoverTrigger>
+                            <Tag cursor="pointer" size="md">
+                              3 Errors
+                            </Tag>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontWeight="semibold">
+                              Errors
+                            </PopoverHeader>
+                            <PopoverBody>
+                              <List spacing={2}>
+                                <ListItem>
+                                  <ListIcon
+                                    as={MdCheckCircle}
+                                    color="red.500"
+                                  />
+                                  Lorem ipsum dolor sit amet
+                                </ListItem>
+                                <ListItem>
+                                  <ListIcon
+                                    as={MdCheckCircle}
+                                    color="red.500"
+                                  />
+                                  Consectetur adipiscing elit
+                                </ListItem>
+                                <ListItem>
+                                  <ListIcon
+                                    as={MdCheckCircle}
+                                    color="red.500"
+                                  />
+                                  Error 3
+                                </ListItem>
+                              </List>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </HStack>
                     </Box>
                   </VStack>
                 }
@@ -1926,7 +2024,19 @@ const ResizeableSideBySide = ({
         alignSelf="start"
         paddingTop="10px"
       >
-        {right}
+        <Box
+          top="50px"
+          boxSizing="border-box"
+          background="doenet.canvas"
+          height={`calc(100vh - ${headerHeight + 20}px)`}
+          overflowY="scroll"
+          borderRight="solid 1px"
+          borderTop="solid 1px"
+          borderBottom="solid 1px"
+          borderColor="doenet.mediumGray"
+        >
+          {right}
+        </Box>
       </GridItem>
     </Grid>
   );
