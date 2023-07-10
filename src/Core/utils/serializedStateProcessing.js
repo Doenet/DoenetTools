@@ -2716,10 +2716,7 @@ export function createComponentNames({
     }
 
     if (newNamespace) {
-      if (
-        serializedComponent.componentType === "copy" ||
-        serializedComponent.componentType === "extract"
-      ) {
+      if (serializedComponent.componentType === "copy" && !attributes.prop) {
         // a newNamespace on a copy assigns a new namespace to its replacements
         attributes.assignNewNamespaces = { primitive: true };
         delete attributes.newNamespace;
@@ -2768,11 +2765,11 @@ export function createComponentNames({
       }
     }
 
-    // For copies/extracts, we convert the name to be assignNames so that it applies to the replacement
-    // rather than the copy/extract itself, and then we give the copy a randomly generated name.
+    // For copies without a prop, we convert the name to be assignNames so that it applies to the replacement
+    // rather than the copy itself, and then we give the copy a randomly generated name.
     if (
-      (serializedComponent.componentType === "copy" ||
-        serializedComponent.componentType === "extract") &&
+      serializedComponent.componentType === "copy" &&
+      !attributes.prop &&
       !doenetAttributes.convertedAssignNames
     ) {
       if (

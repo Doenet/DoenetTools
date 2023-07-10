@@ -1526,10 +1526,6 @@ export default class Copy extends CompositeComponent {
         flags,
       });
 
-      if (Array.isArray(assignNames?.[0])) {
-        assignNames = assignNames[0];
-      }
-
       let processResult = serializeFunctions.processAssignNames({
         assignNames,
         assignNamesForCompositeReplacement:
