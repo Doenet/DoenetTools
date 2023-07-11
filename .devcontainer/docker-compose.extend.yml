@@ -43,7 +43,7 @@ services:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-    restart: on-failure
+    restart: unless-stopped
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
   php:
@@ -52,7 +52,7 @@ services:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
-    restart: on-failure
+    restart: unless-stopped
   apache:
     ports:
       - 8080:80
@@ -64,13 +64,14 @@ services:
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
+    restart: unless-stopped
   mysql:
     ports:
       - 3306:3306
     volumes:
       - ./doenet_docker/volumes/db:/var/lib/mysql
       - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
-    restart: on-failure
+    restart: unless-stopped
 
   # for realtime testing
   # rtnode:
