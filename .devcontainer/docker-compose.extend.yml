@@ -52,6 +52,7 @@ services:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
+      - ./doenet_docker/php/env.ini:/usr/local/apache2/htdocs/etc/env.ini
     restart: unless-stopped
   apache:
     ports:
