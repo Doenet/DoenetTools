@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: doenet_local
 -- ------------------------------------------------------
--- Server version	8.0.32
+-- Server version	8.0.33-commercial
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,9 +14,12 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
 
 --
 -- Current Database: `doenet_local`
+-- GTID state at the beginning of the backup 
 --
 
 /*!40000 DROP DATABASE IF EXISTS `doenet_local`*/;
@@ -24,6 +27,10 @@
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
 USE `doenet_local`;
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '2ecbdeca-e4b5-11eb-94b8-02510a20a6cd:1-12,
+45ddb5c1-e41d-11eb-8837-02510a20a623:1-417593784,
+5143de26-1242-11ec-ab6e-02510a20a6cd:1-8637,
+d05f0606-cfcb-11ed-b546-02510a20a6cd:1-4789';
 
 --
 -- Table structure for table `activity_state`
@@ -34,20 +41,20 @@ DROP TABLE IF EXISTS `activity_state`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `activity_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `attemptNumber` int NOT NULL,
-  `saveId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `saveId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `cid` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `variantIndex` int NOT NULL,
-  `activityInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `activityState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `activityInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `activityState` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36923 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,17 +76,17 @@ DROP TABLE IF EXISTS `assignment`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `assignment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
-  `attemptAggregation` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'm',
+  `attemptAggregation` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'm',
   `totalPointsOrPercent` float DEFAULT '10',
-  `gradeCategory` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `gradeCategory` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
   `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
@@ -88,13 +95,13 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `paginate` tinyint(1) NOT NULL DEFAULT '1',
-  `showFinishButton` tinyint(1) NOT NULL DEFAULT '0',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `autoSubmit` tinyint(1) NOT NULL DEFAULT '0',
-  `canViewAfterCompleted` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Can''t navigate back to view and don''t show in gradebook',
+  `showFinishButton` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewAfterCompleted` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10032 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -116,13 +123,13 @@ DROP TABLE IF EXISTS `class_times`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `class_times` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `dotwIndex` int NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
   `sortOrder` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,13 +150,13 @@ DROP TABLE IF EXISTS `collection`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `collection` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `entryId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryDoenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryContentId` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `entryVariant` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` char(21) DEFAULT '',
+  `entryId` char(21) NOT NULL,
+  `entryDoenetId` char(21) NOT NULL DEFAULT '',
+  `entryContentId` char(64) NOT NULL DEFAULT '',
+  `entryVariant` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -170,13 +177,13 @@ DROP TABLE IF EXISTS `collection_groups`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `collection_groups` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` char(21) NOT NULL DEFAULT '',
   `minStudents` int NOT NULL DEFAULT '1',
   `maxStudents` int NOT NULL DEFAULT '1',
   `preferredStudents` int NOT NULL DEFAULT '1',
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,9 +204,9 @@ DROP TABLE IF EXISTS `community_admin`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `community_admin` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `userId` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,10 +227,10 @@ DROP TABLE IF EXISTS `content`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `versionId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `title` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `contentId` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `versionId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `isDraft` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'When this is true (1) is the running draft version between published versions',
   `isNamed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'When this is true (1) is the running draft version between published versions',
@@ -232,51 +239,10 @@ CREATE TABLE `content` (
   `removedFlag` tinyint(1) NOT NULL DEFAULT '0',
   `public` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `cid` (`cid`),
+  KEY `contentId` (`contentId`),
   KEY `doenetId` (`doenetId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27923 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `content`
---
-
-LOCK TABLES `content` WRITE;
-/*!40000 ALTER TABLE `content` DISABLE KEYS */;
-/*!40000 ALTER TABLE `content` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `content_interactions`
---
-
-DROP TABLE IF EXISTS `content_interactions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `content_interactions` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `stateVariables` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `variant` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `attemptNumber` int DEFAULT NULL,
-  `interactionSource` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `timestamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `content_interactions`
---
-
-LOCK TABLES `content_interactions` WRITE;
-/*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `course`
@@ -287,21 +253,21 @@ DROP TABLE IF EXISTS `course`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'Untitled Course',
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Untitled',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
-  `image` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `color` char(6) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'none',
-  `defaultRoleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `examPasscode` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `browserExamKeys` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `lastSeenExamKey` varchar(66) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `canAutoEnroll` tinyint(1) NOT NULL DEFAULT '0',
-  `portfolioCourseForUserId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `color` char(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'none',
+  `defaultRoleId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `examPasscode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `browserExamKeys` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `lastSeenExamKey` varchar(66) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `canAutoEnroll` tinyint(1) DEFAULT '0',
+  `portfolioCourseForUserId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=709 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,20 +289,20 @@ DROP TABLE IF EXISTS `course_content`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course_content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `parentDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'Untitled',
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int NOT NULL DEFAULT '0',
   `isAssigned` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
   `isGloballyAssigned` int NOT NULL DEFAULT '1' COMMENT 'The content from cid shows to all students without a cidOverride',
   `isPublic` int NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
   `userCanViewSource` int NOT NULL DEFAULT '0',
-  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `sortOrder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `jsonDefinition` json DEFAULT NULL,
-  `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `imagePath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `learningOutcomes` json DEFAULT NULL,
   `addToPrivatePortfolioDate` timestamp NULL DEFAULT NULL,
   `addToPublicPortfolioDate` timestamp NULL DEFAULT NULL,
@@ -344,7 +310,7 @@ CREATE TABLE `course_content` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6092 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -365,14 +331,14 @@ DROP TABLE IF EXISTS `course_grade_category`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course_grade_category` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `gradeCategory` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `gradeCategory` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `totalPointsOrPercent` float NOT NULL DEFAULT '0',
   `numberToDrop` int NOT NULL DEFAULT '0',
   `assignmentsInPercent` bit(11) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
   KEY `course_grade_category` (`courseId`,`gradeCategory`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -392,11 +358,11 @@ DROP TABLE IF EXISTS `course_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course_role` (
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `roleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled Role',
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `roleId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'Untitled Role',
   `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
-  `canViewCourse` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'This is to hide the course from navigation initially for placement exams',
+  `canViewCourse` tinyint(1) NOT NULL DEFAULT '1',
   `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
   `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
   `canEditContent` tinyint(1) NOT NULL DEFAULT '0',
@@ -406,7 +372,7 @@ CREATE TABLE `course_role` (
   `canViewActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyCourseSettings` tinyint(1) NOT NULL DEFAULT '0',
-  `dataAccessPermission` varchar(15) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'None',
+  `dataAccessPermission` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'None',
   `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
   `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
@@ -415,7 +381,7 @@ CREATE TABLE `course_role` (
   PRIMARY KEY (`courseId`,`roleId`),
   UNIQUE KEY `roleId` (`roleId`),
   CONSTRAINT `course_role_ibfk_1` FOREIGN KEY (`courseId`) REFERENCES `course` (`courseId`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -436,22 +402,22 @@ DROP TABLE IF EXISTS `course_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `course_user` (
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `externalId` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `id` int DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `externalId` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `dateEnrolled` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC DateTime',
-  `section` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `section` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `withdrew` bit(1) DEFAULT b'0',
   `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
   `courseCredit` double DEFAULT NULL,
-  `courseGrade` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `overrideCourseGrade` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `overrideCourseGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
-  `roleId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `roleId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`courseId`,`userId`),
-  KEY `course_user_ibfk_1` (`roleId`),
-  CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  KEY `driveId_userId` (`courseId`,`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -473,19 +439,20 @@ DROP TABLE IF EXISTS `drive`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `drive` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `driveType` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `driveType` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
-  `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
+  `isPublic` tinyint(1) DEFAULT '0',
   `isDeleted` tinyint(1) DEFAULT '0',
-  `image` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `color` char(6) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `examPasscode` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `browserExamKeys` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `courseId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `color` char(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `examPasscode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `browserExamKeys` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`driveId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=275 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -506,24 +473,24 @@ DROP TABLE IF EXISTS `drive_content`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `drive_content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `itemId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `parentFolderId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `driveId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `itemId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `parentFolderId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int NOT NULL DEFAULT '0',
-  `isReleased` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the instructor in course',
-  `isAssigned` int NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
-  `isPublic` int NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
-  `itemType` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `sourceDoenetId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'Filled after a copy of drive, folder or doenetML',
-  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `isReleased` int NOT NULL DEFAULT '0',
+  `isAssigned` int NOT NULL DEFAULT '0',
+  `isPublic` int NOT NULL DEFAULT '0',
+  `itemType` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `sourceDoenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `sortOrder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `driveId` (`driveId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4068 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -544,8 +511,8 @@ DROP TABLE IF EXISTS `drive_user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `drive_user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `driveId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `driveId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
@@ -559,10 +526,10 @@ CREATE TABLE `drive_user` (
   `canViewUnreleasedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canViewUnassignedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
-  `role` char(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `role` char(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=721 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -583,22 +550,22 @@ DROP TABLE IF EXISTS `event`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `verb` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `activityCid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `pageCid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `verb` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `activityCid` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `pageCid` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `pageNumber` int DEFAULT NULL,
   `attemptNumber` int DEFAULT NULL,
   `activityVariantIndex` int DEFAULT NULL,
   `pageVariantIndex` int DEFAULT NULL,
-  `object` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `context` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `result` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `object` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `context` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `result` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
-  `version` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=533 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4239130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -620,14 +587,14 @@ DROP TABLE IF EXISTS `experiment`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `experiment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `experimentId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `waitingCid` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `experimentId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `waitingCid` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `hasBegun` int DEFAULT '0',
   `numberOfGroups` int DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -640,32 +607,19 @@ LOCK TABLES `experiment` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `homepage_carousel`
+-- Table structure for table `eventsecretcodes`
 --
-
-DROP TABLE IF EXISTS `homepage_carousel`;
+DROP TABLE IF EXISTS `eventsecretcodes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `homepage_carousel` (
+CREATE TABLE `eventsecretcodes` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `section` int DEFAULT '0',
-  `position` int DEFAULT '0',
-  `imagePath` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `link` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) DEFAULT NULL,
+  `secretCode` char(21) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `homepage_carousel`
---
-
-LOCK TABLES `homepage_carousel` WRITE;
-/*!40000 ALTER TABLE `homepage_carousel` DISABLE KEYS */;
-INSERT INTO `homepage_carousel` VALUES (1,0,1,'https://www.doenet.org/media/bafkreiam4krvixrkppyucgwxwvsqugdnu744fetsjfpaik42e6garyliui.png','Sketching the Derivative of a Function','https://www.doenet.org/public?&doenetId=_2vI5BPzPpy2xIgIdeeT58#page1'),(2,2,1,'https://www.doenet.org/media/bafkreihtu6ojja2rqu7h7ozwgo6wxfaxcbjhfl72qrk35gkyvewkfkdpm4.png','The Distance Formula','https://www.doenet.org/public/?&doenetId=_Nx4JdF9H01nevilBVcpH7&pageId=_2Q0GSCRjcOXzsG2XqkxIy'),(3,1,1,'https://www.doenet.org/media/bafkreibscqr4xqdtzluhxqpq2b5te6aee5klhih5a7gyepbhzg5ef7a4dy.png','Gravity Pendulum','https://www.doenet.org/public?&doenetId=_9yltFP7xicXUxc5zn47kV&pageId=_R01B4y1aIIAhUUMJ1kS4h'),(4,0,2,'https://www.doenet.org/media/bafkreifp3vvgjzyauwcz4sgv3ufnhgt73wgjxeo526bxrc42dy5z7ptdk4.png','Using Critical Points to Graph a Function','https://www.doenet.org/public?&pageId=_nndyecDUVhrBxRSVEsIks&doenetId=_xFp9q8N0M5ZmndOdNoCdV#page1'),(5,0,3,'https://www.doenet.org/media/bafkreidaba7xob6ttqtmrlhxc3tac4ndbyspxyjgdkrum7kqennbbhiksq.png','Cobwebbing as a Graphical Solution Technique','https://www.doenet.org/public?&pageId=_dZtsQukSqUSyj1zpjjKmR&doenetId=_Zhp8bgIK4cH1rmC2qbmZ1#page1'),(6,0,4,'https://www.doenet.org/media/bafkreiaxmhuwpaysgexfyi52u227wjue7sdupuhca5fclc6vz5s75i43gi.png','Finding Equilibria of Dynamical Systems Graphically','https://www.doenet.org/public?&doenetId=_mSq0VF5YtzU1G6O8yKmH3&pageId=_xaxKwgl5eoIW5jSkER4dL'),(7,0,5,'https://www.doenet.org/media/bafkreieiacouqdzeocyuf73nrd2spwnfjt24ttpgbzx3xuex7ma7qkaje4.png','Average Rate of Change of f(x)','https://www.doenet.org/public?&doenetId=_Tr6eNIi78wbhqPbWNrMxz&pageId=_D4swdtGCu05CX9zGHWoeX'),(8,0,6,'https://www.doenet.org/media/bafkreigezuzjy2jm6afsbzt2bz6aibxibebynhq5m6tgu5q2vx46ptqk4y.png','Retinal Neuron in Response to Light','https://www.doenet.org/public?&doenetId=_0tyHTDbSrC99yN3Dcxatt&pageId=_iDhjQ8aQc3rvRZo4ahMDH'),(9,0,7,'https://www.doenet.org/media/bafkreifdwgupm3bls3oaswjgjdmsdribbnapnoj6vmztssfdhkmewcejiq.png','Sketching Riemann Sums','https://www.doenet.org/public?&doenetId=_szVX6GxaRlNjE85iPorIX&pageId=_I8W0aJ0d29wR4tykHzcTm'),(10,0,8,'https://www.doenet.org/media/bafkreif53m74qbeaaxf6ox7x45vidz77fxluuzgwuxyvkpdhm3aesa7fem.png','Graphical Solution to Autonomous Differential Equation','https://www.doenet.org/public?tool=editor&doenetId=_PdrivZGPIuLsu0yNYgTh1&pageId=_xyXzlFeOcnDf5M043pmOa'),(11,1,2,'https://www.doenet.org/media/bafkreibbljj4oae2mrbmupcnr7a62wjmxgrspgkn6pp2nygsl6vaab2ulq.png','Force Polygon and Free-body Diagram','https://www.doenet.org/public?&doenetId=_oLrDBHvAQ6km8U8oW8n8F&pageId=_bir2xQiClURXl58TRjJyu'),(12,1,3,'https://www.doenet.org/media/bafkreidfgtqqf4pomt2yk7e2n3b2ozgqnspgz34bsydajauy6jc3f3q2ym.png','The Parallel Axis Theorem','https://www.doenet.org/public?&doenetId=_nQhMzFgVSHKdQLYHZdqSi&pageId=_9egpTeOQ7CeyKQOzXJsE4'),(13,1,4,'https://www.doenet.org/media/bafkreidziwruo6ew34pcxucdgjshuwyvtn4yxfe3klm24zipl7qekzn2ji.png','Parametric Curves and the Fibonacci Spiral','https://www.doenet.org/public?&doenetId=_YHXi5AZ50HpDaiDpqY5i4'),(14,1,5,'https://www.doenet.org/media/bafkreiesq4ovdbrbbzwtelrzqi55y5cn77hg2hzdvpka6lzkivgavgs7pm.png','Mohr\'s Circle Construction','https://www.doenet.org/public?&doenetId=_2GQLzLQk720Xtp0IQQlsP'),(15,2,2,'https://www.doenet.org/media/bafkreigbsq22gtn6cyjowbct6yfvmdubxvbbbpcg3w7lb7diwiuedp66wi.png','Parabola in Vertex Form','https://www.doenet.org/public?&doenetId=_Tx6tHFlAjEkwI2JqobpJb&pageId=_xsXSITMkeoe2Kxk09K9nU'),(16,2,3,'https://www.doenet.org/media/bafkreigaqyhy7jozong5oy6d6tazum36koslg737hqpbtvrr6fuvxgl3zu.png','The Unit Circle','https://www.doenet.org/public?&doenetId=_6694ERXlB01d4O02Y6Ss4&pageId=_MKp8wrCuf6RBfwqXt29KU'),(17,2,4,'https://www.doenet.org/media/bafkreie7wydzahclczanva3jvntado4jbn7v57ijjxyyahc34z7k3cwgpa.png','Radioactive Decay','https://www.doenet.org/public?&doenetId=_djqyy5l6czkNhT1WfNfG8&pageId=_O1pgjFfTntXw9vLe7shW3'),(18,2,5,'https://www.doenet.org/media/bafkreiezrefj2verba4vwcl7jwa3nyulazeo736daw57kkp7j7q4ihihy4.png','Rational Functions','https://www.doenet.org/public?&doenetId=_TGnpVEefcj59zLjsnULqK&pageId=_nBhukue9G82wLIs0Nx2XT'),(19,2,6,'https://www.doenet.org/media/bafkreid6r7fcpgqlv32q3lxqsnmt47daicrdjcnws5annfqtwg4qnsrepu.png','Verify Algebraic Simplification','https://www.doenet.org/public?&doenetId=_BrVjSspzU5pdew3DOBlXP&pageId=_Svl7QVdDJFpaByTUDsOi8'),(20,2,7,'https://www.doenet.org/media/bafkreih5kbfwmtkifdfskchyiuekinlx7zo6lsvoozxrboxyyeygspwe2q.png','Transform Trigonometric Functions','https://www.doenet.org/public?&doenetId=_9o97WpLVp3FRYyjwDqpDY'),(21,2,8,'https://www.doenet.org/media/bafkreienne7x5iiq2qr4ca7pct6ngl4omdxv6pkzmrvtwn2nyamybnscyi.png','Integer Practice on the Coordinate Plane','https://www.doenet.org/public?&doenetId=_5kggLH0irOmDTBvrOcDK3'),(22,3,1,'https://www.doenet.org/media/bafkreigezuzjy2jm6afsbzt2bz6aibxibebynhq5m6tgu5q2vx46ptqk4y.png','Retinal Neuron in Response to Light','https://www.doenet.org/public?&doenetId=_0tyHTDbSrC99yN3Dcxatt&pageId=_iDhjQ8aQc3rvRZo4ahMDH'),(23,3,2,'https://www.doenet.org/media/bafkreiezrefj2verba4vwcl7jwa3nyulazeo736daw57kkp7j7q4ihihy4.png','Rational Functions','https://www.doenet.org/public?&doenetId=_TGnpVEefcj59zLjsnULqK&pageId=_nBhukue9G82wLIs0Nx2XT'),(24,3,3,'https://www.doenet.org/media/bafkreienne7x5iiq2qr4ca7pct6ngl4omdxv6pkzmrvtwn2nyamybnscyi.png','Integer Practice on the Coordinate Plane','https://www.doenet.org/public?&doenetId=_5kggLH0irOmDTBvrOcDK3');
-/*!40000 ALTER TABLE `homepage_carousel` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `initial_renderer_state`
@@ -676,18 +630,18 @@ DROP TABLE IF EXISTS `initial_renderer_state`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `initial_renderer_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `cid` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `variantIndex` int NOT NULL,
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
-  `solutionDisplayMode` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'button',
+  `solutionDisplayMode` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'button',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `autoSubmit` tinyint(1) NOT NULL DEFAULT '0',
-  `rendererState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `coreInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `rendererState` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `coreInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniquekey` (`cid`,`variantIndex`,`showCorrectness`,`solutionDisplayMode`,`showFeedback`,`showHints`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  UNIQUE KEY `uniqueKey` (`cid`,`variantIndex`,`showCorrectness`,`solutionDisplayMode`,`showFeedback`,`showHints`)
+) ENGINE=InnoDB AUTO_INCREMENT=26362 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -708,12 +662,12 @@ DROP TABLE IF EXISTS `ipfs_to_upload`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ipfs_to_upload` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `cid` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `fileType` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `cid` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `fileType` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `sizeInBytes` int DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -734,16 +688,16 @@ DROP TABLE IF EXISTS `link_pages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `link_pages` (
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `containingDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `parentDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `sourceCollectionDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `sourcePageDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `containingDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `parentDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `sourceCollectionDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `sourcePageDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `timeOfLastUpdate` datetime DEFAULT NULL,
   PRIMARY KEY (`doenetId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -764,22 +718,22 @@ DROP TABLE IF EXISTS `page_state`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `page_state` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `deviceName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `cid` char(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `pageNumber` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `cid` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `pageNumber` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `attemptNumber` int DEFAULT NULL,
-  `saveId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `coreInfo` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `coreState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-  `rendererState` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `saveId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `coreInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `coreState` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `rendererState` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId-doenetId-pageNumber-attemptNumber` (`userId`,`doenetId`,`pageNumber`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=107224 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -800,15 +754,15 @@ DROP TABLE IF EXISTS `pages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pages` (
-  `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `containingDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `courseId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `containingDoenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'Untitled',
   `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`containingDoenetId`,`doenetId`),
   KEY `doenetId` (`doenetId`),
-  CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -829,13 +783,13 @@ DROP TABLE IF EXISTS `promoted_content`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `promoted_content` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `sortOrder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `promotedGroupId` int NOT NULL,
   PRIMARY KEY (`id`,`promotedGroupId`),
   KEY `fk_promoted_content_promoted_content_groups1_idx` (`promotedGroupId`),
   CONSTRAINT `fk_promoted_content_promoted_content_groups1` FOREIGN KEY (`promotedGroupId`) REFERENCES `promoted_content_group` (`promotedGroupId`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=186 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,12 +810,12 @@ DROP TABLE IF EXISTS `promoted_content_group`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `promoted_content_group` (
   `promotedGroupId` int NOT NULL AUTO_INCREMENT,
-  `groupName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `groupName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `currentlyFeatured` int DEFAULT NULL,
   `homepage` int DEFAULT NULL,
   PRIMARY KEY (`promotedGroupId`),
   UNIQUE KEY `groupName_UNIQUE` (`groupName`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -874,6 +828,79 @@ LOCK TABLES `promoted_content_group` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `save_content_interactions`
+--
+DROP TABLE IF EXISTS `save_content_interactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `save_content_interactions` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `contentId` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `stateVariables` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `variant` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `attemptNumber` int DEFAULT NULL,
+  `interactionSource` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=784664 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `save_event`
+--
+
+DROP TABLE IF EXISTS `save_event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `save_event` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `verb` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `contentId` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `doenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `attemptNumber` int DEFAULT NULL,
+  `variant` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `object` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `context` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `result` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  `timestored` timestamp NULL DEFAULT NULL,
+  `version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `deviceName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `valid` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2163373 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `save_user_assignment_attempt_item_submission`
+--
+
+DROP TABLE IF EXISTS `save_user_assignment_attempt_item_submission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `save_user_assignment_attempt_item_submission` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `doenetId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `contentId` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `attemptNumber` int DEFAULT NULL,
+  `itemNumber` int DEFAULT NULL,
+  `submissionNumber` int DEFAULT NULL,
+  `stateVariables` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'JSON used to persist state of user''s experience',
+  `credit` double DEFAULT NULL,
+  `submittedDate` datetime NOT NULL,
+  `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
+) ENGINE=InnoDB AUTO_INCREMENT=620829 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `support_files`
 --
 
@@ -882,23 +909,23 @@ DROP TABLE IF EXISTS `support_files`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `support_files` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `cid` char(80) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '0',
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `fileType` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `description` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `asFileName` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `cid` char(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0',
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `fileType` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `description` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `asFileName` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `sizeInBytes` mediumint DEFAULT NULL,
   `widthPixels` int DEFAULT NULL,
   `heightPixels` int DEFAULT NULL,
-  `columnTypes` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `columnTypes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `timestamp` datetime DEFAULT NULL,
   `isListed` tinyint(1) NOT NULL DEFAULT '0',
   `isPublic` tinyint(1) NOT NULL DEFAULT '0',
   `isActivityThumbnail` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=365 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -924,7 +951,7 @@ CREATE TABLE `temp_log` (
   `secretCodeMatches` int DEFAULT '0',
   `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=323 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -946,18 +973,18 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `screenName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'New User',
-  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `lastName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '',
-  `firstName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT '',
-  `profilePicture` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `screenName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'New User',
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'full email address',
+  `lastName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+  `firstName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+  `profilePicture` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `trackingConsent` tinyint(1) DEFAULT '0',
   `canUpload` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6406 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -979,20 +1006,20 @@ DROP TABLE IF EXISTS `user_assignment`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_assignment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedAdjustment` int DEFAULT NULL,
-  `groupId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
-  `groupName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `groupId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'NULL means no group',
+  `groupName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
   `completedDate` datetime DEFAULT NULL,
   `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
   `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   `isUnassigned` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  UNIQUE KEY `assignment-userId` (`doenetId`,`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=62779 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1014,8 +1041,8 @@ DROP TABLE IF EXISTS `user_assignment_attempt`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_assignment_attempt` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `attemptNumber` int NOT NULL DEFAULT '1',
   `credit` double DEFAULT NULL,
   `creditOverride` double DEFAULT NULL,
@@ -1023,7 +1050,7 @@ CREATE TABLE `user_assignment_attempt` (
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userid-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=44127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1045,8 +1072,8 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `userId` char(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `attemptNumber` int NOT NULL,
   `itemNumber` int NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
   `credit` double DEFAULT NULL COMMENT 'maximum credit',
@@ -1056,7 +1083,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=176635 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1084,8 +1111,9 @@ CREATE TABLE `user_device` (
   `timestampOfSignInCode` datetime DEFAULT NULL,
   `deviceName` varchar(255) DEFAULT NULL,
   `signedIn` int DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  KEY `deviceName_email` (`deviceName`,`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=9858 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1097,6 +1125,7 @@ LOCK TABLES `user_device` WRITE;
 INSERT INTO `user_device` VALUES (1,'t1LsUo14It9GJIWAs9xnB','kevin@doenet.org',664273265,'2023-03-27 14:22:08','Sycamore',1),(2,'t1LsUo14It9GJIWAs9xnB','kevin@doenet.org',280186330,'2023-03-28 21:51:38','Beech',1);
 /*!40000 ALTER TABLE `user_device` ENABLE KEYS */;
 UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1107,4 +1136,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-29 14:45:00
+-- Dump completed on 2023-07-11 16:59:03
