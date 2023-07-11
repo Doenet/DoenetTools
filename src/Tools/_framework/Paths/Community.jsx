@@ -23,7 +23,6 @@ import {
   Wrap,
   Flex,
   VStack,
-  HStack,
   Checkbox,
   FormLabel,
 } from "@chakra-ui/react";
@@ -673,7 +672,7 @@ export function Community() {
                     )}
                     <br />
                     <br />
-                    <HStack>
+                    <Wrap overflow="visible">
                       {group.map((cardObj, i) => {
                         return (
                           <ActivityCard
@@ -734,7 +733,7 @@ export function Community() {
                           />
                         );
                       })}
-                    </HStack>
+                    </Wrap>
                   </span>
                 ) : (
                   <Carousel title={groupName} data={group} />
