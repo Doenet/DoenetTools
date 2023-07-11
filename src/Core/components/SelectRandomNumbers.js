@@ -180,7 +180,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -202,7 +201,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           componentType: "number",
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
       }
 

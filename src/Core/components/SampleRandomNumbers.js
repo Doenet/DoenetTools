@@ -589,7 +589,6 @@ export default class SampleRandomNumbers extends CompositeComponent {
     component,
     componentInfoObjects,
     startNum = 0,
-    flags,
   }) {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -613,7 +612,6 @@ export default class SampleRandomNumbers extends CompositeComponent {
           componentType: "number",
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
       }
 
@@ -639,7 +637,6 @@ export default class SampleRandomNumbers extends CompositeComponent {
   static async calculateReplacementChanges({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let replacementChanges = [];
 
@@ -672,7 +669,6 @@ export default class SampleRandomNumbers extends CompositeComponent {
           component,
           componentInfoObjects,
           startNum: component.replacements.length,
-          flags,
         });
 
         let replacementInstruction = {

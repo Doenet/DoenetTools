@@ -133,7 +133,6 @@ export default class Intersection extends CompositeComponent {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let lines = (await component.stateValues.lineChildren).map(
       (x) => x.stateValues,
@@ -206,7 +205,6 @@ export default class Intersection extends CompositeComponent {
           componentType: repl.componentType,
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         if (!repl.attributes) {
@@ -233,7 +231,6 @@ export default class Intersection extends CompositeComponent {
     component,
     components,
     componentInfoObjects,
-    flags,
   }) {
     let replacementChanges = [];
 
@@ -242,7 +239,6 @@ export default class Intersection extends CompositeComponent {
         component,
         components,
         componentInfoObjects,
-        flags,
       })
     ).replacements;
 

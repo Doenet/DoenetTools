@@ -232,7 +232,6 @@ export function convertAttributesForComponentType({
   componentInfoObjects,
   compositeAttributesObj = {},
   compositeCreatesNewNamespace,
-  flags,
 }) {
   let newClass = componentInfoObjects.allComponentClasses[componentType];
   let newAttributesObj = newClass.createAttributesObject();
@@ -309,7 +308,6 @@ export async function verifyReplacementsMatchSpecifiedType({
   workspace = {},
   componentInfoObjects,
   compositeAttributesObj,
-  flags,
   components,
   publicCaseInsensitiveAliasSubstitutions,
 }) {
@@ -510,7 +508,6 @@ export async function verifyReplacementsMatchSpecifiedType({
         componentInfoObjects,
         compositeAttributesObj,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
 
       let uniqueIdentifierBase = requiredComponentType + "|empty" + i;

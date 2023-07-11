@@ -256,7 +256,6 @@ export default class Map extends CompositeComponent {
     component,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
@@ -294,7 +293,6 @@ export default class Map extends CompositeComponent {
             component,
             iter,
             componentInfoObjects,
-            flags,
           })),
         );
       }
@@ -307,7 +305,6 @@ export default class Map extends CompositeComponent {
         sourcesNumber: 0,
         iterateNumber: -1,
         componentInfoObjects,
-        flags,
       });
       replacements = results.replacements;
     }
@@ -317,12 +314,7 @@ export default class Map extends CompositeComponent {
     return { replacements };
   }
 
-  static async parallelReplacement({
-    component,
-    iter,
-    componentInfoObjects,
-    flags,
-  }) {
+  static async parallelReplacement({ component, iter, componentInfoObjects }) {
     let replacements = [deepClone(await component.stateValues.template)];
     let newNamespace = component.attributes.newNamespace?.primitive;
     let compositeAttributesObj = this.createAttributesObject();
@@ -336,7 +328,6 @@ export default class Map extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       compositeCreatesNewNamespace: newNamespace,
-      flags,
     });
     if (!replacements[0].attributes) {
       replacements[0].attributes = {};
@@ -377,7 +368,6 @@ export default class Map extends CompositeComponent {
     childnumberArray = [],
     iterateNumber,
     componentInfoObjects,
-    flags,
   }) {
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
@@ -407,7 +397,6 @@ export default class Map extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         if (!serializedComponents[0].attributes) {
@@ -447,7 +436,6 @@ export default class Map extends CompositeComponent {
           childnumberArray: newChildnumberArray,
           iterateNumber,
           componentInfoObjects,
-          flags,
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber;
@@ -462,7 +450,6 @@ export default class Map extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`)
 
@@ -570,7 +557,6 @@ export default class Map extends CompositeComponent {
         component,
         workspace,
         componentInfoObjects,
-        flags,
       }).replacements;
 
       let replacementInstruction = {
@@ -717,7 +703,6 @@ export default class Map extends CompositeComponent {
               component,
               iter,
               componentInfoObjects,
-              flags,
             })),
           );
         }

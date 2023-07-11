@@ -338,7 +338,6 @@ export default class Collect extends CompositeComponent {
     componentInfoObjects,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(await component.stateValues.collectedComponents)
@@ -381,7 +380,6 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
-          flags,
         });
 
         workspace.propVariablesCopiedByCollected[collectedNum] =
@@ -417,7 +415,6 @@ export default class Collect extends CompositeComponent {
     compositeAttributesObj,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
   }) {
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
@@ -488,7 +485,6 @@ export default class Collect extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
         Object.assign(repl.attributes, attributesFromComposite);
       }
@@ -516,7 +512,6 @@ export default class Collect extends CompositeComponent {
     componentInfoObjects,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
   }) {
     // console.log("Calculating replacement changes for " + component.componentName);
     // console.log((await component.stateValues.collectedComponents).map(x => x.componentName))
@@ -651,7 +646,6 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
-          flags,
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -722,7 +716,6 @@ export default class Collect extends CompositeComponent {
         compositeAttributesObj,
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags,
       });
 
       let propVariablesCopiedByReplacement =
@@ -814,7 +807,6 @@ export default class Collect extends CompositeComponent {
     compositeAttributesObj,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
   }) {
     let results = await this.createReplacementForCollected({
       component,
@@ -826,7 +818,6 @@ export default class Collect extends CompositeComponent {
       compositeAttributesObj,
       numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
-      flags,
     });
 
     let propVariablesCopiedByReplacement =

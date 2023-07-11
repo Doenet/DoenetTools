@@ -1048,7 +1048,7 @@ export default class Copy extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    flags,
+
     resolveItem,
     publicCaseInsensitiveAliasSubstitutions,
   }) {
@@ -1121,7 +1121,6 @@ export default class Copy extends CompositeComponent {
             componentInfoObjects,
             compositeAttributesObj,
             compositeCreatesNewNamespace: newNamespace,
-            flags,
           });
 
           for (let attrName in attributesFromComposite) {
@@ -1148,7 +1147,6 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         for (let attrName in attributesFromComposite) {
@@ -1200,7 +1198,7 @@ export default class Copy extends CompositeComponent {
         workspace,
         componentInfoObjects,
         compositeAttributesObj,
-        flags,
+
         components,
         publicCaseInsensitiveAliasSubstitutions,
       });
@@ -1218,7 +1216,6 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
 
       let replacements = [
@@ -1246,7 +1243,7 @@ export default class Copy extends CompositeComponent {
         workspace,
         componentInfoObjects,
         compositeAttributesObj,
-        flags,
+
         components,
         publicCaseInsensitiveAliasSubstitutions,
       });
@@ -1281,7 +1278,6 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         workspace.uniqueIdentifiersUsedBySource[0] = [];
@@ -1421,7 +1417,7 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags,
+
         fromCopyTarget:
           Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
       });
@@ -1454,7 +1450,7 @@ export default class Copy extends CompositeComponent {
       workspace,
       componentInfoObjects,
       compositeAttributesObj,
-      flags,
+
       components,
       publicCaseInsensitiveAliasSubstitutions,
     });
@@ -1476,7 +1472,7 @@ export default class Copy extends CompositeComponent {
     componentInfoObjects,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
+
     fromCopyTarget,
   }) {
     // console.log(`create replacement for sourceNum ${sourceNum}`)
@@ -1523,7 +1519,6 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags,
       });
 
       let processResult = serializeFunctions.processAssignNames({
@@ -1595,7 +1590,6 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
       Object.assign(repl.attributes, attributesFromComposite);
     }
@@ -1727,7 +1721,7 @@ export default class Copy extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    flags,
+
     resolveItem,
     publicCaseInsensitiveAliasSubstitutions,
   }) {
@@ -1792,7 +1786,7 @@ export default class Copy extends CompositeComponent {
           workspace,
           componentInfoObjects,
           compositeAttributesObj,
-          flags,
+
           components,
           publicCaseInsensitiveAliasSubstitutions,
         });
@@ -1831,7 +1825,7 @@ export default class Copy extends CompositeComponent {
           workspace,
           componentInfoObjects,
           compositeAttributesObj,
-          flags,
+
           components,
           publicCaseInsensitiveAliasSubstitutions,
         });
@@ -2027,7 +2021,6 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           numComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
-          flags,
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -2108,7 +2101,7 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags,
+
         fromCopyTarget:
           Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
       });
@@ -2242,7 +2235,7 @@ export default class Copy extends CompositeComponent {
       workspace,
       componentInfoObjects,
       compositeAttributesObj,
-      flags,
+
       components,
       publicCaseInsensitiveAliasSubstitutions,
     });
@@ -2275,7 +2268,6 @@ export default class Copy extends CompositeComponent {
     componentInfoObjects,
     numComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags,
   }) {
     let results = await this.createReplacementForSource({
       component,
@@ -2288,7 +2280,7 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
-      flags,
+
       fromCopyTarget:
         Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
     });
@@ -2329,7 +2321,6 @@ export async function replacementFromProp({
   componentInfoObjects,
   numComponentsForSource,
   publicCaseInsensitiveAliasSubstitutions,
-  flags,
 }) {
   // console.log(`replacement from prop for ${component.componentName}`)
   // console.log(replacementSource)
@@ -2506,7 +2497,6 @@ export async function replacementFromProp({
             componentInfoObjects,
             compositeAttributesObj,
             compositeCreatesNewNamespace: newNamespace,
-            flags,
           });
 
           let attributeComponentsShadowingStateVariables;
@@ -2647,7 +2637,6 @@ export async function replacementFromProp({
                 attributes: additionalAttributes,
                 componentType: createComponentOfType,
                 componentInfoObjects,
-                flags,
               });
 
               if (stateVarObj.shadowingInstructions.attributesToShadow) {
@@ -2917,7 +2906,6 @@ export async function replacementFromProp({
                     attributes: additionalAttributes,
                     componentType: createComponentOfType,
                     componentInfoObjects,
-                    flags,
                   },
                 );
 
@@ -3124,7 +3112,6 @@ export async function replacementFromProp({
                     attributes: additionalAttributes,
                     componentType: piece.componentType,
                     componentInfoObjects,
-                    flags,
                   });
 
                   Object.assign(attributesForReplacement, additionalAttributes);
@@ -3163,7 +3150,6 @@ export async function replacementFromProp({
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         Object.assign(replacement.attributes, attributesFromComposite);
@@ -3291,7 +3277,6 @@ export async function replacementFromProp({
         componentInfoObjects,
         compositeAttributesObj,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
 
       if (link) {
@@ -3394,7 +3379,6 @@ export async function replacementFromProp({
             componentType:
               stateVarObj.shadowingInstructions.createComponentOfType,
             componentInfoObjects,
-            flags,
           });
 
           if (stateVarObj.shadowingInstructions.attributesToShadow) {

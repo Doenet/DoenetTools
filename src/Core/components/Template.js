@@ -203,7 +203,7 @@ export default class Template extends CompositeComponent {
     component,
     components,
     componentInfoObjects,
-    flags,
+
     publicCaseInsensitiveAliasSubstitutions,
   }) {
     // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
@@ -231,7 +231,6 @@ export default class Template extends CompositeComponent {
             componentType: repl.componentType,
             componentInfoObjects,
             compositeCreatesNewNamespace: newNamespace,
-            flags,
           });
           if (!repl.attributes) {
             repl.attributes = {};
@@ -268,7 +267,7 @@ export default class Template extends CompositeComponent {
         assignNames: component.doenetAttributes.assignNames,
         componentInfoObjects,
         compositeAttributesObj: this.createAttributesObject(),
-        flags,
+
         components,
         publicCaseInsensitiveAliasSubstitutions,
       });
@@ -283,7 +282,6 @@ export default class Template extends CompositeComponent {
   static async calculateReplacementChanges({
     component,
     componentInfoObjects,
-    flags,
   }) {
     if (!(await component.stateValues.rendered)) {
       if (
@@ -314,7 +312,6 @@ export default class Template extends CompositeComponent {
         let createResult = await this.createSerializedReplacements({
           component,
           componentInfoObjects,
-          flags,
         });
 
         let replacements = createResult.replacements;

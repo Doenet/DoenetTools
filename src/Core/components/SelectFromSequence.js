@@ -219,7 +219,6 @@ export default class SelectFromSequence extends Sequence {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let componentType = await component.stateValues.type;
     if (componentType === "letters") {
@@ -246,7 +245,6 @@ export default class SelectFromSequence extends Sequence {
         componentType,
         componentInfoObjects,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
     }
 

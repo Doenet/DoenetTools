@@ -2604,7 +2604,6 @@ export default class Core {
       assignNames: component.doenetAttributes.assignNames,
       componentInfoObjects: this.componentInfoObjects,
       compositeAttributesObj: component.constructor.createAttributesObject(),
-      flags: this.flags,
       components: this._components,
       publicCaseInsensitiveAliasSubstitutions:
         this.publicCaseInsensitiveAliasSubstitutions.bind(this),
