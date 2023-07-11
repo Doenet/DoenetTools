@@ -195,6 +195,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const renameGroup = (groupInfo) => {
     const newGroupName = window.prompt(
       "Enter a new name for group " + groupInfo.groupName,
+      groupInfo.groupName,
     );
     if (newGroupName) {
       fetcher.submit(

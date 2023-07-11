@@ -53,7 +53,7 @@ try {
             // update anything either
             $response_arr = [
                 'success' => true,
-                'message' => 'nothing changed, this item is already the farthest to the left'
+                'message' => 'nothing changed, this item is already the farthest to the ' . $direction
             ];
         } else {
             if ($direction == "left") {
