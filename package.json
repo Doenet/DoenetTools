@@ -1,6 +1,6 @@
 {
   "name": "doenet_tools",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "preview": "view preview",
@@ -11,7 +11,7 @@
     "deploy:development": "npm run build -- --mode development --outDir dist --minify false",
     "deploy:dev": "npm run deploy:development",
     "buildx:dev": "npm run dbx:b -- -f doenet_docker/dev/Dockerfile -t lyanthropos/doenet_dev:latest -t lyanthropos/doenet_dev:2.1 .",
-    "buildx:php": "npm run dbx:b -- -f doenet_docker/php/Dockerfile -t lyanthropos/doenet_php:dev .",
+    "buildx:php": "npm run dbx:b -- -f doenet_docker/php/Dockerfile -t cse-docker-doenet.artifactory.umn.edu/doenet_php:$npm_package_version -t cse-docker-doenet.artifactory.umn.edu/doenet_php --provenance=false --push .",
     "buildx:apache": "npm run dbx:b -- -f doenet_docker/apache/Dockerfile -t lyanthropos/doenet_apache:dev .",
     "buildx:mysql": "npm run dbx:b -- -f doenet_docker/mysql/Dockerfile -t lyanthropos/doenet_mysql:dev .",
     "start:ci": "docker compose up -d",
