@@ -24,6 +24,6 @@ RUN rm -rf /var/lib/apt/lists/* &&\
 RUN docker-php-ext-install mysqli
 
 WORKDIR /usr/local/apache2/htdocs/api/
-COPY ./src/Api .
+COPY ./public/api .
 COPY --from=composer /build/vendor ./vendor
 EXPOSE 9000
