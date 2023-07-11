@@ -23,6 +23,7 @@ import {
   Wrap,
   Flex,
   VStack,
+  HStack,
   Checkbox,
   FormLabel,
 } from "@chakra-ui/react";
@@ -38,6 +39,7 @@ export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
   let {
+    direction,
     doenetId,
     groupName,
     newGroupName,
@@ -66,6 +68,12 @@ export async function action({ request }) {
       return postApiAlertOnError("/api/removePromotedContent.php", {
         doenetId,
         groupId,
+      });
+    case "Move Promoted Content":
+      return postApiAlertOnError("/api/movePromotedContent.php", {
+        doenetId,
+        groupId,
+        direction,
       });
     case "New Group":
       return postApiAlertOnError("/api/addPromotedContentGroup.php", {
@@ -665,7 +673,7 @@ export function Community() {
                     )}
                     <br />
                     <br />
-                    <Wrap>
+                    <HStack>
                       {group.map((cardObj, i) => {
                         return (
                           <ActivityCard
@@ -691,12 +699,42 @@ export function Community() {
                                 >
                                   Remove from group
                                 </MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "Move Promoted Content",
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                        direction: "left",
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                >
+                                  Move Left
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "Move Promoted Content",
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                        direction: "right",
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                >
+                                  Move Right
+                                </MenuItem>
                               </>
                             }
                           />
                         );
                       })}
-                    </Wrap>
+                    </HStack>
                   </span>
                 ) : (
                   <Carousel title={groupName} data={group} />

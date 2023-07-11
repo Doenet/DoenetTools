@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include 'db_connection.php';
 include 'checkForCommunityAdminFunctions.php';
+include "lexicographicalRankingSort.php";
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -28,13 +29,24 @@ try {
         throw new Exception("This activity is already in that group.");
     }
 
+    $sql = "SELECT sortOrder
+    FROM promoted_content
+    WHERE promotedGroupId = '$groupId'
+    ORDER BY sortOrder desc
+    LIMIT 1";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc() ;
+    $prev = $row['sortOrder'] ?: "";
+    $sortOrder = SortOrder\getSortOrder($prev, null);
+
     $sql = 
-        "insert into promoted_content (doenetId, promotedGroupId,sortOrder) values ('$doenetId','$groupId', 'a')";
+        "insert into promoted_content (doenetId, promotedGroupId,sortOrder) values ('$doenetId','$groupId', '$sortOrder')";
 
     $result = $conn->query($sql);
     if ($result && $conn->affected_rows == 1) {
         $response_arr = [
             'success' => true,
+            'prev' => $prev
         ];
     } else {
         throw new Exception("Failed to add this activity to promoted material group. " . $conn->error);

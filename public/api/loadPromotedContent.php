@@ -33,6 +33,7 @@ try {
     if (!$isAdmin) {
         $sql .= "AND (pcg.currentlyFeatured = 1 OR groupName = 'Homepage')";
     }
+    $sql .= "order by sortOrder";
 
     $result = $conn->query($sql);
     $promotedGroups = [];
