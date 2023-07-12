@@ -7,7 +7,6 @@ services:
       - dev_net
     depends_on:
       - php
-      - mysql
     restart: always
 
   php:
