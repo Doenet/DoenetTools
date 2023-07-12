@@ -223,7 +223,7 @@ describe("Pluralize Tag Tests", function () {
     <p>How many geese? <textinput name="ngeese" prefill="1" /></p>
     <p>How many teeth? <textinput name="nteeth" prefill="1" /></p>
 
-    <p><pluralize>I have <copy prop="value" target="ngeese" /> goose even if one doesn't have <copy prop="value" target="nteeth" /> tooth</pluralize></p>
+    <p><pluralize>I have $ngeese.value goose even if one doesn't have $nteeth.value tooth</pluralize></p>
     `,
         },
         "*",

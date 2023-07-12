@@ -19,12 +19,12 @@ describe("TextList Tag Tests", function () {
       <text>hello</text>
       <copy target="_textlist1" hide="false" />
       <text>bye</text>
-      <copy target="_copy1" />
+      $_copy1
     </textlist></p>
 
     <p><copy maxNumber="6" target="_textlist2" /></p>
 
-    <p><copy prop="text" target="_textlist2" /></p>
+    <p>$_textlist2.text</p>
 
     `,
         },

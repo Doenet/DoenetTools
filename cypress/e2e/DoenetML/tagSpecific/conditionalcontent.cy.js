@@ -624,7 +624,7 @@ describe("Conditional Content Tag Tests", function () {
 
     <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="((b))" /></p>
 
-    <p name="pb1">b1: <copy source="b" assignNames="b1" /></p>
+    <p name="pb1">b1: $b{name="b1"}</p>
 
     `,
         },
@@ -714,7 +714,7 @@ describe("Conditional Content Tag Tests", function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy source="a" assignNames="a1" /></p>
+    <p name="pa1">a1: $a{name="a1"}</p>
 
     <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="(b)" /></p>
 
@@ -811,24 +811,24 @@ describe("Conditional Content Tag Tests", function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy source="a" assignNames="a1" /></p>
-    <p>b1: <copy source="b" assignNames="b1" /></p>
-    <p>c1: <copy source="c" assignNames="c1" /></p>
-    <p>d1: <copy source="d" assignNames="d1" /></p>
+    <p>a1: $a{name="a1"}</p>
+    <p>b1: $b{name="b1"}</p>
+    <p>c1: $c{name="c1"}</p>
+    <p>d1: $d{name="d1"}</p>
 
     <p>copy: <copy name="cp1" source="_conditionalcontent1" assignNames="((e f g h i))" /></p>
 
-    <p>e1: <copy source="e" assignNames="e1" /></p>
-    <p>f1: <copy source="f" assignNames="f1" /></p>
-    <p>g1: <copy source="g" assignNames="g1" /></p>
-    <p>h1: <copy source="h" assignNames="h1" /></p>
-    <p>i1: <copy source="i" assignNames="i1" /></p>
+    <p>e1: $e{name="e1"}</p>
+    <p>f1: $f{name="f1"}</p>
+    <p>g1: $g{name="g1"}</p>
+    <p>h1: $h{name="h1"}</p>
+    <p>i1: $i{name="i1"}</p>
 
     <p>copied copy: <copy source="cp1" assignNames="(((j k l)))" /></p>
 
-    <p>j1: <copy source="j" assignNames="j1" /></p>
-    <p>k1: <copy source="k" assignNames="k1" /></p>
-    <p>l1: <copy source="l" assignNames="l1" /></p>
+    <p>j1: $j{name="j1"}</p>
+    <p>k1: $k{name="k1"}</p>
+    <p>l1: $l{name="l1"}</p>
     `,
         },
         "*",
@@ -2501,8 +2501,8 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" >
-        <copy source="x1" assignNames="theanimal" />
-        <copy source="y1" assignNames="theplant" />
+        $x1{name="theanimal"}
+        $y1{name="theplant"}
         <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy source="thex" /><copy source="thea" /></math>
       </case>
       <case newNamespace condition="$n <= 1" >

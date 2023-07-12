@@ -19,7 +19,7 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -104,7 +104,7 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -178,7 +178,7 @@ describe("AnimateFromSequence Tag Tests", function () {
   <animateFromSequence type="letters" name="x" animationMode='decrease' animationOn='$b' target='a' animationInterval='100' from="e" to="z" step="3" />
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -293,7 +293,7 @@ describe("AnimateFromSequence Tag Tests", function () {
   <animateFromSequence type="letters" name="x" animationMode='decrease once' animationOn='$b' target='a' animationInterval='100' from="e" to="z" step="3" />
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -363,7 +363,7 @@ describe("AnimateFromSequence Tag Tests", function () {
   <animateFromSequence name="x" animationMode='oscillate' animationOn='$b' target='a' animationInterval='100' from="-1000" to="1000" step="100" exclude="0 200 -200 300 -300 400 -400 700 -700 800 -800" />
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -823,7 +823,7 @@ describe("AnimateFromSequence Tag Tests", function () {
     <text>a</text>
     <p>Animation mode: <textinput name="anmode" prefill="increase" /></p>
     <animatefromsequence name="an" animationmode="$anmode" />
-    <p>Animation direction: <copy prop="currentAnimationDirection" target="an" assignNames="cad" /></p>
+    <p>Animation direction: $an.currentAnimationDirection{assignNames="cad"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -916,7 +916,7 @@ describe("AnimateFromSequence Tag Tests", function () {
     <label>toggle</label>
   </callAction>
 
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },
@@ -2114,9 +2114,9 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
 
-  <p name="p2"><copy target="nl" assignNames="nl2" /></p>
+  <p name="p2">$nl{name="nl2"}</p>
 
-  <p><copy prop="number3" target="nl" assignNames="n3" /></p>
+  <p>$nl.number3{assignNames="n3"}</p>
 
   `,
         },
@@ -2322,9 +2322,9 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
 
-  <p name="p2"><copy target="nl" assignNames="nl2" /></p>
+  <p name="p2">$nl{name="nl2"}</p>
 
-  <p><copy prop="number3" target="nl" assignNames="n3" /></p>
+  <p>$nl.number3{assignNames="n3"}</p>
 
   `,
         },
@@ -2533,9 +2533,9 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
 
-  <p name="p2"><copy target="nl" assignNames="nl2" /></p>
+  <p name="p2">$nl{name="nl2"}</p>
 
-  <p><copy prop="number3" target="nl" assignNames="n3" /></p>
+  <p>$nl.number3{assignNames="n3"}</p>
 
   `,
         },
@@ -2771,7 +2771,7 @@ describe("AnimateFromSequence Tag Tests", function () {
 
   <booleaninput name="b" />
   
-  <p>copy: <copy target="a" assignNames="a2" /></p>
+  <p>copy: $a{name="a2"}</p>
 
   `,
         },

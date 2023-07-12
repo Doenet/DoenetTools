@@ -633,7 +633,7 @@ describe("ChoiceInput Tag Tests", function () {
     <text>a</text>
     <choiceinput shuffleOrder name="ci1">
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
-      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy target="lambda2" />+<copy target="twice" /></math>.</choice>
+      <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify>$lambda2+$twice</math>.</choice>
       <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
       <choice>Can't convert this latex: <m>\\bar{x}^i</m>.</choice>
     </choiceinput>
@@ -1133,7 +1133,7 @@ describe("ChoiceInput Tag Tests", function () {
     <copy prop='selectedindex' target="copy" />
     </aslist></p>
 
-    <p>Check for core round trip: <booleaninput name="bi" /> <copy prop="value" target="bi" assignNames="b" /></p>
+    <p>Check for core round trip: <booleaninput name="bi" /> $bi.value{assignNames="b"}</p>
     `,
         },
         "*",

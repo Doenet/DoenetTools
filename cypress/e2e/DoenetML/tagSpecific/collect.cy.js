@@ -27,7 +27,7 @@ describe("Collect Tag Tests", function () {
     </graph>
 
     <graph>
-      <copy source="_point1" assignNames="p1a" />
+      $_point1{name="p1a"}
       <point>(4,2)</point>
       <point>
         (<copy prop="y" source="_point2" />,
@@ -3852,9 +3852,9 @@ describe("Collect Tag Tests", function () {
     <text>a</text>
     <section>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy source="theP1" assignNames="theP2" />
+      $theP1{name="theP2"}
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy source="theP3" assignNames="theP4" />
+      $theP3{name="theP4"}
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
     <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
@@ -3894,9 +3894,9 @@ describe("Collect Tag Tests", function () {
     <text>a</text>
     <section hide>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy source="theP1" assignNames="theP2" />
+      $theP1{name="theP2"}
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy source="theP3" assignNames="theP4" />
+      $theP3{name="theP4"}
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
     <collect componentTypes="p" source="_section1" hide="false" assignNames="cp5 cp6 cp7 cp8" />
@@ -4819,7 +4819,7 @@ describe("Collect Tag Tests", function () {
     </graph>
 
     <graph>
-      <copy source="_point1" assignNames="p1a" />
+      $_point1{name="p1a"}
       <point>(4,2)</point>
       <point>
         (<copy prop="y" source="_point2" />,

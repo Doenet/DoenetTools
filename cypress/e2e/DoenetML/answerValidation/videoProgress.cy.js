@@ -15,8 +15,8 @@ describe("Video progress tests", function () {
     <video name="v" width="560 px" youtube="tJ4ypc5L6uU" />
 
     <p name="pDuration">Duration: $v.duration</p>
-    <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
-    <p>State: <copy prop="state" target="v" assignNames="state" /></p>
+    <p>Time: $v.time{assignNames="time"}</p>
+    <p>State: $v.state{assignNames="state"}</p>
     
     <p>Seconds watched: <number displayDecimals="0" name="seconds">$v.secondsWatched</number></p>
     <p>Video progress: <number displayDecimals="1" name="progress">$v.fractionWatched*100</number>%</p>

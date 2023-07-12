@@ -15,9 +15,9 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
     <triangle/>
-    <copy name="vertex1" prop="vertex1" target="_triangle1" />
-    <copy name="vertex2" prop="vertex2" target="_triangle1" />
-    <copy name="vertex3" prop="vertex3" target="_triangle1" />
+    $_triangle1.vertex1{name="vertex1"}
+    $_triangle1.vertex2{name="vertex2"}
+    $_triangle1.vertex3{name="vertex3"}
   </graph>
   `,
         },
@@ -150,9 +150,9 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
     <triangle vertices="" />
-    <copy name="vertex1" prop="vertex1" target="_triangle1" />
-    <copy name="vertex2" prop="vertex2" target="_triangle1" />
-    <copy name="vertex3" prop="vertex3" target="_triangle1" />
+    $_triangle1.vertex1{name="vertex1"}
+    $_triangle1.vertex2{name="vertex2"}
+    $_triangle1.vertex3{name="vertex3"}
   </graph>
   `,
         },
@@ -284,9 +284,9 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5)" />
-    <copy name="vertex1" prop="vertex1" target="_triangle1" />
-    <copy name="vertex2" prop="vertex2" target="_triangle1" />
-    <copy name="vertex3" prop="vertex3" target="_triangle1" />
+    $_triangle1.vertex1{name="vertex1"}
+    $_triangle1.vertex2{name="vertex2"}
+    $_triangle1.vertex3{name="vertex3"}
   </graph>
   `,
         },
@@ -418,9 +418,9 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5) (6,2)" />
-    <copy name="vertex1" prop="vertex1" target="_triangle1" />
-    <copy name="vertex2" prop="vertex2" target="_triangle1" />
-    <copy name="vertex3" prop="vertex3" target="_triangle1" />
+    $_triangle1.vertex1{name="vertex1"}
+    $_triangle1.vertex2{name="vertex2"}
+    $_triangle1.vertex3{name="vertex3"}
   </graph>
   `,
         },
@@ -552,9 +552,9 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
     <triangle vertices="(-8,5) (6,2) (5,-4)" />
-    <copy name="vertex1" prop="vertex1" target="_triangle1" />
-    <copy name="vertex2" prop="vertex2" target="_triangle1" />
-    <copy name="vertex3" prop="vertex3" target="_triangle1" />
+    $_triangle1.vertex1{name="vertex1"}
+    $_triangle1.vertex2{name="vertex2"}
+    $_triangle1.vertex3{name="vertex3"}
   </graph>
   `,
         },
@@ -701,7 +701,7 @@ describe("Triangle Tag Tests", function () {
     </sideBySide>
   </group>
   
-  <copy target="g1" assignNames="g2" />
+  $g1{name="g2"}
 
   `,
         },
@@ -1229,7 +1229,7 @@ describe("Triangle Tag Tests", function () {
     <triangle vertices="(0,0) (6,0) (0,6)" />
     <point x="10" y="10">
       <constraints>
-      <constrainTo><copy target="_triangle1" /></constrainTo>
+      <constrainTo>$_triangle1</constrainTo>
       </constraints>
     </point>
   </graph>
@@ -1367,8 +1367,8 @@ describe("Triangle Tag Tests", function () {
   </graph>
 
   <point name="flip3">
-    (<extract prop="y"><copy prop="vertex3" target="_triangle1" /></extract>,
-    <extract prop="x"><copy prop="vertex3" target="_triangle1" /></extract>)
+    (<extract prop="y">$_triangle1.vertex3</extract>,
+    <extract prop="x">$_triangle1.vertex3</extract>)
   </point>
 
   `,
@@ -1514,8 +1514,8 @@ describe("Triangle Tag Tests", function () {
   </graph>
 
   <point name="flip3">
-    (<extract prop="y"><copy prop="vertex3" target="_triangle1" /></extract>,
-    <extract prop="x"><copy prop="vertex3" target="_triangle1" /></extract>)
+    (<extract prop="y">$_triangle1.vertex3</extract>,
+    <extract prop="x">$_triangle1.vertex3</extract>)
   </point>
 
   `,
@@ -1657,8 +1657,8 @@ describe("Triangle Tag Tests", function () {
   <text>a</text>
   <graph>
   <point name="A" hide>
-    (<copy prop="y" target="B" />,
-    <copy prop="x" target="B" />)
+    ($B.y,
+    $B.x)
   </point>
   <point name="B" hide>(3,5)</point>
   <point name="C" hide>(-5,2)</point>

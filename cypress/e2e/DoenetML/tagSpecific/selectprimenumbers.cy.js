@@ -962,11 +962,11 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <selectprimenumbers exclude="1031 1049" withReplacement name="sample19" numToSelect="$n" minValue="1020" maxValue="1050" />
     <selectprimenumbers exclude="1031 1049" withReplacement name="sample20" numToSelect="$n" minValue="1020" maxValue="1050" />
     </aslist>
-    <copy name="n2" target="n3" />
-    <copy name="n" target="num1" />
-    <math name="num1"><copy target="n2" />+<copy target="num2" />+2</math>
-    <math name="num2"><copy target="n3" />+<copy target="num3" /></math>
-    <copy name="n3" target="num3" />
+    $n3{name="n2"}
+    $num1{name="n"}
+    <math name="num1">$n2+$num2+2</math>
+    <math name="num2">$n3+$num3</math>
+    $num3{name="n3"}
     <number name="num3">1</number>
     `,
         },
@@ -1072,11 +1072,11 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <copy assignNames="noreresample2" target="noresample2" />
     </aslist></p>
 
-    <p><copy name="noresamplelist" target="_aslist1" /></p>
+    <p>$_aslist1{name="noresamplelist"}</p>
 
     <p><copy assignNames="noreresamplelist" target="noresamplelist" /></p>
 
-    <copy name="noresamplep" target="_p1" />
+    $_p1{name="noresamplep"}
     <copy assignNames="noreresamplep" target="noresamplep" />
     `,
         },
@@ -1216,7 +1216,7 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <p><aslist>
     <selectprimenumbers name="sample2" withReplacement maxValue="$maxnum2" numToSelect="$numToSelect2" />
     </aslist></p>
-    <p><copy prop="value" target="maxnum2" assignNames="maxnum2a" /></p>
+    <p>$maxnum2.value{assignNames="maxnum2a"}</p>
     `,
         },
         "*",
@@ -1308,17 +1308,17 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
-    <p name="p3"><copy target="_aslist1" /></p>
+    <p name="p2"><aslist>$_map1</aslist></p>
+    <p name="p3">$_aslist1</p>
 
     <copy name="p4" target="p1" assignNames="p1a" />
     <copy name="p5" target="p2" assignNames="p2a" />
     <copy name="p6" target="p3" assignNames="p3a" />
 
-    <copy name="p7" target="p1a" />
-    <copy name="p8" target="p2a" />
-    <copy name="p9" target="p3a" />
-    <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
+    $p1a{name="p7"}
+    $p2a{name="p8"}
+    $p3a{name="p9"}
+    <p>$_mathinput1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -2416,8 +2416,8 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist><selectprimenumbers numToSelect="20" sortresults="true" withreplacement="true" maxValue="100" /></aslist></p>
 
-    <p><copy target="_aslist1" /></p>
-    <copy target="_p1" />
+    <p>$_aslist1</p>
+    $_p1
     `,
         },
         "*",
@@ -2462,8 +2462,8 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     <text>a</text>
     <p><aslist><selectprimenumbers numToSelect="3" sortresults="true" withreplacement="true" maxValue="10" /></aslist></p>
 
-    <p><copy target="_aslist1" /></p>
-    <copy target="_p1" />
+    <p>$_aslist1</p>
+    $_p1
     `,
         },
         "*",
@@ -2511,7 +2511,7 @@ describe("SelecPrimeNumbers Tag Tests", function () {
       <label>Hide second select</label>
     </booleaninput>
     <p><selectprimenumbers maxValue="10" assignnames="c" hide="$h1" />, <selectprimenumbers maxValue="10" assignnames="d" hide="$h2" /></p>
-    <p><copy target="c" />, <copy target="d" /></p>
+    <p>$c, $d</p>
     `,
         },
         "*",

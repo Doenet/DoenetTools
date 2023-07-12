@@ -4981,7 +4981,7 @@ describe("Specifying single variant document tests", function () {
       <p>Enter <selectFromSequence assignNames="n" />. <answer name="ans">$n</answer></p>
     </group>
 
-    <copy source="g" assignNames="g2" />
+    $g{name="g2"}
 
     <copy source="g" assignNames="g3" link="false" />
 

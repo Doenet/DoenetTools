@@ -533,7 +533,7 @@ describe("Numberlist Tag Tests", function () {
           <copy prop="number5" target="_numberlist1" createComponentOfType="number" />
         </numberlist>
       </numberlist>
-      <copy target="mid" />
+      $mid
     </numberlist></p>
 
     <mathinput bindValueTo="$(_numberlist1.number1)"/>
@@ -772,7 +772,7 @@ describe("Numberlist Tag Tests", function () {
       <number>4</number>
       <copy target="_numberlist1" hide="false" />
       <number hide>5</number>
-      <copy target="numberlist1a" />
+      $numberlist1a
     </numberlist></p>
 
     <p><copy name="numberlist3" maxNumber="6" target="_numberlist2" /></p>

@@ -18,32 +18,32 @@ describe("sequence and map assignName Tests", function () {
   <sequence assignNames="a b" type="letters" length="$n" />
   </aslist></p>
 
-  <p name="pa">a: <copy name="cpa" target="a" /></p>
-  <p name="pb">b: <copy name="cpb" target="b" /></p>
+  <p name="pa">a: $a{name="cpa"}</p>
+  <p name="pb">b: $b{name="cpb"}</p>
 
   <p name="s2"><aslist>
   <sequence name="cpall" copytarget="_sequence1" assignNames="a1 b1 c1" />
   </aslist></p>
-  <p name="pa1">a1: <copy name="cpa1" target="a1" /></p>
-  <p name="pb1">b1: <copy name="cpb1" target="b1" /></p>
-  <p name="pc1">c1: <copy name="cpc1" target="c1" /></p>
+  <p name="pa1">a1: $a1{name="cpa1"}</p>
+  <p name="pb1">b1: $b1{name="cpb1"}</p>
+  <p name="pc1">c1: $c1{name="cpc1"}</p>
 
   <p name="s3"><aslist>
   <sequence name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" />
   </aslist></p>
-  <p name="pa2">a2: <copy name="cpa2" target="a2" /></p>
-  <p name="pb2">b2: <copy name="cpb2" target="b2" /></p>
-  <p name="pc2">c2: <copy name="cpc2" target="c2" /></p>
-  <p name="pd2">d2: <copy name="cpd2" target="d2" /></p>
-  <p name="pe2">e2: <copy name="cpe2" target="e2" /></p>
+  <p name="pa2">a2: $a2{name="cpa2"}</p>
+  <p name="pb2">b2: $b2{name="cpb2"}</p>
+  <p name="pc2">c2: $c2{name="cpc2"}</p>
+  <p name="pd2">d2: $d2{name="cpd2"}</p>
+  <p name="pe2">e2: $e2{name="cpe2"}</p>
 
   <p name="s4"><aslist>
   <sequence name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" />
   </aslist></p>
-  <p name="pa3">a3: <copy name="cpa3" target="a3" /></p>
-  <p name="pb3">b3: <copy name="cpb3" target="b3" /></p>
-  <p name="pc3">c3: <copy name="cpc3" target="c3" /></p>
-  <p name="pd3">d3: <copy name="cpd3" target="d3" /></p>
+  <p name="pa3">a3: $a3{name="cpa3"}</p>
+  <p name="pb3">b3: $b3{name="cpb3"}</p>
+  <p name="pc3">c3: $c3{name="cpc3"}</p>
+  <p name="pd3">d3: $d3{name="cpd3"}</p>
   `,
         },
         "*",
@@ -573,71 +573,71 @@ describe("sequence and map assignName Tests", function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map assignNames="a b">
-    <template newNamespace>Letter <copy target="i" name="n" /> is <copy target="l" name="v" />. </template>
+    <template newNamespace>Letter $i{name="n"} is $l{name="v"}. </template>
     <sources alias="l" indexAlias="i">
       <sequence type="letters" length="$n" />
    </sources>
   </map></p>
 
-  <p name="pa">a: <copy name="cpa" target="a" /></p>
-  <p name="pb">b: <copy name="cpb" target="b" /></p>
+  <p name="pa">a: $a{name="cpa"}</p>
+  <p name="pb">b: $b{name="cpb"}</p>
 
-  <p name="pan">a/n: <copy name="cpan" target="a/n" /></p>
-  <p name="pbn">b/n: <copy name="cpbn" target="b/n" /></p>
+  <p name="pan">a/n: $(a/n{name="cpan"})</p>
+  <p name="pbn">b/n: $(b/n{name="cpbn"})</p>
 
-  <p name="pav">a/v: <copy name="cpav" target="a/v" /></p>
-  <p name="pbv">b/v: <copy name="cpbv" target="b/v" /></p>
+  <p name="pav">a/v: $(a/v{name="cpav"})</p>
+  <p name="pbv">b/v: $(b/v{name="cpbv"})</p>
 
 
   <p name="m2"><map name="cpall" copytarget="_map1" assignNames="a1 b1 c1" /></p>
-  <p name="pa1">a1: <copy name="cpa1" target="a1" /></p>
-  <p name="pb1">b1: <copy name="cpb1" target="b1" /></p>
-  <p name="pc1">c1: <copy name="cpc1" target="c1" /></p>
+  <p name="pa1">a1: $a1{name="cpa1"}</p>
+  <p name="pb1">b1: $b1{name="cpb1"}</p>
+  <p name="pc1">c1: $c1{name="cpc1"}</p>
 
-  <p name="pan1">a1/n: <copy name="cpan1" target="a1/n" /></p>
-  <p name="pbn1">b1/n: <copy name="cpbn1" target="b1/n" /></p>
-  <p name="pcn1">c1/n: <copy name="cpcn1" target="c1/n" /></p>
+  <p name="pan1">a1/n: $(a1/n{name="cpan1"})</p>
+  <p name="pbn1">b1/n: $(b1/n{name="cpbn1"})</p>
+  <p name="pcn1">c1/n: $(c1/n{name="cpcn1"})</p>
 
-  <p name="pav1">a1/v: <copy name="cpav1" target="a1/v" /></p>
-  <p name="pbv1">b1/v: <copy name="cpbv1" target="b1/v" /></p>
-  <p name="pcv1">c1/v: <copy name="cpcv1" target="c1/v" /></p>
+  <p name="pav1">a1/v: $(a1/v{name="cpav1"})</p>
+  <p name="pbv1">b1/v: $(b1/v{name="cpbv1"})</p>
+  <p name="pcv1">c1/v: $(c1/v{name="cpcv1"})</p>
 
 
   <p name="m3"><map name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
-  <p name="pa2">a2: <copy name="cpa2" target="a2" /></p>
-  <p name="pb2">b2: <copy name="cpb2" target="b2" /></p>
-  <p name="pc2">c2: <copy name="cpc2" target="c2" /></p>
-  <p name="pd2">d2: <copy name="cpd2" target="d2" /></p>
-  <p name="pe2">e2: <copy name="cpe2" target="e2" /></p>
+  <p name="pa2">a2: $a2{name="cpa2"}</p>
+  <p name="pb2">b2: $b2{name="cpb2"}</p>
+  <p name="pc2">c2: $c2{name="cpc2"}</p>
+  <p name="pd2">d2: $d2{name="cpd2"}</p>
+  <p name="pe2">e2: $e2{name="cpe2"}</p>
   
-  <p name="pan2">a2/n: <copy name="cpan2" target="a2/n" /></p>
-  <p name="pbn2">b2/n: <copy name="cpbn2" target="b2/n" /></p>
-  <p name="pcn2">c2/n: <copy name="cpcn2" target="c2/n" /></p>
-  <p name="pdn2">d2/n: <copy name="cpdn2" target="d2/n" /></p>
-  <p name="pen2">e2/n: <copy name="cpen2" target="e2/n" /></p>
+  <p name="pan2">a2/n: $(a2/n{name="cpan2"})</p>
+  <p name="pbn2">b2/n: $(b2/n{name="cpbn2"})</p>
+  <p name="pcn2">c2/n: $(c2/n{name="cpcn2"})</p>
+  <p name="pdn2">d2/n: $(d2/n{name="cpdn2"})</p>
+  <p name="pen2">e2/n: $(e2/n{name="cpen2"})</p>
 
-  <p name="pav2">a2/v: <copy name="cpav2" target="a2/v" /></p>
-  <p name="pbv2">b2/v: <copy name="cpbv2" target="b2/v" /></p>
-  <p name="pcv2">c2/v: <copy name="cpcv2" target="c2/v" /></p>
-  <p name="pdv2">d2/v: <copy name="cpdv2" target="d2/v" /></p>
-  <p name="pev2">e2/v: <copy name="cpev2" target="e2/v" /></p>
+  <p name="pav2">a2/v: $(a2/v{name="cpav2"})</p>
+  <p name="pbv2">b2/v: $(b2/v{name="cpbv2"})</p>
+  <p name="pcv2">c2/v: $(c2/v{name="cpcv2"})</p>
+  <p name="pdv2">d2/v: $(d2/v{name="cpdv2"})</p>
+  <p name="pev2">e2/v: $(e2/v{name="cpev2"})</p>
 
 
   <p name="m4"><map name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" /></p>
-  <p name="pa3">a3: <copy name="cpa3" target="a3" /></p>
-  <p name="pb3">b3: <copy name="cpb3" target="b3" /></p>
-  <p name="pc3">c3: <copy name="cpc3" target="c3" /></p>
-  <p name="pd3">d3: <copy name="cpd3" target="d3" /></p>
+  <p name="pa3">a3: $a3{name="cpa3"}</p>
+  <p name="pb3">b3: $b3{name="cpb3"}</p>
+  <p name="pc3">c3: $c3{name="cpc3"}</p>
+  <p name="pd3">d3: $d3{name="cpd3"}</p>
 
-  <p name="pan3">a3/n: <copy name="cpan3" target="a3/n" /></p>
-  <p name="pbn3">b3/n: <copy name="cpbn3" target="b3/n" /></p>
-  <p name="pcn3">c3/n: <copy name="cpcn3" target="c3/n" /></p>
-  <p name="pdn3">d3/n: <copy name="cpdn3" target="d3/n" /></p>
+  <p name="pan3">a3/n: $(a3/n{name="cpan3"})</p>
+  <p name="pbn3">b3/n: $(b3/n{name="cpbn3"})</p>
+  <p name="pcn3">c3/n: $(c3/n{name="cpcn3"})</p>
+  <p name="pdn3">d3/n: $(d3/n{name="cpdn3"})</p>
 
-  <p name="pav3">a3/v: <copy name="cpav3" target="a3/v" /></p>
-  <p name="pbv3">b3/v: <copy name="cpbv3" target="b3/v" /></p>
-  <p name="pcv3">c3/v: <copy name="cpcv3" target="c3/v" /></p>
-  <p name="pdv3">d3/v: <copy name="cpdv3" target="d3/v" /></p>
+  <p name="pav3">a3/v: $(a3/v{name="cpav3"})</p>
+  <p name="pbv3">b3/v: $(b3/v{name="cpbv3"})</p>
+  <p name="pcv3">c3/v: $(c3/v{name="cpcv3"})</p>
+  <p name="pdv3">d3/v: $(d3/v{name="cpdv3"})</p>
   `,
         },
         "*",
@@ -1558,40 +1558,40 @@ describe("sequence and map assignName Tests", function () {
   </map></p>
 
 
-  <p name="pa">a: <copy name="cpa" target="a" /></p>
-  <p name="pb">b: <copy name="cpb" target="b" /></p>
+  <p name="pa">a: $a{name="cpa"}</p>
+  <p name="pb">b: $b{name="cpb"}</p>
 
-  <p name="pan1">a/n1: <copy name="cpan1" target="a/n1" /></p>
-  <p name="pbn1">b/n1: <copy name="cpbn1" target="b/n1" /></p>
-  <p name="pan2">a/n2: <copy name="cpan2" target="a/n2" /></p>
-  <p name="pbn2">b/n2: <copy name="cpbn2" target="b/n2" /></p>
+  <p name="pan1">a/n1: $(a/n1{name="cpan1"})</p>
+  <p name="pbn1">b/n1: $(b/n1{name="cpbn1"})</p>
+  <p name="pan2">a/n2: $(a/n2{name="cpan2"})</p>
+  <p name="pbn2">b/n2: $(b/n2{name="cpbn2"})</p>
 
-  <p name="pav1">a/v1: <copy name="cpav1" target="a/v1" /></p>
-  <p name="pbv1">b/v1: <copy name="cpbv1" target="b/v1" /></p>
-  <p name="pav2">a/v2: <copy name="cpav2" target="a/v2" /></p>
-  <p name="pbv2">b/v2: <copy name="cpbv2" target="b/v2" /></p>
+  <p name="pav1">a/v1: $(a/v1{name="cpav1"})</p>
+  <p name="pbv1">b/v1: $(b/v1{name="cpbv1"})</p>
+  <p name="pav2">a/v2: $(a/v2{name="cpav2"})</p>
+  <p name="pbv2">b/v2: $(b/v2{name="cpbv2"})</p>
 
 
   <p name="m2"><copy name="cpall" target="_map1" assignNames="a1 b1 c1" /></p>
-  <p name="pa1">a1: <copy name="cpa1" target="a1" /></p>
-  <p name="pb1">b1: <copy name="cpb1" target="b1" /></p>
-  <p name="pc1">c1: <copy name="cpc1" target="c1" /></p>
+  <p name="pa1">a1: $a1{name="cpa1"}</p>
+  <p name="pb1">b1: $b1{name="cpb1"}</p>
+  <p name="pc1">c1: $c1{name="cpc1"}</p>
 
-  <p name="pan11">a1/n1: <copy name="cpan11" target="a1/n1" /></p>
-  <p name="pbn11">b1/n1: <copy name="cpbn11" target="b1/n1" /></p>
-  <p name="pcn11">c1/n1: <copy name="cpcn11" target="c1/n1" /></p>
+  <p name="pan11">a1/n1: $(a1/n1{name="cpan11"})</p>
+  <p name="pbn11">b1/n1: $(b1/n1{name="cpbn11"})</p>
+  <p name="pcn11">c1/n1: $(c1/n1{name="cpcn11"})</p>
 
-  <p name="pan21">a1/n2: <copy name="cpan21" target="a1/n2" /></p>
-  <p name="pbn21">b1/n2: <copy name="cpbn21" target="b1/n2" /></p>
-  <p name="pcn21">c1/n2: <copy name="cpcn21" target="c1/n2" /></p>
+  <p name="pan21">a1/n2: $(a1/n2{name="cpan21"})</p>
+  <p name="pbn21">b1/n2: $(b1/n2{name="cpbn21"})</p>
+  <p name="pcn21">c1/n2: $(c1/n2{name="cpcn21"})</p>
 
-  <p name="pav11">a1/v1: <copy name="cpav11" target="a1/v1" /></p>
-  <p name="pbv11">b1/v1: <copy name="cpbv11" target="b1/v1" /></p>
-  <p name="pcv11">c1/v1: <copy name="cpcv11" target="c1/v1" /></p>
+  <p name="pav11">a1/v1: $(a1/v1{name="cpav11"})</p>
+  <p name="pbv11">b1/v1: $(b1/v1{name="cpbv11"})</p>
+  <p name="pcv11">c1/v1: $(c1/v1{name="cpcv11"})</p>
 
-  <p name="pav21">a1/v2: <copy name="cpav21" target="a1/v2" /></p>
-  <p name="pbv21">b1/v2: <copy name="cpbv21" target="b1/v2" /></p>
-  <p name="pcv21">c1/v2: <copy name="cpcv21" target="c1/v2" /></p>
+  <p name="pav21">a1/v2: $(a1/v2{name="cpav21"})</p>
+  <p name="pbv21">b1/v2: $(b1/v2{name="cpbv21"})</p>
+  <p name="pcv21">c1/v2: $(c1/v2{name="cpcv21"})</p>
   `,
         },
         "*",
@@ -1832,13 +1832,13 @@ describe("sequence and map assignName Tests", function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1"><map>
-    <template>Letter <copy target="i" assignNames="n1" /> is <copy target="m" assignnames="v1" />. Repeat: letter $n1 is $v1. </template>
+    <template>Letter $i{name="n1"} is $m{name="v1"}. Repeat: letter $n1 is $v1. </template>
     <sources alias='m' indexAlias='i'>
       <sequence type="letters" length="$n" />
    </sources>
   </map></p>
 
-  <p name="m2"><copy name="cpall" target="_map1" /></p>
+  <p name="m2">$_map1{name="cpall"}</p>
   `,
         },
         "*",
@@ -1901,13 +1901,13 @@ describe("sequence and map assignName Tests", function () {
   <text>a</text>
   <mathinput name="n" prefill="1" />
   <p name="m1" newNamespace><map>
-    <template>Letter <copy target="i" assignNames="n1" /> is <copy target="m" assignnames="v1" />. Repeat: letter $n1 is $v1. </template>
+    <template>Letter $i{name="n1"} is $m{name="v1"}. Repeat: letter $n1 is $v1. </template>
     <sources alias="m" indexAlias="i">
       <sequence type="letters" length="$(../n)" />
    </sources>
   </map></p>
 
-  <p name="m2"><copy name="cpall" target="m1/_map1" /></p>
+  <p name="m2">$(m1/_map1{name="cpall"})</p>
   `,
         },
         "*",

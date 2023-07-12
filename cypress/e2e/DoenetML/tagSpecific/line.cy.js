@@ -276,7 +276,7 @@ describe("Line Tag Tests", function () {
   <point><label>Q</label>(-4,-1)</point>
     <line through="$_point1 $_point2 "/>
   </graph>
-  <copy target="_point1" assignNames="p1a" />
+  $_point1{name="p1a"}
     `,
         },
         "*",
@@ -332,8 +332,8 @@ describe("Line Tag Tests", function () {
   <graph>
     <line through="(1,2) (4,7)" ><label>l</label></line>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
     `,
         },
         "*",
@@ -368,8 +368,8 @@ describe("Line Tag Tests", function () {
   <graph>
     <line name='l' labelIsName through="($_math1, $_math2) (4,7) " />
   </graph>
-  <copy prop="point1" target="l" assignNames="p1" />
-  <copy prop="point2" target="l" assignNames="p2" />
+  $l.point1{assignNames="p1"}
+  $l.point2{assignNames="p2"}
     `,
         },
         "*",
@@ -403,8 +403,8 @@ describe("Line Tag Tests", function () {
   <graph>
     <line through="$_math1 $_math2" ><label>l</label></line>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
     `,
         },
         "*",
@@ -439,8 +439,8 @@ describe("Line Tag Tests", function () {
       5x-2y=3
     </line>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -527,11 +527,11 @@ describe("Line Tag Tests", function () {
   <graph>
     <line>
       5x-2y=3
-      <label>slope = <copy prop="slope" target="_line1" /></label>
+      <label>slope = $_line1.slope</label>
     </line>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -659,7 +659,7 @@ describe("Line Tag Tests", function () {
   <text>a</text>
   <graph>
     <line>
-      <label>slope = <copy prop="slope" target="_line1" /></label>
+      <label>slope = $_line1.slope</label>
       $a x + $b y=$c
     </line>
   </graph>
@@ -734,8 +734,8 @@ describe("Line Tag Tests", function () {
   <graph>
     <line equation="5x-2y=3" />
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -827,11 +827,11 @@ describe("Line Tag Tests", function () {
   <math>1</math>
   <graph>
     <line equation="5x-2y=3" >
-      <label>slope = <copy prop="slope" target="_line1" /></label>
+      <label>slope = $_line1.slope</label>
     </line>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -969,9 +969,9 @@ describe("Line Tag Tests", function () {
       5u-2v=3
     </line>
   </graph>
-  <p>Variables are <copy prop="var1" target="_line1" assignNames="var1" /> and <copy prop="var2" target="_line1" assignNames="var2" />.</p>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  <p>Variables are $_line1.var1{assignNames="var1"} and $_line1.var2{assignNames="var2"}.</p>
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -1148,15 +1148,15 @@ describe("Line Tag Tests", function () {
   <graph>
 
   <point>
-  (<copy prop="y" target="_point2" />,
-  <copy target="a" />)
+  ($_point2.y,
+  $a)
   </point>
   <point>(5,3)</point>
   <line through="$_point1 $_point2" />
   </graph>
-  <math name="a" hide simplify><copy prop="x" target="_point2" />+1</math>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  <math name="a" hide simplify>$_point2.x+1</math>
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -1410,10 +1410,10 @@ describe("Line Tag Tests", function () {
   </graph>
   
   <graph>
-  <copy target="_line1" assignNames="l2" />
+  $_line1{name="l2"}
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -1603,10 +1603,10 @@ describe("Line Tag Tests", function () {
   </graph>
   
   <graph>
-  <copy target="_line1" assignNames="l2" />
+  $_line1{name="l2"}
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -1788,14 +1788,14 @@ describe("Line Tag Tests", function () {
   <line through="(1,2) (3,4)" />
   </graph>
   <graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   </graph>
   <graph>
-  <copy prop="points" target="_line1" assignNames="p1a p2a" />
+  $_line1.points{assignNames="p1a p2a"}
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1b" />
-  <copy prop="point2" target="_line1" assignNames="p2b" />
+  $_line1.point1{assignNames="p1b"}
+  $_line1.point2{assignNames="p2b"}
   `,
         },
         "*",
@@ -2009,10 +2009,10 @@ describe("Line Tag Tests", function () {
   </graph>
   <graph>
   <line through="$(_line1.points)" />
-  <copy prop="points" target="_line1" assignNames="p1 p2" />
+  $_line1.points{assignNames="p1 p2"}
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1b" />
-  <copy prop="point2" target="_line1" assignNames="p2b" />
+  $_line1.point1{assignNames="p1b"}
+  $_line1.point2{assignNames="p2b"}
   `,
         },
         "*",
@@ -2206,11 +2206,11 @@ describe("Line Tag Tests", function () {
     <line through="(5,-4) (1,4)" />
   </graph>
 
-  <p>Variables are <copy prop="var1" target="_line1" assignNames="var1" /> and <copy prop="var2" target="_line1" assignNames="var2" />.</p>
-  <p><m>x</m>-intercept is: <copy prop="xintercept" target="_line1" assignNames="xintercept" />.</p>
-  <p><m>y</m>-intercept is: <copy prop="yintercept" target="_line1" assignNames="yintercept" />.</p>
-  <p>Slope is: <copy prop="slope" target="_line1" assignNames="slope" />.</p>
-  <p>Equation is: <copy prop="equation" target="_line1" assignNames="equation" />.</p>
+  <p>Variables are $_line1.var1{assignNames="var1"} and $_line1.var2{assignNames="var2"}.</p>
+  <p><m>x</m>-intercept is: $_line1.xintercept{assignNames="xintercept"}.</p>
+  <p><m>y</m>-intercept is: $_line1.yintercept{assignNames="yintercept"}.</p>
+  <p>Slope is: $_line1.slope{assignNames="slope"}.</p>
+  <p>Equation is: $_line1.equation{assignNames="equation"}.</p>
   `,
         },
         "*",
@@ -2295,8 +2295,8 @@ describe("Line Tag Tests", function () {
   <graph>
   <line variables="u v" equation="$(_line1.coeffvar1)u +$(_line1.coeffvar2)v + $(_line1.coeff0) = 0" />
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -2412,17 +2412,17 @@ describe("Line Tag Tests", function () {
     <line through="$A ($(A.y),$(A.x)) "/>
     <point name="x1" x="$(_line1.pointX1_1)" y="$threeFixed" />
     <point name="x2">
-      (<extract prop="x"><copy prop="point2" target="_line1" /></extract>,
+      (<extract prop="x">$_line1.point2</extract>,
       <math fixed>4</math>)
     </point>
     <point name="y1" y="$(_line1.pointX1_2)" x="$threeFixed" />
     <point name="y2">
       (<math fixed>4</math>,
-      <extract prop="y"><copy prop="point2" target="_line1" /></extract>)
+      <extract prop="y">$_line1.point2</extract>)
     </point>
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   
   `,
         },
@@ -2578,12 +2578,12 @@ describe("Line Tag Tests", function () {
   <line through="$(_line3.point2{ createComponentOfType='point'}) (3,2)" />
   <line through="$(_line1.point2{ createComponentOfType='point'}) (-1,4)" />
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p11" />
-  <copy prop="point2" target="_line1" assignNames="p12" />
-  <copy prop="point1" target="_line2" assignNames="p21" />
-  <copy prop="point2" target="_line2" assignNames="p22" />
-  <copy prop="point1" target="_line3" assignNames="p31" />
-  <copy prop="point2" target="_line3" assignNames="p32" />
+  $_line1.point1{assignNames="p11"}
+  $_line1.point2{assignNames="p12"}
+  $_line2.point1{assignNames="p21"}
+  $_line2.point2{assignNames="p22"}
+  $_line3.point1{assignNames="p31"}
+  $_line3.point2{assignNames="p32"}
   `,
         },
         "*",
@@ -2797,8 +2797,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -2976,8 +2976,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -3155,8 +3155,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -3334,8 +3334,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -3501,36 +3501,36 @@ describe("Line Tag Tests", function () {
   <text>a</text>
   <graph name="g1" newNamespace>
     <line through="(-5,9)" name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph newNamespace name="g2">
     <copy target="../g1/l" assignNames="l" through="(4,-2)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
-  <copy prop="pointX1_1" target="g1/l" assignNames="x11" />
-  <copy prop="pointX1_2" target="g1/l" assignNames="y11" />
-  <copy prop="pointX2_1" target="g1/l" assignNames="x2" />
-  <copy prop="pointX2_2" target="g1/l" assignNames="y2" />
-  <copy prop="pointX1_1" target="g2/l" assignNames="x12" />
-  <copy prop="pointX1_2" target="g2/l" assignNames="y12" />
+  $(g1/l.pointX1_1{assignNames="x11"})
+  $(g1/l.pointX1_2{assignNames="y11"})
+  $(g1/l.pointX2_1{assignNames="x2"})
+  $(g1/l.pointX2_2{assignNames="y2"})
+  $(g2/l.pointX1_1{assignNames="x12"})
+  $(g2/l.pointX1_2{assignNames="y12"})
   `,
         },
         "*",
@@ -3944,36 +3944,36 @@ describe("Line Tag Tests", function () {
         <line through="(-5,9)" />
       </else>
     </conditionalContent>
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph newNamespace name="g2">
     <copy target="../g1/l" assignNames="l" through="(4,-2)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
-  <copy prop="pointX1_1" target="g1/l" assignNames="x11" />
-  <copy prop="pointX1_2" target="g1/l" assignNames="y11" />
-  <copy prop="pointX2_1" target="g1/l" assignNames="x2" />
-  <copy prop="pointX2_2" target="g1/l" assignNames="y2" />
-  <copy prop="pointX1_1" target="g2/l" assignNames="x12" />
-  <copy prop="pointX1_2" target="g2/l" assignNames="y12" />
+  $(g1/l.pointX1_1{assignNames="x11"})
+  $(g1/l.pointX1_2{assignNames="y11"})
+  $(g1/l.pointX2_1{assignNames="x2"})
+  $(g1/l.pointX2_2{assignNames="y2"})
+  $(g2/l.pointX1_1{assignNames="x12"})
+  $(g2/l.pointX1_2{assignNames="y12"})
 
   `,
         },
@@ -4601,8 +4601,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -4769,8 +4769,8 @@ describe("Line Tag Tests", function () {
 
   <mathinput prefill="0"/>
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -5550,8 +5550,8 @@ describe("Line Tag Tests", function () {
 
   <mathinput prefill="0"/>
 
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -6246,13 +6246,13 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph>
-    <copy target="_line1" assignNames="la" />
-    <copy prop="point1" target="_line1" assignNames="p1a" />
-    <copy prop="point2" target="_line1" assignNames="p2a" />
+    $_line1{name="la"}
+    $_line1.point1{assignNames="p1a"}
+    $_line1.point2{assignNames="p2a"}
   </graph>
 
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -6603,13 +6603,13 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph>
-    <copy target="_line1" assignNames="la" />
-    <copy prop="point1" target="_line1" assignNames="p1a" />
-    <copy prop="point2" target="_line1" assignNames="p2a" />
+    $_line1{name="la"}
+    $_line1.point1{assignNames="p1a"}
+    $_line1.point2{assignNames="p2a"}
   </graph>
 
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -6956,13 +6956,13 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph>
-    <copy target="_line1" assignNames="la" />
-    <copy prop="point1" target="_line1" assignNames="p1a" />
-    <copy prop="point2" target="_line1" assignNames="p2a" />
+    $_line1{name="la"}
+    $_line1.point1{assignNames="p1a"}
+    $_line1.point2{assignNames="p2a"}
   </graph>
 
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
 
   `,
         },
@@ -7351,13 +7351,13 @@ describe("Line Tag Tests", function () {
   </graph>
 
   <graph>
-    <copy target="_line1" assignNames="la" />
-    <copy prop="point1" target="_line1" assignNames="p1a" />
-    <copy prop="point2" target="_line1" assignNames="p2a" />
+    $_line1{name="la"}
+    $_line1.point1{assignNames="p1a"}
+    $_line1.point2{assignNames="p2a"}
   </graph>
 
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  $_line1.point1{assignNames="p1"}
+  $_line1.point2{assignNames="p2"}
   `,
         },
         "*",
@@ -7754,8 +7754,8 @@ describe("Line Tag Tests", function () {
 
   <copy assignNames="g3" target="g2" />
   
-  <copy prop="point1" target="g1/l" assignNames="p1" />
-  <copy prop="point2" target="g1/l" assignNames="p2" />
+  $(g1/l.point1{assignNames="p1"})
+  $(g1/l.point2{assignNames="p2"})
   `,
         },
         "*",
@@ -7998,8 +7998,8 @@ describe("Line Tag Tests", function () {
   
   <graph name="g1" newNamespace>
     <line through="(-5,9)" slope="$(../slope1)" name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B"/>
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph name="g2" newNamespace>
@@ -8010,17 +8010,17 @@ describe("Line Tag Tests", function () {
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
   <copy prop="pointX1_1" target="g1/l" assignNames="x1" simplify />
   <copy prop="pointX1_2" target="g1/l" assignNames="y1" simplify />
@@ -8649,8 +8649,8 @@ describe("Line Tag Tests", function () {
   
   <graph name="g1" newNamespace>
     <line through="(-5,9)" name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B"/>
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph name="g2" newNamespace>
@@ -8661,17 +8661,17 @@ describe("Line Tag Tests", function () {
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
   <copy prop="pointX1_1" target="g1/l" assignNames="x1" simplify />
   <copy prop="pointX1_2" target="g1/l" assignNames="y1" simplify />
@@ -9518,8 +9518,8 @@ describe("Line Tag Tests", function () {
   
   <graph name="g1" newNamespace>
     <line slope="$(../slope1)" name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B"/>
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph name="g2" newNamespace>
@@ -9530,17 +9530,17 @@ describe("Line Tag Tests", function () {
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
   
   <copy prop="pointX1_1" target="g1/l" assignNames="x1" simplify />
   <copy prop="pointX1_2" target="g1/l" assignNames="y1" simplify />
@@ -10171,8 +10171,8 @@ describe("Line Tag Tests", function () {
   
   <graph name="g1" newNamespace>
     <line slope="$(../slope)" name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B"/>
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph name="g2" newNamespace>
@@ -10183,17 +10183,17 @@ describe("Line Tag Tests", function () {
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
   <copy prop="pointX1_1" target="g1/l" assignNames="x11" simplify />
   <copy prop="pointX1_2" target="g1/l" assignNames="y11" simplify />
@@ -10799,8 +10799,8 @@ describe("Line Tag Tests", function () {
   
   <graph name="g1" newNamespace>
     <line name="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B"/>
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}
   </graph>
 
   <graph name="g2" newNamespace>
@@ -10811,17 +10811,17 @@ describe("Line Tag Tests", function () {
 
   <graph newNamespace name="g3">
     <copy target="../g2/l" assignNames="l" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
   <graph newNamespace name="g4">
     <copy target="../g2/_copy1" assignNames="(l)" />
-    <copy prop="point1" target="l" assignNames="A" />
-    <copy prop="point2" target="l" assignNames="B" />  
+    $l.point1{assignNames="A"}
+    $l.point2{assignNames="B"}  
   </graph>
 
-  <copy target="g2" assignNames="g5" />
+  $g2{name="g5"}
 
   <copy prop="pointX2_1" target="g1/l" assignNames="x1" simplify />
   <copy prop="pointX2_2" target="g1/l" assignNames="y1" simplify />
@@ -11413,11 +11413,11 @@ describe("Line Tag Tests", function () {
     <line through="(0,0) (1,0.05)" name="l" />
     <point x="100" y="0" name="P">
       <constraints>
-        <constrainTo relativeToGraphScales><copy target="l" /></constrainTo>
+        <constrainTo relativeToGraphScales>$l</constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="P" assignNames="P1a" />
+  $P{name="P1a"}
   `,
         },
         "*",
@@ -11472,8 +11472,8 @@ describe("Line Tag Tests", function () {
       <point name="B">(3,4)</point>
       <line name="l" through="$A $B" />
     </graph>
-    <p><copy target="A" prop="coords" assignNames="Ac" />, <copy target="B" prop="coords" assignNames="Bc" /></p>
-    <p><copy target="l" prop="equation" assignNames="le" /></p>
+    <p>$A.coords{assignNames="Ac"}, $B.coords{assignNames="Bc"}</p>
+    <p>$l.equation{assignNames="le"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -12082,8 +12082,8 @@ describe("Line Tag Tests", function () {
   <point name="Q" labelIsName>(-4,-1)</point>
   <line through="$P $Q" />
   </graph>
-  <copy target="P" assignNames="Pa" />
-  <copy target="Q" assignNames="Qa" />
+  $P{name="Pa"}
+  $Q{name="Qa"}
     `,
         },
         "*",
@@ -12196,10 +12196,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" perpendicularTo="$l1" />
     $l2.points{assignNames="A2 B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -12452,10 +12452,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" parallelTo="$l1" />
     $l2.points{assignNames="A2 B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -12709,10 +12709,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" perpendicularTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -12966,10 +12966,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" parallelTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -13223,10 +13223,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" perpendicularTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -13468,10 +13468,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" parallelTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -13713,10 +13713,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" perpendicularTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -13958,10 +13958,10 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" parallelTo="$l1" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A1" assignNames="A1a" />
-  <copy source="B1" assignNames="B1a" />
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A1{name="A1a"}
+  $B1{name="B1a"}
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -14470,8 +14470,8 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" perpendicularTo="(1,-1)" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",
@@ -14618,8 +14618,8 @@ describe("Line Tag Tests", function () {
     <line name="l2" through="$A2" parallelTo="(1,-1)" />
     $l2.point2{assignNames="B2"}
   </graph>
-  <copy source="A2" assignNames="A2a" />
-  <copy source="B2" assignNames="B2a" />
+  $A2{name="A2a"}
+  $B2{name="B2a"}
     `,
         },
         "*",

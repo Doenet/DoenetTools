@@ -26,7 +26,7 @@ describe("Module Tag Tests", function () {
 
     <p><textinput name="item2" prefill="animal" /></p>
     <p name="p4"><copy target="m" item="$item2" /></p>
-    <p name="p5"><copy target="m" /></p>
+    <p name="p5">$m</p>
 
     `,
         },
@@ -67,7 +67,7 @@ describe("Module Tag Tests", function () {
     <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
     <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{name="m4"}
     `,
         },
         "*",
@@ -107,7 +107,7 @@ describe("Module Tag Tests", function () {
     <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
     <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{name="m4"}
     `,
         },
         "*",
@@ -147,7 +147,7 @@ describe("Module Tag Tests", function () {
     <copy target="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
     <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{name="m4"}
     `,
         },
         "*",
@@ -189,7 +189,7 @@ describe("Module Tag Tests", function () {
         <mathinput name="x2" bindValueTo="$(p.x)" />
         <mathinput name="y2" bindValueTo="$(p.y)" />
       </p>
-      <p><copy prop="value" target="y2" assignNames="y2a" /></p>
+      <p>$y2.value{assignNames="y2a"}</p>
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
@@ -197,7 +197,7 @@ describe("Module Tag Tests", function () {
     
     <copy target="m" x="$x" y="$y" size="$s" aspectRatio="$ar" assignNames="m2" />
 
-    <p><copy prop="value" target="ar" assignNames="ar2" /></p>
+    <p>$ar.value{assignNames="ar2"}</p>
     `,
         },
         "*",
@@ -359,7 +359,7 @@ describe("Module Tag Tests", function () {
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
     <copy target="n" u="$x" v="$y" assignNames="n2" />
 
-    <p><copy prop="value" target="y" assignNames="y2" /></p>
+    <p>$y.value{assignNames="y2"}</p>
 
     `,
         },
@@ -477,8 +477,8 @@ describe("Module Tag Tests", function () {
     <section><title>First one</title>
     <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' assignNames="m1" />
 
-    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
-    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
+    <p>Submitted response for problem 1: <math name="sr1">$(m1/ans.submittedResponse)</math></p>
+    <p>Credit for problem 1: $(m1/prob.creditAchieved{assignNames="ca1"})</p>
     </section>
 
     <section><title>Second one</title>
@@ -487,8 +487,8 @@ describe("Module Tag Tests", function () {
 
     
     <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" assignNames="m2" />
-    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
-    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
+    <p>Submitted response for problem 2: <math name="sr2">$(m2/ans.submittedResponse)</math></p>
+    <p>Credit for problem 2: $(m2/prob.creditAchieved{assignNames="ca2"})</p>
     </section>
 
     `,
@@ -657,8 +657,8 @@ describe("Module Tag Tests", function () {
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
       <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" assignNames="extMod" />
     
-      <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" target="extMod/ans" /></math></p>
-      <p>Credit for problem: <copy prop="creditAchieved" target="extMod/prob" assignNames="ca" /></p>
+      <p>Submitted response for problem: <math name="sr">$(extMod/ans.submittedResponse)</math></p>
+      <p>Credit for problem: $(extMod/prob.creditAchieved{assignNames="ca"})</p>
 
     </module>
     
@@ -1375,7 +1375,7 @@ describe("Module Tag Tests", function () {
       <p>Disabled? $disabled</p>
     </module>
     
-    <copy target="m" assignNames="m1" />
+    $m{name="m1"}
     <copy target="m" disabled="true" assignNames="m2" />
     <copy target="m" disabled="false" assignNames="m3" />
     `,
@@ -1406,7 +1406,7 @@ describe("Module Tag Tests", function () {
       <p>Next value? <mathinput name="q" />  OK $q it is.</p>
     </module>
     
-    <copy target="md" assignNames="md1" />
+    $md{name="md1"}
     <copy target="md1" n="10" assignNames="md2" />
     <copy target="md2" m="100" assignNames="md3" />
     <copy target="md3" n="0" assignNames="md4" />
@@ -1607,10 +1607,10 @@ describe("Module Tag Tests", function () {
 
 
     <section><title>First one</title>
-    <copy target="mod" assignNames="m1" />
+    $mod{name="m1"}
 
-    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
-    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
+    <p>Submitted response for problem 1: <math name="sr1">$(m1/ans.submittedResponse)</math></p>
+    <p>Credit for problem 1: $(m1/prob.creditAchieved{assignNames="ca1"})</p>
     </section>
 
     <section><title>Second one</title>
@@ -1619,8 +1619,8 @@ describe("Module Tag Tests", function () {
 
     
     <copy target="mod" title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" aspectRatio="1" assignNames="m2" />
-    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
-    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
+    <p>Submitted response for problem 2: <math name="sr2">$(m2/ans.submittedResponse)</math></p>
+    <p>Credit for problem 2: $(m2/prob.creditAchieved{assignNames="ca2"})</p>
     </section>
 
     `,

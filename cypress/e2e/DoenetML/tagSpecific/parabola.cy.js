@@ -23,15 +23,15 @@ describe("Parabola Tag Tests", function () {
     <text>a</text>
     <graph>
     <parabola />
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignnames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
-    <copy prop="equation" name="e2" target="p2" />
+    $p2.equation{name="e2"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -1654,15 +1654,15 @@ describe("Parabola Tag Tests", function () {
     <text>a</text>
     <graph>
     <parabola through="" />
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignnames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
-    <copy prop="equation" name="e2" target="p2" />
+    $p2.equation{name="e2"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -3286,15 +3286,15 @@ describe("Parabola Tag Tests", function () {
     <graph>
     <point>(1,2)</point>
     <parabola through="$_point1"/>
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignnames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
-    <copy prop="equation" name="e2" target="p2" />
+    $p2.equation{name="e2"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -4960,15 +4960,15 @@ describe("Parabola Tag Tests", function () {
     <point>(1,2)</point>
     <point>(3,4)</point>
     <parabola through="$_point1 $_point2"/>
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignnames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
-    <copy prop="equation" name="e2" target="p2" />
+    $p2.equation{name="e2"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -7272,15 +7272,15 @@ describe("Parabola Tag Tests", function () {
     <point>(3,4)</point>
     <point>(5,6)</point>
     <parabola through="$_point1 $_point2 $_point3"/>
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignnames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
-    <copy prop="equation" name="e2" target="p2" />
+    $p2.equation{name="e2"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -10361,17 +10361,17 @@ describe("Parabola Tag Tests", function () {
           <point>($i+<math>0</math>, $m+<math>0</math>)</point>
         </template>
         <sources alias="m" indexAlias="i">
-          <sequence step="2"><count><copy prop="value" target="n" /></count></sequence>
+          <sequence step="2"><count>$n.value</count></sequence>
         </sources>
       </map>
     </through></parabola>
-    <copy prop="vertex" name="v" target="_parabola1" />
+    $_parabola1.vertex{name="v"}
     </graph>
     <graph name="g2">
-    <copy name="p2" target="_parabola1" />
+    $_parabola1{name="p2"}
     <copy assignames="v2" target="v" />
     </graph>
-    <copy name="g3" target="g2"/>
+    $g2{name="g3"}
 
     <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
     <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
@@ -14104,7 +14104,7 @@ describe("Parabola Tag Tests", function () {
     <copy target="p3" vertex="(-6,6)" assignNames="p4" />
     </graph>
 
-    <copy target="g1" assignNames="g2" />
+    $g1{name="g2"}
 
     `,
         },

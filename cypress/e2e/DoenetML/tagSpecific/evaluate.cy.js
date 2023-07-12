@@ -28,7 +28,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input)</m></p>
 
-  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: $result_symbolic{name="result_symbolic3"}</p>
 
 
   <p>Evaluate numeric: 
@@ -38,7 +38,7 @@ describe("Evaluate Tag Tests", function () {
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input)</m></p>
 
 
-  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: $result_numeric{name="result_numeric3"}</p>
 
 
   <p>Force evaluate symbolic: 
@@ -699,10 +699,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2" />
   <evaluate function="$f3" input="$input" name="ef3" />
   <evaluate function="$f4" input="$input" name="ef4" />
-  <copy target="ef1" assignNames="ef1a" />
-  <copy target="ef2" assignNames="ef2a" />
-  <copy target="ef3" assignNames="ef3a" />
-  <copy target="ef4" assignNames="ef4a" />
+  $ef1{name="ef1a"}
+  $ef2{name="ef2a"}
+  $ef3{name="ef3a"}
+  $ef4{name="ef4a"}
   </p>
 
   <p>
@@ -710,10 +710,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
   <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
   <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
-  <copy target="ef1dg6" assignNames="ef1dg6a" />
-  <copy target="ef2dg6" assignNames="ef2dg6a" />
-  <copy target="ef3dg6" assignNames="ef3dg6a" />
-  <copy target="ef4dg6" assignNames="ef4dg6a" />
+  $ef1dg6{name="ef1dg6a"}
+  $ef2dg6{name="ef2dg6a"}
+  $ef3dg6{name="ef3dg6a"}
+  $ef4dg6{name="ef4dg6a"}
   </p>
 
   <p>
@@ -721,10 +721,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
   <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
   <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
-  <copy target="ef1dc6" assignNames="ef1dc6a" />
-  <copy target="ef2dc6" assignNames="ef2dc6a" />
-  <copy target="ef3dc6" assignNames="ef3dc6a" />
-  <copy target="ef4dc6" assignNames="ef4dc6a" />
+  $ef1dc6{name="ef1dc6a"}
+  $ef2dc6{name="ef2dc6a"}
+  $ef3dc6{name="ef3dc6a"}
+  $ef4dc6{name="ef4dc6a"}
   </p>
 
   <p>
@@ -732,10 +732,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f3" input="$input" name="ef3dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f4" input="$input" name="ef4dsz" displaySmallAsZero="1E-13" />
-  <copy target="ef1dsz" assignNames="ef1dsza" />
-  <copy target="ef2dsz" assignNames="ef2dsza" />
-  <copy target="ef3dsz" assignNames="ef3dsza" />
-  <copy target="ef4dsz" assignNames="ef4dsza" />
+  $ef1dsz{name="ef1dsza"}
+  $ef2dsz{name="ef2dsza"}
+  $ef3dsz{name="ef3dsza"}
+  $ef4dsz{name="ef4dsza"}
   </p>
 
   <p>
@@ -743,10 +743,10 @@ describe("Evaluate Tag Tests", function () {
   <m name="ef2m">$$f2($input)</m>
   <m name="ef3m">$$f3($input)</m>
   <m name="ef4m">$$f4($input)</m>
-  <copy target="ef1m" assignNames="ef1ma" />
-  <copy target="ef2m" assignNames="ef2ma" />
-  <copy target="ef3m" assignNames="ef3ma" />
-  <copy target="ef4m" assignNames="ef4ma" />
+  $ef1m{name="ef1ma"}
+  $ef2m{name="ef2ma"}
+  $ef3m{name="ef3ma"}
+  $ef4m{name="ef4ma"}
   </p>
   `,
         },
@@ -2325,10 +2325,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2" />
   <evaluate function="$f3" input="$input" name="ef3" />
   <evaluate function="$f4" input="$input" name="ef4" />
-  <copy target="ef1" assignNames="ef1a" />
-  <copy target="ef2" assignNames="ef2a" />
-  <copy target="ef3" assignNames="ef3a" />
-  <copy target="ef4" assignNames="ef4a" />
+  $ef1{name="ef1a"}
+  $ef2{name="ef2a"}
+  $ef3{name="ef3a"}
+  $ef4{name="ef4a"}
   </p>
 
   <p>
@@ -2336,10 +2336,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
   <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
   <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
-  <copy target="ef1dg6" assignNames="ef1dg6a" />
-  <copy target="ef2dg6" assignNames="ef2dg6a" />
-  <copy target="ef3dg6" assignNames="ef3dg6a" />
-  <copy target="ef4dg6" assignNames="ef4dg6a" />
+  $ef1dg6{name="ef1dg6a"}
+  $ef2dg6{name="ef2dg6a"}
+  $ef3dg6{name="ef3dg6a"}
+  $ef4dg6{name="ef4dg6a"}
   </p>
 
   <p>
@@ -2347,10 +2347,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
   <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
   <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
-  <copy target="ef1dc6" assignNames="ef1dc6a" />
-  <copy target="ef2dc6" assignNames="ef2dc6a" />
-  <copy target="ef3dc6" assignNames="ef3dc6a" />
-  <copy target="ef4dc6" assignNames="ef4dc6a" />
+  $ef1dc6{name="ef1dc6a"}
+  $ef2dc6{name="ef2dc6a"}
+  $ef3dc6{name="ef3dc6a"}
+  $ef4dc6{name="ef4dc6a"}
   </p>
 
   <p>
@@ -2358,10 +2358,10 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f3" input="$input" name="ef3dsz" displaySmallAsZero="1E-13" />
   <evaluate function="$f4" input="$input" name="ef4dsz" displaySmallAsZero="1E-13" />
-  <copy target="ef1dsz" assignNames="ef1dsza" />
-  <copy target="ef2dsz" assignNames="ef2dsza" />
-  <copy target="ef3dsz" assignNames="ef3dsza" />
-  <copy target="ef4dsz" assignNames="ef4dsza" />
+  $ef1dsz{name="ef1dsza"}
+  $ef2dsz{name="ef2dsza"}
+  $ef3dsz{name="ef3dsza"}
+  $ef4dsz{name="ef4dsza"}
   </p>
 
   <p>
@@ -2369,10 +2369,10 @@ describe("Evaluate Tag Tests", function () {
   <m name="ef2m">$$f2($input)</m>
   <m name="ef3m">$$f3($input)</m>
   <m name="ef4m">$$f4($input)</m>
-  <copy target="ef1m" assignNames="ef1ma" />
-  <copy target="ef2m" assignNames="ef2ma" />
-  <copy target="ef3m" assignNames="ef3ma" />
-  <copy target="ef4m" assignNames="ef4ma" />
+  $ef1m{name="ef1ma"}
+  $ef2m{name="ef2ma"}
+  $ef3m{name="ef3ma"}
+  $ef4m{name="ef4ma"}
   </p>
   `,
         },
@@ -3008,7 +3008,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input1, $input2)</m></p>
 
-  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: $result_symbolic{name="result_symbolic3"}</p>
 
 
   <p>Evaluate numeric: 
@@ -3017,7 +3017,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input1, $input2)</m></p>
 
-  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: $result_numeric{name="result_numeric3"}</p>
 
   <p>Force evaluate symbolic numeric function: 
   <evaluate forceSymbolic name="result_force_symbolic_numeric" function="$f_numeric" input="$input1 $input2" />
@@ -3446,7 +3446,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p>Evaluate 2:  <m name="result2">$$f($input)</m></p>
 
-  <p>Evaluate 3: <copy target="result1" assignNames="result3" /></p>
+  <p>Evaluate 3: $result1{name="result3"}</p>
   `,
         },
         "*",
@@ -4233,7 +4233,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <m name="result_symbolic2">$$f_symbolic($input1, $input2)</m></p>
 
-  <p>Evaluated symbolic result again: <copy target="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: $result_symbolic{name="result_symbolic3"}</p>
 
 
   <p>Evaluate numeric: 
@@ -4242,7 +4242,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p>Evaluate numeric using macro:  <m name="result_numeric2">$$f_numeric($input1, $input2)</m></p>
 
-  <p>Evaluated numeric result again: <copy target="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: $result_numeric{name="result_numeric3"}</p>
 
   <p>Force evaluate symbolic numeric function: 
   <evaluate forceSymbolic name="result_force_symbolic_numeric" function="$f_numeric" input="$input1 $input2" />
@@ -4722,7 +4722,7 @@ describe("Evaluate Tag Tests", function () {
 
   <p>Evaluate 2:  <m name="result2">$$f($input)</m></p>
 
-  <p>Evaluate 3: <copy target="result1" assignNames="result3" /></p>
+  <p>Evaluate 3: $result1{name="result3"}</p>
   `,
         },
         "*",

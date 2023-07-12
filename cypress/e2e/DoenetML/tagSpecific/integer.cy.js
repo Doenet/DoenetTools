@@ -13,7 +13,7 @@ describe("Integer Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <copy target="_integer1" />
+      $_integer1
       <integer>1.2+1.1</integer>
     `,
         },
@@ -48,7 +48,7 @@ describe("Integer Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <copy target="_integer1" />
+      $_integer1
       <integer>x+1</integer>
       `,
         },

@@ -25,7 +25,7 @@ describe("CobwebPolyline Tag Tests", function () {
   <p>Initial condition is <m>x_0 = 1</m>:
   <answer name="check_initial">
     <award><when>
-    <copy prop="coords" target="P1"/> = <math>(1,0)</math>
+    $P1.coords = <math>(1,0)</math>
     </when></award>
   </answer>
   </p>
@@ -55,7 +55,7 @@ describe("CobwebPolyline Tag Tests", function () {
         </mrow>
       </template>
       <sources alias="x" indexAlias="i">
-        <copy prop="iterateValues" target="graph1/cobweb" />
+        $(graph1/cobweb.iterateValues)
       </sources>
     </map>
     </md>
@@ -66,7 +66,7 @@ describe("CobwebPolyline Tag Tests", function () {
   <p><answer name="check_cobweb">
   <award credit="$(graph1/cobweb.fractionCorrectVerticesAdjusted)"><when>true</when></award>
     <considerAsResponses>
-      <copy prop="vertices" target="graph1/cobweb" />
+      $(graph1/cobweb.vertices)
     </considerAsResponses>
   </answer>
   </p>

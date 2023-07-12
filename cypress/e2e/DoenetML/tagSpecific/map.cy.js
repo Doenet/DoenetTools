@@ -1056,7 +1056,7 @@ describe("Map Tag Tests", function () {
     <text>a</text>
     <map>
     <template newNamespace><math simplify>
-        <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
+        $n{name="b"} + $j{name="i"} + <copy target="../a" /> 
         + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" to="2"/></sources>
@@ -1162,7 +1162,7 @@ describe("Map Tag Tests", function () {
     <number name="length">1</number>
     <map>
     <template newnamespace><math simplify>
-        <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
+        $n{name="b"} + $j{name="i"} + <copy target="../a" /> 
         + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" length="$length"/></sources>
@@ -1458,7 +1458,7 @@ describe("Map Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <map>
-    <template><math simplify="full">sin(<copy target="i"/><copy target="x"/>)</math></template>
+    <template><math simplify="full">sin($i$x)</math></template>
     <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
@@ -1594,9 +1594,9 @@ describe("Map Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <copy target="/hi/c/_point1" prop="coords" assignNames="c1" />
-    <copy target="/hi/s/_point1" prop="coords" assignNames="c2" />
-    <copy target="/hi/q/_point1" prop="coords" assignNames="c3" />
+    $(/hi/c/_point1.coords{assignNames="c1"})
+    $(/hi/s/_point1.coords{assignNames="c2"})
+    $(/hi/q/_point1.coords{assignNames="c3"})
     
     <grapH Name="hi" newNamespace >
     <map assignnames="q  c s">
@@ -1663,11 +1663,11 @@ describe("Map Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <map assignnames="u v w">
-      <template newNamespace><math>(<copy target="n"/>, <copy target="../e/_copy1" />)</math></template>
+      <template newNamespace><math>($n, <copy target="../e/_copy1" />)</math></template>
       <sources alias="n"><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c d e">
-      <template newNamespace><math>sin(<copy target="n"/>)</math></template>
+      <template newNamespace><math>sin($n)</math></template>
       <sources alias="n"><sequence from="4" to="6"/></sources>
     </map>
     `,
@@ -1817,8 +1817,8 @@ describe("Map Tag Tests", function () {
     $copymapthroughp{name="copymapthroughp2"}
     $copymapthroughp2{name="copymapthroughp3"}
 
-    <copy prop="value" target="sequenceCount" assignNames="sequenceCount2" />
-    <copy prop="value" target="sequenceTo" assignNames="sequenceTo2" />
+    $sequenceCount.value{assignNames="sequenceCount2"}
+    $sequenceTo.value{assignNames="sequenceTo2"}
     `,
         },
         "*",
@@ -2511,10 +2511,10 @@ describe("Map Tag Tests", function () {
       <map assignnames="a b c">
         <template newNamespace><point>
             (<copy target="../q" />$n^2,
-            <copy prop="x" target="_point2" />)
+            $_point2.x)
           </point><point>
             (<copy target="../r" />$n,
-            <copy prop="x" target="_point1" />)
+            $_point1.x)
           </point></template>
       <sources alias='n'>
         <sequence from="2" to="4" />
@@ -2849,8 +2849,8 @@ describe("Map Tag Tests", function () {
     
     <copy name="g4" target="_graph1" newNamespace />
     <p><collect componentTypes="point" target="_graph1"/></p>
-    <copy prop="value" target="sequenceCount" assignNames="sequenceCount2" />
-    <copy prop="value" target="sequenceTo" assignNames="sequenceTo2" />
+    $sequenceCount.value{assignNames="sequenceCount2"}
+    $sequenceTo.value{assignNames="sequenceTo2"}
     `,
         },
         "*",
@@ -3570,8 +3570,8 @@ describe("Map Tag Tests", function () {
         </sources>
       </map>
     </math>
-    <copy prop="value" target="number" assignNames="number2" />
-    <copy prop="value" target="step" assignNames="step2" />
+    $number.value{assignNames="number2"}
+    $step.value{assignNames="step2"}
     `,
         },
         "*",
@@ -3734,28 +3734,28 @@ describe("Map Tag Tests", function () {
 
     <map name="m2" assignNames="q1 q2 q3">
       <template newNamespace>
-        <point name="pt">(<copy target="p" prop="x" />^2, <copy target="p" prop="y" />^2)</point>
+        <point name="pt">($p.x^2, $p.y^2)</point>
       </template>
       <sources alias="p">
         $m1
       </sources>
     </map>
 
-    p1a: <copy target="p1" assignNames="p1a" />,
+    p1a: $p1{name="p1a"},
     p1b: <copy target="p1/pt" assignNames="p1b" />,
-    p2a: <copy target="p2" assignNames="p2a" />,
+    p2a: $p2{name="p2a"},
     p2b: <copy target="p2/pt" assignNames="p2b" />,
-    p3a: <copy target="p3" assignNames="p3a" />,
+    p3a: $p3{name="p3a"},
     p3b: <copy target="p3/pt" assignNames="p3b" />,
 
-    q1a: <copy target="q1" assignNames="q1a" />,
+    q1a: $q1{name="q1a"},
     q1b: <copy target="q1/pt" assignNames="q1b" />,
-    q2a: <copy target="q2" assignNames="q2a" />,
+    q2a: $q2{name="q2a"},
     q2b: <copy target="q2/pt" assignNames="q2b" />,
-    q3a: <copy target="q3" assignNames="q3a" />,
+    q3a: $q3{name="q3a"},
     q3b: <copy target="q3/pt" assignNames="q3b" />,
 
-    <p><copy prop="value" target="number" assignNames="number2" /></p>
+    <p>$number.value{assignNames="number2"}</p>
 
     `,
         },
@@ -4188,7 +4188,7 @@ describe("Map Tag Tests", function () {
     <text>a</text>
     <map assignNames="a b">
       <template newNamespace>
-      <copy target="i" assignNames="ind" />
+      $i{name="ind"}
       <mathinput bindValueTo="$ind" />
       </template>
       <sources indexAlias="i"><text>red</text><text>yellow</text></sources>
@@ -4304,10 +4304,10 @@ describe("Map Tag Tests", function () {
     </map></p>
 
     <p>
-      <copy prop="value" target="h1" assignNames="h1a" />
-      <copy prop="value" target="h2" assignNames="h2a" />
-      <copy prop="value" target="n1" assignNames="n1a" />
-      <copy prop="value" target="n2" assignNames="n2a" />
+      $h1.value{assignNames="h1a"}
+      $h2.value{assignNames="h2a"}
+      $n1.value{assignNames="n1a"}
+      $n2.value{assignNames="n2a"}
     </p>
     `,
         },

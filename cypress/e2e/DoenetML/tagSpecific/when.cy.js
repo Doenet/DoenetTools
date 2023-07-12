@@ -17,9 +17,9 @@ describe("When Tag Tests", function () {
     $n > 0 and $n > 1
   </when>
 
-  <p>Value: <copy prop="value" target="w" assignNames="v" /></p>
-  <p>Condition satisfied: <copy prop="conditionSatisfied" target="w" assignNames="cs" /></p>
-  <p>Fraction satisfied: <copy prop="fractionSatisfied" target="w" assignNames="fs" /></p>
+  <p>Value: $w.value{assignNames="v"}</p>
+  <p>Condition satisfied: $w.conditionSatisfied{assignNames="cs"}</p>
+  <p>Fraction satisfied: $w.fractionSatisfied{assignNames="fs"}</p>
 
   `,
         },

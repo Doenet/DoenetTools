@@ -13,7 +13,7 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <copy target="_number1" />
+      $_number1
       <number>1+1</number>
     `,
         },
@@ -47,7 +47,7 @@ describe("Number Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <copy target="_number1" />
+      $_number1
       <number>x+1</number>
       `,
         },
@@ -171,7 +171,7 @@ describe("Number Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <number>log(0.5/0.3)</number>, 
-      <math><copy target="_number1" /></math>
+      <math>$_number1</math>
       `,
         },
         "*",
@@ -220,16 +220,16 @@ describe("Number Tag Tests", function () {
       <copy target="n3" displayDecimals='3' assignNames="n3b" />
       <copy target="n3" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3c" />
 
-      <copy target="n1a" assignNames="n1aa" />
+      $n1a{name="n1aa"}
       <copy target="n1a" displayDecimals='3' assignNames="n1ab" />
-      <copy target="n2a" assignNames="n2aa" />
+      $n2a{name="n2aa"}
       <copy target="n2a" displayDecimals='3' assignNames="n2ab" />
       <copy target="n3a" displaySmallAsZero="false" assignNames="n3aa" />
       <copy target="n3a" displayDecimals='3' displaySmallAsZero="false" assignNames="n3ab" />
 
-      <copy target="n1b" assignNames="n1ba" />
+      $n1b{name="n1ba"}
       <copy target="n1b" displayDigits='5'  assignNames="n1bb" />
-      <copy target="n2b" assignNames="n2ba" />
+      $n2b{name="n2ba"}
       <copy target="n2b" displayDigits='5' assignNames="n2bb" />
       <copy target="n3b" displaySmallAsZero="false" assignNames="n3ba" />
       <copy target="n3b" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3bb" />
@@ -567,44 +567,44 @@ describe("Number Tag Tests", function () {
       <math name="n2cMath">$n2c</math>
       <math name="n2cpadMath">$n2cpad</math>
 
-      <copy prop="value" target="n1a" assignNames="n1aValue" />
-      <copy prop="value" target="n1apad" assignNames="n1apadValue" />
-      <copy prop="value" target="n1b" assignNames="n1bValue" />
-      <copy prop="value" target="n1bpad" assignNames="n1bpadValue" />
-      <copy prop="value" target="n1c" assignNames="n1cValue" />
-      <copy prop="value" target="n1cpad" assignNames="n1cpadValue" />
-      <copy prop="value" target="n2a" assignNames="n2aValue" />
-      <copy prop="value" target="n2apad" assignNames="n2apadValue" />
-      <copy prop="value" target="n2b" assignNames="n2bValue" />
-      <copy prop="value" target="n2bpad" assignNames="n2bpadValue" />
-      <copy prop="value" target="n2c" assignNames="n2cValue" />
-      <copy prop="value" target="n2cpad" assignNames="n2cpadValue" />
+      $n1a.value{assignNames="n1aValue"}
+      $n1apad.value{assignNames="n1apadValue"}
+      $n1b.value{assignNames="n1bValue"}
+      $n1bpad.value{assignNames="n1bpadValue"}
+      $n1c.value{assignNames="n1cValue"}
+      $n1cpad.value{assignNames="n1cpadValue"}
+      $n2a.value{assignNames="n2aValue"}
+      $n2apad.value{assignNames="n2apadValue"}
+      $n2b.value{assignNames="n2bValue"}
+      $n2bpad.value{assignNames="n2bpadValue"}
+      $n2c.value{assignNames="n2cValue"}
+      $n2cpad.value{assignNames="n2cpadValue"}
 
-      <copy prop="text" target="n1a" assignNames="n1aText" />
-      <copy prop="text" target="n1apad" assignNames="n1apadText" />
-      <copy prop="text" target="n1b" assignNames="n1bText" />
-      <copy prop="text" target="n1bpad" assignNames="n1bpadText" />
-      <copy prop="text" target="n1c" assignNames="n1cText" />
-      <copy prop="text" target="n1cpad" assignNames="n1cpadText" />
-      <copy prop="text" target="n2a" assignNames="n2aText" />
-      <copy prop="text" target="n2apad" assignNames="n2apadText" />
-      <copy prop="text" target="n2b" assignNames="n2bText" />
-      <copy prop="text" target="n2bpad" assignNames="n2bpadText" />
-      <copy prop="text" target="n2c" assignNames="n2cText" />
-      <copy prop="text" target="n2cpad" assignNames="n2cpadText" />
+      $n1a.text{assignNames="n1aText"}
+      $n1apad.text{assignNames="n1apadText"}
+      $n1b.text{assignNames="n1bText"}
+      $n1bpad.text{assignNames="n1bpadText"}
+      $n1c.text{assignNames="n1cText"}
+      $n1cpad.text{assignNames="n1cpadText"}
+      $n2a.text{assignNames="n2aText"}
+      $n2apad.text{assignNames="n2apadText"}
+      $n2b.text{assignNames="n2bText"}
+      $n2bpad.text{assignNames="n2bpadText"}
+      $n2c.text{assignNames="n2cText"}
+      $n2cpad.text{assignNames="n2cpadText"}
 
-      <copy prop="math" target="n1a" assignNames="n1aMath2" />
-      <copy prop="math" target="n1apad" assignNames="n1apadMath2" />
-      <copy prop="math" target="n1b" assignNames="n1bMath2" />
-      <copy prop="math" target="n1bpad" assignNames="n1bpadMath2" />
-      <copy prop="math" target="n1c" assignNames="n1cMath2" />
-      <copy prop="math" target="n1cpad" assignNames="n1cpadMath2" />
-      <copy prop="math" target="n2a" assignNames="n2aMath2" />
-      <copy prop="math" target="n2apad" assignNames="n2apadMath2" />
-      <copy prop="math" target="n2b" assignNames="n2bMath2" />
-      <copy prop="math" target="n2bpad" assignNames="n2bpadMath2" />
-      <copy prop="math" target="n2c" assignNames="n2cMath2" />
-      <copy prop="math" target="n2cpad" assignNames="n2cpadMath2" />
+      $n1a.math{assignNames="n1aMath2"}
+      $n1apad.math{assignNames="n1apadMath2"}
+      $n1b.math{assignNames="n1bMath2"}
+      $n1bpad.math{assignNames="n1bpadMath2"}
+      $n1c.math{assignNames="n1cMath2"}
+      $n1cpad.math{assignNames="n1cpadMath2"}
+      $n2a.math{assignNames="n2aMath2"}
+      $n2apad.math{assignNames="n2apadMath2"}
+      $n2b.math{assignNames="n2bMath2"}
+      $n2bpad.math{assignNames="n2bpadMath2"}
+      $n2c.math{assignNames="n2cMath2"}
+      $n2cpad.math{assignNames="n2cpadMath2"}
 
     `,
         },
@@ -968,28 +968,28 @@ describe("Number Tag Tests", function () {
           doenetML: `
   <p><text>a</text></p>
   <p><number name="n1" displayDigits="2">8.5203845251</number>
-  <copy target="n1" prop="value" assignNames="n1a" />
+  $n1.value{assignNames="n1a"}
   <copy target="n1" prop="value" displayDigits="5" assignNames="n1b" />
   <copy target="n1" prop="value" link="false" assignNames="n1c" />
   <copy target="n1" prop="value" link="false" displayDigits="5" assignNames="n1d" />
   </p>
 
   <p><number name="n2" displayDecimals="0">8.5203845251</number>
-  <copy target="n2" prop="value" assignNames="n2a" />
+  $n2.value{assignNames="n2a"}
   <copy target="n2" prop="value" displayDecimals="6" assignNames="n2b" />
   <copy target="n2" prop="value" link="false" assignNames="n2c" />
   <copy target="n2" prop="value" link="false" displayDecimals="6" assignNames="n2d" />
   </p>
 
   <p><number name="n3" displaySmallAsZero="false">0.000000000000000015382487</number>
-  <copy target="n3" prop="value" assignNames="n3a" />
+  $n3.value{assignNames="n3a"}
   <copy target="n3" prop="value" displaySmallAsZero assignNames="n3b" />
   <copy target="n3" prop="value" link="false" assignNames="n3c" />
   <copy target="n3" prop="value" link="false" displaySmallAsZero assignNames="n3d" />
   </p>
 
   <p><number name="n4" padZeros>8</number>
-  <copy target="n4" prop="value" assignNames="n4a" />
+  $n4.value{assignNames="n4a"}
   <copy target="n4" prop="value" padZeros="false" assignNames="n4b" />
   <copy target="n4" prop="value" link="false" assignNames="n4c" />
   <copy target="n4" prop="value" link="false" padZeros="false" assignNames="n4d" />

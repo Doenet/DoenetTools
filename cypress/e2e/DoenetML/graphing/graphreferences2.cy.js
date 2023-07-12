@@ -19,24 +19,24 @@ describe("Graph Reference Test 2", function () {
     </graph>
   
     <graph width="150px" height="150px" name="graph2">
-    <copy prop="tail" target="_vector1" />
-    <copy prop="head" target="_vector1" />
-    <copy prop="displacement" name="d1" target="_vector1" />
-    <copy name="rv1" target="_vector1" />
+    $_vector1.tail
+    $_vector1.head
+    $_vector1.displacement{name="d1"}
+    $_vector1{name="rv1"}
     </graph>
 
     <graph width="150px" height="150px" name="graph3">
-    <copy prop="tail" target="d1" />
-    <copy prop="head" target="d1" />
-    <copy prop="displacement" target="d1" />
-    <copy target="d1" />
+    $d1.tail
+    $d1.head
+    $d1.displacement
+    $d1
     </graph>
   
     <graph width="150px" height="150px" name="graph4">
-    <copy prop="tail" target="rv1" />
-    <copy prop="head" target="rv1" />
-    <copy prop="displacement" target="rv1" />
-    <copy name="rv2" target="rv1" />
+    $rv1.tail
+    $rv1.head
+    $rv1.displacement
+    $rv1{name="rv2"}
     </graph>
     </sidebyside>
 
@@ -55,7 +55,7 @@ describe("Graph Reference Test 2", function () {
     </sideBySide>
     </sbsgroup>
 
-    <copy name="sbsgroup2" target="_sbsgroup1" />
+    $_sbsgroup1{name="sbsgroup2"}
   
     `,
         },

@@ -15,7 +15,7 @@ describe("SolveEquations Tag Tests", function () {
   <p>variable: <mathinput name="var" prefill="x" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numSolutions" target="solve" assignNames="num" /></p>
+  <p>Number of solutions: $solve.numSolutions{assignNames="num"}</p>
   <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   `,
         },
@@ -366,13 +366,13 @@ describe("SolveEquations Tag Tests", function () {
   <p>maxvar: <mathinput name="maxvar" prefill="1" /></p>
   <p>equation: <mathinput name="equation" prefill="x^2+1=0" /></p>
   <solveEquations name="solve" variables="$var" minVar="$minvar" maxVar="$maxvar">$equation</solveEquations>
-  <p>Number of solutions: <copy prop="numSolutions" target="solve" assignNames="num" /></p>
+  <p>Number of solutions: $solve.numSolutions{assignNames="num"}</p>
   <p name="sols">Solutions: <aslist><copy prop="solutions" target="solve" displayDigits="6" /></aslist></p>
   <p>
-    <copy prop="value" target="equation" assignNames="equation2" />
-    <copy prop="value" target="var" assignNames="var2" />
-    <copy prop="value" target="maxvar" assignNames="maxvar2" />
-    <copy prop="value" target="minvar" assignNames="minvar2" />
+    $equation.value{assignNames="equation2"}
+    $var.value{assignNames="var2"}
+    $maxvar.value{assignNames="maxvar2"}
+    $minvar.value{assignNames="minvar2"}
   </p>
   `,
         },

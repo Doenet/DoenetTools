@@ -201,7 +201,7 @@ ${theDoenetML3}
   </section>
 
   <section name="s2" copySource="s1" />
-  <copy source="s1" assignNames="s3" />
+  $s1{name="s3"}
   <section name="s4" copySource="s1" link="false" />
   <copy source="s1" assignNames="s5" link="false" />
 

@@ -158,9 +158,9 @@ describe("Basic copy assignName Tests", function () {
   <copy name="cp10" target="cp6" assignNames="s9" />
 
 
-  <extract name="ex1" prop="simplify" assignNames="s10"><copy target="_math1" /></extract>
+  <extract name="ex1" prop="simplify" assignNames="s10">$_math1</extract>
   <copy name="cp11" target="s10" assignNames="s11" />
-  <extract name="ex2" prop="simplify" assignNames="s12"><copy target="m1" /></extract>
+  <extract name="ex2" prop="simplify" assignNames="s12">$m1</extract>
   <copy name="cp12" target="s12" assignNames="s13" />
 
   `,
@@ -298,16 +298,16 @@ describe("Basic copy assignName Tests", function () {
   <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
 
   <graph>
-    <copy target="b" assignNames="b1" />
-    <copy target="c" assignNames="c1" />
+    $b{name="b1"}
+    $c{name="c1"}
   </graph>
 
   <graph>
     <copy assignNames="d e" target="cp1" />
   </graph>
 
-  <copy target="d" assignNames="f" />
-  <copy target="e" assignNames="g" />
+  $d{name="f"}
+  $e{name="g"}
 
   `,
         },
@@ -766,14 +766,14 @@ describe("Basic copy assignName Tests", function () {
   <copy name="cp1" prop="point1" assignNames="b" target="_line1" />
 
   <graph>
-    <copy target="b" assignNames="b1" />
+    $b{name="b1"}
   </graph>
 
   <graph>
     <copy assignNames="d" target="cp1" />
   </graph>
 
-  <copy target="d" assignNames="f" />
+  $d{name="f"}
 
   `,
         },
@@ -941,11 +941,11 @@ describe("Basic copy assignName Tests", function () {
      <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
   </graph>
 
-  <p>xs of points: <copy prop="x" target="cp1" assignNames="d e" /></p>
+  <p>xs of points: $cp1.x{assignNames="d e"}</p>
 
   <p>
-    xs again: <copy target="d" assignNames="f" />
-    <copy target="e" assignNames="g" />
+    xs again: $d{name="f"}
+    $e{name="g"}
   </p>
 
   `,
@@ -1104,31 +1104,31 @@ describe("Basic copy assignName Tests", function () {
 
   <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
   
-  <p name="n1">nothing 1: <copy target="a1" /></p>
-  <p name="n2">nothing 2: <copy target="a2" /></p>
-  <p name="n3">nothing 3: <copy target="b1" /></p>
-  <p name="n4">nothing 4: <copy target="b2" /></p>
+  <p name="n1">nothing 1: $a1</p>
+  <p name="n2">nothing 2: $a2</p>
+  <p name="n3">nothing 3: $b1</p>
+  <p name="n4">nothing 4: $b2</p>
 
   <graph>
     <copy name="cp2" assignNames="c d" target="cp1" />
   </graph>
 
-  <copy target="c" assignNames="e" />
-  <copy target="d" assignNames="f" />
+  $c{name="e"}
+  $d{name="f"}
 
   <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
   
-  <p name="n5">nothing 5: <copy target="g1" /></p>
-  <p name="n6">nothing 6: <copy target="g2" /></p>
-  <p name="n7">nothing 7: <copy target="h1" /></p>
-  <p name="n8">nothing 8: <copy target="h2" /></p>
+  <p name="n5">nothing 5: $g1</p>
+  <p name="n6">nothing 6: $g2</p>
+  <p name="n7">nothing 7: $h1</p>
+  <p name="n8">nothing 8: $h2</p>
 
   <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
   
-  <p name="n9">nothing 9: <copy target="i1" /></p>
-  <p name="n10">nothing 10: <copy target="i2" /></p>
-  <p name="n11">nothing 11: <copy target="j1" /></p>
-  <p name="n12">nothing 12: <copy target="j2" /></p>
+  <p name="n9">nothing 9: $i1</p>
+  <p name="n10">nothing 10: $i2</p>
+  <p name="n11">nothing 11: $j1</p>
+  <p name="n12">nothing 12: $j2</p>
 
 
   `,
@@ -1598,31 +1598,31 @@ describe("Basic copy assignName Tests", function () {
 
   <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
   
-  <p name="n1">nothing 1: <copy target="a1" /></p>
-  <p name="n2">nothing 2: <copy target="a2" /></p>
-  <p name="n3">nothing 3: <copy target="b1" /></p>
-  <p name="n4">nothing 4: <copy target="b2" /></p>
+  <p name="n1">nothing 1: $a1</p>
+  <p name="n2">nothing 2: $a2</p>
+  <p name="n3">nothing 3: $b1</p>
+  <p name="n4">nothing 4: $b2</p>
 
   <graph>
     <copy name="cp2" assignNames="c d" target="cp1" />
   </graph>
 
-  <copy target="c" assignNames="e" />
-  <copy target="d" assignNames="f" />
+  $c{name="e"}
+  $d{name="f"}
 
   <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
   
-  <p name="n5">nothing 5: <copy target="g1" /></p>
-  <p name="n6">nothing 6: <copy target="g2" /></p>
-  <p name="n7">nothing 7: <copy target="h1" /></p>
-  <p name="n8">nothing 8: <copy target="h2" /></p>
+  <p name="n5">nothing 5: $g1</p>
+  <p name="n6">nothing 6: $g2</p>
+  <p name="n7">nothing 7: $h1</p>
+  <p name="n8">nothing 8: $h2</p>
 
   <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
   
-  <p name="n9">nothing 9: <copy target="i1" /></p>
-  <p name="n10">nothing 10: <copy target="i2" /></p>
-  <p name="n11">nothing 11: <copy target="j1" /></p>
-  <p name="n12">nothing 12: <copy target="j2" /></p>
+  <p name="n9">nothing 9: $i1</p>
+  <p name="n10">nothing 10: $i2</p>
+  <p name="n11">nothing 11: $j1</p>
+  <p name="n12">nothing 12: $j2</p>
   
   </section>
 
@@ -2300,7 +2300,7 @@ describe("Basic copy assignName Tests", function () {
     </math>
   </p>
 
-  <copy target="pOriginal" assignNames="pCopy" />
+  $pOriginal{name="pCopy"}
 
   <p>This grabs expression: <copy target="pOriginal/expression" assignNames="expressionCopy" /></p>
   <p>This grabs expression: <copy target="pCopy/expression" assignNames="expressionCopy2" /></p>

@@ -204,7 +204,7 @@ describe("Rectangle Tag Tests", function () {
       </sideBySide>
     </group>
 
-    <copy target="g1" assignNames="g2" />
+    $g1{name="g2"}
 
 
     `,
@@ -1450,18 +1450,18 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   </graph>
 
   <graph>
-  <copy name="centerPoint" target="_rectangle1" prop="center"/>
-  <copy name="v1" target="_rectangle1" prop="vertex1"/>
-  <copy name="v2" target="_rectangle1" prop="vertex2"/>
-  <copy name="v3" target="_rectangle1" prop="vertex3"/>
-  <copy name="v4" target="_rectangle1" prop="vertex4"/>
+  $_rectangle1.center{name="centerPoint"}
+  $_rectangle1.vertex1{name="v1"}
+  $_rectangle1.vertex2{name="v2"}
+  $_rectangle1.vertex3{name="v3"}
+  $_rectangle1.vertex4{name="v4"}
   </graph>
 
   <mathinput bindValueTo="$(_rectangle1.width)" />
   <mathinput bindValueTo="$(_rectangle1.height)" />
 
   <graph name="graph3">
-    <copy name="rectangleCopy" target="_rectangle1"/>
+    $_rectangle1{name="rectangleCopy"}
   </graph>
   
   $graph3{name="graph4"}

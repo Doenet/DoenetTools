@@ -211,12 +211,12 @@ describe("ref Tag Tests", function () {
         {
           doenetML: `
   <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
-  <p>Repeat url: <copy target="_ref1" />.</p>
-  <p>The link address is: <copy prop="uri" target="_ref1" />.</p>
-  <p>The text linked is: <copy prop="linktext" target="_ref1" />.</p>
+  <p>Repeat url: $_ref1.</p>
+  <p>The link address is: $_ref1.uri.</p>
+  <p>The text linked is: $_ref1.linktext.</p>
   <!--<p>Recreate from pieces: <ref uri="$uri" >
-     <copy prop="linktext" target="_ref1" /></ref>.</p>
-  <text name="uri" hide><copy prop="uri" target="_ref1" /></text>-->
+     $_ref1.linktext</ref>.</p>
+  <text name="uri" hide>$_ref1.uri</text>-->
   `,
         },
         "*",

@@ -27,7 +27,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
       <p name="data">data: <aslist>$l.data</aslist></p>
     `,
         },
@@ -130,7 +130,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
     `,
         },
         "*",
@@ -170,7 +170,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
     `,
         },
         "*",
@@ -211,7 +211,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
     `,
         },
         "*",
@@ -278,7 +278,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
        
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
     `,
         },
         "*",
@@ -375,7 +375,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
 
     `,
         },
@@ -469,7 +469,7 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
     `,
         },
         "*",
@@ -558,10 +558,10 @@ describe("BestFitLine Tag Tests", function () {
       
       </graph>
       
-      <copy prop="equation" target="l" assignNames="eq" />
+      $l.equation{assignNames="eq"}
       <p name="data">data: <aslist>$l.data</aslist></p>
       
-      <copy prop="equation" target="l2" assignNames="eq2" />
+      $l2.equation{assignNames="eq2"}
       <p name="data2">data2: <aslist>$l2.data</aslist></p>
     `,
         },

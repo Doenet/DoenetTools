@@ -20,7 +20,7 @@ describe("BooleanList Tag Tests", function () {
       <boolean hide>false</boolean>
       <copy target="_booleanlist1" hide="false" />
       <boolean>false</boolean>
-      <copy target="_copy1" />
+      $_copy1
     </booleanlist></p>
 
     <p><copy maxNumber="6" target="_booleanlist2" /></p>

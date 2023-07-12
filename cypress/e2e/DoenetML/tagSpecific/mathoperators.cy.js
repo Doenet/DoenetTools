@@ -3292,14 +3292,14 @@ describe("Math Operator Tag Tests", function () {
         <point layer="1">(6,7)</point>
         <point>
           (<clampnumber lowervalue="-2" uppervalue="5">
-            <copy prop="x" target="_point1" />
+            $_point1.x
           </clampnumber>,
           <wrapnumberperiodic lowervalue="-2" uppervalue="5">
-            <copy prop="y" target="_point1" />
+            $_point1.y
           </wrapnumberperiodic>
           )
         </point>
-        <point>(<copy prop="y" target="_point2" />, <copy prop="x" target="_point2" />)</point>
+        <point>($_point2.y, $_point2.x)</point>
       </graph>
 
       $_graph1{name="g2"}

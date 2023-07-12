@@ -125,8 +125,8 @@ describe("Extract Tag Tests", function () {
     <graph>
       <copy assignNames="copy" target="original" />
       <point name="transformed">
-        (<copy prop="y" target="copy2" />,
-        <extract prop="x1"><copy name="copy2" target="copy" /></extract>)
+        ($copy2.y,
+        <extract prop="x1">$copy{name="copy2"}</extract>)
       </point>
     </graph>
 
@@ -290,9 +290,9 @@ describe("Extract Tag Tests", function () {
     </extract>
     </aslist></p>
     
-    <p><aslist><copy target="_extract1" /></aslist></p>
+    <p><aslist>$_extract1</aslist></p>
     
-    <p><copy target="_aslist2" /></p>
+    <p>$_aslist2</p>
     `,
         },
         "*",
@@ -516,12 +516,12 @@ describe("Extract Tag Tests", function () {
     </extract>
     </aslist></p>
     
-    <p><aslist><copy target="_extract1" /></aslist></p>
+    <p><aslist>$_extract1</aslist></p>
     
-    <p><copy target="_aslist2" /></p>
+    <p>$_aslist2</p>
 
-    <p><copy prop="value" target="n" assignNames="n2" />
-    <copy prop="value" target="m" assignNames="m2" /></p>
+    <p>$n.value{assignNames="n2"}
+    $m.value{assignNames="m2"}</p>
     `,
         },
         "*",

@@ -158,7 +158,7 @@ describe("MathList Tag Tests", function () {
     <number name="n1">7</number>
     <number name="n2">11</number></p>
     <p><point xs="$m1 $m2/$n1 $n1 $n1-$n2 $n1 -$n2 $n1 - $n2 $n1$m1$m2 ($n1+$m1)/($n2$m2)" /></p>
-    <p><aslist><copy prop="xs" target="_point1" assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11" /></aslist></p>
+    <p><aslist>$_point1.xs{assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11"}</aslist></p>
     `,
         },
         "*",
@@ -1156,7 +1156,7 @@ describe("MathList Tag Tests", function () {
           <copy prop="math5" target="_mathlist1" assignNames="m9" createComponentOfType="math" />
         </mathlist>
       </mathlist>
-      <copy target="mid" assignNames="mid2" />
+      $mid{name="mid2"}
     </mathlist>
 
     <mathinput bindValueTo="$(_mathlist1.math1)" />
@@ -2172,8 +2172,8 @@ describe("MathList Tag Tests", function () {
     </mathlist>
     <p>Merge math lists: <booleaninput /></p>
 
-    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
+    <p>Third math: $_mathlist1.math3</p>
+    <p>Fifth math: $_mathlist1.math5</p>
 
     <p>Change values:
       <mathinput name="mi1" bindValueTo="$_mathlist1.math1" />
@@ -2561,8 +2561,8 @@ describe("MathList Tag Tests", function () {
       <math>a,b,c,d,e</math>
     </mathlist>
 
-    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
+    <p>Third math: $_mathlist1.math3</p>
+    <p>Fifth math: $_mathlist1.math5</p>
 
     <p>Change values:
     <mathinput name="mi1" bindValueTo="$_mathlist1.math1" />
@@ -3159,7 +3159,7 @@ describe("MathList Tag Tests", function () {
       <math>x</math>
       <copy target="_mathlist1" hide="false" />
       <math hide>y</math>
-      <copy target="mathlist1a" />
+      $mathlist1a
     </mathlist></p>
 
     <p><copy name="mathlist3" maxNumber="6" target="_mathlist2" /></p>

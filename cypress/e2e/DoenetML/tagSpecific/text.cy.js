@@ -13,7 +13,7 @@ describe("Text Tag Tests", function () {
           doenetML: `
     <p><text>Hello</text> <text>there</text>!</p>
 
-    <p><text>We <text>could</text> be <copy target="_text2" />.</text></p>
+    <p><text>We <text>could</text> be $_text2.</text></p>
     `,
         },
         "*",
@@ -105,7 +105,7 @@ describe("Text Tag Tests", function () {
           doenetML: `
     <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> (or <tagc>text</tagc>?) doesn't <term>do</term> <c>much</c>.</p>
 
-    <p name="textOnly"><copy prop="text" target="orig" assignNames="t" /></p>
+    <p name="textOnly">$orig.text{assignNames="t"}</p>
 
     <p name="insideText"><text name="t2"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> (or <tagc>text</tagc>?) doesn't <term>do</term> <c>much</c>.</text></p>
     `,
@@ -137,7 +137,7 @@ describe("Text Tag Tests", function () {
           doenetML: `
     <p name="orig">Pick a <lsq/>number<rsq/> from 1 <ndash/> 2 <mdash/> no, <lq/>maybe<rq/> from<nbsp/>3<ellipsis /></p>
 
-    <p name="textOnly"><copy prop="text" target="orig" assignNames="t" /></p>
+    <p name="textOnly">$orig.text{assignNames="t"}</p>
 
     <p name="insideText"><text name="t2">Pick a <lsq/>number<rsq/> from 1 <ndash/> 2 <mdash/> no, <lq/>maybe<rq/> from<nbsp/>3<ellipsis /></text></p>
     `,

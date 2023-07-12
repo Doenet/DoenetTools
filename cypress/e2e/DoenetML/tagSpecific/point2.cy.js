@@ -414,8 +414,8 @@ describe("Point Tag Tests 2", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <point>(<copy prop="y" target="P2a" />, 7)</point>
-    <point>(<copy prop="y" target="P1a" />, 9)</point>
+    <point>($P2a.y, 7)</point>
+    <point>($P1a.y, 9)</point>
   </graph>
   
   <graph>

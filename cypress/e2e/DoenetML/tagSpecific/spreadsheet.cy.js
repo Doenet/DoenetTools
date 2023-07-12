@@ -268,9 +268,9 @@ describe("Spreadsheet Tag Tests", function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy source="_cell4" assignNames="c4a" />
+  $_cell4{name="c4a"}
   <copy colnum="A" source="_cell2" assignNames="c2a" />
-  <copy source="_cell3" assignNames="c3a" />
+  $_cell3{name="c3a"}
   <copy colnum="2" rownum="4" source="_cell1" assignNames="c1a" />
   <copy rownum="2" source="_cell5" assignNames="c5a" />
   </spreadsheet>

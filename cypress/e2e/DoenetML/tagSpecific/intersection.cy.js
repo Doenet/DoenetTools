@@ -377,12 +377,12 @@ describe("Integer Tag Tests", function () {
       </graph>
 
       <p>
-        <copy source="r1" assignNames="r1a" />
-        <copy source="r2" assignNames="r2a" />
-        <copy source="P1" assignNames="P1a" />
-        <copy source="P2" assignNames="P2a" />
-        <copy source="int1" assignNames="int1a" />
-        <copy source="int2" assignNames="int2a" />
+        $r1{name="r1a"}
+        $r2{name="r2a"}
+        $P1{name="P1a"}
+        $P2{name="P2a"}
+        $int1{name="int1a"}
+        $int2{name="int2a"}
       </p>
     `,
         },
@@ -551,12 +551,12 @@ describe("Integer Tag Tests", function () {
       </graph>
 
       <p>
-        <copy source="r" assignNames="ra" />
-        <copy source="P" assignNames="Pa" />
-        <copy source="A" assignNames="Aa" />
-        <copy source="B" assignNames="Ba" />
-        <copy source="int1" assignNames="int1a" />
-        <copy source="int2" assignNames="int2a" />
+        $r{name="ra"}
+        $P{name="Pa"}
+        $A{name="Aa"}
+        $B{name="Ba"}
+        $int1{name="int1a"}
+        $int2{name="int2a"}
       </p>
     `,
         },
@@ -1235,12 +1235,12 @@ describe("Integer Tag Tests", function () {
       </graph>
 
       <p>
-        <copy source="r" assignNames="ra" />
-        <copy source="P" assignNames="Pa" />
-        <copy source="A" assignNames="Aa" />
-        <copy source="B" assignNames="Ba" />
-        <copy source="int1" assignNames="int1a" />
-        <copy source="int2" assignNames="int2a" />
+        $r{name="ra"}
+        $P{name="Pa"}
+        $A{name="Aa"}
+        $B{name="Ba"}
+        $int1{name="int1a"}
+        $int2{name="int2a"}
       </p>
     `,
         },
@@ -1752,8 +1752,8 @@ describe("Integer Tag Tests", function () {
   
   </graph>
   <copy source="p.vertices" assignNames="p11 p12 p13" />
-  <copy source="P" assignNames="Pa" />
-  <copy source="r" assignNames="ra" />
+  $P{name="Pa"}
+  $r{name="ra"}
   $int1 $int2 $int3 $int4 $int5 $int6
 
   `,

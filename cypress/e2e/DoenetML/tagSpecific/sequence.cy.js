@@ -801,7 +801,7 @@ describe("Sequence Tag Tests", function () {
     <aslist><sequence from="-1" length="10" exclude="$exclude2  0 6" />
     </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
-    <p><copy prop="value" target="exclude2" assignNames="exclude2a" /></p>
+    <p>$exclude2.value{assignNames="exclude2a"}</p>
     `,
         },
         "*",
@@ -977,7 +977,7 @@ describe("Sequence Tag Tests", function () {
     <aslist><sequence type="letters" length="10" exclude="$e  b f" />
     </aslist>
     <p>Also exclude: <textinput name="e" /></p>
-    <p><copy prop="value" target="e" assignNames="ea" /></p>
+    <p>$e.value{assignNames="ea"}</p>
     `,
         },
         "*",
@@ -1108,7 +1108,7 @@ describe("Sequence Tag Tests", function () {
       <sequence type="math" length="10" from="x" step="x" exclude="2x 6x  $e" />
     </aslist>
     <p>Also exclude: <mathinput name="e" /></p>
-    <p><copy prop="value" target="e" assignNames="ea" /></p>
+    <p>$e.value{assignNames="ea"}</p>
     `,
         },
         "*",
@@ -1396,7 +1396,7 @@ describe("Sequence Tag Tests", function () {
   <text>a</text>
   <mathinput name="n"/>
   <aslist><sequence from="2" to="$n" /></aslist>
-  <p><copy prop="value" target="n" assignNames="n2" /></p>
+  <p>$n.value{assignNames="n2"}</p>
     `,
         },
         "*",
@@ -1733,8 +1733,8 @@ describe("Sequence Tag Tests", function () {
     <p>Change first: <mathinput name="a2" bindValueTo="$a{link='false'}" /></p>
     <p>Change second: <mathinput name="b2" bindValueTo="$b{link='false'}" /></p>
 
-    <p>Copy of a2: <copy source="a2" assignNames="a3" /></p>
-    <p>Copy of b2: <copy source="b2" assignNames="b3" /></p>
+    <p>Copy of a2: $a2{name="a3"}</p>
+    <p>Copy of b2: $b2{name="b3"}</p>
 
     `,
         },

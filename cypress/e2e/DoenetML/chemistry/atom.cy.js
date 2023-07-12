@@ -21,11 +21,11 @@ describe("Atom Tests", function () {
   
   <p>Atomic number: <mathinput name="aNum" prefill="1" /></p>
   
-  <p>Name: <copy prop="name" target="atom" assignNames="name" /></p>
-  <p>Symbol: <copy prop="symbol" target="atom" assignNames="symbol" /></p>
-  <p>Atomic number: <copy prop="atomicNumber" target="atom" assignNames="atomicNumber" /></p>
-  <p>Group: <copy prop="group" target="atom" assignNames="group" /></p>
-  <p>Group Name: <copy prop="groupName" target="atom" assignNames="groupName" /></p>
+  <p>Name: $atom.name{assignNames="name"}</p>
+  <p>Symbol: $atom.symbol{assignNames="symbol"}</p>
+  <p>Atomic number: $atom.atomicNumber{assignNames="atomicNumber"}</p>
+  <p>Group: $atom.group{assignNames="group"}</p>
+  <p>Group Name: $atom.groupName{assignNames="groupName"}</p>
   <p>Atomic mass: <copy prop="atomicMass" target="atom" assignNames="atomicMass" displayDigits="10" /></p>
   <p>Phase at STP: <copy prop="phaseAtSTP" target="atom" assignNames="pahseAtSTP" displayDigits="10" /></p>
   <p>Charge of common ion: <copy prop="chargeOfCommonIon" target="atom" assignNames="chargeOfCommonIon" displayDigits="10" /></p>
@@ -37,8 +37,8 @@ describe("Atom Tests", function () {
   <p>Atomic radius: <copy prop="atomicRadius" target="atom" assignNames="atomicRadius" displayDigits="10" /></p>
   <p>Density: <copy prop="density" target="atom" assignNames="density" displayDigits="10" /></p>
   <p>Electronegativity: <copy prop="electronegativity" target="atom" assignNames="electronegativity" displayDigits="10" /></p>
-  <p>Electron configuration: <copy prop="electronConfiguration" target="atom" assignNames="electronConfiguration" /></p>
-  Orbital diagram: <copy prop="orbitalDiagram" target="atom" assignNames="orbitalDiagram" />
+  <p>Electron configuration: $atom.electronConfiguration{assignNames="electronConfiguration"}</p>
+  Orbital diagram: $atom.orbitalDiagram{assignNames="orbitalDiagram"}
   
   `,
         },

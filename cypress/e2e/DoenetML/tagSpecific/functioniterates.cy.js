@@ -519,7 +519,7 @@ describe("FunctionIterates Tag Tests", function () {
 
   <functionIterates function="$f" initialValue="$u" numIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
-  <copy prop="value" target="n" assignNames="n2" />
+  $n.value{assignNames="n2"}
 
   `,
         },
@@ -615,7 +615,7 @@ describe("FunctionIterates Tag Tests", function () {
 
   <functionIterates function="$f" initialValue="$u" numIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
-  <copy prop="value" target="n" assignNames="n2" />
+  $n.value{assignNames="n2"}
 
   `,
         },
@@ -713,9 +713,9 @@ describe("FunctionIterates Tag Tests", function () {
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="3" name="fis" /></p>
   
-  <copy prop="value" target="vars" assignNames="vars2" />
-  <copy prop="value" target="fformula" assignNames="fformula2" />
-  <copy prop="value" target="u" assignNames="u2" />
+  $vars.value{assignNames="vars2"}
+  $fformula.value{assignNames="fformula2"}
+  $u.value{assignNames="u2"}
 
   `,
         },
@@ -931,9 +931,9 @@ describe("FunctionIterates Tag Tests", function () {
 
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic="false">$fformula</function><functioniterates function="$f" initialValue="$u" numIterates="3" name="fis" /></p>
-  <copy prop="value" target="u" assignNames="u2" />
-  <copy prop="value" target="fformula" assignNames="fformula2" />
-  <copy prop="value" target="vars" assignNames="vars2" />
+  $u.value{assignNames="u2"}
+  $fformula.value{assignNames="fformula2"}
+  $vars.value{assignNames="vars2"}
 
   `,
         },

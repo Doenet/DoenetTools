@@ -4535,7 +4535,7 @@ describe("Math Tag Tests", function () {
     <copy source="m2" unordered="$(../b3)" assignNames="m3" />
   </p>
 
-  <copy source="p1" assignNames="p2" />
+  $p1{name="p2"}
   <p>
     <copy prop="value" source="b1" assignNames="b1a" />
     <copy prop="value" source="b2" assignNames="b2a" />

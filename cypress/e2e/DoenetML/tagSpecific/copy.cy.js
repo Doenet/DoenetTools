@@ -7764,7 +7764,7 @@ describe("Copy Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><group name="g"><text name="m">hello</text> <copy source="m" assignNames="q" /></group></p>
+    <p><group name="g"><text name="m">hello</text> $m{name="q"}</group></p>
     <p><group copySource="g" link="false" /></p>
     `,
         },

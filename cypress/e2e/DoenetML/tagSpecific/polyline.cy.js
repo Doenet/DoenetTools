@@ -157,8 +157,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -240,8 +240,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -328,10 +328,10 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -405,10 +405,10 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -453,10 +453,10 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -499,13 +499,13 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   <textinput name="ti" />
-  <copy target="ti" prop="value" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -629,13 +629,13 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   <textinput name="ti" />
-  <copy target="ti" prop="value" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -860,8 +860,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <polyline vertices="$(../g1/pg.vertices)" name="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -961,12 +961,12 @@ describe("Polyline Tag Tests", function () {
         </point>
       </template>
       <sources alias="x">
-        <copy prop="vertices" name="vs" target="_polyline1" />
+        $_polyline1.vertices{name="vs"}
       </sources>
     </map>
     <polyline vertices="$_map1" />
     </graph>
-    <copy target="_polyline2" prop="vertices" assignNames="p1 p2 p3 p4" />
+    $_polyline2.vertices{assignNames="p1 p2 p3 p4"}
 
     `,
         },
@@ -1134,7 +1134,7 @@ describe("Polyline Tag Tests", function () {
       <polyline name="parallelogram" vertices="(1,2) (3,4) (-5,6) ($(parallelogram.vertexX1_1{fixed})+$(parallelogram.vertexX3_1{fixed})-$(parallelogram.vertexX2_1), $(parallelogram.vertexX1_2{fixed})+$(parallelogram.vertexX3_2{fixed})-$(parallelogram.vertexX2_2))" />
     </graph>
 
-    <copy target="parallelogram" prop="vertices" assignNames="p1 p2 p3 p4" />
+    $parallelogram.vertices{assignNames="p1 p2 p3 p4"}
 
     `,
         },
@@ -1314,7 +1314,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
     <polyline vertices="$(_polyline1.vertex1) ($(_polyline1.vertexX2_2), $(_polyline1.vertexX2_1)) $(_polyline1.vertex3) ($(_polyline1.vertexX4_2), $(_polyline1.vertexX4_1))" />
   </graph>
-  <copy target="_polyline2" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polyline2.vertices{assignNames="p1 p2 p3 p4"}
   `,
         },
         "*",
@@ -1467,7 +1467,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline vertices="(1,2) (3,4) (-5,6) ($(_polyline1.vertexX3_1{fixed})+$(_polyline1.vertexX2_1{fixed})-$(_polyline1.vertexX1_1), $(_polyline1.vertexX3_2{fixed})+$(_polyline1.vertexX2_2{fixed})-$(_polyline1.vertexX1_2))" />
   </graph>
-  <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polyline1.vertices{assignNames="p1 p2 p3 p4"}
 
   `,
         },
@@ -1613,7 +1613,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline vertices="(1,2) (3,4) (-5,6) $(_polyline1.vertex1{createComponentOfType='point'})" />
   </graph>
-  <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polyline1.vertices{assignNames="p1 p2 p3 p4"}
   `,
         },
         "*",
@@ -1752,7 +1752,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline vertices="$(_polyline1.vertex4{ createComponentOfType='point' }) (3,4) (-5,6) (1,2)" />
   </graph>
-  <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polyline1.vertices{assignNames="p1 p2 p3 p4"}
   
   `,
         },
@@ -1893,7 +1893,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline vertices="$(_polyline1.vertex4{createComponentOfType='point'}) (3,4) (-5,6) (1,2) ($(_polyline1.vertexX1_1)+1,2)" />
   </graph>
-  <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
+  $_polyline1.vertices{assignNames="p1 p2 p3 p4 p5"}
   
   `,
         },
@@ -2069,7 +2069,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline name="P" vertices="$(P.vertex4{createComponentOfType='point'}) (1,2) (3,4) $(P.vertex7{createComponentOfType='point'}) (5,7) (-5,7) $(P.vertex10{createComponentOfType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
-  <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
+  $P.vertices{assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10"}
   
   `,
         },
@@ -2435,7 +2435,7 @@ describe("Polyline Tag Tests", function () {
   <graph>
   <polyline name="P" vertices="($(P.vertexX4_1)+1,$(P.vertexX4_2)+1) (1,2) (3,4) ($(P.vertexX7_1)+1,$(P.vertexX7_2)+1) (5,7) (-5,7) ($(P.vertexX10_1)+1,$(P.vertexX10_2)+1) (3,1) (5,0) (-5,-1)" />
   </graph>
-  <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
+  $P.vertices{assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10"}
   
   `,
         },
@@ -2817,7 +2817,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
-        <attractTo><copy target="_polyline1" /></attractTo>
+        <attractTo>$_polyline1</attractTo>
       </constraints>
     </point>
   </graph>
@@ -3154,7 +3154,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
-        <constrainTo><copy target="_polyline1" /></constrainTo>
+        <constrainTo>$_polyline1</constrainTo>
       </constraints>
     </point>
   </graph>
@@ -3499,11 +3499,11 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
       <constraints>
-        <constrainTo relativeToGraphScales><copy target="p" /></constrainTo>
+        <constrainTo relativeToGraphScales>$p</constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="A" assignNames="A2" />
+  $A{name="A2"}
   `,
         },
         "*",
@@ -3621,7 +3621,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="(1,3) (5,7) (-2,6)" name="p" fixed />
   </graph>
   <textinput name="ti" />
-  <copy prop="value" target="ti" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -4371,8 +4371,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -4487,8 +4487,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -4607,8 +4607,8 @@ describe("Polyline Tag Tests", function () {
   <graph name="g2" newNamespace>
     <copy target="../g1/pg" assignNames="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",

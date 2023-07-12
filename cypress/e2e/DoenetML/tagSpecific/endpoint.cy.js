@@ -24,10 +24,10 @@ describe("Endpoint Tag Tests", function () {
   
     <booleaninput name="b1" />
     <booleaninput name="b2" />
-    <copy prop="value" target="b1" assignNames="b1a" />
-    <copy prop="value" target="b2" assignNames="b2a" />
+    $b1.value{assignNames="b1a"}
+    $b2.value{assignNames="b2a"}
 
-    <copy target="g" assignNames="g2" />
+    $g{name="g2"}
     `,
         },
         "*",
