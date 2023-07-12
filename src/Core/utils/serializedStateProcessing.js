@@ -2778,11 +2778,13 @@ export function createComponentNames({
       }
     }
 
-    // For copies without a prop, we convert the name to be assignNames so that it applies to the replacement
+    // For copies without a prop or for component with fromCopyTarget/fromCopyURI,
+    // we convert the name to be assignNames so that it applies to the replacement
     // rather than the copy itself, and then we give the copy a randomly generated name.
     if (
-      serializedComponent.componentType === "copy" &&
-      !attributes.prop &&
+      ((serializedComponent.componentType === "copy" && !attributes.prop) ||
+        doenetAttributes.fromCopyTarget ||
+        doenetAttributes.fromCopyFromURI) &&
       !doenetAttributes.convertedAssignNames
     ) {
       if (

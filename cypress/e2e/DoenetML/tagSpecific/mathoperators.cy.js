@@ -1,6 +1,4 @@
 import me from "math-expressions";
-import { isStrictMode } from "react-is";
-import { isStyledComponent } from "styled-components";
 import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("Math Operator Tag Tests", function () {
@@ -1093,12 +1091,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -1191,14 +1183,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("21");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -1335,12 +1327,12 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(21);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(21);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "+",
           "x",
           "x",
@@ -1349,10 +1341,10 @@ describe("Math Operator Tag Tests", function () {
           "y",
           "z",
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -1388,12 +1380,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -1486,14 +1472,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("51");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -1631,21 +1617,21 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(51);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(51);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "*",
           "x",
           ["+", "x", "y"],
           ["+", "x", "y", "z"],
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -2427,13 +2413,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
-
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
         .eq(0)
@@ -2525,14 +2504,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("51");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2670,21 +2649,21 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(51);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(51);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "*",
           "x",
           ["+", "x", "y"],
           ["+", "x", "y", "z"],
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -2717,10 +2696,10 @@ describe("Math Operator Tag Tests", function () {
       <clampNumber lowervalue="10" uppervalue="40">-12$a</clampNumber>
       <clampNumber lowervalue="10" uppervalue="40">3$a</clampNumber>
 
-      $_clampnumber1{name="_clampnumber1b"}
-      $_clampnumber5{name="_clampnumber5b"}
-      $_clampnumber9{name="_clampnumber9b"}
-      $_clampnumber14{name="_clampnumber14b"}
+      $_clampnumber1{name="clampnumber1b"}
+      $_clampnumber5{name="clampnumber5b"}
+      $_clampnumber9{name="clampnumber9b"}
+      $_clampnumber14{name="clampnumber14b"}
 
       `,
         },
@@ -2732,18 +2711,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
-      let replacement3Name =
-        stateVariables["/_copy3"].replacements[0].componentName;
-      let replacement3Anchor = cesc2("#" + replacement3Name);
-      let replacement4Name =
-        stateVariables["/_copy4"].replacements[0].componentName;
-      let replacement4Anchor = cesc2("#" + replacement4Name);
 
       cy.get(cesc("#\\/_clampnumber1"))
         .find(".mjx-mrow")
@@ -2843,28 +2810,28 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("12");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/clampnumber1b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("1");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/clampnumber5b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("10");
         });
-      cy.get(replacement3Anchor)
+      cy.get(cesc("#\\/clampnumber9b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("12");
         });
-      cy.get(replacement4Anchor)
+      cy.get(cesc("#\\/clampnumber14b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2887,10 +2854,10 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/_clampnumber12"].stateValues.value).eq(40);
         expect(stateVariables["/_clampnumber13"].stateValues.value).eq(10);
         expect(stateVariables["/_clampnumber14"].stateValues.value).eq(12);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(1);
-        expect(stateVariables[replacement2Name].stateValues.value).eq(10);
-        expect(stateVariables[replacement3Name].stateValues.value).eq(12);
-        expect(stateVariables[replacement4Name].stateValues.value).eq(12);
+        expect(stateVariables["/clampnumber1b"].stateValues.value).eq(1);
+        expect(stateVariables["/clampnumber5b"].stateValues.value).eq(10);
+        expect(stateVariables["/clampnumber9b"].stateValues.value).eq(12);
+        expect(stateVariables["/clampnumber14b"].stateValues.value).eq(12);
         expect(
           stateVariables["/_clampnumber1"].stateValues.isNumericOperator,
         ).eq(true);
@@ -2934,16 +2901,16 @@ describe("Math Operator Tag Tests", function () {
           stateVariables["/_clampnumber14"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
+          stateVariables["/clampnumber1b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
+          stateVariables["/clampnumber5b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement3Name].stateValues.isNumericOperator,
+          stateVariables["/clampnumber9b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement4Name].stateValues.isNumericOperator,
+          stateVariables["/clampnumber14b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(stateVariables["/_clampnumber1"].stateValues.isNumber).eq(true);
         expect(stateVariables["/_clampnumber2"].stateValues.isNumber).eq(true);
@@ -2963,10 +2930,10 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/_clampnumber12"].stateValues.isNumber).eq(true);
         expect(stateVariables["/_clampnumber13"].stateValues.isNumber).eq(true);
         expect(stateVariables["/_clampnumber14"].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement3Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement4Name].stateValues.isNumber).eq(true);
+        expect(stateVariables["/clampnumber1b"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/clampnumber5b"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/clampnumber9b"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/clampnumber14b"].stateValues.isNumber).eq(true);
       });
     });
   });
@@ -2999,10 +2966,10 @@ describe("Math Operator Tag Tests", function () {
       <wrapnumberperiodic lowervalue="10" uppervalue="40">-12$a</wrapnumberperiodic>
       <wrapnumberperiodic lowervalue="10" uppervalue="40">3$a</wrapnumberperiodic>
 
-      $_wrapnumberperiodic1{name="_wrapnumberperiodic1b"}
-      $_wrapnumberperiodic5{name="_wrapnumberperiodic5b"}
-      $_wrapnumberperiodic9{name="_wrapnumberperiodic9b"}
-      $_wrapnumberperiodic14{name="_wrapnumberperiodic14b"}
+      $_wrapnumberperiodic1{name="wrapnumberperiodic1b"}
+      $_wrapnumberperiodic5{name="wrapnumberperiodic5b"}
+      $_wrapnumberperiodic9{name="wrapnumberperiodic9b"}
+      $_wrapnumberperiodic14{name="wrapnumberperiodic14b"}
 
       `,
         },
@@ -3014,18 +2981,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
-      let replacement3Name =
-        stateVariables["/_copy3"].replacements[0].componentName;
-      let replacement3Anchor = cesc2("#" + replacement3Name);
-      let replacement4Name =
-        stateVariables["/_copy4"].replacements[0].componentName;
-      let replacement4Anchor = cesc2("#" + replacement4Name);
 
       cy.get(cesc("#\\/_wrapnumberperiodic1"))
         .find(".mjx-mrow")
@@ -3125,28 +3080,28 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("12");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/wrapnumberperiodic1b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("0.3");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/wrapnumberperiodic5b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("34.7");
         });
-      cy.get(replacement3Anchor)
+      cy.get(cesc("#\\/wrapnumberperiodic9b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("12");
         });
-      cy.get(replacement4Anchor)
+      cy.get(cesc("#\\/wrapnumberperiodic14b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3197,22 +3152,18 @@ describe("Math Operator Tag Tests", function () {
         expect(
           stateVariables["/_wrapnumberperiodic14"].stateValues.value,
         ).closeTo(12, 1e-12);
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
-          0.3,
-          1e-12,
-        );
-        expect(stateVariables[replacement2Name].stateValues.value).closeTo(
-          34.7,
-          1e-12,
-        );
-        expect(stateVariables[replacement3Name].stateValues.value).closeTo(
-          12,
-          1e-12,
-        );
-        expect(stateVariables[replacement4Name].stateValues.value).closeTo(
-          12,
-          1e-12,
-        );
+        expect(
+          stateVariables["/wrapnumberperiodic1b"].stateValues.value,
+        ).closeTo(0.3, 1e-12);
+        expect(
+          stateVariables["/wrapnumberperiodic5b"].stateValues.value,
+        ).closeTo(34.7, 1e-12);
+        expect(
+          stateVariables["/wrapnumberperiodic9b"].stateValues.value,
+        ).closeTo(12, 1e-12);
+        expect(
+          stateVariables["/wrapnumberperiodic14b"].stateValues.value,
+        ).closeTo(12, 1e-12);
         expect(
           stateVariables["/_wrapnumberperiodic1"].stateValues.isNumericOperator,
         ).eq(true);
@@ -3261,16 +3212,17 @@ describe("Math Operator Tag Tests", function () {
             .isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
+          stateVariables["/wrapnumberperiodic1b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
+          stateVariables["/wrapnumberperiodic5b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement3Name].stateValues.isNumericOperator,
+          stateVariables["/wrapnumberperiodic9b"].stateValues.isNumericOperator,
         ).eq(true);
         expect(
-          stateVariables[replacement4Name].stateValues.isNumericOperator,
+          stateVariables["/wrapnumberperiodic14b"].stateValues
+            .isNumericOperator,
         ).eq(true);
         expect(stateVariables["/_wrapnumberperiodic1"].stateValues.isNumber).eq(
           true,
@@ -3314,10 +3266,18 @@ describe("Math Operator Tag Tests", function () {
         expect(
           stateVariables["/_wrapnumberperiodic14"].stateValues.isNumber,
         ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement3Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement4Name].stateValues.isNumber).eq(true);
+        expect(stateVariables["/wrapnumberperiodic1b"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/wrapnumberperiodic5b"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(stateVariables["/wrapnumberperiodic9b"].stateValues.isNumber).eq(
+          true,
+        );
+        expect(
+          stateVariables["/wrapnumberperiodic14b"].stateValues.isNumber,
+        ).eq(true);
       });
     });
   });
@@ -3342,7 +3302,7 @@ describe("Math Operator Tag Tests", function () {
         <point>(<copy prop="y" target="_point2" />, <copy prop="x" target="_point2" />)</point>
       </graph>
 
-      <copy name="g2" target="_graph1" />
+      $_graph1{name="g2"}
       `,
         },
         "*",
@@ -3364,9 +3324,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3392,9 +3352,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3420,9 +3380,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3448,9 +3408,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3467,9 +3427,7 @@ describe("Math Operator Tag Tests", function () {
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName:
-          stateVariables[stateVariables["/g2"].replacements[0].componentName]
-            .activeChildren[0].componentName,
+        componentName: stateVariables["/g2"].activeChildren[0].componentName,
         args: { x, y },
       });
       stateVariables = await win.returnAllStateVariables1();
@@ -3480,9 +3438,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(x);
       expect((await g2children[0].stateValues.xs)[1]).eq(y);
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3499,9 +3457,7 @@ describe("Math Operator Tag Tests", function () {
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName:
-          stateVariables[stateVariables["/g2"].replacements[0].componentName]
-            .activeChildren[1].componentName,
+        componentName: stateVariables["/g2"].activeChildren[1].componentName,
         args: { x, y },
       });
       stateVariables = await win.returnAllStateVariables1();
@@ -3512,9 +3468,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3531,9 +3487,7 @@ describe("Math Operator Tag Tests", function () {
 
       await win.callAction1({
         actionName: "movePoint",
-        componentName:
-          stateVariables[stateVariables["/g2"].replacements[0].componentName]
-            .activeChildren[2].componentName,
+        componentName: stateVariables["/g2"].activeChildren[2].componentName,
         args: { x: y, y: x },
       });
 
@@ -3545,9 +3499,9 @@ describe("Math Operator Tag Tests", function () {
       expect(stateVariables["/_point3"].stateValues.xs[0]).eq(wrap(y));
       expect(stateVariables["/_point3"].stateValues.xs[1]).eq(clamp(x));
 
-      let g2children = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => stateVariables[x.componentName]);
+      let g2children = stateVariables["/g2"].activeChildren.map(
+        (x) => stateVariables[x.componentName],
+      );
       expect((await g2children[0].stateValues.xs)[0]).eq(clamp(x));
       expect((await g2children[0].stateValues.xs)[1]).eq(wrap(y));
       expect((await g2children[1].stateValues.xs)[0]).eq(clamp(x));
@@ -3580,9 +3534,9 @@ describe("Math Operator Tag Tests", function () {
 
       <round numDecimals="-6"><math>exp(20) pi</math></round>
 
-      $_round1{name="_round1b"}
-      $_round5{name="_round5b"}
-      $_round11{name="_round11b"}
+      $_round1{name="round1b"}
+      $_round5{name="round5b"}
+      $_round11{name="round11b"}
   
       `,
         },
@@ -3594,15 +3548,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
-      let replacement3Name =
-        stateVariables["/_copy3"].replacements[0].componentName;
-      let replacement3Anchor = cesc2("#" + replacement3Name);
 
       cy.get(cesc("#\\/_round1"))
         .find(".mjx-mrow")
@@ -3688,21 +3633,21 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("1524000000");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/round1b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("55");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/round5b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("3.43");
         });
-      cy.get(replacement3Anchor)
+      cy.get(cesc("#\\/round11b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3727,9 +3672,9 @@ describe("Math Operator Tag Tests", function () {
         ]);
         expect(stateVariables["/_round11"].stateValues.value).eq(62.7);
         expect(stateVariables["/_round12"].stateValues.value).eq(1524000000);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(55);
-        expect(stateVariables[replacement2Name].stateValues.value).eq(3.43);
-        expect(stateVariables[replacement3Name].stateValues.value).eq(62.7);
+        expect(stateVariables["/round1b"].stateValues.value).eq(55);
+        expect(stateVariables["/round5b"].stateValues.value).eq(3.43);
+        expect(stateVariables["/round11b"].stateValues.value).eq(62.7);
       });
     });
   });
@@ -3869,13 +3814,13 @@ describe("Math Operator Tag Tests", function () {
       <p><math>(1,2,3,2,1)</math></p>
       <p><math>1,2,3,2,1</math></p>
 
-      <p><convertSetToList>$_math1{name="_math1b"}</convertSetToList></p>
-      <p><convertSetToList>$_math2{name="_math2b"}</convertSetToList></p>
-      <p><convertSetToList>$_math3{name="_math3b"}</convertSetToList></p>
+      <p><convertSetToList>$_math1</convertSetToList></p>
+      <p><convertSetToList>$_math2</convertSetToList></p>
+      <p><convertSetToList>$_math3</convertSetToList></p>
 
-      <p><copy name="r1" target="_convertsettolist1" /></p>
-      <p><copy name="r2" target="_convertsettolist2" /></p>
-      <p><copy name="r3" target="_convertsettolist3" /></p>
+      <p>$_convertsettolist1{name="r1"}</p>
+      <p>$_convertsettolist2{name="r2"}</p>
+      <p>$_convertsettolist3{name="r3"}</p>
 
 
       `,
@@ -3888,15 +3833,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/r1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/r2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
-      let replacement3Name =
-        stateVariables["/r3"].replacements[0].componentName;
-      let replacement3Anchor = cesc2("#" + replacement3Name);
 
       cy.get(cesc("#\\/_math1"))
         .find(".mjx-mrow")
@@ -3940,21 +3876,21 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("1,2,3,2,1");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/r1"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("1,2,3");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/r2"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("(1,2,3,2,1)");
         });
-      cy.get(replacement3Anchor)
+      cy.get(cesc("#\\/r3"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -4009,13 +3945,8 @@ describe("Math Operator Tag Tests", function () {
           2,
           1,
         ]);
-        expect(stateVariables[replacement1Name].stateValues.value).eqls([
-          "list",
-          1,
-          2,
-          3,
-        ]);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/r1"].stateValues.value).eqls(["list", 1, 2, 3]);
+        expect(stateVariables["/r2"].stateValues.value).eqls([
           "tuple",
           1,
           2,
@@ -4023,7 +3954,7 @@ describe("Math Operator Tag Tests", function () {
           2,
           1,
         ]);
-        expect(stateVariables[replacement3Name].stateValues.value).eqls([
+        expect(stateVariables["/r3"].stateValues.value).eqls([
           "list",
           1,
           2,
@@ -4040,9 +3971,9 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/_convertsettolist3"].stateValues.unordered).eq(
           true,
         );
-        expect(stateVariables[replacement1Name].stateValues.unordered).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.unordered).eq(true);
-        expect(stateVariables[replacement3Name].stateValues.unordered).eq(true);
+        expect(stateVariables["/r1"].stateValues.unordered).eq(true);
+        expect(stateVariables["/r2"].stateValues.unordered).eq(true);
+        expect(stateVariables["/r3"].stateValues.unordered).eq(true);
       });
     });
   });
@@ -4059,14 +3990,14 @@ describe("Math Operator Tag Tests", function () {
       <selectFromSequence assignNames='p' hide='true' exclude="$m, $n" from="-10" to="10" />
       </p>
 
-      <p><convertSetToList><math>{$m{name="mb"},$n{name="nb"},$p{name="pb"}, $m{name="mb"}}</math></convertSetToList></p>
-      <p><copy name="csl2" target="_convertsettolist1" /></p>
+      <p><convertSetToList><math>{$m,$n,$p,$m}</math></convertSetToList></p>
+      <p>$_convertsettolist1{name="csl2"}</p>
 
-      <p><copy name="n2" target="n3" />
-      <copy name="n" target="num1" />
-      <math name="num1" simplify>$n2{name="n2b"}+$num2{name="num2b"}</math>
-      <math name="num2" simplify>$n3{name="n3b"}+$num3{name="num3b"}</math>
-      <copy name="n3" target="num3" />
+      <p>$n3{name="n2"}
+      $num1{name="n"}
+      <math name="num1" simplify>$n2+$num2</math>
+      <math name="num2" simplify>$n3+$num3</math>
+      $num3{name="n3"}
       <number name="num3">1</number></p>
       `,
         },
@@ -4085,17 +4016,11 @@ describe("Math Operator Tag Tests", function () {
         3,
         p,
       ]);
-      expect(
-        stateVariables[stateVariables["/csl2"].replacements[0].componentName]
-          .stateValues.value,
-      ).eqls(["list", 7, 3, p]);
+      expect(stateVariables["/csl2"].stateValues.value).eqls(["list", 7, 3, p]);
       expect(stateVariables["/_convertsettolist1"].stateValues.unordered).eq(
         true,
       );
-      expect(
-        stateVariables[stateVariables["/csl2"].replacements[0].componentName]
-          .stateValues.unordered,
-      ).eq(true);
+      expect(stateVariables["/csl2"].stateValues.unordered).eq(true);
     });
   });
 
@@ -4108,16 +4033,16 @@ describe("Math Operator Tag Tests", function () {
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
 
-      <floor>$_floor1{name="_floor1b"}/$_ceil1{name="_ceil1b"}</floor>
-      <ceil>$_ceil1{name="_ceil1b"}/$_floor1{name="_floor1b"}</ceil>
+      <floor>$_floor1/$_ceil1</floor>
+      <ceil>$_ceil1/$_floor1</ceil>
 
       <p>Allow for slight roundoff error:
       <floor>3.999999999999999</floor>
       <ceil>-6999.999999999999</ceil>
       </p>
 
-      <copy name="f2a" target="_floor2" />
-      <copy name="c2a" target="_ceil2" />
+      $_floor2{name="f2a"}
+      $_ceil2{name="c2a"}
 
       <floor>2.1x</floor>
       <ceil>-3.2y</ceil>
@@ -4132,12 +4057,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/f2a"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/c2a"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/_floor1"))
         .find(".mjx-mrow")
@@ -4181,14 +4100,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("−7000");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/f2a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("13");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/c2a"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -4217,8 +4136,8 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/_ceil2"].stateValues.value).eq(1);
         expect(stateVariables["/_floor3"].stateValues.value).eq(4);
         expect(stateVariables["/_ceil3"].stateValues.value).eq(-7000);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(13);
-        expect(stateVariables[replacement2Name].stateValues.value).eq(1);
+        expect(stateVariables["/f2a"].stateValues.value).eq(13);
+        expect(stateVariables["/c2a"].stateValues.value).eq(1);
         expect(stateVariables["/_floor4"].stateValues.value).eqls([
           "apply",
           "floor",
@@ -4468,7 +4387,7 @@ describe("Math Operator Tag Tests", function () {
       <text>a</text>
       <abs name="a1">-9</abs>
       <mathinput bindValueTo="$a1" name="a2" />
-      <copy prop="value" target="a2" assignNames="a3" />
+      $a2.value{assignNames="a3"}
       `,
         },
         "*",
@@ -4669,17 +4588,17 @@ describe("Math Operator Tag Tests", function () {
         <point>
           (
           <floor>
-            <copy prop="x" target="_point1" />
+            $_point1.x
           </floor>,
           <ceil>
-            <copy prop="y" target="_point1" />
+            $_point1.y
           </ceil>
           )
         </point>
-        <point>(<abs><copy prop="y" target="_point2" /></abs>, <round><copy prop="x" target="_point1" /></round>)</point>
+        <point>(<abs>$_point2.y</abs>, <round>$_point1.x</round>)</point>
       </graph>
 
-      <copy name="g2" target="_graph1" />
+      $_graph1{name="g2"}
       `,
         },
         "*",
@@ -4690,9 +4609,9 @@ describe("Math Operator Tag Tests", function () {
     let g2ChildrenNames;
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      g2ChildrenNames = stateVariables[
-        stateVariables["/g2"].replacements[0].componentName
-      ].activeChildren.map((x) => x.componentName);
+      g2ChildrenNames = stateVariables["/g2"].activeChildren.map(
+        (x) => x.componentName,
+      );
     });
 
     let checkPoints = async function (x, y) {
@@ -4944,12 +4863,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -5042,14 +4955,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("7");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -5180,20 +5093,20 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(7);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(7);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "/",
           ["+", "x", "x", "y", "x", "y", "z"],
           3,
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -5952,18 +5865,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mean2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
-      );
-      let mean3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
-      );
-      let mean5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
-      );
-      let mean6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
-      );
 
       cy.log("Test value displayed in browser");
 
@@ -5974,14 +5875,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("4.25");
         });
-      cy.get(mean2Anchor)
+      cy.get(cesc("#\\/meanPrimeb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("4.25");
         });
-      cy.get(mean3Anchor)
+      cy.get(cesc("#\\/pPrimeb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -5995,14 +5896,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("50.5");
         });
-      cy.get(mean5Anchor)
+      cy.get(cesc("#\\/mean100b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("50.5");
         });
-      cy.get(mean6Anchor)
+      cy.get(cesc("#\\/p100b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -6013,29 +5914,17 @@ describe("Math Operator Tag Tests", function () {
       cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         expect(stateVariables["/meanPrime"].stateValues.value).eq(4.25);
+        expect(stateVariables["/meanPrimeb"].stateValues.value).eq(4.25);
         expect(
           stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).eq(4.25);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/pPrimeb"].activeChildren[1].componentName
           ].stateValues.value,
         ).eq(4.25);
         expect(stateVariables["/mean100"].stateValues.value).eq(50.5);
+        expect(stateVariables["/mean100b"].stateValues.value).eq(50.5);
         expect(
           stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).eq(50.5);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/p100b"].activeChildren[1].componentName
           ].stateValues.value,
         ).eq(50.5);
       });
@@ -6106,12 +5995,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theVariance = me.math.variance([3, 17, 1]);
       let theVarianceString = theVariance.toString();
@@ -6205,14 +6088,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal(theVarianceString);
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -6330,18 +6213,16 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(
-          theVariance,
+        expect(stateVariables["/numbersb"].stateValues.value).eq(theVariance);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
         );
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        // expect(stateVariables["/varsb"].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -7096,107 +6977,84 @@ describe("Math Operator Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
+    let variancePrimes = me.math.variance(2, 3, 5, 7);
+    let variance100 = me.math.variance(
+      Array.from({ length: 100 }, (_, i) => i + 1),
+    );
+
+    cy.log("Test value displayed in browser");
+
+    cy.get(cesc("#\\/variancePrime"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/variancePrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/pPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/variance100"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+    cy.get(cesc("#\\/variance100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+    cy.get(cesc("#\\/p100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
+        variancePrimes,
+        1e-12,
       );
-      let variance3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      expect(stateVariables["/variancePrimeb"].stateValues.value).closeTo(
+        variancePrimes,
+        1e-12,
       );
-      let variance5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      expect(
+        stateVariables[
+          stateVariables["/pPrimeb"].activeChildren[1].componentName
+        ].stateValues.value,
+      ).closeTo(variancePrimes, 1e-12);
+      expect(stateVariables["/variance100"].stateValues.value).closeTo(
+        variance100,
+        1e-12,
       );
-      let variance6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      expect(stateVariables["/variance100b"].stateValues.value).closeTo(
+        variance100,
+        1e-12,
       );
-
-      let variancePrimes = me.math.variance(2, 3, 5, 7);
-      let variance100 = me.math.variance(
-        Array.from({ length: 100 }, (_, i) => i + 1),
-      );
-
-      cy.log("Test value displayed in browser");
-
-      cy.get(cesc("#\\/variancePrime"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(variance2Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(variance3Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(cesc("#\\/variance100"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-      cy.get(variance5Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-      cy.get(variance6Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
-          variancePrimes,
-          1e-12,
-        );
-        expect(
-          stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(variancePrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(variancePrimes, 1e-12);
-        expect(stateVariables["/variance100"].stateValues.value).closeTo(
-          variance100,
-          1e-12,
-        );
-        expect(
-          stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(variance100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(variance100, 1e-12);
-      });
+      expect(
+        stateVariables[stateVariables["/p100b"].activeChildren[1].componentName]
+          .stateValues.value,
+      ).closeTo(variance100, 1e-12);
     });
   });
 
@@ -7231,12 +7089,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theVariance = me.math.variance([4, 16, 1], "uncorrected");
       let theVarianceString = theVariance.toString();
@@ -7335,14 +7187,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal(theVarianceString);
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -7463,18 +7315,16 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(
-          theVariance,
+        expect(stateVariables["/numbersb"].stateValues.value).eq(theVariance);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
         );
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        // expect(stateVariables["/varsb"].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -7500,108 +7350,85 @@ describe("Math Operator Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
+    let variancePrimes = me.math.variance([2, 3, 5, 7], "uncorrected");
+    let variance100 = me.math.variance(
+      Array.from({ length: 100 }, (_, i) => i + 1),
+      "uncorrected",
+    );
+
+    cy.log("Test value displayed in browser");
+
+    cy.get(cesc("#\\/variancePrime"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/variancePrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/pPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variancePrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/variance100"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+    cy.get(cesc("#\\/variance100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+    cy.get(cesc("#\\/p100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(variance100, 1e-6);
+      });
+
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let variance2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
+        variancePrimes,
+        1e-12,
       );
-      let variance3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
+      expect(stateVariables["/variancePrimeb"].stateValues.value).closeTo(
+        variancePrimes,
+        1e-12,
       );
-      let variance5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
+      expect(
+        stateVariables[
+          stateVariables["/pPrimeb"].activeChildren[1].componentName
+        ].stateValues.value,
+      ).closeTo(variancePrimes, 1e-12);
+      expect(stateVariables["/variance100"].stateValues.value).closeTo(
+        variance100,
+        1e-12,
       );
-      let variance6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
+      expect(stateVariables["/variance100b"].stateValues.value).closeTo(
+        variance100,
+        1e-12,
       );
-
-      let variancePrimes = me.math.variance([2, 3, 5, 7], "uncorrected");
-      let variance100 = me.math.variance(
-        Array.from({ length: 100 }, (_, i) => i + 1),
-        "uncorrected",
-      );
-
-      cy.log("Test value displayed in browser");
-
-      cy.get(cesc("#\\/variancePrime"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(variance2Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(variance3Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variancePrimes, 1e-6);
-        });
-      cy.get(cesc("#\\/variance100"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-      cy.get(variance5Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-      cy.get(variance6Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(variance100, 1e-6);
-        });
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/variancePrime"].stateValues.value).closeTo(
-          variancePrimes,
-          1e-12,
-        );
-        expect(
-          stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(variancePrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(variancePrimes, 1e-12);
-        expect(stateVariables["/variance100"].stateValues.value).closeTo(
-          variance100,
-          1e-12,
-        );
-        expect(
-          stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(variance100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(variance100, 1e-12);
-      });
+      expect(
+        stateVariables[stateVariables["/p100b"].activeChildren[1].componentName]
+          .stateValues.value,
+      ).closeTo(variance100, 1e-12);
     });
   });
 
@@ -7636,12 +7463,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theStandardDeviation = me.math.std([3, 17, 1]);
 
@@ -7735,14 +7556,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -7864,19 +7685,19 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
+        expect(stateVariables["/numbersb"].stateValues.value).closeTo(
           theStandardDeviation,
           1e-12,
         );
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        // expect(stateVariables["/varsb"].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -8152,103 +7973,79 @@ describe("Math Operator Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
+    let stdPrimes = me.math.std(2, 3, 5, 7);
+    let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1));
+
+    cy.log("Test value displayed in browser");
+
+    cy.get(cesc("#\\/standarddeviationPrime"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviationPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/pPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviation100"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviation100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+    cy.get(cesc("#\\/p100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      expect(
+        stateVariables["/standarddeviationPrime"].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(
+        stateVariables["/standarddeviationPrimeb"].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(
+        stateVariables[
+          stateVariables["/pPrimeb"].activeChildren[1].componentName
+        ].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(stateVariables["/standarddeviation100"].stateValues.value).closeTo(
+        std100,
+        1e-12,
       );
-      let std3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
-      );
-      let std5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
-      );
-      let std6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
-      );
-
-      let stdPrimes = me.math.std(2, 3, 5, 7);
-      let std100 = me.math.std(Array.from({ length: 100 }, (_, i) => i + 1));
-
-      cy.log("Test value displayed in browser");
-
-      cy.get(cesc("#\\/standarddeviationPrime"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(std2Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(std3Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(cesc("#\\/standarddeviation100"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-      cy.get(std5Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-      cy.get(std6Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(
-          stateVariables["/standarddeviationPrime"].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables["/standarddeviation100"].stateValues.value,
-        ).closeTo(std100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(std100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(std100, 1e-12);
-      });
+      expect(
+        stateVariables["/standarddeviation100b"].stateValues.value,
+      ).closeTo(std100, 1e-12);
+      expect(
+        stateVariables[stateVariables["/p100b"].activeChildren[1].componentName]
+          .stateValues.value,
+      ).closeTo(std100, 1e-12);
     });
   });
 
@@ -8283,12 +8080,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       let theStandardDeviation = me.math.std([4, 16, 1], "uncorrected");
 
@@ -8385,14 +8176,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(Number(text)).closeTo(theStandardDeviation, 1e-6);
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -8517,19 +8308,19 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).closeTo(
+        expect(stateVariables["/numbersb"].stateValues.value).closeTo(
           theStandardDeviation,
           1e-12,
         );
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        // expect(stateVariables[replacement2Name].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        // expect(stateVariables["/varsb"].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -8555,106 +8346,82 @@ describe("Math Operator Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
+    let stdPrimes = me.math.std([2, 3, 5, 7], "uncorrected");
+    let std100 = me.math.std(
+      Array.from({ length: 100 }, (_, i) => i + 1),
+      "uncorrected",
+    );
+
+    cy.log("Test value displayed in browser");
+
+    cy.get(cesc("#\\/standarddeviationPrime"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviationPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/pPrimeb"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(stdPrimes, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviation100"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+    cy.get(cesc("#\\/standarddeviation100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+    cy.get(cesc("#\\/p100b"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(Number(text)).closeTo(std100, 1e-6);
+      });
+
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let std2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
+      expect(
+        stateVariables["/standarddeviationPrime"].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(
+        stateVariables["/standarddeviationPrimeb"].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(
+        stateVariables[
+          stateVariables["/pPrimeb"].activeChildren[1].componentName
+        ].stateValues.value,
+      ).closeTo(stdPrimes, 1e-12);
+      expect(stateVariables["/standarddeviation100"].stateValues.value).closeTo(
+        std100,
+        1e-12,
       );
-      let std3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
-      );
-      let std5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
-      );
-      let std6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
-      );
-
-      let stdPrimes = me.math.std([2, 3, 5, 7], "uncorrected");
-      let std100 = me.math.std(
-        Array.from({ length: 100 }, (_, i) => i + 1),
-        "uncorrected",
-      );
-
-      cy.log("Test value displayed in browser");
-
-      cy.get(cesc("#\\/standarddeviationPrime"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(std2Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(std3Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(stdPrimes, 1e-6);
-        });
-      cy.get(cesc("#\\/standarddeviation100"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-      cy.get(std5Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-      cy.get(std6Anchor)
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(Number(text)).closeTo(std100, 1e-6);
-        });
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(
-          stateVariables["/standarddeviationPrime"].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(stdPrimes, 1e-12);
-        expect(
-          stateVariables["/standarddeviation100"].stateValues.value,
-        ).closeTo(std100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).closeTo(std100, 1e-12);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
-          ].stateValues.value,
-        ).closeTo(std100, 1e-12);
-      });
+      expect(
+        stateVariables["/standarddeviation100b"].stateValues.value,
+      ).closeTo(std100, 1e-12);
+      expect(
+        stateVariables[stateVariables["/p100b"].activeChildren[1].componentName]
+          .stateValues.value,
+      ).closeTo(std100, 1e-12);
     });
   });
 
@@ -8688,12 +8455,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -8786,14 +8547,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("3");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("3");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -8912,16 +8673,14 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           true,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(3);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eq(3);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersb"].stateValues.value).eq(3);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eq(3);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(true);
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(true);
       });
     });
   });
@@ -9661,18 +9420,6 @@ describe("Math Operator Tag Tests", function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let count2Anchor = cesc2(
-        "#" + stateVariables["/_copy1"].replacements[0].componentName,
-      );
-      let count3Anchor = cesc2(
-        "#" + stateVariables["/_copy2"].replacements[0].componentName,
-      );
-      let count5Anchor = cesc2(
-        "#" + stateVariables["/_copy3"].replacements[0].componentName,
-      );
-      let count6Anchor = cesc2(
-        "#" + stateVariables["/_copy4"].replacements[0].componentName,
-      );
 
       cy.log("Test value displayed in browser");
 
@@ -9683,14 +9430,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("4");
         });
-      cy.get(count2Anchor)
+      cy.get(cesc("#\\/countPrimeb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("4");
         });
-      cy.get(count3Anchor)
+      cy.get(cesc("#\\/pPrimeb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -9704,14 +9451,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("100");
         });
-      cy.get(count5Anchor)
+      cy.get(cesc("#\\/count100b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("100");
         });
-      cy.get(count6Anchor)
+      cy.get(cesc("#\\/p100b"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -9722,29 +9469,17 @@ describe("Math Operator Tag Tests", function () {
       cy.log("Test internal values are set to the correct values");
       cy.window().then(async (win) => {
         expect(stateVariables["/countPrime"].stateValues.value).eq(4);
+        expect(stateVariables["/countPrimeb"].stateValues.value).eq(4);
         expect(
           stateVariables[
-            stateVariables["/_copy1"].replacements[0].componentName
-          ].stateValues.value,
-        ).eq(4);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy2"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/pPrimeb"].activeChildren[1].componentName
           ].stateValues.value,
         ).eq(4);
         expect(stateVariables["/count100"].stateValues.value).eq(100);
+        expect(stateVariables["/count100b"].stateValues.value).eq(100);
         expect(
           stateVariables[
-            stateVariables["/_copy3"].replacements[0].componentName
-          ].stateValues.value,
-        ).eq(100);
-        expect(
-          stateVariables[
-            stateVariables[
-              stateVariables["/_copy4"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/p100b"].activeChildren[1].componentName
           ].stateValues.value,
         ).eq(100);
       });
@@ -9781,12 +9516,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -9879,14 +9608,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("1");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -10017,20 +9746,20 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(1);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(1);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "apply",
           "min",
           ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -11236,12 +10965,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
-      let replacement2Name =
-        stateVariables["/_copy2"].replacements[0].componentName;
-      let replacement2Anchor = cesc2("#" + replacement2Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -11334,14 +11057,14 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("NaN");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal("17");
         });
-      cy.get(replacement2Anchor)
+      cy.get(cesc("#\\/varsb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -11472,20 +11195,20 @@ describe("Math Operator Tag Tests", function () {
         expect(stateVariables["/varsForcedNumeric"].stateValues.isNumber).eq(
           false,
         );
-        expect(stateVariables[replacement1Name].stateValues.value).eq(17);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement2Name].stateValues.value).eqls([
+        expect(stateVariables["/numbersb"].stateValues.value).eq(17);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
+        expect(stateVariables["/varsb"].stateValues.value).eqls([
           "apply",
           "max",
           ["tuple", "x", ["+", "x", "y"], ["+", "x", "y", "z"]],
         ]);
-        expect(
-          stateVariables[replacement2Name].stateValues.isNumericOperator,
-        ).eq(false);
-        expect(stateVariables[replacement2Name].stateValues.isNumber).eq(false);
+        expect(stateVariables["/varsb"].stateValues.isNumericOperator).eq(
+          false,
+        );
+        expect(stateVariables["/varsb"].stateValues.isNumber).eq(false);
       });
     });
   });
@@ -12691,9 +12414,6 @@ describe("Math Operator Tag Tests", function () {
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement1Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let replacement1Anchor = cesc2("#" + replacement1Name);
 
       cy.get(cesc("#\\/numbers"))
         .find(".mjx-mrow")
@@ -12765,7 +12485,7 @@ describe("Math Operator Tag Tests", function () {
         .then((text) => {
           expect(text.trim()).equal("3");
         });
-      cy.get(replacement1Anchor)
+      cy.get(cesc("#\\/numbersb"))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -12871,11 +12591,11 @@ describe("Math Operator Tag Tests", function () {
           stateVariables["/withNumberMod"].stateValues.isNumericOperator,
         ).eq(true);
         expect(stateVariables["/withNumberMod"].stateValues.isNumber).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.value).eq(2);
-        expect(
-          stateVariables[replacement1Name].stateValues.isNumericOperator,
-        ).eq(true);
-        expect(stateVariables[replacement1Name].stateValues.isNumber).eq(true);
+        expect(stateVariables["/numbersb"].stateValues.value).eq(2);
+        expect(stateVariables["/numbersb"].stateValues.isNumericOperator).eq(
+          true,
+        );
+        expect(stateVariables["/numbersb"].stateValues.isNumber).eq(true);
       });
     });
   });

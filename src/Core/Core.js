@@ -2495,12 +2495,6 @@ export default class Core {
       // it is possible that those names will collide with the original names
       // but we don't protect against that.
 
-      console.log({
-        newNamespace,
-        namespaceFromReplacementOfMediating,
-        mediatingNewNamespace,
-        assignNewNamespaces,
-      });
       let originalNamesAreConsistent =
         newNamespace ||
         namespaceFromReplacementOfMediating ||

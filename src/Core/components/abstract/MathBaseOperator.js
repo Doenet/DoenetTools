@@ -120,6 +120,10 @@ export default class MathOperator extends MathComponent {
           childGroups: ["mathLists"],
           variableNames: ["maths"],
         },
+        shadowSource: {
+          dependencyType: "shadowSource",
+          variableNames: ["isNumericOperator"],
+        },
       }),
       definition({ dependencyValues }) {
         let isNumericOperator;
@@ -131,7 +135,11 @@ export default class MathOperator extends MathComponent {
           dependencyValues.mathChildren.length === 0 &&
           dependencyValues.mathListChildren.length === 0
         ) {
-          isNumericOperator = true;
+          isNumericOperator =
+            dependencyValues.shadowSource?.stateValues.isNumericOperator;
+          if (isNumericOperator === undefined) {
+            isNumericOperator = true;
+          }
         } else {
           // have math children and aren't forced to be numeric or symbolic
           // will be numeric only if have all math children are numbers

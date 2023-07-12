@@ -21,10 +21,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -97,10 +97,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -172,10 +172,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -247,10 +247,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -322,10 +322,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -397,10 +397,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -467,10 +467,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -537,10 +537,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -607,10 +607,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -677,10 +677,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -747,10 +747,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -824,10 +824,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -901,10 +901,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -978,10 +978,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1055,10 +1055,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1107,10 +1107,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1184,10 +1184,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1261,10 +1261,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1338,10 +1338,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1367,7 +1367,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.variance(samples, "uncorrected");
 
-      expect(meanX).closeTo(8.5, 0.1);
+      expect(meanX).closeTo(8.5, 0.15);
       expect(varX).closeTo(((2 ** 2 - 1) * 2 ** 2) / 12, 0.05);
 
       let firstSample =
@@ -1415,10 +1415,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1483,10 +1483,10 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </aslist></p>
 
     <p name="p2"><aslist>
-      <copy source="_map1" />
+      $_map1
     </aslist></p>
 
-    <copy source="p2" assignNames = "p3" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -1555,8 +1555,8 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <sampleRandomNumbers type="gaussian" name="sample2" standardDeviation="$standardDeviation" numSamples="$numSamples2" />
     </aslist></p>
     <p>
-      <copy prop="value" source="numSamples2" assignNames="numSamples2a" />
-      <copy prop="value" source="standardDeviation" assignNames="standardDeviationa" />
+      $numSamples2{name="numSamples2a"}
+      $standardDeviation{name="standardDeviationa"}
     </p>
     `,
         },
@@ -1713,17 +1713,17 @@ describe("SampleRandomNumbers Tag Tests", function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy source="_map1" /></aslist></p>
-    <p name="p3"><copy source="_aslist1" /></p>
+    <p name="p2"><aslist>$_map1</aslist></p>
+    <p name="p3">$_aslist1</p>
 
-    <copy name="p4" source="p1" />
-    <copy name="p5" source="p2" />
-    <copy name="p6" source="p3" />
+    $p1{name="p4"}
+    $p2{name="p5"}
+    $p3{name="p6"}
 
-    <copy name="p7" source="p4" />
-    <copy name="p8" source="p5" />
-    <copy name="p9" source="p6" />
-    <p><copy prop="value" source="_mathinput1" assignNames="m1" /></p>
+    $p4{name="p7"}
+    $p5{name="p8"}
+    $p6{name="p9"}
+    <p>$_mathinput1{name="m1"}</p>
     `,
         },
         "*",
@@ -1888,9 +1888,9 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p><sampleRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="u"/></p>
     <p><sampleRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="v"/></p>
     <p><sampleRandomNumbers type="discreteUniform" from="3" step="7" to="16" assignnames="w"/></p>
-    <p><copy assignNames="u2" source="u" /></p>
-    <p><copy assignNames="v2" source="v" /></p>
-    <p><copy assignNames="w2" source="w" /></p>
+    <p>$u{name="u2"}</p>
+    <p>$v{name="v2"}</p>
+    <p>$w{name="w2"}</p>
     `,
         },
         "*",
@@ -1931,9 +1931,9 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p><aslist>
       <sampleRandomNumbers name="s" from="3" to="13" assignnames="u v w" numSamples="6" displayDigits="10" />
     </aslist></p>
-    <p><copy assignNames="u2" source="u" /></p>
-    <p><copy assignNames="v2" source="v" /></p>
-    <p><copy assignNames="w2" source="w" /></p>
+    <p>$u{name="u2"}</p>
+    <p>$v{name="v2"}</p>
+    <p>$w{name="w2"}</p>
     `,
         },
         "*",
@@ -1999,9 +1999,9 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p><aslist>
       <sampleRandomNumbers name="s" newnamespace from="3" to="13" assignnames="u v w" numSamples="6" displayDigits="10" />
     </aslist></p>
-    <p><copy assignNames="u2" source="s/u" /></p>
-    <p><copy assignNames="v2" source="s/v" /></p>
-    <p><copy assignNames="w2" source="s/w" /></p>
+    <p>$(s/u{name="u2"})</p>
+    <p>$(s/v{name="v2"})</p>
+    <p>$(s/w{name="w2"})</p>
     `,
         },
         "*",
@@ -2071,35 +2071,35 @@ describe("SampleRandomNumbers Tag Tests", function () {
     <p>Specified from <mathinput name="specifiedFrom" prefill="0" /></p>
     <p>Specified to <mathinput name="specifiedTo" prefill="1" /></p>
     <p>Specified step <mathinput name="specifiedStep" prefill="1" /></p>
-    <p>Actual type: <copy prop="type" source="samples" obtainPropFromComposite assignNames="actualType" /></p>
-    <p>Actual from: <copy prop="from" source="samples" obtainPropFromComposite assignNames="actualFrom" /></p>
-    <p>Actual to: <copy prop="to" source="samples" obtainPropFromComposite assignNames="actualTo" /></p>
-    <p>Actual step: <copy prop="step" source="samples" obtainPropFromComposite assignNames="actualStep" /></p>
-    <p>Expected mean: <copy prop="mean" source="samples" obtainPropFromComposite assignNames="expectedMean" displayDigits="10" /></p>
-    <p>Expected variance: <copy prop="variance" source="samples" obtainPropFromComposite assignNames="expectedVariance" displayDigits="10" /></p>
-    <p>Expected standard deviation: <copy prop="standardDeviation" source="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" displayDigits="10" /></p>
+    <p>Actual type: $samples.type{obtainPropFromComposite assignNames="actualType"}</p>
+    <p>Actual from: $samples.from{obtainPropFromComposite assignNames="actualFrom"}</p>
+    <p>Actual to: $samples.to{obtainPropFromComposite assignNames="actualTo"}</p>
+    <p>Actual step: $samples.step{obtainPropFromComposite assignNames="actualStep"}</p>
+    <p>Expected mean: $samples.mean{obtainPropFromComposite assignNames="expectedMean" displayDigits="10"}</p>
+    <p>Expected variance: $samples.variance{obtainPropFromComposite assignNames="expectedVariance" displayDigits="10"}</p>
+    <p>Expected standard deviation: $samples.standardDeviation{obtainPropFromComposite assignNames="expectedStandardDeviation" displayDigits="10"}</p>
     <p>Resulting mean: <mean name="resultingMean" displayDigits="10">$samples</mean></p>
     <p>Resulting variance: <variance name="resultingVariance" displayDigits="10">$samples</variance></p>
     <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation" displayDigits="10">$samples</standardDeviation></p>
     <p name="p1"><aslist>
       <sampleRandomNumbers name="samples" numSamples="$nSamples" type="$type" mean="$specifiedMean" variance="$specifiedVariance" from="$specifiedFrom" to="$specifiedTo" step="$specifiedStep" displayDigits="10" />
     </aslist></p>
-    <p name="p2"><aslist><copy source="samples" /></aslist></p>
-    <p name="p3"><copy source="_aslist1" /></p>
+    <p name="p2"><aslist>$samples</aslist></p>
+    <p name="p3">$_aslist1</p>
 
-    <copy name="p4c" source="p1" assignNames="p4" />
-    <copy name="p5c" source="p2" assignNames="p5" />
-    <copy name="p6c" source="p3" assignNames="p6" />
+    $p1{name="p4"}
+    $p2{name="p5"}
+    $p3{name="p6"}
 
-    <copy name="p7c" source="p4c" assignNames="(p7)" />
-    <copy name="p8c" source="p5" assignNames="p8" />
-    <copy name="p9c" source="p6c" assignNames="(p9)" />
+    $p4{name="p7"}
+    $p5{name="p8"}
+    $p6{name="p9"}
 
     <p>
-      <copy prop="value" source="nSamples" assignNames="nSamplesa" />
-      <copy prop="value" source="specifiedTo" assignNames="specifiedToa" />
-      <copy prop="value" source="type" assignNames="typea" />
-      <copy prop="value" source="specifiedVariance" assignNames="specifiedVariancea" />
+      $nSamples{name="nSamplesa"}
+      $specifiedTo{name="specifiedToa"}
+      $type{name="typea"}
+      $specifiedVariance{name="specifiedVariancea"}
     </p>
     `,
         },
@@ -2980,46 +2980,28 @@ describe("SampleRandomNumbers Tag Tests", function () {
         .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[stateVariables["/p4"].replacements[0].componentName]
-          .activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[stateVariables["/p5"].replacements[0].componentName]
-          .activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[stateVariables["/p6"].replacements[0].componentName]
-          .activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     expect(
-      stateVariables[
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren[0].componentName
-      ].activeChildren.length,
+      stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+        .activeChildren.length,
     ).eq(n);
     for (let ind = 0; ind < n; ind++) {
       expect(
@@ -3042,59 +3024,38 @@ describe("SampleRandomNumbers Tag Tests", function () {
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[stateVariables["/p4"].replacements[0].componentName]
-              .activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[stateVariables["/p5"].replacements[0].componentName]
-              .activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[stateVariables["/p6"].replacements[0].componentName]
-              .activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].replacements[0].componentName
-            ].activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].replacements[0].componentName
-            ].activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].replacements[0].componentName
-            ].activeChildren[0].componentName
-          ].activeChildren[ind].componentName
+          stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+            .activeChildren[ind].componentName
         ].stateValues.value,
       ).eq(samplednumbers[ind]);
     }

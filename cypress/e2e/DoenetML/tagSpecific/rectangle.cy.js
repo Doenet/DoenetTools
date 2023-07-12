@@ -1464,7 +1464,7 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
     <copy name="rectangleCopy" target="_rectangle1"/>
   </graph>
   
-  <copy name="graph4" target="graph3" />
+  $graph3{name="graph4"}
   `,
       },
       "*",

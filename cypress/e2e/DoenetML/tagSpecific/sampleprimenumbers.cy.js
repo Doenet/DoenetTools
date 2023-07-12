@@ -469,9 +469,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <copy name="p5" target="p2" assignNames="p2a" />
     <copy name="p6" target="p3" assignNames="p3a" />
 
-    <copy name="p7" target="p1a" />
-    <copy name="p8" target="p2a" />
-    <copy name="p9" target="p3a" />
+    $p1a{name="p7"}
+    $p2a{name="p8"}
+    $p3a{name="p9"}
     <p><copy prop="value" source="_mathinput1" assignNames="m1" /></p>
     `,
         },

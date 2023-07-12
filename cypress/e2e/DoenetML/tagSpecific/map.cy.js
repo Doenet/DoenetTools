@@ -762,7 +762,7 @@ describe("Map Tag Tests", function () {
       </graph></template>
     <sources alias="n" indexalias="k"><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy name="mapcopy" target="_map1" />
+    $_map1{name="mapcopy"}
     `,
         },
         "*",
@@ -1057,12 +1057,12 @@ describe("Map Tag Tests", function () {
     <map>
     <template newNamespace><math simplify>
         <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
-        + <math name="q">z</math> + <copy target="q" /> + <copy target="b" /> +<copy target="i" />
+        + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" to="2"/></sources>
     </map>
     <math name="a">x</math>
-    <copy name="mapcopy" target="_map1" />
+    $_map1{name="mapcopy"}
     `,
         },
         "*",
@@ -1163,12 +1163,12 @@ describe("Map Tag Tests", function () {
     <map>
     <template newnamespace><math simplify>
         <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
-        + <math name="q">z</math> + <copy target="q" /> + <copy target="b" /> +<copy target="i" />
+        + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" length="$length"/></sources>
     </map>
     <math name="a">x</math>
-    <copy name="mapcopy" target="_map1" />
+    $_map1{name="mapcopy"}
 
     <updatevalue target="length" newValue="2$length"  >
       <label>double</label>
@@ -1463,11 +1463,11 @@ describe("Map Tag Tests", function () {
     </map>
   
     <map>
-    <copy target="_template1" />
+    $_template1
     <sources alias="x" indexalias="i"><math>q</math><math>p</math></sources>
     </map>
 
-    <copy name="mapcopy" target="_map2" />
+    $_map2{name="mapcopy"}
     `,
         },
         "*",
@@ -1541,7 +1541,7 @@ describe("Map Tag Tests", function () {
     <sources alias="x" indexalias="i"><math>x</math><math>y</math></sources>
     </map>
   
-    <copy name="mapcopy" target="_map1" />
+    $_map1{name="mapcopy"}
     `,
         },
         "*",
@@ -1810,12 +1810,12 @@ describe("Map Tag Tests", function () {
     <mathinput name="sequenceTo" prefill="2"/>
     <mathinput name="sequenceCount" prefill="0"/>
     
-    <p><copy name="copymap2" target="_map1" /></p>
-    <p><copy name="copymap3" target="copymap2" /></p>
+    <p>$_map1{name="copymap2"}</p>
+    <p>$copymap2{name="copymap3"}</p>
 
-    <copy name="copymapthroughp" target="_p1" />
-    <copy name="copymapthroughp2" target="copymapthroughp" />
-    <copy name="copymapthroughp3" target="copymapthroughp2" />
+    $_p1{name="copymapthroughp"}
+    $copymapthroughp{name="copymapthroughp2"}
+    $copymapthroughp2{name="copymapthroughp3"}
 
     <copy prop="value" target="sequenceCount" assignNames="sequenceCount2" />
     <copy prop="value" target="sequenceTo" assignNames="sequenceTo2" />
@@ -3737,7 +3737,7 @@ describe("Map Tag Tests", function () {
         <point name="pt">(<copy target="p" prop="x" />^2, <copy target="p" prop="y" />^2)</point>
       </template>
       <sources alias="p">
-        <copy target="m1" />
+        $m1
       </sources>
     </map>
 

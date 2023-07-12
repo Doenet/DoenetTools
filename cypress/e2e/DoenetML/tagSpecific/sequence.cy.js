@@ -1353,10 +1353,10 @@ describe("Sequence Tag Tests", function () {
       <sequence from="$min" to="$max"/>
     </aslist>
     <number name="min">
-      <min><copy target="n" /><number>11</number></min>
+      <min>$n<number>11</number></min>
     </number>
     <number name="max">
-      <max><math><copy target="m" />+3</math><number>11</number></max>
+      <max><math>$m+3</math><number>11</number></max>
     </number>
     `,
         },
