@@ -120,6 +120,13 @@ export function Courses() {
   } = useDisclosure();
   const cancelDeleteAlertRef = React.useRef();
 
+  const {
+    isOpen: isWarningOpen,
+    onOpen: onOpenWarning,
+    onClose: onCloseWarning,
+  } = useDisclosure();
+  const cancelWarningRef = React.useRef();
+
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
   let optimisticCourses = [...courses];
@@ -240,16 +247,51 @@ export function Courses() {
               My Courses
             </Text>
 
+            <AlertDialog
+              isOpen={isWarningOpen}
+              leastDestructiveRef={cancelWarningRef}
+              onClose={onCloseWarning}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Add Course
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Are you sure? Courses are under development. They may
+                    include bugs and missing functionality.
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelWarningRef} onClick={onCloseWarning}>
+                      Cancel
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        onCloseWarning();
+                        fetcher.submit(
+                          { _action: "Create New Course" },
+                          { method: "post" },
+                        );
+                      }}
+                      ml={3}
+                    >
+                      Understood
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+
             <div style={{ position: "absolute", top: "48px", right: "10px" }}>
               <Button
                 data-test="Add Course"
                 size="xs"
                 colorScheme="blue"
                 onClick={() => {
-                  fetcher.submit(
-                    { _action: "Create New Course" },
-                    { method: "post" },
-                  );
+                  onOpenWarning();
                 }}
               >
                 Add Course
