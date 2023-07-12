@@ -1,6 +1,6 @@
 FROM composer as composer
 WORKDIR /build
-COPY ./doenet_docker/php/composer.json .
+COPY ./docker/php/composer.json .
 RUN composer install --ignore-platform-reqs
 
 FROM php:7.4-fpm

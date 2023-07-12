@@ -53,13 +53,13 @@ services:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
-      - ./doenet_docker/php/env.ini:/usr/local/apache2/htdocs/etc/env.ini
+      - ./docker/php/env.ini:/usr/local/apache2/htdocs/etc/env.ini
     restart: unless-stopped
 
   apache:
     build:
       context: ./
-      dockerfile: ./doenet_docker/apache/Dockerfile
+      dockerfile: ./docker/apache/Dockerfile
       args:
         - BUILD_MODE=development
         - NODE_OPTIONS=--max-old-space-size=3584
@@ -67,19 +67,20 @@ services:
       - 8080:80
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
-      - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
+      - ./docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
     restart: unless-stopped
 
   mysql:
     image: mysql:8.0.32
     ports:
       - 3306:3306
-    volumes:
-      - db:/var/lib/mysql:rw
-      - ./doenet_docker/mysql/db_init:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_DATABASE=doenet_local
       - MYSQL_ROOT_PASSWORD=helloworld
+    command: --innodb_use_native_aio=0
+    volumes:
+      - ./docker/mysql:/docker-entrypoint-initdb.d/:ro
+      - ./docker/mysql/data:/var/lib/mysql:rw
     networks:
       - dev_net
     restart: unless-stopped
