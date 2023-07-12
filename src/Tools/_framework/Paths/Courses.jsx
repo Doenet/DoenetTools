@@ -65,35 +65,26 @@ export async function action({ request }) {
     if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Rename") {
-    // let { data } = await axios.post("/api/modifyCourse.php", {
-    let resp = await axios.post("/api/modifyCourse.php", {
+    let { data } = await axios.post("/api/modifyCourse.php", {
       courseId: formObj.courseId,
       label: formObj.newLabel,
     });
-    //TODO: modifyCourse.php doesn't respond with data.success
-    // console.log(resp);
-    // if (!data.success) throw Error(data.message);
+    if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Update Image") {
-    // let { data } = await axios.post("/api/modifyCourse.php", {
-
-    let resp = await axios.post("/api/modifyCourse.php", {
+    let { data } = await axios.post("/api/modifyCourse.php", {
       courseId: formObj.courseId,
       image: formObj.image,
       color: "none",
     });
+    if (!data.success) throw Error(data.message);
     return true;
   } else if (formObj?._action == "Update Color") {
-    // let { data } = await axios.post("/api/modifyCourse.php", {
-
-    let resp = await axios.post("/api/modifyCourse.php", {
+    let { data } = await axios.post("/api/modifyCourse.php", {
       courseId: formObj.courseId,
       color: formObj.color,
     });
-
-    //TODO: modifyCourse.php doesn't respond with data.success
-    // console.log(resp);
-    // if (!data.success) throw Error(data.message);
+    if (!data.success) throw Error(data.message);
     return true;
   }
 }
