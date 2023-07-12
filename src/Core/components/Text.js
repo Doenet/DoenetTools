@@ -25,8 +25,8 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement
   // don't required composite replacements

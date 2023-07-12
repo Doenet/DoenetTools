@@ -35,8 +35,8 @@ export default class NumberComponent extends InlineComponent {
   }
   static componentType = "number";
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

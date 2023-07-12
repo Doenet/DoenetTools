@@ -954,11 +954,14 @@ function breakUpTargetIntoPropsAndIndices(
               );
               component.componentType = newComponent.componentType;
 
-              if (
-                propArray.length === 0 &&
-                !(component.attributes.prop || component.attributes.propIndex)
-              ) {
-                component.doenetAttributes.isPlainCopy = true;
+              if (propArray.length === 0) {
+                let reducedAttributes = { ...component.attributes };
+                delete reducedAttributes.createComponentOfType;
+                delete reducedAttributes.componentIndex;
+                delete reducedAttributes.sourceSubnames;
+                if (Object.keys(reducedAttributes).length === 0) {
+                  component.doenetAttributes.noAttributesOrProp = true;
+                }
               }
 
               if (newComponent.children) {
@@ -1029,14 +1032,18 @@ function breakUpTargetIntoPropsAndIndices(
           }
         } else {
           // have copy with just a simple target prop that is a targetName
-          if (
-            component.componentType === "copy" &&
-            !(component.attributes.prop || component.attributes.propIndex)
-          ) {
-            if (!component.doenetAttributes) {
-              component.doenetAttributes = {};
+
+          if (component.componentType === "copy") {
+            let reducedAttributes = { ...component.attributes };
+            delete reducedAttributes.createComponentOfType;
+            delete reducedAttributes.componentIndex;
+            delete reducedAttributes.sourceSubnames;
+            if (Object.keys(reducedAttributes).length === 0) {
+              if (!component.doenetAttributes) {
+                component.doenetAttributes = {};
+              }
+              component.doenetAttributes.noAttributesOrProp = true;
             }
-            component.doenetAttributes.isPlainCopy = true;
           }
         }
       }
@@ -1391,7 +1398,13 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         markCreatedFromMacro([newComponent]);
 
         if (result.propArray.length === 0) {
-          newComponent.doenetAttributes.isPlainMacro = true;
+          let reducedAttributes = { ...newComponent.attributes };
+          delete reducedAttributes.createComponentOfType;
+          delete reducedAttributes.componentIndex;
+          delete reducedAttributes.sourceSubnames;
+          if (Object.keys(reducedAttributes).length === 0) {
+            newComponent.doenetAttributes.noAttributesOrProp = true;
+          }
         }
 
         componentsFromMacro = [newComponent];

@@ -11,8 +11,8 @@ export default class OrbitalDiagram extends BlockComponent {
 
   static componentType = "orbitalDiagram";
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

@@ -6160,7 +6160,7 @@ describe("Copy Tag Tests", function () {
     <group name="grp">
       <math>x</math>
       skip me
-      <text>hello</text>
+      <text fixed>hello</text>
       skip me too
       <point>(4,5)</point>
       <line through="(10,9) (9,8)" />
@@ -6177,6 +6177,8 @@ describe("Copy Tag Tests", function () {
     <p name="p8">math from p: $(grp[5]/m)</p>
     <p name="p9">text from p: $(grp[5]/t)</p>
     <p name="p10">nothing: $grp[6]</p>
+    <p name="p11">Prop fixed from group: $grp.fixed</p>
+    <p name="p12">Prop x from group: $grp.x</p>
     `,
         },
         "*",
@@ -6210,9 +6212,21 @@ describe("Copy Tag Tests", function () {
       .should("have.text", "y");
     cy.get(cesc2("#/p9")).should("have.text", "text from p: word");
     cy.get(cesc2("#/p10")).should("have.text", "nothing: ");
+    cy.get(cesc2("#/p11")).should(
+      "have.text",
+      "Prop fixed from group: falsetruefalsefalsefalse",
+    );
+    cy.get(cesc2("#/p12")).should("contain.text", "Prop x from group: x");
+    cy.get(cesc2("#/p12")).should("contain.text", "x4");
+    cy.get(cesc2("#/p12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/p12") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "4");
   });
 
-  it("isPlainMacro and isPlainCopy", () => {
+  it("implicitProp from an input", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6298,7 +6312,227 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copies of composites ignore isPlainMacro and isPlainCopy", () => {
+  it("implicitProp with same componentType depend on attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" simplify><math name="msub">x</math>+x</math>
+    $m{name="mimplicit1"}
+    $m{name="mimplicit2" createComponentOfType="math"}
+    <math name="mimplicit3" copySource="m" />
+    $m{name="mnotimplicit1" newNamespace}
+    $m{name="mnotimplicit2" newNamespace createComponentOfType="math"}
+    <math name="mnotimplicit3" copySource="m" newNamespace />
+    $m{name="mnotimplicit4" simplify="false"}
+    $m{name="mnotimplicit5" simplify="false" createComponentOfType="math"}
+    <math name="mnotimplicit6" copySource="m" simplify="false" />
+
+    $(mnotimplicit2/msub{name="msubimplicit1"})
+    $(mnotimplicit3/msub{name="msubimplicit2"})
+    <math name="msubimplicit3" copySource="mnotimplicit1/msub" />
+
+
+    <math name="n" newNamespace><math name="nsub">y</math>+z</math>
+    $n{name="nnotimplicit1"}
+    <math name="nnotimplicit2" copySource="n" />
+    $(nnotimplicit2/nsub{name="nsubimplicit1"})
+    <math name="nsubimplicit2" copySource="nnotimplicit1/nsub" />
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/msubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/nnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nsubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/nsubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit3"].activeChildren.length).eq(0);
+      expect(stateVariables["/mnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit3"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit4"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit5"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit6"].activeChildren.length).eq(2);
+      expect(stateVariables["/msubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit3"].activeChildren.length).eq(0);
+
+      expect(stateVariables["/nnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/nnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/nsubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/nsubimplicit2"].activeChildren.length).eq(0);
+    });
+  });
+
+  it("implicitProp with same componentType depend on attributes, subnames", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+    <map name="map">
+      <template newNamespace><math name="m" simplify><math name="msub">x</math>+x</math></template>
+      <sources><number>1</number></sources>
+    </map>
+
+    $(map[1]/m{name="mimplicit1"})
+    $(map[1]/m{name="mimplicit2" createComponentOfType="math"})
+    <math name="mimplicit3" copySource="map[1]/m" />
+    $(map[1]/m{name="mnotimplicit1" newNamespace})
+    $(map[1]/m{name="mnotimplicit2" newNamespace createComponentOfType="math"})
+    <math name="mnotimplicit3" copySource="map[1]/m" newNamespace />
+    $(map[1]/m{name="mnotimplicit4" simplify="false"})
+    $(map[1]/m{name="mnotimplicit5" simplify="false" createComponentOfType="math"})
+    <math name="mnotimplicit6" copySource="map[1]/m" simplify="false" />
+
+    $(mnotimplicit2/msub{name="msubimplicit1"})
+    $(mnotimplicit3/msub{name="msubimplicit2"})
+    <math name="msubimplicit3" copySource="mnotimplicit1/msub" />
+
+    <map name="map2">
+      <template newNamespace><math name="n" newNamespace><math name="nsub">y</math>+z</math></template>
+      <sources><number>1</number></sources>
+    </map>
+
+    $(map2[1]/n{name="nnotimplicit1"})
+    <math name="nnotimplicit2" copySource="map2[1]/n" />
+    $(nnotimplicit2/nsub{name="nsubimplicit1"})
+    <math name="nsubimplicit2" copySource="nnotimplicit1/nsub" />
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/msubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/nnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nsubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/nsubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit3"].activeChildren.length).eq(0);
+      expect(stateVariables["/mnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit3"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit4"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit5"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit6"].activeChildren.length).eq(2);
+      expect(stateVariables["/msubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit3"].activeChildren.length).eq(0);
+
+      expect(stateVariables["/nnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/nnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/nsubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/nsubimplicit2"].activeChildren.length).eq(0);
+    });
+  });
+
+  it("copies of composites ignore implicitProp", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6394,7 +6628,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copies of composites with subnames do not ignore isPlainMacro and isPlainCopy", () => {
+  it("copies of composites with subnames do not ignore implicitProp", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6515,55 +6749,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("isPlainCopy does not mean isPlainMacro", () => {
-    // a plain copy copies children, unlike a macro
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-    <text>a</text>
-    <p name="p1"><math newNamespace name="x">x+<math name="y">y</math></math></p>
-
-    <p name="p2"><copy source="x" name="x2" /></p>
-    
-    <p name="p3">x2/y: $(x2/y)</p>
-
-    <p name="p4">$x</p>
-
-    `,
-        },
-        "*",
-      );
-    });
-
-    // to wait for page to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-
-    cy.get(cesc2("#/p1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-    cy.get(cesc2("#/p2") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-    cy.get(cesc2("#/p3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "y");
-    cy.get(cesc2("#/p4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/x2"].activeChildren.length).eq(2);
-
-      expect(stateVariables["/x2/y"].stateValues.value).eq("y");
-
-      let macroName = stateVariables["/p4"].activeChildren[0].componentName;
-      expect(stateVariables[macroName].activeChildren.length).eq(0);
-    });
-  });
-
-  it("plain copies and macros with createComponentOfType", () => {
+  it("implicitProp with createComponentOfType", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {

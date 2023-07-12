@@ -49,8 +49,8 @@ export default class MathComponent extends InlineComponent {
   // make sure it doesn't use the essential state variable unnormalizedValue
   static primaryEssentialStateVariable = "value";
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";

@@ -2955,7 +2955,7 @@ export default class Core {
               targetName: name,
               compositeName: dep.compositeName,
               propVariable: dep.propVariable,
-              fromPlainMacro: dep.fromPlainMacro,
+              fromImplicitProp: dep.fromImplicitProp,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
@@ -3855,8 +3855,8 @@ export default class Core {
 
       let shadowStandardVariables = false;
       let stateVariablesToShadow = [];
-      if (targetComponent.constructor.plainMacroReturnsSameType) {
-        if (redefineDependencies.fromPlainMacro) {
+      if (targetComponent.constructor.implicitPropReturnsSameType) {
+        if (redefineDependencies.fromImplicitProp) {
           shadowStandardVariables = true;
         }
 
@@ -10825,14 +10825,14 @@ export default class Core {
           // We find the original component and the recurse on all the components
           // that shadow it.
           // Don't include shadows due to propVariable
-          // unless it is a plain macro marked as returning the same type
+          // unless it is a plain copy marked as returning the same type
           let baseComponent = component;
           while (
             baseComponent.shadows &&
             (baseComponent.shadows.propVariable === undefined ||
-              (baseComponent.doenetAttributes.fromPlainMacro &&
+              (baseComponent.doenetAttributes.fromImplicitProp &&
                 this._components[baseComponent.shadows.componentName]
-                  .constructor.plainMacroReturnsSameType))
+                  .constructor.implicitPropReturnsSameType))
           ) {
             baseComponent =
               this._components[baseComponent.shadows.componentName];
@@ -11189,11 +11189,11 @@ export default class Core {
     if (recurseToShadows && component.shadowedBy) {
       for (let shadow of component.shadowedBy) {
         // Don't include shadows due to propVariable
-        // unless it is a plain macro marked as returning the same type
+        // unless it is a plain copy marked as returning the same type
         if (
           shadow.shadows.propVariable === undefined ||
-          (shadow.doenetAttributes.fromPlainMacro &&
-            component.constructor.plainMacroReturnsSameType)
+          (shadow.doenetAttributes.fromImplicitProp &&
+            component.constructor.implicitPropReturnsSameType)
         ) {
           this.calculateEssentialVariableChanges({
             component: shadow,

@@ -6,8 +6,7 @@ export default class Choice extends InlineComponent {
   static rendererType = "containerInline";
   static renderChildren = true;
 
-  static variableForPlainMacro = "submitted";
-  static variableForPlainCopy = "submitted";
+  static variableForImplicitProp = "submitted";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

@@ -39,8 +39,7 @@ export default class Choiceinput extends Input {
 
   static renderChildren = true;
 
-  static variableForPlainMacro = "selectedValues";
-  static variableForPlainCopy = "selectedValues";
+  static variableForImplicitProp = "selectedValues";
 
   static createsVariants = true;
 

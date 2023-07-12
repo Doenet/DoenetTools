@@ -10,8 +10,7 @@ export default class Award extends BaseComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  static variableForPlainMacro = "awarded";
-  static variableForPlainCopy = "awarded";
+  static variableForImplicitProp = "awarded";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

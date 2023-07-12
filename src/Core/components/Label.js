@@ -28,8 +28,8 @@ export default class Label extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "valueShadow";
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

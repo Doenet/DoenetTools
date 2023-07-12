@@ -4225,7 +4225,7 @@ class AttributeComponentDependency extends Dependency {
     while (comp.shadows) {
       let shadows = comp.shadows;
       let propVariable = comp.shadows.propVariable;
-      let fromPlainMacro = comp.doenetAttributes.fromPlainMacro;
+      let fromImplicitProp = comp.doenetAttributes.fromImplicitProp;
 
       if (
         this.dontRecurseToShadowsIfHaveAttribute &&
@@ -4239,12 +4239,12 @@ class AttributeComponentDependency extends Dependency {
         break;
       }
 
-      // if a prop variable was created from a plain macro that is marked as returning the same type
+      // if a prop variable was created from a plain copy that is marked as returning the same type
       // then treat it like a regular copy (as if there was no prop variable)
       // and shadow all attributes
       if (
         propVariable &&
-        !(fromPlainMacro && comp.constructor.plainMacroReturnsSameType)
+        !(fromImplicitProp && comp.constructor.implicitPropReturnsSameType)
       ) {
         if (
           !(
