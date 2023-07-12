@@ -68,6 +68,8 @@ services:
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
+    depends_on:
+      - php
     restart: unless-stopped
 
   mysql:
@@ -77,7 +79,7 @@ services:
     environment:
       - MYSQL_DATABASE=doenet_local
       - MYSQL_ROOT_PASSWORD=helloworld
-    command: --innodb_use_native_aio=0
+    # command: --innodb_use_native_aio=0
     volumes:
       - ./docker/mysql:/docker-entrypoint-initdb.d/:ro
       - ./docker/mysql/data:/var/lib/mysql:rw
