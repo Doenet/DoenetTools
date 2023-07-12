@@ -31,13 +31,13 @@ services:
       # Persist VS Code extensions between rebuilds
       # - vscode-extensions:/root/.vscode-server/extensions
       # mount ssh configuration
-      - ~/.ssh:/.ssh
+      # - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
-      - NODE_OPTIONS=--max-old-space-size=4098
+      - NODE_OPTIONS=--max-old-space-size=3584
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE
@@ -46,6 +46,7 @@ services:
     restart: unless-stopped
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
+
   php:
     volumes:
       - ./public/api:/usr/local/apache2/htdocs/api
@@ -54,24 +55,33 @@ services:
       - vendor:/usr/local/apache2/htdocs/api/vendor
       - ./doenet_docker/php/env.ini:/usr/local/apache2/htdocs/etc/env.ini
     restart: unless-stopped
+
   apache:
-    ports:
-      - 8080:80
     build:
       context: ./
       dockerfile: ./doenet_docker/apache/Dockerfile
       args:
         - BUILD_MODE=development
+        - NODE_OPTIONS=--max-old-space-size=3584
+    ports:
+      - 8080:80
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
     restart: unless-stopped
+
   mysql:
+    image: mysql:8.0.32
     ports:
       - 3306:3306
     volumes:
-      - ./doenet_docker/volumes/db:/var/lib/mysql
-      - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+      - db:/var/lib/mysql:rw
+      - ./doenet_docker/mysql/db_init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=doenet_local
+      - MYSQL_ROOT_PASSWORD=helloworld
+    networks:
+      - dev_net
     restart: unless-stopped
 
   # for realtime testing
@@ -91,3 +101,4 @@ services:
 volumes:
   node_modules:
   vendor:
+  db:

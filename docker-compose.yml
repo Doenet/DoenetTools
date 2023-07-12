@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   apache:
@@ -12,12 +12,6 @@ services:
 
   php:
     image: lyanthropos/doenet_php:dev
-    networks:
-      - dev_net
-    restart: always
-
-  mysql:
-    image: lyanthropos/doenet_mysql:dev
     networks:
       - dev_net
     restart: always
