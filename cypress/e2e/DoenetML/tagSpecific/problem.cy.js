@@ -2655,7 +2655,7 @@ describe("Problem Tag Tests", function () {
           <text name="color">yellow</text>
           </option>
       </select>
-      <p>Enter <copy target="fruit/name" assignNames="fruitName" />: 
+      <p>Enter $(fruit/name{name="e"}): 
         <answer type="text">
           <textinput name="input1" />
           <award>$(fruit/name)</award>

@@ -456,20 +456,20 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    <copy name="mr" prop="modifyIndirectly" source="x"/>
-    <copy name="mr2" prop="modifyIndirectly" modifyIndirectly="true" source="x"/>
+    <copy assignNames="mr" prop="modifyIndirectly" source="x"/>
+    <copy assignNames="mr2" prop="modifyIndirectly" modifyIndirectly="true" source="x"/>
 
-    <copy name="frmt" prop="format" source="x"/>
-    <copy name="frmt2" prop="format" source="x" hide />
+    <copy assignNames="frmt" prop="format" source="x"/>
+    <copy assignNames="frmt2" prop="format" source="x" hide />
     <copy name="frmt3" hide source="frmt"/>
 
     <point name="A" labelIsName>(1,2)</point>
-    <copy name="cA" prop="coords" source="A"/>
-    <copy name="l" prop="latex" source="cA"/>
-    <copy name="lmr" prop="latex" modifyIndirectly="false" source="cA"/>
+    <copy assignNames="cA" prop="coords" source="A"/>
+    <copy assignNames="l" prop="latex" source="cA"/>
+    <copy assignNames="lmr" prop="latex" modifyIndirectly="false" source="cA"/>
     <copy name="A2" source="A"/>
-    <copy name="cA2" prop="coords" source="A2"/>
-    <copy name="l2" prop="latex" source="cA2"/>
+    <copy assignNames="cA2" prop="coords" source="A2"/>
+    <copy assignNames="l2" prop="latex" source="cA2"/>
     `,
         },
         "*",
@@ -534,20 +534,20 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    <copy name="mr" source="x.modifyIndirectly"/>
-    <copy name="mr2" modifyIndirectly="true" source="x.modifyIndirectly"/>
+    <copy assignNames="mr" source="x.modifyIndirectly"/>
+    <copy assignNames="mr2" modifyIndirectly="true" source="x.modifyIndirectly"/>
 
-    <copy name="frmt" source="x.format"/>
-    <copy name="frmt2" source="x.format" hide />
+    <copy assignNames="frmt" source="x.format"/>
+    <copy assignNames="frmt2" source="x.format" hide />
     <copy name="frmt3" hide source="frmt"/>
 
     <point name="A" labelIsName>(1,2)</point>
-    <copy name="cA" source="A.coords"/>
-    <copy name="l" source="cA.latex"/>
-    <copy name="lmr" modifyIndirectly="false" source="cA.latex"/>
+    <copy assignNames="cA" source="A.coords"/>
+    <copy assignNames="l" source="cA.latex"/>
+    <copy assignNames="lmr" modifyIndirectly="false" source="cA.latex"/>
     <copy name="A2" source="A"/>
-    <copy name="cA2" source="A2.coords"/>
-    <copy name="l2" source="cA2.latex"/>
+    <copy assignNames="cA2" source="A2.coords"/>
+    <copy assignNames="l2" source="cA2.latex"/>
     `,
         },
         "*",
@@ -612,20 +612,20 @@ describe("Copy Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    $(x.modifyIndirectly{name="mr" })
-    $(x.modifyIndirectly{name="mr2" modifyIndirectly="true" })
+    $(x.modifyIndirectly{assignNames="mr" })
+    $(x.modifyIndirectly{assignNames="mr2" modifyIndirectly="true" })
 
-    $(x.format{name="frmt" })
-    $(x.format{name="frmt2" hide })
+    $(x.format{assignNames="frmt" })
+    $(x.format{assignNames="frmt2" hide })
     $frmt{name="frmt3" hide }
 
     <point name="A" labelIsName>(1,2)</point>
-    $(A.coords{name="cA" })
-    $(cA.latex{name="l" })
-    $(cA.latex{name="lmr" modifyIndirectly="false" })
+    $(A.coords{assignNames="cA" })
+    $(cA.latex{assignNames="l" })
+    $(cA.latex{assignNames="lmr" modifyIndirectly="false" })
     $A{name="A2" }
-    $(A2.coords{name="cA2" })
-    $(cA2.latex{name="l2" })
+    $(A2.coords{assignNames="cA2" })
+    $(cA2.latex{assignNames="l2" })
     `,
         },
         "*",
@@ -1382,7 +1382,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     <graph>
-    <copy prop="displacement" name="d1" source="_vector1"/>
+    <copy prop="displacement" assignNames="d1" source="_vector1"/>
     </graph>
   
     <graph>
@@ -1609,7 +1609,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     <graph>
-    <copy name="d1" source="_vector1.displacement"/>
+    <copy assignNames="d1" source="_vector1.displacement"/>
     </graph>
   
     <graph>
@@ -1836,7 +1836,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     <graph>
-    $(_vector1.displacement{name="d1"})
+    $(_vector1.displacement{assignNames="d1"})
     </graph>
   
     <graph>
@@ -5362,7 +5362,7 @@ describe("Copy Tag Tests", function () {
     </graph>
     
     <graph>
-      <copy source="l" prop="point1" link="false" name="A3" />
+      <copy source="l" prop="point1" link="false" assignNames="A3" />
     </graph>
     <graph>
       <copy source="l" prop="points" link="false" assignNames="A4 B4"  />
@@ -5370,20 +5370,20 @@ describe("Copy Tag Tests", function () {
 
     <copy source="g" link="false" name="gnolink" newNamespace />
     
-    <copy source="A" prop="x" link="false" name="Ax"  />
+    <copy source="A" prop="x" link="false" assignNames="Ax"  />
 
     <p>
       <copy source="A" name="Ac" />
       <copy source="B" name="Bc" />
-      <copy prop="point1" source="l" name="lp1" />
+      <copy prop="point1" source="l" assignNames="lp1" />
       <copy source="A2" name="A2c" />
-      <copy prop="point1" source="l2" name="l2p1" />
+      <copy prop="point1" source="l2" assignNames="l2p1" />
       <copy source="A3" name="A3c" />
       <copy source="A4" name="A4c" />
       <copy source="B4" name="B4c" />
       <copy source="gnolink/A" name="A5c" />
       <copy source="gnolink/B" name="B5c" />
-      <copy prop="point1" source="gnolink/l" name="l3p1" />
+      <copy prop="point1" source="gnolink/l" assignNames="l3p1" />
 
     </p>
   
@@ -5827,7 +5827,7 @@ describe("Copy Tag Tests", function () {
     </graph>
     
     <graph>
-      <copy source="l.point1" link="false" name="A3" />
+      <copy source="l.point1" link="false" assignNames="A3" />
     </graph>
     <graph>
       <copy source="l.points" link="false" assignNames="A4 B4"  />
@@ -5835,20 +5835,20 @@ describe("Copy Tag Tests", function () {
 
     <copy source="g" link="false" name="gnolink" newNamespace />
     
-    <copy source="A.x" link="false" name="Ax"  />
+    <copy source="A.x" link="false" assignNames="Ax"  />
 
     <p>
       <copy source="A" name="Ac" />
       <copy source="B" name="Bc" />
-      <copy source="l.point1" name="lp1" />
+      <copy source="l.point1" assignNames="lp1" />
       <copy source="A2" name="A2c" />
-      <copy source="l2.point1" name="l2p1" />
+      <copy source="l2.point1" assignNames="l2p1" />
       <copy source="A3" name="A3c" />
       <copy source="A4" name="A4c" />
       <copy source="B4" name="B4c" />
       <copy source="gnolink/A" name="A5c" />
       <copy source="gnolink/B" name="B5c" />
-      <copy source="gnolink/l.point1" name="l3p1" />
+      <copy source="gnolink/l.point1" assignNames="l3p1" />
 
     </p>
   
@@ -6293,7 +6293,7 @@ describe("Copy Tag Tests", function () {
     </graph>
     
     <graph>
-      $(l.point1{link="false" name="A3"})
+      $(l.point1{link="false" assignNames="A3"})
     </graph>
     <graph>
       $(l.points{link="false" assignNames="A4 B4" })
@@ -6301,20 +6301,20 @@ describe("Copy Tag Tests", function () {
 
     $g{link="false" name="gnolink" newNamespace}
     
-    $(A.x{link="false" name="Ax" })
+    $(A.x{link="false" assignNames="Ax" })
 
     <p>
       $A{name="Ac"}
       $B{name="Bc"}
-      $(l.point1{name="lp1"})
+      $(l.point1{assignNames="lp1"})
       $A2{name="A2c"}
-      $(l2.point1{name="l2p1"})
+      $(l2.point1{assignNames="l2p1"})
       $A3{name="A3c"}
       $A4{name="A4c"}
       $B4{name="B4c"}
       $(gnolink/A{name="A5c"})
       $(gnolink/B{name="B5c"})
-      $(gnolink/l.point1{name="l3p1"})
+      $(gnolink/l.point1{assignNames="l3p1"})
 
     </p>
   

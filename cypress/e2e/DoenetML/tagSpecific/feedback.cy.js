@@ -320,7 +320,7 @@ describe("Feedback Tag Tests", function () {
     <award credit="0.1"><when>$_mathinput1.immediateValue > 0.9</when></award>
     <award credit="0"><when>$_mathinput1.immediateValue < 0</when></award>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_award1">
     <p>Larger than 1</p>
@@ -633,7 +633,7 @@ describe("Feedback Tag Tests", function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -753,7 +753,7 @@ describe("Feedback Tag Tests", function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -872,7 +872,7 @@ describe("Feedback Tag Tests", function () {
       </shuffle>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved 1: <copy assignNames="ca1" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved 1: $_answer1.creditAchieved{assignNames="ca1"}</p>
   <section>
   <feedback condition="$cat1">
     <p>Meow</p>
@@ -894,7 +894,7 @@ describe("Feedback Tag Tests", function () {
       </shuffle>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved 2: <copy assignNames="ca2" prop="creditAchieved" target="_answer2" /></p>
+  <p>Credit achieved 2: $_answer2.creditAchieved{assignNames="ca2"}</p>
   <section>
   <feedback condition="$dog2">
     <p>Ruff</p>

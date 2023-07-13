@@ -325,7 +325,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <samplePrimeNumbers  name="sample2" exclude="$ml_exclude" maxValue="50" numSamples="$numSamples2" />
     </aslist></p>
     <p>
-      <copy prop="value" source="numSamples2" assignNames="numSamples2a" />
+      $numSamples2.value{assignNames="numSamples2a"}
     </p>
     `,
         },
@@ -472,7 +472,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     $p1a{name="p7"}
     $p2a{name="p8"}
     $p3a{name="p9"}
-    <p><copy prop="value" source="_mathinput1" assignNames="m1" /></p>
+    <p>$_mathinput1.value{assignNames="m1"}</p>
     `,
         },
         "*",

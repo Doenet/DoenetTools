@@ -1066,18 +1066,18 @@ describe("SelecPrimeNumbers Tag Tests", function () {
     </aslist></p>
 
     <p><aslist>
-    <copy assignNames="noresample1" target="sample1" />
-    <copy assignNames="noresample2" target="sample2" />
-    <copy assignNames="noreresample1" target="noresample1" />
-    <copy assignNames="noreresample2" target="noresample2" />
+    $sample1{name="noresample1"}
+    $sample2{name="noresample2"}
+    $noresample1{name="noreresample1"}
+    $noresample2{name="noreresample2"}
     </aslist></p>
 
     <p>$_aslist1{name="noresamplelist"}</p>
 
-    <p><copy assignNames="noreresamplelist" target="noresamplelist" /></p>
+    <p>$noresamplelist{name="noreresamplelist"}</p>
 
     $_p1{name="noresamplep"}
-    <copy assignNames="noreresamplep" target="noresamplep" />
+    $noresamplep{name="noreresamplep"}
     `,
         },
         "*",

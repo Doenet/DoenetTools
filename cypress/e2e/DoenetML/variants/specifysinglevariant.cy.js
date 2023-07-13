@@ -4561,7 +4561,7 @@ describe("Specifying single variant document tests", function () {
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
     </choiceinput></p>
-    <p><copy prop="selectedValue" source="c1" assignNames="c1v" /></p>
+    <p>$c1.selectedValue{assignNames="c1v"}</p>
     `;
 
     // let generatedVariantInfo;

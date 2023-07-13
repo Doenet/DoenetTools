@@ -3176,7 +3176,7 @@ describe("Point Tag Tests", function () {
   </graph>
   $g1{name="g2"}
   <graph>
-  <copy assignNames="p3" target="/g1/_point1" />
+  $(/g1/_point1{name="p3"})
   </graph>
   $p3.coords{assignNames="coords1"}
   `,
@@ -8365,11 +8365,11 @@ describe("Point Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <graph>
-    <copy assignNames="p1b" target="p1a" />
+    $p1a{name="p1b"}
   </graph>
   
   <graph>
-    <copy assignNames="p1a" target="p1" />
+    $p1{name="p1a"}
   </graph>
   
   <graph>

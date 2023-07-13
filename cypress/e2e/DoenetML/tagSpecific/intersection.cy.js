@@ -181,8 +181,8 @@ describe("Integer Tag Tests", function () {
   <p name="i1">Intersection 1: <intersection hide="$h1"><copy source="_line1" /><copy source="_line2" /></intersection></p>
   <p name="i2">Intersection 2: <intersection hide="$h2"><copy source="_line1" /><copy source="_line2" /></intersection></p>
 
-  <copy prop="value" source="h1" assignNames="h1Val" />
-  <copy prop="value" source="h2" assignNames="h2Val" />
+  $h1.value{assignNames="h1Val"}
+  $h2.value{assignNames="h2Val"}
   <copy prop="coords" source="_point1" assignNames="coords1" displayDecimals="2" />
   <copy prop="coords" source="_point2" assignNames="coords2" displayDecimals="2" />
   <copy prop="coords" source="_point3" assignNames="coords3" displayDecimals="2" />

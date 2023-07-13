@@ -26,17 +26,17 @@ describe("Atom Tests", function () {
   <p>Atomic number: $atom.atomicNumber{assignNames="atomicNumber"}</p>
   <p>Group: $atom.group{assignNames="group"}</p>
   <p>Group Name: $atom.groupName{assignNames="groupName"}</p>
-  <p>Atomic mass: <copy prop="atomicMass" target="atom" assignNames="atomicMass" displayDigits="10" /></p>
-  <p>Phase at STP: <copy prop="phaseAtSTP" target="atom" assignNames="pahseAtSTP" displayDigits="10" /></p>
-  <p>Charge of common ion: <copy prop="chargeOfCommonIon" target="atom" assignNames="chargeOfCommonIon" displayDigits="10" /></p>
-  <p>Metal category: <copy prop="metalCategory" target="atom" assignNames="metalCategory" displayDigits="10" /></p>
-  <p>Period: <copy prop="period" target="atom" assignNames="period" displayDigits="10" /></p>
-  <p>Ionization energy: <copy prop="ionizationEnergy" target="atom" assignNames="ionizationEnergy" displayDigits="10" /></p>
-  <p>Melting point: <copy prop="meltingPoint" target="atom" assignNames="meltingPoint" displayDigits="10" /></p>
-  <p>Boiling point: <copy prop="boilingPoint" target="atom" assignNames="boilingPoint" displayDigits="10" /></p>
-  <p>Atomic radius: <copy prop="atomicRadius" target="atom" assignNames="atomicRadius" displayDigits="10" /></p>
-  <p>Density: <copy prop="density" target="atom" assignNames="density" displayDigits="10" /></p>
-  <p>Electronegativity: <copy prop="electronegativity" target="atom" assignNames="electronegativity" displayDigits="10" /></p>
+  <p>Atomic mass: $atom.atomicMass{assignNames="atomicMass" displayDigits="10"}</p>
+  <p>Phase at STP: $atom.phaseAtSTP{assignNames="pahseAtSTP" displayDigits="10"}</p>
+  <p>Charge of common ion: $atom.chargeOfCommonIon{assignNames="chargeOfCommonIon" displayDigits="10"}</p>
+  <p>Metal category: $atom.metalCategory{assignNames="metalCategory" displayDigits="10"}</p>
+  <p>Period: $atom.period{assignNames="period" displayDigits="10"}</p>
+  <p>Ionization energy: $atom.ionizationEnergy{assignNames="ionizationEnergy" displayDigits="10"}</p>
+  <p>Melting point: $atom.meltingPoint{assignNames="meltingPoint" displayDigits="10"}</p>
+  <p>Boiling point: $atom.boilingPoint{assignNames="boilingPoint" displayDigits="10"}</p>
+  <p>Atomic radius: $atom.atomicRadius{assignNames="atomicRadius" displayDigits="10"}</p>
+  <p>Density: $atom.density{assignNames="density" displayDigits="10"}</p>
+  <p>Electronegativity: $atom.electronegativity{assignNames="electronegativity" displayDigits="10"}</p>
   <p>Electron configuration: $atom.electronConfiguration{assignNames="electronConfiguration"}</p>
   Orbital diagram: $atom.orbitalDiagram{assignNames="orbitalDiagram"}
   

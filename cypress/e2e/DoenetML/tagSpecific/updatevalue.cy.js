@@ -384,7 +384,7 @@ describe("UpdateValue Tag Tests", function () {
   
     <updateValue target="col" prop="x" newValue="2$(p.x)" componentIndex="2" />
     <updateValue target="col[3].x" newValue="2$(p.x)" />
-    <p><booleaninput name="bi" /><copy prop="value" source="bi" assignNames="b" /></p>
+    <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
         "*",
@@ -546,7 +546,7 @@ describe("UpdateValue Tag Tests", function () {
   
     <updateValue target="grp" prop="x" newValue="2$(grp[1].x)" componentIndex="2" />
     <updateValue target="grp[3].x" newValue="2$(grp[1].x)" />
-    <p><booleaninput name="bi" /><copy prop="value" source="bi" assignNames="b" /></p>
+    <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
         "*",

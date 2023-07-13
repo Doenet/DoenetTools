@@ -1397,9 +1397,9 @@ describe("Single page activity tests", function () {
     const doenetML = `
 <title>A video</title>
 <video youtube="tJ4ypc5L6uU" width="640px" height="360px" name="v" />
-<p>State: <copy prop="state" source="v" assignNames="state" /></p>
-<p>Time: <copy prop="time" source="v" assignNames="time" /></p>
-<p>Duration: <copy prop="duration" source="v" assignNames="duration" /></p>
+<p>State: $v.state{assignNames="state"}</p>
+<p>Time: $v.time{assignNames="time"}</p>
+<p>Duration: $v.duration{assignNames="duration"}</p>
 <p>
   <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
   <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>

@@ -465,8 +465,8 @@ describe("Angle Tag Tests", function () {
     <point x="7cos(1)" y="7sin(1)" />
     <angle radius="$_mathinput1" through="$_point1 $_point2 $_point3" displayDigits="10" />
   </graph>
-  <copy assignNames="angle2" prop="angle" target="_angle1" />
-  <copy assignNames="radius2" prop="radius" target="_angle1" />
+  $_angle1.angle{assignNames="angle2"}
+  $_angle1.radius{assignNames="radius2"}
   `,
         },
         "*",
@@ -558,8 +558,8 @@ describe("Angle Tag Tests", function () {
     <point x="8cos($_mathinput1)" y="8sin($_mathinput1)" />
     <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" displayDigits="10" />
   </graph>
-  <p><copy assignNames="alpha" prop="angle" target="_angle1" /></p>
-  <p><copy assignNames="alphadeg" prop="degrees" target="_angle1" /></p>
+  <p>$_angle1.angle{assignNames="alpha"}</p>
+  <p>$_angle1.degrees{assignNames="alphadeg"}</p>
   <p>Angle again: $_angle1</p>
   `,
         },

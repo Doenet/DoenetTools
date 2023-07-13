@@ -2047,9 +2047,9 @@ describe("Select Tag Tests", function () {
     <option><math>a</math><math>b</math><math>c</math></option>
     <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="q1"><aslist><copy target="s1/x" /><copy target="s1/y" /><copy target="s1/z" /></aslist></p>
-    <p name="q2"><aslist><copy target="s2/x" /><copy target="s2/y" /><copy target="s2/z" /></aslist></p>
-    <p name="q3"><aslist><copy target="s3/x" /><copy target="s3/y" /><copy target="s3/z" /></aslist></p>
+    <p name="q1"><aslist>$(s1/x)$(s1/y)$(s1/z)</aslist></p>
+    <p name="q2"><aslist>$(s2/x)$(s2/y)$(s2/z)</aslist></p>
+    <p name="q3"><aslist>$(s3/x)$(s3/y)$(s3/z)</aslist></p>
 
     `,
         },
@@ -2217,9 +2217,9 @@ describe("Select Tag Tests", function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q r s t u" numToSelect="5" withreplacement>
-      <option newNamespace><p>Option 1: <math>3<copy target="../x1" /><copy target="../y1" /></math></p></option>
-      <option><p name="h" newnamespace>Option 2: <math>4<copy target="../x2" /><copy target="../y2" /></math></p></option>
-      <option newNamespace><p name="l">Option 3: <math>5<copy target="../x3" /><copy target="../y3" /></math></p></option>
+      <option newNamespace><p>Option 1: <math>3$(../x1)$(../y1)</math></p></option>
+      <option><p name="h" newnamespace>Option 2: <math>4$(../x2)$(../y2)</math></p></option>
+      <option newNamespace><p name="l">Option 3: <math>5$(../x3)$(../y3)</math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -4701,13 +4701,13 @@ describe("Select Tag Tests", function () {
     <select assignnames="(a b c d)">
     <option>
       <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
-      <math simplify newNamespace><math name="q">z</math> + 2<copy assignNames="v" target="q" /></math>
+      <math simplify newNamespace><math name="q">z</math> + 2$q{name="v"}</math>
       <copy target="a/w" assignNamesSkip="1" />
       <copy target="b/q" assignNamesSkip="1" />
     </option>
     <option>
       <math name="h2" newNamespace><math name="w">u</math><math>v</math></math>
-      <math simplify newNamespace><math name="q">t</math> + 2<copy assignNames="v" target="q" /></math>
+      <math simplify newNamespace><math name="q">t</math> + 2$q{name="v"}</math>
       <copy target="a/w" assignNamesSkip="1" />
       <copy target="b/q" assignNamesSkip="1" />
     </option>

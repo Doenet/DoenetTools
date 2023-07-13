@@ -1056,7 +1056,7 @@ describe("Map Tag Tests", function () {
     <text>a</text>
     <map>
     <template newNamespace><math simplify>
-        $n{name="b"} + $j{name="i"} + <copy target="../a" /> 
+        $n{name="b"} + $j{name="i"} + $(../a) 
         + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" to="2"/></sources>
@@ -1162,7 +1162,7 @@ describe("Map Tag Tests", function () {
     <number name="length">1</number>
     <map>
     <template newnamespace><math simplify>
-        $n{name="b"} + $j{name="i"} + <copy target="../a" /> 
+        $n{name="b"} + $j{name="i"} + $(../a) 
         + <math name="q">z</math> + $q + $b +$i
       </math><math>x</math></template>
     <sources alias="n" indexalias="j"><sequence from="1" length="$length"/></sources>
@@ -1663,7 +1663,7 @@ describe("Map Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <map assignnames="u v w">
-      <template newNamespace><math>($n, <copy target="../e/_copy1" />)</math></template>
+      <template newNamespace><math>($n, $(../e/_copy1))</math></template>
       <sources alias="n"><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c d e">
@@ -2510,10 +2510,10 @@ describe("Map Tag Tests", function () {
     <graph>
       <map assignnames="a b c">
         <template newNamespace><point>
-            (<copy target="../q" />$n^2,
+            ($(../q)$n^2,
             $_point2.x)
           </point><point>
-            (<copy target="../r" />$n,
+            ($(../r)$n,
             $_point1.x)
           </point></template>
       <sources alias='n'>
@@ -3742,18 +3742,18 @@ describe("Map Tag Tests", function () {
     </map>
 
     p1a: $p1{name="p1a"},
-    p1b: <copy target="p1/pt" assignNames="p1b" />,
+    p1b: $(p1/pt{name="t"}),
     p2a: $p2{name="p2a"},
-    p2b: <copy target="p2/pt" assignNames="p2b" />,
+    p2b: $(p2/pt{name="t"}),
     p3a: $p3{name="p3a"},
-    p3b: <copy target="p3/pt" assignNames="p3b" />,
+    p3b: $(p3/pt{name="t"}),
 
     q1a: $q1{name="q1a"},
-    q1b: <copy target="q1/pt" assignNames="q1b" />,
+    q1b: $(q1/pt{name="t"}),
     q2a: $q2{name="q2a"},
-    q2b: <copy target="q2/pt" assignNames="q2b" />,
+    q2b: $(q2/pt{name="t"}),
     q3a: $q3{name="q3a"},
-    q3b: <copy target="q3/pt" assignNames="q3b" />,
+    q3b: $(q3/pt{name="t"}),
 
     <p>$number.value{assignNames="number2"}</p>
 

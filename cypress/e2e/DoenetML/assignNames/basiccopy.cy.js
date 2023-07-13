@@ -770,7 +770,7 @@ describe("Basic copy assignName Tests", function () {
   </graph>
 
   <graph>
-    <copy assignNames="d" target="cp1" />
+    $cp1{name="d"}
   </graph>
 
   $d{name="f"}
@@ -1626,13 +1626,13 @@ describe("Basic copy assignName Tests", function () {
   
   </section>
 
-  <copy target="hello/e" assignNames="e" />
-  <copy target="hello/f" assignNames="f" />
+  $(hello/e{name="e"})
+  $(hello/f{name="f"})
 
-  <p name="n13">nothing 13: <copy target="hello/i1" /></p>
-  <p name="n14">nothing 14: <copy target="hello/i2" /></p>
-  <p name="n15">nothing 15: <copy target="hello/j1" /></p>
-  <p name="n16">nothing 16: <copy target="hello/j2" /></p>
+  <p name="n13">nothing 13: $(hello/i1)</p>
+  <p name="n14">nothing 14: $(hello/i2)</p>
+  <p name="n15">nothing 15: $(hello/j1)</p>
+  <p name="n16">nothing 16: $(hello/j2)</p>
   
 
   `,
@@ -2205,13 +2205,13 @@ describe("Basic copy assignName Tests", function () {
     </subsection>
   </section>
 
-  <copy assignNames="a" target="_section1"/>
+  $_section1{name="a"}
 
-  <copy assignNames="b" target="a" />
+  $a{name="b"}
 
   <p><copy target="_section1/_p1/person"/> <copy target="_section1/person"/>
-<copy target="a/_p1/person" /> <copy target="a/person" />
-<copy target="b/_p1/person" /> <copy target="b/person" /></p>
+$(a/_p1/person) $(a/person)
+$(b/_p1/person) $(b/person)</p>
   `,
         },
         "*",
@@ -2256,13 +2256,13 @@ describe("Basic copy assignName Tests", function () {
   <text>a</text>
   <section name="hello" newNamespace><title>Hello</title>
     <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
-    <copy assignNames="a" target="_p1"/>
-    <p><copy target="_p1/person"/> <copy target="a/person" /> <copy target="../bye/a/person" /></p>
+    $_p1{name="a"}
+    <p><copy target="_p1/person"/> $(a/person) $(../bye/a/person)</p>
   </section>
 
   <section name="bye" newNamespace><title>Bye</title>
     <copy assignNames="a" target="../hello/_p1"/>
-    <p><copy target="../hello/_p1/person"/> <copy target="../hello/a/person" /> <copy target="a/person" /></p>
+    <p><copy target="../hello/_p1/person"/> $(../hello/a/person) $(a/person)</p>
   </section>
   `,
         },
@@ -2302,12 +2302,12 @@ describe("Basic copy assignName Tests", function () {
 
   $pOriginal{name="pCopy"}
 
-  <p>This grabs expression: <copy target="pOriginal/expression" assignNames="expressionCopy" /></p>
-  <p>This grabs expression: <copy target="pCopy/expression" assignNames="expressionCopy2" /></p>
-  <p>This grabs piece x: <copy target="pOriginal/x" assignNames="xCopy" /></p>
-  <p>This grabs piece y: <copy target="pOriginal/y" assignNames="yCopy" /></p>
-  <p>Should this grab piece x? <copy target="pCopy/x" assignNames="xCopy2" /></p>
-  <p>Should this grab piece y? <copy target="pCopy/y" assignNames="yCopy2" /></p>
+  <p>This grabs expression: $(pOriginal/expression{name="n"})</p>
+  <p>This grabs expression: $(pCopy/expression{name="n"})</p>
+  <p>This grabs piece x: $(pOriginal/x{name="x"})</p>
+  <p>This grabs piece y: $(pOriginal/y{name="y"})</p>
+  <p>Should this grab piece x? $(pCopy/x{name="x"})</p>
+  <p>Should this grab piece y? $(pCopy/y{name="y"})</p>
 
   `,
         },

@@ -7076,17 +7076,17 @@ describe("Function Tag Tests", function () {
     <function>$_mathinput1 x^4 + $_mathinput2 x^3 +$_mathinput3 x^2 +1</function>
     
     <graph>
-      <copy assignNames="f1a" target="_function1" />
+      $_function1{name="f1a"}
       <copy assignNames="maximum1 maximum2 maximum3" prop="maxima" target="_function1" />
       <copy assignNames="minimum1 minimum2 minimum3" prop="minima" target="f1a" />
       <copy prop="globalMaximum" assignNames="globalmax" target="_function1" />
       <copy prop="globalMinimum" assignNames="globalmin" target="f1a" />
     </graph>
     <graph>
-      <copy assignNames="f1b" target="f1a" />
-      <copy assignNames="extremum1" prop="extremum1" target="f1b" />
-      <copy assignNames="extremum2" prop="extremum2" target="f1b" />
-      <copy assignNames="extremum3" prop="extremum3" target="f1b" />
+      $f1a{name="f1b"}
+      $f1b.extremum1{assignNames="extremum1"}
+      $f1b.extremum2{assignNames="extremum2"}
+      $f1b.extremum3{assignNames="extremum3"}
       <copy prop="globalSupremum" assignNames="globalsup" target="f1b" />
       <copy prop="globalInfimum" assignNames="globalinf" target="f1b" />
     </graph>
@@ -7196,8 +7196,8 @@ describe("Function Tag Tests", function () {
     <function name="f2" symbolic simplify="false">$f</function>
     <function name="f3" variable="s" symbolic simplify="false"><copy target="f.formula"/></function>
 
-    <copy assignNames="f4" target="f"/>
-    <copy assignNames="f5" target="f2"/>
+    $f{name="f4"}
+    $f2{name="f5"}
     $f3{name="f6"}
 
     $f.variable{assignNames="fv"}
@@ -7609,10 +7609,10 @@ describe("Function Tag Tests", function () {
     <text>a</text>
 
     <function name="f">sin(x)</function>
-    <copy assignNames="f2" target="f" />
+    $f{name="f2"}
     <function name="f3">$f</function>
     <function name="g" maxima="(1,2) (4,3)" />
-    <copy assignNames="g2" target="g" />
+    $g{name="g2"}
     <function name="g3">$g</function>
     `,
         },

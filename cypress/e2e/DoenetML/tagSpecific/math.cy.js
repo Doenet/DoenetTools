@@ -101,7 +101,7 @@ describe("Math Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy source="_math1" /> + 5</math>
+    <math>3$_math1{name="m1a"} + 5</math>
     `,
         },
         "*",
@@ -129,22 +129,15 @@ describe("Math Tag Tests", function () {
     cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacement = stateVariables["/_copy1"].replacements[0];
       expect(stateVariables["/_math1"].stateValues.value).eqls(["+", "x", 1]);
-      expect(stateVariables[replacement.componentName].stateValues.value).eqls([
-        "+",
-        "x",
-        1,
-      ]);
+      expect(stateVariables["/m1a"].stateValues.value).eqls(["+", "x", 1]);
       expect(stateVariables["/_math2"].stateValues.value).eqls([
         "+",
         ["*", 3, ["+", "x", 1]],
         5,
       ]);
       expect(stateVariables["/_math1"].stateValues.hide).eq(true);
-      expect(stateVariables[replacement.componentName].stateValues.hide).eq(
-        true,
-      );
+      expect(stateVariables["/m1a"].stateValues.hide).eq(true);
       expect(stateVariables["/_math2"].stateValues.hide).eq(false);
     });
   });
@@ -293,9 +286,9 @@ describe("Math Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <math name="a" simplify><math name="x">x</math> + <copy source="x" /> + <copy source="z" /></math>
+  <math name="a" simplify><math name="x">x</math> + $x + $z</math>
   <math name="z">z</math>
-  <copy name="a2" source="a" />
+  $a{name="a2"}
   `,
         },
         "*",
@@ -313,17 +306,13 @@ describe("Math Tag Tests", function () {
         expect(text.trim()).equal("2x+z");
       });
 
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      let replacement = stateVariables["/a2"].replacements[0];
-      cy.get(cesc2("#" + replacement.componentName))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("2x+z");
-        });
-    });
+    cy.get(cesc2("#/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("2x+z");
+      });
   });
 
   it("point adapts into a math", () => {
@@ -333,7 +322,7 @@ describe("Math Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <point>3</point>
-  <math simplify>2 + <copy source="_point1" /></math>
+  <math simplify>2 + $_point1</math>
   `,
         },
         "*",
@@ -354,8 +343,6 @@ describe("Math Tag Tests", function () {
     cy.log("Test internal values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let point = stateVariables["/_copy1"].replacements[0];
-      let coords = point.adapterUsed;
       expect(stateVariables["/_math1"].stateValues.value).eq(5);
       // expect(stateVariables['/_math1'].activeChildren[1].componentName).equal(coords.componentName);
       // expect(coords.adaptedFrom.componentName).eq(point.componentName);
@@ -370,7 +357,7 @@ describe("Math Tag Tests", function () {
   <text>a</text>
   <math simplify>2<sequence length="0"/>3</math>
   <graph>
-  <point>(<copy source="_math1" />, 3)</point>
+  <point>($_math1, 3)</point>
   </graph>
   `,
         },
@@ -392,7 +379,6 @@ describe("Math Tag Tests", function () {
     cy.log("Test internal values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      // string children are originally 1 and 3
       expect(stateVariables["/_math1"].activeChildren[0]).eq("2");
       expect(stateVariables["/_math1"].activeChildren[1]).eq("3");
       expect(stateVariables["/_math1"].stateValues.value).eq(6);
@@ -408,10 +394,14 @@ describe("Math Tag Tests", function () {
         componentName: "/_point1",
         args: { x: 7, y: 9 },
       });
+    });
+
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      // second child takes value, third is blank
-      expect(stateVariables["/_math1"].activeChildren[0]).eq("7");
-      expect(stateVariables["/_math1"].activeChildren[1]).eq("");
+      // Since we mark the component to ignore changes to defining children,
+      // the activeChildren might not be changed
+      // expect(stateVariables["/_math1"].activeChildren[0]).eq("7");
+      // expect(stateVariables["/_math1"].activeChildren[1]).eq("");
       expect(stateVariables["/_math1"].stateValues.value).eq(7);
       expect(stateVariables["/_point1"].stateValues.xs[0]).eq(7);
       expect(stateVariables["/_point1"].stateValues.xs[1]).eq(9);
@@ -1005,25 +995,25 @@ describe("Math Tag Tests", function () {
   <p><math name="expr2Dig5" displayDigits="5">31.3835205397397634 x + 4pi</math></p>
   <p><math name="expr1Dec5" displayDecimals="5">621802.3520303639164826281</math></p>
   <p><math name="expr2Dec5" displayDecimals="5">31.3835205397397634 x + 4pi</math></p>
-  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5" assignNames="expr1Dig5b" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5" assignNames="expr2Dig5b" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5" assignNames="expr1Dec5b" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5" assignNames="expr2Dec5b" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5a" assignNames="expr1Dig5c" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5a" assignNames="expr2Dig5c" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5a" assignNames="expr1Dec5c" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5a" assignNames="expr2Dec5c" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5b" assignNames="expr1Dig5d" displayDigits="5" /></p>
-  <p><copy source="expr2Dec5b" assignNames="expr2Dig5d" displayDigits="5" /></p>
-  <p><copy source="expr1Dig5b" assignNames="expr1Dec5d" displayDecimals="5" /></p>
-  <p><copy source="expr2Dig5b" assignNames="expr2Dec5d" displayDecimals="5" /></p>
+  <p>$expr1{name="expr1Dig5a" displayDigits="5"}</p>
+  <p>$expr2{name="expr2Dig5a" displayDigits="5"}</p>
+  <p>$expr1{name="expr1Dec5a" displayDecimals="5"}</p>
+  <p>$expr2{name="expr2Dec5a" displayDecimals="5"}</p>
+  <p>$expr1Dec5{name="expr1Dig5b" displayDigits="5"}</p>
+  <p>$expr2Dec5{name="expr2Dig5b" displayDigits="5"}</p>
+  <p>$expr1Dig5{name="expr1Dec5b" displayDecimals="5"}</p>
+  <p>$expr2Dig5{name="expr2Dec5b" displayDecimals="5"}</p>
+  <p>$expr1Dec5a{name="expr1Dig5c" displayDigits="5"}</p>
+  <p>$expr2Dec5a{name="expr2Dig5c" displayDigits="5"}</p>
+  <p>$expr1Dig5a{name="expr1Dec5c" displayDecimals="5"}</p>
+  <p>$expr2Dig5a{name="expr2Dec5c" displayDecimals="5"}</p>
+  <p>$expr1Dec5b{name="expr1Dig5d" displayDigits="5"}</p>
+  <p>$expr2Dec5b{name="expr2Dig5d" displayDigits="5"}</p>
+  <p>$expr1Dig5b{name="expr1Dec5d" displayDecimals="5"}</p>
+  <p>$expr2Dig5b{name="expr2Dec5d" displayDecimals="5"}</p>
 
-  <p><copy source="expr1" assignNames="expr1Dig5Dec1" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy source="expr2" assignNames="expr2Dig5Dec1" displayDigits="5" displayDecimals="1" /></p>
+  <p>$expr1{name="expr1Dig5Dec1" displayDigits="5" displayDecimals="1"}</p>
+  <p>$expr2{name="expr2Dig5Dec1" displayDigits="5" displayDecimals="1"}</p>
   `,
         },
         "*",
@@ -1413,22 +1403,22 @@ describe("Math Tag Tests", function () {
   <p><math name="expr2Dig5" displayDigits="5">31.3835205397397634 x + 4pi</math></p>
   <p><math name="expr1Dec5" displayDecimals="5">621802.3520303639164826281</math></p>
   <p><math name="expr2Dec5" displayDecimals="5">31.3835205397397634 x + 4pi</math></p>
-  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" /></p>
-  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" /></p>
-  <p><copy source="expr1Dec5" assignNames="expr1Dig8Dec5" displayDigits="8" displayDecimals="5" /></p>
-  <p><copy source="expr2Dec5" assignNames="expr2Dig8Dec5" displayDigits="8" displayDecimals="5" /></p>
-  <p><copy source="expr1Dig5" assignNames="expr1Dec8Dig5" displayDecimals="8" displayDigits="5" /></p>
-  <p><copy source="expr2Dig5" assignNames="expr2Dec8Dig5" displayDecimals="8" displayDigits="5" /></p>
-  <p><copy source="expr1Dec5a" assignNames="expr1Dig8Dec5a" displayDigits="8" displayDecimals="5" /></p>
-  <p><copy source="expr2Dec5a" assignNames="expr2Dig8Dec5a" displayDigits="8" displayDecimals="5" /></p>
-  <p><copy source="expr1Dig5a" assignNames="expr1Dec8Dig5a" displayDecimals="8" displayDigits="5" /></p>
-  <p><copy source="expr2Dig5a" assignNames="expr2Dec8Dig5a" displayDecimals="8" displayDigits="5" /></p>
-  <p><copy source="expr1Dec8Dig5" assignNames="expr1Dig3Dec8" displayDigits="3" displayDecimals="8" /></p>
-  <p><copy source="expr2Dec8Dig5" assignNames="expr2Dig3Dec8" displayDigits="3" displayDecimals="8" /></p>
-  <p><copy source="expr1Dig8Dec5" assignNames="expr1Dec3Dig8" displayDecimals="3" displayDigits="8" /></p>
-  <p><copy source="expr2Dig8Dec5" assignNames="expr2Dec3Dig8" displayDecimals="3" displayDigits="8" /></p>
+  <p>$expr1{name="expr1Dig5a" displayDigits="5"}</p>
+  <p>$expr2{name="expr2Dig5a" displayDigits="5"}</p>
+  <p>$expr1{name="expr1Dec5a" displayDecimals="5"}</p>
+  <p>$expr2{name="expr2Dec5a" displayDecimals="5"}</p>
+  <p>$expr1Dec5{name="expr1Dig8Dec5" displayDigits="8" displayDecimals="5"}</p>
+  <p>$expr2Dec5{name="expr2Dig8Dec5" displayDigits="8" displayDecimals="5"}</p>
+  <p>$expr1Dig5{name="expr1Dec8Dig5" displayDigits="5" displayDecimals="8"}</p>
+  <p>$expr2Dig5{name="expr2Dec8Dig5" displayDigits="5" displayDecimals="8"}</p>
+  <p>$expr1Dec5a{name="expr1Dig8Dec5a" displayDigits="8" displayDecimals="5"}</p>
+  <p>$expr2Dec5a{name="expr2Dig8Dec5a" displayDigits="8" displayDecimals="5"}</p>
+  <p>$expr1Dig5a{name="expr1Dec8Dig5a" displayDigits="5" displayDecimals="8"}</p>
+  <p>$expr2Dig5a{name="expr2Dec8Dig5a" displayDigits="5" displayDecimals="8"}</p>
+  <p>$expr1Dec8Dig5{name="expr1Dig3Dec8" displayDigits="3" displayDecimals="8"}</p>
+  <p>$expr2Dec8Dig5{name="expr2Dig3Dec8" displayDigits="3" displayDecimals="8"}</p>
+  <p>$expr1Dig8Dec5{name="expr1Dec3Dig8" displayDigits="8" displayDecimals="3"}</p>
+  <p>$expr2Dig8Dec5{name="expr2Dec3Dig8" displayDigits="8" displayDecimals="3"}</p>
 
   `,
         },
@@ -1775,81 +1765,81 @@ describe("Math Tag Tests", function () {
   <p><math>62.1</math></p>
   <p><math>162.1*10^(-3)</math></p>
   <p><math>1.3 x + 4pi</math></p>
-  <p><copy source="_math1" assignNames="dig5a" displayDigits="5" /></p>
-  <p><copy source="_math1" assignNames="dig5apad" displayDigits="5" padZeros /></p>
-  <p><copy source="_math2" assignNames="dig5b" displayDigits="5" /></p>
-  <p><copy source="_math2" assignNames="dig5bpad" displayDigits="5" padZeros /></p>
-  <p><copy source="_math3" assignNames="dig5c" displayDigits="5" /></p>
-  <p><copy source="_math3" assignNames="dig5cpad" displayDigits="5" padZeros /></p>
-  <p><copy source="_math1" assignNames="dec5a" displayDecimals="5" /></p>
-  <p><copy source="_math1" assignNames="dec5apad" displayDecimals="5" padZeros /></p>
-  <p><copy source="_math2" assignNames="dec5b" displayDecimals="5" /></p>
-  <p><copy source="_math2" assignNames="dec5bpad" displayDecimals="5" padZeros /></p>
-  <p><copy source="_math3" assignNames="dec5c" displayDecimals="5" /></p>
-  <p><copy source="_math3" assignNames="dec5cpad" displayDecimals="5" padZeros /></p>
-  <p><copy source="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy source="_math1" assignNames="dig5dec1apad" displayDigits="5" displayDecimals="1" padZeros /></p>
-  <p><copy source="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy source="_math2" assignNames="dig5dec1bpad" displayDigits="5" displayDecimals="1" padZeros /></p>
-  <p><copy source="_math3" assignNames="dig5dec1c" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy source="_math3" assignNames="dig5dec1cpad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p>$_math1{name="dig5a" displayDigits="5"}</p>
+  <p>$_math1{name="dig5apad" displayDigits="5" padZeros}</p>
+  <p>$_math2{name="dig5b" displayDigits="5"}</p>
+  <p>$_math2{name="dig5bpad" displayDigits="5" padZeros}</p>
+  <p>$_math3{name="dig5c" displayDigits="5"}</p>
+  <p>$_math3{name="dig5cpad" displayDigits="5" padZeros}</p>
+  <p>$_math1{name="dec5a" displayDecimals="5"}</p>
+  <p>$_math1{name="dec5apad" displayDecimals="5" padZeros}</p>
+  <p>$_math2{name="dec5b" displayDecimals="5"}</p>
+  <p>$_math2{name="dec5bpad" displayDecimals="5" padZeros}</p>
+  <p>$_math3{name="dec5c" displayDecimals="5"}</p>
+  <p>$_math3{name="dec5cpad" displayDecimals="5" padZeros}</p>
+  <p>$_math1{name="dig5dec1a" displayDigits="5" displayDecimals="1"}</p>
+  <p>$_math1{name="dig5dec1apad" displayDigits="5" displayDecimals="1" padZeros}</p>
+  <p>$_math2{name="dig5dec1b" displayDigits="5" displayDecimals="1"}</p>
+  <p>$_math2{name="dig5dec1bpad" displayDigits="5" displayDecimals="1" padZeros}</p>
+  <p>$_math3{name="dig5dec1c" displayDigits="5" displayDecimals="1"}</p>
+  <p>$_math3{name="dig5dec1cpad" displayDigits="5" displayDecimals="1" padZeros}</p>
 
-  <p><copy prop="text" source="dig5a" assignNames="dig5aText" /></p>
-  <p><copy prop="text" source="dig5apad" assignNames="dig5apadText" /></p>
-  <p><copy prop="text" source="dig5b" assignNames="dig5bText" /></p>
-  <p><copy prop="text" source="dig5bpad" assignNames="dig5bpadText" /></p>
-  <p><copy prop="text" source="dig5c" assignNames="dig5cText" /></p>
-  <p><copy prop="text" source="dig5cpad" assignNames="dig5cpadText" /></p>
-  <p><copy prop="text" source="dec5a" assignNames="dec5aText" /></p>
-  <p><copy prop="text" source="dec5apad" assignNames="dec5apadText" /></p>
-  <p><copy prop="text" source="dec5b" assignNames="dec5bText" /></p>
-  <p><copy prop="text" source="dec5bpad" assignNames="dec5bpadText" /></p>
-  <p><copy prop="text" source="dec5c" assignNames="dec5cText" /></p>
-  <p><copy prop="text" source="dec5cpad" assignNames="dec5cpadText" /></p>
-  <p><copy prop="text" source="dig5dec1a" assignNames="dig5dec1aText" /></p>
-  <p><copy prop="text" source="dig5dec1apad" assignNames="dig5dec1apadText" /></p>
-  <p><copy prop="text" source="dig5dec1b" assignNames="dig5dec1bText" /></p>
-  <p><copy prop="text" source="dig5dec1bpad" assignNames="dig5dec1bpadText" /></p>
-  <p><copy prop="text" source="dig5dec1c" assignNames="dig5dec1cText" /></p>
-  <p><copy prop="text" source="dig5dec1cpad" assignNames="dig5dec1cpadText" /></p>
+  <p>$dig5a.text{assignNames="dig5aText"}</p>
+  <p>$dig5apad.text{assignNames="dig5apadText"}</p>
+  <p>$dig5b.text{assignNames="dig5bText"}</p>
+  <p>$dig5bpad.text{assignNames="dig5bpadText"}</p>
+  <p>$dig5c.text{assignNames="dig5cText"}</p>
+  <p>$dig5cpad.text{assignNames="dig5cpadText"}</p>
+  <p>$dec5a.text{assignNames="dec5aText"}</p>
+  <p>$dec5apad.text{assignNames="dec5apadText"}</p>
+  <p>$dec5b.text{assignNames="dec5bText"}</p>
+  <p>$dec5bpad.text{assignNames="dec5bpadText"}</p>
+  <p>$dec5c.text{assignNames="dec5cText"}</p>
+  <p>$dec5cpad.text{assignNames="dec5cpadText"}</p>
+  <p>$dig5dec1a.text{assignNames="dig5dec1aText"}</p>
+  <p>$dig5dec1apad.text{assignNames="dig5dec1apadText"}</p>
+  <p>$dig5dec1b.text{assignNames="dig5dec1bText"}</p>
+  <p>$dig5dec1bpad.text{assignNames="dig5dec1bpadText"}</p>
+  <p>$dig5dec1c.text{assignNames="dig5dec1cText"}</p>
+  <p>$dig5dec1cpad.text{assignNames="dig5dec1cpadText"}</p>
 
-  <p><copy prop="value" source="dig5a" assignNames="dig5aValue" /></p>
-  <p><copy prop="value" source="dig5apad" assignNames="dig5apadValue" /></p>
-  <p><copy prop="value" source="dig5b" assignNames="dig5bValue" /></p>
-  <p><copy prop="value" source="dig5bpad" assignNames="dig5bpadValue" /></p>
-  <p><copy prop="value" source="dig5c" assignNames="dig5cValue" /></p>
-  <p><copy prop="value" source="dig5cpad" assignNames="dig5cpadValue" /></p>
-  <p><copy prop="value" source="dec5a" assignNames="dec5aValue" /></p>
-  <p><copy prop="value" source="dec5apad" assignNames="dec5apadValue" /></p>
-  <p><copy prop="value" source="dec5b" assignNames="dec5bValue" /></p>
-  <p><copy prop="value" source="dec5bpad" assignNames="dec5bpadValue" /></p>
-  <p><copy prop="value" source="dec5c" assignNames="dec5cValue" /></p>
-  <p><copy prop="value" source="dec5cpad" assignNames="dec5cpadValue" /></p>
-  <p><copy prop="value" source="dig5dec1a" assignNames="dig5dec1aValue" /></p>
-  <p><copy prop="value" source="dig5dec1apad" assignNames="dig5dec1apadValue" /></p>
-  <p><copy prop="value" source="dig5dec1b" assignNames="dig5dec1bValue" /></p>
-  <p><copy prop="value" source="dig5dec1bpad" assignNames="dig5dec1bpadValue" /></p>
-  <p><copy prop="value" source="dig5dec1c" assignNames="dig5dec1cValue" /></p>
-  <p><copy prop="value" source="dig5dec1cpad" assignNames="dig5dec1cpadValue" /></p>
+  <p>$dig5a.value{assignNames="dig5aValue"}</p>
+  <p>$dig5apad.value{assignNames="dig5apadValue"}</p>
+  <p>$dig5b.value{assignNames="dig5bValue"}</p>
+  <p>$dig5bpad.value{assignNames="dig5bpadValue"}</p>
+  <p>$dig5c.value{assignNames="dig5cValue"}</p>
+  <p>$dig5cpad.value{assignNames="dig5cpadValue"}</p>
+  <p>$dec5a.value{assignNames="dec5aValue"}</p>
+  <p>$dec5apad.value{assignNames="dec5apadValue"}</p>
+  <p>$dec5b.value{assignNames="dec5bValue"}</p>
+  <p>$dec5bpad.value{assignNames="dec5bpadValue"}</p>
+  <p>$dec5c.value{assignNames="dec5cValue"}</p>
+  <p>$dec5cpad.value{assignNames="dec5cpadValue"}</p>
+  <p>$dig5dec1a.value{assignNames="dig5dec1aValue"}</p>
+  <p>$dig5dec1apad.value{assignNames="dig5dec1apadValue"}</p>
+  <p>$dig5dec1b.value{assignNames="dig5dec1bValue"}</p>
+  <p>$dig5dec1bpad.value{assignNames="dig5dec1bpadValue"}</p>
+  <p>$dig5dec1c.value{assignNames="dig5dec1cValue"}</p>
+  <p>$dig5dec1cpad.value{assignNames="dig5dec1cpadValue"}</p>
 
-  <p><copy prop="number" source="dig5a" assignNames="dig5aNumber" /></p>
-  <p><copy prop="number" source="dig5apad" assignNames="dig5apadNumber" /></p>
-  <p><copy prop="number" source="dig5b" assignNames="dig5bNumber" /></p>
-  <p><copy prop="number" source="dig5bpad" assignNames="dig5bpadNumber" /></p>
-  <p><copy prop="number" source="dig5c" assignNames="dig5cNumber" /></p>
-  <p><copy prop="number" source="dig5cpad" assignNames="dig5cpadNumber" /></p>
-  <p><copy prop="number" source="dec5a" assignNames="dec5aNumber" /></p>
-  <p><copy prop="number" source="dec5apad" assignNames="dec5apadNumber" /></p>
-  <p><copy prop="number" source="dec5b" assignNames="dec5bNumber" /></p>
-  <p><copy prop="number" source="dec5bpad" assignNames="dec5bpadNumber" /></p>
-  <p><copy prop="number" source="dec5c" assignNames="dec5cNumber" /></p>
-  <p><copy prop="number" source="dec5cpad" assignNames="dec5cpadNumber" /></p>
-  <p><copy prop="number" source="dig5dec1a" assignNames="dig5dec1aNumber" /></p>
-  <p><copy prop="number" source="dig5dec1apad" assignNames="dig5dec1apadNumber" /></p>
-  <p><copy prop="number" source="dig5dec1b" assignNames="dig5dec1bNumber" /></p>
-  <p><copy prop="number" source="dig5dec1bpad" assignNames="dig5dec1bpadNumber" /></p>
-  <p><copy prop="number" source="dig5dec1c" assignNames="dig5dec1cNumber" /></p>
-  <p><copy prop="number" source="dig5dec1cpad" assignNames="dig5dec1cpadNumber" /></p>
+  <p>$dig5a.number{assignNames="dig5aNumber"}</p>
+  <p>$dig5apad.number{assignNames="dig5apadNumber"}</p>
+  <p>$dig5b.number{assignNames="dig5bNumber"}</p>
+  <p>$dig5bpad.number{assignNames="dig5bpadNumber"}</p>
+  <p>$dig5c.number{assignNames="dig5cNumber"}</p>
+  <p>$dig5cpad.number{assignNames="dig5cpadNumber"}</p>
+  <p>$dec5a.number{assignNames="dec5aNumber"}</p>
+  <p>$dec5apad.number{assignNames="dec5apadNumber"}</p>
+  <p>$dec5b.number{assignNames="dec5bNumber"}</p>
+  <p>$dec5bpad.number{assignNames="dec5bpadNumber"}</p>
+  <p>$dec5c.number{assignNames="dec5cNumber"}</p>
+  <p>$dec5cpad.number{assignNames="dec5cpadNumber"}</p>
+  <p>$dig5dec1a.number{assignNames="dig5dec1aNumber"}</p>
+  <p>$dig5dec1apad.number{assignNames="dig5dec1apadNumber"}</p>
+  <p>$dig5dec1b.number{assignNames="dig5dec1bNumber"}</p>
+  <p>$dig5dec1bpad.number{assignNames="dig5dec1bpadNumber"}</p>
+  <p>$dig5dec1c.number{assignNames="dig5dec1cNumber"}</p>
+  <p>$dig5dec1cpad.number{assignNames="dig5dec1cpadNumber"}</p>
 
   <p><math name="dig5aMath">$dig5a</math></p>
   <p><math name="dig5apadMath">$dig5apad</math></p>
@@ -1889,24 +1879,24 @@ describe("Math Tag Tests", function () {
   <p><number name="dig5dec1cNumber2">$dig5dec1c</number></p>
   <p><number name="dig5dec1cpadNumber2">$dig5dec1cpad</number></p>
 
-  <p><copy prop="x1" source="dig5a" assignNames="dig5aX1" /></p>
-  <p><copy prop="x1" source="dig5apad" assignNames="dig5apadX1" /></p>
-  <p><copy prop="x1" source="dig5b" assignNames="dig5bX1" /></p>
-  <p><copy prop="x1" source="dig5bpad" assignNames="dig5bpadX1" /></p>
-  <p><copy prop="x1" source="dig5c" assignNames="dig5cX1" /></p>
-  <p><copy prop="x1" source="dig5cpad" assignNames="dig5cpadX1" /></p>
-  <p><copy prop="x1" source="dec5a" assignNames="dec5aX1" /></p>
-  <p><copy prop="x1" source="dec5apad" assignNames="dec5apadX1" /></p>
-  <p><copy prop="x1" source="dec5b" assignNames="dec5bX1" /></p>
-  <p><copy prop="x1" source="dec5bpad" assignNames="dec5bpadX1" /></p>
-  <p><copy prop="x1" source="dec5c" assignNames="dec5cX1" /></p>
-  <p><copy prop="x1" source="dec5cpad" assignNames="dec5cpadX1" /></p>
-  <p><copy prop="x1" source="dig5dec1a" assignNames="dig5dec1aX1" /></p>
-  <p><copy prop="x1" source="dig5dec1apad" assignNames="dig5dec1apadX1" /></p>
-  <p><copy prop="x1" source="dig5dec1b" assignNames="dig5dec1bX1" /></p>
-  <p><copy prop="x1" source="dig5dec1bpad" assignNames="dig5dec1bpadX1" /></p>
-  <p><copy prop="x1" source="dig5dec1c" assignNames="dig5dec1cX1" /></p>
-  <p><copy prop="x1" source="dig5dec1cpad" assignNames="dig5dec1cpadX1" /></p>
+  <p>$dig5a.x1{assignNames="dig5aX1"}</p>
+  <p>$dig5apad.x1{assignNames="dig5apadX1"}</p>
+  <p>$dig5b.x1{assignNames="dig5bX1"}</p>
+  <p>$dig5bpad.x1{assignNames="dig5bpadX1"}</p>
+  <p>$dig5c.x1{assignNames="dig5cX1"}</p>
+  <p>$dig5cpad.x1{assignNames="dig5cpadX1"}</p>
+  <p>$dec5a.x1{assignNames="dec5aX1"}</p>
+  <p>$dec5apad.x1{assignNames="dec5apadX1"}</p>
+  <p>$dec5b.x1{assignNames="dec5bX1"}</p>
+  <p>$dec5bpad.x1{assignNames="dec5bpadX1"}</p>
+  <p>$dec5c.x1{assignNames="dec5cX1"}</p>
+  <p>$dec5cpad.x1{assignNames="dec5cpadX1"}</p>
+  <p>$dig5dec1a.x1{assignNames="dig5dec1aX1"}</p>
+  <p>$dig5dec1apad.x1{assignNames="dig5dec1apadX1"}</p>
+  <p>$dig5dec1b.x1{assignNames="dig5dec1bX1"}</p>
+  <p>$dig5dec1bpad.x1{assignNames="dig5dec1bpadX1"}</p>
+  <p>$dig5dec1c.x1{assignNames="dig5dec1cX1"}</p>
+  <p>$dig5dec1cpad.x1{assignNames="dig5dec1cpadX1"}</p>
 
   `,
         },
@@ -2520,9 +2510,9 @@ describe("Math Tag Tests", function () {
       <p>Number: <math name="n">35203423.02352343201</math></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy source="n" displayDigits='$ndigits' displayDecimals='$ndecimals' assignNames="na" /></p>
-      <p><copy prop="value" source="ndigits" assignNames="ndigits2" /></p>
-      <p><copy prop="value" source="ndecimals" assignNames="ndecimals2" /></p>
+      <p>$n{displayDigits='$ndigits' displayDecimals='$ndecimals' name="na"}</p>
+      <p>$ndigits.value{assignNames="ndigits2"}</p>
+      <p>$ndecimals.value{assignNames="ndecimals2"}</p>
     `,
         },
         "*",
@@ -2778,12 +2768,12 @@ describe("Math Tag Tests", function () {
           doenetML: `
   <p><text>a</text></p>
   <math name="m1">f(x)+m(x)</math>
-  <copy source="m1" functionSymbols="m" assignNames="m2" />
-  <copy source="m2" functionSymbols="m f" assignNames="m3" />
+  $m1{functionSymbols="m" name="m2"}
+  $m2{functionSymbols="m f" name="m3"}
 
   <math name="m4" functionSymbols="m f">f(x)+m(x)</math>
-  <copy source="m4" functionSymbols="m" assignNames="m5" />
-  <copy source="m5" functionSymbols="f" assignNames="m6" />
+  $m4{functionSymbols="m" name="m5"}
+  $m5{functionSymbols="f" name="m6"}
   `,
         },
         "*",
@@ -2951,12 +2941,12 @@ describe("Math Tag Tests", function () {
   <p><select assignNames="f">f g h k m n</select></p>
 
   <p><math name="m1">$f(x)</math></p>
-  <p><copy source="m1" sourcesAreFunctionSymbols="f" assignNames="m2" /></p>
-  <p><copy source="m2" sourcesAreFunctionSymbols="" assignNames="m3" /></p>
+  <p>$m1{sourcesAreFunctionSymbols="f" name="m2"}</p>
+  <p>$m2{sourcesAreFunctionSymbols="" name="m3"}</p>
 
   <p><math name="m4" sourcesAreFunctionSymbols="f">$f(x)</math></p>
-  <p><copy source="m4" sourcesAreFunctionSymbols="" assignNames="m5" /></p>
-  <p><copy source="m5" sourcesAreFunctionSymbols="f" assignNames="m6" /></p>
+  <p>$m4{sourcesAreFunctionSymbols="" name="m5"}</p>
+  <p>$m5{sourcesAreFunctionSymbols="f" name="m6"}</p>
   `,
         },
         "*",
@@ -3032,16 +3022,16 @@ describe("Math Tag Tests", function () {
           doenetML: `
   <p><text>a</text></p>
   <p><math name="m1">x+x</math></p>
-  <p><copy source="m1" simplify assignNames="m2" /></p>
-  <p><copy source="m2" simplify="none" assignNames="m3" /></p>
-  <p><copy source="m1.value" simplify assignNames="m2a" /></p>
-  <p><copy source="m2.value" simplify="none" assignNames="m3a" /></p>
+  <p>$m1{simplify name="m2"}</p>
+  <p>$m2{simplify="none" name="m3"}</p>
+  <p>$m1.value{simplify assignNames="m2a"}</p>
+  <p>$m2.value{simplify="none" assignNames="m3a"}</p>
 
   <p><math name="m4" simplify>x+x</math></p>
-  <p><copy source="m4" simplify="none" assignNames="m5" /></p>
-  <p><copy source="m5" simplify assignNames="m6" /></p>
-  <p><copy source="m4.value" simplify="none" assignNames="m5a" /></p>
-  <p><copy source="m5a.value" simplify assignNames="m6a" /></p>
+  <p>$m4{simplify="none" name="m5"}</p>
+  <p>$m5{simplify name="m6"}</p>
+  <p>$m4.value{simplify="none" assignNames="m5a"}</p>
+  <p>$m5a.value{simplify assignNames="m6a"}</p>
   `,
         },
         "*",
@@ -3955,12 +3945,12 @@ describe("Math Tag Tests", function () {
           doenetML: `
   <p><text>a</text></p>
   <p><math name="m1">xyz</math></p>
-  <p><copy source="m1" splitsymbols="false" assignNames="m2" /></p>
-  <p><copy source="m2" splitsymbols assignNames="m3" /></p>
+  <p>$m1{splitSymbols="false" name="m2"}</p>
+  <p>$m2{splitSymbols name="m3"}</p>
 
   <p><math name="m4" splitSymbols="false">xyz</math></p>
-  <p><copy source="m4" splitsymbols assignNames="m5" /></p>
-  <p><copy source="m5" splitsymbols="false" assignNames="m6" /></p>
+  <p>$m4{splitSymbols name="m5"}</p>
+  <p>$m5{splitSymbols="false" name="m6"}</p>
   `,
         },
         "*",
@@ -4124,14 +4114,14 @@ describe("Math Tag Tests", function () {
   <p><mathinput name="m" prefill="(a,b,c)" /></p>
   <p><math name="m2">$m</math></p>
   <p><math name="m3" createVectors>$m</math></p>
-  <p>Ndimensions: <extract prop="numDimensions" assignNames="numDim1">$m</extract> <copy prop="numDimensions" source="m2" assignNames="numDim2" /> <copy prop="numDimensions" source="m3" assignNames="numDim3" /></p>
-  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" source="m2" assignNames="x_2" /> <copy prop="x" source="m3" assignNames="x_3" /></p>
-  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" source="m2" assignNames="y_2" /> <copy prop="y" source="m3" assignNames="y_3" /></p>
-  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" source="m2" assignNames="z_2" /> <copy prop="z" source="m3" assignNames="z_3" /></p>
-  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" source="m2" assignNames="x1_2" /> <copy prop="x1" source="m3" assignNames="x1_3" /></p>
-  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" source="m2" assignNames="x2_2" /> <copy prop="x2" source="m3" assignNames="x2_3" /></p>
-  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" source="m2" assignNames="x3_2" /> <copy prop="x3" source="m3" assignNames="x3_3" /></p>
-  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" source="m2" assignNames="x4_2" /> <copy prop="x4" source="m3" assignNames="x4_3" /></p>
+  <p>Ndimensions: <extract prop="numDimensions" assignNames="numDim1">$m</extract> $m2.numDimensions{assignNames="numDim2"} $m3.numDimensions{assignNames="numDim3"}</p>
+  <p>x: <extract prop="x" assignNames="x">$m</extract> $m2.x{assignNames="x_2"} $m3.x{assignNames="x_3"}</p>
+  <p>y: <extract prop="y" assignNames="y">$m</extract> $m2.y{assignNames="y_2"} $m3.y{assignNames="y_3"}</p>
+  <p>z: <extract prop="z" assignNames="z">$m</extract> $m2.z{assignNames="z_2"} $m3.z{assignNames="z_3"}</p>
+  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> $m2.x1{assignNames="x1_2"} $m3.x1{assignNames="x1_3"}</p>
+  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> $m2.x2{assignNames="x2_2"} $m3.x2{assignNames="x2_3"}</p>
+  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> $m2.x3{assignNames="x3_2"} $m3.x3{assignNames="x3_3"}</p>
+  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> $m2.x4{assignNames="x4_2"} $m3.x4{assignNames="x4_3"}</p>
   <p>x: <mathinput bindValueTo="$x" name="mx" /> <mathinput bindValueTo="$m2.x" name="mx_2" /> <mathinput bindValueTo="$m3.x" name="mx_3" /></p>
   <p>y: <mathinput bindValueTo="$y" name="my" /> <mathinput bindValueTo="$m2.y" name="my_2" /> <mathinput bindValueTo="$m3.y" name="my_3" /></p>
   <p>z: <mathinput bindValueTo="$z" name="mz" /> <mathinput bindValueTo="$m2.z" name="mz_2" /> <mathinput bindValueTo="$m3.z" name="mz_3" /></p>
@@ -4374,68 +4364,381 @@ describe("Math Tag Tests", function () {
     check_values(["j", "k", "l"], "altvector");
   });
 
-  it("group composite replacements inside math", () => {
+  it("aslist inside math, group", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
-  <p><text>a</text></p>
-  <math name="groupByDefault">
-    <group><math>a</math><math>b</math></group>
-  </math>
-  <math name="dontGroup" compositeReplacementsAsList="false">
-    <group><math>a</math><math>b</math></group>
-  </math>
-  <math name="dontGroupDueToString">
-    <group><math>a</math> + <math>b</math></group>
-  </math>
+  
+  <group name="grp">
+    <math>a</math>
+    b
+    <math>c</math>
+  </group>
+
+
+  <math name="nolist">$grp</math>
+  <math name="list">$grp{asList}</math>
+  <math name="nolist2">($grp)</math>
+  <math name="tuple">($grp{asList})</math>
+  <math name="doubleNoList">2$grp</math>
+  <math name="doubleTuple">2$grp{asList}</math>
+  <math name="appendNoList">$grp, sin(x)</math>
+  <math name="appendToList">$grp{asList}, sin(x)</math>
+  <math name="functionNoList">f($grp)</math>
+  <math name="functionOfList">f($grp{asList})</math>
+  
   `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/nolist") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "abc");
 
-    cy.get(cesc(`#\\/groupByDefault`))
-      .find(".mjx-mrow")
+    cy.get(cesc2("#/list") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("(a,b)");
-      });
-    cy.get(cesc(`#\\/dontGroup`))
-      .find(".mjx-mrow")
+      .should("have.text", "a,b,c");
+
+    cy.get(cesc2("#/nolist2") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("ab");
-      });
-    cy.get(cesc(`#\\/dontGroupDueToString`))
-      .find(".mjx-mrow")
+      .should("have.text", "abc");
+
+    cy.get(cesc2("#/tuple") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("a+b");
-      });
+      .should("have.text", "(a,b,c)");
+
+    cy.get(cesc2("#/doubleNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2abc");
+
+    cy.get(cesc2("#/doubleTuple") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2(a,b,c)");
+
+    cy.get(cesc2("#/appendNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "abc,sin(x)");
+
+    cy.get(cesc2("#/appendToList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a,b,c,sin(x)");
+
+    cy.get(cesc2("#/functionNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "f(abc)");
+
+    cy.get(cesc2("#/functionOfList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "f(a,b,c)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/groupByDefault"].stateValues.value).eqls([
-        "tuple",
-        "a",
-        "b",
-      ]);
-      expect(stateVariables["/dontGroup"].stateValues.value).eqls([
+      expect(stateVariables["/nolist"].stateValues.value).eqls([
         "*",
         "a",
         "b",
+        "c",
       ]);
-      expect(stateVariables["/dontGroupDueToString"].stateValues.value).eqls([
-        "+",
+      expect(stateVariables["/nolist"].stateValues.text).eq("a b c");
+
+      expect(stateVariables["/list"].stateValues.value).eqls([
+        "list",
         "a",
         "b",
+        "c",
+      ]);
+      expect(stateVariables["/list"].stateValues.text).eq("a, b, c");
+
+      expect(stateVariables["/nolist2"].stateValues.value).eqls([
+        "*",
+        "a",
+        "b",
+        "c",
+      ]);
+      expect(stateVariables["/nolist2"].stateValues.text).eq("a b c");
+
+      expect(stateVariables["/tuple"].stateValues.value).eqls([
+        "tuple",
+        "a",
+        "b",
+        "c",
+      ]);
+      expect(stateVariables["/tuple"].stateValues.text).eq("( a, b, c )");
+
+      expect(stateVariables["/doubleNoList"].stateValues.value).eqls([
+        "*",
+        2,
+        "a",
+        "b",
+        "c",
+      ]);
+      expect(stateVariables["/doubleNoList"].stateValues.text).eq("2 a b c");
+
+      expect(stateVariables["/doubleTuple"].stateValues.value).eqls([
+        "*",
+        2,
+        ["tuple", "a", "b", "c"],
+      ]);
+      expect(stateVariables["/doubleTuple"].stateValues.text).eq(
+        "2 ( a, b, c )",
+      );
+
+      expect(stateVariables["/appendNoList"].stateValues.value).eqls([
+        "list",
+        ["*", "a", "b", "c"],
+        ["apply", "sin", "x"],
+      ]);
+      expect(stateVariables["/appendNoList"].stateValues.text).eq(
+        "a b c, sin(x)",
+      );
+
+      expect(stateVariables["/appendToList"].stateValues.value).eqls([
+        "list",
+        "a",
+        "b",
+        "c",
+        ["apply", "sin", "x"],
+      ]);
+      expect(stateVariables["/appendToList"].stateValues.text).eq(
+        "a, b, c, sin(x)",
+      );
+
+      expect(stateVariables["/functionNoList"].stateValues.value).eqls([
+        "apply",
+        "f",
+        ["*", "a", "b", "c"],
+      ]);
+      expect(stateVariables["/functionNoList"].stateValues.text).eq("f(a b c)");
+
+      expect(stateVariables["/functionOfList"].stateValues.value).eqls([
+        "apply",
+        "f",
+        ["tuple", "a", "b", "c"],
+      ]);
+      expect(stateVariables["/functionOfList"].stateValues.text).eq(
+        "f( a, b, c )",
+      );
+    });
+  });
+
+  it("aslist inside math, sequence", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  
+  <sequence name="seq" to="4" />
+
+
+  <math name="list" simplify>$seq</math>
+  <math name="nolist" simplify>$seq{asList="false"}</math>
+  <math name="tuple" simplify>($seq)</math>
+  <math name="nolist2" simplify>($seq{asList="false"})</math>
+  <math name="doubleTuple" simplify>2$seq</math>
+  <math name="doubleNoList" simplify>2$seq{asList="false"}</math>
+  <math name="appendToList" simplify>$seq, sin(x)</math>
+  <math name="appendNoList" simplify>$seq{asList="false"}, sin(x)</math>
+  <math name="functionOfList" simplify>sum($seq)</math>
+  <math name="functionNoList" simplify>sum($seq{asList="false"})</math>
+  
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/list") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2,3,4");
+
+    cy.get(cesc2("#/nolist") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "24");
+
+    cy.get(cesc2("#/tuple") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2,3,4)");
+
+    cy.get(cesc2("#/nolist2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "24");
+
+    cy.get(cesc2("#/doubleTuple") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,4,6,8)");
+
+    cy.get(cesc2("#/doubleNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "48");
+
+    cy.get(cesc2("#/appendToList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2,3,4,sin(x)");
+
+    cy.get(cesc2("#/appendNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "24,sin(x)");
+
+    cy.get(cesc2("#/functionOfList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "10");
+
+    cy.get(cesc2("#/functionNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "24");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/list"].stateValues.value).eqls([
+        "list",
+        1,
+        2,
+        3,
+        4,
+      ]);
+
+      expect(stateVariables["/nolist"].stateValues.value).eq(24);
+
+      expect(stateVariables["/tuple"].stateValues.value).eqls([
+        "tuple",
+        1,
+        2,
+        3,
+        4,
+      ]);
+
+      expect(stateVariables["/nolist2"].stateValues.value).eq(24);
+
+      expect(stateVariables["/doubleTuple"].stateValues.value).eqls([
+        "tuple",
+        2,
+        4,
+        6,
+        8,
+      ]);
+
+      expect(stateVariables["/doubleNoList"].stateValues.value).eq(48);
+
+      expect(stateVariables["/appendToList"].stateValues.value).eqls([
+        "list",
+        1,
+        2,
+        3,
+        4,
+        ["apply", "sin", "x"],
+      ]);
+
+      expect(stateVariables["/appendNoList"].stateValues.value).eqls([
+        "list",
+        24,
+        ["apply", "sin", "x"],
+      ]);
+
+      expect(stateVariables["/functionOfList"].stateValues.value).eq(10);
+
+      expect(stateVariables["/functionNoList"].stateValues.value).eq(24);
+    });
+  });
+
+  it("aslist inside math, map", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  
+  <map name="map">
+    <template>
+
+      <number>$v^2</number>
+
+      <math>x</math>
+
+    </template>
+    <sources alias="v"><sequence to="3" /></sources>
+  </map>
+
+  <math name="list" simplify>$map</math>
+  <math name="nolist" simplify>$map{asList="false"}</math>
+  <math name="tuple" simplify>($map)</math>
+  <math name="nolist2" simplify>($map{asList="false"})</math>
+  <math name="doubleTuple" simplify>2$map</math>
+  <math name="doubleNoList" simplify>2$map{asList="false"}</math>
+  
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/list") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x,4x,9x");
+
+    cy.get(cesc2("#/nolist") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "36x3");
+
+    cy.get(cesc2("#/tuple") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(x,4x,9x)");
+
+    cy.get(cesc2("#/nolist2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "36x3");
+
+    cy.get(cesc2("#/doubleTuple") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2x,8x,18x)");
+
+    cy.get(cesc2("#/doubleNoList") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "72x3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/list"].stateValues.value).eqls([
+        "list",
+        "x",
+        ["*", 4, "x"],
+        ["*", 9, "x"],
+      ]);
+
+      expect(stateVariables["/nolist"].stateValues.value).eqls([
+        "*",
+        36,
+        ["^", "x", 3],
+      ]);
+
+      expect(stateVariables["/tuple"].stateValues.value).eqls([
+        "tuple",
+        "x",
+        ["*", 4, "x"],
+        ["*", 9, "x"],
+      ]);
+
+      expect(stateVariables["/nolist2"].stateValues.value).eqls([
+        "*",
+        36,
+        ["^", "x", 3],
+      ]);
+
+      expect(stateVariables["/doubleTuple"].stateValues.value).eqls([
+        "tuple",
+        ["*", 2, "x"],
+        ["*", 8, "x"],
+        ["*", 18, "x"],
+      ]);
+
+      expect(stateVariables["/doubleNoList"].stateValues.value).eqls([
+        "*",
+        72,
+        ["^", "x", 3],
       ]);
     });
   });
@@ -4479,20 +4782,20 @@ describe("Math Tag Tests", function () {
           doenetML: `
   <p><text>a</text></p>
   <math name="ordered1">2,3</math>
-  <copy source="ordered1" unordered assignNames="unordered1" />
-  <copy source="unordered1" unordered="false" assignNames="ordered2" />
+  $ordered1{unordered name="unordered1"}
+  $unordered1{unordered="false" name="ordered2"}
 
   <math name="unordered2" unordered>2,3</math>
-  <copy source="unordered2" unordered="false" assignNames="ordered3" />
-  <copy source="ordered3" unordered assignNames="unordered3" />
+  $unordered2{unordered="false" name="ordered3"}
+  $ordered3{unordered name="unordered3"}
 
   <math name="unordered4"><math unordered>2,3</math></math>
-  <copy source="unordered4" unordered="false" assignNames="ordered4" />
-  <copy source="ordered4" unordered assignNames="unordered5" />
+  $unordered4{unordered="false" name="ordered4"}
+  $ordered4{unordered name="unordered5"}
 
   <math name="ordered5" unordered="false"><math unordered>2,3</math></math>
-  <copy source="ordered5" unordered assignNames="unordered6" />
-  <copy source="unordered6" unordered="false" assignNames="ordered6" />
+  $ordered5{unordered name="unordered6"}
+  $unordered6{unordered="false" name="ordered6"}
 
   `,
         },
@@ -4531,15 +4834,15 @@ describe("Math Tag Tests", function () {
 
   <p name="p1" newNamespace>
     <math name="m1" unordered="$(../b1)">2,3</math>
-    <copy source="m1" unordered="$(../b2)" assignNames="m2" />
-    <copy source="m2" unordered="$(../b3)" assignNames="m3" />
+    $m1{unordered="$(../b2)" name="m2"}
+    $m2{unordered="$(../b3)" name="m3"}
   </p>
 
   $p1{name="p2"}
   <p>
-    <copy prop="value" source="b1" assignNames="b1a" />
-    <copy prop="value" source="b2" assignNames="b2a" />
-    <copy prop="value" source="b3" assignNames="b3a" />
+    $b1.value{assignNames="b1a"}
+    $b2.value{assignNames="b2a"}
+    $b3.value{assignNames="b3a"}
   </p>
   `,
         },
@@ -4646,7 +4949,7 @@ describe("Math Tag Tests", function () {
   <number name="n">1</number>
   <graph>
     <point name="P" coords="(2$n+1,1)" />
-    <copy source="P" assignNames="Q" x="2$n-1" />
+    $P{name="Q" x="2$n-1"}
   </graph>
   `,
         },
@@ -4693,7 +4996,7 @@ describe("Math Tag Tests", function () {
   <math name="coords" simplify>(2$n+1,1)</math>
   <graph>
     <point name="P" coords="$coords" />
-    <copy source="P" assignNames="Q" x="2$n-1" />
+    $P{name="Q" x="2$n-1"}
   </graph>
   `,
         },
@@ -4756,7 +5059,7 @@ describe("Math Tag Tests", function () {
   <mathinput name="coords2" bindValueTo="$coords1" />
   <graph>
     <point name="P" coords="$coords2" />
-    <copy source="P" assignNames="Q" x="2$n-1" />
+    $P{name="Q" x="2$n-1"}
   </graph>
   `,
         },

@@ -123,7 +123,7 @@ describe("Extract Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <graph>
-      <copy assignNames="copy" target="original" />
+      $original{name="copy"}
       <point name="transformed">
         ($copy2.y,
         <extract prop="x1">$copy{name="copy2"}</extract>)
@@ -211,17 +211,17 @@ describe("Extract Tag Tests", function () {
     <circle through="$_point1 $_point2" />
     </extract>
     
-    <copy assignNames="x1" prop="x" target="_extract1" />,
-    <copy assignNames="y1" prop="y" target="_extract1" />
+    $_extract1.x{assignNames="x1"},
+    $_extract1.y{assignNames="y1"}
     
     <graph>
     <point>(1,2)</point>
     <point>(5,6)</point>
-    <copy assignNames="copiedextract" target="_extract1" />
+    $_extract1{name="copiedextract"}
     </graph>
 
-    <copy assignNames="x2" prop="x" target="copiedextract" />,
-    <copy assignNames="y2" prop="y" target="copiedextract" />
+    $copiedextract.x{assignNames="x2"},
+    $copiedextract.y{assignNames="y2"}
     `,
         },
         "*",

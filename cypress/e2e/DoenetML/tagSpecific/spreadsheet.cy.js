@@ -41,9 +41,9 @@ describe("Spreadsheet Tag Tests", function () {
   <spreadsheet minNumRows="4" minNumColumns="4" />
   <text>a</text>
   <p>
-    <copy prop="cellA1" source="_spreadsheet1" assignNames="A1a" />
-    <copy prop="cellB3" source="_spreadsheet1" assignNames="B3a" />
-    <copy prop="cellD2" source="_spreadsheet1" assignNames="D2a" />
+    $_spreadsheet1.cellA1{assignNames="A1a"}
+    $_spreadsheet1.cellB3{assignNames="B3a"}
+    $_spreadsheet1.cellD2{assignNames="D2a"}
   </p>
   `,
         },
@@ -515,7 +515,7 @@ describe("Spreadsheet Tag Tests", function () {
   <spreadsheet>
   <copy prop="cellD4" colnum="D" rownum="4" source="_spreadsheet1" assignNames="c4a" />
   <copy prop="cellC3" colnum="A" rownum="3" source="_spreadsheet1" assignNames="c2a" />
-  <copy prop="cellD3" source="_spreadsheet1" assignNames="c3a" />
+  $_spreadsheet1.cellD3{assignNames="c3a"}
   <copy prop="cellA1" colnum="2" rownum="4" source="_spreadsheet1" assignNames="c1a" />
   <copy prop="cellb1" rownum="2" colnum="b" source="_spreadsheet1" assignNames="c5a" />
   </spreadsheet>
@@ -2144,7 +2144,7 @@ describe("Spreadsheet Tag Tests", function () {
   </spreadsheet>
   
   <p>
-    <copy prop="cellD1" source="_spreadsheet1" assignNames="D1a" />
+    $_spreadsheet1.cellD1{assignNames="D1a"}
   </p>
 
 
@@ -4426,8 +4426,8 @@ describe("Spreadsheet Tag Tests", function () {
   <cell>1</cell><cell>2</cell>
 </spreadsheet>
 
-<copy prop="cellB1" source="s" assignNames="c1" />
-<copy prop="cellA1" source="s" assignNames="c2" />
+$s.cellB1{assignNames="c1"}
+$s.cellA1{assignNames="c2"}
 
 <tabular>
   <row>

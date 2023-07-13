@@ -1001,8 +1001,8 @@ describe("Collect Tag Tests", function () {
       <collect componentTypes="point vector" source="_panel1" assignNames="v1 v2 v3 v4 v5 v6" />
     </graph>
 
-    <copy prop="head" source="_vector1" assignNames="h1" />
-    <copy prop="head" source="_vector2" assignNames="h2" />
+    $_vector1.head{assignNames="h1"}
+    $_vector2.head{assignNames="h2"}
     `,
         },
         "*",
@@ -4163,7 +4163,7 @@ describe("Collect Tag Tests", function () {
 
     <copy source="al" name="al2" newNamespace />
 
-    <copy prop="fixed" source="A2" assignNames="A2fixed" />
+    $A2.fixed{assignNames="A2fixed"}
     `,
         },
         "*",
@@ -5061,6 +5061,5 @@ describe("Collect Tag Tests", function () {
 
     cy.get(cesc2("#/P1") + " .mjx-mrow").should("contain.text", "(1,2");
     cy.get(cesc2("#/P2") + " .mjx-mrow").should("contain.text", "(3,4");
-
   });
 });

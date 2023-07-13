@@ -155,7 +155,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -238,7 +238,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -326,7 +326,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
@@ -403,7 +403,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
@@ -451,7 +451,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
@@ -497,7 +497,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
@@ -627,7 +627,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
@@ -743,15 +743,15 @@ describe("Polyline Tag Tests", function () {
   <polyline vertices="(-3,-1) (1,2) (3,4) (6,-2)" />
   </graph>
   <graph>
-  <copy assignNames="v1" prop="vertex1" target="_polyline1" />
-  <copy assignNames="v2" prop="vertex2" target="_polyline1" />
-  <copy assignNames="v3" prop="vertex3" target="_polyline1" />
-  <copy assignNames="v4" prop="vertex4" target="_polyline1" />
+  $_polyline1.vertex1{assignNames="v1"}
+  $_polyline1.vertex2{assignNames="v2"}
+  $_polyline1.vertex3{assignNames="v3"}
+  $_polyline1.vertex4{assignNames="v4"}
   </graph>
   <graph>
   <copy assignNames="v1a v2a v3a v4a" prop="vertices" target="_polyline1" />
   </graph>
-  <copy assignNames="v4b" prop="vertex4" target="_polyline1" />
+  $_polyline1.vertex4{assignNames="v4b"}
   `,
         },
         "*",
@@ -4369,7 +4369,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -4485,7 +4485,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -4605,7 +4605,7 @@ describe("Polyline Tag Tests", function () {
     <polyline vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="g"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})

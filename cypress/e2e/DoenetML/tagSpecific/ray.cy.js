@@ -1168,9 +1168,9 @@ describe("Ray Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g2">
-    <copy target="/g1/ray1" assignNames="ray1" />
-    <copy target="/g1/ray2" assignNames="ray2" />
-    <copy target="/g1/ray3" assignNames="ray3" />
+    $(/g1/ray1{name="1"})
+    $(/g1/ray2{name="2"})
+    $(/g1/ray3{name="3"})
   </graph>
 
   $g2{name="g3"}
@@ -2820,12 +2820,12 @@ describe("Ray Tag Tests", function () {
   </graph>
 
   <graph>
-  <copy assignNames="vt2" target="vt" />
-  <copy assignNames="vh2" target="vh" />
-  <copy assignNames="vd2" target="vd" />
-  <copy assignNames="vth2" target="vth" />
-  <copy assignNames="vtd2" target="vtd" />
-  <copy assignNames="vhd2" target="vhd" />
+  $vt{name="vt2"}
+  $vh{name="vh2"}
+  $vd{name="vd2"}
+  $vth{name="vth2"}
+  $vtd{name="vtd2"}
+  $vhd{name="vhd2"}
   </graph>
 
   <graph>
