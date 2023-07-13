@@ -9,18 +9,12 @@ export function textFromComponent(component) {
 }
 
 // Concatenate the text from children into one string.
-// If compositeReplacementsAsList is true,
-// then add commas between the components that are all from one composite
+// Add commas between the components that are all from one composite
 // if that composite has asList set to true
 export function textFromChildren(
   children,
-  compositeReplacementsAsList = true,
   textFromComponentConverter = textFromComponent,
 ) {
-  if (!compositeReplacementsAsList) {
-    return children.map(textFromComponentConverter).join("");
-  }
-
   let result = textFromChildrenSub({
     compositeReplacementRange: children.compositeReplacementRange,
     children,

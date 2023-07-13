@@ -256,15 +256,11 @@ export default class Label extends InlineComponent {
           }
         };
 
-        let value = textFromChildren(
-          dependencyValues.inlineChildren,
-          true,
-          (x) => textFromComponentConverter(x, true),
+        let value = textFromChildren(dependencyValues.inlineChildren, (x) =>
+          textFromComponentConverter(x, true),
         );
-        let text = textFromChildren(
-          dependencyValues.inlineChildren,
-          true,
-          (x) => textFromComponentConverter(x, false),
+        let text = textFromChildren(dependencyValues.inlineChildren, (x) =>
+          textFromComponentConverter(x, false),
         );
 
         return { setValue: { text, latex: text, value } };

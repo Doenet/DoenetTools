@@ -5911,6 +5911,7 @@ class ReplacementDependency extends Dependency {
       this.targetSubnames = this.definition.targetSubnames;
     }
 
+    // Note: it appears that targetSubnamesComponentIndex is not yet implemented
     if (this.definition.targetSubnamesComponentIndex) {
       if (
         this.definition.targetSubnamesComponentIndex.every(Number.isInteger)
@@ -6106,11 +6107,16 @@ class ReplacementDependency extends Dependency {
     }
 
     if (this.componentIndex !== undefined) {
-      let nonStringReplacements = replacements.filter(
-        (x) => typeof x !== "string",
+      // Note: strings that are not blank do take up a slot for component index.
+      // However, this non-blank strings that do take up a slot
+      // will not be returned as a replacement (instead the replacement will be empty).
+      // Rationale: we do not have a mechanism for linking a string to its replacement source,
+      // so returning the string would it unlinked and inconsistent with other cases.
+      let nonBlankStringReplacements = replacements.filter(
+        (x) => typeof x !== "string" || x.trim() !== "",
       );
-      let theReplacement = nonStringReplacements[this.componentIndex - 1];
-      if (theReplacement) {
+      let theReplacement = nonBlankStringReplacements[this.componentIndex - 1];
+      if (theReplacement && typeof theReplacement !== "string") {
         replacements = [theReplacement];
       } else {
         replacements = [];
@@ -6118,7 +6124,7 @@ class ReplacementDependency extends Dependency {
     }
 
     if (this.targetSubnames) {
-      function replaceComponentsUsingSubname({
+      let replaceComponentsUsingSubname = function ({
         components,
         subNames,
         subNamesComponentIndex,
@@ -6166,11 +6172,13 @@ class ReplacementDependency extends Dependency {
               // don't have a composite
               // so add only if there are no more subnames and either no more component indices
               // or just one index of 1 left
+
+              // Note: it appears subNamesComponentIndex is being ignored
               if (
                 remainingSubnames.length === 0 &&
                 (subNamesComponentIndex?.length ||
                   0 === 0 ||
-                  (subNamesComponentIndex.lenght === 1 &&
+                  (subNamesComponentIndex.length === 1 &&
                     subNamesComponentIndex[0] === 1))
               ) {
                 newComponents.push(newComp);
@@ -6180,7 +6188,7 @@ class ReplacementDependency extends Dependency {
         }
 
         return newComponents;
-      }
+      };
 
       replacements = replaceComponentsUsingSubname({
         components: replacements,

@@ -136,12 +136,6 @@ export default class MathComponent extends InlineComponent {
       fallBackToParentStateVariable: "parseScientificNotation",
     };
 
-    attributes.compositeReplacementsAsList = {
-      createPrimitiveOfType: "boolean",
-      createStateVariable: "compositeReplacementsAsList",
-      defaultValue: true,
-    };
-
     attributes.displayBlanks = {
       createComponentOfType: "boolean",
       createStateVariable: "displayBlanks",
@@ -385,10 +379,6 @@ export default class MathComponent extends InlineComponent {
         parseScientificNotation: {
           dependencyType: "stateVariable",
           variableName: "parseScientificNotation",
-        },
-        compositeReplacementsAsList: {
-          dependencyType: "stateVariable",
-          variableName: "compositeReplacementsAsList",
         },
       }),
       set: (x) => (x === null ? null : convertValueToMathExpression(x)),
@@ -1740,7 +1730,6 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   let inputString = createInputStringFromChildren({
     stringMathChildren: dependencyValues.stringMathChildren,
-    compositeReplacementsAsList: dependencyValues.compositeReplacementsAsList,
     codePre: dependencyValues.codePre,
     format: dependencyValues.format,
   });
@@ -1798,7 +1787,6 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 // Put parens around that list in some cases, as described below.
 function createInputStringFromChildren({
   stringMathChildren,
-  compositeReplacementsAsList,
   codePre,
   format,
 }) {
@@ -1811,17 +1799,6 @@ function createInputStringFromChildren({
       mathIndByChild.push(mathInd);
       mathInd++;
     }
-  }
-
-  if (!compositeReplacementsAsList) {
-    return baseStringFromChildren({
-      stringMathChildren,
-      startInd: 0,
-      endInd: stringMathChildren.length - 1,
-      mathIndByChild,
-      format,
-      codePre,
-    });
   }
 
   let result = createInputStringFromChildrenSub({

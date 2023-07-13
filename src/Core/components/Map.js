@@ -122,7 +122,7 @@ export default class Map extends CompositeComponent {
         templateChild: {
           dependencyType: "child",
           childGroups: ["templates"],
-          variableNames: ["serializedChildren", "newNamespace"],
+          variableNames: ["serializedChildren", "newNamespace", "asList"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -138,9 +138,13 @@ export default class Map extends CompositeComponent {
           state: { rendered: true },
           children: childrenOfTemplate,
           originalName: templateChild.componentName,
+          attributes: {},
         };
         if (templateChild.stateValues.newNamespace) {
-          template.attributes = { newNamespace: { primitive: true } };
+          template.attributes.newNamespace = { primitive: true };
+        }
+        if (templateChild.stateValues.asList) {
+          template.attributes.asList = { primitive: true };
         }
         return {
           setValue: {

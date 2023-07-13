@@ -59,12 +59,6 @@ export default class Text extends InlineComponent {
       public: true,
     };
 
-    attributes.compositeReplacementsAsList = {
-      createPrimitiveOfType: "boolean",
-      createStateVariable: "compositeReplacementsAsList",
-      defaultValue: true,
-    };
-
     Object.assign(attributes, returnAnchorAttributes());
 
     return attributes;
@@ -119,10 +113,6 @@ export default class Text extends InlineComponent {
           childGroups: ["textLike"],
           variableNames: ["text"],
         },
-        compositeReplacementsAsList: {
-          dependencyType: "stateVariable",
-          variableName: "compositeReplacementsAsList",
-        },
       }),
       defaultValue: "",
       set: (x) => (x === null ? "" : String(x)),
@@ -135,10 +125,7 @@ export default class Text extends InlineComponent {
           };
         }
 
-        let value = textFromChildren(
-          dependencyValues.textLikeChildren,
-          dependencyValues.compositeReplacementsAsList,
-        );
+        let value = textFromChildren(dependencyValues.textLikeChildren);
 
         return { setValue: { value } };
       },

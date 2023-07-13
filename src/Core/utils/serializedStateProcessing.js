@@ -3378,7 +3378,7 @@ export function processAssignNames({
 
   let processedComponents = [];
 
-  let numPrimitives = 0;
+  let numPrimitivesSkipped = 0;
 
   for (let ind = 0; ind < numComponents; ind++) {
     let indForNames = ind + indOffset;
@@ -3386,14 +3386,16 @@ export function processAssignNames({
     let component = serializedComponents[ind];
 
     if (typeof component !== "object") {
-      // don't name strings or primitive numbers
-      // and don't use up an entry from assignNames
-      numPrimitives++;
+      // Blank strings do not take up one of the names from assignNames.
+      // All other primitives do use up a name, but they are not actually named
+      if (typeof component === "string" && component.trim() === "") {
+        numPrimitivesSkipped++;
+      }
       processedComponents.push(component);
       continue;
     }
 
-    let name = assignNames[indForNames - numPrimitives];
+    let name = assignNames[indForNames - numPrimitivesSkipped];
 
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};

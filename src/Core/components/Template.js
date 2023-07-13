@@ -45,6 +45,13 @@ export default class Template extends CompositeComponent {
     attributes.numComponents = {
       createPrimitiveOfType: "number",
     };
+
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: false,
+    };
+
     return attributes;
   }
 
