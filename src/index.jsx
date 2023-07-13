@@ -172,7 +172,11 @@ const router = createBrowserRouter([
         path: "courses",
         loader: courseLoader,
         action: courseAction,
-        errorElement: <div>Error!</div>,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
 
         element: (
           <ChakraProvider theme={theme}>
