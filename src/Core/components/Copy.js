@@ -2060,6 +2060,8 @@ export default class Copy extends CompositeComponent {
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
+        fromCopyTarget:
+          Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
       });
 
       let propVariablesCopiedByReplacement =
@@ -2238,6 +2240,8 @@ export default class Copy extends CompositeComponent {
       numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
       flags,
+      fromCopyTarget:
+        Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
     });
 
     let propVariablesCopiedByReplacement =
