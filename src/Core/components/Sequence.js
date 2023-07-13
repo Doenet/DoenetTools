@@ -32,9 +32,9 @@ export default class Sequence extends CompositeComponent {
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
 
-    attributes.displayWithCommas = {
+    attributes.asList = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "displayWithCommas",
+      createStateVariable: "asList",
       defaultValue: true,
     };
 

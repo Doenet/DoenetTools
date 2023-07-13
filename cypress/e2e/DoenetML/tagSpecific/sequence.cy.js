@@ -1982,20 +1982,20 @@ describe("Sequence Tag Tests", function () {
     });
   });
 
-  it("sequence displays with commas by default", () => {
+  it("sequence displays as list by default", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <p name="pdefault"><sequence name="default" /></p>
-    <p name="pnocommas"><sequence displayWithCommas="false" name="nocommas" /></p>
-    <p name="pwithcommas"><sequence displayWithCommas name="withcommas" /></p>
+    <p name="pnocommas"><sequence asList="false" name="nocommas" /></p>
+    <p name="pwithcommas"><sequence asList name="withcommas" /></p>
     <p name="pdefault2">$default</p>
     <p name="pnocommas2">$nocommas</p>
     <p name="pwithcommas2">$withcommas</p>
-    <p name="pnocommas3">$default{displayWithCommas="false"}</p>
-    <p name="pnocommas3a">$withcommas{displayWithCommas="false"}</p>
-    <p name="pwithcommas3">$nocommas{displayWithCommas="true"}</p>
+    <p name="pnocommas3">$default{asList="false"}</p>
+    <p name="pnocommas3a">$withcommas{asList="false"}</p>
+    <p name="pwithcommas3">$nocommas{asList="true"}</p>
     <p name="pdefault4" copysource="pdefault" />
     <p name="pnocommas4" copysource="pnocommas" />
     <p name="pwithcommas4" copysource="pwithcommas" />

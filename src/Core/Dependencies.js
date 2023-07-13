@@ -4627,78 +4627,52 @@ class ChildDependency extends Dependency {
     } else {
       // translate parent.compositeReplacementActiveRange
       // so that indices refer to index from activeChildrenMatched
-      // and that only first composite is included
 
       if (
         parent.compositeReplacementActiveRange &&
         activeChildrenMatched.length > 0
       ) {
-        let ind = 0;
-        while (ind < activeChildrenIndices.length) {
-          let activeInd = activeChildrenIndices[ind];
-          for (let [
-            compositeInd,
-            compositeInfo,
-          ] of parent.compositeReplacementActiveRange.entries()) {
-            if (
-              compositeInfo.firstInd <= activeInd &&
-              compositeInfo.lastInd >= activeInd
-            ) {
-              let firstInd = ind;
-              let lastInd = ind;
-              while (
-                compositeInfo.lastInd > activeInd &&
-                ind < activeChildrenIndices.length - 1
-              ) {
-                ind++;
-                activeInd = activeChildrenIndices[ind];
-                if (compositeInfo.lastInd >= activeInd) {
-                  lastInd = ind;
-                } else {
-                  break;
-                }
-              }
+        for (let compositeInfo of parent.compositeReplacementActiveRange) {
+          let translatedFirstInd, translatedLastInd;
 
-              let displayWithCommas = compositeInfo.displayWithCommas;
+          let translatedPotentialListComponents = [];
 
-              // if we have multiple composites with the same indices,
-              // displayWithCommas should be determined by the last composite
-              let nextCompositeInd = compositeInd + 1;
-              let nextCompositeInfo =
-                parent.compositeReplacementActiveRange[nextCompositeInd];
-              while (nextCompositeInfo) {
-                if (
-                  nextCompositeInfo.firstInd === compositeInfo.firstInd &&
-                  nextCompositeInfo.lastInd === compositeInfo.lastInd
-                ) {
-                  displayWithCommas = nextCompositeInfo.displayWithCommas;
-                  nextCompositeInd = nextCompositeInd + 1;
-                  nextCompositeInfo =
-                    parent.compositeReplacementActiveRange[nextCompositeInd];
-                } else {
-                  break;
-                }
-              }
-
-              this.compositeReplacementRange.push({
-                compositeName: compositeInfo.compositeName,
-                target: compositeInfo.target,
-                firstInd,
-                lastInd,
-                displayWithCommas,
-              });
-
-              ind++;
-
-              if (ind === activeChildrenIndices.length) {
-                break;
-              }
-
-              activeInd = activeChildrenIndices[ind];
+          for (let [ind, activeInd] of activeChildrenIndices.entries()) {
+            if (compositeInfo.firstInd > activeInd) {
+              continue;
             }
+            if (compositeInfo.lastInd < activeInd) {
+              break;
+            }
+
+            // activeInd is matched by compositeInfo
+
+            if (translatedFirstInd === undefined) {
+              // this is the first activeInd to match, so translate first ind
+              // to the index of activeInd
+              translatedFirstInd = ind;
+            }
+
+            // last one to match will be picked
+            translatedLastInd = ind;
+
+            translatedPotentialListComponents.push(
+              compositeInfo.potentialListComponents[
+                activeInd - compositeInfo.firstInd
+              ],
+            );
           }
 
-          ind++;
+          if (translatedLastInd !== undefined) {
+            this.compositeReplacementRange.push({
+              compositeName: compositeInfo.compositeName,
+              target: compositeInfo.target,
+              firstInd: translatedFirstInd,
+              lastInd: translatedLastInd,
+              asList: compositeInfo.asList,
+              potentialListComponents: translatedPotentialListComponents,
+            });
+          }
         }
       }
 

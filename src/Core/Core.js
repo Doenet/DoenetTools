@@ -2785,18 +2785,44 @@ export default class Core {
           parent.compositeReplacementActiveRange = [];
         }
 
+        // Record whether or not each component can be considered an element of a list.
+        // If this composite or a containing composite has asList set,
+        // then it may be turned into a list if all the components can be list elements.
+
+        // All inline components and any components with canBeInList set
+        // are considered potential components for a list.
+        let replacementsCanBeInList = replacements.map(
+          (repl) =>
+            typeof repl !== "object" ||
+            this.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: repl.componentType,
+              baseComponentType: "_inline",
+            }) ||
+            repl.constructor.canBeInList,
+        );
+
         for (let otherCompositeObject of parent.compositeReplacementActiveRange) {
           if (otherCompositeObject.lastInd >= childInd) {
             otherCompositeObject.lastInd += replacements.length - 1;
+            otherCompositeObject.potentialListComponents.splice(
+              childInd,
+              1,
+              ...replacementsCanBeInList,
+            );
           }
         }
 
+        // compositeReplacementActiveRange will be used
+        // - in renderers to determined if they should add commas
+        // - in child dependencies, where they will be translated for matched children
+        //   and used in some components to determine if thsoe children can be formed into a list
         parent.compositeReplacementActiveRange.push({
           compositeName: child.componentName,
           target: await child.stateValues.target,
           firstInd: childInd,
           lastInd: childInd + replacements.length - 1,
-          displayWithCommas: await child.stateValues.displayWithCommas,
+          asList: await child.stateValues.asList,
+          potentialListComponents: replacementsCanBeInList,
         });
 
         parent.activeChildren.splice(childInd, 1, ...replacements);

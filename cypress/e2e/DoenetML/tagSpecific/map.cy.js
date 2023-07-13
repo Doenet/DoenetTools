@@ -4405,7 +4405,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1 hi2 hi3 hi4 ");
   });
 
-  it("map does not display with commas by default", () => {
+  it("map displays as list by default, single number in template", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -4420,7 +4420,7 @@ describe("Map Tag Tests", function () {
         </map>
       </p>
       <p name="pnocommas">
-        <map name="nocommas" displayWithCommas="false">
+        <map name="nocommas" asList="false">
           <template>
             <number>$v^2</number>
           </template>
@@ -4428,7 +4428,7 @@ describe("Map Tag Tests", function () {
         </map>
       </p>
       <p name="pwithcommas">
-        <map name="withcommas" displayWithCommas>
+        <map name="withcommas" asList>
           <template>
             <number>$v^2</number>
           </template>
@@ -4438,9 +4438,9 @@ describe("Map Tag Tests", function () {
       <p name="pdefault2">$default</p>
       <p name="pnocommas2">$nocommas</p>
       <p name="pwithcommas2">$withcommas</p>
-      <p name="pnocommas3">$withcommas{displayWithCommas="false"}</p>
-      <p name="pwithcommas3">$default{displayWithCommas="true"}</p>
-      <p name="pwithcommas3a">$nocommas{displayWithCommas="true"}</p>
+      <p name="pnocommas3">$default{asList="false"}</p>
+      <p name="pnocommas3a">$withcommas{asList="false"}</p>
+      <p name="pwithcommas3">$nocommas{asList="true"}</p>
       <p name="pdefault4" copysource="pdefault" />
       <p name="pnocommas4" copysource="pnocommas" />
       <p name="pwithcommas4" copysource="pwithcommas" />
@@ -4448,8 +4448,8 @@ describe("Map Tag Tests", function () {
       <p name="pnocommas5" copysource="pnocommas2" />
       <p name="pwithcommas5" copysource="pwithcommas2" />
       <p name="pnocommas6" copysource="pnocommas3" />
+      <p name="pnocommas6a" copysource="pnocommas3a" />
       <p name="pwithcommas6" copysource="pwithcommas3" />
-      <p name="pwithcommas6a" copysource="pwithcommas3a" />
 
     `,
         },
@@ -4462,29 +4462,29 @@ describe("Map Tag Tests", function () {
     cy.get(cesc2("#/default"))
       .invoke("text")
       .then((text) =>
-        expect(text.replace(/\s+/g, " ").trim()).eq(
-          "1 4 9 16 25 36 49 64 81 100",
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
     cy.get(cesc2("#/pdefault2"))
       .invoke("text")
       .then((text) =>
-        expect(text.replace(/\s+/g, " ").trim()).eq(
-          "1 4 9 16 25 36 49 64 81 100",
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
     cy.get(cesc2("#/pdefault4"))
       .invoke("text")
       .then((text) =>
-        expect(text.replace(/\s+/g, " ").trim()).eq(
-          "1 4 9 16 25 36 49 64 81 100",
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
     cy.get(cesc2("#/pdefault5"))
       .invoke("text")
       .then((text) =>
-        expect(text.replace(/\s+/g, " ").trim()).eq(
-          "1 4 9 16 25 36 49 64 81 100",
+        expect(text.replace(/, \s*/g, ", ").trim()).eq(
+          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
     cy.get(cesc2("#/nocommas"))
@@ -4508,6 +4508,13 @@ describe("Map Tag Tests", function () {
           "1 4 9 16 25 36 49 64 81 100",
         ),
       );
+    cy.get(cesc2("#/pnocommas3a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
     cy.get(cesc2("#/pnocommas4"))
       .invoke("text")
       .then((text) =>
@@ -4523,6 +4530,13 @@ describe("Map Tag Tests", function () {
         ),
       );
     cy.get(cesc2("#/pnocommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 4 9 16 25 36 49 64 81 100",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6a"))
       .invoke("text")
       .then((text) =>
         expect(text.replace(/\s+/g, " ").trim()).eq(
@@ -4551,13 +4565,6 @@ describe("Map Tag Tests", function () {
           "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
-    cy.get(cesc2("#/pwithcommas3a"))
-      .invoke("text")
-      .then((text) =>
-        expect(text.replace(/, \s*/g, ", ").trim()).eq(
-          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
-        ),
-      );
     cy.get(cesc2("#/pwithcommas4"))
       .invoke("text")
       .then((text) =>
@@ -4579,36 +4586,29 @@ describe("Map Tag Tests", function () {
           "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
         ),
       );
-    cy.get(cesc2("#/pwithcommas6a"))
-      .invoke("text")
-      .then((text) =>
-        expect(text.replace(/, \s*/g, ", ").trim()).eq(
-          "1, 4, 9, 16, 25, 36, 49, 64, 81, 100",
-        ),
-      );
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(
         stateVariables["/pdefault"].stateValues.text
-          .replace(/\s+/g, " ")
+          .replace(/, \s*/g, ", ")
           .trim(),
-      ).eq("1 4 9 16 25 36 49 64 81 100");
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
       expect(
         stateVariables["/pdefault2"].stateValues.text
-          .replace(/\s+/g, " ")
+          .replace(/, \s*/g, ", ")
           .trim(),
-      ).eq("1 4 9 16 25 36 49 64 81 100");
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
       expect(
         stateVariables["/pdefault4"].stateValues.text
-          .replace(/\s+/g, " ")
+          .replace(/, \s*/g, ", ")
           .trim(),
-      ).eq("1 4 9 16 25 36 49 64 81 100");
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
       expect(
         stateVariables["/pdefault5"].stateValues.text
-          .replace(/\s+/g, " ")
+          .replace(/, \s*/g, ", ")
           .trim(),
-      ).eq("1 4 9 16 25 36 49 64 81 100");
+      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
       expect(
         stateVariables["/pnocommas"].stateValues.text
           .replace(/\s+/g, " ")
@@ -4621,6 +4621,11 @@ describe("Map Tag Tests", function () {
       ).eq("1 4 9 16 25 36 49 64 81 100");
       expect(
         stateVariables["/pnocommas3"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
+        stateVariables["/pnocommas3a"].stateValues.text
           .replace(/\s+/g, " ")
           .trim(),
       ).eq("1 4 9 16 25 36 49 64 81 100");
@@ -4640,6 +4645,11 @@ describe("Map Tag Tests", function () {
           .trim(),
       ).eq("1 4 9 16 25 36 49 64 81 100");
       expect(
+        stateVariables["/pnocommas6a"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 4 9 16 25 36 49 64 81 100");
+      expect(
         stateVariables["/pwithcommas"].stateValues.text
           .replace(/, \s*/g, ", ")
           .trim(),
@@ -4651,11 +4661,6 @@ describe("Map Tag Tests", function () {
       ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
       expect(
         stateVariables["/pwithcommas3"].stateValues.text
-          .replace(/, \s*/g, ", ")
-          .trim(),
-      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
-      expect(
-        stateVariables["/pwithcommas3a"].stateValues.text
           .replace(/, \s*/g, ", ")
           .trim(),
       ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
@@ -4674,11 +4679,691 @@ describe("Map Tag Tests", function () {
           .replace(/, \s*/g, ", ")
           .trim(),
       ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+    });
+  });
+
+  it("map displays as list by default, number and string in template", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p name="pdefault">
+        <map name="default" >
+          <template>
+            <number>$v^2</number>
+            x
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pnocommas">
+        <map name="nocommas" asList="false">
+          <template>
+            <number>$v^2</number>
+            x
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pwithcommas">
+        <map name="withcommas" asList>
+          <template>
+            <number>$v^2</number>
+            x
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pdefault2">$default</p>
+      <p name="pnocommas2">$nocommas</p>
+      <p name="pwithcommas2">$withcommas</p>
+      <p name="pnocommas3">$default{asList="false"}</p>
+      <p name="pnocommas3a">$withcommas{asList="false"}</p>
+      <p name="pwithcommas3">$nocommas{asList="true"}</p>
+      <p name="pdefault4" copysource="pdefault" />
+      <p name="pnocommas4" copysource="pnocommas" />
+      <p name="pwithcommas4" copysource="pwithcommas" />
+      <p name="pdefault5" copysource="pdefault2" />
+      <p name="pnocommas5" copysource="pnocommas2" />
+      <p name="pwithcommas5" copysource="pwithcommas2" />
+      <p name="pnocommas6" copysource="pnocommas3" />
+      <p name="pnocommas6a" copysource="pnocommas3a" />
+      <p name="pwithcommas6" copysource="pwithcommas3" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    // Note: we do not remove whitespace that has a following commas,
+    // as we want to test that the whitespace before a comma is removed.
+    cy.get(cesc2("#/default"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pdefault2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pdefault4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pdefault5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/nocommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas3a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x",
+        ),
+      );
+
+    cy.get(cesc2("#/withcommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x",
+        ),
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       expect(
-        stateVariables["/pwithcommas6a"].stateValues.text
-          .replace(/, \s*/g, ", ")
+        stateVariables["/pdefault"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
           .trim(),
-      ).eq("1, 4, 9, 16, 25, 36, 49, 64, 81, 100");
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault2"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault4"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault5"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pnocommas"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas2"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas3"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas3a"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas4"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas5"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas6"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas6a"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pwithcommas"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas2"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas3"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas4"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas5"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas6"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+    });
+  });
+
+  it("map displays as list by default, number, string and math in template", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p name="pdefault">
+        <map name="default" >
+          <template>
+            <number>$v^2</number>
+            <math>x</math>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pnocommas">
+        <map name="nocommas" asList="false">
+          <template>
+            <number>$v^2</number>
+            <math>x</math>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pwithcommas">
+        <map name="withcommas" asList>
+          <template>
+            <number>$v^2</number>
+            <math>x</math>
+          </template>
+          <sources alias="v"><sequence /></sources>
+        </map>
+      </p>
+      <p name="pdefault2">$default</p>
+      <p name="pnocommas2">$nocommas</p>
+      <p name="pwithcommas2">$withcommas</p>
+      <p name="pnocommas3">$default{asList="false"}</p>
+      <p name="pnocommas3a">$withcommas{asList="false"}</p>
+      <p name="pwithcommas3">$nocommas{asList="true"}</p>
+      <p name="pdefault4" copysource="pdefault" />
+      <p name="pnocommas4" copysource="pnocommas" />
+      <p name="pwithcommas4" copysource="pwithcommas" />
+      <p name="pdefault5" copysource="pdefault2" />
+      <p name="pnocommas5" copysource="pnocommas2" />
+      <p name="pwithcommas5" copysource="pwithcommas2" />
+      <p name="pnocommas6" copysource="pnocommas3" />
+      <p name="pnocommas6a" copysource="pnocommas3a" />
+      <p name="pwithcommas6" copysource="pwithcommas3" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    // make sure Mathjax has run
+    cy.get(cesc2("#/default") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    // Note: we do not remove whitespace that has a following commas,
+    // as we want to test that the whitespace before a comma is removed.
+
+    // Note 2: to check relationship between math and commas,
+    // we will grab the entire text, which includes 3 copies of math right now
+    // (subject to change if MathJax changes how their different formats work)
+    cy.get(cesc2("#/default"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pdefault2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pdefault4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pdefault5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/nocommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas3a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pnocommas6a"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+/g, " ").trim()).eq(
+          "1 xxx 4 xxx 9 xxx 16 xxx 25 xxx 36 xxx 49 xxx 64 xxx 81 xxx 100 xxx",
+        ),
+      );
+
+    cy.get(cesc2("#/withcommas"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas2"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas3"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas4"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas5"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+    cy.get(cesc2("#/pwithcommas6"))
+      .invoke("text")
+      .then((text) =>
+        expect(text.replace(/\s+(?!,)/g, " ").trim()).eq(
+          "1 xxx, 4 xxx, 9 xxx, 16 xxx, 25 xxx, 36 xxx, 49 xxx, 64 xxx, 81 xxx, 100 xxx",
+        ),
+      );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(
+        stateVariables["/pdefault"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault2"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault4"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pdefault5"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pnocommas"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas2"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas3"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas3a"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas4"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas5"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas6"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pnocommas6a"].stateValues.text
+          .replace(/\s+/g, " ")
+          .trim(),
+      ).eq("1 x 4 x 9 x 16 x 25 x 36 x 49 x 64 x 81 x 100 x");
+      expect(
+        stateVariables["/pwithcommas"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas2"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas3"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas4"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas5"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+      expect(
+        stateVariables["/pwithcommas6"].stateValues.text
+          .replace(/\s+(?!,)/g, " ")
+          .trim(),
+      ).eq("1 x, 4 x, 9 x, 16 x, 25 x, 36 x, 49 x, 64 x, 81 x, 100 x");
+    });
+  });
+
+  it("map will not display as list if has block components", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <map asList>
+        <template>
+          <p>Hello $v</p>
+        </template>
+        <sources alias="v"><sequence to="3" /></sources>
+      </map>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should("contain.text", "Hello 1");
+    cy.get(cesc2("#/_document1")).should("contain.text", "Hello 2");
+    cy.get(cesc2("#/_document1")).should("contain.text", "Hello 3");
+    cy.get(cesc2("#/_document1")).should("not.contain.text", ",");
+  });
+
+  it("map will display as list if has components with canBeInList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p name="p1"><map asList>
+        <template><point>($v, $v^2)</point></template>
+        <sources alias="v"><sequence to="3" /></sources>
+      </map></p>
+      <p name="p2"><map asList>
+        <template><vector>($v, $v^2)</vector></template>
+        <sources alias="v"><sequence to="3" /></sources>
+      </map></p>
+      <p name="p3"><map asList>
+        <template><line>y=$v</line></template>
+        <sources alias="v"><sequence to="3" /></sources>
+      </map></p>
+      <p name="p4"><map asList>
+        <template><angle>2$v</angle></template>
+        <sources alias="v"><sequence to="3" /></sources>
+      </map></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,1)");
+    cy.get(cesc2("#/p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(2,4)");
+    cy.get(cesc2("#/p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(3,9)");
+    cy.get(cesc2("#/p1")).should("contain.text", "), (");
+
+    cy.get(cesc2("#/p2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,1)");
+    cy.get(cesc2("#/p2") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(2,4)");
+    cy.get(cesc2("#/p2") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(3,9)");
+    cy.get(cesc2("#/p2")).should("contain.text", "), (");
+
+    cy.get(cesc2("#/p3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y=1");
+    cy.get(cesc2("#/p3") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "y=2");
+    cy.get(cesc2("#/p3") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "y=3");
+    cy.get(cesc2("#/p3")).should("contain.text", "1, y");
+    cy.get(cesc2("#/p3")).should("contain.text", "2, y");
+
+    cy.get(cesc2("#/p4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2");
+    cy.get(cesc2("#/p4") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "4");
+    cy.get(cesc2("#/p4") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "6");
+    cy.get(cesc2("#/p4")).should("contain.text", "2, 4");
+    cy.get(cesc2("#/p4")).should("contain.text", "4, 6");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1"].stateValues.text).eq(
+        "( 1, 1 ), ( 2, 4 ), ( 3, 9 )",
+      );
+      expect(stateVariables["/p2"].stateValues.text).eq(
+        "( 1, 1 ), ( 2, 4 ), ( 3, 9 )",
+      );
+      expect(stateVariables["/p3"].stateValues.text).eq("y = 1, y = 2, y = 3");
+      expect(stateVariables["/p4"].stateValues.text).eq("2, 4, 6");
     });
   });
 

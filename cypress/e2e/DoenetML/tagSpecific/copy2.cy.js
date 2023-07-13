@@ -6852,7 +6852,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("displayWithCommas when copy array prop", () => {
+  it("asList when copy array prop", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6864,8 +6864,8 @@ describe("Copy Tag Tests", function () {
     </choiceinput>
 
     <p name="default">Default: $ci.choiceTexts</p>
-    <p name="nocommas">No commas: $ci.choiceTexts{displayWithCommas="false"}</p>
-    <p name="withcommas">With commas: $ci.choiceTexts{displayWithCommas="true"}</p>
+    <p name="nocommas">No commas: $ci.choiceTexts{asList="false"}</p>
+    <p name="withcommas">With commas: $ci.choiceTexts{asList="true"}</p>
     <p name="default2" copySource="default" />
     <p name="nocommas2" copySource="nocommas" />
     <p name="withcommas2" copySource="withcommas" />
@@ -6911,7 +6911,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("displayWithCommas when copy array prop, multiple stacked props", () => {
+  it("asList when copy array prop, multiple stacked props", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6919,8 +6919,8 @@ describe("Copy Tag Tests", function () {
     <line name="l" through="(1,2) (3,4)" />
 
     <p name="default">Default: $l.points.x</p>
-    <p name="nocommas">No commas: $l.points.x{displayWithCommas="false"}</p>
-    <p name="withcommas">With commas: $l.points.x{displayWithCommas="true"}</p>
+    <p name="nocommas">No commas: $l.points.x{asList="false"}</p>
+    <p name="withcommas">With commas: $l.points.x{asList="true"}</p>
     <p name="default2" copySource="default" />
     <p name="nocommas2" copySource="nocommas" />
     <p name="withcommas2" copySource="withcommas" />
@@ -6952,7 +6952,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("displayWithCommas when copy array prop, aslist overrides", () => {
+  it("asList when copy array prop, aslist overrides", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -6964,7 +6964,7 @@ describe("Copy Tag Tests", function () {
     </choiceinput>
 
     
-    Override no commas: <aslist name="nocommas">$ci.choiceTexts{displayWithCommas="false"}</aslist>
+    Override no commas: <aslist name="nocommas">$ci.choiceTexts{asList="false"}</aslist>
     Copy: <aslist name="nocommas2" copySource="nocommas" />
     `,
         },
@@ -6982,7 +6982,7 @@ describe("Copy Tag Tests", function () {
     );
   });
 
-  it("displayWithCommas when copy array prop, test renderers", () => {
+  it("asList when copy array prop, test renderers", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {

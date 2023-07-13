@@ -49,9 +49,9 @@ export default class Extract extends CompositeComponent {
       public: true,
     };
 
-    attributes.displayWithCommas = {
+    attributes.asList = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "displayWithCommas",
+      createStateVariable: "asList",
       defaultValue: true,
     };
     return attributes;

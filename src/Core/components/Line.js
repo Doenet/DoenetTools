@@ -25,6 +25,7 @@ export default class Line extends GraphicalComponent {
     });
   }
   static componentType = "line";
+  static canBeInList = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

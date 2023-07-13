@@ -102,9 +102,9 @@ export default class Copy extends CompositeComponent {
       defaultValue: false,
     };
 
-    attributes.displayWithCommas = {
+    attributes.asList = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "displayWithCommas",
+      createStateVariable: "asList",
       defaultValue: true,
     };
 
@@ -1587,7 +1587,7 @@ export default class Copy extends CompositeComponent {
         componentType: repl.componentType,
         componentInfoObjects,
         compositeAttributesObj,
-        dontSkipAttributes: ["displayWithCommas"],
+        dontSkipAttributes: ["asList"],
         compositeCreatesNewNamespace: newNamespace,
       });
       Object.assign(repl.attributes, attributesFromComposite);

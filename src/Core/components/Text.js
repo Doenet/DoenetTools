@@ -59,9 +59,9 @@ export default class Text extends InlineComponent {
       public: true,
     };
 
-    attributes.displayCommasBetweenCompositeReplacements = {
+    attributes.compositeReplacementsAsList = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "displayCommasBetweenCompositeReplacements",
+      createStateVariable: "compositeReplacementsAsList",
       defaultValue: true,
     };
 
@@ -119,16 +119,14 @@ export default class Text extends InlineComponent {
           childGroups: ["textLike"],
           variableNames: ["text"],
         },
-        displayCommasBetweenCompositeReplacements: {
+        compositeReplacementsAsList: {
           dependencyType: "stateVariable",
-          variableName: "displayCommasBetweenCompositeReplacements",
+          variableName: "compositeReplacementsAsList",
         },
       }),
       defaultValue: "",
       set: (x) => (x === null ? "" : String(x)),
       definition: function ({ dependencyValues }) {
-        console.log(dependencyValues);
-
         if (dependencyValues.textLikeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -139,7 +137,7 @@ export default class Text extends InlineComponent {
 
         let value = textFromChildren(
           dependencyValues.textLikeChildren,
-          dependencyValues.displayCommasBetweenCompositeReplacements,
+          dependencyValues.compositeReplacementsAsList,
         );
 
         return { setValue: { value } };

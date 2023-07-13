@@ -11,6 +11,8 @@ import { returnWrapNonLabelsSugarFunction } from "../utils/label";
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
+  static canBeInList = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.radius = {

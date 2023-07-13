@@ -36,10 +36,10 @@ export default class Map extends CompositeComponent {
       leaveRaw: true,
     };
 
-    attributes.displayWithCommas = {
+    attributes.asList = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "displayWithCommas",
-      defaultValue: false,
+      createStateVariable: "asList",
+      defaultValue: true,
     };
 
     return attributes;

@@ -4383,7 +4383,7 @@ describe("Math Tag Tests", function () {
   <math name="groupByDefault">
     <group><math>a</math><math>b</math></group>
   </math>
-  <math name="dontGroup" groupCompositeReplacements="false">
+  <math name="dontGroup" compositeReplacementsAsList="false">
     <group><math>a</math><math>b</math></group>
   </math>
   <math name="dontGroupDueToString">

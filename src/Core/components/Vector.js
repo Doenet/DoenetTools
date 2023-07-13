@@ -28,6 +28,8 @@ export default class Vector extends GraphicalComponent {
   }
   static componentType = "vector";
 
+  static canBeInList = true;
+
   static primaryStateVariableForDefinition = "displacementShadow";
 
   static createAttributesObject() {

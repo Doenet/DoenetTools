@@ -24682,7 +24682,9 @@ describe("Answer Tag Tests", function () {
         </answer>
         </p>
 
-        $a.feedbacks{assignNames="fb1 fb2 fb3 fb4 fb5"}
+        <div name="theFeedbacks">
+          $a.feedbacks{assignNames="fb1 fb2 fb3 fb4 fb5"}
+        </div>
 
         <p>Current responses: <aslist>$a.currentResponses{assignNames="cr1 cr2" createComponentOfType="math" numComponents="2"}</aslist></p>
         <p>Submitted response: <aslist>$a.submittedResponses{assignNames="sr1 sr2" createComponentOfType="math" numComponents="2"}</aslist></p>
@@ -24899,6 +24901,17 @@ describe("Answer Tag Tests", function () {
     cy.get(cesc("#\\/fb3")).should("not.exist");
     cy.get(cesc("#\\/fb4")).should("not.exist");
     cy.get(cesc("#\\/fb5")).should("not.exist");
+
+    // make sure don't have a comma displayed between feedbacks
+    cy.get(cesc("#\\/theFeedbacks")).should(
+      "contain.text",
+      "At least the first is a number",
+    );
+    cy.get(cesc("#\\/theFeedbacks")).should(
+      "contain.text",
+      "At least the second is a number",
+    );
+    cy.get(cesc("#\\/theFeedbacks")).should("not.contain.text", ",");
 
     cy.get(cesc("#\\/cr1"))
       .find(".mjx-mrow")
