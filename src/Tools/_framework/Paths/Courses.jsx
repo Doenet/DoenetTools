@@ -264,11 +264,16 @@ export function Courses() {
                   </AlertDialogBody>
 
                   <AlertDialogFooter>
-                    <Button ref={cancelWarningRef} onClick={onCloseWarning}>
+                    <Button
+                      ref={cancelWarningRef}
+                      onClick={onCloseWarning}
+                      data-test="Cancel Add Course"
+                    >
                       Cancel
                     </Button>
                     <Button
                       colorScheme="red"
+                      data-test="Confirm Add Course"
                       onClick={() => {
                         onCloseWarning();
                         fetcher.submit(

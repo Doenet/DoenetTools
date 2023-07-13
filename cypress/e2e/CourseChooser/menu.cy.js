@@ -29,6 +29,7 @@ describe("Duplicate Course", function () {
 
     cy.get('[data-test="My Courses"]').click();
     cy.get('[data-test="Add Course"]').click();
+    cy.get('[data-test="Confirm Add Course"]').click();
     //Assumes it's the left most "Untitled Course" is the one cypress made
     cy.log("Create a new course and label it")
     cy.get('[data-test="My Courses"]').click();
@@ -55,6 +56,7 @@ describe("Duplicate Course", function () {
 
     cy.get('[data-test="My Courses"]').click();
     cy.get('[data-test="Add Course"]').click();
+    cy.get('[data-test="Confirm Add Course"]').click();
     //Assumes it's the left most "Untitled Course" is the one cypress made
     cy.log("Create a new course and label it")
     cy.get('[data-test="My Courses"]').click();
@@ -98,6 +100,7 @@ describe("Duplicate Course", function () {
 
     cy.get('[data-test="My Courses"]').click();
     cy.get('[data-test="Add Course"]').click();
+    cy.get('[data-test="Confirm Add Course"]').click();
     //Assumes it's the left most "Untitled Course" is the one cypress made
     cy.log("Create a new course and label it")
     cy.get('[data-test="My Courses"]').click();
@@ -159,4 +162,19 @@ describe("Duplicate Course", function () {
 
   });
 
+  it.skip("Add Course Cancel", () => {
+    //Test that course count is the same
+    cy.log("Cancel adding a course")
+    cy.get('[data-test="My Courses"]').click();
+
+    cy.get('[data-test="Course Card"]').then(($cards) => {
+      const numCardsBefore = $cards.length;
+      cy.get('[data-test="Cancel Add Course"]').click();
+      // cy.get('[data-test="Confirm Add Course"]').click();
+      cy.get('[data-test="Course Card"]').should(($cardsAfter) => {
+        expect($cardsAfter.length).to.eq(numCardsBefore);
+      });
+    })
+
+  });
 });
