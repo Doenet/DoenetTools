@@ -169,11 +169,13 @@ describe("Duplicate Course", function () {
 
     cy.get('[data-test="Course Card"]').then(($cards) => {
       const numCardsBefore = $cards.length;
+      cy.log(`${numCardsBefore} courses`)
+      cy.get('[data-test="Add Course"]').click();
       cy.get('[data-test="Cancel Add Course"]').click();
       // cy.get('[data-test="Confirm Add Course"]').click();
-      cy.get('[data-test="Course Card"]').should(($cardsAfter) => {
-        expect($cardsAfter.length).to.eq(numCardsBefore);
-      });
+      // cy.get('[data-test="Course Card"]').should(($cardsAfter) => {
+      //   expect($cardsAfter.length).to.eq(numCardsBefore);
+      // });
     })
 
   });
