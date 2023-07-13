@@ -5353,6 +5353,67 @@ describe("Copy Tag Tests", function () {
     checkResult(1, 1, 2, 2);
   });
 
+  it("dot and array notation from group", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <group name="grp">
+      <math>x</math>
+      skip me
+      <text>hello</text>
+      skip me too
+      <point>(4,5)</point>
+      <line through="(10,9) (9,8)" />
+      <p newNamespace>A <math name="m">y</math> and a <text name="t">word</text>.</p>
+    </group>
+    
+    <p name="p1">the math: $grp[1]</p>
+    <p name="p2">the text: $grp[2]</p>
+    <p name="p3">the point: $grp[3]</p>
+    <p name="p4">the point x: $grp[3].x</p>
+    <p name="p5">the line: $grp[4]</p>
+    <p name="p6">the line, point 1: $grp[4].points[1]</p>
+    <p name="p7">the line, point 2, y: $grp[4].points[2].y</p>
+    <p name="p8">math from p: $(grp[5]/m)</p>
+    <p name="p9">text from p: $(grp[5]/t)</p>
+    <p name="p10">nothing: $grp[6]</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/p2")).should("have.text", "the text: hello");
+    cy.get(cesc2("#/p3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc2("#/p4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4");
+    cy.get(cesc2("#/p5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "0=x−y−1");
+    cy.get(cesc2("#/p6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(10,9)");
+    cy.get(cesc2("#/p7") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+    cy.get(cesc2("#/p8") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/p9")).should("have.text", "text from p: word");
+    cy.get(cesc2("#/p10")).should("have.text", "nothing: ");
+  });
+
   it("isPlainMacro and isPlainCopy", () => {
     cy.window().then(async (win) => {
       win.postMessage(
