@@ -49,6 +49,19 @@ export default class AnimateFromSequence extends BaseComponent {
       public: true,
     };
 
+    attributes.targetSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.targetSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
+      defaultValue: null,
+      public: true,
+    };
+
     attributes.animationOn = {
       createComponentOfType: "boolean",
       createStateVariable: "animationOn",
@@ -363,6 +376,8 @@ export default class AnimateFromSequence extends BaseComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "componentIndex",
+        "targetSubnames",
+        "targetSubnamesComponentIndex",
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
         let dependencies = {};
@@ -372,13 +387,26 @@ export default class AnimateFromSequence extends BaseComponent {
             componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false,
-            })
+            }) ||
+            (componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: true,
+            }) &&
+              stateValues.componentIndex !== null)
           ) {
+            let targetSubnamesComponentIndex =
+              stateValues.targetSubnamesComponentIndex;
+            if (targetSubnamesComponentIndex) {
+              targetSubnamesComponentIndex = [...targetSubnamesComponentIndex];
+            }
+
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
               recursive: true,
               componentIndex: stateValues.componentIndex,
+              targetSubnames: stateValues.targetSubnames,
+              targetSubnamesComponentIndex,
             };
           } else if (
             stateValues.componentIndex === null ||
@@ -815,12 +843,12 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation({
+  async startAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -835,12 +863,12 @@ export default class AnimateFromSequence extends BaseComponent {
     });
   }
 
-  stopAnimation({
+  async stopAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -860,7 +888,7 @@ export default class AnimateFromSequence extends BaseComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",

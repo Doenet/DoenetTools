@@ -46,46 +46,44 @@ export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == "Create New Course") {
-    let { data } = await axios.get("/api/createCourse.php");
-    if (!data.success) throw Error(data.message);
-    return true;
-  } else if (formObj?._action == "Delete") {
-    let { data } = await axios.post("/api/deleteCourse.php", {
-      courseId: formObj.courseId,
-    });
-    if (!data.success) throw Error(data.message);
-    return true;
-  } else if (formObj?._action == "Duplicate") {
-    let { data } = await axios.post("/api/duplicateCourse.php", {
-      courseId: formObj.courseId,
-      dateDifference: formObj.dateDifference,
-      newLabel: formObj.newLabel,
-    });
-    if (!data.success) throw Error(data.message);
-    return true;
-  } else if (formObj?._action == "Rename") {
-    let { data } = await axios.post("/api/modifyCourse.php", {
-      courseId: formObj.courseId,
-      label: formObj.newLabel,
-    });
-    if (!data.success) throw Error(data.message);
-    return true;
-  } else if (formObj?._action == "Update Image") {
-    let { data } = await axios.post("/api/modifyCourse.php", {
-      courseId: formObj.courseId,
-      image: formObj.image,
-      color: "none",
-    });
-    if (!data.success) throw Error(data.message);
-    return true;
-  } else if (formObj?._action == "Update Color") {
-    let { data } = await axios.post("/api/modifyCourse.php", {
-      courseId: formObj.courseId,
-      color: formObj.color,
-    });
-    if (!data.success) throw Error(data.message);
-    return true;
+  try {
+    if (formObj?._action == "Create New Course") {
+      let { data } = await axios.get("/api/createCourse.php");
+      return { success: true, message: data.message };
+    } else if (formObj?._action == "Delete") {
+      let { data } = await axios.post("/api/deleteCourse.php", {
+        courseId: formObj.courseId,
+      });
+      return { success: true, message: data.message };
+    } else if (formObj?._action == "Duplicate") {
+      let { data } = await axios.post("/api/duplicateCourse.php", {
+        courseId: formObj.courseId,
+        dateDifference: formObj.dateDifference,
+        newLabel: formObj.newLabel,
+      });
+      return { success: true, message: data.message };
+    } else if (formObj?._action == "Rename") {
+      let { data } = await axios.post("/api/modifyCourse.php", {
+        courseId: formObj.courseId,
+        label: formObj.newLabel,
+      });
+      return { success: true, message: data.message };
+    } else if (formObj?._action == "Update Image") {
+      let { data } = await axios.post("/api/modifyCourse.php", {
+        courseId: formObj.courseId,
+        image: formObj.image,
+        color: "none",
+      });
+      return { success: true, message: data.message };
+    } else if (formObj?._action == "Update Color") {
+      let { data } = await axios.post("/api/modifyCourse.php", {
+        courseId: formObj.courseId,
+        color: formObj.color,
+      });
+      return { success: true, message: data.message };
+    }
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
   }
 }
 
@@ -99,7 +97,6 @@ export async function loader({ params }) {
 export function Courses() {
   const { courses } = useLoaderData();
   const fetcher = useFetcher();
-  // console.log(fetcher.data); //Use this for error messages from the server
 
   const {
     isOpen: duplicateIsOpen,
@@ -125,7 +122,13 @@ export function Courses() {
     onOpen: onOpenWarning,
     onClose: onCloseWarning,
   } = useDisclosure();
+
   const cancelWarningRef = React.useRef();
+  const {
+    isOpen: isErrorOpen,
+    onOpen: onOpenError,
+    onClose: onCloseError,
+  } = useDisclosure();
 
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
@@ -160,8 +163,24 @@ export function Courses() {
     }
   }
 
+  //Display Error
+  if (fetcher.formData && !isErrorOpen && fetcher.data?.success == false) {
+    onOpenError();
+  }
+
   return (
     <>
+      <Modal onClose={onCloseError} size="lg" isOpen={isErrorOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Error</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>{fetcher.data?.message}</ModalBody>
+          <ModalFooter>
+            <Button onClick={onCloseError}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <AlertDialog
         motionPreset="slideInBottom"
         leastDestructiveRef={cancelDeleteAlertRef}
@@ -296,7 +315,10 @@ export function Courses() {
                 size="xs"
                 colorScheme="blue"
                 onClick={() => {
-                  onOpenWarning();
+                  fetcher.submit(
+                    { _action: "Create New Course" },
+                    { method: "post" },
+                  );
                 }}
               >
                 Add Course

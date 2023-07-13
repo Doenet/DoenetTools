@@ -1004,6 +1004,18 @@ function breakUpTargetIntoPropsAndIndices(
                 // to original component
                 delete component.props[targetPropName];
                 Object.assign(component.attributes, newComponent.attributes);
+                // rename attributes to refer to target rather than source
+                if (component.attributes.sourceSubnames) {
+                  component.attributes.targetSubnames =
+                    component.attributes.sourceSubnames;
+                  delete component.attributes.sourceSubnames;
+                }
+                if (component.attributes.sourceSubnamesComponentIndex) {
+                  component.attributes.targetSubnamesComponentIndex =
+                    component.attributes.sourceSubnamesComponentIndex;
+                  delete component.attributes.sourceSubnamesComponentIndex;
+                }
+
                 if (!component.doenetAttributes) {
                   component.doenetAttributes = {};
                 }
