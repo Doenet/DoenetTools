@@ -276,7 +276,7 @@ export function Portfolio() {
           </Text>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
-              dataTest="Add Activity"
+              data-test="Add Activity"
               size="xs"
               colorScheme="blue"
               onClick={async () => {
