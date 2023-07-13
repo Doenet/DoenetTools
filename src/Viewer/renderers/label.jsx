@@ -450,7 +450,6 @@ export default React.memo(function Label(props) {
   }
 
   let style = textRendererStyle(darkMode, SVs.selectedStyle);
-  style.marginRight = "12px";
 
   let label = SVs.value;
 
