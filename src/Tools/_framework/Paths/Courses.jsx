@@ -34,6 +34,13 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -315,10 +322,7 @@ export function Courses() {
                 size="xs"
                 colorScheme="blue"
                 onClick={() => {
-                  fetcher.submit(
-                    { _action: "Create New Course" },
-                    { method: "post" },
-                  );
+                  onOpenWarning();
                 }}
               >
                 Add Course
