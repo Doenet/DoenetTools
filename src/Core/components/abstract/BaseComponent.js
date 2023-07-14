@@ -1168,6 +1168,42 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if (parameters.copyPrimaryEssential) {
+      let primaryEssentialStateVariable = "value";
+      if (this.constructor.primaryEssentialStateVariable) {
+        primaryEssentialStateVariable =
+          this.constructor.primaryEssentialStateVariable;
+      } else if (this.constructor.primaryStateVariableForDefinition) {
+        primaryEssentialStateVariable =
+          this.constructor.primaryStateVariableForDefinition;
+      }
+
+      // primaryEssentialStateVariable is the state variable we want to set in the copy,
+      // but it might have a differently named essential state variable
+      // associated with it.
+      if (this.state[primaryEssentialStateVariable].essentialVarName) {
+        primaryEssentialStateVariable =
+          this.state[primaryEssentialStateVariable].essentialVarName;
+      }
+
+      let stateVariableToBeShadowed = "value";
+      if (this.constructor.stateVariableToBeShadowed) {
+        stateVariableToBeShadowed = this.constructor.stateVariableToBeShadowed;
+      } else if (this.constructor.primaryStateVariableForDefinition) {
+        stateVariableToBeShadowed =
+          this.constructor.primaryStateVariableForDefinition;
+      }
+
+      // copy the value of stateVariableToBeShadowed of source
+      // to the state of primaryEssentialStateVariable of the copy
+      if (!serializedComponent.state) {
+        serializedComponent.state = {};
+      }
+
+      serializedComponent.state[primaryEssentialStateVariable] = await this
+        .stateValues[stateVariableToBeShadowed];
+    }
+
     if (this.doenetMLrange) {
       serializedComponent.range = JSON.parse(
         JSON.stringify(this.doenetMLrange),

@@ -14,6 +14,7 @@ $success = TRUE;
 $courseId = $_POST['courseId'];
 $userId = $_POST['userId'];
 $studentUserId = $_POST['studentUserId'];
+$label = $_POST['label'];
 // $emailaddress = 'devuser@example.com';
 // $userId = 'devuserid';
 
@@ -23,12 +24,15 @@ if ($userId == ''){
 if ($studentUserId == ''){
   $studentUserId = 'cyStudentUserId';
 }
+if ($label == ''){
+  $label = 'Cypress Generated';
+}
 
 
 $sql = "
 INSERT INTO course
 SET courseId='$courseId',
-label='Cypress Generated',
+label='$label',
 image='picture1.jpg',
 defaultRoleId = 'studentRoleId'
 ";

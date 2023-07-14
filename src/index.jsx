@@ -30,6 +30,12 @@ import {
   Portfolio,
 } from "./Tools/_framework/Paths/Portfolio";
 import {
+  loader as courseLoader,
+  action as courseAction,
+  Courses,
+} from "./Tools/_framework/Paths/Courses";
+import { loader as portfolioEditorMenuCapLoader } from "./Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap";
+import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
 } from "./Tools/_framework/Paths/PublicPortfolio";
@@ -93,48 +99,6 @@ const theme = extendTheme({
       whiteBlankLink: "#6d4445",
       mainYellow: "#94610a",
       mainPurple: "#4a03d9",
-    },
-  },
-  components: {
-    Button: {
-      baseStyle: {
-        fontWeight: "normal",
-        letterSpacing: ".5px",
-        _focus: {
-          outline: "2px solid #2D5994",
-          outlineOffset: "2px",
-        },
-        _disabled: {
-          bg: "#E2E2E2",
-          color: "black",
-          cursor: "none",
-        },
-      },
-      variants: {
-        // We can override existing variants
-        solid: {
-          bg: "doenet.mainBlue",
-          color: "white",
-          _hover: {
-            bg: "doenet.solidLightBlue",
-            color: "black",
-          },
-        },
-        outline: {
-          borderColor: "#2D5994",
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        ghost: {
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        link: {
-          color: "solidLightBlue",
-        },
-      },
     },
   },
 });
@@ -201,6 +165,22 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Portfolio />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "courses",
+        loader: courseLoader,
+        action: courseAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+
+        element: (
+          <ChakraProvider theme={theme}>
+            <Courses />
           </ChakraProvider>
         ),
       },
@@ -306,7 +286,6 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    // errorElement: <div>Error!</div>,
     element: (
       <MathJaxContext
         version={2}

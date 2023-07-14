@@ -1543,11 +1543,29 @@ export default class Copy extends CompositeComponent {
     let sourceAttributesToIgnore = await component.stateValues
       .sourceAttributesToIgnore;
 
+    // a component that shadows a propVariable
+    // (or shadows something that shadows a propVariable)
+    // will not have enough infomation in its children to determine its state.
+    // Therefore, we if are copying without linking, we'll also
+    // need to copy the primary essential variable in this case.
+    let copyPrimaryEssential = false;
+    if (!link) {
+      let comp = replacementSourceComponent;
+      while (comp.shadows) {
+        if (comp.shadows.propVariable) {
+          copyPrimaryEssential = true;
+          break;
+        }
+        comp = components[comp.shadows.componentName];
+      }
+    }
+
     let serializedReplacements = [
       await replacementSourceComponent.serialize({
         copyAll: !link,
         copyVariants: !link,
         primitiveSourceAttributesToIgnore: sourceAttributesToIgnore,
+        copyPrimaryEssential,
       }),
     ];
 
@@ -2100,7 +2118,6 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-
         fromCopyTarget:
           Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
       });
@@ -2279,7 +2296,6 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
-
       fromCopyTarget:
         Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
     });

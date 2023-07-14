@@ -35,7 +35,7 @@ export default class Point extends GraphicalComponent {
   // Instead have a public array state variable of maths for each component
   // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
-  static stateVariableForAttributeValue = "coords";
+  static stateVariableToBeShadowed = "coords";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

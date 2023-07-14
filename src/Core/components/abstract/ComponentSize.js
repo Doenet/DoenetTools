@@ -31,7 +31,7 @@ export class ComponentSize extends InlineComponent {
 
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "componentSize";
-  static stateVariableForAttributeValue = "componentSize";
+  static stateVariableToBeShadowed = "componentSize";
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
@@ -480,7 +480,7 @@ export class ComponentSizeList extends BaseComponent {
 
   // when another component has a attribute that is a componentSizeList,
   // use the componentSizes state variable to populate that attribute
-  static stateVariableForAttributeValue = "componentSizes";
+  static stateVariableToBeShadowed = "componentSizes";
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();

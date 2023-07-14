@@ -3116,7 +3116,7 @@ export default class Core {
           attributeSpecification.componentStateVariableForAttributeValue;
         if (stateVariableForAttributeValue === undefined) {
           stateVariableForAttributeValue =
-            attributeClass.stateVariableForAttributeValue;
+            attributeClass.stateVariableToBeShadowed;
           if (stateVariableForAttributeValue === undefined) {
             stateVariableForAttributeValue = "value";
           }
@@ -3583,7 +3583,7 @@ export default class Core {
           attributeSpecification.componentStateVariableForAttributeValue;
         if (stateVariableForAttributeValue === undefined) {
           stateVariableForAttributeValue =
-            attributeClass.stateVariableForAttributeValue;
+            attributeClass.stateVariableToBeShadowed;
           if (stateVariableForAttributeValue === undefined) {
             stateVariableForAttributeValue = "value";
           }

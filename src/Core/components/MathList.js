@@ -17,7 +17,7 @@ export default class MathList extends InlineComponent {
 
   // when another component has an attribute that is a mathList,
   // use the maths state variable to populate that attribute
-  static stateVariableForAttributeValue = "maths";
+  static stateVariableToBeShadowed = "maths";
   static primaryStateVariableForDefinition = "mathsShadow";
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement
