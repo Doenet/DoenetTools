@@ -624,7 +624,13 @@ function SupportFilesControls() {
                             }}
                           />
                           <InputRightElement width="4.5rem">
-                            <Button type="submit" mt="8px" mr="12px" size="xs">
+                            <Button
+                              type="submit"
+                              colorScheme="blue"
+                              mt="8px"
+                              mr="12px"
+                              size="xs"
+                            >
                               Submit
                             </Button>
                           </InputRightElement>
@@ -768,7 +774,11 @@ function SupportFilesControls() {
                           }}
                           text={doenetMLCode}
                         >
-                          <Button size="sm" leftIcon={<BsClipboardPlus />}>
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            leftIcon={<BsClipboardPlus />}
+                          >
                             Copy Code
                           </Button>
                         </CopyToClipboard>
