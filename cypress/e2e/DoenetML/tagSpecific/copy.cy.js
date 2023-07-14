@@ -8366,6 +8366,202 @@ describe("Copy Tag Tests", function () {
       .should("have.text", "(2,8)");
   });
 
+  it("copy no-link of a copy prop", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="x">x</math>
+    <math copySource="x.value" name="xval" />
+    <math copySource="xval" link="false" name="xvalnl" />
+
+    <mathinput name="mi1">$xval</mathinput>
+    <mathinput name="mi2">$xvalnl</mathinput>
+  
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/x") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/xval") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/xvalnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}{backspace}y{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/x") + " .mjx-mrow").should("contain.text", "y");
+    cy.get(cesc2("#/x") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/xval") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/xvalnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/mi2") + " textarea").type("{end}{backspace}z{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/xvalnl") + " .mjx-mrow").should("contain.text", "z");
+    cy.get(cesc2("#/xvalnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "z");
+
+    cy.get(cesc2("#/x") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/xval") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+  });
+
+  it("copy no-link of a copy prop 2", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <triangle name="t"/>
+    
+      <point copySource="t.vertex1" name="v1" />
+      <point name="v2" copySource="v1" />
+      <point name="v3" copySource="v2" />
+    </graph>
+    
+    <graph>
+      <point copySource="v1" name="v1nl" link="false" />
+      <point copySource="v2" name="v2nl" link="false" />
+      <point copySource="v3" name="v3nl" link="false" />
+    </graph>
+
+    <point copySource="v1" name="v1a" />
+    <point copySource="v1nl" name="v1nla" />
+    <point copySource="v2nl" name="v2nla" />
+    <point copySource="v3nl" name="v3nla" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/v1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+
+    cy.log("Move v1");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/v1",
+        args: { x: 2, y: 3 },
+      });
+    });
+
+    cy.get(cesc2("#/v1a") + " .mjx-mrow").should("contain.text", "(2,3)");
+    cy.get(cesc2("#/v1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,3)");
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+
+    cy.log("Move v1nl");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/v1nl",
+        args: { x: 3, y: 4 },
+      });
+    });
+
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow").should("contain.text", "(3,4)");
+    cy.get(cesc2("#/v1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,3)");
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+
+    cy.log("Move v2nl");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/v2nl",
+        args: { x: 4, y: 5 },
+      });
+    });
+
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow").should("contain.text", "(4,5)");
+    cy.get(cesc2("#/v1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,3)");
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+
+    cy.log("Move v3nl");
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/v3nl",
+        args: { x: 5, y: 6 },
+      });
+    });
+
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow").should("contain.text", "(5,6)");
+    cy.get(cesc2("#/v1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,3)");
+    cy.get(cesc2("#/v1nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/v2nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(4,5)");
+    cy.get(cesc2("#/v3nla") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+  });
+
   it("external content cannot reach outside namespace", () => {
     cy.window().then(async (win) => {
       win.postMessage(

@@ -5,7 +5,7 @@ export default class CollaborateGroups extends BaseComponent {
   static componentType = "collaborateGroups";
   static rendererType = undefined;
 
-  static stateVariableForAttributeValue = "collaborateGroups";
+  static stateVariableToBeShadowed = "collaborateGroups";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
