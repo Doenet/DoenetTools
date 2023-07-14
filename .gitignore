@@ -45,7 +45,7 @@ docker\ deb/
 docker\ alp/
 
 #Docker mysql db
-doenet_docker/volumes/db/*
+docker/mysql/data/*
 
 .eslintrc.js
 
