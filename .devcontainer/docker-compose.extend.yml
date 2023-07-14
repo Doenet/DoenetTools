@@ -31,61 +31,46 @@ services:
       # Persist VS Code extensions between rebuilds
       # - vscode-extensions:/root/.vscode-server/extensions
       # mount ssh configuration
-      # - ~/.ssh:/.ssh
+      - ~/.ssh:/.ssh
     networks:
       - dev_net
     environment:
       - CYPRESS_CACHE_FOLDER=/home/node/workspace/.cache/Cypress
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
-      - NODE_OPTIONS=--max-old-space-size=3584
+      - NODE_OPTIONS=--max-old-space-size=4098
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-    restart: unless-stopped
+    restart: on-failure
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
-
   php:
     volumes:
       - ./public/api:/usr/local/apache2/htdocs/api
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
-      - ./docker/php/env.ini:/usr/local/apache2/htdocs/etc/env.ini
-    restart: unless-stopped
-
+    restart: on-failure
   apache:
-    build:
-      context: ./
-      dockerfile: ./docker/apache/Dockerfile
-      args:
-        - BUILD_MODE=development
-        - NODE_OPTIONS=--max-old-space-size=3584
     ports:
       - 8080:80
+    build:
+      context: ./
+      dockerfile: ./doenet_docker/apache/Dockerfile
+      args:
+        - BUILD_MODE=development
     volumes:
       - ./src/Media:/usr/local/apache2/htdocs/media
-      - ./docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
-    depends_on:
-      - php
-    restart: unless-stopped
-
+      - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
   mysql:
-    image: mysql:8.0.32
     ports:
       - 3306:3306
-    environment:
-      - MYSQL_DATABASE=doenet_local
-      - MYSQL_ROOT_PASSWORD=helloworld
-    # command: --innodb_use_native_aio=0
     volumes:
-      - ./docker/mysql:/docker-entrypoint-initdb.d/:ro
-      - ./docker/mysql/data:/var/lib/mysql:rw
-    networks:
-      - dev_net
-    restart: unless-stopped
+      - ./doenet_docker/volumes/db:/var/lib/mysql
+      - ./doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
+    restart: on-failure
 
   # for realtime testing
   # rtnode:
@@ -104,4 +89,3 @@ services:
 volumes:
   node_modules:
   vendor:
-  db:

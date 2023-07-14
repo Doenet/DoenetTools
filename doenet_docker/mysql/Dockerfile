@@ -1,0 +1,3 @@
+FROM mysql:8.0.32
+ENV MYSQL_DATABASE doenet_local
+ENV MYSQL_ROOT_PASSWORD helloworld
