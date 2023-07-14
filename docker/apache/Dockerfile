@@ -1,6 +1,6 @@
 FROM node:19.8-bullseye AS build
 WORKDIR /build
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 COPY index.html vite.config.js ./
 COPY src ./src
