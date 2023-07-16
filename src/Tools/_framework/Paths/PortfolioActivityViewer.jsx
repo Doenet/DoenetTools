@@ -1,35 +1,25 @@
-import React, { useEffect, useRef } from "react";
-import {
-  redirect,
-  useLoaderData,
-  useNavigate,
-  // useOutletContext,
-} from "react-router";
+import React, { useEffect, useRef, useState } from "react";
+import { redirect, useLoaderData, useNavigate } from "react-router";
 import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from "../../../_sharedRecoil/PageViewerRecoil";
-import { useRecoilState, useSetRecoilState } from "recoil";
+
+import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import { Link } from "react-router-dom";
 import {
   Avatar,
   Box,
   Button,
-  Center,
   Flex,
   Grid,
   GridItem,
-  HStack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
+import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -98,10 +88,6 @@ export function PortfolioActivityViewer() {
   } = useLoaderData();
 
   const navigate = useNavigate();
-  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -118,17 +104,24 @@ export function PortfolioActivityViewer() {
     document.title = `${label} - Doenet`;
   }, [label]);
 
+  const [variants, setVariants] = useState({
+    index: 1,
+    allPossibleVariants: ["a"],
+  });
+
+  let variantOptions = [];
+  variants.allPossibleVariants.forEach((variant) => {
+    variantOptions.push({ value: variant, label: variant });
+  });
+
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
       JSON.stringify(generatedVariantInfo),
     );
-    setVariantPanel({
+    setVariants({
       index: cleanGeneratedVariant.index,
       allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
     });
   }
 
@@ -292,8 +285,69 @@ export function PortfolioActivityViewer() {
               minHeight="100%"
               overflow="hidden"
             >
-              <Box
+              <VStack
+                margin="10px 0px 10px 0px" //Only need when there is an outline
                 height="calc(100vh - 160px)" //40px header height
+                spacing={0}
+                width="100%"
+              >
+                {variants.allPossibleVariants.length > 1 && (
+                  <Box bg="doenet.lightBlue" h="32px" width="100%">
+                    <VariantSelect
+                      size="sm"
+                      menuWidth="140px"
+                      array={variants.allPossibleVariants}
+                      onChange={(index) =>
+                        setVariants((prev) => {
+                          let next = { ...prev };
+                          next.index = index + 1;
+                          return next;
+                        })
+                      }
+                    />
+                  </Box>
+                )}
+                <Box
+                  h={
+                    variants.allPossibleVariants.length > 1
+                      ? "calc(100vh - 192px)"
+                      : "calc(100vh - 160px)"
+                  }
+                  background="var(--canvas)"
+                  borderWidth="1px"
+                  borderStyle="solid"
+                  borderColor="doenet.mediumGray"
+                  width="100%"
+                >
+                  <PageViewer
+                    key={`HPpageViewer`}
+                    doenetML={doenetML}
+                    // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+                    flags={{
+                      showCorrectness: true,
+                      solutionDisplayMode: "button",
+                      showFeedback: true,
+                      showHints: true,
+                      autoSubmit: false,
+                      allowLoadState: false,
+                      allowSaveState: false,
+                      allowLocalState: false,
+                      allowSaveSubmissions: false,
+                      allowSaveEvents: false,
+                    }}
+                    // doenetId={doenetId}
+                    attemptNumber={1}
+                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    requestedVariantIndex={variants.index}
+                    // setIsInErrorState={setIsInErrorState}
+                    pageIsActive={true}
+                  />
+                </Box>
+                <Box marginBottom="50vh" />
+              </VStack>
+              {/* <Box
+                height="calc(100vh - 160px)" //Has a menu on the viewer
+                // height="calc(100vh - 160px)" //40px header height
                 background="var(--canvas)"
                 borderWidth="1px"
                 borderStyle="solid"
@@ -328,7 +382,7 @@ export function PortfolioActivityViewer() {
                   />
                   <Box marginBottom="50vh" />
                 </>
-              </Box>
+              </Box> */}
             </GridItem>
           </Grid>
         </GridItem>
