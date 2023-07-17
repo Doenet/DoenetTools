@@ -35,15 +35,7 @@ export default function VariantSelect({
   );
   return (
     <>
-      <HStack
-        m={0}
-        spacing={0}
-        borderRadius="lg"
-        onMouseEnter={() => {
-          !menuIsOpen ? setShowTooltip(true) : null;
-        }}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
+      <HStack m={0} spacing={0} borderRadius="lg">
         <Menu
           onOpen={() => {
             setShowTooltip(false);
@@ -62,6 +54,12 @@ export default function VariantSelect({
               as={Button}
               rightIcon={<ChevronDownIcon />}
               width={menuWidth ? menuWidth : undefined}
+              onMouseEnter={() => {
+                !menuIsOpen ? setShowTooltip(true) : null;
+              }}
+              onMouseLeave={() => {
+                setShowTooltip(false);
+              }}
             >
               {value}
             </MenuButton>
@@ -98,6 +96,7 @@ export default function VariantSelect({
         </Menu>
 
         <IconButton
+          isDisabled={index == array.length - 1}
           borderRadius={0}
           size={size}
           icon={<TriangleDownIcon />}
@@ -114,6 +113,7 @@ export default function VariantSelect({
           }}
         />
         <IconButton
+          isDisabled={index < 1}
           size={size}
           borderBottomLeftRadius={0}
           borderTopLeftRadius={0}
