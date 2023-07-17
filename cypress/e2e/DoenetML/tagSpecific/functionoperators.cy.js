@@ -81,18 +81,14 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables[
-        stateVariables["/m4"].replacements[0].componentName
-      ].replacements.reduce(
+      let map4Replacements = stateVariables["/m4"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables[
-        stateVariables["/m5"].replacements[0].componentName
-      ].replacements.reduce(
+      let map5Replacements = stateVariables["/m5"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -266,18 +262,14 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables[
-        stateVariables["/m4"].replacements[0].componentName
-      ].replacements.reduce(
+      let map4Replacements = stateVariables["/m4"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables[
-        stateVariables["/m5"].replacements[0].componentName
-      ].replacements.reduce(
+      let map5Replacements = stateVariables["/m5"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -591,18 +583,14 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables[
-        stateVariables["/m4"].replacements[0].componentName
-      ].replacements.reduce(
+      let map4Replacements = stateVariables["/m4"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables[
-        stateVariables["/m5"].replacements[0].componentName
-      ].replacements.reduce(
+      let map5Replacements = stateVariables["/m5"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -779,18 +767,14 @@ describe("Function Operator Tag Tests", function () {
       let map3ReplacementAnchors = map3Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map4Replacements = stateVariables[
-        stateVariables["/m4"].replacements[0].componentName
-      ].replacements.reduce(
+      let map4Replacements = stateVariables["/m4"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
       let map4ReplacementAnchors = map4Replacements.map((x) =>
         cesc2("#" + x.componentName),
       );
-      let map5Replacements = stateVariables[
-        stateVariables["/m5"].replacements[0].componentName
-      ].replacements.reduce(
+      let map5Replacements = stateVariables["/m5"].replacements.reduce(
         (a, c) => [...a, ...stateVariables[c.componentName].replacements],
         [],
       );
@@ -2788,25 +2772,25 @@ describe("Function Operator Tag Tests", function () {
       <derivative name="d1"><function>(x^2, x^3)</function></derivative>
       <derivative name="d2"><math name="x2">(x^2, x^3)</math></derivative>
       <derivative name="d2b">$x2</derivative>
-      <derivative name="d2c"><copy source="x2" /></derivative>
+      <derivative name="d2c">$x2</derivative>
       <derivative name="d3"><function>(x^2sin(z), z^2sin(x))</function></derivative>
       <derivative name="d4" variables="z">(x^2sin(z),z^2sin(x))</derivative>
       <math name='var'>z</math><number name="a">2</number>
       <derivative name="d4b" variable="$var">(x^$a sin($var), $var^$a sin(x))</derivative>
-      <derivative name="d5"><copy source="f1" /></derivative>
+      <derivative name="d5">$f1</derivative>
       <derivative name="d5b">$f1</derivative>
-      <derivative name="d6"><copy source="f2" /></derivative>
+      <derivative name="d6">$f2</derivative>
       <derivative name="d6b">$f2</derivative>
-      <derivative name="d7"><copy source="f3" /></derivative>
+      <derivative name="d7">$f3</derivative>
       <derivative name="d7b">$f3</derivative>
-      <derivative name="d8"><copy source="f4" /></derivative>
+      <derivative name="d8">$f4</derivative>
       <derivative name="d8b">$f4</derivative>
-      <derivative variables="q" name="d9"><copy source="f1" /></derivative>
-      <derivative variable="q" name="d10"><copy source="f2" /></derivative>
-      <derivative variables="q" name="d11"><copy source="f3" /></derivative>
-      <derivative variable="q" name="d12"><copy source="f4" /></derivative>
-      <derivative variables="y" name="d13"><copy source="f3" /></derivative>
-      <derivative variable="y" name="d14"><copy source="f4" /></derivative>
+      <derivative variables="q" name="d9">$f1</derivative>
+      <derivative variable="q" name="d10">$f2</derivative>
+      <derivative variables="q" name="d11">$f3</derivative>
+      <derivative variable="q" name="d12">$f4</derivative>
+      <derivative variables="y" name="d13">$f3</derivative>
+      <derivative variable="y" name="d14">$f4</derivative>
       `,
         },
         "*",

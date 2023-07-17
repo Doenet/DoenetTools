@@ -253,11 +253,11 @@ describe("Spreadsheet Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" source="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" source="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" source="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" source="C1a" /></extract>
+  <extract prop="text" assignNames="t1">$_spreadsheet1.cellA1</extract>
+  <extract prop="text" assignNames="t2">$_spreadsheet2.cellA3</extract>
+  <extract prop="text" assignNames="t3">$ss1a.cellD3</extract>
+  <extract prop="text" assignNames="t4">$ss2a.cellD4</extract>
+  <extract prop="text" assignNames="t5">$ss1b.cellB1</extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -269,16 +269,16 @@ describe("Spreadsheet Tag Tests", function () {
 
   <spreadsheet>
   $_cell4{name="c4a"}
-  <copy colnum="A" source="_cell2" assignNames="c2a" />
+  <cell colnum="A" copySource="_cell2" name="c2a" />
   $_cell3{name="c3a"}
-  <copy colnum="2" rownum="4" source="_cell1" assignNames="c1a" />
-  <copy rownum="2" source="_cell5" assignNames="c5a" />
+  <cell colnum="2" rownum="4" copySource="_cell1" name="c1a" />
+  <cell rownum="2" copySource="_cell5" name="c5a" />
   </spreadsheet>
 
-  <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" source="C1" assignNames="(ss1b)" />
-  <copy name="C2a" source="C2" assignNames="(ss2b)" />
+  <spreadsheet copySource="_spreadsheet1" name="ss1a" />
+  <spreadsheet copySource="_spreadsheet2" name="ss2a" />
+  <spreadsheet copySource="ss1a" name="ss1b" />
+  <spreadsheet copySource="ss2a" name="ss2b" />
   `,
         },
         "*",
@@ -498,11 +498,11 @@ describe("Spreadsheet Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" source="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" source="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" source="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" source="C1a" /></extract>
+  <extract prop="text" assignNames="t1">$_spreadsheet1.cellA1</extract>
+  <extract prop="text" assignNames="t2">$_spreadsheet2.cellA3</extract>
+  <extract prop="text" assignNames="t3">$ss1a.cellD3</extract>
+  <extract prop="text" assignNames="t4">$ss2a.cellD4</extract>
+  <extract prop="text" assignNames="t5">$ss1b.cellB1</extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -513,17 +513,17 @@ describe("Spreadsheet Tag Tests", function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="cellD4" colnum="D" rownum="4" source="_spreadsheet1" assignNames="c4a" />
-  <copy prop="cellC3" colnum="A" rownum="3" source="_spreadsheet1" assignNames="c2a" />
-  $_spreadsheet1.cellD3{assignNames="c3a"}
-  <copy prop="cellA1" colnum="2" rownum="4" source="_spreadsheet1" assignNames="c1a" />
-  <copy prop="cellb1" rownum="2" colnum="b" source="_spreadsheet1" assignNames="c5a" />
+  <cell colnum="D" rownum="4" copysource="_spreadsheet1.cellD4" name="c4a" />
+  <cell colnum="A" rownum="3" copysource="_spreadsheet1.cellC3" name="c2a" />
+  <cell copySource="_spreadsheet1.cellD3" name="c3a" />
+  <cell colnum="2" rownum="4" copysource="_spreadsheet1.cellA1" name="c1a" />
+  <cell rownum="2" colnum="b" copysource="_spreadsheet1.cellb1" name="c5a" />
   </spreadsheet>
 
-  <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" source="C1" assignNames="(ss1b)" />
-  <copy name="C2a" source="C2" assignNames="(ss2b)" />
+  <spreadsheet copySource="_spreadsheet1" name="ss1a" />
+  <spreadsheet copySource="_spreadsheet2" name="ss2a" />
+  <spreadsheet copySource="ss1a" name="ss1b" />
+  <spreadsheet copySource="ss2a" name="ss2b" />
   `,
         },
         "*",

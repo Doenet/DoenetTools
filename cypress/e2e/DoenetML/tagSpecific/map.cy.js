@@ -1663,11 +1663,11 @@ describe("Map Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <map assignnames="u v w">
-      <template newNamespace><math>($n, $(../e/_copy1))</math></template>
+      <template newNamespace><math>($n, $(../e/n2))</math></template>
       <sources alias="n"><sequence from="1" to="3"/></sources>
     </map>
     <map assignnames="c d e">
-      <template newNamespace><math>sin($n)</math></template>
+      <template newNamespace><math>sin($n{name="n2"})</math></template>
       <sources alias="n"><sequence from="4" to="6"/></sources>
     </map>
     `,
@@ -1799,7 +1799,7 @@ describe("Map Tag Tests", function () {
 
     <p>
     <map>
-    <template><math simplify>$n^2</math><text>,</text></template>
+    <template><math simplify>$n^2</math></template>
     <sources alias="n">
     <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
     </sources>
@@ -1813,9 +1813,9 @@ describe("Map Tag Tests", function () {
     <p>$_map1{name="copymap2"}</p>
     <p>$copymap2{name="copymap3"}</p>
 
-    $_p1{name="copymapthroughp"}
-    $copymapthroughp{name="copymapthroughp2"}
-    $copymapthroughp2{name="copymapthroughp3"}
+    $_p1{name="p4"}
+    $p4{name="p5"}
+    $p5{name="p6"}
 
     $sequenceCount.value{assignNames="sequenceCount2"}
     $sequenceTo.value{assignNames="sequenceTo2"}
@@ -1826,678 +1826,644 @@ describe("Map Tag Tests", function () {
     });
 
     cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for window to load
+    cy.log("At beginning, nothing shown");
+    cy.get(cesc2("#/_p1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/_p2"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/_p3"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p4"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p5"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p6"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+
+    cy.log("make sequence length 1");
+    cy.get(cesc2("#/sequenceCount") + " textarea").type(
+      "{end}{backspace}1{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceCount2")).should("contain.text", "1");
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let p4 = stateVariables["/copymapthroughp"].replacements[0];
-      let p4Anchor = cesc2("#" + p4.componentName);
-      let p5 = stateVariables["/copymapthroughp2"].replacements[0];
-      let p5Anchor = cesc2("#" + p5.componentName);
-      let p6 = stateVariables["/copymapthroughp3"].replacements[0];
-      let p6Anchor = cesc2("#" + p6.componentName);
-
-      cy.log("At beginning, nothing shown");
-      cy.get(cesc2("#/_p1"))
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-      cy.get(cesc2("#/_p2"))
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-      cy.get(cesc2("#/_p3"))
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-      cy.get(p4Anchor)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-      cy.get(p5Anchor)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-      cy.get(p6Anchor)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("");
-        });
-
-      cy.log("make sequence length 1");
-      cy.get(cesc2("#/sequenceCount") + " textarea").type(
-        "{end}{backspace}1{enter}",
-        { force: true },
+      let map1mathNames = stateVariables["/_map1"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
       );
-      cy.get(cesc2("#/sequenceCount2")).should("contain.text", "1");
-
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let map1mathNames = stateVariables["/_map1"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
-        let map2mathNames = stateVariables["/copymap2"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
-        let map3mathNames = stateVariables["/copymap3"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
-        let map4mathNames = stateVariables[
-          stateVariables["/copymapthroughp"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
-        let map5mathNames = stateVariables[
-          stateVariables["/copymapthroughp2"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
-        let map6mathNames = stateVariables[
-          stateVariables["/copymapthroughp3"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
-
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-      });
-
-      cy.log("make sequence length 0 again");
-      cy.get(cesc2("#/sequenceCount") + " textarea").type(
-        "{end}{backspace}0{enter}",
-        { force: true },
+      let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
+      let map2mathNames = stateVariables["/copymap2"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
       );
-      cy.get(cesc2("#/sequenceCount2")).should("contain.text", "0");
+      let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
+      let map3mathNames = stateVariables["/copymap3"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
+      let map4mathNames = stateVariables["/p4"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
+      let map5mathNames = stateVariables["/p5"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
+      let map6mathNames = stateVariables["/p6"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
       cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
       cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
       cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
-      cy.get(p4Anchor)
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
-      cy.get(p5Anchor)
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
-      cy.get(p6Anchor)
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
+    });
 
-      cy.log("make sequence length 2");
-      cy.get(cesc2("#/sequenceCount") + " textarea").type(
-        "{end}{backspace}2{enter}",
-        { force: true },
-      );
-      cy.get(cesc2("#/sequenceCount2")).should("contain.text", "2");
+    cy.log("make sequence length 0 again");
+    cy.get(cesc2("#/sequenceCount") + " textarea").type(
+      "{end}{backspace}0{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceCount2")).should("contain.text", "0");
 
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let map1mathNames = stateVariables["/_map1"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
-        let map2mathNames = stateVariables["/copymap2"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
-        let map3mathNames = stateVariables["/copymap3"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
-        let map4mathNames = stateVariables[
-          stateVariables["/copymapthroughp"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
-        let map5mathNames = stateVariables[
-          stateVariables["/copymapthroughp2"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
-        let map6mathNames = stateVariables[
-          stateVariables["/copymapthroughp3"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
-
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("1");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("4");
-          });
+    cy.get(cesc2("#/_p1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/_p2"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/_p3"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p4"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p5"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p6"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
       });
 
-      cy.log("change limits");
-      cy.get(cesc2("#/sequenceFrom") + " textarea").type(
-        "{end}{backspace}3{enter}",
-        { force: true },
-      );
-      cy.get(cesc2("#/sequenceTo") + " textarea").type(
-        "{end}{backspace}5{enter}",
-        { force: true },
-      );
-      cy.get(cesc2("#/sequenceTo2")).should("contain.text", "5");
+    cy.log("make sequence length 2");
+    cy.get(cesc2("#/sequenceCount") + " textarea").type(
+      "{end}{backspace}2{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceCount2")).should("contain.text", "2");
 
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let map1mathNames = stateVariables["/_map1"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
-        let map2mathNames = stateVariables["/copymap2"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
-        let map3mathNames = stateVariables["/copymap3"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
-        let map4mathNames = stateVariables[
-          stateVariables["/copymapthroughp"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
-        let map5mathNames = stateVariables[
-          stateVariables["/copymapthroughp2"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
-        let map6mathNames = stateVariables[
-          stateVariables["/copymapthroughp3"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
-
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-      });
-
-      cy.log("make sequence length 0 again");
-      cy.get(cesc2("#/sequenceCount") + " textarea").type(
-        "{end}{backspace}0{enter}",
-        { force: true },
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1mathNames = stateVariables["/_map1"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
       );
-      cy.get(cesc2("#/sequenceCount2")).should("contain.text", "0");
+      let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
+      let map2mathNames = stateVariables["/copymap2"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
+      let map3mathNames = stateVariables["/copymap3"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
+      let map4mathNames = stateVariables["/p4"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
+      let map5mathNames = stateVariables["/p5"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
+      let map6mathNames = stateVariables["/p6"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
       cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
         });
       cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
         });
       cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
-      cy.get(p4Anchor)
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("4");
         });
-      cy.get(p5Anchor)
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("1");
         });
-      cy.get(p6Anchor)
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("");
+          expect(text.trim()).equal("4");
         });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("1");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("4");
+        });
+    });
 
-      cy.log("make sequence length 3");
-      cy.get(cesc2("#/sequenceCount") + " textarea").type(
-        "{end}{backspace}3{enter}",
-        { force: true },
+    cy.log("change limits");
+    cy.get(cesc2("#/sequenceFrom") + " textarea").type(
+      "{end}{backspace}3{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceTo") + " textarea").type(
+      "{end}{backspace}5{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceTo2")).should("contain.text", "5");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1mathNames = stateVariables["/_map1"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
       );
-      cy.get(cesc2("#/sequenceCount2")).should("contain.text", "3");
+      let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
+      let map2mathNames = stateVariables["/copymap2"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
+      let map3mathNames = stateVariables["/copymap3"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
+      let map4mathNames = stateVariables["/p4"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
+      let map5mathNames = stateVariables["/p5"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
+      let map6mathNames = stateVariables["/p6"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
 
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let map1mathNames = stateVariables["/_map1"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
-        let map2mathNames = stateVariables["/copymap2"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
-        let map3mathNames = stateVariables["/copymap3"].replacements.map(
-          (x) => stateVariables[x.componentName].replacements[0].componentName,
-        );
-        let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
-        let map4mathNames = stateVariables[
-          stateVariables["/copymapthroughp"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
-        let map5mathNames = stateVariables[
-          stateVariables["/copymapthroughp2"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
-        let map6mathNames = stateVariables[
-          stateVariables["/copymapthroughp3"].replacements[0].componentName
-        ].activeChildren
-          .filter((x) => x.componentType === "math")
-          .map((x) => x.componentName);
-        let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+    });
 
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(cesc2("#/_p1"))
-          .find(map1mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(cesc2("#/_p2"))
-          .find(map2mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(cesc2("#/_p3"))
-          .find(map3mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(p4Anchor)
-          .find(map4mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(p5Anchor)
-          .find(map5mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[0])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("9");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[1])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("16");
-          });
-        cy.get(p6Anchor)
-          .find(map6mathAnchors[2])
-          .find(".mjx-mrow")
-          .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("25");
-          });
+    cy.log("make sequence length 0 again");
+    cy.get(cesc2("#/sequenceCount") + " textarea").type(
+      "{end}{backspace}0{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceCount2")).should("contain.text", "0");
+
+    cy.get(cesc2("#/_p1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
       });
+    cy.get(cesc2("#/_p2"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/_p3"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p4"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p5"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+    cy.get(cesc2("#/p6"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("");
+      });
+
+    cy.log("make sequence length 3");
+    cy.get(cesc2("#/sequenceCount") + " textarea").type(
+      "{end}{backspace}3{enter}",
+      { force: true },
+    );
+    cy.get(cesc2("#/sequenceCount2")).should("contain.text", "3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let map1mathNames = stateVariables["/_map1"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map1mathAnchors = map1mathNames.map((x) => cesc2("#" + x));
+      let map2mathNames = stateVariables["/copymap2"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map2mathAnchors = map2mathNames.map((x) => cesc2("#" + x));
+      let map3mathNames = stateVariables["/copymap3"].replacements.map(
+        (x) => stateVariables[x.componentName].replacements[0].componentName,
+      );
+      let map3mathAnchors = map3mathNames.map((x) => cesc2("#" + x));
+      let map4mathNames = stateVariables["/p4"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map4mathAnchors = map4mathNames.map((x) => cesc2("#" + x));
+      let map5mathNames = stateVariables["/p5"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map5mathAnchors = map5mathNames.map((x) => cesc2("#" + x));
+      let map6mathNames = stateVariables["/p6"].activeChildren
+        .filter((x) => x.componentType === "math")
+        .map((x) => x.componentName);
+      let map6mathAnchors = map6mathNames.map((x) => cesc2("#" + x));
+
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/_p1"))
+        .find(map1mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/_p2"))
+        .find(map2mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/_p3"))
+        .find(map3mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/p4"))
+        .find(map4mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/p5"))
+        .find(map5mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[0])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("9");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[1])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("16");
+        });
+      cy.get(cesc2("#/p6"))
+        .find(map6mathAnchors[2])
+        .find(".mjx-mrow")
+        .eq(0)
+        .invoke("text")
+        .then((text) => {
+          expect(text.trim()).equal("25");
+        });
     });
   });
 
@@ -2818,7 +2784,7 @@ describe("Map Tag Tests", function () {
     <graph>
       <map assignnames="a b c">
         <template newNamespace><point>
-            (-$n, $n<copy prop="x" target="../q/_point1" />)
+            (-$n, $n$(../q/_point1.x))
           </point></template>
       <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
@@ -2826,7 +2792,7 @@ describe("Map Tag Tests", function () {
       </map>
       <map assignnames="q r s">
         <template newNamespace><point>
-            ($n, $n<copy prop="x" target="../a/_point1" />)
+            ($n, $n$(../a/_point1.x))
           </point></template>
       <sources alias="n">
         <sequence from="$sequenceFrom" to="$sequenceTo" length="$sequenceCount" />
@@ -2839,16 +2805,16 @@ describe("Map Tag Tests", function () {
     <mathinput name="sequenceCount" prefill="0"/>
     
     <graph>
-    <copy name="copymap1" target="_map1" newNamespace />
-    <copy name="copymap2" target="_map2" newNamespace />
+    <map name="copymap1" copySource="_map1" newNamespace />
+    <map name="copymap2" copySource="_map2" newNamespace />
     </graph>
     <graph>
-    <copy name="copymap1b" target="copymap1" newNamespace />
-    <copy name="copymap2b" target="copymap2" newNamespace />
+    <map name="copymap1b" copySource="copymap1" newNamespace />
+    <map name="copymap2b" copySource="copymap2" newNamespace />
     </graph>
     
-    <copy name="g4" target="_graph1" newNamespace />
-    <p><collect componentTypes="point" target="_graph1"/></p>
+    <graph name="g4" copySource="_graph1" newNamespace />
+    <p><collect componentTypes="point" source="_graph1"/></p>
     $sequenceCount.value{assignNames="sequenceCount2"}
     $sequenceTo.value{assignNames="sequenceTo2"}
     `,
@@ -2877,9 +2843,9 @@ describe("Map Tag Tests", function () {
       expect(
         stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
       ).eq(0);
-      expect(
-        stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
-      ).eq(0);
+      expect(stateVariables["/g4"].stateValues.graphicalDescendants.length).eq(
+        0,
+      );
     });
 
     cy.log("make sequence length 1");
@@ -2899,7 +2865,7 @@ describe("Map Tag Tests", function () {
       );
 
       cy.get(cesc2("#/_p1"))
-        .children(coords1Anchor)
+        .find(coords1Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2907,7 +2873,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−1,1)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords2Anchor)
+        .find(coords2Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2927,7 +2893,7 @@ describe("Map Tag Tests", function () {
           stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
         ).eq(2);
         expect(
-          stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
+          stateVariables["/g4"].stateValues.graphicalDescendants.length,
         ).eq(2);
         expect(stateVariables["/a/_point1"].stateValues.coords).eqls([
           "vector",
@@ -2996,9 +2962,9 @@ describe("Map Tag Tests", function () {
       expect(
         stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
       ).eq(0);
-      expect(
-        stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
-      ).eq(0);
+      expect(stateVariables["/g4"].stateValues.graphicalDescendants.length).eq(
+        0,
+      );
     });
 
     cy.log("make sequence length 2");
@@ -3024,7 +2990,7 @@ describe("Map Tag Tests", function () {
       );
 
       cy.get(cesc2("#/_p1"))
-        .children(coords1Anchor)
+        .find(coords1Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3032,7 +2998,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−1,1)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords2Anchor)
+        .find(coords2Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3040,7 +3006,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−2,2)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords3Anchor)
+        .find(coords3Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3048,7 +3014,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(1,−1)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords4Anchor)
+        .find(coords4Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3068,7 +3034,7 @@ describe("Map Tag Tests", function () {
           stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
         ).eq(4);
         expect(
-          stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
+          stateVariables["/g4"].stateValues.graphicalDescendants.length,
         ).eq(4);
         expect(stateVariables["/a/_point1"].stateValues.coords).eqls([
           "vector",
@@ -3180,7 +3146,7 @@ describe("Map Tag Tests", function () {
       );
 
       cy.get(cesc2("#/_p1"))
-        .children(coords1Anchor)
+        .find(coords1Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3188,7 +3154,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−3,9)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords2Anchor)
+        .find(coords2Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3196,7 +3162,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−5,15)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords3Anchor)
+        .find(coords3Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3204,7 +3170,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(3,−9)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords4Anchor)
+        .find(coords4Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3224,7 +3190,7 @@ describe("Map Tag Tests", function () {
           stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
         ).eq(4);
         expect(
-          stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
+          stateVariables["/g4"].stateValues.graphicalDescendants.length,
         ).eq(4);
         expect(stateVariables["/a/_point1"].stateValues.coords).eqls([
           "vector",
@@ -3333,9 +3299,9 @@ describe("Map Tag Tests", function () {
       expect(
         stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
       ).eq(0);
-      expect(
-        stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
-      ).eq(0);
+      expect(stateVariables["/g4"].stateValues.graphicalDescendants.length).eq(
+        0,
+      );
     });
 
     cy.log("make sequence length 3");
@@ -3367,7 +3333,7 @@ describe("Map Tag Tests", function () {
       );
 
       cy.get(cesc2("#/_p1"))
-        .children(coords1Anchor)
+        .find(coords1Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3375,7 +3341,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−3,9)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords2Anchor)
+        .find(coords2Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3383,7 +3349,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−4,12)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords3Anchor)
+        .find(coords3Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3391,7 +3357,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(−5,15)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords4Anchor)
+        .find(coords4Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3399,7 +3365,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(3,−9)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords5Anchor)
+        .find(coords5Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3407,7 +3373,7 @@ describe("Map Tag Tests", function () {
           expect(text.trim()).equal("(4,−12)");
         });
       cy.get(cesc2("#/_p1"))
-        .children(coords6Anchor)
+        .find(coords6Anchor)
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -3427,7 +3393,7 @@ describe("Map Tag Tests", function () {
           stateVariables["/_graph3"].stateValues.graphicalDescendants.length,
         ).eq(6);
         expect(
-          stateVariables["/g4/_graph1"].stateValues.graphicalDescendants.length,
+          stateVariables["/g4"].stateValues.graphicalDescendants.length,
         ).eq(6);
         expect(stateVariables["/a/_point1"].stateValues.coords).eqls([
           "vector",
@@ -3742,18 +3708,18 @@ describe("Map Tag Tests", function () {
     </map>
 
     p1a: $p1{name="p1a"},
-    p1b: $(p1/pt{name="t"}),
+    p1b: $(p1/pt{name="p1b"}),
     p2a: $p2{name="p2a"},
-    p2b: $(p2/pt{name="t"}),
+    p2b: $(p2/pt{name="p2b"}),
     p3a: $p3{name="p3a"},
-    p3b: $(p3/pt{name="t"}),
+    p3b: $(p3/pt{name="p3b"}),
 
     q1a: $q1{name="q1a"},
-    q1b: $(q1/pt{name="t"}),
+    q1b: $(q1/pt{name="q1b"}),
     q2a: $q2{name="q2a"},
-    q2b: $(q2/pt{name="t"}),
+    q2b: $(q2/pt{name="q2b"}),
     q3a: $q3{name="q3a"},
-    q3b: $(q3/pt{name="t"}),
+    q3b: $(q3/pt{name="q3b"}),
 
     <p>$number.value{assignNames="number2"}</p>
 
@@ -4195,7 +4161,7 @@ describe("Map Tag Tests", function () {
     </map>
     <map assignNames="c d">
       <template newNamespace>
-      <copy target="i" assignNames="ind" fixed="false"  />
+      $i{name="ind" fixed="false"}
       <mathinput bindValueTo="$ind" />
       </template>
       <sources indexAlias="i"><text>red</text><text>yellow</text></sources>
@@ -4317,7 +4283,7 @@ describe("Map Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc("#\\/m1")).should("have.text", "map 1: hi1 hi2 hi3 hi4 ");
+    cy.get(cesc("#\\/m1")).should("have.text", "map 1: hi1, hi2, hi3, hi4 ");
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}6{enter}", {
@@ -4331,7 +4297,7 @@ describe("Map Tag Tests", function () {
 
     cy.get(cesc("#\\/m1")).should(
       "have.text",
-      "map 1: hi1 hi2 hi3 hi4 hi5 hi6 ",
+      "map 1: hi1, hi2, hi3, hi4, hi5, hi6 ",
     );
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: ");
 
@@ -4343,7 +4309,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/m1")).should("have.text", "map 1: ");
     cy.get(cesc("#\\/m2")).should(
       "have.text",
-      "map 2: hi1 hi2 hi3 hi4 hi5 hi6 ",
+      "map 2: hi1, hi2, hi3, hi4, hi5, hi6 ",
     );
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}8{enter}", {
@@ -4358,7 +4324,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/m1")).should("have.text", "map 1: ");
     cy.get(cesc("#\\/m2")).should(
       "have.text",
-      "map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ",
+      "map 2: hi1, hi2, hi3, hi4, hi5, hi6, hi7, hi8 ",
     );
 
     cy.get(cesc("#\\/h1")).click();
@@ -4368,7 +4334,7 @@ describe("Map Tag Tests", function () {
 
     cy.get(cesc("#\\/m1")).should(
       "have.text",
-      "map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ",
+      "map 1: hi1, hi2, hi3, hi4, hi5, hi6, hi7, hi8 ",
     );
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: ");
 
@@ -4381,7 +4347,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/n2a")).should("contain.text", "3");
     cy.get(cesc("#\\/n1a")).should("contain.text", "3");
 
-    cy.get(cesc("#\\/m1")).should("have.text", "map 1: hi1 hi2 hi3 ");
+    cy.get(cesc("#\\/m1")).should("have.text", "map 1: hi1, hi2, hi3 ");
     cy.get(cesc("#\\/m2")).should("have.text", "map 2: ");
 
     cy.get(cesc("#\\/h1")).click();
@@ -4390,7 +4356,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/h1a")).should("contain.text", "true");
 
     cy.get(cesc("#\\/m1")).should("have.text", "map 1: ");
-    cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1 hi2 hi3 ");
+    cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1, hi2, hi3 ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}4{enter}", {
       force: true,
@@ -4402,7 +4368,7 @@ describe("Map Tag Tests", function () {
     cy.get(cesc("#\\/n1a")).should("contain.text", "4");
 
     cy.get(cesc("#\\/m1")).should("have.text", "map 1: ");
-    cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1 hi2 hi3 hi4 ");
+    cy.get(cesc("#\\/m2")).should("have.text", "map 2: hi1, hi2, hi3, hi4 ");
   });
 
   it("map displays as list by default, single number in template", () => {

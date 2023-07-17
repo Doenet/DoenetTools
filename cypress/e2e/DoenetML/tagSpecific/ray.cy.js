@@ -1168,9 +1168,9 @@ describe("Ray Tag Tests", function () {
   </graph>
 
   <graph newNamespace name="g2">
-    $(/g1/ray1{name="1"})
-    $(/g1/ray2{name="2"})
-    $(/g1/ray3{name="3"})
+    $(/g1/ray1{name="ray1"})
+    $(/g1/ray2{name="ray2"})
+    $(/g1/ray3{name="ray3"})
   </graph>
 
   $g2{name="g3"}
@@ -2344,7 +2344,7 @@ describe("Ray Tag Tests", function () {
       </constraints>
     </point>
   </graph>
-  <copy target="P" assignNames="Pa" displayDigits="8" />
+  $P{name="Pa" displayDigits="8"}
   `,
         },
         "*",
@@ -9288,12 +9288,12 @@ describe("Ray Tag Tests", function () {
   <text>a</text>
   <graph name="g0" newNamespace>
     <ray name="v0" />
-    <copy target="v0" through="(3,4)" assignNames="v1" />
-    <copy target="v1" endpoint="(-1,0)" assignNames="v2" />
-    <copy target="v0" endpoint="(2,-6)" assignNames="v3" />
-    <copy target="v3" direction="(-3,4)" assignNames="v4" />
-    <copy target="v0" direction="(5,-1)" assignNames="v5" />
-    <copy target="v5" through="(6,2)" assignNames="v6" />
+    $v0{through="(3,4)" name="v1"}
+    $v1{endpoint="(-1,0)" name="v2"}
+    $v0{endpoint="(2,-6)" name="v3"}
+    $v3{direction="(-3,4)" name="v4"}
+    $v0{direction="(5,-1)" name="v5"}
+    $v5{through="(6,2)" name="v6"}
   </graph>
 
   $g0{name="g1"}

@@ -718,6 +718,8 @@ describe("Point Tag Tests 2", function () {
     <point>(2$_point2.y+1, 3)</point>
   </graph>
      
+  <coords copysource="_point1.coords" name="coords1" />
+  <coords copysource="_point2.coords" name="coords2" />
 
   `,
         },

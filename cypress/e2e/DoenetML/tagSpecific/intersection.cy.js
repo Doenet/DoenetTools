@@ -19,7 +19,7 @@ describe("Integer Tag Tests", function () {
   
   <line through="$_point1 $_point2" />
   <line through="$_point3 $_point4" />
-  <intersection assignNames="int1"><copy source="_line1" /><copy source="_line2" /></intersection>
+  <intersection assignNames="int1">$_line1$_line2</intersection>
   
   </graph>
   <copy prop="coords" source="_point1" assignNames="coords1" displayDecimals="2" />
@@ -178,8 +178,8 @@ describe("Integer Tag Tests", function () {
     <label>Hide second intersection</label>
   </booleaninput>
   
-  <p name="i1">Intersection 1: <intersection hide="$h1"><copy source="_line1" /><copy source="_line2" /></intersection></p>
-  <p name="i2">Intersection 2: <intersection hide="$h2"><copy source="_line1" /><copy source="_line2" /></intersection></p>
+  <p name="i1">Intersection 1: <intersection hide="$h1">$_line1$_line2</intersection></p>
+  <p name="i2">Intersection 2: <intersection hide="$h2">$_line1$_line2</intersection></p>
 
   $h1.value{assignNames="h1Val"}
   $h2.value{assignNames="h2Val"}

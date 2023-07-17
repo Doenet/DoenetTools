@@ -48,17 +48,13 @@ describe("Graph Reference Test", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let graphB = stateVariables["/graphB"];
-      let graphC =
-        stateVariables[stateVariables["/graphC"].replacements[0].componentName];
-      let graphD =
-        stateVariables[stateVariables["/graphD"].replacements[0].componentName];
-      let graphE =
-        stateVariables[stateVariables["/graphE"].replacements[0].componentName];
-      let graphF =
-        stateVariables[stateVariables["/graphF"].replacements[0].componentName];
+      let graphC = stateVariables["/graphC"];
+      let graphD = stateVariables["/graphD"];
+      let graphE = stateVariables["/graphE"];
+      let graphF = stateVariables["/graphF"];
       let pointsA = [
         "/pointA",
-        stateVariables["/pointC"].replacements[0].componentName,
+        "/pointC",
         graphB.activeChildren[0].componentName,
         graphB.activeChildren[4].componentName,
         graphC.activeChildren[0].componentName,
@@ -100,7 +96,7 @@ describe("Graph Reference Test", function () {
 
       let linesA = [
         "/lineA",
-        stateVariables["/lineC"].replacements[0].componentName,
+        "/lineC",
         graphB.activeChildren[2].componentName,
         graphB.activeChildren[6].componentName,
         graphC.activeChildren[2].componentName,
@@ -115,7 +111,7 @@ describe("Graph Reference Test", function () {
 
       let linesB = [
         "/lineB",
-        stateVariables["/lineD"].replacements[0].componentName,
+        "/lineD",
         graphB.activeChildren[3].componentName,
         graphB.activeChildren[7].componentName,
         graphC.activeChildren[3].componentName,

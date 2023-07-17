@@ -30,18 +30,18 @@ describe("Collection assignName Tests", function () {
   <p>v: $v{name="vshadow"}</p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="(a1 b1)" />
+    $cl1{name="cp1" assignNames="a1 b1"}
   </graph>
 
   <p>a1: $a1.coords{assignNames="a1shadow"}</p>
   <p>b1: $b1.coords{assignNames="b1shadow"}</p>
 
-  <copy name="cp2" prop="x" target="cl1" assignNames="u1 v1" />
+  $cl1.x{name="cp2" assignNames="u1 v1"}
 
   <p>u1: $u1{name="u1shadow"}</p>
   <p>v1: $v1{name="v1shadow"}</p>
 
-  <copy name="cp3" prop="x" target="cp1" assignNames="u2 v2" />
+  $cp1.x{name="cp3" assignNames="u2 v2"}
 
   <p>u2: $u2{name="u2shadow"}</p>
   <p>v2: $v2{name="v2shadow"}</p>
@@ -1047,21 +1047,21 @@ describe("Collection assignName Tests", function () {
   <p name="pw">w: $w{name="wshadow"}</p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="(a1 b1 c1)" />
+    $cl1{name="cp1" assignNames="a1 b1 c1"}
   </graph>
 
   <p>a1: $a1.coords{assignNames="a1shadow"}</p>
   <p>b1: $b1.coords{assignNames="b1shadow"}</p>
   <p name="pc1">c1: $c1.coords{assignNames="c1shadow"}</p>
 
-  <copy name="cp2" prop="x" target="cl1" assignNames="u1 v1 w1 x1" />
+  $cl1.x{name="cp2" assignNames="u1 v1 w1 x1"}
 
   <p>u1: $u1{name="u1shadow"}</p>
   <p>v1: $v1{name="v1shadow"}</p>
   <p name="pv1">v1: $w1{name="w1shadow"}</p>
   <p name="px1">x1: $x1{name="x1shadow"}</p>
 
-  <copy name="cp3" prop="x" target="cp1" assignNames="u2 v2" />
+  $cp1.x{name="cp3" assignNames="u2 v2"}
 
   <p>u2: $u2{name="u2shadow"}</p>
   <p>v2: $v2{name="v2shadow"}</p>
@@ -4068,7 +4068,7 @@ describe("Collection assignName Tests", function () {
   <p>p3: $p3.coords{assignNames="p3shadow"}</p>
   <p>p4: $p4.coords{assignNames="p4shadow"}</p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="(q1 q2 q3 q4 q5 q6)"/>
+  $allpoints{name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"}
 
   <p>q1: $q1.coords{assignNames="q1shadow"}</p>
   <p>q2: $q2.coords{assignNames="q2shadow"}</p>
@@ -4086,21 +4086,21 @@ describe("Collection assignName Tests", function () {
   <p>x15: $x15{name="x15shadow"}</p>
   <p>x16: $x16{name="x16shadow"}</p>
 
-  <copy name="allxs2" target="allxs1" assignNames="(x21 x22 x23 x24)"/>
+  $allxs1{name="allxs2" assignNames="x21 x22 x23 x24"}
 
   <p>x21: $x21{name="x21shadow"}</p>
   <p>x22: $x22{name="x22shadow"}</p>
   <p>x23: $x23{name="x23shadow"}</p>
   <p>x24: $x24{name="x24shadow"}</p>
 
-  <copy name="allxs3" prop="x" target="allpoints" assignNames="x31 x32 x33 x34" />
+  $allpoints.x{name="allxs3" assignNames="x31 x32 x33 x34"}
 
   <p>x31: $x31{name="x31shadow"}</p>
   <p>x32: $x32{name="x32shadow"}</p>
   <p>x33: $x33{name="x33shadow"}</p>
   <p>x34: $x34{name="x34shadow"}</p>
 
-  <copy name="allxs4" prop="x" target="allpoints2" assignNames="x41 x42 x43 x44" />
+  $allpoints2.x{name="allxs4" assignNames="x41 x42 x43 x44"}
 
   <p>x41: $x41{name="x41shadow"}</p>
   <p>x42: $x42{name="x42shadow"}</p>
@@ -8800,7 +8800,7 @@ describe("Collection assignName Tests", function () {
   <p>p3: $p3.coords{assignNames="p3shadow"}</p>
   <p>p4: $p4.coords{assignNames="p4shadow"}</p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="(q1 q2 q3 q4 q5 q6)"/>
+  $allpoints{name="allpoints2" assignNames="q1 q2 q3 q4 q5 q6"}
 
   <p>q1: $q1.coords{assignNames="q1shadow"}</p>
   <p>q2: $q2.coords{assignNames="q2shadow"}</p>
@@ -8820,7 +8820,7 @@ describe("Collection assignName Tests", function () {
   <p>xs17: $xs17{name="xs17shadow"}</p>
   <p>xs18: $xs18{name="xs18shadow"}</p>
 
-  <copy name="allxs2" target="allxs1" assignNames="(xs21 xs22 xs23 xs24 xs25 xs26)"/>
+  $allxs1{name="allxs2" assignNames="xs21 xs22 xs23 xs24 xs25 xs26"}
 
   <p>xs21: $xs21{name="xs21shadow"}</p>
   <p>xs22: $xs22{name="xs22shadow"}</p>
@@ -8829,7 +8829,7 @@ describe("Collection assignName Tests", function () {
   <p>xs25: $xs25{name="xs25shadow"}</p>
   <p>xs26: $xs26{name="xs26shadow"}</p>
 
-  <copy name="allxs3" prop="xs" target="allpoints" assignNames="xs31 xs32 xs33 xs34 xs35 xs36" />
+  $allpoints.xs{name="allxs3" assignNames="xs31 xs32 xs33 xs34 xs35 xs36"}
 
   <p>xs31: $xs31{name="xs31shadow"}</p>
   <p>xs32: $xs32{name="xs32shadow"}</p>
@@ -8838,7 +8838,7 @@ describe("Collection assignName Tests", function () {
   <p>xs35: $xs35{name="xs35shadow"}</p>
   <p>xs36: $xs36{name="xs36shadow"}</p>
 
-  <copy name="allxs4" prop="xs" target="allpoints2" assignNames="xs41 xs42 xs43 xs44 xs45 xs46" />
+  $allpoints2.xs{name="allxs4" assignNames="xs41 xs42 xs43 xs44 xs45 xs46"}
 
   <p>xs41: $xs41{name="xs41shadow"}</p>
   <p>xs42: $xs42{name="xs42shadow"}</p>

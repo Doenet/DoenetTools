@@ -193,13 +193,13 @@ describe("Rectangle Tag Tests", function () {
         <rectangle name="r1" />
       </graph>
       <graph width="180" height="180">
-        <copy target="r1" vertices="(3,4)" assignNames="r2" styleNumber="2" />
+        <rectangle copySource="r1" vertices="(3,4)" name="r2" styleNumber="2" />
       </graph>
       <graph width="180" height="180">
-        <copy target="r2" width="5" assignNames="r3" styleNumber="3" />
+        <rectangle copySource="r2" width="5" name="r3" styleNumber="3" />
       </graph>
       <graph width="180" height="180">
-        <copy target="r3" center="(4,5)" assignNames="r4" styleNumber="4" />
+        <rectangle copySource="r3" center="(4,5)" name="r4" styleNumber="4" />
       </graph>
       </sideBySide>
     </group>
@@ -1450,11 +1450,11 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   </graph>
 
   <graph>
-  $_rectangle1.center{name="centerPoint"}
-  $_rectangle1.vertex1{name="v1"}
-  $_rectangle1.vertex2{name="v2"}
-  $_rectangle1.vertex3{name="v3"}
-  $_rectangle1.vertex4{name="v4"}
+  $_rectangle1.center{assignNames="centerPoint"}
+  $_rectangle1.vertex1{assignNames="v1"}
+  $_rectangle1.vertex2{assignNames="v2"}
+  $_rectangle1.vertex3{assignNames="v3"}
+  $_rectangle1.vertex4{assignNames="v4"}
   </graph>
 
   <mathinput bindValueTo="$(_rectangle1.width)" />
@@ -1464,7 +1464,7 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
     $_rectangle1{name="rectangleCopy"}
   </graph>
   
-  $graph3{name="graph4"}
+  $graph3{name="graph4" newNamespace}
   `,
       },
       "*",
@@ -1479,17 +1479,13 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     let stateVariables = await win.returnAllStateVariables1();
 
     let rectangleName = "/_rectangle1";
-    let centerPointName =
-      stateVariables["/centerPoint"].replacements[0].componentName;
-    let v0Name = stateVariables["/v1"].replacements[0].componentName;
-    let v1Name = stateVariables["/v2"].replacements[0].componentName;
-    let v2Name = stateVariables["/v3"].replacements[0].componentName;
-    let v3Name = stateVariables["/v4"].replacements[0].componentName;
-    let rectangleCopyName =
-      stateVariables["/rectangleCopy"].replacements[0].componentName;
-    let rectangleCopy2Name =
-      stateVariables[stateVariables["/graph4"].replacements[0].componentName]
-        .activeChildren[0].componentName;
+    let centerPointName = "/centerPoint";
+    let v0Name = "/v1";
+    let v1Name = "/v2";
+    let v2Name = "/v3";
+    let v3Name = "/v4";
+    let rectangleCopyName = "/rectangleCopy";
+    let rectangleCopy2Name = "/graph4/rectangleCopy";
     let widthInputName = "/_mathinput1";
     let heightInputName = "/_mathinput2";
 

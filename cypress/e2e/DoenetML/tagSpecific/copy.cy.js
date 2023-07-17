@@ -7713,7 +7713,7 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/p2")).should("have.text", "Hello");
   });
 
-  // This was causing a duplicate componentName error
+  // This was causing a duplicate component name error
   it("copy group with name inside with no link", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -7735,7 +7735,7 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_p2")).should("have.text", "hello hello");
   });
 
-  // This was causing a duplicate componentName error
+  // This was causing a duplicate component name error
   it("copy group with name inside with no link, macros", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -7757,7 +7757,7 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_p2")).should("have.text", "hello hello");
   });
 
-  // This was causing a duplicate componentName error
+  // This was causing a duplicate component name error
   it("copy group with assignNames inside with no link, with copySource", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -9136,7 +9136,7 @@ describe("Copy Tag Tests", function () {
     <text>a</text>
     <group name="g" newNamespace>
     <copy uri="doenet:cid=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" name="p" />
-    <p>Credit achieved: $(p/_answer1.creditAchieved{name="ca"})</p>
+    <p>Credit achieved: $(p/_answer1.creditAchieved{assignNames="ca"})</p>
     </group>
     
     $g{link="false" name="g2"}
@@ -9357,9 +9357,9 @@ describe("Copy Tag Tests", function () {
     <textinput name="external" prefill="bye" />
 
     <group name="g" newNamespace>
-      $(/external.value{name="w"})
+      $(/external.value{assignNames="w"})
       <point name="P"><label>$(/external)</label>(a,b)</point>
-      $(P.label{name="Plabel"})
+      $(P.label{assignNames="Plabel"})
     </group>
     
     $g{name="g2" link="false"}
@@ -9521,7 +9521,7 @@ describe("Copy Tag Tests", function () {
         <template newNamespace>
           $x{name="w"}
           <point name="P"><label>$x</label>(a,b)</point>
-          $(P.label{name="Plabel"})
+          $(P.label{assignNames="Plabel"})
 
 
         </template>
@@ -12317,13 +12317,13 @@ describe("Copy Tag Tests", function () {
       
       <section><copy source="_p1" newNamespace name="p1" /></section>
       
-      <copy source="p1" />
+      $p1
       <copy source="p1" name="p1a" />
       <copy source="p1" newNamespace />
       <copy source="p1" newNamespace name="p1b" />
       <copy source="p1a" newNamespace />
       
-      <copy source="_section1" />
+      $_section1
       <copy source="_section1" name="s1a" />
       <copy source="_section1" newNamespace />
       <copy source="_section1" newNamespace name="s1b" />
@@ -12799,13 +12799,13 @@ describe("Copy Tag Tests", function () {
       
       <section><copy source="_p1" newNamespace name="p1" /></section>
       
-      <copy source="p1" />
+      $p1
       <copy source="p1" name="p1a" />
       <copy source="p1" newNamespace />
       <copy source="p1" newNamespace name="p1b" />
       <copy source="p1a" newNamespace />
       
-      <copy source="_section1" />
+      $_section1
       <copy source="_section1" name="s1a" />
       <copy source="_section1" newNamespace />
       <copy source="_section1" newNamespace name="s1b" />
@@ -14033,6 +14033,251 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("copy with newNamespace and name retains original names, even with group, wrapped in nested groups and copied with variable componentIndex", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <mathinput name="n" prefill="1" />
+  <group name="grp">
+    <group newNamespace name="g1">
+      <p>values: <group name="grp"><number>1</number> <number>2</number></group> <number>3</number></p>
+      
+      <section>$_p1{newNamespace name="p1"}</section>
+      
+      $p1{name="p1a"}
+      $p1{newNamespace name="p1b"}
+      
+      $_section1{newNamespace name="s1b"}
+    </group>
+    <group newNamespace name="g2">
+      <p>values: <group name="grp" assignNames="n1 n2"><number>4</number> <number>5</number></group> <number name="n3">6</number></p>
+
+      <section>$_p1{newNamespace name="p1"}</section>
+      
+      $p1{name="p1a"}
+      $p1{newNamespace name="p1b"}
+      
+      $_section1{newNamespace name="s1b"}
+    </group>
+  </group>
+
+  $grp[$n]{name="thegrp"}
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.log("check g1");
+    cy.get(cesc2("#/g1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/g1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/g1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/g1/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/g1/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/g1/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/g1/p1a/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/g1/p1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/g1/p1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/g1/p1b/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/g1/p1b/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/g1/p1b/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/g1/s1b/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/g1/s1b/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/g1/s1b/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/g1/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/g1/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/g1/p1b")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/g1/s1b/p1")).should("have.text", "values: 1 2 3");
+
+    cy.get(cesc2("#/g1/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.get(cesc2("#/g1/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.log("check g2");
+
+    cy.get(cesc2("#/g2/n1")).should("have.text", "4");
+    cy.get(cesc2("#/g2/n2")).should("have.text", "5");
+    cy.get(cesc2("#/g2/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/g2/p1/n1")).should("have.text", "4");
+    cy.get(cesc2("#/g2/p1/n2")).should("have.text", "5");
+    cy.get(cesc2("#/g2/p1/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/g2/p1a/n1")).should("have.text", "4");
+    cy.get(cesc2("#/g2/p1a/n2")).should("have.text", "5");
+    cy.get(cesc2("#/g2/p1a/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/g2/p1b/n1")).should("have.text", "4");
+    cy.get(cesc2("#/g2/p1b/n2")).should("have.text", "5");
+    cy.get(cesc2("#/g2/p1b/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/g2/s1b/p1/n1")).should("have.text", "4");
+    cy.get(cesc2("#/g2/s1b/p1/n2")).should("have.text", "5");
+    cy.get(cesc2("#/g2/s1b/p1/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/g2/_p1")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/g2/p1a")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/g2/p1b")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/g2/s1b/p1")).should("have.text", "values: 4 5 6");
+
+    cy.get(cesc2("#/g2/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 3\s*values: 4 5 6/)).not.be.null;
+      });
+
+    cy.get(cesc2("#/g2/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 4\s*values: 4 5 6/)).not.be.null;
+      });
+
+    cy.log("check thegrp");
+
+    cy.get(cesc2("#/thegrp/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1a/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1b/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1b/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1b/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/s1b/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/s1b/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/s1b/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/p1b")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/s1b/p1")).should("have.text", "values: 1 2 3");
+
+    cy.get(cesc2("#/thegrp/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.get(cesc2("#/thegrp/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.log("Change index for thegrp");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}2{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/thegrp/n1")).should("have.text", "4");
+    cy.get(cesc2("#/thegrp/n2")).should("have.text", "5");
+    cy.get(cesc2("#/thegrp/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/thegrp/p1/n1")).should("have.text", "4");
+    cy.get(cesc2("#/thegrp/p1/n2")).should("have.text", "5");
+    cy.get(cesc2("#/thegrp/p1/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/thegrp/p1a/n1")).should("have.text", "4");
+    cy.get(cesc2("#/thegrp/p1a/n2")).should("have.text", "5");
+    cy.get(cesc2("#/thegrp/p1a/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/thegrp/p1b/n1")).should("have.text", "4");
+    cy.get(cesc2("#/thegrp/p1b/n2")).should("have.text", "5");
+    cy.get(cesc2("#/thegrp/p1b/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/thegrp/s1b/p1/n1")).should("have.text", "4");
+    cy.get(cesc2("#/thegrp/s1b/p1/n2")).should("have.text", "5");
+    cy.get(cesc2("#/thegrp/s1b/p1/n3")).should("have.text", "6");
+
+    cy.get(cesc2("#/thegrp/_p1")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/thegrp/p1a")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/thegrp/p1b")).should("have.text", "values: 4 5 6");
+    cy.get(cesc2("#/thegrp/s1b/p1")).should("have.text", "values: 4 5 6");
+
+    cy.get(cesc2("#/thegrp/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 5\s*values: 4 5 6/)).not.be.null;
+      });
+
+    cy.get(cesc2("#/thegrp/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 6\s*values: 4 5 6/)).not.be.null;
+      });
+
+    cy.log("Change to invalid index for thegrp");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/thegrp")).should("not.exist");
+
+    cy.log("Change back to index 1 for thegrp");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/thegrp/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1a/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1a/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1a/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/p1b/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/p1b/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/p1b/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/s1b/p1/_number1")).should("have.text", "1");
+    cy.get(cesc2("#/thegrp/s1b/p1/_number2")).should("have.text", "2");
+    cy.get(cesc2("#/thegrp/s1b/p1/_number3")).should("have.text", "3");
+
+    cy.get(cesc2("#/thegrp/_p1")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/p1a")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/p1b")).should("have.text", "values: 1 2 3");
+    cy.get(cesc2("#/thegrp/s1b/p1")).should("have.text", "values: 1 2 3");
+
+    cy.get(cesc2("#/thegrp/_section1"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null;
+      });
+
+    cy.get(cesc2("#/thegrp/s1b"))
+      .invoke("text")
+      .then((text) => {
+        expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null;
+      });
+  });
+
   it("copy group of groups retains name", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -14104,8 +14349,7 @@ describe("Copy Tag Tests", function () {
       );
     });
 
-    cy.document().should("contain.text", "Duplicate componentName");
-    cy.document().should("contain.text", "num2");
+    cy.document().should("contain.text", "Duplicate component name: num2");
   });
 
   it("copy p with newNamespace, does not avoid name collision when assignnames", () => {
@@ -14122,8 +14366,23 @@ describe("Copy Tag Tests", function () {
       );
     });
 
-    cy.document().should("contain.text", "Duplicate component name");
-    cy.document().should("contain.text", "hello");
+    cy.document().should("contain.text", "Duplicate component name: hello");
+  });
+
+  it("copy point with math attribute, duplicate component name message uses point name", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <point name="P" y="1" />
+      $P{name="P" y="2" }
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.document().should("contain.text", "Duplicate component name: P");
   });
 
   it("copy componentIndex", () => {
@@ -14150,7 +14409,7 @@ describe("Copy Tag Tests", function () {
   
     <copy source="g2" name="g3" newNamespace />
 
-    <aslist name="al"><copy prop="x" source="col" componentIndex="$n" name="Ax" /></aslist>
+    <aslist name="al"><copy prop="x" source="col" componentIndex="$n" assignNames="Ax" /></aslist>
 
     <copy source="al" name="al2" newNamespace />
 
@@ -14301,7 +14560,7 @@ describe("Copy Tag Tests", function () {
   
     <copy source="g2" name="g3" newNamespace />
 
-    <aslist name="al"><copy source="col[$n].x" name="Ax" /></aslist>
+    <aslist name="al"><copy source="col[$n].x" assignNames="Ax" /></aslist>
 
     <copy source="al" name="al2" newNamespace />
 
@@ -14452,7 +14711,7 @@ describe("Copy Tag Tests", function () {
   
     $g2{name="g3" newNamespace}
 
-    <aslist name="al">$(col[$n].x{name="Ax"})</aslist>
+    <aslist name="al">$(col[$n].x{assignNames="Ax"})</aslist>
 
     $al{name="al2" newNamespace}
 
@@ -14867,7 +15126,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     
-    <p><aslist name="al"><copy prop="xs" source="col" componentIndex="$m" propIndex="$n" name="n1" /></aslist></p>
+    <p><aslist name="al"><copy prop="xs" source="col" componentIndex="$m" propIndex="$n" assignNames="n1" /></aslist></p>
 
     <p><copy source="al" name="al2" newNamespace /></p>
 
@@ -15132,7 +15391,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     
-    <p><aslist name="al"><copy source="col[$m].xs[$n]" name="n1" /></aslist></p>
+    <p><aslist name="al"><copy source="col[$m].xs[$n]" assignNames="n1" /></aslist></p>
 
     <p><copy source="al" name="al2" newNamespace /></p>
 
@@ -15397,7 +15656,7 @@ describe("Copy Tag Tests", function () {
     </graph>
   
     
-    <p><aslist name="al">$(col[$m].xs[$n]{name="n1"})</aslist></p>
+    <p><aslist name="al">$(col[$m].xs[$n]{assignNames="n1"})</aslist></p>
 
     <p>$al{name="al2" newNamespace}</p>
 

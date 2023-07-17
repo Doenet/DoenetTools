@@ -676,7 +676,7 @@ describe("Parameterized Curve Tag Tests", function () {
     </curve>
     </graph>
     <graph>
-      <copy target="c1" parMin="-4" parMax="0" assignNames="c2" />
+      $c1{parMin="-4" parMax="0" name="c2"}
     </graph>
     `,
         },
@@ -1107,8 +1107,8 @@ describe("Parameterized Curve Tag Tests", function () {
 
     <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
       <curve name="c">
-        $f
-        $g
+        <function copySource="f" />
+        <function copySource="g" />
       </curve>
       <point x="1" y="0.001" name="P">
         <constraints>

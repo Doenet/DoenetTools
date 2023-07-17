@@ -387,8 +387,8 @@ describe("MatchesPattern Tag Tests", function () {
   </boolean></p>
   <p>Matches: 
     <conditionalContent assignNames="(bm1 bm2 bm3)" maximumNumberToShow="1">
-      <case condition="$base1">$base1.patternMatches[1]{assignNamesSkip="1"} $base1.patternMatches[2]{assignNamesSkip="1"} $base1.patternMatch3{assignNamesSkip="1"}</case>
-      <case condition="$base2">$base2.patternMatches[1]{assignNamesSkip="1"} <math>0</math> $base2.patternMatch2</case>
+      <case condition="$base1">$base1.patternMatches[1] $base1.patternMatches[2] $base1.patternMatch3</case>
+      <case condition="$base2">$base2.patternMatches[1] <math>0</math> $base2.patternMatch2</case>
     </conditionalContent>
   </p>
 
@@ -398,8 +398,8 @@ describe("MatchesPattern Tag Tests", function () {
   </boolean></p>
   <p>Matches: 
     <conditionalContent assignNames="(rnm1 rnm2 rnm3)" maximumNumberToShow="1">
-      <case condition="$requireNumeric1">$requireNumeric1.patternMatches[1]{assignNamesSkip="1"} $requireNumeric1.patternMatches[2]{assignNamesSkip="1"} $requireNumeric1.patternMatch3{assignNamesSkip="1"}</case>
-      <case condition="$requireNumeric2">$requireNumeric2.patternMatches[1]{assignNamesSkip="1"} <math>0</math> $requireNumeric2.patternMatch2</case>
+      <case condition="$requireNumeric1">$requireNumeric1.patternMatches[1] $requireNumeric1.patternMatches[2] $requireNumeric1.patternMatch3</case>
+      <case condition="$requireNumeric2">$requireNumeric2.patternMatches[1] <math>0</math> $requireNumeric2.patternMatch2</case>
     </conditionalContent>
   </p>
   
@@ -409,8 +409,8 @@ describe("MatchesPattern Tag Tests", function () {
   </boolean></p>
   <p>Matches: 
     <conditionalContent assignNames="(exm1 exm2 exm3)" maximumNumberToShow="1">
-      <case condition="$excludeX1">$excludeX1.patternMatches[1]{assignNamesSkip="1"} $excludeX1.patternMatches[2]{assignNamesSkip="1"} $excludeX1.patternMatch3{assignNamesSkip="1"}</case>
-      <case condition="$excludeX2">$excludeX2.patternMatches[1]{assignNamesSkip="1"} <math>0</math> $excludeX2.patternMatch2</case>
+      <case condition="$excludeX1">$excludeX1.patternMatches[1] $excludeX1.patternMatches[2] $excludeX1.patternMatch3</case>
+      <case condition="$excludeX2">$excludeX2.patternMatches[1] <math>0</math> $excludeX2.patternMatch2</case>
     </conditionalContent>
   </p>
   `,

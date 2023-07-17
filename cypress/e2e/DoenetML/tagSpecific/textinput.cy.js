@@ -22,14 +22,14 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <textinput prefill='hello' name="ti1" />
-    <copy target="ti1" assignNames="ti1a" createComponentOfType="textinput" />
-    <copy prop='value' target="ti1" assignNames="v1" />
-    <copy prop='immediateValue' target="ti1" assignNames="iv1" />
-    <copy prop='value' target="ti1a" assignNames="v1a" />
-    <copy prop='immediateValue' target="ti1a" assignNames="iv1a" />
+    <textinput copySource="ti1" name="ti1a" />
+    $ti1.value{assignNames="v1"}
+    $ti1.immediateValue{assignNames="iv1"}
+    $ti1a.value{assignNames="v1a"}
+    $ti1a.immediateValue{assignNames="iv1a"}
     <textinput name="ti2" />
-    <copy prop='value' target="ti2" assignNames="v2" />
-    <copy prop='immediateValue' target="ti2" assignNames="iv2" />
+    $ti2.value{assignNames="v2"}
+    $ti2.immediateValue{assignNames="iv2"}
     `,
         },
         "*",

@@ -537,15 +537,15 @@ describe("UpdateValue Tag Tests", function () {
     <text>a</text>
     <group name="grp">
       <point name="p">(3,2)</point>
-      skip me
+      ignore me
       <point name="p2">(1,5)</point>
-      skip me too
+      ignore me too
       <point name="p3">(7,0)</point>
     </group>
     
   
-    <updateValue target="grp" prop="x" newValue="2$(grp[1].x)" componentIndex="2" />
-    <updateValue target="grp[3].x" newValue="2$(grp[1].x)" />
+    <updateValue target="grp" prop="x" newValue="2$(grp[1].x)" componentIndex="3" />
+    <updateValue target="grp[5].x" newValue="2$(grp[1].x)" />
     <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
@@ -1586,7 +1586,7 @@ describe("UpdateValue Tag Tests", function () {
       $P
     </graph>
     <graph>
-      $P{assignNames="P2"}
+      $P{name="P2"}
     </graph>
     <graph>
       <point copySource="P" />

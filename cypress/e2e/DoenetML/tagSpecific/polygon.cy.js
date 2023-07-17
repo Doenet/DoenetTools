@@ -155,7 +155,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -238,7 +238,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -326,7 +326,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
@@ -403,7 +403,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
@@ -451,7 +451,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
@@ -497,7 +497,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
@@ -627,7 +627,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
@@ -2820,8 +2820,8 @@ describe("Polygon Tag Tests", function () {
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" displayDigits="8" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
+  $_point1{name="p1" displayDigits="8"}
+  $_polygon1.vertices{assignNames="v1 v2 v3" displayDigits="8"}
   `,
         },
         "*",
@@ -3156,8 +3156,8 @@ describe("Polygon Tag Tests", function () {
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" displayDigits="8" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
+  $_point1{name="p1" displayDigits="8"}
+  $_polygon1.vertices{assignNames="v1 v2 v3" displayDigits="8"}
   `,
         },
         "*",
@@ -4630,7 +4630,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -4746,7 +4746,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -4866,7 +4866,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
@@ -4976,7 +4976,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 3$_point2 $_point3" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    $(../g1/pg{name="g"})
+    $(../g1/pg{name="pg"})
   </graph>
   $g2{name="g3"}
   $(g1/pg.vertices{assignNames="p1 p2 p3"})

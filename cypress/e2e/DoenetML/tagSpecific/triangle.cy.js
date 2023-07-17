@@ -690,13 +690,13 @@ describe("Triangle Tag Tests", function () {
         <triangle name="t1" />
       </graph>
       <graph width="180" height="180">
-        <copy target="t1" vertices="(3,-2)" assignNames="t2" />
+        <triangle copySource="t1" vertices="(3,-2)" name="t2" />
       </graph>
       <graph width="180" height="180">
-        <copy target="t1" vertices="(5,2) (6, -1)" assignNames="t3" />
+        <triangle copySource="t1" vertices="(5,2) (6, -1)" name="t3" />
       </graph>
       <graph width="180" height="180">
-        <copy target="t1" vertices="(9,0) (-4, 5) (2, -3)" assignNames="t4" />
+        <triangle copySource="t1" vertices="(9,0) (-4, 5) (2, -3)" name="t4" />
       </graph>
     </sideBySide>
   </group>

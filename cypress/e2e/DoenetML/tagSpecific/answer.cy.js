@@ -13,9 +13,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer>x+y</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -230,9 +230,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <math name="xy" hide>x+y</math>
   <p><answer>$xy</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -448,9 +448,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><math>x+y</math></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -667,9 +667,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><math name="x">x</math><math name="y">y</math></setup>
   <p><answer>$x+$y</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -882,9 +882,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><math>x</math>+<math>y</math></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -1098,9 +1098,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><math name="y">y</math></setup>
   <p><answer><math>x</math>+$y</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -1313,9 +1313,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -1504,9 +1504,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text" expanded>hello there</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -1720,9 +1720,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <text name='h'>hello there</text>
   <p><answer type="text">$h</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -1911,9 +1911,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><text>hello there</text></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -2103,9 +2103,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <text name='h'>hello there</text>
   <p><answer><text copySource="h" /></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -2295,9 +2295,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <text name='h'>hello there</text>
   <p><answer>$(h{createComponentOfType="text"})</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -2487,9 +2487,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><text name="h">hello</text></setup>
   <p><answer type="text">$h there</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -2678,9 +2678,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><text>hello</text> there</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -2870,9 +2870,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><text name="h">hello</text><text name="t">there</text></setup>
   <p><answer type="text">$h $t</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3062,9 +3062,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><text name="h">hello</text></setup>
   <p><answer>$h <text>there</text></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3405,9 +3405,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="boolean">true</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3533,9 +3533,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><boolean>true</boolean></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3662,9 +3662,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <boolean hide name="b">false</boolean>
   <p><answer type="boolean">not $b</answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3790,9 +3790,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer>not <boolean>false</boolean></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -3918,9 +3918,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y</math></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -4131,9 +4131,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award>x+y</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -4345,9 +4345,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <math name="xy" hide>x+y</math>
   <p><answer><award>$xy</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -4559,9 +4559,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><math name="x">x</math><math name="y">y</math></setup>
   <p><answer><award>$x+$y</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -4773,9 +4773,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><math name="x">x</math></setup>
   <p><answer><award>$x+<math>y</math></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -4987,9 +4987,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><math name="x">x</math><award name="aw">$x+<math>y</math></award></setup>
   <p><answer><award copySource="aw" /></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -5200,9 +5200,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y-3+$n</math></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   $n3{name="n2"}
   $num1{name="n"}
@@ -5420,9 +5420,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer matchPartial><mathList>x+y z</mathList></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -5723,9 +5723,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer matchPartial><award><mathList>x+y z</mathList></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -6031,7 +6031,7 @@ describe("Answer Tag Tests", function () {
     </when></award></answer></p>
   <p>Current response: $_answer1.currentResponses{assignNames="cr1 cr2"}</p>
   <p>Submitted response: $_answer1.submittedResponses{assignNames="sr1 sr2" createComponentOfType="math" numComponents="2"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -6443,9 +6443,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer matchPartial><numberList>1 2</numberList></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -6741,9 +6741,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer matchPartial><award><numberList>1 2</numberList></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7039,9 +7039,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><text>  hello there </text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7229,9 +7229,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text"><award><text>  hello there </text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7419,9 +7419,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text"><award>  hello there </award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7610,9 +7610,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><text name="h">hello</text></setup>
   <p><answer type="text"><award>$h there</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7800,9 +7800,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><text>hello</text> there</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -7991,9 +7991,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <setup><text name="h">hello</text></setup>
   <p><answer><award>$h <text>there</text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -8181,9 +8181,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><text>$n</text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   $n3{name="n2"}
   $text1{name="n"}
@@ -8381,9 +8381,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer matchPartial><textlist>  hello there </textlist></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -8581,9 +8581,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award matchPartial><textlist>  hello there </textlist></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -8786,7 +8786,7 @@ describe("Answer Tag Tests", function () {
     </when></award></answer></p>
   <p>Current responses: $_answer1.currentResponses{assignNames="cr1 cr2"}</p>
   <p>Submitted responses: $_answer1.submittedResponses{assignNames="sr1 sr2"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -9015,9 +9015,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><boolean>true</boolean></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -9143,9 +9143,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="boolean"><award><boolean>true</boolean></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -9272,9 +9272,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <boolean hide name="b">false</boolean>
   <p><answer type="boolean"><award>not $b</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -9401,9 +9401,9 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <boolean hide name="b">false</boolean>
   <p><answer><award>not <boolean>false</boolean></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: $_answer1.submittedResponse{name="sr1"}</p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   `,
         },
@@ -9529,9 +9529,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -9815,9 +9815,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><math>$rightAnswer</math></award><award credit="0.5"><math>x-3+$n</math></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
 
   <math name="rightAnswer">x+y-3+$n</math>
   $n3{name="n2"}
@@ -10112,9 +10112,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer><award><text>hello there</text></award><award credit="0.5"><text>bye</text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -10294,9 +10294,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text"><award><text>hello there</text></award><award credit="0.5"><text>bye</text></award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -10476,9 +10476,9 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer type="text"><award>hello there</award><award credit="0.5">bye</award></answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <text copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   `,
         },
         "*",
@@ -10662,9 +10662,9 @@ describe("Answer Tag Tests", function () {
     <award newNamespace><math>x+y</math></award>
     <award credit="0.5" newNamespace><math>x</math></award>
   </answer></p>
-  <p>Current response: $_answer1.currentResponse{name="cr1"}</p>
+  <p>Current response: $_answer1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $_answer1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $_answer1.creditAchieved{assignNames="ca1"}</p>
   </section>
 
   `,
@@ -10962,15 +10962,15 @@ describe("Answer Tag Tests", function () {
   <award><when><math>$_mathinput1.immediateValue{isResponse}+$_mathinput2.immediateValue{isResponse}</math> = <math>3x</math></when></award>
   <award credit="0.5"><when><math>$_mathinput1.immediateValue+$_mathinput2.immediateValue</math> = <math>3</math></when></award>
   </answer></p>
-  <p>First current response: $_answer1.currentResponse{name="cr"}</p>
-  <p>First current response again: $_answer1.currentResponse1{name="cr1"}</p>
-  <p>Second current response: $_answer1.currentResponse2{name="cr2"}</p>
+  <p>First current response: $_answer1.currentResponse{assignNames="cr"}</p>
+  <p>First current response again: $_answer1.currentResponse1{assignNames="cr1"}</p>
+  <p>Second current response: $_answer1.currentResponse2{assignNames="cr2"}</p>
   <p>Both current responses together: $_answer1.currentResponses{assignNames="crsa crsb"}</p>
   <p>First submitted response: <math copySource="_answer1.submittedResponse" name="sr" /></p>
   <p>First submitted response again: <math copySource="_answer1.submittedResponse1" name="sr1" /></p>
   <p>Second submitted response: <math copySource="_answer1.submittedResponse2" name="sr2" /></p>
   <p>Both submitted responses together: $_answer1.submittedResponses{assignNames="srsa srsb"}</p>
-  <p>Credit for submitted responses: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Credit for submitted responses: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -12085,15 +12085,15 @@ describe("Answer Tag Tests", function () {
   <award><when>$_mathinput1+$_mathinput2 = 3x</when></award>
   <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </answer></p>
-  <p>First current response: $_answer1.currentResponse{name="cr"}</p>
-  <p>First current response again: $_answer1.currentResponse1{name="cr1"}</p>
-  <p>Second current response: $_answer1.currentResponse2{name="cr2"}</p>
+  <p>First current response: $_answer1.currentResponse{assignNames="cr"}</p>
+  <p>First current response again: $_answer1.currentResponse1{assignNames="cr1"}</p>
+  <p>Second current response: $_answer1.currentResponse2{assignNames="cr2"}</p>
   <p>Both current responses together: $_answer1.currentResponses{assignNames="crsa crsb"}</p>
   <p>First submitted response: <math copySource="_answer1.submittedResponse" name="sr" /></p>
   <p>First submitted response again: <math copySource="_answer1.submittedResponse1" name="sr1" /></p>
   <p>Second submitted response: <math copySource="_answer1.submittedResponse2" name="sr2" /></p>
   <p>Both submitted responses together: $_answer1.submittedResponses{assignNames="srsa srsb"}</p>
-  <p>Credit for submitted responses: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Credit for submitted responses: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -13120,15 +13120,15 @@ describe("Answer Tag Tests", function () {
     <award copySource="aw1" />
     <award copySource="aw2" />
   </answer></p>
-  <p>First current response: $_answer1.currentResponse{name="cr"}</p>
-  <p>First current response again: $_answer1.currentResponse1{name="cr1"}</p>
-  <p>Second current response: $_answer1.currentResponse2{name="cr2"}</p>
+  <p>First current response: $_answer1.currentResponse{assignNames="cr"}</p>
+  <p>First current response again: $_answer1.currentResponse1{assignNames="cr1"}</p>
+  <p>Second current response: $_answer1.currentResponse2{assignNames="cr2"}</p>
   <p>Both current responses together: $_answer1.currentResponses{assignNames="crsa crsb"}</p>
   <p>First submitted response: <math copySource="_answer1.submittedResponse" name="sr" /></p>
   <p>First submitted response again: <math copySource="_answer1.submittedResponse1" name="sr1" /></p>
   <p>Second submitted response: <math copySource="_answer1.submittedResponse2" name="sr2" /></p>
   <p>Both submitted responses together: $_answer1.submittedResponses{assignNames="srsa srsb"}</p>
-  <p>Credit for submitted responses: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Credit for submitted responses: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -14153,15 +14153,15 @@ describe("Answer Tag Tests", function () {
   <award credit="0.5"><when>$_textinput2.immediateValue = rain</when></award>
   <award credit="0.5"><when>$_textinput2.immediateValue = snow</when></award>
   </answer></p>
-  <p>First current response: $_answer1.currentResponse{name="cr"}</p>
-  <p>First current response again: $_answer1.currentResponse1{name="cr1"}</p>
-  <p>Second current response: $_answer1.currentResponse2{name="cr2"}</p>
+  <p>First current response: $_answer1.currentResponse{assignNames="cr"}</p>
+  <p>First current response again: $_answer1.currentResponse1{assignNames="cr1"}</p>
+  <p>Second current response: $_answer1.currentResponse2{assignNames="cr2"}</p>
   <p>Both current responses together: $_answer1.currentResponses{assignNames="crsa crsb"}</p>
   <p>First submitted response: <text copySource="_answer1.submittedResponse" name="sr" /></p>
   <p>First submitted response again: <text copySource="_answer1.submittedResponse1" name="sr1" /></p>
   <p>Second submitted response: <text copySource="_answer1.submittedResponse2" name="sr2" /></p>
   <p>Both submitted responses together: $_answer1.submittedResponses{assignNames="srsa srsb"}</p>
-  <p>Credit for submitted responses: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Credit for submitted responses: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -14844,8 +14844,8 @@ describe("Answer Tag Tests", function () {
   <award sourcesAreResponses="m"><when>$m > 5</when></award>
   <award><when>$m < <math>2</math></when></award>
   </answer>
-  <p>Submitted response: $_answer1.submittedResponse{name="sr"}</p>
-  <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Submitted response: $_answer1.submittedResponse{assignNames="sr"}</p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -14912,8 +14912,8 @@ describe("Answer Tag Tests", function () {
   <answer><mathinput/>
   <award><when>-1 <= $_mathinput1.immediateValue{isResponse} <= 1</when></award>
   </answer>
-  <p>Submitted response: $_answer1.submittedResponse{name="sr"}</p>
-  <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Submitted response: $_answer1.submittedResponse{assignNames="sr"}</p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -14959,8 +14959,8 @@ describe("Answer Tag Tests", function () {
   <answer><mathinput/>
   <award><when>-1 < $_mathinput1.immediateValue{isResponse} < 1</when></award>
   </answer>
-  <p>Submitted response: $_answer1.submittedResponse{name="sr"}</p>
-  <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Submitted response: $_answer1.submittedResponse{assignNames="sr"}</p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -15005,8 +15005,8 @@ describe("Answer Tag Tests", function () {
   <answer><mathinput/>
   <award><when>1 > $_mathinput1.immediateValue{isResponse} >= -1</when></award>
   </answer>
-  <p>Submitted response: $_answer1.submittedResponse{name="sr"}</p>
-  <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Submitted response: $_answer1.submittedResponse{assignNames="sr"}</p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -15061,7 +15061,7 @@ describe("Answer Tag Tests", function () {
    </when></award>
   </answer>
   <p>Submitted responses: $_answer1.submittedResponses{assignNames="sr1 sr2 sr3"}</p>
-  <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   `,
         },
         "*",
@@ -15118,8 +15118,8 @@ describe("Answer Tag Tests", function () {
     <map assignNames="a b c">
       <template newNamespace>
         <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
-        <p>Credit achieved: $_answer1.creditAchieved{name="ca"}</p>
-        <p>Current response: $_answer1.currentResponse{name="cr"}</p>
+        <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
+        <p>Current response: $_answer1.currentResponse{assignNames="cr"}</p>
         <p>Submitted response: <math copySource="_answer1.submittedResponse" name="sr" /></p>
       </template>
       <sources alias="n"><sequence from="1" to="3" /></sources>
@@ -22968,7 +22968,7 @@ describe("Answer Tag Tests", function () {
         <p>Your current text answer is <text copySource="a.currentResponse2" name="cr2" /></p>
         <p>Your submitted math answer is <math copySource="a.submittedResponse" name="sr1" /></p>
         <p>Your submitted text answer is <text copySource="a.submittedResponse2" name="sr2" /></p>
-        <p>Credit for your answers $a.creditAchieved{name="ca"}</p>
+        <p>Credit for your answers $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -23141,7 +23141,7 @@ describe("Answer Tag Tests", function () {
         <p>Your current text answer is <text copySource="a.currentResponse2" name="cr2" /></p>
         <p>Your submitted math answer is <math copySource="a.submittedResponse" name="sr1" /></p>
         <p>Your submitted text answer is <text copySource="a.submittedResponse2" name="sr2" /></p>
-        <p>Credit for your answers $a.creditAchieved{name="ca"}</p>
+        <p>Credit for your answers $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -23316,7 +23316,7 @@ describe("Answer Tag Tests", function () {
         
         <p>Your current answer: <math copySource="a.currentResponse" name="cr" /></p>
         <p>Your submitted answer: <math copySource="a.submittedResponse" name="sr" /></p>
-        <p>Credit for your answer $a.creditAchieved{name="ca"}</p>
+        <p>Credit for your answer $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -23560,7 +23560,7 @@ describe("Answer Tag Tests", function () {
         
         <p>Current response <math copySource="a.currentResponses" name="cr" /></p>
         <p>Submitted response <math copySource="a.submittedResponses" name="sr" /></p>
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -23669,7 +23669,7 @@ describe("Answer Tag Tests", function () {
         
         <p>Current responses <aslist>$a.currentResponses{assignNames="cr1 cr2" createComponentOfType="math" numComponents="2"}</aslist></p>
         <p>Submitted responses <aslist>$a.submittedResponses{assignNames="sr1 sr2" createComponentOfType="math" numComponents="2"}</aslist></p>
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -24119,7 +24119,7 @@ describe("Answer Tag Tests", function () {
         
         <p>Current responses $a.currentResponses{assignNames="cr1 cr2" createComponentOfType="math" numComponents="2"}</p>
         <p>Submitted response $a.submittedResponses{assignNames="sr1 sr2" createComponentOfType="math" numComponents="2"}</p>
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -24310,7 +24310,7 @@ describe("Answer Tag Tests", function () {
         
         <p>Current response: <math copySource="a.currentResponses" name="cr" /></p>
         <p>Submitted response: <math copySource="a.submittedResponses" name="sr" /></p>
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -24688,7 +24688,7 @@ describe("Answer Tag Tests", function () {
 
         <p>Current responses: <aslist>$a.currentResponses{assignNames="cr1 cr2" createComponentOfType="math" numComponents="2"}</aslist></p>
         <p>Submitted response: <aslist>$a.submittedResponses{assignNames="sr1 sr2" createComponentOfType="math" numComponents="2"}</aslist></p>
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
  `,
         },
         "*",
@@ -25420,7 +25420,7 @@ describe("Answer Tag Tests", function () {
 
         $a.feedbacks{assignNames="fb1 fb2 fb3 fb4 fb5"}
 
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
 
  `,
         },
@@ -25787,7 +25787,7 @@ describe("Answer Tag Tests", function () {
 
         $a.feedbacks{assignNames="fb1 fb2 fb3 fb4 fb5"}
 
-        <p>Credit: $a.creditAchieved{name="ca"}</p>
+        <p>Credit: $a.creditAchieved{assignNames="ca"}</p>
 
  `,
         },
@@ -25965,8 +25965,8 @@ describe("Answer Tag Tests", function () {
     <award><math>x+y</math></award>
   </answer></p>
   <p><answer type="text">hello</answer></p>
-  <p>Number of submissions 1: $_answer1.numSubmissions{name="nsubs1"}</p>
-  <p>Number of submissions 2: $_answer2.numSubmissions{name="nsubs2"}</p>
+  <p>Number of submissions 1: $_answer1.numSubmissions{assignNames="nsubs1"}</p>
+  <p>Number of submissions 2: $_answer2.numSubmissions{assignNames="nsubs2"}</p>
   `,
         },
         "*",
@@ -27469,8 +27469,8 @@ describe("Answer Tag Tests", function () {
   <text>a</text>
   <answer name="a"><mathinput name="mia" />x</answer>
 
-  <p>Current Response: $a.currentResponse{name="cr"}</p>
-  <p>Submitted Response: $a.submittedResponse{name="sr"}</p>
+  <p>Current Response: $a.currentResponse{assignNames="cr"}</p>
+  <p>Submitted Response: $a.submittedResponse{assignNames="sr"}</p>
   
   <p>Change current response: <mathinput bindValueTo="$a.currentResponse" name="micr" /></p>
   <p>Change submitted response: <mathinput bindValueTo="$a.submittedResponse" name="misr"  /></p>
@@ -28054,12 +28054,12 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer name="ans1">x+y</answer></p>
-  <p>Current response: $ans1.currentResponse{name="cr1"}</p>
+  <p>Current response: $ans1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="ans1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $ans1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $ans1.creditAchieved{assignNames="ca1"}</p>
 
   <p><answer copySource="ans1" name="ans2" /></p>
-  <p>Current response: $ans2.currentResponse{name="cr2"}</p>
+  <p>Current response: $ans2.currentResponse{assignNames="cr2"}</p>
   <p>Submitted response: <math copySource="ans2.submittedResponse" name="sr2" /></p>
   <p>Credit for submitted response: $ans2.creditAchieved{name="ca2"}</p>
 
@@ -28286,12 +28286,12 @@ describe("Answer Tag Tests", function () {
           doenetML: `
   <text>a</text>
   <p><answer name="ans1">x+y</answer></p>
-  <p>Current response: $ans1.currentResponse{name="cr1"}</p>
+  <p>Current response: $ans1.currentResponse{assignNames="cr1"}</p>
   <p>Submitted response: <math copySource="ans1.submittedResponse" name="sr1" /></p>
-  <p>Credit for submitted response: $ans1.creditAchieved{name="ca1"}</p>
+  <p>Credit for submitted response: $ans1.creditAchieved{assignNames="ca1"}</p>
 
   <p><answer copySource="ans1" name="ans2" link='false' /></p>
-  <p>Current response: $ans2.currentResponse{name="cr2"}</p>
+  <p>Current response: $ans2.currentResponse{assignNames="cr2"}</p>
   <p>Submitted response: <math copySource="ans2.submittedResponse" name="sr2" /></p>
   <p>Credit for submitted response: $ans2.creditAchieved{name="ca2"}</p>
 
@@ -28668,9 +28668,9 @@ describe("Answer Tag Tests", function () {
     <award>x^2-2x+3</award>
     <award credit="0.5" numSignErrorsMatched="1">x^2-2x+3</award>
   </answer>
-  <p>Current response: $ans.currentResponse{name="cr"}</p>
+  <p>Current response: $ans.currentResponse{assignNames="cr"}</p>
   <p>Submitted response: <math copySource="ans.submittedResponse" name="sr" /></p>
-  <p>Credit for submitted response: $ans.creditAchieved{name="ca"}</p>
+  <p>Credit for submitted response: $ans.creditAchieved{assignNames="ca"}</p>
 
   `,
         },

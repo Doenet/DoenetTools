@@ -203,7 +203,7 @@ ${theDoenetML3}
   <section name="s2" copySource="s1" />
   $s1{name="s3"}
   <section name="s4" copySource="s1" link="false" />
-  <copy source="s1" assignNames="s5" link="false" />
+  $s1{name="s5" link="false"}
 
   
   <section name="s1a" newNamespace>
@@ -346,9 +346,9 @@ ${theDoenetML3}
     <section name="s1">
       <section boxed>
         <title>Copy in external</title>
-        <copy uri="doenet:cid=bafkreievuawsojoy4kzz7sbjvc2sxreqw6bzg3gow2jwor23aknjsmihcy" assignNames="external" />
+        <copy uri="doenet:cid=bafkreiatr7qxnkb5lnjd7bccsiravqyy7xnpynyskilyg2etb3hva7oe74" name="external" />
       </section>
-
+      
       <p>Grab the DoenetML from external pre:</p>
       <pre>$(external/_pre1.doenetML)</pre>
 
@@ -357,11 +357,11 @@ ${theDoenetML3}
     </section>
 
 
-    <copy source="s1" assignNames="s2" assignNewNamespaces />
+    $s1{name="s2" newNamespace}
 
     <section copySource="s1" name="s3" newNamespace />
 
-    <copy source="s1" assignNames="s4" link="false" assignNewNamespaces />
+    $s1{name="s4" newNamespace link="false"}
 
     <section copySource="s1" name="s5" link="false" newNamespace />
   `,

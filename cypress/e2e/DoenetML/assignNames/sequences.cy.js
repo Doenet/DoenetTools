@@ -22,14 +22,14 @@ describe("sequence and map assignName Tests", function () {
   <p name="pb">b: $b{name="cpb"}</p>
 
   <p name="s2"><aslist>
-  <sequence name="cpall" copytarget="_sequence1" assignNames="a1 b1 c1" />
+  <sequence name="cpall" copysource="_sequence1" assignNames="a1 b1 c1" />
   </aslist></p>
   <p name="pa1">a1: $a1{name="cpa1"}</p>
   <p name="pb1">b1: $b1{name="cpb1"}</p>
   <p name="pc1">c1: $c1{name="cpc1"}</p>
 
   <p name="s3"><aslist>
-  <sequence name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" />
+  <sequence name="cpall2" copysource="cpall" assignNames="a2 b2 c2 d2 e2" />
   </aslist></p>
   <p name="pa2">a2: $a2{name="cpa2"}</p>
   <p name="pb2">b2: $b2{name="cpb2"}</p>
@@ -38,7 +38,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pe2">e2: $e2{name="cpe2"}</p>
 
   <p name="s4"><aslist>
-  <sequence name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" />
+  <sequence name="cpall3" copysource="cpall2" assignNames="a3 b3 c3 d3" />
   </aslist></p>
   <p name="pa3">a3: $a3{name="cpa3"}</p>
   <p name="pb3">b3: $b3{name="cpb3"}</p>
@@ -572,7 +572,7 @@ describe("sequence and map assignName Tests", function () {
           doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1"><map assignNames="a b">
+  <p name="m1"><map assignNames="a b" aslist="false">
     <template newNamespace>Letter $i{name="n"} is $l{name="v"}. </template>
     <sources alias="l" indexAlias="i">
       <sequence type="letters" length="$n" />
@@ -589,7 +589,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pbv">b/v: $(b/v{name="cpbv"})</p>
 
 
-  <p name="m2"><map name="cpall" copytarget="_map1" assignNames="a1 b1 c1" /></p>
+  <p name="m2"><map name="cpall" copysource="_map1" assignNames="a1 b1 c1" /></p>
   <p name="pa1">a1: $a1{name="cpa1"}</p>
   <p name="pb1">b1: $b1{name="cpb1"}</p>
   <p name="pc1">c1: $c1{name="cpc1"}</p>
@@ -603,7 +603,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pcv1">c1/v: $(c1/v{name="cpcv1"})</p>
 
 
-  <p name="m3"><map name="cpall2" copytarget="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
+  <p name="m3"><map name="cpall2" copysource="cpall" assignNames="a2 b2 c2 d2 e2" /></p>
   <p name="pa2">a2: $a2{name="cpa2"}</p>
   <p name="pb2">b2: $b2{name="cpb2"}</p>
   <p name="pc2">c2: $c2{name="cpc2"}</p>
@@ -623,7 +623,7 @@ describe("sequence and map assignName Tests", function () {
   <p name="pev2">e2/v: $(e2/v{name="cpev2"})</p>
 
 
-  <p name="m4"><map name="cpall3" copytarget="cpall2" assignNames="a3 b3 c3 d3" /></p>
+  <p name="m4"><map name="cpall3" copysource="cpall2" assignNames="a3 b3 c3 d3" /></p>
   <p name="pa3">a3: $a3{name="cpa3"}</p>
   <p name="pb3">b3: $b3{name="cpb3"}</p>
   <p name="pc3">c3: $c3{name="cpc3"}</p>
@@ -1543,15 +1543,15 @@ describe("sequence and map assignName Tests", function () {
     cy.get(cesc("#\\/pev2")).should("have.text", "e2/v: ");
   });
 
-  it("copy source and index assign names", () => {
+  it("copy alias and index alias with names", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1"><map assignNames="a b">
-    <template newNamespace>Letter <copy target="i" assignNames="n1 n2" /> is <copy target="m" assignnames="v1  v2" />. </template>
+  <p name="m1"><map assignNames="a b" asList="false">
+    <template newNamespace>Letter $i{name="n1"} is $m{name="v1"}. </template>
     <sources alias="m" indexAlias="i">
       <sequence type="letters" length="$n" />
    </sources>
@@ -1563,16 +1563,12 @@ describe("sequence and map assignName Tests", function () {
 
   <p name="pan1">a/n1: $(a/n1{name="cpan1"})</p>
   <p name="pbn1">b/n1: $(b/n1{name="cpbn1"})</p>
-  <p name="pan2">a/n2: $(a/n2{name="cpan2"})</p>
-  <p name="pbn2">b/n2: $(b/n2{name="cpbn2"})</p>
 
   <p name="pav1">a/v1: $(a/v1{name="cpav1"})</p>
   <p name="pbv1">b/v1: $(b/v1{name="cpbv1"})</p>
-  <p name="pav2">a/v2: $(a/v2{name="cpav2"})</p>
-  <p name="pbv2">b/v2: $(b/v2{name="cpbv2"})</p>
 
 
-  <p name="m2"><copy name="cpall" target="_map1" assignNames="a1 b1 c1" /></p>
+  <p name="m2">$_map1{name="cpall" assignNames="a1 b1 c1"}</p>
   <p name="pa1">a1: $a1{name="cpa1"}</p>
   <p name="pb1">b1: $b1{name="cpb1"}</p>
   <p name="pc1">c1: $c1{name="cpc1"}</p>
@@ -1581,17 +1577,9 @@ describe("sequence and map assignName Tests", function () {
   <p name="pbn11">b1/n1: $(b1/n1{name="cpbn11"})</p>
   <p name="pcn11">c1/n1: $(c1/n1{name="cpcn11"})</p>
 
-  <p name="pan21">a1/n2: $(a1/n2{name="cpan21"})</p>
-  <p name="pbn21">b1/n2: $(b1/n2{name="cpbn21"})</p>
-  <p name="pcn21">c1/n2: $(c1/n2{name="cpcn21"})</p>
-
   <p name="pav11">a1/v1: $(a1/v1{name="cpav11"})</p>
   <p name="pbv11">b1/v1: $(b1/v1{name="cpbv11"})</p>
   <p name="pcv11">c1/v1: $(c1/v1{name="cpcv11"})</p>
-
-  <p name="pav21">a1/v2: $(a1/v2{name="cpav21"})</p>
-  <p name="pbv21">b1/v2: $(b1/v2{name="cpbv21"})</p>
-  <p name="pcv21">c1/v2: $(c1/v2{name="cpcv21"})</p>
   `,
         },
         "*",
@@ -1608,34 +1596,24 @@ describe("sequence and map assignName Tests", function () {
 
     cy.get(cesc("#\\/pan1")).should("have.text", "a/n1: 1");
     cy.get(cesc("#\\/pan11")).should("have.text", "a1/n1: 1");
-    cy.get(cesc("#\\/pan2")).should("have.text", "a/n2: ");
-    cy.get(cesc("#\\/pan21")).should("have.text", "a1/n2: ");
 
     cy.get(cesc("#\\/pav1")).should("have.text", "a/v1: a");
     cy.get(cesc("#\\/pav11")).should("have.text", "a1/v1: a");
-    cy.get(cesc("#\\/pav2")).should("have.text", "a/v2: ");
-    cy.get(cesc("#\\/pav21")).should("have.text", "a1/v2: ");
 
     cy.get(cesc("#\\/pb")).should("have.text", "b: ");
     cy.get(cesc("#\\/pb1")).should("have.text", "b1: ");
 
     cy.get(cesc("#\\/pbn1")).should("have.text", "b/n1: ");
     cy.get(cesc("#\\/pbn11")).should("have.text", "b1/n1: ");
-    cy.get(cesc("#\\/pbn2")).should("have.text", "b/n2: ");
-    cy.get(cesc("#\\/pbn21")).should("have.text", "b1/n2: ");
 
     cy.get(cesc("#\\/pbv1")).should("have.text", "b/v1: ");
     cy.get(cesc("#\\/pbv11")).should("have.text", "b1/v1: ");
-    cy.get(cesc("#\\/pbv2")).should("have.text", "b/v2: ");
-    cy.get(cesc("#\\/pbv21")).should("have.text", "b1/v2: ");
 
     cy.get(cesc("#\\/pc1")).should("have.text", "c1: ");
 
     cy.get(cesc("#\\/pcn11")).should("have.text", "c1/n1: ");
-    cy.get(cesc("#\\/pcn21")).should("have.text", "c1/n2: ");
 
     cy.get(cesc("#\\/pcv11")).should("have.text", "c1/v1: ");
-    cy.get(cesc("#\\/pcv21")).should("have.text", "c1/v2: ");
 
     cy.log("change n to 2");
     cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}2{enter}", {
@@ -1656,34 +1634,24 @@ describe("sequence and map assignName Tests", function () {
 
     cy.get(cesc("#\\/pan1")).should("have.text", "a/n1: 1");
     cy.get(cesc("#\\/pan11")).should("have.text", "a1/n1: 1");
-    cy.get(cesc("#\\/pan2")).should("have.text", "a/n2: ");
-    cy.get(cesc("#\\/pan21")).should("have.text", "a1/n2: ");
 
     cy.get(cesc("#\\/pav1")).should("have.text", "a/v1: a");
     cy.get(cesc("#\\/pav11")).should("have.text", "a1/v1: a");
-    cy.get(cesc("#\\/pav2")).should("have.text", "a/v2: ");
-    cy.get(cesc("#\\/pav21")).should("have.text", "a1/v2: ");
 
     cy.get(cesc("#\\/pb")).should("have.text", "b: Letter 2 is b. ");
     cy.get(cesc("#\\/pb1")).should("have.text", "b1: Letter 2 is b. ");
 
     cy.get(cesc("#\\/pbn1")).should("have.text", "b/n1: 2");
     cy.get(cesc("#\\/pbn11")).should("have.text", "b1/n1: 2");
-    cy.get(cesc("#\\/pbn2")).should("have.text", "b/n2: ");
-    cy.get(cesc("#\\/pbn21")).should("have.text", "b1/n2: ");
 
     cy.get(cesc("#\\/pbv1")).should("have.text", "b/v1: b");
     cy.get(cesc("#\\/pbv11")).should("have.text", "b1/v1: b");
-    cy.get(cesc("#\\/pbv2")).should("have.text", "b/v2: ");
-    cy.get(cesc("#\\/pbv21")).should("have.text", "b1/v2: ");
 
     cy.get(cesc("#\\/pc1")).should("have.text", "c1: ");
 
     cy.get(cesc("#\\/pcn11")).should("have.text", "c1/n1: ");
-    cy.get(cesc("#\\/pcn21")).should("have.text", "c1/n2: ");
 
     cy.get(cesc("#\\/pcv11")).should("have.text", "c1/v1: ");
-    cy.get(cesc("#\\/pcv21")).should("have.text", "c1/v2: ");
 
     cy.log("change n to 0");
     cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}0{enter}", {
@@ -1698,34 +1666,24 @@ describe("sequence and map assignName Tests", function () {
 
     cy.get(cesc("#\\/pan1")).should("have.text", "a/n1: ");
     cy.get(cesc("#\\/pan11")).should("have.text", "a1/n1: ");
-    cy.get(cesc("#\\/pan2")).should("have.text", "a/n2: ");
-    cy.get(cesc("#\\/pan21")).should("have.text", "a1/n2: ");
 
     cy.get(cesc("#\\/pav1")).should("have.text", "a/v1: ");
     cy.get(cesc("#\\/pav11")).should("have.text", "a1/v1: ");
-    cy.get(cesc("#\\/pav2")).should("have.text", "a/v2: ");
-    cy.get(cesc("#\\/pav21")).should("have.text", "a1/v2: ");
 
     cy.get(cesc("#\\/pb")).should("have.text", "b: ");
     cy.get(cesc("#\\/pb1")).should("have.text", "b1: ");
 
     cy.get(cesc("#\\/pbn1")).should("have.text", "b/n1: ");
     cy.get(cesc("#\\/pbn11")).should("have.text", "b1/n1: ");
-    cy.get(cesc("#\\/pbn2")).should("have.text", "b/n2: ");
-    cy.get(cesc("#\\/pbn21")).should("have.text", "b1/n2: ");
 
     cy.get(cesc("#\\/pbv1")).should("have.text", "b/v1: ");
     cy.get(cesc("#\\/pbv11")).should("have.text", "b1/v1: ");
-    cy.get(cesc("#\\/pbv2")).should("have.text", "b/v2: ");
-    cy.get(cesc("#\\/pbv21")).should("have.text", "b1/v2: ");
 
     cy.get(cesc("#\\/pc1")).should("have.text", "c1: ");
 
     cy.get(cesc("#\\/pcn11")).should("have.text", "c1/n1: ");
-    cy.get(cesc("#\\/pcn21")).should("have.text", "c1/n2: ");
 
     cy.get(cesc("#\\/pcv11")).should("have.text", "c1/v1: ");
-    cy.get(cesc("#\\/pcv21")).should("have.text", "c1/v2: ");
 
     cy.log("change n to 3");
     cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}3{enter}", {
@@ -1746,34 +1704,24 @@ describe("sequence and map assignName Tests", function () {
 
     cy.get(cesc("#\\/pan1")).should("have.text", "a/n1: 1");
     cy.get(cesc("#\\/pan11")).should("have.text", "a1/n1: 1");
-    cy.get(cesc("#\\/pan2")).should("have.text", "a/n2: ");
-    cy.get(cesc("#\\/pan21")).should("have.text", "a1/n2: ");
 
     cy.get(cesc("#\\/pav1")).should("have.text", "a/v1: a");
     cy.get(cesc("#\\/pav11")).should("have.text", "a1/v1: a");
-    cy.get(cesc("#\\/pav2")).should("have.text", "a/v2: ");
-    cy.get(cesc("#\\/pav21")).should("have.text", "a1/v2: ");
 
     cy.get(cesc("#\\/pb")).should("have.text", "b: Letter 2 is b. ");
     cy.get(cesc("#\\/pb1")).should("have.text", "b1: Letter 2 is b. ");
 
     cy.get(cesc("#\\/pbn1")).should("have.text", "b/n1: 2");
     cy.get(cesc("#\\/pbn11")).should("have.text", "b1/n1: 2");
-    cy.get(cesc("#\\/pbn2")).should("have.text", "b/n2: ");
-    cy.get(cesc("#\\/pbn21")).should("have.text", "b1/n2: ");
 
     cy.get(cesc("#\\/pbv1")).should("have.text", "b/v1: b");
     cy.get(cesc("#\\/pbv11")).should("have.text", "b1/v1: b");
-    cy.get(cesc("#\\/pbv2")).should("have.text", "b/v2: ");
-    cy.get(cesc("#\\/pbv21")).should("have.text", "b1/v2: ");
 
     cy.get(cesc("#\\/pc1")).should("have.text", "c1: Letter 3 is c. ");
 
     cy.get(cesc("#\\/pcn11")).should("have.text", "c1/n1: 3");
-    cy.get(cesc("#\\/pcn21")).should("have.text", "c1/n2: ");
 
     cy.get(cesc("#\\/pcv11")).should("have.text", "c1/v1: c");
-    cy.get(cesc("#\\/pcv21")).should("have.text", "c1/v2: ");
 
     cy.log("change n to 5");
     cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}5{enter}", {
@@ -1794,44 +1742,34 @@ describe("sequence and map assignName Tests", function () {
 
     cy.get(cesc("#\\/pan1")).should("have.text", "a/n1: 1");
     cy.get(cesc("#\\/pan11")).should("have.text", "a1/n1: 1");
-    cy.get(cesc("#\\/pan2")).should("have.text", "a/n2: ");
-    cy.get(cesc("#\\/pan21")).should("have.text", "a1/n2: ");
 
     cy.get(cesc("#\\/pav1")).should("have.text", "a/v1: a");
     cy.get(cesc("#\\/pav11")).should("have.text", "a1/v1: a");
-    cy.get(cesc("#\\/pav2")).should("have.text", "a/v2: ");
-    cy.get(cesc("#\\/pav21")).should("have.text", "a1/v2: ");
 
     cy.get(cesc("#\\/pb")).should("have.text", "b: Letter 2 is b. ");
     cy.get(cesc("#\\/pb1")).should("have.text", "b1: Letter 2 is b. ");
 
     cy.get(cesc("#\\/pbn1")).should("have.text", "b/n1: 2");
     cy.get(cesc("#\\/pbn11")).should("have.text", "b1/n1: 2");
-    cy.get(cesc("#\\/pbn2")).should("have.text", "b/n2: ");
-    cy.get(cesc("#\\/pbn21")).should("have.text", "b1/n2: ");
 
     cy.get(cesc("#\\/pbv1")).should("have.text", "b/v1: b");
     cy.get(cesc("#\\/pbv11")).should("have.text", "b1/v1: b");
-    cy.get(cesc("#\\/pbv2")).should("have.text", "b/v2: ");
-    cy.get(cesc("#\\/pbv21")).should("have.text", "b1/v2: ");
 
     cy.get(cesc("#\\/pc1")).should("have.text", "c1: Letter 3 is c. ");
 
     cy.get(cesc("#\\/pcn11")).should("have.text", "c1/n1: 3");
-    cy.get(cesc("#\\/pcn21")).should("have.text", "c1/n2: ");
 
     cy.get(cesc("#\\/pcv11")).should("have.text", "c1/v1: c");
-    cy.get(cesc("#\\/pcv21")).should("have.text", "c1/v2: ");
   });
 
-  it("copy source and index assign names, no new template namespace", () => {
+  it("copy alias and index alias with names, no new template namespace", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1"><map>
+  <p name="m1"><map asList="false">
     <template>Letter $i{name="n1"} is $m{name="v1"}. Repeat: letter $n1 is $v1. </template>
     <sources alias='m' indexAlias='i'>
       <sequence type="letters" length="$n" />
@@ -1900,7 +1838,7 @@ describe("sequence and map assignName Tests", function () {
           doenetML: `
   <text>a</text>
   <mathinput name="n" prefill="1" />
-  <p name="m1" newNamespace><map>
+  <p name="m1" newNamespace><map asList="false">
     <template>Letter $i{name="n1"} is $m{name="v1"}. Repeat: letter $n1 is $v1. </template>
     <sources alias="m" indexAlias="i">
       <sequence type="letters" length="$(../n)" />

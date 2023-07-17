@@ -2977,9 +2977,9 @@ describe("SideBySide Tag Tests", function () {
       <lorem generateParagraphs="4" />
     </sideBySide>
 
-    <copy target="sbs" widths="30% 10%" margins="1% 3%" valigns="bottom middle top bottom" assignNames="sbs2" />
+    <sideBySide copySource="sbs" widths="30% 10%" margins="1% 3%" valigns="bottom middle top bottom" name="sbs2" />
 
-    <copy target="sbs2" widths="7% 8% 11% 12%" valigns="top bottom" assignNames="sbs3" />
+    <sideBySide copySource="sbs2" widths="7% 8% 11% 12%" valigns="top bottom" name="sbs3" />
 
     `,
         },
@@ -7312,9 +7312,9 @@ describe("SideBySide Tag Tests", function () {
       </sideBySide>
     </sbsgroup>
 
-    <copy target="sbsg" widths="30% 10%" margins="1% 3%" valigns="bottom middle" assignNames="sbsg2" />
+    <sbsgroup copySource="sbsg" widths="30% 10%" margins="1% 3%" valigns="bottom middle" name="sbsg2" />
 
-    <copy target="sbsg2" widths="7%" valigns="top bottom" assignNames="sbsg3" />
+    <sbsgroup copySource="sbsg2" widths="7%" valigns="top bottom" name="sbsg3" />
 
     `,
         },

@@ -1229,6 +1229,8 @@ export default class BaseComponent {
 
     delete serializedComponent.doenetAttributes.prescribedName;
     delete serializedComponent.doenetAttributes.assignNames;
+    delete serializedComponent.doenetAttributes
+      .assignNamesForCompositeReplacement;
 
     return serializedComponent;
   }

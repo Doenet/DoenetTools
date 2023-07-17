@@ -398,8 +398,8 @@ describe("Point Tag Tests", function () {
   </graph>
 
   <graph name="g4">
-     <copy source="P" assignNames="P4" labelIsName="false" />
-     <copy source="_point2" assignNames="Q4" labelIsName="false" />
+     $P{name="P4" labelIsName="false"}
+     $_point2{name="Q4" labelIsName="false"}
   </graph>
 
   <graph copySource="g2" name="g5" newNamespace />
@@ -837,13 +837,13 @@ describe("Point Tag Tests", function () {
     <point copySource="A" name="D" labelIsName/>
   </graph>
   <graph>
-    <copy source="A" assignNames="E" labelIsName />
+    $A{name="E" labelIsName}
   </graph>
   <graph>
     <point copySource="A" labelIsName/>
   </graph>
-  <graph>
-    <copy source="A" labelIsName />
+  <graph name="g7">
+    <group name="grp">$A{labelIsName}</group>
   </graph>
 
   <p><text copySource="A" copyProp="label" name="lA" /></p>
@@ -852,7 +852,7 @@ describe("Point Tag Tests", function () {
   <p><label copySource="D" copyProp="label" name="lD" /></p>
   <p><text copySource="E" copyProp="label" name="lE" /></p>
   <p><label copySource="_point4" copyProp="label" name="lp4" /></p>
-  <p><label copySource="_copy3" copyProp="label" name="lc3" /></p>
+  <p><label copySource="grp[1].label" name="lc3" /></p>
 
   <p><textinput bindValueTo="$A.label" name="tiA" /></p>
   <p><textinput bindValueTo="$B.label" name="tiB" /></p>
@@ -860,7 +860,7 @@ describe("Point Tag Tests", function () {
   <p><textinput bindValueTo="$D.label" name="tiD" /></p>
   <p><textinput bindValueTo="$E.label" name="tiE" /></p>
   <p><textinput bindValueTo="$_point4.label" name="tip4" /></p>
-  <p><textinput bindValueTo="$_copy3.label" name="tic3" /></p>
+  <p><textinput bindValueTo="$grp[1].label" name="tic3" /></p>
     `,
         },
         "*",
@@ -893,7 +893,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -924,7 +926,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -955,7 +959,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -986,7 +992,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -1017,7 +1025,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -1048,7 +1058,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq(
         "&UnderBar;point4",
       );
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -1079,7 +1091,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/E"].stateValues.labelForGraph).eq("J");
       expect(stateVariables["/_point4"].stateValues.label).eq("K");
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq("K");
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("A");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("A");
     });
@@ -1108,7 +1122,9 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/E"].stateValues.labelForGraph).eq("J");
       expect(stateVariables["/_point4"].stateValues.label).eq("K");
       expect(stateVariables["/_point4"].stateValues.labelForGraph).eq("K");
-      let c3p = stateVariables["/_copy3"].replacements[0].componentName;
+      let c3p =
+        stateVariables[stateVariables["/grp"].replacements[0].componentName]
+          .replacements[0].componentName;
       expect(stateVariables[c3p].stateValues.label).eq("L");
       expect(stateVariables[c3p].stateValues.labelForGraph).eq("L");
     });
@@ -2104,7 +2120,7 @@ describe("Point Tag Tests", function () {
       <point name="P" labelIsName>$(coords.value{createComponentOfType="math"})</point>
     </graph>
     <graph>
-      <copy target="P" assignNames="Q" labelIsName/>
+      $P{name="Q" labelIsName}
     </graph>
     $P.coords{assignNames="Pcoords"}
     $Q.coords{assignNames="Qcoords"}
@@ -2299,7 +2315,7 @@ describe("Point Tag Tests", function () {
       <point name="P" labelIsName><math>$coords</math></point>
     </graph>
     <graph>
-      <copy target="P" assignNames="Q" labelIsName/>
+      $P{name="Q" labelIsName}
     </graph>
     $P.coords{assignNames="Pcoords"}
     $Q.coords{assignNames="Qcoords"}
@@ -2494,7 +2510,7 @@ describe("Point Tag Tests", function () {
       <point name="P" labelIsName><vector><math>$coords</math></vector></point>
     </graph>
     <graph>
-      <copy target="P" assignNames="Q" labelIsName/>
+      $P{name="Q" labelIsName}
     </graph>
     $P.coords{assignNames="Pcoords"}
     $Q.coords{assignNames="Qcoords"}
@@ -2690,7 +2706,7 @@ describe("Point Tag Tests", function () {
       <point name="P" labelIsName>$v</point>
     </graph>
     <graph>
-      <copy target="P" assignNames="Q" labelIsName/>
+      $P{name="Q" labelIsName}
     </graph>
     $P.coords{assignNames="Pcoords"}
     $Q.coords{assignNames="Qcoords"}
@@ -7972,7 +7988,7 @@ describe("Point Tag Tests", function () {
   </graph>
   
   <graph>
-  <point name="p7"><copy target="_copy1" assignNames="(p8)" /></point>
+  <point name="p7">$p4{name="p8"}</point>
   </graph>
   $p1.coords{assignNames="coords1"}
   `,
@@ -8040,110 +8056,9 @@ describe("Point Tag Tests", function () {
   <text>a</text>
   <graph>
     <point>(1,2)</point>
-    $_point1
-    $_point1
-    <point x = "$(_copy1.y)" y="$(_copy2.x)" />
-  </graph>
-  $_point1.coords{assignNames="coords1"}
-  `,
-        },
-        "*",
-      );
-    });
-
-    // use this to wait for page to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-
-    cy.log("initial positions");
-
-    cy.get(cesc("#\\/coords1") + " .mjx-mrow").should("contain.text", `(1,2)`);
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      let x = 1;
-      let y = 2;
-
-      expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
-      expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
-
-      expect(stateVariables["/_point2"].stateValues.xs[0]).eq(y);
-      expect(stateVariables["/_point2"].stateValues.xs[1]).eq(x);
-    });
-
-    cy.log("move point 1");
-    cy.window().then(async (win) => {
-      let x = -3;
-      let y = 5;
-
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point1",
-        args: { x, y },
-      });
-
-      cy.get(cesc("#\\/coords1") + " .mjx-mrow").should(
-        "contain.text",
-        `${Math.abs(x)}`,
-      );
-      cy.get(cesc("#\\/coords1") + " .mjx-mrow").should(
-        "contain.text",
-        `${Math.abs(y)}`,
-      );
-
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-
-        expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
-        expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
-
-        expect(stateVariables["/_point2"].stateValues.xs[0]).eq(y);
-        expect(stateVariables["/_point2"].stateValues.xs[1]).eq(x);
-      });
-    });
-
-    cy.log("move point 2");
-    cy.window().then(async (win) => {
-      let x = 9;
-      let y = -1;
-
-      win.callAction1({
-        actionName: "movePoint",
-        componentName: "/_point2",
-        args: { x: y, y: x },
-      });
-
-      cy.get(cesc("#\\/coords1") + " .mjx-mrow").should(
-        "contain.text",
-        `${Math.abs(x)}`,
-      );
-      cy.get(cesc("#\\/coords1") + " .mjx-mrow").should(
-        "contain.text",
-        `${Math.abs(y)}`,
-      );
-
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-
-        expect(stateVariables["/_point1"].stateValues.xs[0]).eq(x);
-        expect(stateVariables["/_point1"].stateValues.xs[1]).eq(y);
-
-        expect(stateVariables["/_point2"].stateValues.xs[0]).eq(y);
-        expect(stateVariables["/_point2"].stateValues.xs[1]).eq(x);
-      });
-    });
-  });
-
-  it("combining different components through copies 2", () => {
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-  <text>a</text>
-  <graph>
-    <point>(1,2)</point>
-    $_point1
-    $_point1
-    <point x = "$(_copy1.y)" y="$(_copy2.x)" />
+    $_point1{name="pa"}
+    $_point1{name="pb"}
+    <point x = "$pa.y" y="$pb.x" />
   </graph>
   $_point1.coords{assignNames="coords1"}
   `,
@@ -8243,7 +8158,7 @@ describe("Point Tag Tests", function () {
     <math>$p1a.y{assignNames="p1ay"}</math>
 
     <graph>
-      <copy name="p1a" target="p1" assignNames="p1ap" />
+      $p1{name="p1a"}
     </graph>
     
     <graph>
@@ -8272,8 +8187,8 @@ describe("Point Tag Tests", function () {
       expect(stateVariables["/p1"].stateValues.xs[0]).eq(x);
       expect(stateVariables["/p1"].stateValues.xs[1]).eq(y);
 
-      expect(stateVariables["/p1ap"].stateValues.xs[0]).eq(x);
-      expect(stateVariables["/p1ap"].stateValues.xs[1]).eq(y);
+      expect(stateVariables["/p1a"].stateValues.xs[0]).eq(x);
+      expect(stateVariables["/p1a"].stateValues.xs[1]).eq(y);
 
       expect(stateVariables["/p1ay"].stateValues.value).eq(y);
     });
@@ -8304,8 +8219,8 @@ describe("Point Tag Tests", function () {
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(x);
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(y);
 
-        expect(stateVariables["/p1ap"].stateValues.xs[0]).eq(x);
-        expect(stateVariables["/p1ap"].stateValues.xs[1]).eq(y);
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(x);
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(y);
         expect(stateVariables["/p1ay"].stateValues.value).eq(y);
       });
 
@@ -8325,7 +8240,7 @@ describe("Point Tag Tests", function () {
 
       win.callAction1({
         actionName: "movePoint",
-        componentName: "/p1ap",
+        componentName: "/p1a",
         args: { x, y },
       });
 
@@ -8344,8 +8259,8 @@ describe("Point Tag Tests", function () {
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(x);
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(y);
 
-        expect(stateVariables["/p1ap"].stateValues.xs[0]).eq(x);
-        expect(stateVariables["/p1ap"].stateValues.xs[1]).eq(y);
+        expect(stateVariables["/p1a"].stateValues.xs[0]).eq(x);
+        expect(stateVariables["/p1a"].stateValues.xs[1]).eq(y);
         expect(stateVariables["/p1ay"].stateValues.value).eq(y);
       });
       cy.get(cesc("#\\/_math1"))

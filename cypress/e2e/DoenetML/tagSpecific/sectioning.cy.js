@@ -3425,7 +3425,7 @@ describe("Sectioning Tag Tests", function () {
         <p>Work hard</p>
       </problem>
   
-      $aProb{assignNames='aProbb'}
+      $aProb{name='aProbb'}
     </exercises>
 
     `,
@@ -3491,7 +3491,7 @@ describe("Sectioning Tag Tests", function () {
         <p>Work hard</p>
       </problem>
   
-      $aProb{assignNames='aProbb'}
+      $aProb{name='aProbb'}
     </section>
 
     `,

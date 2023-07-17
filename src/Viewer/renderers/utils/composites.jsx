@@ -131,18 +131,20 @@ function addCommasForCompositeRangesSub({
         childrenInRange = newChildrenInRange;
       }
 
-      // Whether or not we added commas, we still add a span and a anchor with the id of the composite
-      // so that links to the composite name will scroll to the right location.
-      let compositeId = cesc(range.compositeName);
-      childrenInRange = (
-        <React.Fragment key={compositeId}>
-          <a name={compositeId} />
-          <span id={compositeId}>{childrenInRange}</span>
-        </React.Fragment>
-      );
-      newChildren.push(childrenInRange);
-      if (potentialListComponents) {
-        newPotentialListComponents.push(allListComponents);
+      if (childrenInRange.length > 0) {
+        // Whether or not we added commas, we still add a span and a anchor with the id of the composite
+        // so that links to the composite name will scroll to the right location.
+        let compositeId = cesc(range.compositeName);
+        childrenInRange = (
+          <React.Fragment key={compositeId}>
+            <a name={compositeId} />
+            <span id={compositeId}>{childrenInRange}</span>
+          </React.Fragment>
+        );
+        newChildren.push(childrenInRange);
+        if (potentialListComponents) {
+          newPotentialListComponents.push(allListComponents);
+        }
       }
       lastChildInd = rangeLastInd;
     }

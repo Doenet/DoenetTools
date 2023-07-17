@@ -663,7 +663,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("assignNewNamespaces and references to parent", () => {
+  it("copy with newNamespace and references to parent", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -675,16 +675,16 @@ describe("Copy Tag Tests", function () {
 
     <problem name="p1">
       <answer>y</answer>
-      <p>Credit achieved: $p1.creditAchieved{name="ca"}</p>
-      <p>Value of mathinput: $mi.value{name="m"}</p>
-      <p>Other answer credit achieved: $(p2/_answer1.creditAchieved{name="cao"})</p>
+      <p>Credit achieved: $p1.creditAchieved{assignNames="ca"}</p>
+      <p>Value of mathinput: $mi.value{assignNames="m"}</p>
+      <p>Other answer credit achieved: $(p2/_answer1.creditAchieved{assignNames="cao"})</p>
       </problem>
 
     <problem name="p2" newNamespace>
       <answer>z</answer>
-      <p>Credit achieved: $(../p2.creditAchieved{name="ca"})</p>
-      <p>Value of mathinput: $(../mi.value{name="m"})</p>
-      <p>Other answer credit achieved: $(../_answer2.creditAchieved{name="cao"})</p>
+      <p>Credit achieved: $(../p2.creditAchieved{assignNames="ca"})</p>
+      <p>Value of mathinput: $(../mi.value{assignNames="m"})</p>
+      <p>Other answer credit achieved: $(../_answer2.creditAchieved{assignNames="cao"})</p>
     </problem>
 
     $p1{name="p3" newNamespace}
@@ -1490,7 +1490,7 @@ describe("Copy Tag Tests", function () {
 
     <mathinput name="n" prefill="2" />
 
-    <p>Value: <copy source="n" prop="value" name="n2" /></p>
+    <p>Value: <copy source="n" prop="value" assignNames="n2" /></p>
     <p>Value 2: <number copySource="n2" name="n3" /></p>
 
     <map name="map1" assignNames="(p1) (p2) (p3)">
@@ -1822,7 +1822,7 @@ describe("Copy Tag Tests", function () {
 
     <mathinput name="n" prefill="2" />
 
-    <p>Value: $n.value{name="n2"}</p>
+    <p>Value: $n.value{assignNames="n2"}</p>
     <p>Value 2: $n2{name="n3"}</p>
 
     <map name="map1" assignNames="(p1) (p2) (p3)">
@@ -2165,12 +2165,12 @@ describe("Copy Tag Tests", function () {
     <coords name="c1" copySource="P" />
     $P{name="c2" createComponentOfType="coords"}
     <coords name="c3" copySource="P.coords" />
-    $P.coords{name="c4" createComponentOfType="coords"}
+    $P.coords{assignNames="c4" createComponentOfType="coords"}
 
     <math name="mc1" copySource="P" />
     $P{name="mc2" createComponentOfType="math"}
     <math name="mc3" copySource="P.coords" />
-    $P.coords{name="mc4" createComponentOfType="math"}
+    $P.coords{assignNames="mc4" createComponentOfType="math"}
 
     `,
         },
@@ -4153,9 +4153,9 @@ describe("Copy Tag Tests", function () {
       $grp1{name="grp3"}
 
       <point name="p">(3,4)</point>
-      <copy source="p" prop="x" name="x1" />
-      <copy source="p.x" name="x2" />
-      $p.x{name="x3"}
+      <copy source="p" prop="x" assignNames="x1" />
+      <copy source="p.x" assignNames="x2" />
+      $p.x{assignNames="x3"}
 
     `,
         },
@@ -4212,7 +4212,7 @@ describe("Copy Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text name="t1">hi</text> <copy source="t1" />
+      <text name="t1">hi</text> $t1
 
     `,
         },
@@ -4238,26 +4238,20 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copy and macro's prescribed name or assignNames is used to assign name to prop replacement", () => {
+  it("copy and macro's ssignNames is used to assign name to prop replacement", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
       <point name="p">(3,4)</point>
-      <copy source="p.x" name="x1" />
-      <copy source="p.x" assignNames="x2" />
-      $p.x{name="x3"}
-      $p.x{assignNames="x4"}
+      <copy source="p.x" assignNames="x1" />
+      $p.x{assignNames="x2"}
 
-      <copy source="p.coords" name="c1" />
-      <copy source="p.coords" assignNames="c2" />
-      $p.coords{name="c3"}
-      $p.coords{assignNames="c4"}
+      <copy source="p.coords" assignNames="c1" />
+      $p.coords{assignNames="c2"}
 
-      <copy source="p.xs" name="x11" />
-      <copy source="p.xs" assignNames="x12 x22" />
-      $p.xs{name="x13"}
-      $p.xs{assignNames="x14 x24"}
+      <copy source="p.xs" assignNames="x11 x21" />
+      $p.xs{assignNames="x12 x22"}
 
     `,
         },
@@ -4275,12 +4269,6 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/x2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "3");
-    cy.get(cesc2("#/x3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "3");
-    cy.get(cesc2("#/x4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "3");
 
     cy.get(cesc2("#/c1") + " .mjx-mrow")
       .eq(0)
@@ -4288,29 +4276,17 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/c2") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "(3,4)");
-    cy.get(cesc2("#/c3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(3,4)");
-    cy.get(cesc2("#/c4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(3,4)");
 
     cy.get(cesc2("#/x11") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "3");
+    cy.get(cesc2("#/x21") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4");
     cy.get(cesc2("#/x12") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "3");
     cy.get(cesc2("#/x22") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "4");
-    cy.get(cesc2("#/x13") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "3");
-    cy.get(cesc2("#/x14") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "3");
-    cy.get(cesc2("#/x24") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "4");
 
@@ -4319,18 +4295,12 @@ describe("Copy Tag Tests", function () {
       expect(stateVariables["/p"].stateValues.xs).eqls([3, 4]);
       expect(stateVariables["/x1"].stateValues.value).eq(3);
       expect(stateVariables["/x2"].stateValues.value).eq(3);
-      expect(stateVariables["/x3"].stateValues.value).eq(3);
-      expect(stateVariables["/x4"].stateValues.value).eq(3);
       expect(stateVariables["/c1"].stateValues.value).eqls(["vector", 3, 4]);
       expect(stateVariables["/c2"].stateValues.value).eqls(["vector", 3, 4]);
-      expect(stateVariables["/c3"].stateValues.value).eqls(["vector", 3, 4]);
-      expect(stateVariables["/c4"].stateValues.value).eqls(["vector", 3, 4]);
       expect(stateVariables["/x11"].stateValues.value).eq(3);
+      expect(stateVariables["/x21"].stateValues.value).eq(4);
       expect(stateVariables["/x12"].stateValues.value).eq(3);
       expect(stateVariables["/x22"].stateValues.value).eq(4);
-      expect(stateVariables["/x13"].stateValues.value).eq(3);
-      expect(stateVariables["/x14"].stateValues.value).eq(3);
-      expect(stateVariables["/x24"].stateValues.value).eq(4);
     });
   });
 
@@ -4367,7 +4337,7 @@ describe("Copy Tag Tests", function () {
     <p name="p19">y of P: $(P.xs[2])</p>
 
 
-    <p name="p20">P: <copy source="P" /></p>
+    <p name="p20">P: $P</p>
     <p name="p21">P: <copy source="P[1]" /></p>
     <p name="p22">nothing: <copy source="P[2]" /></p>
     <p name="p23">nothing: <copy source="P." /></p>
@@ -4649,13 +4619,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)",
+      "\\left( \\frac{2}{3}, 3 \\right), \\left( 5, 6 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p31")).should("have.text", "36");
+    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p31")).should("have.text", "3, 6");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p34")).should("have.text", "36");
+    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p34")).should("have.text", "3, 6");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should(
@@ -4701,7 +4671,7 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
 
     cy.get(cesc2("#/p1") + " .mjx-mrow")
@@ -4813,13 +4783,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "79");
-    cy.get(cesc2("#/p31")).should("have.text", "80");
+    cy.get(cesc2("#/p30")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p31")).should("have.text", "8, 0");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "79");
-    cy.get(cesc2("#/p34")).should("have.text", "80");
+    cy.get(cesc2("#/p33")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p34")).should("have.text", "8, 0");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should("have.text", "\\left( 7, 8 \\right)");
@@ -5032,13 +5002,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)",
+      "\\left( \\frac{2}{3}, 3 \\right), \\left( 5, 6 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p31")).should("have.text", "36");
+    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p31")).should("have.text", "3, 6");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p34")).should("have.text", "36");
+    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p34")).should("have.text", "3, 6");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should(
@@ -5084,7 +5054,7 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
 
     cy.get(cesc2("#/p1") + " .mjx-mrow")
@@ -5196,13 +5166,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "79");
-    cy.get(cesc2("#/p31")).should("have.text", "80");
+    cy.get(cesc2("#/p30")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p31")).should("have.text", "8, 0");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "79");
-    cy.get(cesc2("#/p34")).should("have.text", "80");
+    cy.get(cesc2("#/p33")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p34")).should("have.text", "8, 0");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should("have.text", "\\left( 7, 8 \\right)");
@@ -6159,26 +6129,28 @@ describe("Copy Tag Tests", function () {
     <text>a</text>
     <group name="grp">
       <math>x</math>
-      skip me
+      copied will be blank
       <text fixed>hello</text>
-      skip me too
+      copied will also be blank
       <point>(4,5)</point>
       <line through="(10,9) (9,8)" />
       <p newNamespace>A <math name="m">y</math> and a <text name="t">word</text>.</p>
     </group>
     
     <p name="p1">the math: $grp[1]</p>
-    <p name="p2">the text: $grp[2]</p>
-    <p name="p3">the point: $grp[3]</p>
-    <p name="p4">the point x: $grp[3].x</p>
-    <p name="p5">the line: $grp[4]</p>
-    <p name="p6">the line, point 1: $grp[4].points[1]</p>
-    <p name="p7">the line, point 2, y: $grp[4].points[2].y</p>
-    <p name="p8">math from p: $(grp[5]/m)</p>
-    <p name="p9">text from p: $(grp[5]/t)</p>
-    <p name="p10">nothing: $grp[6]</p>
-    <p name="p11">Prop fixed from group: $grp.fixed</p>
-    <p name="p12">Prop x from group: $grp.x</p>
+    <p name="p2">a blank: $grp[2]</p>
+    <p name="p3">the text: $grp[3]</p>
+    <p name="p4">another blank: $grp[4]</p>
+    <p name="p5">the point: $grp[5]</p>
+    <p name="p6">the point x: $grp[5].x</p>
+    <p name="p7">the line: $grp[6]</p>
+    <p name="p8">the line, point 1: $grp[6].points[1]</p>
+    <p name="p9">the line, point 2, y: $grp[6].points[2].y</p>
+    <p name="p10">math from p: $(grp[7]/m)</p>
+    <p name="p11">text from p: $(grp[7]/t)</p>
+    <p name="p12">nothing: $grp[8]</p>
+    <p name="p13">Prop fixed from group: $grp.fixed</p>
+    <p name="p14">Prop x from group: $grp.x</p>
     `,
         },
         "*",
@@ -6191,37 +6163,39 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/p1") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "x");
-    cy.get(cesc2("#/p2")).should("have.text", "the text: hello");
-    cy.get(cesc2("#/p3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(4,5)");
-    cy.get(cesc2("#/p4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "4");
+    cy.get(cesc2("#/p2")).should("have.text", "a blank: ");
+    cy.get(cesc2("#/p3")).should("have.text", "the text: hello");
+    cy.get(cesc2("#/p4")).should("have.text", "another blank: ");
     cy.get(cesc2("#/p5") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=x−y−1");
+      .should("have.text", "(4,5)");
     cy.get(cesc2("#/p6") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(10,9)");
+      .should("have.text", "4");
     cy.get(cesc2("#/p7") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8");
+      .should("have.text", "0=x−y−1");
     cy.get(cesc2("#/p8") + " .mjx-mrow")
       .eq(0)
+      .should("have.text", "(10,9)");
+    cy.get(cesc2("#/p9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+    cy.get(cesc2("#/p10") + " .mjx-mrow")
+      .eq(0)
       .should("have.text", "y");
-    cy.get(cesc2("#/p9")).should("have.text", "text from p: word");
-    cy.get(cesc2("#/p10")).should("have.text", "nothing: ");
-    cy.get(cesc2("#/p11")).should(
+    cy.get(cesc2("#/p11")).should("have.text", "text from p: word");
+    cy.get(cesc2("#/p12")).should("have.text", "nothing: ");
+    cy.get(cesc2("#/p13")).should(
       "have.text",
-      "Prop fixed from group: falsetruefalsefalsefalse",
+      "Prop fixed from group: false, true, false, false, false",
     );
-    cy.get(cesc2("#/p12")).should("contain.text", "Prop x from group: x");
-    cy.get(cesc2("#/p12")).should("contain.text", "x4");
-    cy.get(cesc2("#/p12") + " .mjx-mrow")
+    cy.get(cesc2("#/p14")).should("contain.text", "Prop x from group: x");
+    cy.get(cesc2("#/p14")).should("contain.text", "x, 4");
+    cy.get(cesc2("#/p14") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "x");
-    cy.get(cesc2("#/p12") + " .mjx-mrow")
+    cy.get(cesc2("#/p14") + " .mjx-mrow")
       .eq(1)
       .should("have.text", "4");
   });
@@ -6236,7 +6210,7 @@ describe("Copy Tag Tests", function () {
 
     <p name="pmacro1">$mi</p>
     <p name="pmacro2">$mi{simplify}</p>
-    <p name="pcopy1"><copy source="mi" /></p>
+    <p name="pcopy1">$mi</p>
     <p name="pcopy2"><copy source="mi{simplify}" /></p>
     <p name="pcopy3"><copy source="mi" simplify /></p>
     <p name="pcopy4"><copy source="mi" createComponentOfType="mathinput" /></p>
@@ -6547,11 +6521,11 @@ describe("Copy Tag Tests", function () {
 
     <p name="pmacro">$col</p>
 
-    <p name="pcopy"><copy source="col" /></p>
+    <p name="pcopy">$col</p>
 
     <p name="pmacro2">$g</p>
 
-    <p name="pcopy2"><copy source="g" /></p>
+    <p name="pcopy2">$g</p>
 
     `,
         },
@@ -6640,7 +6614,7 @@ describe("Copy Tag Tests", function () {
     </map>
 
     <p name="pmacro">$map</p>
-    <p name="pcopy"><copy source="map" /></p>
+    <p name="pcopy">$map</p>
 
     <p name="pmacroInd">$map[1]$map[2]</p>
     <p name="pcopyInd"><copy source="map[1]" /><copy source="map[2]" /></p>

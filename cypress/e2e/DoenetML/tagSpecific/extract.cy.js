@@ -217,7 +217,7 @@ describe("Extract Tag Tests", function () {
     <graph>
     <point>(1,2)</point>
     <point>(5,6)</point>
-    $_extract1{name="copiedextract"}
+    $_extract1{assignNames="copiedextract"}
     </graph>
 
     $copiedextract.x{assignNames="x2"},

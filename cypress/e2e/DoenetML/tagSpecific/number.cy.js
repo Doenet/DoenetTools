@@ -12,8 +12,7 @@ describe("Number Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
-      $_number1
+      $_number1{name="num"}
       <number>1+1</number>
     `,
         },
@@ -21,23 +20,15 @@ describe("Number Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.log("Test value displayed in browser");
+    cy.get(cesc2("#/num")).should("have.text", "2");
+    cy.get(cesc2("#/_number1")).should("have.text", "2");
 
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let number0Name = stateVariables["/_copy1"].replacements[0].componentName;
-      let number0Anchor = cesc2("#" + number0Name);
-
-      cy.log("Test value displayed in browser");
-      cy.get(number0Anchor).should("have.text", "2");
-      cy.get(cesc("#\\/_number1")).should("have.text", "2");
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables[number0Name].stateValues.value).eq(2);
-        expect(stateVariables["/_number1"].stateValues.value).eq(2);
-      });
+      expect(stateVariables["/num"].stateValues.value).eq(2);
+      expect(stateVariables["/_number1"].stateValues.value).eq(2);
     });
   });
 
@@ -46,8 +37,7 @@ describe("Number Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
-      $_number1
+      $_number1{name="num"}
       <number>x+1</number>
       `,
         },
@@ -55,23 +45,15 @@ describe("Number Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.log("Test value displayed in browser");
+    cy.get(cesc2("#/num")).should("have.text", "NaN");
+    cy.get(cesc2("#/_number1")).should("have.text", "NaN");
 
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let number0Name = stateVariables["/_copy1"].replacements[0].componentName;
-      let number0Anchor = cesc2("#" + number0Name);
-
-      cy.log("Test value displayed in browser");
-      cy.get(number0Anchor).should("have.text", "NaN");
-      cy.get(cesc("#\\/_number1")).should("have.text", "NaN");
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        assert.isNaN(stateVariables[number0Name].stateValues.value);
-        assert.isNaN(stateVariables["/_number1"].stateValues.value);
-      });
+      assert.isNaN(stateVariables["/num"].stateValues.value);
+      assert.isNaN(stateVariables["/_number1"].stateValues.value);
     });
   });
 
@@ -210,29 +192,29 @@ describe("Number Tag Tests", function () {
       <number name="n1">234234823.34235235324</number>
       <number name="n2">5.4285023408250342</number>
       <number name="n3">0.000000000000005023481340324</number>
-      <copy target="n1" displayDigits='5' assignNames="n1a" />
-      <copy target="n1" displayDecimals='3' assignNames="n1b" />
-      <copy target="n1" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n1c" />
-      <copy target="n2" displayDigits='5' assignNames="n2a" />
-      <copy target="n2" displayDecimals='3' assignNames="n2b" />
-      <copy target="n2" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n2c" />
-      <copy target="n3" displayDigits='5' assignNames="n3a" />
-      <copy target="n3" displayDecimals='3' assignNames="n3b" />
-      <copy target="n3" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3c" />
+      $n1{displayDigits='5' name="n1a"}
+      $n1{displayDecimals='3' name="n1b"}
+      $n1{displayDigits='5' displayDecimals='3' displaySmallAsZero="false" name="n1c"}
+      $n2{displayDigits='5' name="n2a"}
+      $n2{displayDecimals='3' name="n2b"}
+      $n2{displayDigits='5' displayDecimals='3' displaySmallAsZero="false" name="n2c"}
+      $n3{displayDigits='5' name="n3a"}
+      $n3{displayDecimals='3' name="n3b"}
+      $n3{displayDigits='5' displayDecimals='3' displaySmallAsZero="false" name="n3c"}
 
       $n1a{name="n1aa"}
-      <copy target="n1a" displayDecimals='3' assignNames="n1ab" />
+      $n1a{displayDecimals='3' name="n1ab"}
       $n2a{name="n2aa"}
-      <copy target="n2a" displayDecimals='3' assignNames="n2ab" />
-      <copy target="n3a" displaySmallAsZero="false" assignNames="n3aa" />
-      <copy target="n3a" displayDecimals='3' displaySmallAsZero="false" assignNames="n3ab" />
+      $n2a{displayDecimals='3' name="n2ab"}
+      $n3a{displaySmallAsZero="false" name="n3aa"}
+      $n3a{displayDecimals='3' displaySmallAsZero="false" name="n3ab"}
 
       $n1b{name="n1ba"}
-      <copy target="n1b" displayDigits='5'  assignNames="n1bb" />
+      $n1b{displayDigits='5'  name="n1bb"}
       $n2b{name="n2ba"}
-      <copy target="n2b" displayDigits='5' assignNames="n2bb" />
-      <copy target="n3b" displaySmallAsZero="false" assignNames="n3ba" />
-      <copy target="n3b" displayDigits='5' displayDecimals='3' displaySmallAsZero="false" assignNames="n3bb" />
+      $n2b{displayDigits='5' name="n2bb"}
+      $n3b{displaySmallAsZero="false" name="n3ba"}
+      $n3b{displayDigits='5' displayDecimals='3' displaySmallAsZero="false" name="n3bb"}
 
       <m name="n1am">$n1a</m>
       <m name="n1bm">$n1b</m>
@@ -515,18 +497,18 @@ describe("Number Tag Tests", function () {
       <text>a</text>
       <number name="n1">22</number>
       <number name="n2" displaySmallAsZero="false">0.000000000000005</number>
-      <copy target="n1" displayDigits='4' assignNames="n1a" />
-      <copy target="n1" displayDigits='4' assignNames="n1apad" padZeros />
-      <copy target="n1" displayDecimals='3' assignNames="n1b" />
-      <copy target="n1" displayDecimals='3' assignNames="n1bpad" padZeros />
-      <copy target="n1" displayDigits='4' displaySmallAsZero assignNames="n1c" />
-      <copy target="n1" displayDigits='4' displaySmallAsZero assignNames="n1cpad" padZeros />
-      <copy target="n2" displayDigits='4' assignNames="n2a" />
-      <copy target="n2" displayDigits='4' assignNames="n2apad" padZeros />
-      <copy target="n2" displayDecimals='3' assignNames="n2b" />
-      <copy target="n2" displayDecimals='3' assignNames="n2bpad" padZeros />
-      <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2c" />
-      <copy target="n2" displayDigits='4' displaySmallAsZero assignNames="n2cpad" padZeros />
+      $n1{displayDigits='4' name="n1a"}
+      $n1{displayDigits='4' name="n1apad" padZeros}
+      $n1{displayDecimals='3' name="n1b"}
+      $n1{displayDecimals='3' name="n1bpad" padZeros}
+      $n1{displayDigits='4' displaySmallAsZero name="n1c"}
+      $n1{displayDigits='4' displaySmallAsZero name="n1cpad" padZeros}
+      $n2{displayDigits='4' name="n2a"}
+      $n2{displayDigits='4' name="n2apad" padZeros}
+      $n2{displayDecimals='3' name="n2b"}
+      $n2{displayDecimals='3' name="n2bpad" padZeros}
+      $n2{displayDigits='4' displaySmallAsZero name="n2c"}
+      $n2{displayDigits='4' displaySmallAsZero name="n2cpad" padZeros}
 
       <m name="n1am">$n1a</m>
       <m name="n1apadm">$n1apad</m>
@@ -789,7 +771,7 @@ describe("Number Tag Tests", function () {
       <p>Number: <number name="n">35203423.02352343201</number></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy target="n" displayDigits='$ndigits' displayDecimals='$ndecimals' assignNames="na" /></p>
+      <p>$n{displayDigits='$ndigits' displayDecimals='$ndecimals' name="na"}</p>
     `,
         },
         "*",
@@ -969,30 +951,30 @@ describe("Number Tag Tests", function () {
   <p><text>a</text></p>
   <p><number name="n1" displayDigits="2">8.5203845251</number>
   $n1.value{assignNames="n1a"}
-  <copy target="n1" prop="value" displayDigits="5" assignNames="n1b" />
-  <copy target="n1" prop="value" link="false" assignNames="n1c" />
-  <copy target="n1" prop="value" link="false" displayDigits="5" assignNames="n1d" />
+  $n1.value{displayDigits="5" assignNames="n1b"}
+  $n1.value{link="false" assignNames="n1c"}
+  $n1.value{link="false" displayDigits="5" assignNames="n1d"}
   </p>
 
   <p><number name="n2" displayDecimals="0">8.5203845251</number>
   $n2.value{assignNames="n2a"}
-  <copy target="n2" prop="value" displayDecimals="6" assignNames="n2b" />
-  <copy target="n2" prop="value" link="false" assignNames="n2c" />
-  <copy target="n2" prop="value" link="false" displayDecimals="6" assignNames="n2d" />
+  $n2.value{displayDecimals="6" assignNames="n2b"}
+  $n2.value{link="false" assignNames="n2c"}
+  $n2.value{link="false" displayDecimals="6" assignNames="n2d"}
   </p>
 
   <p><number name="n3" displaySmallAsZero="false">0.000000000000000015382487</number>
   $n3.value{assignNames="n3a"}
-  <copy target="n3" prop="value" displaySmallAsZero assignNames="n3b" />
-  <copy target="n3" prop="value" link="false" assignNames="n3c" />
-  <copy target="n3" prop="value" link="false" displaySmallAsZero assignNames="n3d" />
+  $n3.value{displaySmallAsZero assignNames="n3b"}
+  $n3.value{link="false" assignNames="n3c"}
+  $n3.value{link="false" displaySmallAsZero assignNames="n3d"}
   </p>
 
   <p><number name="n4" padZeros>8</number>
   $n4.value{assignNames="n4a"}
-  <copy target="n4" prop="value" padZeros="false" assignNames="n4b" />
-  <copy target="n4" prop="value" link="false" assignNames="n4c" />
-  <copy target="n4" prop="value" link="false" padZeros="false" assignNames="n4d" />
+  $n4.value{padZeros="false" assignNames="n4b"}
+  $n4.value{link="false" assignNames="n4c"}
+  $n4.value{link="false" padZeros="false" assignNames="n4d"}
   </p>
 
   `,

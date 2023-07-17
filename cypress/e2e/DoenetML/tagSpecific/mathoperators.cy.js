@@ -708,7 +708,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -2044,7 +2044,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -5512,7 +5512,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -6609,7 +6609,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -7708,7 +7708,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">13</number>
         <number name="b">25</number>
         <number name="c">5-4</number>
@@ -9067,7 +9067,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -10165,7 +10165,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -11614,7 +11614,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">3</number>
         <number name="b">17</number>
         <number name="c">5-4</number>
@@ -12931,7 +12931,7 @@ describe("Math Operator Tag Tests", function () {
         {
           doenetML: `
       <text>a</text>
-      <group name="nums">
+      <group name="nums" asList>
         <number name="a">17</number>
         <number name="b">3</number>
       </group>

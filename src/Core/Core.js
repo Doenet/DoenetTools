@@ -1349,6 +1349,35 @@ export default class Core {
     namespaceForUnamed = "/",
     componentsReplacementOf,
   }) {
+    // Check for a component name collision before recursing to children,
+    // as children may have randomly generated names which will also collide
+    // if this component's name collides,
+    // and we want the mesage to be based on a name that will appear in the DoenetML document.
+    if (componentName in this._components) {
+      let indexRange = "";
+      if (serializedComponent.downstreamDependencies) {
+        for (let name in serializedComponent.downstreamDependencies) {
+          let depArray = serializedComponent.downstreamDependencies[name];
+          for (let dep of depArray) {
+            if (dep.dependencyType === "referenceShadow") {
+              let fromComposite = this.components[dep.compositeName];
+              indexRange = serializeFunctions.indexRangeString({
+                range: fromComposite.doenetMLrange,
+              });
+            }
+          }
+        }
+      } else {
+        indexRange = serializeFunctions.indexRangeString(serializedComponent);
+      }
+
+      let lastSlash = componentName.lastIndexOf("/");
+      let name = componentName.slice(lastSlash + 1);
+      throw Error(
+        `Duplicate component name: ${name}. Found in component of type ${componentClass.componentType}${indexRange}`,
+      );
+    }
+
     // first recursively create children and attribute components
     let serializedChildren = serializedComponent.children;
     let definingChildren = [];
@@ -2451,65 +2480,13 @@ export default class Core {
     // );
 
     if (component.constructor.assignNamesToReplacements) {
-      let mediatingNewNamespace =
-        compositeMediatingTheShadow.attributes.newNamespace?.primitive;
-      let assignNewNamespaces =
-        compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
-
-      // cehck if the component that created the namespace for the shadowing composite
-      // is a replacement of the composite mediating the shadow
-      let namespaceFromReplacementOfMediating = false;
-      let lastSlash = component.componentName.lastIndexOf("/");
-      let nameForNamespaceOfShadowing = component.componentName.slice(
-        0,
-        lastSlash,
-      );
-      let componentCreatingNamespace =
-        this._components[nameForNamespaceOfShadowing];
-
-      if (componentCreatingNamespace) {
-        let compositeOfNamespaceCreator =
-          componentCreatingNamespace.replacementOf;
-        while (compositeOfNamespaceCreator) {
-          if (
-            compositeOfNamespaceCreator.componentName ===
-            compositeMediatingTheShadow.componentName
-          ) {
-            namespaceFromReplacementOfMediating = true;
-            break;
-          }
-          compositeOfNamespaceCreator =
-            compositeOfNamespaceCreator.replacementOf;
-        }
-      }
+      let originalNamesAreConsistent =
+        this.determineOriginalNamesConsistentForShadowingComposite(component);
 
       let target =
         this._components[
           compositeMediatingTheShadow.doenetAttributes.targetComponentName
         ];
-
-      // Note: originalNamesAreConsistent means that processAssignNames should leave
-      // the original names in the serializedComponents as is
-      // (unless their names are assigned or have been marked to create unique)
-      // If originalNamesAreConsistent is false, then all components
-      // that don't have names assigned will be renamed to random names
-
-      // We set originalNamesAreConsistent to true if we can be sure (with an exception, see below)
-      // that we won't create any duplicate names.
-      // If the component shadowing has a newNamespace,
-      // or the composite mediating the shadow has a new namespace or assigns a new namespaces,
-      // or the namespace of the composite shadowing was due to the composite mediating the shadow
-      // that will, in most cases, be enough to prevent name collisions.
-
-      // If the composite mediating the shadow also assign names (or subnames)
-      // it is possible that those names will collide with the original names
-      // but we don't protect against that.
-
-      let originalNamesAreConsistent =
-        newNamespace ||
-        namespaceFromReplacementOfMediating ||
-        mediatingNewNamespace ||
-        assignNewNamespaces;
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && (await component.stateValues.addLevelToAssignNames)) {
@@ -2538,6 +2515,8 @@ export default class Core {
 
       let processResult = serializeFunctions.processAssignNames({
         assignNames,
+        assignNamesForCompositeReplacement:
+          component.doenetAttributes.assignNamesForCompositeReplacement,
         serializedComponents: serializedReplacements,
         parentName,
         parentNameForUniqueNames: component.componentName,
@@ -2644,6 +2623,87 @@ export default class Core {
     compositesExpanded.push(component.componentName);
 
     return { success: true, compositesExpanded };
+  }
+
+  determineOriginalNamesConsistentForShadowingComposite(shadowingComposite) {
+    // originalNamesAreConsistent means that processAssignNames should leave
+    // the original names in the serializedComponents as is
+    // (unless their names are assigned or have been marked to create unique)
+    // If originalNamesAreConsistent is false, then all components
+    // that don't have names assigned will be renamed to random names
+
+    // We set originalNamesAreConsistent to true if we can be sure (with an exception, see below)
+    // that we won't create any duplicate names.
+    // If the component shadowing has a newNamespace,
+    // or the composite mediating the shadow has a new namespace or assigns a new namespaces,
+    // or the namespace of the composite shadowing was due to the composite mediating the shadow
+    // that will, in most cases, be enough to prevent name collisions.
+
+    // If the composite mediating the shadow also assign names (or subnames)
+    // it is possible that those names will collide with the original names
+    // but we don't protect against that.
+
+    let compositeMediatingTheShadow =
+      this.components[shadowingComposite.shadows.compositeName];
+
+    let newNamespace = shadowingComposite.attributes.newNamespace?.primitive;
+    let mediatingNewNamespace =
+      compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+    let assignNewNamespaces =
+      compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+
+    // check if the component that created the namespace for the shadowing composite
+    // is a replacement of the composite mediating the shadow
+    let lastSlash = shadowingComposite.componentName.lastIndexOf("/");
+    let nameForNamespaceOfShadowing = shadowingComposite.componentName.slice(
+      0,
+      lastSlash,
+    );
+    let componentCreatingNamespace =
+      this._components[nameForNamespaceOfShadowing];
+
+    let checkIfReplacementOfMediating = (comp) => {
+      if (!comp) {
+        return false;
+      }
+      let replacementOf = comp.replacementOf;
+      if (replacementOf) {
+        if (
+          replacementOf.componentName ===
+          compositeMediatingTheShadow.componentName
+        ) {
+          return true;
+        }
+        if (checkIfReplacementOfMediating(replacementOf)) {
+          return true;
+        }
+      }
+      if (checkIfReplacementOfMediating(this._components[comp.parentName])) {
+        return true;
+      }
+
+      return false;
+    };
+
+    let namespaceFromReplacementOfMediating = checkIfReplacementOfMediating(
+      componentCreatingNamespace,
+    );
+
+    let originalNamesAreConsistent =
+      newNamespace ||
+      namespaceFromReplacementOfMediating ||
+      mediatingNewNamespace ||
+      assignNewNamespaces;
+
+    // console.log(`for shadowing composite: ${shadowingComposite.componentName}`);
+    // console.log({
+    //   newNamespace,
+    //   namespaceFromReplacementOfMediating,
+    //   mediatingNewNamespace,
+    //   assignNewNamespaces,
+    //   originalNamesAreConsistent,
+    // });
+    return originalNamesAreConsistent;
   }
 
   async createAndSetReplacements({ component, serializedReplacements }) {
@@ -3901,13 +3961,18 @@ export default class Core {
       }
 
       if (redefineDependencies.additionalStateVariableShadowing) {
-        let differentStateVariablesInTarget = [];
+        // since using parallel arrays, start with empty array to match next indices
+        let differentStateVariablesInTarget = Array(
+          stateVariablesToShadow.length,
+        );
         for (let varName in redefineDependencies.additionalStateVariableShadowing) {
-          stateVariablesToShadow.push(varName);
-          differentStateVariablesInTarget.push(
-            redefineDependencies.additionalStateVariableShadowing[varName]
-              .stateVariableToShadow,
-          );
+          if (!stateVariablesToShadow.includes(varName)) {
+            stateVariablesToShadow.push(varName);
+            differentStateVariablesInTarget.push(
+              redefineDependencies.additionalStateVariableShadowing[varName]
+                .stateVariableToShadow,
+            );
+          }
         }
 
         this.modifyStateDefsToBeShadows({
@@ -8935,18 +9000,10 @@ export default class Core {
         }
 
         if (shadowingComponent.constructor.assignNamesToReplacements) {
-          let nameOfCompositeMediatingTheShadow =
-            shadowingComponent.shadows.compositeName;
-          let compositeMediatingTheShadow =
-            this.components[nameOfCompositeMediatingTheShadow];
-          let mediatingNewNamespace =
-            compositeMediatingTheShadow.attributes.newNamespace?.primitive;
-          let mediatingAssignNames =
-            compositeMediatingTheShadow.doenetAttributes.assignNames;
-
           let originalNamesAreConsistent =
-            shadowingNewNamespace ||
-            (mediatingNewNamespace && !mediatingAssignNames);
+            this.determineOriginalNamesConsistentForShadowingComposite(
+              shadowingComponent,
+            );
 
           let assignNames = shadowingComponent.doenetAttributes.assignNames;
           if (
@@ -8978,6 +9035,9 @@ export default class Core {
           }
           let processResult = serializeFunctions.processAssignNames({
             assignNames,
+            assignNamesForCompositeReplacement:
+              shadowingComponent.doenetAttributes
+                .assignNamesForCompositeReplacement,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName,

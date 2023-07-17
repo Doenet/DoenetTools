@@ -24,11 +24,11 @@ describe("Circle Tag Tests", function () {
     <circle/>
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.center{name="centerPoint2" displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -288,11 +288,11 @@ describe("Circle Tag Tests", function () {
       <circle center="$center" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point name="radiusPoint" x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.center{name="centerPoint2" displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -614,11 +614,11 @@ describe("Circle Tag Tests", function () {
     <circle radius="$pX" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center{name="centerPoint2" displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -1016,11 +1016,11 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center{name="centerPoint2" displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -1584,11 +1584,11 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1 $_point2"/>
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -2661,11 +2661,11 @@ describe("Circle Tag Tests", function () {
     <point>(2,-3)</point><point>(3,4)</point>
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -3739,13 +3739,12 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1 $_point2 $_point3" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{displaySmallAsZero displayDigits="8" name="centerPoint2"}
-    </extract>
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.diameter{name="diam" displayDigits="8"}
+    $_circle1.center.coords{displaySmallAsZero displayDigits="8" assignNames="centerPoint2"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.diameter{assignNames="diam" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -5638,12 +5637,12 @@ describe("Circle Tag Tests", function () {
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.diameter{name="diam" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.diameter{assignNames="diam" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -7537,11 +7536,11 @@ describe("Circle Tag Tests", function () {
     <circle radius="$pX" through="$_point2" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -8310,11 +8309,11 @@ describe("Circle Tag Tests", function () {
     <circle radius="$pX" through="$_point2 $_point3" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -9815,11 +9814,11 @@ describe("Circle Tag Tests", function () {
     <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -10796,11 +10795,11 @@ describe("Circle Tag Tests", function () {
     <circle radius="$pX" center="$center" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point name="radiusPoint" x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -11159,11 +11158,11 @@ describe("Circle Tag Tests", function () {
       </point>
       </graph>
     <graph>
-      $_circle1.center{name="centerPoint"}
+      $_circle1.center{assignNames="centerPoint"}
       <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     $_graph1{name="graph2" newNamespace}
     `,
         },
@@ -11762,15 +11761,15 @@ describe("Circle Tag Tests", function () {
     <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point>
       ($centerPoint.y,
       $_circle1.radius)
     </point>
     $_circle1{name="circle2"}
     </graph>
-    $_circle1.center{name="centerPoint2" displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
     `,
         },
@@ -12627,8 +12626,8 @@ describe("Circle Tag Tests", function () {
     </point>
   
     </graph>
-    $c.center{name="centerPoint2" displayDigits="8"}
-    $c.radius{name="radiusNumber" displayDigits="8"}
+    $c.center{assignNames="centerPoint2" displayDigits="8"}
+    $c.radius{assignNames="radiusNumber" displayDigits="8"}
 
     `,
         },
@@ -13306,11 +13305,11 @@ describe("Circle Tag Tests", function () {
   <math hide name="r">$_circle1.center.y</math>
   <graph>
     <circle radius="$r" center="(1,2)" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
     `,
         },
@@ -13439,11 +13438,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle radius="2" center="(1,$(_circle1.radius))" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -13570,11 +13569,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle radius="2" center="(1,$_circle1.diameter)" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -13712,11 +13711,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle center="(1,$(_circle1.radius))" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -13846,11 +13845,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle radius="2" through="(1,2$(_circle1.radius))" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14016,11 +14015,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle through="(1,2$(_circle1.radius))" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14187,11 +14186,11 @@ describe("Circle Tag Tests", function () {
   <math name="r" hide>$_circle1.throughPoint1.y/2</math>
   <graph>
     <circle radius="$r" through="(1,4)" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14367,11 +14366,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle through="(1,4)" center="($_circle1.throughPointX1_1, $_circle1.throughPointX1_2/2)"/>
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14568,11 +14567,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle through="($_circle1.centerX1,$(_circle1.centerX2)2)" center="(1,2)" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14769,11 +14768,11 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <circle center="(1, $_circle1.centerX1+1)" />
-    $_circle1.center{name="centerPoint}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -14878,11 +14877,11 @@ describe("Circle Tag Tests", function () {
     <point name="TP1">(1,2)</point>
     <point name="TP2">(3,4)</point>
     <circle radius="$r" through="$TP1 $TP2" />
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -15279,12 +15278,12 @@ describe("Circle Tag Tests", function () {
   </math>
   <graph>
     <point name="TP1">(1,2)</point>
-    $_circle1.throughPoint2{name="TP2}
+    $_circle1.throughPoint2{assignNames="TP2"}
     <circle radius="$r" through="$TP1 ($(_circle1.radius)+1,3)" />
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -15672,12 +15671,12 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <point name="TP1">(1,2)</point>
-    $_circle1.throughPoint2{name="TP2}
+    $_circle1.throughPoint2{assignNames="TP2"}
     <circle through="$TP1 ($_circle1.throughPointX1_1+1,3)"/>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -16027,13 +16026,13 @@ describe("Circle Tag Tests", function () {
   <text>a</text>
   <graph>
     <point name="TP2">(1,2)</point>
-    $_circle1.throughPoint3{name="TP3}
+    $_circle1.throughPoint3{assignNames="TP3"}
     <circle through="($_circle1.throughPointX2_1+1,3) $TP2 ($_circle1.throughPointX1_1+1,5)" />
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.throughPoint1{name="TP1}
-  $_circle1.radius{name="radiusNumber" displayDigits="8"}
+  $_circle1.throughPoint1{assignNames="TP1"}
+  $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
 
   `,
         },
@@ -16551,10 +16550,10 @@ describe("Circle Tag Tests", function () {
      ($_circle1.center.y,
      $_circle1.center.x)
     </point>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
   </graph>
 
-  $_circle1.center{name="centerPoint2" displayDigits="8"}
+  $_circle1.center{assignNames="centerPoint2" displayDigits="8"}
 
   `,
         },
@@ -17259,8 +17258,8 @@ describe("Circle Tag Tests", function () {
       <circle name="circ" />
     </graph>
     <mathinput bindvalueTo="$(circ.radius)" name="r" />
-    <p>radius: $circ.radius{name="r2"}</p>
-    <p>Center: $circ.center{name="c}</p>
+    <p>radius: $circ.radius{assignNames="r2"}</p>
+    <p>Center: $circ.center{assignNames="c"}</p>
   `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -17673,11 +17672,11 @@ describe("Circle Tag Tests", function () {
     <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -18652,11 +18651,11 @@ describe("Circle Tag Tests", function () {
     <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -19639,11 +19638,11 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1 $_point2"/>
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -20665,12 +20664,12 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1 $_point2 $_point3" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.diameter{name="diam" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.diameter{assignNames="diam" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>
@@ -21254,12 +21253,12 @@ describe("Circle Tag Tests", function () {
     <circle through="$_point1 $_point2 $_point3" />
     </graph>
     <graph>
-    $_circle1.center{name="centerPoint"}
+    $_circle1.center{assignNames="centerPoint"}
     <point x="$(_circle1.radius)" y="0" />
     </graph>
-    $_circle1.center.coords{name="centerPoint2" displaySmallAsZero displayDigits="8"}
-    $_circle1.radius{name="radiusNumber" displayDigits="8"}
-    $_circle1.diameter{name="diam" displayDigits="8"}
+    $_circle1.center.coords{assignNames="centerPoint2" displaySmallAsZero displayDigits="8"}
+    $_circle1.radius{assignNames="radiusNumber" displayDigits="8"}
+    $_circle1.diameter{assignNames="diam" displayDigits="8"}
     <graph name="graph3" newNamespace>
       $(../_circle1{name="circle"})
     </graph>

@@ -1495,7 +1495,7 @@ describe("Sequence Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1234");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3, 4");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}6{enter}", {
@@ -1505,14 +1505,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 123456");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3, 4, 5, 6");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 123456");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3, 4, 5, 6");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}8{enter}", {
       force: true,
@@ -1522,12 +1522,18 @@ describe("Sequence Tag Tests", function () {
     });
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 12345678");
+    cy.get(cesc("#\\/s2")).should(
+      "have.text",
+      "sequence 2: 1, 2, 3, 4, 5, 6, 7, 8",
+    );
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 12345678");
+    cy.get(cesc("#\\/s1")).should(
+      "have.text",
+      "sequence 1: 1, 2, 3, 4, 5, 6, 7, 8",
+    );
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}3{enter}", {
@@ -1537,14 +1543,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 123");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 123");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}4{enter}", {
       force: true,
@@ -1554,7 +1560,7 @@ describe("Sequence Tag Tests", function () {
     });
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1234");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3, 4");
   });
 
   it("sequence fixed by default", () => {

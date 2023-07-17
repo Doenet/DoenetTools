@@ -1628,7 +1628,7 @@ describe("Symbolic equality tests", function () {
     <p>
     What is <math name="expr">-3-4</math>?
     <answer>
-      <award symbolicEquality="true">$expr{simplify}></award>
+      <award symbolicEquality="true">$expr{simplify}</award>
     </answer>
     </p>
     

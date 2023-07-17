@@ -989,7 +989,7 @@ describe("Point location validation tests", function () {
     cy.get(cesc("#\\/_answer1_submit")).click();
     cy.get(cesc(`#\\/srs`) + ` .mjx-mrow`).should(
       "contain.text",
-      "((4.9,−1.1),(−2.3,−3.4))",
+      "(4.9,−1.1),(−2.3,−3.4)",
     );
     cy.get(cesc("#\\/_answer1_submit")).should("not.exist");
     cy.get(cesc("#\\/_answer1_correct")).should("not.exist");
@@ -1005,9 +1005,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1051,9 +1049,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1096,7 +1092,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1139,7 +1135,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1184,7 +1180,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1228,7 +1224,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -1272,7 +1268,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1316,7 +1312,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1360,7 +1356,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1449,9 +1445,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1495,9 +1489,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1540,7 +1532,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1583,7 +1575,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1628,7 +1620,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1672,7 +1664,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -1716,7 +1708,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1760,7 +1752,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1804,7 +1796,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1883,9 +1875,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1929,9 +1919,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1974,7 +1962,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2017,7 +2005,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2062,7 +2050,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2106,7 +2094,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -2150,7 +2138,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2194,7 +2182,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2238,7 +2226,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2317,9 +2305,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2363,9 +2349,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2408,7 +2392,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2451,7 +2435,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2496,7 +2480,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2540,7 +2524,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -2584,7 +2568,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2628,7 +2612,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2672,7 +2656,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2751,9 +2735,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2797,9 +2779,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2842,7 +2822,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2885,7 +2865,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2930,7 +2910,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2974,7 +2954,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -3018,7 +2998,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3062,7 +3042,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3106,7 +3086,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3300,7 +3280,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(2,1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(2,1)");
       });
 
     cy.log("Move point B close and submit");
@@ -3327,7 +3307,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.log("Move point A close to other goal and submit");
@@ -3356,7 +3336,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.log("Move point B away and submit");
@@ -3383,7 +3363,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.log("Move point B close to second goal and submit");
@@ -3411,7 +3391,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.log("Move point A away and submit");
@@ -3439,7 +3419,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.log("Move point A near first goal and submit");
@@ -3466,7 +3446,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.log("create point C and submit");
@@ -3489,7 +3469,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(3,1))",
+          "(-4.1,7.4),(6.8,9.1),(3,1)",
         );
       });
 
@@ -3518,7 +3498,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(-4.1,7.4))",
+          "(-4.1,7.4),(6.8,9.1),(-4.1,7.4)",
         );
       });
 
@@ -3541,7 +3521,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
   });
 
@@ -3742,7 +3722,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(1,2))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(1,2)");
       });
 
     cy.log("Move point A2 close and submit");
@@ -3769,7 +3749,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.log("Move point A1 close to other goal and submit");
@@ -3798,7 +3778,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.log("Move point A2 away and submit");
@@ -3825,7 +3805,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.log("Move point A2 close to second goal and submit");
@@ -3853,7 +3833,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.log("Move point A1 away and submit");
@@ -3881,7 +3861,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.log("Move point A1 near first goal and submit");
@@ -3908,7 +3888,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.log("create point B1 and B2 and submit");
@@ -3931,7 +3911,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(2,1),(1,2))",
+          "(-4.1,7.4),(6.8,9.1),(2,1),(1,2)",
         );
       });
 
@@ -3960,7 +3940,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(6.8,9.1),(1,2))",
+          "(-4.1,7.4),(6.8,9.1),(6.8,9.1),(1,2)",
         );
       });
 
@@ -3983,7 +3963,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
   });
 });

@@ -1426,9 +1426,9 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
   
     <paginator name="pgn">
-      <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
-      <copy assignNames="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
-      <copy assignNames="problem3" target="problema" link="false" />
+      <copy name="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
+      <copy name="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
+      <copy name="problem3" target="problema" link="false" />
   
     </paginator>
     <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
@@ -1634,9 +1634,9 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
   
     <paginator name="pgn">
-      <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
-      <copy assignNames="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
-      <copy assignNames="problem3" target="problema" link="false" />
+      <copy name="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
+      <copy name="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
+      <copy name="problem3" target="problema" link="false" />
   
     </paginator>
     <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
@@ -2145,8 +2145,8 @@ describe("Paginator Tag Tests", function () {
     <text>a</text>
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem1" />
-      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem2" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" name="problem1" />
+      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" name="problem2" />
     </paginator>
     
     <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
@@ -2156,8 +2156,8 @@ describe("Paginator Tag Tests", function () {
     <text>a</text>
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem1" />
-      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem2" />
+      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" name="problem1" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" name="problem2" />
     </paginator>
     
     <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>

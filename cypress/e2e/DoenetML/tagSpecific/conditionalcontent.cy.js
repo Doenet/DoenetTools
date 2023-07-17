@@ -489,14 +489,14 @@ describe("Conditional Content Tag Tests", function () {
     cy.get(cesc2("#/p")).should("have.text", "The fox jumps.");
   });
 
-  it("assignNames skips strings but strings still displayed", () => {
+  it("assignNames gives blanks for strings but strings still displayed", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p name="p1"><conditionalContent condition="$n > 0" assignNames="a b">
+    <p name="p1"><conditionalContent condition="$n > 0" assignNames="a b c">
       <text>dog</text> mouse <text>cat</text>
     </conditionalContent></p>
 
@@ -504,12 +504,15 @@ describe("Conditional Content Tag Tests", function () {
     
     <p name="pb">$b</p>
 
-    <p name="p2" ><copy source="_conditionalcontent1" assignNames="(c d)" /></p>
-
     <p name="pc">$c</p>
-    
+
+    <p name="p2" ><copy source="_conditionalcontent1" assignNames="d e f" /></p>
+
     <p name="pd">$d</p>
 
+    <p name="pe">$e</p>
+
+    <p name="pf">$f</p>
 
     `,
         },
@@ -522,19 +525,23 @@ describe("Conditional Content Tag Tests", function () {
     cy.get(cesc2("#/p1")).should("have.text", "");
     cy.get(cesc2("#/pa")).should("have.text", "");
     cy.get(cesc2("#/pb")).should("have.text", "");
-    cy.get(cesc2("#/p2")).should("have.text", "");
     cy.get(cesc2("#/pc")).should("have.text", "");
+    cy.get(cesc2("#/p2")).should("have.text", "");
     cy.get(cesc2("#/pd")).should("have.text", "");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "");
 
     cy.log("enter 1");
     cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
     cy.get(cesc2("#/p1")).should("contain.text", "dog mouse cat");
     cy.get(cesc2("#/pa")).should("have.text", "dog");
-    cy.get(cesc2("#/pb")).should("have.text", "cat");
+    cy.get(cesc2("#/pb")).should("have.text", "");
+    cy.get(cesc2("#/pc")).should("have.text", "cat");
     cy.get(cesc2("#/p2")).should("contain.text", "dog mouse cat");
-    cy.get(cesc2("#/pc")).should("have.text", "dog");
-    cy.get(cesc2("#/pd")).should("have.text", "cat");
+    cy.get(cesc2("#/pd")).should("have.text", "dog");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "cat");
 
     cy.log("enter 0");
     cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}0{enter}", {
@@ -544,9 +551,11 @@ describe("Conditional Content Tag Tests", function () {
     cy.get(cesc2("#/p1")).should("have.text", "");
     cy.get(cesc2("#/pa")).should("have.text", "");
     cy.get(cesc2("#/pb")).should("have.text", "");
-    cy.get(cesc2("#/p2")).should("have.text", "");
     cy.get(cesc2("#/pc")).should("have.text", "");
+    cy.get(cesc2("#/p2")).should("have.text", "");
     cy.get(cesc2("#/pd")).should("have.text", "");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "");
   });
 
   it("correctly withhold replacements when shadowing", () => {
@@ -563,7 +572,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>Show copy:
       <booleanInput name="show_copy" />
     </p>
-    <conditionalContent condition="$show_copy" assignNames="(p2)">
+    <conditionalContent condition="$show_copy" assignNames="p2">
       $p
     </conditionalContent>
     
@@ -620,9 +629,9 @@ describe("Conditional Content Tag Tests", function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy source="a" assignNames="(a1)" /></p>
+    <p name="pa1">a1: $a{assignNames="a1"}</p>
 
-    <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="((b))" /></p>
+    <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="(b)" /></p>
 
     <p name="pb1">b1: $b{name="b1"}</p>
 
@@ -716,9 +725,9 @@ describe("Conditional Content Tag Tests", function () {
 
     <p name="pa1">a1: $a{name="a1"}</p>
 
-    <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="(b)" /></p>
+    <p name="pb" >b: $_conditionalcontent1{assignNames="b"}</p>
 
-    <p name="pb1">b1: <copy source="b" assignNames="(b1)" /></p>
+    <p name="pb1">b1: $b{assignNames="b1"}</p>
 
     `,
         },
@@ -816,7 +825,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>c1: $c{name="c1"}</p>
     <p>d1: $d{name="d1"}</p>
 
-    <p>copy: <copy name="cp1" source="_conditionalcontent1" assignNames="((e f g h i))" /></p>
+    <p>copy: <copy name="cnd2" source="_conditionalcontent1" assignNames="(e f g h i)" /></p>
 
     <p>e1: $e{name="e1"}</p>
     <p>f1: $f{name="f1"}</p>
@@ -824,7 +833,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>h1: $h{name="h1"}</p>
     <p>i1: $i{name="i1"}</p>
 
-    <p>copied copy: <copy source="cp1" assignNames="(((j k l)))" /></p>
+    <p>copied copy: <copy source="cnd2" assignNames="(j k l)" /></p>
 
     <p>j1: $j{name="j1"}</p>
     <p>k1: $k{name="k1"}</p>
@@ -1195,24 +1204,24 @@ describe("Conditional Content Tag Tests", function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy source="s1/a" assignNames="a1" /></p>
-    <p>b1: <copy source="s1/b" assignNames="b1" /></p>
-    <p>c1: <copy source="s1/c" assignNames="c1" /></p>
-    <p>d1: <copy source="s1/d" assignNames="d1" /></p>
+    <p>a1: $(s1/a{name="a1"})</p>
+    <p>b1: $(s1/b{name="b1"})</p>
+    <p>c1: $(s1/c{name="c1"})</p>
+    <p>d1: $(s1/d{name="d1"})</p>
 
     <p>copy: <conditionalContent name="s2" copySource="s1" assignNames="(e f g h i)" /></p>
 
-    <p>e1: <copy source="s2/e" assignNames="e1" /></p>
-    <p>f1: <copy source="s2/f" assignNames="f1" /></p>
-    <p>g1: <copy source="s2/g" assignNames="g1" /></p>
-    <p>h1: <copy source="s2/h" assignNames="h1" /></p>
-    <p>i1: <copy source="s2/i" assignNames="i1" /></p>
+    <p>e1: $(s2/e{name="e1"})</p>
+    <p>f1: $(s2/f{name="f1"})</p>
+    <p>g1: $(s2/g{name="g1"})</p>
+    <p>h1: $(s2/h{name="h1"})</p>
+    <p>i1: $(s2/i{name="i1"})</p>
 
     <p>copied copy: <conditionalContent name="s3" copysource="s2" assignNames="(j k l)" newNamespace /></p>
 
-    <p>j1: <copy source="s3/j" assignNames="j1" /></p>
-    <p>k1: <copy source="s3/k" assignNames="k1" /></p>
-    <p>l1: <copy source="s3/l" assignNames="l1" /></p>
+    <p>j1: $(s3/j{name="j1"})</p>
+    <p>k1: $(s3/k{name="k1"})</p>
+    <p>l1: $(s3/l{name="l1"})</p>
     `,
         },
         "*",
@@ -1574,21 +1583,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="((a) (b) c)">
+    <p>original: <conditionalContent assignNames="(a b c)">
       <case condition="$n<0" >
-        <copy source="x1" />
-        <copy source="y1" />
-        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy source="a1" /><copy source="b1" /></math>
+        $x1
+        $y1
+        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + $a1$b1</math>
       </case>
       <case condition="$n <= 1" >
-        <copy source="x2" />
-        <copy source="y2" />
-        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy source="a2" /><copy source="b2" /></math>
+        $x2
+        $y2
+        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + $a2$b2</math>
       </case>
       <else>
-        <copy source="x3" />
-        <copy source="y3" />
-        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + <copy source="a3" /><copy source="b3" /></math>
+        $x3
+        $y3
+        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + $a3$b3</math>
       </else>
     </conditionalContent></p>
 
@@ -1597,17 +1606,17 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="aa" source="a" />
-    <copy assignNames="bb" source="b" />
-    <copy assignNames="cc" source="c" />
+    $a{name="aa"}
+    $b{name="bb"}
+    $c{name="cc"}
 
     <p>Whole thing repeated</p>
-    <conditionalContent copysource="_conditionalcontent1" assignNames="((d) (e) f)" />
+    <conditionalContent copysource="_conditionalcontent1" assignNames="(d e f)" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="dd" source="d" />
-    <copy assignNames="ee" source="e" />
-    <copy assignNames="ff" source="f" />
+    $d{name="dd"}
+    $e{name="ee"}
+    $f{name="ff"}
 
 
     `,
@@ -1800,19 +1809,19 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" newNamespace >
-        <copy source="../x1" assignNames="animal" />
-        <copy source="../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy source="x" /><copy source="a" /></math>
+        $(../x1{name="animal"})
+        $(../y1{name="plant"})
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + $x$a</math>
       </case>
       <case condition="$n <= 1" newNamespace >
-        <copy source="../x2" assignNames="animal" />
-        <copy source="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy source="x" /><copy source="a" /></math>
+        $(../x2{name="animal"})
+        $(../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy source="../x3" assignNames="animal" />
-        <copy source="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy source="x" /><copy source="a" /></math>
+        $(../x3{name="animal"})
+        $(../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -1821,21 +1830,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" source="a/animal" />
-    <copy assignNames="plant" source="a/plant" />
-    <copy assignNames="p" source="a/p" />
-    <copy assignNames="xx" source="a/x" />
-    <copy assignNames="aa" source="a/a" />
+    $(a/animal{name="animal"})
+    $(a/plant{name="plant"})
+    $(a/p{name="p"})
+    $(a/x{name="xx"})
+    $(a/a{name="aa"})
 
     <p>Whole thing repeated</p>
     <conditionalContent copysource="_conditionalcontent1" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" source="b/animal" />
-    <copy assignNames="plantcopy" source="b/plant" />
-    <copy assignNames="pcopy" source="b/p" />
-    <copy assignNames="xxcopy" source="b/x" />
-    <copy assignNames="aacopy" source="b/a" />
+    $(b/animal{name="animalcopy"})
+    $(b/plant{name="plantcopy"})
+    $(b/p{name="pcopy"})
+    $(b/x{name="xxcopy"})
+    $(b/a{name="aacopy"})
 
     `,
         },
@@ -2149,19 +2158,19 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent name="s" assignNames="a" newNamespace>
       <case newNamespace condition="$(../n) < 0" >
-        <copy source="../../x1" assignNames="animal" />
-        <copy source="../../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy source="x" /><copy source="a" /></math>
+        $(../../x1{name="animal"})
+        $(../../y1{name="plant"})
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + $x$a</math>
       </case>
       <case newNamespace condition="$(../n) <= 1" >
-        <copy source="../../x2" assignNames="animal" />
-        <copy source="../../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy source="x" /><copy source="a" /></math>
+        $(../../x2{name="animal"})
+        $(../../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy source="../../x3" assignNames="animal" />
-        <copy source="../../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy source="x" /><copy source="a" /></math>
+        $(../../x3{name="animal"})
+        $(../../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -2170,21 +2179,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" source="s/a/animal" />
-    <copy assignNames="plant" source="s/a/plant" />
-    <copy assignNames="p" source="s/a/p" />
-    <copy assignNames="xx" source="s/a/x" />
-    <copy assignNames="aa" source="s/a/a" />
+    $(s/a/animal{name="animal"})
+    $(s/a/plant{name="plant"})
+    $(s/a/p{name="p"})
+    $(s/a/x{name="xx"})
+    $(s/a/a{name="aa"})
 
     <p>Whole thing repeated</p>
     <conditionalContent copysource="s" name="s2" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" source="s2/b/animal" />
-    <copy assignNames="plantcopy" source="s2/b/plant" />
-    <copy assignNames="pcopy" source="s2/b/p" />
-    <copy assignNames="xxcopy" source="s2/b/x" />
-    <copy assignNames="aacopy" source="s2/b/a" />
+    $(s2/b/animal{name="animalcopy"})
+    $(s2/b/plant{name="plantcopy"})
+    $(s2/b/p{name="pcopy"})
+    $(s2/b/x{name="xxcopy"})
+    $(s2/b/a{name="aacopy"})
 
     `,
         },
@@ -2503,17 +2512,17 @@ describe("Conditional Content Tag Tests", function () {
       <case condition="$n<0" >
         $x1{name="theanimal"}
         $y1{name="theplant"}
-        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy source="thex" /><copy source="thea" /></math>
+        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + $thex$thea</math>
       </case>
       <case newNamespace condition="$n <= 1" >
-        <copy source="../x2" assignNames="animal" />
-        <copy source="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy source="x" /><copy source="a" /></math>
+        $(../x2{name="animal"})
+        $(../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy source="../x3" assignNames="animal" />
-        <copy source="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy source="x" /><copy source="a" /></math>
+        $(../x3{name="animal"})
+        $(../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -2522,21 +2531,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" source="a/animal" />
-    <copy assignNames="plant" source="a/plant" />
-    <copy assignNames="p" source="a/p" />
-    <copy assignNames="xx" source="a/x" />
-    <copy assignNames="aa" source="a/a" />
+    $(a/animal{name="animal"})
+    $(a/plant{name="plant"})
+    $(a/p{name="p"})
+    $(a/x{name="xx"})
+    $(a/a{name="aa"})
 
     <p>Whole thing repeated</p>
     <p name="repeat"><conditionalContent name="s2" copysource="_conditionalcontent1" assignNames="b" /></p>
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" source="b/animal" />
-    <copy assignNames="plantcopy" source="b/plant" />
-    <copy assignNames="pcopy" source="b/p" />
-    <copy assignNames="xxcopy" source="b/x" />
-    <copy assignNames="aacopy" source="b/a" />
+    $(b/animal{name="animalcopy"})
+    $(b/plant{name="plantcopy"})
+    $(b/p{name="pcopy"})
+    $(b/x{name="xxcopy"})
+    $(b/a{name="aacopy"})
 
     `,
         },
@@ -3069,9 +3078,9 @@ describe("Conditional Content Tag Tests", function () {
     </conditionalContent></p>
     
     
-    <p><copy source="_conditionalcontent1" /></p>
+    <p>$_conditionalcontent1</p>
 
-    <p><copy source="_conditionalcontent2" /></p>
+    <p>$_conditionalcontent2</p>
 
     `,
         },
@@ -3138,9 +3147,9 @@ describe("Conditional Content Tag Tests", function () {
       <copy source="bye" createComponentOfType="else" />
     </conditionalContent></p>
     
-    <p><copy source="_conditionalcontent1" /></p>
+    <p>$_conditionalcontent1</p>
 
-    <p><copy source="_conditionalcontent2" /></p>
+    <p>$_conditionalcontent2</p>
 
     `,
         },
@@ -3279,12 +3288,14 @@ describe("Conditional Content Tag Tests", function () {
     <else>The $animal2 $verb2.</else>
   </conditionalContent></p>
 
-  <p name="pa1">a1: <copy source="a" assignNames="((a11) (a12))" /></p>
+  <p name="pa1">a1: $a{assignNames="a11 a12 a13 a14"}</p>
 
-  <p name="ppieces" >pieces: <conditionalContent copysource="_conditionalcontent1" assignNames="(b c)" /></p>
+  <p name="ppieces" >pieces: <conditionalContent copysource="_conditionalcontent1" assignNames="(b c d e)" /></p>
 
-  <p name="pb1">b1: <copy source="b" assignNames="(b1)" /></p>
-  <p name="pc1">c1: <copy source="c" assignNames="(c1)" /></p>
+  <p name="pb1">b1: $b{name="b1"}</p>
+  <p name="pc1">c1: $c{name="c1"}</p>
+  <p name="pd1">d1: $d{name="d1"}</p>
+  <p name="pe1">e1: $e{name="e1"}</p>
 
   `,
         },
@@ -3300,13 +3311,19 @@ describe("Conditional Content Tag Tests", function () {
       "have.text",
       "pieces: The elephant trumpets.",
     );
-    cy.get(cesc2("#/pb1")).should("have.text", "b1: elephant");
-    cy.get(cesc2("#/pc1")).should("have.text", "c1: trumpets");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: elephant");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: trumpets");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc2("#/a11")).should("have.text", "elephant");
-    cy.get(cesc2("#/a12")).should("have.text", "trumpets");
-    cy.get(cesc2("#/b1")).should("have.text", "elephant");
-    cy.get(cesc2("#/c1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "elephant");
+    cy.get(cesc2("#/a13")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "elephant");
+    cy.get(cesc2("#/d1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/e1")).should("not.exist");
 
     cy.log("enter 1");
     cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
@@ -3314,13 +3331,19 @@ describe("Conditional Content Tag Tests", function () {
     cy.get(cesc2("#/pa")).should("have.text", "a: The fox jumps.");
     cy.get(cesc2("#/pa1")).should("have.text", "a1: The fox jumps.");
     cy.get(cesc2("#/ppieces")).should("have.text", "pieces: The fox jumps.");
-    cy.get(cesc2("#/pb1")).should("have.text", "b1: fox");
-    cy.get(cesc2("#/pc1")).should("have.text", "c1: jumps");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: fox");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: jumps");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc2("#/a11")).should("have.text", "fox");
-    cy.get(cesc2("#/a12")).should("have.text", "jumps");
-    cy.get(cesc2("#/b1")).should("have.text", "fox");
-    cy.get(cesc2("#/c1")).should("have.text", "jumps");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "fox");
+    cy.get(cesc2("#/a13")).should("have.text", "jumps");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "fox");
+    cy.get(cesc2("#/d1")).should("have.text", "jumps");
+    cy.get(cesc2("#/e1")).should("not.exist");
 
     cy.log("enter 0");
     cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}0{enter}", {
@@ -3333,13 +3356,19 @@ describe("Conditional Content Tag Tests", function () {
       "have.text",
       "pieces: The elephant trumpets.",
     );
-    cy.get(cesc2("#/pb1")).should("have.text", "b1: elephant");
-    cy.get(cesc2("#/pc1")).should("have.text", "c1: trumpets");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: elephant");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: trumpets");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc2("#/a11")).should("have.text", "elephant");
-    cy.get(cesc2("#/a12")).should("have.text", "trumpets");
-    cy.get(cesc2("#/b1")).should("have.text", "elephant");
-    cy.get(cesc2("#/c1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "elephant");
+    cy.get(cesc2("#/a13")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "elephant");
+    cy.get(cesc2("#/d1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/e1")).should("not.exist");
   });
 
   it("copy with invalid source gets expanded", () => {

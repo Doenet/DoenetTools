@@ -1005,12 +1005,12 @@ function breakUpTargetIntoPropsAndIndices(
                   "fromExtendedSource" + ancestorString + "|" + component_ind;
                 let nameForExtract = createUniqueName("extract", longNameId);
                 newComponent.doenetAttributes.prescribedName = nameForExtract;
-                newComponent.doenetAttributes.createdFromMacro = true;
+                newComponent.doenetAttributes.excludeFromComponentCounts = true;
 
                 let setupComponent = {
                   componentType: "setup",
                   children: [newComponent],
-                  doenetAttributes: { createdFromMacro: true },
+                  doenetAttributes: { excludeFromComponentCounts: true },
                 };
                 serializedComponents.push(setupComponent);
 
@@ -1621,7 +1621,7 @@ function createComponentFromExtendedSource({
 
   for (let propObj of propArray) {
     if (propsAddExtract) {
-      newComponent.doenetAttributes.createdFromMacro = true;
+      newComponent.doenetAttributes.excludeFromComponentCounts = true;
 
       newComponent = {
         componentType: "extract",
@@ -2435,7 +2435,8 @@ export function countRegularComponentTypesInNamespace(
         !(
           doenetAttributes?.isAttributeChild ||
           doenetAttributes?.createdFromSugar ||
-          doenetAttributes?.createdFromMacro
+          doenetAttributes?.createdFromMacro ||
+          doenetAttributes?.excludeFromComponentCounts
         )
       ) {
         componentCounts[componentType] = ++count;
@@ -2479,7 +2480,8 @@ export function renameAutonameBasedOnNewCounts(
         !(
           doenetAttributes?.isAttributeChild ||
           doenetAttributes?.createdFromSugar ||
-          doenetAttributes?.createdFromMacro
+          doenetAttributes?.createdFromMacro ||
+          doenetAttributes?.excludeFromComponentCounts
         )
       ) {
         componentCounts[componentType] = ++count;
@@ -2580,7 +2582,6 @@ export function createComponentNames({
     let mustCreateUniqueName =
       doenetAttributes.isAttributeChild ||
       doenetAttributes.createdFromSugar ||
-      doenetAttributes.createdFromMacro ||
       doenetAttributes.createUniqueName;
 
     let newNamespace;
@@ -2703,6 +2704,8 @@ export function createComponentNames({
       serializedComponent.originalDoenetAttributes?.assignNames
     ) {
       assignNames = serializedComponent.originalDoenetAttributes.assignNames;
+      doenetAttributes.assignNamesForCompositeReplacement =
+        serializedComponent.originalDoenetAttributes.assignNamesForCompositeReplacement;
     }
 
     if (assignNames) {
@@ -2772,13 +2775,14 @@ export function createComponentNames({
     }
 
     // if created from a attribute/sugar/macro, don't include in component counts
-    if (
-      !(
-        doenetAttributes.isAttributeChild ||
-        doenetAttributes.createdFromSugar ||
-        doenetAttributes.createdFromMacro
-      )
-    ) {
+    // (and we'll give a unique name if we haven't already)
+    let excludeFromComponentCounts =
+      doenetAttributes.isAttributeChild ||
+      doenetAttributes.createdFromSugar ||
+      doenetAttributes.createdFromMacro ||
+      doenetAttributes.excludeFromComponentCounts;
+
+    if (!excludeFromComponentCounts) {
       currentNamespace.componentCounts[componentType] = ++count;
     }
 
@@ -2799,7 +2803,24 @@ export function createComponentNames({
         }
       }
       if (!prescribedName) {
-        prescribedName = "_" + componentType.toLowerCase() + count;
+        if (excludeFromComponentCounts) {
+          let longNameId = parentName + "|createUniqueName|";
+          if (serializedComponent.downstreamDependencies) {
+            longNameId += JSON.stringify(
+              serializedComponent.downstreamDependencies,
+            );
+          } else {
+            longNameId +=
+              componentInd + "|" + indOffset + "|" + createNameContext;
+          }
+
+          prescribedName = createUniqueName(
+            componentType.toLowerCase(),
+            longNameId,
+          );
+        } else {
+          prescribedName = "_" + componentType.toLowerCase() + count;
+        }
       }
     }
 
@@ -2860,6 +2881,31 @@ export function createComponentNames({
         serializedComponent.componentType,
         longNameId,
       );
+    } else if (
+      (serializedComponent.componentType === "copy" ||
+        serializedComponent.componentType === "extract") &&
+      attributes.prop
+    ) {
+      // If we are copying/extracting a prop, we don't do anything special to this component
+      // so that the name will name the composite,
+      // providing a way to access all resulting components in the case when the prop is an array.
+      // The attribute assignNames will assignNames to the replacements,
+      // providing a way to name the array components separately.
+
+      // Ideally, we would, at this point, also treat (recursive) copies of a copy/extract with prop
+      // in the same way, i.e., skipping the above renaming.
+      // (That way the name of these copies could represent the whole array of props
+      // and the assignNames fo those copies could name the individual components of the array.)
+      // However, we don't yet have strongly typed system where we could determine at this stage of processing
+      // whether or not the target of the copy is such a a copy/extract with prop (or recusrive copy of such).
+      // As a workaround, we set the sourceIsProp doenetAttribute on a copy/extract of a prop
+      // (that will also be given to copies of them)
+      // that will be used by the copy component to create an extra <copy/> around its replacements.
+      // That extra copy will then get the name from assignNamesForCompositeReplacement
+      // created from the prescribedName, above (given that we weren't able to skip that processing),
+      // and the extra level added to assignNames, above, will be used by that copy.
+
+      doenetAttributes.sourceIsProp = true;
     }
 
     componentName += prescribedName;
@@ -3414,8 +3460,9 @@ export function processAssignNames({
         numToSkip += component.attributes.assignNamesSkip.primitive;
       }
       if (
-        component.componentType === "copy" ||
-        component.componentType === "extract"
+        (component.componentType === "copy" ||
+          component.componentType === "extract") &&
+        !component.doenetAttributes?.sourceIsProp
       ) {
         numToSkip += 1;
       }
@@ -3964,7 +4011,7 @@ export function restrictTNamesToNamespace({
   }
 }
 
-function indexRangeString(serializedComponent) {
+export function indexRangeString(serializedComponent) {
   let message = "";
   if (serializedComponent.range) {
     let indBegin, indEnd;

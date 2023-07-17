@@ -926,8 +926,8 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <extremum name="ex1" location="3" value="-2" />
-    <copy target="ex1" location="5" assignNames="ex2" />
-    <copy target="ex1" value="2" assignNames="ex3" />
+    <extremum copySource="ex1" location="5" name="ex2" />
+    <extremum copySource="ex1" value="2" name="ex3" />
     
     <graph>
       <function extrema="$ex1 $ex2" />
@@ -974,8 +974,8 @@ describe("Function Tag Tests", function () {
     <text>a</text>
     <graph>
       <function minima="(2,3)" maxima="(4,4)" name="f" />
-      <copy target="f" maxima="(0,4)" assignNames="g" styleNumber="2" />
-      <copy target="f" minima="(6,3)" assignNames="h" styleNumber="3" />
+      <function copySource="f" maxima="(0,4)" name="g" styleNumber="2" />
+      <function copySource="f" minima="(6,3)" name="h" styleNumber="3" />
     </graph>
     `,
         },
@@ -1462,8 +1462,8 @@ describe("Function Tag Tests", function () {
     <text>a</text>
     <graph>
     <function through="(0,2) (2,1) (3,2)" name="f" styleNumber="1" />
-    <copy target="f" through="(1,5) (4,2)" assignNames="g" styleNumber="2" />
-    <copy target="f" throughslopes="1 2 -3" assignNames="h" styleNumber="3" />
+    <function copySource="f" through="(1,5) (4,2)" name="g" styleNumber="2" />
+    <function copySource="f" throughslopes="1 2 -3" name="h" styleNumber="3" />
     </graph>
     `,
         },
@@ -2939,7 +2939,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−2.15,7),(5,6))");
+        expect(text.trim()).equal("(−2.15,7),(5,6)");
       });
     cy.get(cesc("#\\/numMinima")).should("have.text", "2");
     cy.get(cesc("#\\/_math2"))
@@ -2947,7 +2947,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−5,6),(3,4))");
+        expect(text.trim()).equal("(−5,6),(3,4)");
       });
     cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
 
@@ -2956,7 +2956,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−5,6),(−2.15,7),(3,4),(5,6))");
+        expect(text.trim()).equal("(−5,6),(−2.15,7),(3,4),(5,6)");
       });
     cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
     cy.get(cesc2("#/globalsup")).should("have.text", "∞");
@@ -2976,7 +2976,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1.5,7),(5,6))");
+          expect(text.trim()).equal("(−1.5,7),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
@@ -2984,7 +2984,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(2,2))");
+          expect(text.trim()).equal("(−5,6),(2,2)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
@@ -2992,7 +2992,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
+          expect(text.trim()).equal("(−5,6),(−1.5,7),(2,2),(5,6)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
       cy.get(cesc2("#/globalsup")).should("have.text", "∞");
@@ -3013,7 +3013,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
+          expect(text.trim()).equal("(−1,7),(3.6,5.1),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
@@ -3021,7 +3021,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
+          expect(text.trim()).equal("(−5,6),(3,4),(4.3,5)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
@@ -3030,7 +3030,7 @@ describe("Function Tag Tests", function () {
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal(
-            "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
+            "(−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6)",
           );
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
@@ -3052,7 +3052,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(5,6))");
+          expect(text.trim()).equal("(−1,7),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
@@ -3060,7 +3060,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(3,4),(6.5,5))");
+          expect(text.trim()).equal("(−5,6),(3,4),(6.5,5)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "5");
       cy.get(cesc("#\\/_math3"))
@@ -3068,7 +3068,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(−1,7),(3,4),(5,6),(6.5,5))");
+          expect(text.trim()).equal("(−5,6),(−1,7),(3,4),(5,6),(6.5,5)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
       cy.get(cesc2("#/globalsup")).should("have.text", "∞");
@@ -3126,7 +3126,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−7,7),(−1,7),(5,6))");
+          expect(text.trim()).equal("(−7,7),(−1,7),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
@@ -3134,7 +3134,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(3,4))");
+          expect(text.trim()).equal("(−5,6),(3,4)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "5");
       cy.get(cesc("#\\/_math3"))
@@ -3142,7 +3142,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−7,7),(−5,6),(−1,7),(3,4),(5,6))");
+          expect(text.trim()).equal("(−7,7),(−5,6),(−1,7),(3,4),(5,6)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3179,7 +3179,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((5,6),(8,3))");
+          expect(text.trim()).equal("(5,6),(8,3)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
       cy.get(cesc2("#/globalsup")).should("have.text", "∞");
@@ -3200,7 +3200,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((5,6),(7,7))");
+          expect(text.trim()).equal("(5,6),(7,7)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
@@ -3208,7 +3208,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((6,5),(8,6))");
+          expect(text.trim()).equal("(6,5),(8,6)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
@@ -3216,7 +3216,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((5,6),(6,5),(7,7),(8,6))");
+          expect(text.trim()).equal("(5,6),(6,5),(7,7),(8,6)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
       cy.get(cesc2("#/globalsup")).should("have.text", "∞");
@@ -3268,7 +3268,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−2.15,7),(5,6))");
+        expect(text.trim()).equal("(−2.15,7),(5,6)");
       });
     cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
@@ -3285,7 +3285,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−2.15,7),(3,4),(5,6))");
+        expect(text.trim()).equal("(−2.15,7),(3,4),(5,6)");
       });
     cy.get(cesc2("#/globalmax")).should("have.text", "7");
     cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3358,7 +3358,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1.5,7),(2,2))");
+          expect(text.trim()).equal("(−1.5,7),(2,2)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3378,7 +3378,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1.5,7),(5,6))");
+          expect(text.trim()).equal("(−1.5,7),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
@@ -3386,7 +3386,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(2,2))");
+          expect(text.trim()).equal("(−5,6),(2,2)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
@@ -3394,7 +3394,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
+          expect(text.trim()).equal("(−5,6),(−1.5,7),(2,2),(5,6)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3415,7 +3415,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
+          expect(text.trim()).equal("(−1,7),(3.6,5.1),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
@@ -3423,7 +3423,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
+          expect(text.trim()).equal("(−5,6),(3,4),(4.3,5)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
@@ -3432,7 +3432,7 @@ describe("Function Tag Tests", function () {
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal(
-            "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
+            "(−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6)",
           );
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
@@ -3453,7 +3453,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(3.6,5.1))");
+          expect(text.trim()).equal("(−1,7),(3.6,5.1)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "1");
       cy.get(cesc("#\\/_math2"))
@@ -3469,7 +3469,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(3,4),(3.6,5.1))");
+          expect(text.trim()).equal("(−1,7),(3,4),(3.6,5.1)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3521,7 +3521,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−2.15,7),(5,6))");
+        expect(text.trim()).equal("(−2.15,7),(5,6)");
       });
     cy.get(cesc("#\\/numMinima")).should("have.text", "1");
     cy.get(cesc("#\\/_math2"))
@@ -3538,7 +3538,7 @@ describe("Function Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("((−2.15,7),(3,4),(5,6))");
+        expect(text.trim()).equal("(−2.15,7),(3,4),(5,6)");
       });
     cy.get(cesc2("#/globalmax")).should("have.text", "7");
     cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3611,7 +3611,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1.5,7),(2,2))");
+          expect(text.trim()).equal("(−1.5,7),(2,2)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3631,7 +3631,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1.5,7),(5,6))");
+          expect(text.trim()).equal("(−1.5,7),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "2");
       cy.get(cesc("#\\/_math2"))
@@ -3639,7 +3639,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(2,2))");
+          expect(text.trim()).equal("(−5,6),(2,2)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "4");
       cy.get(cesc("#\\/_math3"))
@@ -3647,7 +3647,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(−1.5,7),(2,2),(5,6))");
+          expect(text.trim()).equal("(−5,6),(−1.5,7),(2,2),(5,6)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -3668,7 +3668,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−1,7),(3.6,5.1),(5,6))");
+          expect(text.trim()).equal("(−1,7),(3.6,5.1),(5,6)");
         });
       cy.get(cesc("#\\/numMinima")).should("have.text", "3");
       cy.get(cesc("#\\/_math2"))
@@ -3676,7 +3676,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((−5,6),(3,4),(4.3,5))");
+          expect(text.trim()).equal("(−5,6),(3,4),(4.3,5)");
         });
       cy.get(cesc("#\\/numExtrema")).should("have.text", "6");
       cy.get(cesc("#\\/_math3"))
@@ -3685,7 +3685,7 @@ describe("Function Tag Tests", function () {
         .invoke("text")
         .then((text) => {
           expect(text.trim()).equal(
-            "((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))",
+            "(−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6)",
           );
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "7");
@@ -3722,7 +3722,7 @@ describe("Function Tag Tests", function () {
         .eq(0)
         .invoke("text")
         .then((text) => {
-          expect(text.trim()).equal("((3,4),(3.6,5.1))");
+          expect(text.trim()).equal("(3,4),(3.6,5.1)");
         });
       cy.get(cesc2("#/globalmax")).should("have.text", "NaN");
       cy.get(cesc2("#/globalsup")).should("have.text", "7");
@@ -7194,7 +7194,7 @@ describe("Function Tag Tests", function () {
     <function variables="t" name="f" symbolic simplify="false">st^3</function>
 
     <function name="f2" symbolic simplify="false">$f</function>
-    <function name="f3" variable="s" symbolic simplify="false"><copy target="f.formula"/></function>
+    <function name="f3" variable="s" symbolic simplify="false">$f.formula</function>
 
     $f{name="f4"}
     $f2{name="f5"}
@@ -7316,10 +7316,7 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/f3"].stateValues.variables[0]).eq("s");
       expect(stateVariables["/f4"].stateValues.variables[0]).eq("t");
       expect(stateVariables["/f5"].stateValues.variables[0]).eq("t");
-      expect(
-        stateVariables[stateVariables["/f6"].replacements[0].componentName]
-          .stateValues.variables[0],
-      ).eq("s");
+      expect(stateVariables["/f6"].stateValues.variables[0]).eq("s");
 
       expect(stateVariables["/f"].stateValues.formula).eqls([
         "*",
@@ -7346,10 +7343,11 @@ describe("Function Tag Tests", function () {
         "s",
         ["^", "t", 3],
       ]);
-      expect(
-        stateVariables[stateVariables["/f6"].replacements[0].componentName]
-          .stateValues.formula,
-      ).eqls(["*", "s", ["^", "t", 3]]);
+      expect(stateVariables["/f6"].stateValues.formula).eqls([
+        "*",
+        "s",
+        ["^", "t", 3],
+      ]);
 
       expect(
         stateVariables[stateVariables["/fOfu"].activeChildren[0].componentName]
@@ -8447,11 +8445,11 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <function name="f1" symbolic="false">x^2</function>
-    <copy target="f1" symbolic assignNames="f2" />
-    <copy target="f2" symbolic="false" assignNames="f3" />
+    <function copySource="f1" symbolic name="f2" />
+    <function copySource="f2" symbolic="false" name="f3" />
     <function name="g1">x^2</function>
-    <copy target="g1" symbolic="false" assignNames="g2" />
-    <copy target="g2" symbolic assignNames="g3" />
+    <function copySource="g1" symbolic="false" name="g2" />
+    <function copySource="g2" symbolic name="g3" />
 
     `,
         },
@@ -8481,8 +8479,8 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <function name="f1" symbolic>xyz</function>
-    <copy target="f1" numInputs="2" assignNames="f2" />
-    <copy target="f2" numInputs="3" assignNames="f3" />
+    <function copySource="f1" numInputs="2" name="f2" />
+    <function copySource="f2" numInputs="3" name="f3" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
@@ -8543,11 +8541,11 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <function name="f1" symbolic simplify="none">xyz</function>
-    <copy target="f1" variables="x y" assignNames="f2" />
-    <copy target="f2" variables="x y z" assignNames="f3" />
-    <copy target="f3" variables="z y" assignNames="f4" />
-    <copy target="f4" variables="y" assignNames="f5" />
-    <copy target="f4" variable="y" assignNames="f5a" />
+    <function copySource="f1" variables="x y" name="f2" />
+    <function copySource="f2" variables="x y z" name="f3" />
+    <function copySource="f3" variables="z y" name="f4" />
+    <function copySource="f4" variables="y" name="f5" />
+    <function copySource="f4" variable="y" name="f5a" />
     
     <p name="p1">$$f1(a)</p>
     <p name="p2">$$f2(a,b)</p>
@@ -9238,69 +9236,69 @@ describe("Function Tag Tests", function () {
   <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
   <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
 
-  <copy source="f1" assignNames="f1dg6" displayDigits="6" />
-  <copy source="f2" assignNames="f2dg6" displayDigits="6" />
-  <copy source="f3" assignNames="f3dg6" displayDigits="6" />
-  <copy source="f4" assignNames="f4dg6" displayDigits="6" />
-  <copy source="f5" assignNames="f5dg6" displayDigits="6" />
-  <copy source="f1" assignNames="f1dc7" displayDecimals="7" />
-  <copy source="f2" assignNames="f2dc7" displayDecimals="7" />
-  <copy source="f3" assignNames="f3dc7" displayDecimals="7" />
-  <copy source="f4" assignNames="f4dc7" displayDecimals="7" />
-  <copy source="f5" assignNames="f5dc7" displayDecimals="7" />
-  <copy source="f1" assignNames="f1pt" padZeros />
-  <copy source="f2" assignNames="f2pt" padZeros />
-  <copy source="f3" assignNames="f3pt" padZeros />
-  <copy source="f4" assignNames="f4pt" padZeros />
-  <copy source="f5" assignNames="f5pt" padZeros />
-  <copy source="f1" assignNames="f1pf" padZeros="false" />
-  <copy source="f2" assignNames="f2pf" padZeros="false" />
-  <copy source="f3" assignNames="f3pf" padZeros="false" />
-  <copy source="f4" assignNames="f4pf" padZeros="false" />
-  <copy source="f5" assignNames="f5pf" padZeros="false" />
+  <function copysource="f1" name="f1dg6" displayDigits="6" />
+  <function copysource="f2" name="f2dg6" displayDigits="6" />
+  <function copysource="f3" name="f3dg6" displayDigits="6" />
+  <function copysource="f4" name="f4dg6" displayDigits="6" />
+  <function copysource="f5" name="f5dg6" displayDigits="6" />
+  <function copysource="f1" name="f1dc7" displayDecimals="7" />
+  <function copysource="f2" name="f2dc7" displayDecimals="7" />
+  <function copysource="f3" name="f3dc7" displayDecimals="7" />
+  <function copysource="f4" name="f4dc7" displayDecimals="7" />
+  <function copysource="f5" name="f5dc7" displayDecimals="7" />
+  <function copysource="f1" name="f1pt" padZeros />
+  <function copysource="f2" name="f2pt" padZeros />
+  <function copysource="f3" name="f3pt" padZeros />
+  <function copysource="f4" name="f4pt" padZeros />
+  <function copysource="f5" name="f5pt" padZeros />
+  <function copysource="f1" name="f1pf" padZeros="false" />
+  <function copysource="f2" name="f2pf" padZeros="false" />
+  <function copysource="f3" name="f3pf" padZeros="false" />
+  <function copysource="f4" name="f4pf" padZeros="false" />
+  <function copysource="f5" name="f5pf" padZeros="false" />
 
-  <copy source="f1.formula" assignNames="f1fdg6" displayDigits="6" />
-  <copy source="f2.formula" assignNames="f2fdg6" displayDigits="6" />
-  <copy source="f3.formula" assignNames="f3fdg6" displayDigits="6" />
-  <copy source="f4.formula" assignNames="f4fdg6" displayDigits="6" />
-  <copy source="f5.formula" assignNames="f5fdg6" displayDigits="6" />
-  <copy source="f1.formula" assignNames="f1fdc7" displayDecimals="7" />
-  <copy source="f2.formula" assignNames="f2fdc7" displayDecimals="7" />
-  <copy source="f3.formula" assignNames="f3fdc7" displayDecimals="7" />
-  <copy source="f4.formula" assignNames="f4fdc7" displayDecimals="7" />
-  <copy source="f5.formula" assignNames="f5fdc7" displayDecimals="7" />
-  <copy source="f1.formula" assignNames="f1fpt" padZeros />
-  <copy source="f2.formula" assignNames="f2fpt" padZeros />
-  <copy source="f3.formula" assignNames="f3fpt" padZeros />
-  <copy source="f4.formula" assignNames="f4fpt" padZeros />
-  <copy source="f5.formula" assignNames="f5fpt" padZeros />
-  <copy source="f1.formula" assignNames="f1fpf" padZeros="false" />
-  <copy source="f2.formula" assignNames="f2fpf" padZeros="false" />
-  <copy source="f3.formula" assignNames="f3fpf" padZeros="false" />
-  <copy source="f4.formula" assignNames="f4fpf" padZeros="false" />
-  <copy source="f5.formula" assignNames="f5fpf" padZeros="false" />
+  <math copysource="f1.formula" name="f1fdg6" displayDigits="6" />
+  <math copysource="f2.formula" name="f2fdg6" displayDigits="6" />
+  <math copysource="f3.formula" name="f3fdg6" displayDigits="6" />
+  <math copysource="f4.formula" name="f4fdg6" displayDigits="6" />
+  <math copysource="f5.formula" name="f5fdg6" displayDigits="6" />
+  <math copysource="f1.formula" name="f1fdc7" displayDecimals="7" />
+  <math copysource="f2.formula" name="f2fdc7" displayDecimals="7" />
+  <math copysource="f3.formula" name="f3fdc7" displayDecimals="7" />
+  <math copysource="f4.formula" name="f4fdc7" displayDecimals="7" />
+  <math copysource="f5.formula" name="f5fdc7" displayDecimals="7" />
+  <math copysource="f1.formula" name="f1fpt" padZeros />
+  <math copysource="f2.formula" name="f2fpt" padZeros />
+  <math copysource="f3.formula" name="f3fpt" padZeros />
+  <math copysource="f4.formula" name="f4fpt" padZeros />
+  <math copysource="f5.formula" name="f5fpt" padZeros />
+  <math copysource="f1.formula" name="f1fpf" padZeros="false" />
+  <math copysource="f2.formula" name="f2fpf" padZeros="false" />
+  <math copysource="f3.formula" name="f3fpf" padZeros="false" />
+  <math copysource="f4.formula" name="f4fpf" padZeros="false" />
+  <math copysource="f5.formula" name="f5fpf" padZeros="false" />
 
 
-  <function name="f1dg6a" displayDigits="6" ><copy source="f1" /></function>
-  <function name="f2dg6a" displayDigits="6" ><copy source="f2" /></function>
-  <function name="f3dg6a" displayDigits="6" ><copy source="f3" /></function>
-  <function name="f4dg6a" displayDigits="6" ><copy source="f4" /></function>
-  <function name="f5dg6a" displayDigits="6" ><copy source="f5" /></function>
-  <function name="f1dc7a" displayDecimals="7" ><copy source="f1" /></function>
-  <function name="f2dc7a" displayDecimals="7" ><copy source="f2" /></function>
-  <function name="f3dc7a" displayDecimals="7" ><copy source="f3" /></function>
-  <function name="f4dc7a" displayDecimals="7" ><copy source="f4" /></function>
-  <function name="f5dc7a" displayDecimals="7" ><copy source="f5" /></function>
-  <function name="f1pta" padZeros ><copy source="f1" /></function>
-  <function name="f2pta" padZeros ><copy source="f2" /></function>
-  <function name="f3pta" padZeros ><copy source="f3" /></function>
-  <function name="f4pta" padZeros ><copy source="f4" /></function>
-  <function name="f5pta" padZeros ><copy source="f5" /></function>
-  <function name="f1pfa" padZeros="false" ><copy source="f1" /></function>
-  <function name="f2pfa" padZeros="false" ><copy source="f2" /></function>
-  <function name="f3pfa" padZeros="false" ><copy source="f3" /></function>
-  <function name="f4pfa" padZeros="false" ><copy source="f4" /></function>
-  <function name="f5pfa" padZeros="false" ><copy source="f5" /></function>
+  <function name="f1dg6a" displayDigits="6" >$f1</function>
+  <function name="f2dg6a" displayDigits="6" >$f2</function>
+  <function name="f3dg6a" displayDigits="6" >$f3</function>
+  <function name="f4dg6a" displayDigits="6" >$f4</function>
+  <function name="f5dg6a" displayDigits="6" >$f5</function>
+  <function name="f1dc7a" displayDecimals="7" >$f1</function>
+  <function name="f2dc7a" displayDecimals="7" >$f2</function>
+  <function name="f3dc7a" displayDecimals="7" >$f3</function>
+  <function name="f4dc7a" displayDecimals="7" >$f4</function>
+  <function name="f5dc7a" displayDecimals="7" >$f5</function>
+  <function name="f1pta" padZeros >$f1</function>
+  <function name="f2pta" padZeros >$f2</function>
+  <function name="f3pta" padZeros >$f3</function>
+  <function name="f4pta" padZeros >$f4</function>
+  <function name="f5pta" padZeros >$f5</function>
+  <function name="f1pfa" padZeros="false" >$f1</function>
+  <function name="f2pfa" padZeros="false" >$f2</function>
+  <function name="f3pfa" padZeros="false" >$f3</function>
+  <function name="f4pfa" padZeros="false" >$f4</function>
+  <function name="f5pfa" padZeros="false" >$f5</function>
 
 
 

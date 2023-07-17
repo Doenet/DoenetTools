@@ -522,15 +522,15 @@ describe("Numberlist Tag Tests", function () {
     <p><numberlist>
       <number>1</number>
       <numberlist>2 3</numberlist>
-      <copy prop="number3" target="_numberlist1" createComponentOfType="number" />
+      <number copySource="_numberlist1.number3" />
       <numberlist>
         <numberlist name="mid">
-          <number><copy prop="number1" target="_numberlist1" createComponentOfType="number" /></number>
+          <number><number copySource="_numberlist1.number1" /></number>
           <numberlist>4 5</numberlist>
         </numberlist>
         <numberlist>
-          <copy prop="number2" target="_numberlist1" createComponentOfType="number" />
-          <copy prop="number5" target="_numberlist1" createComponentOfType="number" />
+          <number copySource="_numberlist1.number2" />
+          <number copySource="_numberlist1.number5" />
         </numberlist>
       </numberlist>
       $mid
@@ -684,7 +684,7 @@ describe("Numberlist Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><numberlist name="nl1" maxNumber="$mn1">1 2 3 4 5</numberlist></p>
-      <p><copy target="nl1" maxNumber="$mn2" assignNames="nl2" /></p>
+      <p>$nl1{maxNumber="$mn2" name="nl2"}</p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 
@@ -764,18 +764,18 @@ describe("Numberlist Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><numberlist hide="true">1 2 3</numberlist></p>
+    <p><numberlist name="numberlist1" hide="true">1 2 3</numberlist></p>
 
-    <p><copy name="numberlist1a" hide="false" target="_numberlist1" /></p>
+    <p><numberlist name="numberlist1a" hide="false" copysource="numberlist1" /></p>
 
-    <p><numberlist>
+    <p><numberlist name="numberlist2">
       <number>4</number>
-      <copy target="_numberlist1" hide="false" />
+      <numberlist copysource="numberlist1" hide="false" />
       <number hide>5</number>
       $numberlist1a
     </numberlist></p>
 
-    <p><copy name="numberlist3" maxNumber="6" target="_numberlist2" /></p>
+    <p><numberlist name="numberlist3" maxNumber="6" copysource="numberlist2" /></p>
 
     `,
         },
@@ -798,38 +798,31 @@ describe("Numberlist Tag Tests", function () {
     cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numberlist1a =
-        stateVariables[
-          stateVariables["/numberlist1a"].replacements[0].componentName
-        ];
-      let numberlist3 =
-        stateVariables[
-          stateVariables["/numberlist3"].replacements[0].componentName
-        ];
-      expect(stateVariables["/_numberlist1"].stateValues.numbers.length).eq(3);
-      expect(stateVariables["/_numberlist1"].stateValues.numbers[0]).eq(1);
-      expect(stateVariables["/_numberlist1"].stateValues.numbers[1]).eq(2);
-      expect(stateVariables["/_numberlist1"].stateValues.numbers[2]).eq(3);
-      expect(numberlist1a.stateValues.numbers.length).eq(3);
-      expect(numberlist1a.stateValues.numbers[0]).eq(1);
-      expect(numberlist1a.stateValues.numbers[1]).eq(2);
-      expect(numberlist1a.stateValues.numbers[2]).eq(3);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers.length).eq(8);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[0]).eq(4);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[1]).eq(1);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[2]).eq(2);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[3]).eq(3);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[4]).eq(5);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[5]).eq(1);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[6]).eq(2);
-      expect(stateVariables["/_numberlist2"].stateValues.numbers[7]).eq(3);
-      expect(numberlist3.stateValues.numbers.length).eq(6);
-      expect(numberlist3.stateValues.numbers[0]).eq(4);
-      expect(numberlist3.stateValues.numbers[1]).eq(1);
-      expect(numberlist3.stateValues.numbers[2]).eq(2);
-      expect(numberlist3.stateValues.numbers[3]).eq(3);
-      expect(numberlist3.stateValues.numbers[4]).eq(5);
-      expect(numberlist3.stateValues.numbers[5]).eq(1);
+
+      expect(stateVariables["/numberlist1"].stateValues.numbers.length).eq(3);
+      expect(stateVariables["/numberlist1"].stateValues.numbers[0]).eq(1);
+      expect(stateVariables["/numberlist1"].stateValues.numbers[1]).eq(2);
+      expect(stateVariables["/numberlist1"].stateValues.numbers[2]).eq(3);
+      expect(stateVariables["/numberlist1a"].stateValues.numbers.length).eq(3);
+      expect(stateVariables["/numberlist1a"].stateValues.numbers[0]).eq(1);
+      expect(stateVariables["/numberlist1a"].stateValues.numbers[1]).eq(2);
+      expect(stateVariables["/numberlist1a"].stateValues.numbers[2]).eq(3);
+      expect(stateVariables["/numberlist2"].stateValues.numbers.length).eq(8);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[0]).eq(4);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[1]).eq(1);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[2]).eq(2);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[3]).eq(3);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[4]).eq(5);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[5]).eq(1);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[6]).eq(2);
+      expect(stateVariables["/numberlist2"].stateValues.numbers[7]).eq(3);
+      expect(stateVariables["/numberlist3"].stateValues.numbers.length).eq(6);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[0]).eq(4);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[1]).eq(1);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[2]).eq(2);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[3]).eq(3);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[4]).eq(5);
+      expect(stateVariables["/numberlist3"].stateValues.numbers[5]).eq(1);
     });
   });
 

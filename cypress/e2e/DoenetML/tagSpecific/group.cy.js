@@ -19,15 +19,15 @@ describe("Group Tag Tests", function () {
       <p name="animalp">The animal is a $animal.value.</p>
       <group name="g2">
         <p name="plantp">The plant is a $plant.value.</p>
-        $animalp{name="animalp2"}
+        <p copySource="animalp" name="animalp2" />
         <group name="g3">
-          $plantp{name="plantp2"}
+          <p copySource="plantp" name="plantp2" />
         </group>
-        <copy target="g3" assignNames="((plantp3))" />
+        <group copySource="g3" assignNames="plantp3" />
       </group>
-      <copy target="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
+      <group copySource="g2" assignNames="plantp4 animalp3 (plantp5) (plantp6)" />
     </group>
-    <copy target="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
+    <group copySource="g1" assignNames="animalp4 (plantp7 animalp5 (plantp8) (plantp9)) (plantp10 animalp6 (plantp11) (plantp12))" />
     `,
         },
         "*",
@@ -97,15 +97,15 @@ describe("Group Tag Tests", function () {
       <p name="animalp">The animal $animalphrase.</p>
       <group name="g2">
         <p name="plantp">The plant $plantphrase.</p>
-        $animalp{name="animalp2"}
+        <p copySource="animalp" name="animalp2" />
         <group name="g3">
-          $plantp{name="plantp2"}
+          <p copySource="plantp" name="plantp2" />
         </group>
-        <copy target="g3" assignNames="((plantp3))" />
+        <group copySource="g3" assignNames="plantp3" />
       </group>
-      <copy target="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
+      <group copySource="g2" assignNames="plantp4 animalp3 (plantp5) (plantp6)" />
     </group>
-    <copy target="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
+    <group copySource="g1" assignNames="animalp4 (plantp7 animalp5 (plantp8) (plantp9)) (plantp10 animalp6 (plantp11) (plantp12))" />
 
     $verb1{name="verb"}
     $animalphrase1{name="animalphrase"}
@@ -184,25 +184,23 @@ describe("Group Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p name="p1"><aslist><group>
-    <map>
+    <p name="p1"><group asList name="group1"><map>
     <template><math simplify>$x^2</math></template>
     <sources alias="x">
     <sequence from="$from" to="$to" length="$count" />
     </sources>
-    </map>
-    </group></aslist></p>
+    </map></group></p>
 
     <mathinput name="from" prefill="1"/>
     <mathinput name="to" prefill="2"/>
     <mathinput name="count" prefill="0"/>
     
-    <p name="p2"><aslist>$_group1{name="copygroup2"}</aslist></p>
-    <p name="p3"><aslist>$copygroup2{name="copygroup3"}</aslist></p>
+    <p name="p2"><group copySource="group1" name="group2" /></p>
+    <p name="p3"><group copySource="group2" name="group3" /></p>
 
-    <copy name="copygroupthroughp" target="p1" assignNames="p4" />
-    <copy name="copygroupthroughp2" target="copygroupthroughp" assignNames="p5" />
-    <copy name="copygroupthroughp3" target="copygroupthroughp2" assignNames="p6" />
+    <p name="p4" copySource="p1" />
+    <p name="p5" copySource="p4" />
+    <p name="p6" copySource="p5" />
 
     $count.value{assignNames="count2"}
     $to.value{assignNames="to2"}
@@ -368,13 +366,13 @@ describe("Group Tag Tests", function () {
     <p name="p2"><aslist>$_group1$_group2</aslist></p>
     <p name="p3">$_aslist1</p>
     
-    <copy name="c4" assignNames="p4" target="p1" />
-    <copy name="c5" assignNames="p5" target="p2" />
-    <copy name="c6" assignNames="p6" target="p3" />
+    <p name="p4" copySource="p1" />
+    <p name="p5" copySource="p2" />
+    <p name="p6" copySource="p3" />
     
-    <copy name="c7" assignNames="p7" target="c4" />
-    <copy name="c8" assignNames="p8" target="c5" />
-    <copy name="c9" assignNames="p9" target="c6" />
+    <p name="p7" copySource="p4" />
+    <p name="p8" copySource="p5" />
+    <p name="p9" copySource="p6" />
 
     $var2.value{assignNames="var2b"}
 
@@ -445,15 +443,15 @@ describe("Group Tag Tests", function () {
     </graph>
 
     <graph>
-      <copy target="g" fixed assignNames="g2" />
+      <group copySource="g" fixed name="g2" />
     </graph>
 
     <graph>
-      <copy target="g2" fixed="false" assignNames="g3" />
+      <group copySource="g2" fixed="false" name="g3" />
     </graph>
 
     <graph>
-      <copy target="g2" fixed="false" link="false" assignNames="g4" />
+      <group copySource="g2" fixed="false" link="false" name="g4" />
     </graph>
 
     `,
@@ -554,11 +552,11 @@ describe("Group Tag Tests", function () {
         $ti.value{assignNames="t"}
       </group>
 
-      <copy target="g" disabled assignNames="g2" />
+      <group copySource="g" disabled name="g2" />
 
-      <copy target="g2" disabled="false" assignNames="g3" />
+      <group copySource="g2" disabled="false" name="g3" />
 
-      <copy target="g2" disabled="false" link="false" assignNames="g4" />
+      <group copySource="g2" disabled="false" link="false" name="g4" />
 
     `,
         },

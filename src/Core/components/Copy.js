@@ -603,12 +603,21 @@ export default class Copy extends CompositeComponent {
               dependencyValues.typeAttr.toLowerCase()
             ];
 
+          // if createComponentOfType matches the source's componentType,
+          // we'll allow implicit prop only if implicitPropReturnsSameType is set
+          if (componentTypeFromAttr === source.componentType) {
+            if (
+              !componentInfoObjects.allComponentClasses[source.componentType]
+                .implicitPropReturnsSameType
+            ) {
+              return { setValue: { implicitProp: null } };
+            }
+          }
+
           let varInfo =
             componentInfoObjects.publicStateVariableInfo[source.componentType]
               .stateVariableDescriptions[variableForImplicitProp];
 
-          console.log({ varInfo, componentTypeFromAttr });
-          console.log(dependencyValues);
           if (
             varInfo.createComponentOfType !== undefined &&
             varInfo.createComponentOfType !== componentTypeFromAttr
@@ -1370,6 +1379,71 @@ export default class Copy extends CompositeComponent {
       }
     }
 
+    if (!component.doenetAttributes.sourceIsProp) {
+      let targetComponent =
+        components[(await component.stateValues.targetComponent).componentName];
+      let componentIndex = await component.stateValues.componentIndex;
+      let targetSubnames = await component.stateValues.targetSubnames;
+      if (
+        targetComponent.doenetAttributes.sourceIsProp &&
+        !componentIndex &&
+        !targetSubnames
+      ) {
+        // We are copying a copy/extract of a prop (or a recursive copy of it).
+        // Since we are a currently unable to consistently identify this case
+        // when processing serialized state,
+        // we (incorrectly) converted the name to be assignNames so that it applies to the replacement
+        // rather than the copy itself, and then we gave this copy a randomly generated name.
+        // Now that we have identified the targetComponent and see that it has sourceIsProp,
+        // we implement a workaround of creating an extra copy component
+        // that will act like this copy would have if we didn't convert the name and assignNames.
+        // We add the sourceIsProp doenetAttribute to that copy both to prevent this
+        // workaround from being applied again to that copy
+        // and to trigger this workaround in case that copy is copied.
+
+        // Copy all primitive attributes to make the extra copy behave like this copy
+        let attributesForExtraCopy = {};
+        for (let attrName in component.attributes) {
+          if (!component.attributes[attrName].component) {
+            attributesForExtraCopy[attrName] = JSON.parse(
+              JSON.stringify(component.attributes[attrName]),
+            );
+          }
+        }
+
+        // The extra copy inherit's this copy's target (and will actually use it).
+        let doenetAttributesForExtraCopy = {
+          target: component.doenetAttributes.target,
+          targetComponentName: component.doenetAttributes.targetComponentName,
+          sourceIsProp: true,
+          convertedAssignNames: true,
+        };
+
+        let substituteSerializedReplacements = [
+          {
+            componentType: "copy",
+            attributes: attributesForExtraCopy,
+            doenetAttributes: doenetAttributesForExtraCopy,
+          },
+        ];
+
+        // processAssignNames will set the assignNames of the extra copy
+        // to the original assignNames (before it was incorrectly converted)
+        // and name the copy the original name
+        // (that was converted to assignNamesForCompositeReplacement)
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          assignNamesForCompositeReplacement:
+            component.doenetAttributes.assignNamesForCompositeReplacement,
+          serializedComponents: substituteSerializedReplacements,
+          parentName: component.componentName,
+          componentInfoObjects,
+        });
+
+        return { replacements: processResult.serializedComponents };
+      }
+    }
+
     let replacements = [];
 
     let numReplacementsBySource = [];
@@ -1446,8 +1520,8 @@ export default class Copy extends CompositeComponent {
       publicCaseInsensitiveAliasSubstitutions,
     });
 
-    // console.log(`serialized replacements for ${component.componentName}`)
-    // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
+    // console.log(`serialized replacements for ${component.componentName}`);
+    // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)));
 
     return { replacements: verificationResult.replacements };
   }
@@ -1890,6 +1964,23 @@ export default class Copy extends CompositeComponent {
             `Couldn't resolve recalculateDownstreamComponents for target${ind} of replacementSources of ${component.componentName}`,
           );
         }
+      }
+    }
+
+    if (!component.doenetAttributes.sourceIsProp) {
+      let targetComponent =
+        components[(await component.stateValues.targetComponent).componentName];
+      let componentIndex = await component.stateValues.componentIndex;
+      let targetSubnames = await component.stateValues.targetSubnames;
+      if (
+        targetComponent.doenetAttributes.sourceIsProp &&
+        !componentIndex &&
+        !targetSubnames
+      ) {
+        // The case where we added an extra copy as a workaround for sourceIsProp.
+        // Any replacement changes will be handled by that copy,
+        // so we ignored changes here.
+        return [];
       }
     }
 

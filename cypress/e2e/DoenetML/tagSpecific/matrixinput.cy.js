@@ -13,7 +13,7 @@ describe("MatrixInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p>Matrix 1: <matrixInput name="mi1" /></p>
-    <p>Matrix 2: <copy target="mi1" assignNames="mi2" createComponentOfType="matrixInput" /></p>
+    <p>Matrix 2: <matrixInput copySource="mi1" name="mi2" /></p>
     <p>Matrix 3: $mi1.value{assignNames="m1"}</p>
     <p>Matrix 4: $mi1.immediateValue{assignNames="m2"}</p>
     `,
@@ -14836,7 +14836,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Sparse matrix: <math name="sparse1" format="latex">
     \\begin{matrix}\\\\ & 3\\end{matrix}
     </math></p>
-    <p>Sparse matrix 2: <copy target="sparse1" link="false" assignNames="sparse2" /></p>
+    <p>Sparse matrix 2: $sparse1{link="false" name="sparse2"}</p>
     <p>Matrix 1: <matrixInput name="mi1" bindValueTo="$sparse1" numRows="3" numColumns="3" /></p>
     <p>Matrix 1A: $mi1.value{assignNames="m1"}</p>
     <p>Matrix 2: <matrixInput name="mi2" bindValueTo="$sparse2" numRows="3" numColumns="3" defaultEntry="0" /></p>

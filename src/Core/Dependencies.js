@@ -6155,34 +6155,15 @@ class ReplacementDependency extends Dependency {
               dependenciesMissingComponent.push(dep);
             }
           } else {
-            if (
-              dep.dependencyHandler.componentInfoObjects.isInheritedComponentType(
-                {
-                  inheritedComponentType: newComp.componentType,
-                  baseComponentType: "_composite",
-                },
-              )
-            ) {
-              // TODO: recurse to more composites
+            // TODO: implement subNamesComponentIndex and additional subNames
+            // (as well as allowing componentIndex/subNamesComponentIndex to be multi-dimensional).
+            // These additional levels would involve recursing to the replacements
+            // of additional composites.
 
-              console.warn(
-                "Have not yet implemented recursing subnames to multiple levels of composites",
-              );
-            } else {
-              // don't have a composite
-              // so add only if there are no more subnames and either no more component indices
-              // or just one index of 1 left
-
-              // Note: it appears subNamesComponentIndex is being ignored
-              if (
-                remainingSubnames.length === 0 &&
-                (subNamesComponentIndex?.length ||
-                  0 === 0 ||
-                  (subNamesComponentIndex.length === 1 &&
-                    subNamesComponentIndex[0] === 1))
-              ) {
-                newComponents.push(newComp);
-              }
+            // For now, we return newComponet only if we don't have additional subNames
+            // and we ignore subNamesComponentIndex
+            if (remainingSubnames.length === 0) {
+              newComponents.push(newComp);
             }
           }
         }

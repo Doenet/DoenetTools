@@ -16,7 +16,7 @@ describe("BooleanInput Tag Tests", function () {
       <label>hello</label>
     </booleaninput>
     $bi1.value{assignNames="v1"}
-    $_copy1{name="v2"}
+    $v1{name="v2"}
     `,
         },
         "*",
@@ -486,7 +486,7 @@ describe("BooleanInput Tag Tests", function () {
     </booleaninput></p>
 
     $bi.value{assignNames="v1"}
-    $_copy1{name="v2"}
+    $v1{name="v2"}
     `,
         },
         "*",
