@@ -1607,6 +1607,7 @@ export function PortfolioActivityEditor() {
                               size="sm"
                               menuWidth="140px"
                               array={variants.allPossibleVariants}
+                              syncIndex={variants.index}
                               onChange={(index) =>
                                 setVariants((prev) => {
                                   let next = { ...prev };
@@ -1748,42 +1749,67 @@ export function PortfolioActivityEditor() {
                   maxWidth="850px"
                   overflow="hidden"
                 >
-                  <Box
-                    // minHeight="calc(100vh - 100px)"
-                    height="calc(100vh - 100px)" //40px header height
-                    background="var(--canvas)"
-                    borderWidth="1px"
-                    borderStyle="solid"
-                    borderColor="doenet.mediumGray"
+                  <VStack
+                    spacing={0}
                     margin="10px 0px 10px 0px" //Only need when there is an outline
-                    padding="20px 5px 20px 5px"
-                    flexGrow={1}
-                    overflow="scroll"
                   >
-                    <>
-                      <PageViewer
-                        doenetML={viewerDoenetML}
-                        flags={{
-                          showCorrectness: true,
-                          solutionDisplayMode: "button",
-                          showFeedback: true,
-                          showHints: true,
-                          autoSubmit: false,
-                          allowLoadState: false,
-                          allowSaveState: false,
-                          allowLocalState: false,
-                          allowSaveSubmissions: false,
-                          allowSaveEvents: false,
-                        }}
-                        attemptNumber={1}
-                        generatedVariantCallback={variantCallback} //TODO:Replace
-                        requestedVariantIndex={variants.index}
-                        // setIsInErrorState={setIsInErrorState}
-                        pageIsActive={true}
-                      />
-                      <Box marginBottom="50vh" />
-                    </>
-                  </Box>
+                    {variants.allPossibleVariants.length > 1 && (
+                      <Box bg="doenet.lightBlue" h="32px" width="100%">
+                        <VariantSelect
+                          size="sm"
+                          menuWidth="140px"
+                          syncIndex={variants.index}
+                          array={variants.allPossibleVariants}
+                          onChange={(index) =>
+                            setVariants((prev) => {
+                              let next = { ...prev };
+                              next.index = index + 1;
+                              return next;
+                            })
+                          }
+                        />
+                      </Box>
+                    )}
+                    <Box
+                      h={
+                        variants.allPossibleVariants.length > 1
+                          ? "calc(100vh - 132px)"
+                          : "calc(100vh - 100px)"
+                      }
+                      background="var(--canvas)"
+                      borderWidth="1px"
+                      borderStyle="solid"
+                      borderColor="doenet.mediumGray"
+                      padding="20px 5px 20px 5px"
+                      flexGrow={1}
+                      overflow="scroll"
+                      w="100%"
+                    >
+                      <>
+                        <PageViewer
+                          doenetML={viewerDoenetML}
+                          flags={{
+                            showCorrectness: true,
+                            solutionDisplayMode: "button",
+                            showFeedback: true,
+                            showHints: true,
+                            autoSubmit: false,
+                            allowLoadState: false,
+                            allowSaveState: false,
+                            allowLocalState: false,
+                            allowSaveSubmissions: false,
+                            allowSaveEvents: false,
+                          }}
+                          attemptNumber={1}
+                          generatedVariantCallback={variantCallback} //TODO:Replace
+                          requestedVariantIndex={variants.index}
+                          // setIsInErrorState={setIsInErrorState}
+                          pageIsActive={true}
+                        />
+                        <Box marginBottom="50vh" />
+                      </>
+                    </Box>
+                  </VStack>
                 </GridItem>
               </Grid>
             </GridItem>

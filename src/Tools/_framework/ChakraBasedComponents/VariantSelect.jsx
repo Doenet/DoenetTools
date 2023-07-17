@@ -14,13 +14,14 @@ import {
   MenuList,
   Tooltip,
 } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function VariantSelect({
   size = "sm",
   menuWidth,
   array = [],
   onChange = () => {},
+  syncIndex, //Optional attribute to keep several variant selects in sync
 }) {
   const [index, setIndex] = useState(0);
   const [value, setValue] = useState(array[index]);
@@ -29,6 +30,13 @@ export default function VariantSelect({
 
   const [showTooltip, setShowTooltip] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (syncIndex != undefined && index != syncIndex - 1) {
+      setIndex(syncIndex - 1);
+      setValue(array[syncIndex - 1]);
+    }
+  }, [index, syncIndex, array]);
 
   const filteredArray = array.filter((string) =>
     inputValue === "" ? true : string.includes(inputValue),
