@@ -318,6 +318,7 @@ export function PortfolioActivityViewer() {
                   borderStyle="solid"
                   borderColor="doenet.mediumGray"
                   width="100%"
+                  overflow="scroll"
                 >
                   <PageViewer
                     key={`HPpageViewer`}

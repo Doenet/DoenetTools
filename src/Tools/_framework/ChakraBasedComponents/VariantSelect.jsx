@@ -65,7 +65,7 @@ export default function VariantSelect({
             </MenuButton>
           </Tooltip>
 
-          <MenuList pt={0}>
+          <MenuList pt={0} maxHeight="400px" overflowY="auto">
             <Input
               m={0}
               ref={inputRef}
