@@ -27,15 +27,34 @@ export default function VariantSelect({
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef();
 
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+
   const filteredArray = array.filter((string) =>
     inputValue === "" ? true : string.includes(inputValue),
   );
   return (
     <>
-      <HStack m={0} spacing={0} borderRadius="lg">
-        <Menu>
-          {/* Need to manually control the tooltip so it's closed on menu select onHover? */}
-          <Tooltip hasArrow label="Variant">
+      <HStack
+        m={0}
+        spacing={0}
+        borderRadius="lg"
+        onMouseEnter={() => {
+          !menuIsOpen ? setShowTooltip(true) : null;
+        }}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <Menu
+          onOpen={() => {
+            setShowTooltip(false);
+            setMenuIsOpen(true);
+          }}
+          onClose={() => {
+            setShowTooltip(false);
+            setMenuIsOpen(false);
+          }}
+        >
+          <Tooltip hasArrow label="Variant" isOpen={showTooltip}>
             <MenuButton
               borderBottomRightRadius={0}
               borderTopRightRadius={0}
