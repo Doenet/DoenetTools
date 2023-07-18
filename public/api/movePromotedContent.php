@@ -26,66 +26,11 @@ try {
     // throws exception if current user is not an admin
     checkForAdmin($userId, $conn);
 
-    $positionalFunction;
-    if ($direction == "left") {
-        $positionalFunction = "lag";
-    } else if ($direction == "right") {
-        $positionalFunction = "lead";
-    } else {
-        throw new Exception("Invalid input for direction '$direction',
-        'left' and 'right' are the only accepted values.");
-    }
-    $sql = 
-        "select * from (
-            select doenetId,
-            $positionalFunction(sortOrder) over (order by sortOrder) neighbor,
-            $positionalFunction(sortOrder, 2) over (order by sortOrder) secondNeighbor
-            from promoted_content where promotedGroupId = '$groupId'
-        ) tempTable
-        where doenetId = '$doenetId'"; 
-    $result = $conn->query($sql);
-    if ($result && $result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        $neighbor = $row['neighbor'];
-        $secondNeighbor = $row['secondNeighbor'];
-        if (is_null($neighbor)) {
-            // this item is already furthest to the left, don't fail the request but don't
-            // update anything either
-            $response_arr = [
-                'success' => true,
-                'message' => 'nothing changed, this item is already the farthest to the ' . $direction
-            ];
-        } else {
-            if ($direction == "left") {
-                $sortOrder = SortOrder\getSortOrder($secondNeighbor, $neighbor);
-            } else if ($direction == "right") {
-                $sortOrder = SortOrder\getSortOrder($neighbor, $secondNeighbor);
-            }
+    $response_arr = SortOrder\moveItemInSortedList($conn, 'promoted_content', $direction,
+        "promotedGroupId = '$groupId'", "doenetId = '$doenetId'" );
 
-            $sql = 
-                "update promoted_content
-                set sortOrder = '$sortOrder'
-                where doenetId = '$doenetId' and promotedGroupId = '$groupId'
-                ";
-
-
-            $result = $conn->query($sql);
-            if ($result && $conn->affected_rows == 1) {
-                $response_arr = [
-                    'success' => true,
-                    'toLeft' => $toLeft,
-                    'secondToLeft' => $secondToLeft,
-                    'direction' => $direction
-                ];
-            } else {
-                throw new Exception("Failed to add move this activity in the promoted material group. " . $conn->error);
-            }
-            // set response code - 200 OK
-            http_response_code(200);
-        }
-    } else {
-        throw new Exception("Error finding sort order of previous items in promoted group." . $conn->error);
-    }
+    // set response code - 200 OK
+    http_response_code(200);
 } catch (Exception $e) {
     $response_arr = [
         'success' => false,

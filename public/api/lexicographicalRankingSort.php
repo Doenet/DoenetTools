@@ -98,6 +98,94 @@ namespace SortOrder {
         $str_as_num = lettersToANumber($str);
         return numberToLetters($str_as_num + 1,strlen($str));
       }
-    
+
+
+    /**
+     * Moves a record in a sorted list, managed with a sortOrder column mananged
+     * with our lexographical sorting key generator.
+     * 
+     * Parameters:
+     * conn - database connection
+     * table - table name for sorted records
+     * direction - the direction to move the specified record,
+     *             accepted values 'up', 'down', 'left', 'right'
+     *             up and left are synonyms, as are right and down, to accomodate
+     *             different ways a UI may display the 1 dimensional sort
+     * groupFilter - a sql condition to find all records in the table that belong to this
+     *               given group, can be left blank if the table is sorted globally
+     * itemFilter - a sql condition to find the specific record to be moved
+     * 
+     * Return, associative array suitable for use as request response body
+     * [ success => true, message => 'optional message with a notice to the user]
+     * 
+     * Does not condier a request to move past the end of the list as invalid,
+     * this will report success with a message that could be displayed to a user.
+     */
+    function moveItemInSortedList($conn, $table, $direction, $groupFilter, $itemFilter) {
+        $positionalFunction = "";
+        if ($direction == "left" || $direction == "up") {
+            $positionalFunction = "lag";
+        } else if ($direction == "right" || $direction == "down") {
+            $positionalFunction = "lead";
+        } else {
+            throw new \Exception("Invalid input for direction '$direction',
+            'left', 'up', 'right' and 'down' are the only accepted values.");
+        }
+
+        $groupFilterWithWhere = '';
+        if ($groupFilter) {
+            $groupFilterWithWhere = " where " . $groupFilter;
+        }
+        $sql = 
+            "select neighbor, secondNeighbor from (
+                select *,
+                $positionalFunction(sortOrder) over (order by sortOrder) neighbor,
+                $positionalFunction(sortOrder, 2) over (order by sortOrder) secondNeighbor
+                from $table $groupFilterWithWhere
+            ) tempTable
+            where $itemFilter"; 
+        $result = $conn->query($sql);
+        if ($result && $result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            $neighbor = $row['neighbor'];
+            $secondNeighbor = $row['secondNeighbor'];
+            if (is_null($neighbor)) {
+                // this item is already furthest to the left, don't fail the request but don't
+                // update anything either
+                return [
+                    'success' => true,
+                    'message' => 'nothing changed, this item is already the end of the list.'
+                ];
+            } else {
+                if ($direction == "left" || $direction == "up") {
+                    $sortOrder = getSortOrder($secondNeighbor, $neighbor);
+                } else if ($direction == "right" || $direction == "down") {
+                    $sortOrder = getSortOrder($neighbor, $secondNeighbor);
+                }
+
+                $combinedFilters = implode(" and ", array($groupFilter, $itemFilter));
+                $sql = 
+                    "update $table 
+                    set sortOrder = '$sortOrder'
+                    where $combinedFilters
+                    ";
+
+                $result = $conn->query($sql);
+
+                if ($result) {
+                    if ($conn->affected_rows == 1) {
+                        return [ 'success' => true ];
+                    } else {
+                        throw new \Exception("Operation unexpectedly impacted more than 1 record" . $conn->error);
+                    }
+                } else {
+                    throw new \Exception("Failed to add move this activity in the promoted material group. " . $conn->error);
+                }
+            }
+        } else {
+            throw new \Exception("Error finding sort order of previous items in promoted group." . $conn->error);
+        }
+    }
+        
 }
 ?>
