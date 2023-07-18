@@ -1,7 +1,5 @@
 <?php
 
-use function PHPUnit\Framework\isNull;
-
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: access');
 header('Access-Control-Allow-Methods: POST');
