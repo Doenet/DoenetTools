@@ -227,6 +227,10 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        defaultEntry: {
+          dependencyType: "stateVariable",
+          variableName: "defaultEntry",
+        },
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
@@ -239,7 +243,7 @@ export class MatrixInput extends Input {
         },
       }),
       set: convertValueToMathExpression,
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.mathChild.length > 0) {
           return {
             setValue: {
@@ -253,10 +257,13 @@ export class MatrixInput extends Input {
             },
           };
         } else {
+          let defaultValue = usedDefault.prefill
+            ? dependencyValues.defaultEntry
+            : dependencyValues.prefill;
           return {
             useEssentialOrDefaultValue: {
               valueOriginal: {
-                defaultValue: dependencyValues.prefill,
+                defaultValue,
               },
             },
           };
