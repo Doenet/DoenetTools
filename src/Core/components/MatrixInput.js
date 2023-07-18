@@ -1146,13 +1146,17 @@ export class MatrixInput extends Input {
             if (valueData.length < numRows) {
               // pad first column with blanks
               for (let rowInd = valueData.length; rowInd < numRows; rowInd++) {
-                valueData.push(["\uff3f"]);
+                valueData.push([globalDependencyValues.defaultEntry.tree]);
               }
             }
             if (numColumns > 1) {
               // add additional blank columns
               for (let rowInd = 0; rowInd < numRows; rowInd++) {
-                valueData[rowInd].push(...Array(numColumns - 1).fill("\uff3f"));
+                valueData[rowInd].push(
+                  ...Array(numColumns - 1).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsRowVector) {
@@ -1164,13 +1168,19 @@ export class MatrixInput extends Input {
             if (valueData[0].length < numColumns) {
               // pad first row with blanks
               valueData[0].push(
-                ...Array(numColumns - valueData[0].length).fill("\uff3f"),
+                ...Array(numColumns - valueData[0].length).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsMatrix) {
@@ -1185,7 +1195,7 @@ export class MatrixInput extends Input {
               for (let rowInd = 0; rowInd < valueData.length; rowInd++) {
                 valueData[rowInd].push(
                   ...Array(numColumns - valueData[rowInd].length).fill(
-                    "\uff3f",
+                    globalDependencyValues.defaultEntry.tree,
                   ),
                 );
               }
@@ -1193,7 +1203,11 @@ export class MatrixInput extends Input {
 
             if (valueData.length < numRows) {
               for (let rowInd = valueData.length; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else {
@@ -1201,12 +1215,20 @@ export class MatrixInput extends Input {
             valueData = [[originalTree]];
             if (numColumns > 1) {
               // pad first row with blanks
-              valueData[0].push(...Array(numColumns - 1).fill("\uff3f"));
+              valueData[0].push(
+                ...Array(numColumns - 1).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
+              );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           }
@@ -1586,14 +1608,18 @@ export class MatrixInput extends Input {
                 rowInd < numRows;
                 rowInd++
               ) {
-                immediateValueData.push(["\uff3f"]);
+                immediateValueData.push([
+                  globalDependencyValues.defaultEntry.tree,
+                ]);
               }
             }
             if (numColumns > 1) {
               // add additional blank columns
               for (let rowInd = 0; rowInd < numRows; rowInd++) {
                 immediateValueData[rowInd].push(
-                  ...Array(numColumns - 1).fill("\uff3f"),
+                  ...Array(numColumns - 1).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
                 );
               }
             }
@@ -1607,14 +1633,18 @@ export class MatrixInput extends Input {
               // pad first row with blanks
               immediateValueData[0].push(
                 ...Array(numColumns - immediateValueData[0].length).fill(
-                  "\uff3f",
+                  globalDependencyValues.defaultEntry.tree,
                 ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsMatrix) {
@@ -1633,7 +1663,7 @@ export class MatrixInput extends Input {
               ) {
                 immediateValueData[rowInd].push(
                   ...Array(numColumns - immediateValueData[rowInd].length).fill(
-                    "\uff3f",
+                    globalDependencyValues.defaultEntry.tree,
                   ),
                 );
               }
@@ -1645,7 +1675,11 @@ export class MatrixInput extends Input {
                 rowInd < numRows;
                 rowInd++
               ) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else {
@@ -1654,13 +1688,19 @@ export class MatrixInput extends Input {
             if (numColumns > 1) {
               // pad first row with blanks
               immediateValueData[0].push(
-                ...Array(numColumns - 1).fill("\uff3f"),
+                ...Array(numColumns - 1).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           }

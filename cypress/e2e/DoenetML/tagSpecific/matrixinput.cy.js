@@ -14516,310 +14516,600 @@ describe("MatrixInput Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
-
-    <p>Matrix 1: <matrixInput name="mi1" numRows="3" numColumns="3" /></p>
-    <p>Matrix 1A: <matrix copySource="mi1" name="m1" /></p>
-    <p>Matrix 2: <matrixInput name="mi2" numRows="3" numColumns="3" defaultEntry="0" /></p>
-    <p>Matrix 2A: <matrix copySource="mi2" name="m2" /></p>
+    <p>Matrix Input: <matrixInput name="mi" numRows="2" numColumns="2" defaultEntry="0" /></p>
+    <p>Matrix from value: <matrix copySource="mi" name="mv" /></p>
+    <p>Matrix from immediate value: <matrix copySource="mi.immediateValue" name="miv" /></p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
-
-    cy.get(cesc(`#\\/mi1_component_0_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_0_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_0_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-
-    cy.get(cesc(`#\\/mi2_component_0_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_0_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_0_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-
-    cy.get(cesc("#\\/m1"))
-      .find(".mjx-mrow")
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "⎡⎢⎣＿＿＿＿＿＿＿＿＿⎤⎥⎦");
-    cy.get(cesc("#\\/m2"))
-      .find(".mjx-mrow")
+      .should("have.text", "[0000]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "⎡⎢⎣000000000⎤⎥⎦");
+      .should("have.text", "[0000]");
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let matrixAst1 = [
+
+      let matrixAst = [
         "matrix",
-        ["tuple", 3, 3],
-        [
-          "tuple",
-          ["tuple", "＿", "＿", "＿"],
-          ["tuple", "＿", "＿", "＿"],
-          ["tuple", "＿", "＿", "＿"],
-        ],
+        ["tuple", 2, 2],
+        ["tuple", ["tuple", 0, 0], ["tuple", 0, 0]],
       ];
-      let matrixAst2 = [
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
+    });
+
+    // not sure why have to wait so that MathJax can correctly process
+    // change to immediate value
+    cy.wait(100);
+
+    cy.log("type b in second row of mi");
+    cy.get(cesc("#\\/mi_component_1_0") + " textarea").type(
+      "{end}{backspace}b",
+      {
+        force: true,
+        delay: 50,
+      },
+    );
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow").should("contain.text", "[00b0]");
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00b0]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[0000]");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixivAst = [
         "matrix",
-        ["tuple", 3, 3],
-        ["tuple", ["tuple", 0, 0, 0], ["tuple", 0, 0, 0], ["tuple", 0, 0, 0]],
+        ["tuple", 2, 2],
+        ["tuple", ["tuple", 0, 0], ["tuple", "b", 0]],
       ];
-      expect(stateVariables["/mi1"].stateValues.value).eqls(matrixAst1);
-      expect(stateVariables["/m1"].stateValues.value).eqls(matrixAst1);
-      expect(stateVariables["/mi2"].stateValues.value).eqls(matrixAst2);
-      expect(stateVariables["/m2"].stateValues.value).eqls(matrixAst2);
+      let matrixvAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        ["tuple", ["tuple", 0, 0], ["tuple", 0, 0]],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(
+        matrixivAst,
+      );
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixvAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixivAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixvAst);
+    });
+
+    cy.log("blur");
+    cy.get(cesc("#\\/mi_component_1_0") + " textarea").blur();
+
+    cy.get(cesc("#\\/mv") + " .mjx-mrow").should("contain.text", "[00b0]");
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00b0]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00b0]");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        ["tuple", ["tuple", 0, 0], ["tuple", "b", 0]],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
     });
 
     cy.log("add column");
-    cy.get(cesc("#\\/mi1_columnIncrement")).click();
-    cy.get(cesc("#\\/mi2_columnIncrement")).click();
+    cy.get(cesc("#\\/mi_columnIncrement")).click();
 
-    cy.get(cesc("#\\/m1") + " .mjx-mrow").should(
-      "contain.text",
-      "⎡⎢⎣＿＿＿＿＿＿＿＿＿＿＿＿⎤⎥⎦",
-    );
+    cy.get(cesc("#\\/mv") + " .mjx-mrow").should("contain.text", "[000b00]");
 
-    cy.get(cesc(`#\\/mi1_component_0_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_0_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_0_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_0_3`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_1_3`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-    cy.get(cesc(`#\\/mi1_component_2_3`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("");
-      });
-
-    cy.get(cesc(`#\\/mi2_component_0_0`) + ` .mq-editable-field`)
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
       .invoke("text")
       .then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
       });
-    cy.get(cesc(`#\\/mi2_component_0_1`) + ` .mq-editable-field`)
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
       .invoke("text")
       .then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
       });
-    cy.get(cesc(`#\\/mi2_component_0_2`) + ` .mq-editable-field`)
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
       .invoke("text")
       .then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
       });
-    cy.get(cesc(`#\\/mi2_component_0_3`) + ` .mq-editable-field`)
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
       .invoke("text")
       .then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
       });
-    cy.get(cesc(`#\\/mi2_component_1_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_1_3`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_0`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_1`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_2`) + ` .mq-editable-field`)
-      .invoke("text")
-      .then((text) => {
-        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
-      });
-    cy.get(cesc(`#\\/mi2_component_2_3`) + ` .mq-editable-field`)
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
       .invoke("text")
       .then((text) => {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
       });
 
-    cy.get(cesc("#\\/m1"))
-      .find(".mjx-mrow")
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "⎡⎢⎣＿＿＿＿＿＿＿＿＿＿＿＿⎤⎥⎦");
-    cy.get(cesc("#\\/m2"))
-      .find(".mjx-mrow")
+      .should("have.text", "[000b00]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "⎡⎢⎣000000000000⎤⎥⎦");
+      .should("have.text", "[000b00]");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let matrixAst1 = [
+      let matrixAst = [
         "matrix",
-        ["tuple", 3, 4],
+        ["tuple", 2, 3],
+        ["tuple", ["tuple", 0, 0, 0], ["tuple", "b", 0, 0]],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
+    });
+
+    cy.log("type c in third column of mi");
+    cy.get(cesc("#\\/mi_component_0_2") + " textarea").type(
+      "{end}{backspace}c",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow").should("contain.text", "[00cb00]");
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("c");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00cb00]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[000b00]");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixivAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        ["tuple", ["tuple", 0, 0, "c"], ["tuple", "b", 0, 0]],
+      ];
+      let matrixvAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        ["tuple", ["tuple", 0, 0, 0], ["tuple", "b", 0, 0]],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(
+        matrixivAst,
+      );
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixvAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixivAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixvAst);
+    });
+
+    cy.log("type enter");
+    cy.get(cesc("#\\/mi_component_0_2") + " textarea").type("{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc("#\\/mv") + " .mjx-mrow").should("contain.text", "[00cb00]");
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("c");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00cb00]");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[00cb00]");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        ["tuple", ["tuple", 0, 0, "c"], ["tuple", "b", 0, 0]],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
+    });
+
+    cy.log("add row");
+    cy.get(cesc("#\\/mi_rowIncrement")).click();
+
+    cy.get(cesc("#\\/mv") + " .mjx-mrow").should(
+      "contain.text",
+      "⎡⎢⎣00cb00000⎤⎥⎦",
+    );
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("c");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb00000⎤⎥⎦");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb00000⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 3, 3],
         [
           "tuple",
-          ["tuple", "＿", "＿", "＿", "＿"],
-          ["tuple", "＿", "＿", "＿", "＿"],
-          ["tuple", "＿", "＿", "＿", "＿"],
+          ["tuple", 0, 0, "c"],
+          ["tuple", "b", 0, 0],
+          ["tuple", 0, 0, 0],
         ],
       ];
-      let matrixAst2 = [
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
+    });
+
+    cy.log("type d in third row of mi");
+    cy.get(cesc("#\\/mi_component_2_1") + " textarea").type(
+      "{end}{backspace}d",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow").should(
+      "contain.text",
+      "⎡⎢⎣00cb000d0⎤⎥⎦",
+    );
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("c");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("d");
+      });
+    cy.get(cesc(`#\\/mi_component_2_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb000d0⎤⎥⎦");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb00000⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixivAst = [
         "matrix",
-        ["tuple", 3, 4],
+        ["tuple", 3, 3],
         [
           "tuple",
-          ["tuple", 0, 0, 0, 0],
-          ["tuple", 0, 0, 0, 0],
-          ["tuple", 0, 0, 0, 0],
+          ["tuple", 0, 0, "c"],
+          ["tuple", "b", 0, 0],
+          ["tuple", 0, "d", 0],
         ],
       ];
-      expect(stateVariables["/mi1"].stateValues.value).eqls(matrixAst1);
-      expect(stateVariables["/m1"].stateValues.value).eqls(matrixAst1);
-      expect(stateVariables["/mi2"].stateValues.value).eqls(matrixAst2);
-      expect(stateVariables["/m2"].stateValues.value).eqls(matrixAst2);
+      let matrixvAst = [
+        "matrix",
+        ["tuple", 3, 3],
+        [
+          "tuple",
+          ["tuple", 0, 0, "c"],
+          ["tuple", "b", 0, 0],
+          ["tuple", 0, 0, 0],
+        ],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(
+        matrixivAst,
+      );
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixvAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixivAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixvAst);
+    });
+
+    cy.log("blur");
+    cy.get(cesc("#\\/mi_component_2_1") + " textarea").blur();
+
+    cy.get(cesc("#\\/mv") + " .mjx-mrow").should(
+      "contain.text",
+      "⎡⎢⎣00cb000d0⎤⎥⎦",
+    );
+
+    cy.get(cesc(`#\\/mi_component_0_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_0_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("c");
+      });
+    cy.get(cesc(`#\\/mi_component_1_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("b");
+      });
+    cy.get(cesc(`#\\/mi_component_1_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_1_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_0`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+    cy.get(cesc(`#\\/mi_component_2_1`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("d");
+      });
+    cy.get(cesc(`#\\/mi_component_2_2`) + ` .mq-editable-field`)
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("0");
+      });
+
+    cy.get(cesc("#\\/miv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb000d0⎤⎥⎦");
+    cy.get(cesc("#\\/mv") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣00cb000d0⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixAst = [
+        "matrix",
+        ["tuple", 3, 3],
+        [
+          "tuple",
+          ["tuple", 0, 0, "c"],
+          ["tuple", "b", 0, 0],
+          ["tuple", 0, "d", 0],
+        ],
+      ];
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(matrixAst);
+      expect(stateVariables["/mi"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/miv"].stateValues.value).eqls(matrixAst);
+      expect(stateVariables["/mv"].stateValues.value).eqls(matrixAst);
     });
   });
 
