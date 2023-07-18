@@ -15680,6 +15680,97 @@ describe("MatrixInput Tag Tests", function () {
     });
   });
 
+  it("values from matrix prop using array notation", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <setup>
+    <matrix name="prefill">
+      <row>a b</row>
+      <row>c d</row>
+    </matrix>
+  </setup>
+  <p>Matrix Input: <matrixInput name="mi" prefill="$prefill" /></p>
+  <p name="pmatrix">Matrix: $mi.matrix</p>
+  <p>Row number: <mathinput name="rnum" /></p>
+  <p>Column number: <mathinput name="cnum" /></p>
+  <p name="prow">Row: $mi.matrix[$rnum]</p>
+  <p name="pentry">Entry: $mi.matrix[$rnum][$cnum]{assignNames="entry"}</p>
+  <p>Change entry: <mathinput name="mi_entry">$entry</mathinput></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/pmatrix") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[abcd]");
+    cy.get(cesc2("#/prow") + " .mjx-mrow").should("not.exist");
+    cy.get(cesc2("#/pentry") + " .mjx-mrow").should("not.exist");
+
+    cy.log("pick second row");
+    cy.get(cesc2("#/rnum") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc2("#/prow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[cd]");
+    cy.get(cesc2("#/pentry") + " .mjx-mrow").should("not.exist");
+
+    cy.log("pick first column");
+    cy.get(cesc2("#/cnum") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/pentry") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "c");
+
+    cy.log("change entry from bound value");
+    cy.get(cesc2("#/mi_entry") + " textarea").type("{end}{backspace}x{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/pentry") + " .mjx-mrow").should("contain.text", "x");
+    cy.get(cesc2("#/pmatrix") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[abxd]");
+    cy.get(cesc2("#/prow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xd]");
+    cy.get(cesc2("#/pentry") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.log("change row");
+    cy.get(cesc2("#/rnum") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/prow") + " .mjx-mrow").should("contain.text", "[ab]");
+    cy.get(cesc2("#/prow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ab]");
+    cy.get(cesc2("#/pentry") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "a");
+
+    cy.log("change value from matrix input");
+    cy.get(cesc("#\\/mi_component_0_0") + " textarea").type(
+      "{end}{backspace}y{enter}",
+      {
+        force: true,
+      },
+    );
+
+    cy.get(cesc2("#/pentry") + " .mjx-mrow").should("contain.text", "y");
+    cy.get(cesc2("#/pmatrix") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[ybxd]");
+    cy.get(cesc2("#/prow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[yb]");
+    cy.get(cesc2("#/pentry") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+  });
+
   it("parse scientific notation", () => {
     cy.window().then(async (win) => {
       win.postMessage(
