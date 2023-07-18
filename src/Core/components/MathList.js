@@ -45,6 +45,37 @@ export default class MathList extends InlineComponent {
 
     Object.assign(attributes, returnRoundingAttributes());
 
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "functionSymbols",
+      defaultValue: ["f", "g"],
+      public: true,
+      fallBackToParentStateVariable: "functionSymbols",
+    };
+
+    attributes.sourcesAreFunctionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "sourcesAreFunctionSymbols",
+      defaultValue: [],
+      fallBackToParentStateVariable: "sourcesAreFunctionSymbols",
+    };
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
+    };
+
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "parseScientificNotation",
+    };
+
     return attributes;
   }
 
