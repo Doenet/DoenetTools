@@ -1575,9 +1575,8 @@ export function PortfolioActivityEditor() {
                             <Button
                               size="sm"
                               variant="outline"
-                              bg="doenet.canvas"
                               data-test="Viewer Update Button"
-                              // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
+                              bg="doenet.canvas"
                               leftIcon={<RxUpdate />}
                               rightIcon={
                                 codeChanged ? (
@@ -1667,7 +1666,6 @@ export function PortfolioActivityEditor() {
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
                     >
-                      {/* <Box h="32px" bg="red.300" borderRadius="lg"> */}
                       <Link
                         borderRadius="lg"
                         p="4px 5px 0px 5px"
@@ -1679,7 +1677,6 @@ export function PortfolioActivityEditor() {
                       >
                         Documentation <ExternalLinkIcon mx="2px" />
                       </Link>
-                      {/* </Box> */}
                     </HStack>
                     <Box
                       top="50px"
@@ -1904,7 +1901,6 @@ const ResizeableSideBySide = ({
         width="100%"
         height="100%"
         paddingTop="42px"
-        // paddingTop="10px"
         alignSelf="start"
       >
         <Center
