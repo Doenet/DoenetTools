@@ -43,32 +43,43 @@ export async function loader({ params }) {
   if (profileInfo.cookieRemoved) {
     signedIn = false;
   }
-  const response = await fetch(
-    `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
-  );
-  const data = await response.json();
-  // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
-  // const doenetML = await doenetMLResponse.text();
+  try {
+    const response = await fetch(
+      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+    );
+    const data = await response.json();
+    if (!data.success)
+      return {
+        success: false,
+        message: data.message,
+      };
 
-  const cidResponse = await fetch(`/media/${data.json.assignedCid}.doenet`);
-  const activityML = await cidResponse.text();
+    // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
+    // const doenetML = await doenetMLResponse.text();
 
-  //Find the first page's doenetML
-  const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-  const pageIds = activityML.match(regex);
+    const cidResponse = await fetch(`/media/${data.json.assignedCid}.doenet`);
+    const activityML = await cidResponse.text();
 
-  let firstPage = findFirstPageOfActivity(data.json.content);
+    //Find the first page's doenetML
+    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
+    const pageIds = activityML.match(regex);
 
-  const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
-  const doenetML = await doenetMLResponse.text();
+    let firstPage = findFirstPageOfActivity(data.json.content);
 
-  return {
-    doenetML,
-    signedIn,
-    label: data.label,
-    contributors: data.contributors,
-    pageDoenetId: firstPage,
-  };
+    const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
+    const doenetML = await doenetMLResponse.text();
+
+    return {
+      success: true,
+      doenetML,
+      signedIn,
+      label: data.label,
+      contributors: data.contributors,
+      pageDoenetId: firstPage,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
+  }
 }
 
 const HeaderSectionRight = styled.div`
@@ -79,8 +90,20 @@ const HeaderSectionRight = styled.div`
 `;
 
 export function PortfolioActivityViewer() {
-  const { doenetML, signedIn, label, doenetId, pageDoenetId, contributors } =
-    useLoaderData();
+  const {
+    success,
+    message,
+    doenetML,
+    signedIn,
+    label,
+    doenetId,
+    pageDoenetId,
+    contributors,
+  } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
 
   const fullName = `${contributors[0].firstName} ${contributors[0].lastName}`;
   const { courseId, isUserPortfolio, courseLabel, courseImage, courseColor } =
