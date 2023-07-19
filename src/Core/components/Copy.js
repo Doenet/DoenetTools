@@ -1512,8 +1512,24 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
       });
 
+      let serializedReplacements = processResult.serializedComponents;
+
+      if (
+        fromCopyTarget &&
+        serializedReplacements.length === 1 &&
+        component.serializedChildren.length > 0
+      ) {
+        this.addChildrenFromComposite({
+          replacements: serializedReplacements,
+          children: component.serializedChildren,
+          assignNewNamespaces:
+            component.attributes.assignNewNamespaces?.primitive,
+          componentInfoObjects,
+        });
+      }
+
       return {
-        serializedReplacements: processResult.serializedComponents,
+        serializedReplacements,
         propVariablesCopiedByReplacement:
           results.propVariablesCopiedByReplacement,
       };
