@@ -44,15 +44,9 @@ export async function loader({ params }) {
     signedIn = false;
   }
   try {
-    const response = await fetch(
+    const { data } = await axios.get(
       `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
     );
-    const data = await response.json();
-    if (!data.success)
-      return {
-        success: false,
-        message: data.message,
-      };
 
     // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
     // const doenetML = await doenetMLResponse.text();
