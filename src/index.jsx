@@ -187,6 +187,11 @@ const router = createBrowserRouter([
       {
         path: "publicportfolio/:courseId",
         loader: publicPortfolioLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           <ChakraProvider theme={theme}>
             <PublicPortfolio />
@@ -197,6 +202,11 @@ const router = createBrowserRouter([
         path: "portfolioviewer/:doenetId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           // <DarkmodeController>
           <MathJaxContext
