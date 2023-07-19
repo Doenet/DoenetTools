@@ -1,12 +1,12 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   redirect,
   useLoaderData,
   useNavigate,
-  useOutletContext,
+  // useOutletContext,
 } from "react-router";
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
@@ -14,9 +14,22 @@ import {
 } from "../../../_sharedRecoil/PageViewerRecoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { Form, Link } from "react-router-dom";
-import { Avatar } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import {
+  Avatar,
+  Box,
+  Button,
+  Center,
+  Flex,
+  Grid,
+  GridItem,
+  HStack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
+import axios from "axios";
+import VirtualKeyboard from "../Footers/VirtualKeyboard";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -66,89 +79,11 @@ export async function loader({ params }) {
   };
 }
 
-const PageContainer = styled.div`
-  display: grid;
-  grid-template-rows: 100px auto;
-  height: 100%;
-  width: 100%;
-  /* background: var(--solidLightBlue); */
-`;
-
-const Header = styled.header`
-  grid-row: 1 / 2;
-  display: flex;
-  position: fixed;
-  align-items: center;
-  align-content: center;
-  justify-content: center;
-  height: 100px;
-  width: 100%;
-  background: var(--mainGray);
-  z-index: 100;
-`;
-// background: var(--canvas);
-const ViewerOutsideContainer = styled.div`
-  grid-row: 2 / 3;
-  display: grid;
-  grid-template-columns: auto min-content auto;
-  min-height: calc(100vh - 100px);
-  background: var(--solidLightBlue); //Gutter color
-`;
-
-const ViewerInsideContainer = styled.div`
-  grid-column: 2 / 3;
-  width: 850px;
-  max-width: 850px;
-  min-width: 600px;
-  min-height: calc(100vh - 100px);
-  background: var(--canvas);
-  border: 1px solid #949494; //Viewer Outline
-  margin: 20px 0px 20px 0px; //Only need when there is an outline
-  padding: 20px 5px 20px 5px;
-  @media (max-width: 850px) {
-    width: 100vw;
-  }
-`;
-
-const HeaderContent = styled.div`
-  max-width: 800px;
-  width: 100%;
-  height: 80px;
-  margin: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const HeaderSectionLeft = styled.div`
-  margin: 5px;
-  height: 30px;
-`;
 const HeaderSectionRight = styled.div`
   margin: 5px;
   height: 30px;
   display: flex;
   justify-content: flex-end;
-`;
-const Label = styled.div`
-  font-size: 1.4em;
-  font-weight: bold;
-  max-width: 500px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const AvatarLink = styled(Link)`
-  text-decoration: none;
-  color: black;
-  position: relative;
-`;
-
-const Byline = styled.small`
-  position: absolute;
-  left: 36px;
-  top: 8px;
-  width: 400px;
 `;
 
 export function PortfolioActivityViewer() {
@@ -163,7 +98,7 @@ export function PortfolioActivityViewer() {
   } = useLoaderData();
 
   const navigate = useNavigate();
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -178,6 +113,10 @@ export function PortfolioActivityViewer() {
     navigateTo.current = "";
     location.href = newHref;
   }
+
+  useEffect(() => {
+    document.title = `${label} - Doenet`;
+  }, [label]);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
@@ -195,112 +134,205 @@ export function PortfolioActivityViewer() {
 
   return (
     <>
-      <PageContainer>
-        <Header>
-          <HeaderContent>
-            <div>
-              <HeaderSectionLeft>
-                <Label>{label}</Label>
-              </HeaderSectionLeft>
-              <HeaderSectionLeft>
-                <AvatarLink to={`/publicportfolio/${courseId}`}>
-                  <Avatar size="sm" name={fullName} />{" "}
-                  <Byline>By {fullName}</Byline>
-                </AvatarLink>
-              </HeaderSectionLeft>
-            </div>
-            <div>
-              <HeaderSectionRight>
-                <Button
-                  value="See Inside"
-                  onClick={() => {
-                    navigateTo.current = `/public?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`;
-                    setRecoilPageToolView({
-                      page: "public",
-                      tool: "",
-                      view: "",
-                      params: { doenetId, pageId: pageDoenetId },
-                    });
-                  }}
-                />
-              </HeaderSectionRight>
-              {signedIn ? (
-                <HeaderSectionRight>
-                  {/* <Form method="post"> */}
-                  <Button
-                    value="Remix"
-                    onClick={async () => {
-                      let response = await fetch(
-                        `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
-                      );
-
-                      if (response.ok) {
-                        let { nextActivityDoenetId, nextPageDoenetId } =
-                          await response.json();
-                        navigateTo.current = `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`;
-                        setRecoilPageToolView({
-                          page: "portfolioeditor",
-                          tool: "editor",
-                          view: "",
-                          params: {
-                            doenetId: nextActivityDoenetId,
-                            pageId: nextPageDoenetId,
-                          },
-                        });
-                      } else {
-                        throw Error(response.message);
-                      }
+      <VirtualKeyboard />
+      <Grid
+        background="doenet.lightBlue"
+        minHeight="calc(100vh - 40px)" //40px header height
+        templateAreas={`"header header header"
+      "leftGutter centerContent rightGutter"
+      `}
+        templateRows="100px auto"
+        templateColumns=".06fr 1fr .06fr"
+        position="relative"
+      >
+        <GridItem
+          area="header"
+          height="100px"
+          zIndex="500"
+          background="doenet.mainGray"
+        >
+          <Grid
+            width="100%"
+            height="100px"
+            templateAreas={`"leftHeader headerContent rightHeader"`}
+            templateColumns={`1fr minmax(400px,800px) 1fr`}
+            overflow="hidden"
+            background="doenet.mainGray"
+          >
+            <GridItem area="leftHeader" background="doenet.mainGray"></GridItem>
+            <GridItem
+              area="rightHeader"
+              background="doenet.mainGray"
+            ></GridItem>
+            <GridItem
+              area="rightHeader"
+              background="doenet.mainGray"
+            ></GridItem>
+            <GridItem area="headerContent" maxWidth="800px" width="100%">
+              <Flex justifyContent="space-between">
+                <VStack mt="10px" alignItems="flex-start">
+                  <Text
+                    fontSize="1.4em"
+                    fontWeight="bold"
+                    maxWidth="500px"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                  >
+                    {label}
+                  </Text>
+                  <Link
+                    data-test="Avatar Link"
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                      position: "relative",
+                      justifySelf: "flex-start",
                     }}
-                  />
-                  {/* </Form> */}
-                </HeaderSectionRight>
-              ) : (
-                <Button
-                  dataTest="Nav to signin"
-                  size="medium"
-                  value="Sign In To Remix"
-                  onClick={() => {
-                    navigateTo.current = "/signin";
-                    setRecoilPageToolView({
-                      page: "signin",
-                      tool: "",
-                      view: "",
-                      params: {},
-                    });
-                  }}
-                />
-              )}
-            </div>
-          </HeaderContent>
-        </Header>
-        <ViewerOutsideContainer>
-          <ViewerInsideContainer>
-            <PageViewer
-              key={`HPpageViewer`}
-              doenetML={doenetML}
-              // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: true,
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveSubmissions: false,
-                allowSaveEvents: false,
-              }}
-              // doenetId={doenetId}
-              attemptNumber={1}
-              generatedVariantCallback={variantCallback} //TODO:Replace
-              requestedVariantIndex={variantInfo.index}
-              // setIsInErrorState={setIsInErrorState}
-              pageIsActive={true}
+                    to={`/publicportfolio/${courseId}`}
+                  >
+                    <Avatar size="sm" name={fullName} />
+                    <Text
+                      fontSize="13px"
+                      // fontSize="13pt"
+                      position="absolute"
+                      left="36px"
+                      top="6px"
+                      width="400px"
+                    >
+                      By {fullName}
+                    </Text>
+                  </Link>
+                </VStack>
+                <VStack mt="20px" alignItems="flex-end" spacing="4">
+                  <Button
+                    size="xs"
+                    colorScheme="blue"
+                    data-test="See Inside"
+                    onClick={() => {
+                      navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
+                    }}
+                  >
+                    See Inside
+                  </Button>
+                  {signedIn ? (
+                    <HeaderSectionRight>
+                      <Button
+                        data-test="Remix Button"
+                        size="xs"
+                        colorScheme="blue"
+                        onClick={async () => {
+                          let resp = await axios.get(
+                            `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
+                          );
+                          const { nextActivityDoenetId, nextPageDoenetId } =
+                            resp.data;
+
+                          navigate(
+                            `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
+                          );
+                        }}
+                      >
+                        Remix
+                      </Button>
+                    </HeaderSectionRight>
+                  ) : (
+                    <Button
+                      dataTest="Nav to signin"
+                      colorScheme="blue"
+                      size="xs"
+                      onClick={() => {
+                        navigateTo.current = "/signin";
+                        setRecoilPageToolView({
+                          page: "signin",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      Sign In To Remix
+                    </Button>
+                  )}
+                </VStack>
+              </Flex>
+            </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
+        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
+        <GridItem area="centerContent">
+          <Grid
+            width="100%"
+            height="calc(100vh - 140px)"
+            templateAreas={`"leftViewer viewer rightViewer"`}
+            templateColumns={`1fr minmax(400px,850px) 1fr`}
+            overflow="hidden"
+          >
+            <GridItem
+              area="leftViewer"
+              background="doenet.lightBlue"
+              width="100%"
+              paddingTop="10px"
+              alignSelf="start"
+            ></GridItem>
+            <GridItem
+              area="rightViewer"
+              background="doenet.lightBlue"
+              width="100%"
+              paddingTop="10px"
+              alignSelf="start"
             />
-          </ViewerInsideContainer>
-        </ViewerOutsideContainer>
-      </PageContainer>
+
+            <GridItem
+              area="viewer"
+              width="100%"
+              maxWidth="850px"
+              placeSelf="center"
+              minHeight="100%"
+              overflow="hidden"
+            >
+              <Box
+                height="calc(100vh - 160px)" //40px header height
+                background="var(--canvas)"
+                borderWidth="1px"
+                borderStyle="solid"
+                borderColor="doenet.mediumGray"
+                margin="10px 0px 10px 0px" //Only need when there is an outline
+                padding="20px 5px 20px 5px"
+                overflow="scroll"
+              >
+                <>
+                  <PageViewer
+                    key={`HPpageViewer`}
+                    doenetML={doenetML}
+                    // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+                    flags={{
+                      showCorrectness: true,
+                      solutionDisplayMode: "button",
+                      showFeedback: true,
+                      showHints: true,
+                      autoSubmit: false,
+                      allowLoadState: false,
+                      allowSaveState: false,
+                      allowLocalState: false,
+                      allowSaveSubmissions: false,
+                      allowSaveEvents: false,
+                    }}
+                    // doenetId={doenetId}
+                    attemptNumber={1}
+                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    requestedVariantIndex={variantInfo.index}
+                    // setIsInErrorState={setIsInErrorState}
+                    pageIsActive={true}
+                  />
+                  <Box marginBottom="50vh" />
+                </>
+              </Box>
+            </GridItem>
+          </Grid>
+        </GridItem>
+      </Grid>
     </>
   );
 }

@@ -14,6 +14,10 @@ import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
+import {
+  returnLabelStateVariableDefinitions,
+  returnWrapNonLabelsSugarFunction,
+} from "../utils/label";
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -125,30 +129,22 @@ export default class MathInput extends Input {
       public: true,
       forRenderer: true,
     };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
   static returnSugarInstructions() {
-    let sugarInstructions = [];
-
-    function addMath({ matchedChildren }) {
-      if (matchedChildren.length === 0) {
-        return { success: false };
-      } else {
-        return {
-          success: true,
-          newChildren: [
-            {
-              componentType: "math",
-              children: matchedChildren,
-            },
-          ],
-        };
-      }
-    }
+    let sugarInstructions = super.returnSugarInstructions();
 
     sugarInstructions.push({
-      replacementFunction: addMath,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "math",
+      }),
     });
 
     return sugarInstructions;
@@ -156,6 +152,10 @@ export default class MathInput extends Input {
 
   static returnChildGroups() {
     return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
       {
         group: "maths",
         componentTypes: ["math"],
@@ -173,6 +173,33 @@ export default class MathInput extends Input {
         displaySmallAsZeroDefault: 0,
       }),
     );
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
 
     stateVariableDefinitions.value = {
       public: true,
@@ -218,6 +245,16 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "parseScientificNotation",
         },
+        valueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "valueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
+        },
       }),
       set: convertValueToMathExpression,
       definition: function ({ dependencyValues, usedDefault }) {
@@ -260,42 +297,63 @@ export default class MathInput extends Input {
       }) {
         // console.log(`inverse definition of value for mathInput`)
         // console.log(desiredStateVariableValues)
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
+          },
+        ];
 
         if (dependencyValues.mathChild.length > 0) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "mathChild",
-                desiredValue: desiredStateVariableValues.value,
-                variableIndex: 0,
-                childIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "mathChild",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+            childIndex: 0,
+          });
         } else if (dependencyValues.bindValueTo) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredStateVariableValues.value,
-                variableIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredStateVariableValues.value,
+            variableIndex: 0,
+          });
         } else {
           // no child or bindValueTo, so value is essential and give it the desired value
-          return {
-            success: true,
-            instructions: [
-              {
-                setEssentialValue: "value",
-                value: desiredStateVariableValues.value,
-              },
-            ],
-          };
+          instructions.push({
+            setEssentialValue: "value",
+            value: desiredStateVariableValues.value,
+          });
         }
+
+        return { success: true, instructions };
+      },
+    };
+
+    stateVariableDefinitions.immediateValueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { immediateValueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "immediateValueChanged",
+              value: Boolean(desiredStateVariableValues.immediateValueChanged),
+            },
+          ],
+        };
       },
     };
 
@@ -312,6 +370,11 @@ export default class MathInput extends Input {
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
+        },
+        immediateValueChanged: {
+          dependencyType: "stateVariable",
+          variableName: "immediateValueChanged",
+          onlyToSetInInverseDefinition: true,
         },
       }),
       set: convertValueToMathExpression,
@@ -357,6 +420,10 @@ export default class MathInput extends Input {
           {
             setEssentialValue: "immediateValue",
             value: desiredStateVariableValues.immediateValue,
+          },
+          {
+            setDependency: "immediateValueChanged",
+            desiredValue: true,
           },
         ];
 
@@ -713,8 +780,6 @@ export default class MathInput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -765,26 +830,12 @@ export default class MathInput extends Input {
           },
         ];
 
-        if (immediateValue.tree !== "\uff3f") {
-          updateInstructions.push({
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "rawRendererValue",
-            valueOfStateVariable: "valueForDisplay",
-          });
-        } else {
-          // since have invalid math,
-          // don't update rawRendererValue,
-          // but only update lastValueForDisplay to keep it in sync
-          // (lastValueForDisplay is also update if set rawRendererValue to math
-          // as above)
-          updateInstructions.push({
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "lastValueForDisplay",
-            valueOfStateVariable: "valueForDisplay",
-          });
-        }
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          valueOfStateVariable: "valueForDisplay",
+        });
 
         let event = {
           verb: "answered",
@@ -824,11 +875,7 @@ export default class MathInput extends Input {
           sourceInformation,
           skipRendererUpdate,
         });
-      } else {
-        this.coreFunctions.resolveAction({ actionId });
       }
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

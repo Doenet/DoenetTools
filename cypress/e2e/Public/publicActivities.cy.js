@@ -2,7 +2,7 @@
 
 import { cesc2 } from "../../../src/_utils/url";
 
-describe("Multipage activity tests", function () {
+describe("Public activity tests", function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";

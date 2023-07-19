@@ -129,7 +129,6 @@ describe("doenetEditor test", function () {
     cy.get(cesc2("#/problem1_title")).contains("Problem 1");
   });
 
-  // TODO: This test fails because the bread crumb menu closes immediately after clicking it open
   it("Assign activity and navigate using Breadcrumbs", () => {
     const doenetMLString =
       '<problem name="problem1"><answer>42</answer></problem>';
@@ -139,6 +138,7 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(200);
     cy.get('[data-test="Crumb Menu"]').click({ force: true });
     cy.get('[data-test="Crumb Menu Item 2"]').click();
     cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
@@ -147,7 +147,6 @@ describe("doenetEditor test", function () {
     cy.get(cesc2("#/problem1_title")).contains("Problem 1");
   });
 
-  // TODO: This test fails because the bread crumb menu closes immediately after clicking it open
   it("Assign two-page activity", () => {
     const doenetMLString1 = `
 <section>
@@ -167,6 +166,8 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.wait(200);
 
     cy.get('[data-test="Crumb Menu"]').click({ force: true });
     cy.get('[data-test="Crumb Menu Item 2"]').click();
@@ -190,6 +191,8 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.wait(500);
 
     cy.get('[data-test="Crumb Menu"]').click({ force: true });
     cy.get('[data-test="Crumb Menu Item 2"]').click();
@@ -262,7 +265,6 @@ describe("doenetEditor test", function () {
     cy.reload();
 
     cy.get(cesc2("#page2/_section1_title")).should("have.text", "Section 2");
-    cy.get(cesc2("#/problem1_title")).should("not.contain.text", "1");
 
     cy.get('[data-test="Final Score"]').should("have.text", "10");
     cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");

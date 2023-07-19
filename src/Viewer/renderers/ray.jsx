@@ -13,7 +13,7 @@ export default React.memo(function Ray(props) {
 
   const board = useContext(BoardContext);
 
-  let rayJXG = useRef(null);
+  let rayJXG = useRef({});
 
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
@@ -61,7 +61,7 @@ export default React.memo(function Ray(props) {
       SVs.numericalEndpoint.length !== 2 ||
       SVs.numericalThroughpoint.length !== 2
     ) {
-      rayJXG.current = null;
+      rayJXG.current = {};
 
       return;
     }
@@ -75,7 +75,7 @@ export default React.memo(function Ray(props) {
     var jsxRayAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
       strokeColor: lineColor,
@@ -250,7 +250,7 @@ export default React.memo(function Ray(props) {
       }
     });
 
-    previousWithLabel.current = SVs.showLabel && SVs.labelForGraph !== "";
+    previousWithLabel.current = SVs.labelForGraph !== "";
 
     rayJXG.current = newRayJXG;
   }
@@ -275,11 +275,11 @@ export default React.memo(function Ray(props) {
     rayJXG.current.off("keyfocusout");
     rayJXG.current.off("keydown");
     board.removeObject(rayJXG.current);
-    rayJXG.current = null;
+    rayJXG.current = {};
   }
 
   if (board) {
-    if (rayJXG.current === null) {
+    if (Object.keys(rayJXG.current).length === 0) {
       createRayJXG();
     } else if (
       SVs.numericalEndpoint.length !== 2 ||
@@ -364,9 +364,8 @@ export default React.memo(function Ray(props) {
       }
 
       rayJXG.current.name = SVs.labelForGraph;
-      // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
-      let withlabel = SVs.showLabel && SVs.labelForGraph !== "";
+      let withlabel = SVs.labelForGraph !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;

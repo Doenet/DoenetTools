@@ -554,6 +554,351 @@ describe("Symbolic equality tests", function () {
     });
   });
 
+  it("symbolic equality match with simplifying numbers, preserving order, attributes on answer", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><text>a</text></p>
+    <p>
+    <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
+    <answer symbolicEquality="true" simplifyOnCompare="numbersPreserveOrder">$_math1</answer>
+    </p>
+    
+    <p>Numeric versions</p>
+    <p><answer>
+      <award><copy target="_math1" /></award>
+    </answer></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2("#" + mathinputName + "_submit");
+      let mathinputCorrectAnchor = cesc2("#" + mathinputName + "_correct");
+      let mathinputPartialAnchor = cesc2("#" + mathinputName + "_partial");
+      let mathinputIncorrectAnchor = cesc2("#" + mathinputName + "_incorrect");
+
+      let mathinput2Name =
+        stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc2("#" + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2("#" + mathinput2Name + "_submit");
+      let mathinput2CorrectAnchor = cesc2("#" + mathinput2Name + "_correct");
+      let mathinput2PartialAnchor = cesc2("#" + mathinput2Name + "_partial");
+      let mathinput2IncorrectAnchor = cesc2(
+        "#" + mathinput2Name + "_incorrect",
+      );
+
+      cy.log("Submit exact answer");
+      cy.get(mathinputAnchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Simplify numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute adjacent numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+    });
+  });
+
+  it("symbolic equality match with simplifying numbers, preserving order, attributs on when", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><text>a</text></p>
+    <p>
+    <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
+    <answer>
+      <mathinput />
+      <award><when symbolicEquality="true" simplifyOnCompare="numbersPreserveOrder">$_math1=$_mathinput1</when></award>
+    </answer>
+    </p>
+    
+    <p>Numeric versions</p>
+    <p><answer>
+      <award><copy target="_math1" /></award>
+    </answer></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2("#" + mathinputName + "_submit");
+      let mathinputCorrectAnchor = cesc2("#" + mathinputName + "_correct");
+      let mathinputPartialAnchor = cesc2("#" + mathinputName + "_partial");
+      let mathinputIncorrectAnchor = cesc2("#" + mathinputName + "_incorrect");
+
+      let mathinput2Name =
+        stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc2("#" + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2("#" + mathinput2Name + "_submit");
+      let mathinput2CorrectAnchor = cesc2("#" + mathinput2Name + "_correct");
+      let mathinput2PartialAnchor = cesc2("#" + mathinput2Name + "_partial");
+      let mathinput2IncorrectAnchor = cesc2(
+        "#" + mathinput2Name + "_incorrect",
+      );
+
+      cy.log("Submit exact answer");
+      cy.get(mathinputAnchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Simplify numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute adjacent numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+    });
+  });
+
   it("symbolic equality match with simplifying numbers", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -564,6 +909,315 @@ describe("Symbolic equality tests", function () {
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
     <answer>
       <award symbolicEquality="true" simplifyOnCompare="numbers">$_math1</award>
+    </answer>
+    </p>
+    
+    <p>Numeric versions</p>
+    <p><answer>
+      <award><copy target="_math1" /></award>
+    </answer></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2("#" + mathinputName + "_submit");
+      let mathinputCorrectAnchor = cesc2("#" + mathinputName + "_correct");
+      let mathinputPartialAnchor = cesc2("#" + mathinputName + "_partial");
+      let mathinputIncorrectAnchor = cesc2("#" + mathinputName + "_incorrect");
+
+      let mathinput2Name =
+        stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc2("#" + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2("#" + mathinput2Name + "_submit");
+      let mathinput2CorrectAnchor = cesc2("#" + mathinput2Name + "_correct");
+      let mathinput2PartialAnchor = cesc2("#" + mathinput2Name + "_partial");
+      let mathinput2IncorrectAnchor = cesc2(
+        "#" + mathinput2Name + "_incorrect",
+      );
+
+      cy.log("Submit exact answer");
+      cy.get(mathinputAnchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Simplify numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+    });
+  });
+
+  it("symbolic equality match with simplifying numbers, attributes on answer", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><text>a</text></p>
+    <p>
+    <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
+    <answer symbolicEquality="true" simplifyOnCompare="numbers">$_math1</answer>
+    </p>
+    
+    <p>Numeric versions</p>
+    <p><answer>
+      <award><copy target="_math1" /></award>
+    </answer></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName =
+        stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinputAnchor = cesc2("#" + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc2("#" + mathinputName + "_submit");
+      let mathinputCorrectAnchor = cesc2("#" + mathinputName + "_correct");
+      let mathinputPartialAnchor = cesc2("#" + mathinputName + "_partial");
+      let mathinputIncorrectAnchor = cesc2("#" + mathinputName + "_incorrect");
+
+      let mathinput2Name =
+        stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc2("#" + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc2("#" + mathinput2Name + "_submit");
+      let mathinput2CorrectAnchor = cesc2("#" + mathinput2Name + "_correct");
+      let mathinput2PartialAnchor = cesc2("#" + mathinput2Name + "_partial");
+      let mathinput2IncorrectAnchor = cesc2(
+        "#" + mathinput2Name + "_incorrect",
+      );
+
+      cy.log("Submit exact answer");
+      cy.get(mathinputAnchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Simplify numbers");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Permute terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}",
+        { force: true },
+      );
+      cy.get(mathinputCorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine adjacent variable terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Combine all terms");
+      cy.get(mathinputAnchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinputIncorrectAnchor).should("be.visible");
+      cy.get(mathinput2Anchor).type(
+        "{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}",
+        { force: true },
+      );
+      cy.get(mathinput2CorrectAnchor).should("be.visible");
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+        expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+      });
+    });
+  });
+
+  it("symbolic equality match with simplifying numbers, attributes on when", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><text>a</text></p>
+    <p>
+    <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
+    <answer>
+      <mathinput />
+      <award symbolicEquality="true" simplifyOnCompare="numbers"><when>$_math1=$_mathinput1</when></award>
     </answer>
     </p>
     

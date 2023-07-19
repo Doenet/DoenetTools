@@ -77,6 +77,10 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           dependencyType: "stateVariable",
           variableName: "step",
         },
+        exclude: {
+          dependencyType: "stateVariable",
+          variableName: "exclude",
+        },
         numDiscreteValues: {
           dependencyType: "stateVariable",
           variableName: "numDiscreteValues",

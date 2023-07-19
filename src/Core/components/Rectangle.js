@@ -1278,12 +1278,12 @@ export default class Rectangle extends Polygon {
     if (numVerticesMoved === 1) {
       // single vertex dragged
       if (!(await this.stateValues.verticesDraggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     } else {
       // whole rectangle dragged
       if (!(await this.stateValues.draggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     }
 

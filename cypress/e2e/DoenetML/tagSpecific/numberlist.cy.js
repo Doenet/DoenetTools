@@ -841,8 +841,8 @@ describe("Numberlist Tag Tests", function () {
     <text>a</text>
     <p><numberlist displayDigits="4">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
     <p><numberlist displayDigits="4" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
-    <p><numberlist displayDecimals="3" ignoreDisplayDigits>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
-    <p><numberlist displayDecimals="3" ignoreDisplayDigits padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
+    <p><numberlist displayDecimals="3">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
+    <p><numberlist displayDecimals="3" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
     <p><numberlist displayDigits="4" displaySmallAsZero="false">2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
     <p><numberlist displayDigits="4" displaySmallAsZero="false" padZeros>2345.1535268 3.52343 0.5 0.00000000000052523 0.000000000000000000006</numberList></p>
 
@@ -876,13 +876,13 @@ describe("Numberlist Tag Tests", function () {
         (x) => x.componentName,
       );
 
-      cy.get(cesc2("#" + numbers1[0])).should("have.text", "2345.15");
+      cy.get(cesc2("#" + numbers1[0])).should("have.text", "2345");
       cy.get(cesc2("#" + numbers1[1])).should("have.text", "3.523");
       cy.get(cesc2("#" + numbers1[2])).should("have.text", "0.5");
       cy.get(cesc2("#" + numbers1[3])).should("have.text", "5.252 * 10^(-13)");
       cy.get(cesc2("#" + numbers1[4])).should("have.text", "0");
 
-      cy.get(cesc2("#" + numbers2[0])).should("have.text", "2345.15");
+      cy.get(cesc2("#" + numbers2[0])).should("have.text", "2345");
       cy.get(cesc2("#" + numbers2[1])).should("have.text", "3.523");
       cy.get(cesc2("#" + numbers2[2])).should("have.text", "0.5000");
       cy.get(cesc2("#" + numbers2[3])).should("have.text", "5.252 * 10^(-13)");
@@ -900,13 +900,13 @@ describe("Numberlist Tag Tests", function () {
       cy.get(cesc2("#" + numbers4[3])).should("have.text", "0.000");
       cy.get(cesc2("#" + numbers4[4])).should("have.text", "0.000");
 
-      cy.get(cesc2("#" + numbers5[0])).should("have.text", "2345.15");
+      cy.get(cesc2("#" + numbers5[0])).should("have.text", "2345");
       cy.get(cesc2("#" + numbers5[1])).should("have.text", "3.523");
       cy.get(cesc2("#" + numbers5[2])).should("have.text", "0.5");
       cy.get(cesc2("#" + numbers5[3])).should("have.text", "5.252 * 10^(-13)");
       cy.get(cesc2("#" + numbers5[4])).should("have.text", "6 * 10^(-21)");
 
-      cy.get(cesc2("#" + numbers6[0])).should("have.text", "2345.15");
+      cy.get(cesc2("#" + numbers6[0])).should("have.text", "2345");
       cy.get(cesc2("#" + numbers6[1])).should("have.text", "3.523");
       cy.get(cesc2("#" + numbers6[2])).should("have.text", "0.5000");
       cy.get(cesc2("#" + numbers6[3])).should("have.text", "5.252 * 10^(-13)");
@@ -914,70 +914,49 @@ describe("Numberlist Tag Tests", function () {
     });
   });
 
-  it("numberlist and rounding, override number children", () => {
+  it("numberlist and rounding, number children attributes ignored", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <p><numberlist name="ml1">
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
       <number>0.000000000000000000006</number>
     </numberList></p>
     <p><numberlist name="ml2" displayDigits="4">
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
       <number>0.000000000000000000006</number>
     </numberList></p>
     <p><numberlist name="ml3" displayDigits="4" padZeros>
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
       <number>0.000000000000000000006</number>
     </numberList></p>
-    <p><numberlist name="ml4" displayDigits="4" padZeros="false">
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+    <p><numberlist name="ml5" displayDecimals="4">
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
       <number>0.000000000000000000006</number>
     </numberList></p>
-    <p><numberlist name="ml5" displayDecimals="4" ignoreDisplayDigits>
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
-      <number displayDecimals="4">3.52343</number>
-      <number displayDigits="5" padZeros>5</number>
-      <number displaySmallAsZero="false">0.00000000000000052523</number>
-      <number>0.000000000000000000006</number>
-    </numberList></p>
-    <p><numberlist name="ml6" displayDecimals="4" ignoreDisplayDigits padZeros>
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
-      <number displayDecimals="4">3.52343</number>
-      <number displayDigits="5" padZeros>5</number>
-      <number displaySmallAsZero="false">0.00000000000000052523</number>
-      <number>0.000000000000000000006</number>
-    </numberList></p>
-    <p><numberlist name="ml7" displayDecimals="4" ignoreDisplayDigits padZeros="false">
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
-      <number displayDecimals="4">3.52343</number>
-      <number displayDigits="5" padZeros>5</number>
-      <number displaySmallAsZero="false">0.00000000000000052523</number>
-      <number>0.000000000000000000006</number>
-    </numberList></p>
-    <p><numberlist name="ml8" displayDigits="4" displaySmallAsZero>
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+    <p><numberlist name="ml6" displayDecimals="4" padZeros>
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
       <number>0.000000000000000000006</number>
     </numberList></p>
     <p><numberlist name="ml9" displayDigits="4" displaySmallAsZero="false">
-      <number displayDigits="5" ignoreDisplayDecimals>2345.1535268</number>
+      <number displayDigits="5">2345.1535268</number>
       <number displayDecimals="4">3.52343</number>
       <number displayDigits="5" padZeros>5</number>
       <number displaySmallAsZero="false">0.00000000000000052523</number>
@@ -1003,52 +982,37 @@ describe("Numberlist Tag Tests", function () {
       let numbers3 = stateVariables["/ml3"].activeChildren.map(
         (x) => x.componentName,
       );
-      let numbers4 = stateVariables["/ml4"].activeChildren.map(
-        (x) => x.componentName,
-      );
       let numbers5 = stateVariables["/ml5"].activeChildren.map(
         (x) => x.componentName,
       );
       let numbers6 = stateVariables["/ml6"].activeChildren.map(
         (x) => x.componentName,
       );
-      let numbers7 = stateVariables["/ml7"].activeChildren.map(
-        (x) => x.componentName,
-      );
-      let numbers8 = stateVariables["/ml8"].activeChildren.map(
-        (x) => x.componentName,
-      );
       let numbers9 = stateVariables["/ml9"].activeChildren.map(
         (x) => x.componentName,
       );
 
-      cy.get(cesc2("#" + numbers1[0])).should("have.text", "2345.2");
-      cy.get(cesc2("#" + numbers1[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers1[2])).should("have.text", "5.0000");
-      cy.get(cesc2("#" + numbers1[3])).should("have.text", "5.25 * 10^(-16)");
+      cy.get(cesc2("#" + numbers1[0])).should("have.text", "2345.15");
+      cy.get(cesc2("#" + numbers1[1])).should("have.text", "3.52");
+      cy.get(cesc2("#" + numbers1[2])).should("have.text", "5");
+      cy.get(cesc2("#" + numbers1[3])).should("have.text", "0");
       cy.get(cesc2("#" + numbers1[4])).should("have.text", "0");
 
       cy.get(cesc2("#" + numbers2[0])).should("have.text", "2345");
-      cy.get(cesc2("#" + numbers2[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers2[2])).should("have.text", "5.000");
-      cy.get(cesc2("#" + numbers2[3])).should("have.text", "5.252 * 10^(-16)");
+      cy.get(cesc2("#" + numbers2[1])).should("have.text", "3.523");
+      cy.get(cesc2("#" + numbers2[2])).should("have.text", "5");
+      cy.get(cesc2("#" + numbers2[3])).should("have.text", "0");
       cy.get(cesc2("#" + numbers2[4])).should("have.text", "0");
 
       cy.get(cesc2("#" + numbers3[0])).should("have.text", "2345");
-      cy.get(cesc2("#" + numbers3[1])).should("have.text", "3.5234");
+      cy.get(cesc2("#" + numbers3[1])).should("have.text", "3.523");
       cy.get(cesc2("#" + numbers3[2])).should("have.text", "5.000");
-      cy.get(cesc2("#" + numbers3[3])).should("have.text", "5.252 * 10^(-16)");
+      cy.get(cesc2("#" + numbers3[3])).should("have.text", "0.000");
       cy.get(cesc2("#" + numbers3[4])).should("have.text", "0.000");
-
-      cy.get(cesc2("#" + numbers4[0])).should("have.text", "2345");
-      cy.get(cesc2("#" + numbers4[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers4[2])).should("have.text", "5");
-      cy.get(cesc2("#" + numbers4[3])).should("have.text", "5.252 * 10^(-16)");
-      cy.get(cesc2("#" + numbers4[4])).should("have.text", "0");
 
       cy.get(cesc2("#" + numbers5[0])).should("have.text", "2345.1535");
       cy.get(cesc2("#" + numbers5[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers5[2])).should("have.text", "5.0000");
+      cy.get(cesc2("#" + numbers5[2])).should("have.text", "5");
       cy.get(cesc2("#" + numbers5[3])).should("have.text", "0");
       cy.get(cesc2("#" + numbers5[4])).should("have.text", "0");
 
@@ -1058,90 +1022,57 @@ describe("Numberlist Tag Tests", function () {
       cy.get(cesc2("#" + numbers6[3])).should("have.text", "0.0000");
       cy.get(cesc2("#" + numbers6[4])).should("have.text", "0.0000");
 
-      cy.get(cesc2("#" + numbers7[0])).should("have.text", "2345.1535");
-      cy.get(cesc2("#" + numbers7[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers7[2])).should("have.text", "5");
-      cy.get(cesc2("#" + numbers7[3])).should("have.text", "0");
-      cy.get(cesc2("#" + numbers7[4])).should("have.text", "0");
-
-      cy.get(cesc2("#" + numbers8[0])).should("have.text", "2345");
-      cy.get(cesc2("#" + numbers8[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers8[2])).should("have.text", "5.000");
-      cy.get(cesc2("#" + numbers8[3])).should("have.text", "0");
-      cy.get(cesc2("#" + numbers8[4])).should("have.text", "0");
-
       cy.get(cesc2("#" + numbers9[0])).should("have.text", "2345");
-      cy.get(cesc2("#" + numbers9[1])).should("have.text", "3.5234");
-      cy.get(cesc2("#" + numbers9[2])).should("have.text", "5.000");
+      cy.get(cesc2("#" + numbers9[1])).should("have.text", "3.523");
+      cy.get(cesc2("#" + numbers9[2])).should("have.text", "5");
       cy.get(cesc2("#" + numbers9[3])).should("have.text", "5.252 * 10^(-16)");
       cy.get(cesc2("#" + numbers9[4])).should("have.text", "6 * 10^(-21)");
     });
   });
 
-  it("numberlist and rounding, override math children", () => {
+  it("numberlist and rounding, math children attributes ignored", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <p><numberList name="ml1">
-      <math name="n11" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math name="n11" displayDigits="5">2345.1535268</math>
       <math name="n12" displayDecimals="4">3.52343</math>
       <math name="n13" displayDigits="5" padZeros>5</math>
       <math name="n14" displaySmallAsZero="false">0.00000000000000052523</math>
       <math name="n15">0.000000000000000000006</math>
     </numberList></p>
     <p><numberList name="ml2" displayDigits="4">
-      <math name="n21" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math name="n21" displayDigits="5">2345.1535268</math>
       <math name="n22" displayDecimals="4">3.52343</math>
       <math name="n23" displayDigits="5" padZeros>5</math>
       <math name="n24" displaySmallAsZero="false">0.00000000000000052523</math>
       <math name="n25">0.000000000000000000006</math>
     </numberList></p>
     <p><numberList name="ml3" displayDigits="4" padZeros>
-      <math name="n31" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math name="n31" displayDigits="5">2345.1535268</math>
       <math name="n32" displayDecimals="4">3.52343</math>
       <math name="n33" displayDigits="5" padZeros>5</math>
       <math name="n34" displaySmallAsZero="false">0.00000000000000052523</math>
       <math name="n35">0.000000000000000000006</math>
     </numberList></p>
-    <p><numberList name="ml4" displayDigits="4" padZeros="false">
-      <math name="n41" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
-      <math name="n42" displayDecimals="4">3.52343</math>
-      <math name="n43" displayDigits="5" padZeros>5</math>
-      <math name="n44" displaySmallAsZero="false">0.00000000000000052523</math>
-      <math name="n45">0.000000000000000000006</math>
-    </numberList></p>
-    <p><numberList name="ml5" displayDecimals="4" ignoreDisplayDigits>
-      <math name="n51" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+    <p><numberList name="ml5" displayDecimals="4">
+      <math name="n51" displayDigits="5">2345.1535268</math>
       <math name="n52" displayDecimals="4">3.52343</math>
       <math name="n53" displayDigits="5" padZeros>5</math>
       <math name="n54" displaySmallAsZero="false">0.00000000000000052523</math>
       <math name="n55">0.000000000000000000006</math>
     </numberList></p>
-    <p><numberList name="ml6" displayDecimals="4" ignoreDisplayDigits padZeros>
-      <math name="n61" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+    <p><numberList name="ml6" displayDecimals="4" padZeros>
+      <math name="n61" displayDigits="5">2345.1535268</math>
       <math name="n62" displayDecimals="4">3.52343</math>
       <math name="n63" displayDigits="5" padZeros>5</math>
       <math name="n64" displaySmallAsZero="false">0.00000000000000052523</math>
       <math name="n65">0.000000000000000000006</math>
     </numberList></p>
-    <p><numberList name="ml7" displayDecimals="4" ignoreDisplayDigits padZeros="false">
-      <math name="n71" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
-      <math name="n72" displayDecimals="4">3.52343</math>
-      <math name="n73" displayDigits="5" padZeros>5</math>
-      <math name="n74" displaySmallAsZero="false">0.00000000000000052523</math>
-      <math name="n75">0.000000000000000000006</math>
-    </numberList></p>
-    <p><numberList name="ml8" displayDigits="4" displaySmallAsZero>
-      <math name="n81" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
-      <math name="n82" displayDecimals="4">3.52343</math>
-      <math name="n83" displayDigits="5" padZeros>5</math>
-      <math name="n84" displaySmallAsZero="false">0.00000000000000052523</math>
-      <math name="n85">0.000000000000000000006</math>
-    </numberList></p>
     <p><numberList name="ml9" displayDigits="4" displaySmallAsZero="false">
-      <math name="n91" displayDigits="5" ignoreDisplayDecimals>2345.1535268</math>
+      <math name="n91" displayDigits="5">2345.1535268</math>
       <math name="n92" displayDecimals="4">3.52343</math>
       <math name="n93" displayDigits="5" padZeros>5</math>
       <math name="n94" displaySmallAsZero="false">0.00000000000000052523</math>
@@ -1155,33 +1086,27 @@ describe("Numberlist Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc2("#/n11")).should("have.text", "2345.2");
-    cy.get(cesc2("#/n12")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n13")).should("have.text", "5.0000");
-    cy.get(cesc2("#/n14")).should("have.text", "5.25 * 10^(-16)");
+    cy.get(cesc2("#/n11")).should("have.text", "2345.15");
+    cy.get(cesc2("#/n12")).should("have.text", "3.52");
+    cy.get(cesc2("#/n13")).should("have.text", "5");
+    cy.get(cesc2("#/n14")).should("have.text", "0");
     cy.get(cesc2("#/n15")).should("have.text", "0");
 
     cy.get(cesc2("#/n21")).should("have.text", "2345");
-    cy.get(cesc2("#/n22")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n23")).should("have.text", "5.000");
-    cy.get(cesc2("#/n24")).should("have.text", "5.252 * 10^(-16)");
+    cy.get(cesc2("#/n22")).should("have.text", "3.523");
+    cy.get(cesc2("#/n23")).should("have.text", "5");
+    cy.get(cesc2("#/n24")).should("have.text", "0");
     cy.get(cesc2("#/n25")).should("have.text", "0");
 
     cy.get(cesc2("#/n31")).should("have.text", "2345");
-    cy.get(cesc2("#/n32")).should("have.text", "3.5234");
+    cy.get(cesc2("#/n32")).should("have.text", "3.523");
     cy.get(cesc2("#/n33")).should("have.text", "5.000");
-    cy.get(cesc2("#/n34")).should("have.text", "5.252 * 10^(-16)");
+    cy.get(cesc2("#/n34")).should("have.text", "0.000");
     cy.get(cesc2("#/n35")).should("have.text", "0.000");
-
-    cy.get(cesc2("#/n41")).should("have.text", "2345");
-    cy.get(cesc2("#/n42")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n43")).should("have.text", "5");
-    cy.get(cesc2("#/n44")).should("have.text", "5.252 * 10^(-16)");
-    cy.get(cesc2("#/n45")).should("have.text", "0");
 
     cy.get(cesc2("#/n51")).should("have.text", "2345.1535");
     cy.get(cesc2("#/n52")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n53")).should("have.text", "5.0000");
+    cy.get(cesc2("#/n53")).should("have.text", "5");
     cy.get(cesc2("#/n54")).should("have.text", "0");
     cy.get(cesc2("#/n55")).should("have.text", "0");
 
@@ -1191,21 +1116,9 @@ describe("Numberlist Tag Tests", function () {
     cy.get(cesc2("#/n64")).should("have.text", "0.0000");
     cy.get(cesc2("#/n65")).should("have.text", "0.0000");
 
-    cy.get(cesc2("#/n71")).should("have.text", "2345.1535");
-    cy.get(cesc2("#/n72")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n73")).should("have.text", "5");
-    cy.get(cesc2("#/n74")).should("have.text", "0");
-    cy.get(cesc2("#/n75")).should("have.text", "0");
-
-    cy.get(cesc2("#/n81")).should("have.text", "2345");
-    cy.get(cesc2("#/n82")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n83")).should("have.text", "5.000");
-    cy.get(cesc2("#/n84")).should("have.text", "0");
-    cy.get(cesc2("#/n85")).should("have.text", "0");
-
     cy.get(cesc2("#/n91")).should("have.text", "2345");
-    cy.get(cesc2("#/n92")).should("have.text", "3.5234");
-    cy.get(cesc2("#/n93")).should("have.text", "5.000");
+    cy.get(cesc2("#/n92")).should("have.text", "3.523");
+    cy.get(cesc2("#/n93")).should("have.text", "5");
     cy.get(cesc2("#/n94")).should("have.text", "5.252 * 10^(-16)");
     cy.get(cesc2("#/n95")).should("have.text", "6 * 10^(-21)");
   });
@@ -1220,7 +1133,7 @@ describe("Numberlist Tag Tests", function () {
     <p><numberList name="ml1">34.245023482352345 <number displayDigits="7">245.23823402358234234</number></numberList></p>
     <p><numberList name="ml1Dig6" copySource="ml1" displayDigits="6" /></p>
     <p><numberList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
-    <p><numberList name="ml1Dig6a" copySource="ml1Dec6" displayDigits="6" ignoreDisplayDecimals /></p>
+    <p><numberList name="ml1Dig6a" copySource="ml1Dec6" displayDigits="6" /></p>
     <p><numberList name="ml1Dec6a" copySource="ml1Dig6" displayDecimals="6" /></p>
     `,
         },
@@ -1230,7 +1143,7 @@ describe("Numberlist Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/ml1")).should("have.text", "34.25, 245.2382");
+    cy.get(cesc("#\\/ml1")).should("have.text", "34.25, 245.24");
 
     cy.get(cesc("#\\/ml1Dig6")).should("have.text", "34.245, 245.238");
     cy.get(cesc("#\\/ml1Dig6a")).should("have.text", "34.245, 245.238");
@@ -1281,5 +1194,47 @@ describe("Numberlist Tag Tests", function () {
       ]);
       expect(stateVariables["/_text2"].stateValues.value).eq("1, 2, 3");
     });
+  });
+
+  it("numberlist adapts to mathlist", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <numberlist name="nl"><number>9</number> <number>8</number><number>7</number></numberlist>
+
+    <p><mathlist name="ml">$nl</mathlist></p>
+    <p>Change second math: <mathinput name="mi1">$ml.math2</mathinput></p>
+
+    <p>Change 1st and 3rd math via point: <mathinput name="mi2"><point>($ml.number1,$ml.math3)</point></mathinput></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9,8,7");
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 8, 7");
+
+    cy.get(cesc2("#/mi1") + " textarea").type("{end}3{enter}", { force: true });
+
+    cy.get(cesc2("#/nl")).should("have.text", "9, 83, 7");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9,83,7");
+
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{end}{leftarrow}{backspace}{backspace}{backspace}-1,2{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/nl")).should("have.text", "-1, 83, 2");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "−1,83,2");
   });
 });

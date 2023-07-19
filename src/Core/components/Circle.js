@@ -2849,8 +2849,6 @@ export default class Circle extends Curve {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async circleFocused({
@@ -2868,8 +2866,6 @@ export default class Circle extends Curve {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 

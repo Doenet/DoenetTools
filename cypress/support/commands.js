@@ -87,23 +87,32 @@ Cypress.Commands.add("setUserUpload", ({ userId, newValue = "1" }) => {
   );
 });
 
-Cypress.Commands.add("signin", ({ userId }) => {
-  cy.request(`/cyapi/cypressAutoSignin.php?userId=${userId}`);
-  // .then((resp)=>{
-  //   cy.log("signin",resp.body)
-  // })
-});
+Cypress.Commands.add(
+  "signin",
+  ({ userId, firstName = "first", lastName = "last" }) => {
+    cy.request(
+      `/cyapi/cypressAutoSignin.php?userId=${userId}&firstName=${firstName}&lastName=${lastName}`,
+    );
+    // .then((resp)=>{
+    //   cy.log("signin",resp.body)
+    // })
+  },
+);
 
-Cypress.Commands.add("saveDoenetML", ({ doenetML, pageId, courseId }) => {
-  cy.request("POST", "/api/saveDoenetML.php", {
-    doenetML,
-    pageId,
-    courseId,
-    backup: false,
-  }).then((resp) => {
-    cy.log("saveDoenetML", resp.body);
-  });
-});
+Cypress.Commands.add(
+  "saveDoenetML",
+  ({ doenetML, pageId, courseId, lastKnownCid }) => {
+    cy.request("POST", "/api/saveDoenetML.php", {
+      doenetML,
+      pageId,
+      courseId,
+      lastKnownCid,
+      backup: false,
+    }).then((resp) => {
+      cy.log("saveDoenetML", resp.body);
+    });
+  },
+);
 
 Cypress.Commands.add("clearEvents", ({ doenetId }) => {
   cy.request(`/cyapi/cypressClearEvents.php?doenetId=${doenetId}`);
@@ -133,21 +142,60 @@ Cypress.Commands.add("clearCoursePeople", ({ courseId }) => {
   // })
 });
 
-Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
+Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId, label }) => {
   cy.request("POST", `/cyapi/cypressCreateCourse.php`, {
     userId,
     courseId,
     studentUserId,
+    label
   });
   // .then((resp)=>{
   //   cy.log(resp.body)
   // })
 });
 
+Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
+  if (courseId) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE courseId="${courseId}"
+    `,
+    );
+  } else if (label) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE label="${label}"
+    `,
+    );
+  }
+
+
+});
+
+Cypress.Commands.add(
+  "deletePortfolioActivity",
+  ({ userId, label }) => {
+    cy.task(
+      "queryDb",
+      `DELETE cc
+      FROM course_content AS cc
+      LEFT JOIN course AS c
+      ON cc.courseId = c.courseId
+      WHERE cc.label = '${label}'
+      AND c.portfolioCourseForUserId = '${userId}'
+      `,
+    );
+  });
+
 Cypress.Commands.add(
   "createActivity",
   ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "" }) => {
-    // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
     cy.request("POST", `/cyapi/cypressCreateActivity.php`, {
       courseId,
       doenetId,
@@ -155,9 +203,6 @@ Cypress.Commands.add(
       pageDoenetId,
       doenetML,
     });
-    // .then((resp)=>{
-    //   cy.log(resp.body)
-    // })
   },
 );
 

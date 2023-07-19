@@ -315,12 +315,10 @@ export class ContentBrowser extends BlockComponent {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      return this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -329,7 +327,6 @@ export class ContentBrowser extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 
@@ -346,7 +343,7 @@ export class ContentBrowserItem extends BlockComponent {
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
-      defaultValue: "",
+      defaultValue: "Unlabeled",
       public: true,
       forRenderer: true,
     };

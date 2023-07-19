@@ -323,12 +323,10 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           result: cellChanges,
         },
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -337,6 +335,5 @@ export default class DiscreteSimulationResultList extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

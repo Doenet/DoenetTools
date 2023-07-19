@@ -450,7 +450,7 @@ export default function HomePage(props) {
                 doenetML={doenetML}
                 flags={{
                   showCorrectness: true,
-                  solutionDisplayMode: true,
+                  solutionDisplayMode: "button",
                   showFeedback: true,
                   showHints: true,
                   autoSubmit: false,

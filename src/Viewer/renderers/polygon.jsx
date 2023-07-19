@@ -83,6 +83,7 @@ export default React.memo(function Polygon(props) {
       withLabel: false,
       layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
       highlight: true,
+      showInfoBox: SVs.showCoordsWhenDragging,
     };
 
     let jsxBorderAttributes = {
@@ -102,7 +103,7 @@ export default React.memo(function Polygon(props) {
     let jsxPolygonAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: fixed.current,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 
@@ -251,8 +252,8 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
           },
         });
 
@@ -272,8 +273,8 @@ export default React.memo(function Polygon(props) {
           action: actions.movePolygon,
           args: {
             pointCoords: pointCoords.current,
-            transient: viaPointer,
-            skippable: viaPointer,
+            transient: true,
+            skippable: true,
             sourceDetails: { vertex: i },
           },
         });
@@ -467,6 +468,8 @@ export default React.memo(function Polygon(props) {
         // // let actuallyChangedVisibility = polygonJXG.current.vertices[i].visProp["visible"] !== verticesVisible;
         polygonJXG.current.vertices[i].visProp["visible"] = verticesVisible;
         polygonJXG.current.vertices[i].visPropCalc["visible"] = verticesVisible;
+        polygonJXG.current.vertices[i].visProp.showinfobox =
+          SVs.showCoordsWhenDragging;
       }
 
       if (

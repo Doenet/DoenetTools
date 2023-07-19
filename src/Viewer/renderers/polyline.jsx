@@ -86,7 +86,7 @@ export default React.memo(function Polyline(props) {
     let jsxPolylineAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden && validCoords,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
       fixed: fixed.current,
       strokeColor: lineColor,
@@ -112,6 +112,7 @@ export default React.memo(function Polyline(props) {
         document.documentElement,
       ).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + VERTEX_LAYER_OFFSET,
+      showInfoBox: SVs.showCoordsWhenDragging,
     });
     if (verticesFixed.current || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
@@ -505,6 +506,7 @@ export default React.memo(function Polyline(props) {
         for (let i = 0; i < SVs.numVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;
           pointsJXG.current[i].visPropCalc["visible"] = pointsVisible;
+          pointsJXG.current[i].visProp.showinfobox = SVs.showCoordsWhenDragging;
         }
       } else {
         polylineJXG.current.visProp["visible"] = false;

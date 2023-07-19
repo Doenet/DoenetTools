@@ -687,8 +687,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <function displayDigits="5" ignoreDisplayDecimals name="f1" symbolic="false">100sin(x)</function>
-  <function displayDecimals="4" ignoreDisplayDigits name="f2" symbolic="false">100sin(x)</function>
+  <function displayDigits="5" name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="4" name="f2" symbolic="false">100sin(x)</function>
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <function name="f4" symbolic="false">100sin(x)</function>
 
@@ -717,10 +717,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
   <copy target="ef1dc6" assignNames="ef1dc6a" />
   <copy target="ef2dc6" assignNames="ef2dc6a" />
   <copy target="ef3dc6" assignNames="ef3dc6a" />
@@ -1366,8 +1366,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <function displayDigits="5" ignoreDisplayDecimals name="f1" symbolic="false">100sin(x)</function>
-  <function displayDecimals="4" ignoreDisplayDigits name="f2" symbolic="false">100sin(x)</function>
+  <function displayDigits="5" name="f1" symbolic="false">100sin(x)</function>
+  <function displayDecimals="4" name="f2" symbolic="false">100sin(x)</function>
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <function name="f4" symbolic="false">100sin(x)</function>
 
@@ -1378,56 +1378,56 @@ describe("Evaluate Tag Tests", function () {
   <evaluate function="$f2" input="$input" name="ef2" />
   <evaluate function="$f3" input="$input" name="ef3" />
   <evaluate function="$f4" input="$input" name="ef4" />
-  <copy target="ef1" assignNames="ef1dg6" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef2" assignNames="ef2dg6" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef3" assignNames="ef3dg6" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef4" assignNames="ef4dg6" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef1" assignNames="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef2" assignNames="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef3" assignNames="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef4" assignNames="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef1" assignNames="ef1dg6" displayDigits="6" />
+  <copy target="ef2" assignNames="ef2dg6" displayDigits="6" />
+  <copy target="ef3" assignNames="ef3dg6" displayDigits="6" />
+  <copy target="ef4" assignNames="ef4dg6" displayDigits="6" />
+  <copy target="ef1" assignNames="ef1dc6" displayDecimals="6" />
+  <copy target="ef2" assignNames="ef2dc6" displayDecimals="6" />
+  <copy target="ef3" assignNames="ef3dc6" displayDecimals="6" />
+  <copy target="ef4" assignNames="ef4dc6" displayDecimals="6" />
   <copy target="ef1" assignNames="ef1dsz" displaySmallAsZero="1E-13" />
   <copy target="ef2" assignNames="ef2dsz" displaySmallAsZero="1E-13" />
   <copy target="ef3" assignNames="ef3dsz" displaySmallAsZero="1E-13" />
   <copy target="ef4" assignNames="ef4dsz" displaySmallAsZero="1E-13" />
-  <copy target="ef1dc6" assignNames="ef1dg6a" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef2dc6" assignNames="ef2dg6a" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef3dc6" assignNames="ef3dg6a" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef4dc6" assignNames="ef4dg6a" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef1dg6" assignNames="ef1dc6a" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef2dg6" assignNames="ef2dc6a" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef3dg6" assignNames="ef3dc6a" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef4dg6" assignNames="ef4dc6a" displayDecimals="6" ignoreDisplayDigits />
+  <copy target="ef1dc6" assignNames="ef1dg6a" displayDigits="6" />
+  <copy target="ef2dc6" assignNames="ef2dg6a" displayDigits="6" />
+  <copy target="ef3dc6" assignNames="ef3dg6a" displayDigits="6" />
+  <copy target="ef4dc6" assignNames="ef4dg6a" displayDigits="6" />
+  <copy target="ef1dg6" assignNames="ef1dc6a" displayDecimals="6" />
+  <copy target="ef2dg6" assignNames="ef2dc6a" displayDecimals="6" />
+  <copy target="ef3dg6" assignNames="ef3dc6a" displayDecimals="6" />
+  <copy target="ef4dg6" assignNames="ef4dc6a" displayDecimals="6" />
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dg6b" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f2" input="$input" name="ef2dg6b" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f3" input="$input" name="ef3dg6b" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f4" input="$input" name="ef4dg6b" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef1dg6b" assignNames="ef1dg8" displayDigits="8" ignoreDisplayDecimals />
-  <copy target="ef2dg6b" assignNames="ef2dg8" displayDigits="8" ignoreDisplayDecimals />
-  <copy target="ef3dg6b" assignNames="ef3dg8" displayDigits="8" ignoreDisplayDecimals />
-  <copy target="ef4dg6b" assignNames="ef4dg8" displayDigits="8" ignoreDisplayDecimals />
-  <copy target="ef1dg6b" assignNames="ef1dc6b" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef2dg6b" assignNames="ef2dc6b" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef3dg6b" assignNames="ef3dc6b" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef4dg6b" assignNames="ef4dc6b" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f1" input="$input" name="ef1dg6b" displayDigits="6" />
+  <evaluate function="$f2" input="$input" name="ef2dg6b" displayDigits="6" />
+  <evaluate function="$f3" input="$input" name="ef3dg6b" displayDigits="6" />
+  <evaluate function="$f4" input="$input" name="ef4dg6b" displayDigits="6" />
+  <copy target="ef1dg6b" assignNames="ef1dg8" displayDigits="8" />
+  <copy target="ef2dg6b" assignNames="ef2dg8" displayDigits="8" />
+  <copy target="ef3dg6b" assignNames="ef3dg8" displayDigits="8" />
+  <copy target="ef4dg6b" assignNames="ef4dg8" displayDigits="8" />
+  <copy target="ef1dg6b" assignNames="ef1dc6b" displayDecimals="6" />
+  <copy target="ef2dg6b" assignNames="ef2dc6b" displayDecimals="6" />
+  <copy target="ef3dg6b" assignNames="ef3dc6b" displayDecimals="6" />
+  <copy target="ef4dg6b" assignNames="ef4dc6b" displayDecimals="6" />
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6c" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f2" input="$input" name="ef2dc6c" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f3" input="$input" name="ef3dc6c" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f4" input="$input" name="ef4dc6c" displayDecimals="6" ignoreDisplayDigits />
-  <copy target="ef1dc6c" assignNames="ef1dc7" displayDecimals="7" ignoreDisplayDigits />
-  <copy target="ef2dc6c" assignNames="ef2dc7" displayDecimals="7" ignoreDisplayDigits />
-  <copy target="ef3dc6c" assignNames="ef3dc7" displayDecimals="7" ignoreDisplayDigits />
-  <copy target="ef4dc6c" assignNames="ef4dc7" displayDecimals="7" ignoreDisplayDigits />
-  <copy target="ef1dc6c" assignNames="ef1dg6c" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef2dc6c" assignNames="ef2dg6c" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef3dc6c" assignNames="ef3dg6c" displayDigits="6" ignoreDisplayDecimals />
-  <copy target="ef4dc6c" assignNames="ef4dg6c" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f1" input="$input" name="ef1dc6c" displayDecimals="6" />
+  <evaluate function="$f2" input="$input" name="ef2dc6c" displayDecimals="6" />
+  <evaluate function="$f3" input="$input" name="ef3dc6c" displayDecimals="6" />
+  <evaluate function="$f4" input="$input" name="ef4dc6c" displayDecimals="6" />
+  <copy target="ef1dc6c" assignNames="ef1dc7" displayDecimals="7" />
+  <copy target="ef2dc6c" assignNames="ef2dc7" displayDecimals="7" />
+  <copy target="ef3dc6c" assignNames="ef3dc7" displayDecimals="7" />
+  <copy target="ef4dc6c" assignNames="ef4dc7" displayDecimals="7" />
+  <copy target="ef1dc6c" assignNames="ef1dg6c" displayDigits="6" />
+  <copy target="ef2dc6c" assignNames="ef2dg6c" displayDigits="6" />
+  <copy target="ef3dc6c" assignNames="ef3dg6c" displayDigits="6" />
+  <copy target="ef4dc6c" assignNames="ef4dg6c" displayDigits="6" />
   </p>
 
   <p>
@@ -2313,8 +2313,8 @@ describe("Evaluate Tag Tests", function () {
         {
           doenetML: `
   <text>a</text>
-  <copy target="f2" displayDigits="5" ignoreDisplayDecimals assignNames="f1" />
-  <copy target="f4" displayDecimals="4" ignoreDisplayDigits assignNames="f2" />
+  <copy target="f2" displayDigits="5" assignNames="f1" />
+  <copy target="f4" displayDecimals="4" assignNames="f2" />
   <function displaySmallAsZero="1E-13" name="f3" symbolic="false">100sin(x)</function>
   <copy target="f3" displaySmallAsZero="0" assignNames="f4" />
 
@@ -2332,10 +2332,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" ignoreDisplayDecimals />
-  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" ignoreDisplayDecimals />
+  <evaluate function="$f1" input="$input" name="ef1dg6" displayDigits="6" />
+  <evaluate function="$f2" input="$input" name="ef2dg6" displayDigits="6" />
+  <evaluate function="$f3" input="$input" name="ef3dg6" displayDigits="6" />
+  <evaluate function="$f4" input="$input" name="ef4dg6" displayDigits="6" />
   <copy target="ef1dg6" assignNames="ef1dg6a" />
   <copy target="ef2dg6" assignNames="ef2dg6a" />
   <copy target="ef3dg6" assignNames="ef3dg6a" />
@@ -2343,10 +2343,10 @@ describe("Evaluate Tag Tests", function () {
   </p>
 
   <p>
-  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" ignoreDisplayDigits />
-  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" ignoreDisplayDigits />
+  <evaluate function="$f1" input="$input" name="ef1dc6" displayDecimals="6" />
+  <evaluate function="$f2" input="$input" name="ef2dc6" displayDecimals="6" />
+  <evaluate function="$f3" input="$input" name="ef3dc6" displayDecimals="6" />
+  <evaluate function="$f4" input="$input" name="ef4dc6" displayDecimals="6" />
   <copy target="ef1dc6" assignNames="ef1dc6a" />
   <copy target="ef2dc6" assignNames="ef2dc6a" />
   <copy target="ef3dc6" assignNames="ef3dc6a" />
@@ -8559,28 +8559,28 @@ describe("Evaluate Tag Tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/ga"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/h"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN+1");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/ha"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim()).equal("NaN+1");
+        expect(text.trim()).equal("\uff3f");
       });
     cy.get(cesc("#\\/pg"))
       .find(".mjx-mrow")

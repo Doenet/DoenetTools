@@ -201,8 +201,10 @@ export default class Template extends CompositeComponent {
 
   static async createSerializedReplacements({
     component,
+    components,
     componentInfoObjects,
     flags,
+    publicCaseInsensitiveAliasSubstitutions,
   }) {
     // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
     await component.stateValues.numComponentsSpecified;
@@ -267,6 +269,8 @@ export default class Template extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj: this.createAttributesObject(),
         flags,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       // console.log(`serialized replacements for ${component.componentName}`)

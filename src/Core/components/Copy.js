@@ -557,10 +557,15 @@ export default class Copy extends CompositeComponent {
 
         if (stateValues.targetComponent !== null) {
           if (
-            componentInfoObjects.isCompositeComponent({
+            (componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false,
-            }) &&
+            }) ||
+              (componentInfoObjects.isCompositeComponent({
+                componentType: stateValues.targetComponent.componentType,
+                includeNonStandard: true,
+              }) &&
+                stateValues.componentIndex !== null)) &&
             !(stateValues.propName && stateValues.obtainPropFromComposite)
           ) {
             if (stateValues.linkAttrForDetermineDeps) {
@@ -1177,6 +1182,8 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         flags,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1219,6 +1226,8 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         compositeAttributesObj,
         flags,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1305,6 +1314,8 @@ export default class Copy extends CompositeComponent {
         workspace,
         componentInfoObjects,
         compositeAttributesObj,
+        components,
+        publicCaseInsensitiveAliasSubstitutions,
       });
 
       return { replacements: verificationResult.replacements };
@@ -1421,6 +1432,8 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log(`serialized replacements for ${component.componentName}`)
@@ -1735,6 +1748,8 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           flags,
+          components,
+          publicCaseInsensitiveAliasSubstitutions,
         });
 
         // Note: this has to run after verify,
@@ -1772,6 +1787,8 @@ export default class Copy extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           flags,
+          components,
+          publicCaseInsensitiveAliasSubstitutions,
         });
 
         replacementChanges = verificationResult.replacementChanges;
@@ -2048,6 +2065,8 @@ export default class Copy extends CompositeComponent {
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
         flags,
+        fromCopyTarget:
+          Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
       });
 
       let propVariablesCopiedByReplacement =
@@ -2180,6 +2199,8 @@ export default class Copy extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // Note: this has to run after verify,
@@ -2224,6 +2245,8 @@ export default class Copy extends CompositeComponent {
       numComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
       flags,
+      fromCopyTarget:
+        Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget,
     });
 
     let propVariablesCopiedByReplacement =
@@ -2329,9 +2352,13 @@ export async function replacementFromProp({
     let numReplacementsForSource = numComponentsForSource;
 
     if (stateVarObj.isArray) {
-      numReplacementsForSource = arraySize
-        .slice(0, arraySize.length - numWrappingComponents)
-        .reduce((a, c) => a * c, 1);
+      if (arraySize.some((v) => v === 0)) {
+        numReplacementsForSource = 0;
+      } else {
+        numReplacementsForSource = arraySize
+          .slice(0, arraySize.length - numWrappingComponents)
+          .reduce((a, c) => a * c, 1);
+      }
     } else {
       if (arrayKeys.length === 0) {
         // have an undefined array entry

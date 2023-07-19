@@ -912,8 +912,6 @@ export class SectioningComponent extends BlockComponent {
         });
       }
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async revealSection({
@@ -972,7 +970,7 @@ export class SectioningComponent extends BlockComponent {
     });
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -981,7 +979,6 @@ export class SectioningComponent extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   static setUpVariant({

@@ -977,7 +977,7 @@ describe("ODEsystem Tag Tests", function () {
   <text>a</text>
   <p>displaydigits = <mathinput name="digits" prefill="10"/></p>
 
-  <odesystem name="ode" displaydigits="$digits" ignoreDisplayDecimals initialconditions="9.87654321987654321">
+  <odesystem name="ode" displaydigits="$digits" initialconditions="9.87654321987654321">
   <righthandside>0.123456789123456789x</righthandside>
   </odesystem>
   `,

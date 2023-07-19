@@ -119,7 +119,12 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { propName: dependencyValues.propName } };
+        let propName = dependencyValues.propName;
+        if (!propName) {
+          console.warn("Invalid extract.  Must have a prop.");
+          propName = "";
+        }
+        return { setValue: { propName } };
       },
     };
 
@@ -291,6 +296,8 @@ export default class Extract extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log(`serialized replacements for ${component.componentName}`)
@@ -603,6 +610,8 @@ export default class Extract extends CompositeComponent {
       componentInfoObjects,
       compositeAttributesObj,
       flags,
+      components,
+      publicCaseInsensitiveAliasSubstitutions,
     });
 
     // console.log("replacementChanges");

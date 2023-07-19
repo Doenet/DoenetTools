@@ -6,19 +6,13 @@ import {
   returnRoundingAttributes,
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
+import { returnWrapNonLabelsSugarFunction } from "../utils/label";
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.draggable = {
-      createComponentOfType: "boolean",
-      createStateVariable: "draggable",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-    };
     attributes.radius = {
       createComponentOfType: "math",
       createStateVariable: "radius",
@@ -71,64 +65,11 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToRadiansAttribute = function ({
-      matchedChildren,
-      componentInfoObjects,
-    }) {
-      let componentIsLabel = (x) =>
-        componentInfoObjects.componentIsSpecifiedType(x, "label");
-
-      // find first non-label children for radians
-
-      let childIsLabel = matchedChildren.map(componentIsLabel);
-
-      let childrenForRadians = [],
-        otherChildren = [];
-
-      if (childIsLabel.filter((x) => x).length === 0) {
-        childrenForRadians = matchedChildren;
-      } else {
-        if (childIsLabel[0]) {
-          // started with label, find first non-label child
-          let firstNonLabelInd = childIsLabel.indexOf(false);
-          if (firstNonLabelInd !== -1) {
-            otherChildren.push(...matchedChildren.slice(0, firstNonLabelInd));
-            matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsLabel = childIsLabel.slice(firstNonLabelInd);
-          }
-        }
-
-        // now we don't have label at the beginning
-        // find first label ind
-        let firstLabelInd = childIsLabel.indexOf(true);
-        if (firstLabelInd === -1) {
-          childrenForRadians = matchedChildren;
-        } else {
-          childrenForRadians = matchedChildren.slice(0, firstLabelInd);
-          otherChildren.push(...matchedChildren.slice(firstLabelInd));
-        }
-      }
-
-      if (childrenForRadians.length === 0) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newAttributes: {
-          radians: {
-            component: {
-              componentType: "math",
-              children: childrenForRadians,
-            },
-          },
-        },
-        newChildren: otherChildren,
-      };
-    };
-
     sugarInstructions.push({
-      replacementFunction: stringAndMacrosToRadiansAttribute,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "math",
+        createAttributeOfType: "radians",
+      }),
     });
 
     return sugarInstructions;

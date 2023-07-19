@@ -960,9 +960,13 @@ export class DependencyHandler {
       this.downstreamDependencies[component.componentName][stateVariable];
 
     for (let dependencyName in downDeps) {
-      let { value, changes, usedDefault } = await downDeps[
-        dependencyName
-      ].getValue();
+      let dep = downDeps[dependencyName];
+
+      if (dep.onlyToSetInInverseDefinition) {
+        continue;
+      }
+
+      let { value, changes, usedDefault } = await dep.getValue();
 
       dependencyValues[dependencyName] = value;
       if (Object.keys(changes).length > 0) {
@@ -3342,6 +3346,15 @@ class StateVariableDependency extends Dependency {
     }
     this.originalDownstreamVariableNames = [this.definition.variableName];
 
+    // In order to be allowed to set a value in an inverse definition,
+    // we must create a dependency (as that was we can detect circular dependencies)
+    // However, if the value won't be used in the definition, add the flag onlyToSetInInverseDefinition,
+    // which we prevent its value from being calculated or marked stale
+    // due to this dependency (or included in recursive dependency values)
+    if (this.definition.onlyToSetInInverseDefinition) {
+      this.onlyToSetInInverseDefinition = true;
+    }
+
     if (this.definition.returnAsComponentObject) {
       this.returnSingleComponent = true;
     } else {
@@ -3892,6 +3905,9 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
           for (let dependencyName in downDeps) {
             let dep = downDeps[dependencyName];
+            if (dep.onlyToSetInInverseDefinition) {
+              continue;
+            }
             for (let [cInd, cName] of dep.downstreamComponentNames.entries()) {
               let varNames = [];
               if (
@@ -4107,8 +4123,7 @@ class AttributeComponentDependency extends Dependency {
 
     this.returnSingleComponent = true;
 
-    this.shadowDepth = 0;
-
+    this.dontRecurseToShadows = this.definition.dontRecurseToShadows;
     this.dontRecurseToShadowsIfHaveAttribute =
       this.definition.dontRecurseToShadowsIfHaveAttribute;
   }
@@ -4159,26 +4174,32 @@ class AttributeComponentDependency extends Dependency {
     }
 
     let attribute = parent.attributes[this.attributeName];
-    this.shadowDepth = 0;
 
     if (attribute?.component) {
       // have an attribute that is a component
 
-      if (
-        attribute.component.shadows &&
-        this.dontRecurseToShadowsIfHaveAttribute
-      ) {
-        let otherAttribute =
-          parent.attributes[this.dontRecurseToShadowsIfHaveAttribute];
-        if (otherAttribute?.component && !otherAttribute.component.shadows) {
+      if (attribute.component.shadows) {
+        if (this.dontRecurseToShadows) {
           // The current attribute is a shadow
-          // but the dontRecurseToShadows attribute is not,
           // so we don't use the current attribute
           return {
             success: true,
             downstreamComponentNames: [],
             downstreamComponentTypes: [],
           };
+        } else if (this.dontRecurseToShadowsIfHaveAttribute) {
+          let otherAttribute =
+            parent.attributes[this.dontRecurseToShadowsIfHaveAttribute];
+          if (otherAttribute?.component && !otherAttribute.component.shadows) {
+            // The current attribute is a shadow
+            // but the dontRecurseToShadows attribute is not,
+            // so we don't use the current attribute
+            return {
+              success: true,
+              downstreamComponentNames: [],
+              downstreamComponentTypes: [],
+            };
+          }
         }
       }
       return {
@@ -4190,6 +4211,14 @@ class AttributeComponentDependency extends Dependency {
 
     // if don't have an attribute component,
     // check if shadows a component with that attribute component
+
+    if (this.dontRecurseToShadows) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: [],
+      };
+    }
 
     let comp = parent;
 
@@ -4242,8 +4271,6 @@ class AttributeComponentDependency extends Dependency {
         }
       }
 
-      this.shadowDepth++;
-
       attribute = comp.attributes[this.attributeName];
 
       if (attribute?.component) {
@@ -4264,10 +4291,6 @@ class AttributeComponentDependency extends Dependency {
 
   async getValue({ verbose } = {}) {
     let result = await super.getValue({ verbose, skipProxy: true });
-
-    if (result.value) {
-      result.value.shadowDepth = this.shadowDepth;
-    }
 
     // if (!this.doNotProxy) {
     //   result.value = new Proxy(result.value, readOnlyProxyHandler)
@@ -4333,6 +4356,8 @@ class ChildDependency extends Dependency {
 
     this.proceedIfAllChildrenNotMatched =
       this.definition.proceedIfAllChildrenNotMatched;
+
+    this.dontRecurseToShadows = this.definition.dontRecurseToShadows;
   }
 
   async determineDownstreamComponents() {
@@ -4579,83 +4604,98 @@ class ChildDependency extends Dependency {
       (x) => parent.activeChildren[x],
     );
 
-    // translate parent.compositeReplacementActiveRange
-    // so that indices refer to index from activeChildrenMatched
-    // and that only first composite is included
-
     this.compositeReplacementRange = [];
 
-    if (
-      parent.compositeReplacementActiveRange &&
-      activeChildrenMatched.length > 0
-    ) {
-      let ind = 0;
-      while (ind < activeChildrenIndices.length) {
-        let activeInd = activeChildrenIndices[ind];
-        for (let compositeInfo of parent.compositeReplacementActiveRange) {
-          if (
-            compositeInfo.firstInd <= activeInd &&
-            compositeInfo.lastInd >= activeInd
-          ) {
-            let firstInd = ind;
-            let lastInd = ind;
-            while (
-              compositeInfo.lastInd > activeInd &&
-              ind < activeChildrenIndices.length - 1
+    if (this.dontRecurseToShadows) {
+      let allActiveChildrenMatched = activeChildrenMatched;
+      let allActiveChildrenIndices = activeChildrenIndices;
+
+      activeChildrenMatched = [];
+      activeChildrenIndices = [];
+
+      for (let [ind, child] of allActiveChildrenMatched.entries()) {
+        if (
+          !(
+            child.shadows &&
+            child.shadows.compositeName === parent?.shadows?.compositeName
+          )
+        ) {
+          activeChildrenMatched.push(child);
+          activeChildrenIndices.push(allActiveChildrenIndices[ind]);
+        }
+      }
+    } else {
+      // translate parent.compositeReplacementActiveRange
+      // so that indices refer to index from activeChildrenMatched
+      // and that only first composite is included
+
+      if (
+        parent.compositeReplacementActiveRange &&
+        activeChildrenMatched.length > 0
+      ) {
+        let ind = 0;
+        while (ind < activeChildrenIndices.length) {
+          let activeInd = activeChildrenIndices[ind];
+          for (let compositeInfo of parent.compositeReplacementActiveRange) {
+            if (
+              compositeInfo.firstInd <= activeInd &&
+              compositeInfo.lastInd >= activeInd
             ) {
+              let firstInd = ind;
+              let lastInd = ind;
+              while (
+                compositeInfo.lastInd > activeInd &&
+                ind < activeChildrenIndices.length - 1
+              ) {
+                ind++;
+                activeInd = activeChildrenIndices[ind];
+                if (compositeInfo.lastInd >= activeInd) {
+                  lastInd = ind;
+                } else {
+                  break;
+                }
+              }
+
+              this.compositeReplacementRange.push({
+                compositeName: compositeInfo.compositeName,
+                target: compositeInfo.target,
+                firstInd,
+                lastInd,
+              });
+
               ind++;
-              activeInd = activeChildrenIndices[ind];
-              if (compositeInfo.lastInd >= activeInd) {
-                lastInd = ind;
-              } else {
+
+              if (ind === activeChildrenIndices.length) {
                 break;
               }
+
+              activeInd = activeChildrenIndices[ind];
             }
-
-            this.compositeReplacementRange.push({
-              compositeName: compositeInfo.compositeName,
-              target: compositeInfo.target,
-              firstInd,
-              lastInd,
-            });
-
-            ind++;
-
-            if (ind === activeChildrenIndices.length) {
-              break;
-            }
-
-            activeInd = activeChildrenIndices[ind];
           }
+
+          ind++;
         }
-
-        ind++;
-      }
-    }
-
-    this.shadowDepthByChild = [];
-
-    for (let child of activeChildrenMatched) {
-      let shadowDepth = 0;
-
-      let childSource = child;
-      let parentSource = parent;
-
-      while (
-        childSource?.shadows &&
-        childSource.shadows.compositeName ===
-          parentSource?.shadows?.compositeName
-      ) {
-        shadowDepth++;
-        parentSource =
-          this.dependencyHandler._components[
-            parentSource.shadows.componentName
-          ];
-        childSource =
-          this.dependencyHandler._components[childSource.shadows.componentName];
       }
 
-      this.shadowDepthByChild.push(shadowDepth);
+      for (let child of activeChildrenMatched) {
+        let childSource = child;
+        let parentSource = parent;
+
+        while (
+          childSource?.shadows &&
+          childSource.shadows.compositeName ===
+            parentSource?.shadows?.compositeName
+        ) {
+          parentSource =
+            this.dependencyHandler._components[
+              parentSource.shadows.componentName
+            ];
+          childSource =
+            this.dependencyHandler._components[
+              childSource.shadows.componentName
+            ];
+        }
+      }
     }
 
     this.activeChildrenIndices = activeChildrenIndices;
@@ -4693,10 +4733,8 @@ class ChildDependency extends Dependency {
     let resultValueWithPrimitives = [];
     let resultInd = 0;
 
-    for (let [ind, primitiveOrNull] of this.downstreamPrimitives.entries()) {
+    for (let primitiveOrNull of this.downstreamPrimitives) {
       if (primitiveOrNull === null) {
-        let val = result.value[resultInd];
-        val.shadowDepth = this.shadowDepthByChild[ind];
         resultValueWithPrimitives.push(result.value[resultInd]);
         resultInd++;
       } else {
@@ -6069,7 +6107,10 @@ class ReplacementDependency extends Dependency {
     }
 
     if (this.componentIndex !== undefined) {
-      let theReplacement = replacements[this.componentIndex - 1];
+      let nonStringReplacements = replacements.filter(
+        (x) => typeof x !== "string",
+      );
+      let theReplacement = nonStringReplacements[this.componentIndex - 1];
       if (theReplacement) {
         replacements = [theReplacement];
       } else {

@@ -50,7 +50,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
     let jsxAttributes = {
       name: SVs.labelForGraph,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.labelForGraph !== "",
+      withLabel: SVs.labelForGraph !== "",
       fixed: true,
       layer: 10 * SVs.layer + LINE_LAYER_OFFSET,
 

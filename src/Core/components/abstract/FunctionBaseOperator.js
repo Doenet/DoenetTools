@@ -5,6 +5,7 @@ import {
   returnSymbolicFunctionFromFormula,
 } from "../../utils/function";
 import { returnRoundingAttributeComponentShadowing } from "../../utils/rounding";
+import { returnWrapNonLabelsSugarFunction } from "../../utils/label";
 
 export default class FunctionOperator extends Function {
   static componentType = "_functionOperator";
@@ -12,85 +13,11 @@ export default class FunctionOperator extends Function {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    let wrapStringsAndMacros = function ({
-      matchedChildren,
-      componentInfoObjects,
-    }) {
-      let componentIsLabel = (x) =>
-        componentInfoObjects.componentIsSpecifiedType(x, "label");
-
-      // only apply if all children are strings, macros, or labels
-      if (
-        matchedChildren.length === 0 ||
-        !matchedChildren.every(
-          (child) =>
-            typeof child === "string" ||
-            child.doenetAttributes?.createdFromMacro ||
-            componentIsLabel(child),
-        )
-      ) {
-        return { success: false };
-      }
-
-      // wrap first group of non-label children in <math>
-
-      let childIsLabel = matchedChildren.map(componentIsLabel);
-
-      let childrenToWrap = [],
-        childrenToNotWrapBegin = [],
-        childrenToNotWrapEnd = [];
-
-      if (childIsLabel.filter((x) => x).length === 0) {
-        childrenToWrap = matchedChildren;
-      } else {
-        if (childIsLabel[0]) {
-          // started with label, find first non-label child
-          let firstNonLabelInd = childIsLabel.indexOf(false);
-          if (firstNonLabelInd !== -1) {
-            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
-            matchedChildren = matchedChildren.slice(firstNonLabelInd);
-            childIsLabel = childIsLabel.slice(firstNonLabelInd);
-          }
-        }
-
-        // now we don't have label at the beginning
-        // find first label ind
-        let firstLabelInd = childIsLabel.indexOf(true);
-        if (firstLabelInd === -1) {
-          childrenToWrap = matchedChildren;
-        } else {
-          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
-          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
-        }
-      }
-
-      if (childrenToWrap.length === 0) {
-        return { success: false };
-      }
-
-      // don't apply to a single macro
-      if (
-        childrenToWrap.length === 1 &&
-        typeof childrenToWrap[0] !== "string"
-      ) {
-        return { success: false };
-      }
-
-      return {
-        success: true,
-        newChildren: [
-          ...childrenToNotWrapBegin,
-          {
-            componentType: "math",
-            children: childrenToWrap,
-          },
-          ...childrenToNotWrapEnd,
-        ],
-      };
-    };
-
     sugarInstructions.push({
-      replacementFunction: wrapStringsAndMacros,
+      replacementFunction: returnWrapNonLabelsSugarFunction({
+        wrappingComponentType: "math",
+        onlyStringOrMacros: true,
+      }),
     });
 
     return sugarInstructions;
@@ -115,6 +42,7 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.prescribedExtrema;
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
+    delete stateVariableDefinitions.functionChildrenInfoToCalculateExtrema;
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
@@ -311,10 +239,10 @@ export default class FunctionOperator extends Function {
               domain: globalDependencyValues.domain,
               component: arrayKey,
             });
-            return {
-              setValue: { symbolicfs },
-            };
           }
+          return {
+            setValue: { symbolicfs },
+          };
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
           if (globalDependencyValues.functionChild.length === 0) {
             if (globalDependencyValues.mathChild.length === 0) {
@@ -468,10 +396,10 @@ export default class FunctionOperator extends Function {
               domain: globalDependencyValues.domain,
               component: arrayKey,
             });
-            return {
-              setValue: { numericalfs },
-            };
           }
+          return {
+            setValue: { numericalfs },
+          };
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
           if (globalDependencyValues.functionChild.length === 0) {
             if (globalDependencyValues.mathChild.length === 0) {
@@ -730,12 +658,21 @@ export default class FunctionOperator extends Function {
       },
     };
 
+    // remove function child dependency from latex
+    let originalLatexReturnDeps =
+      stateVariableDefinitions.latex.returnDependencies;
+    stateVariableDefinitions.latex.returnDependencies = function (args) {
+      let dependencies = originalLatexReturnDeps(args);
+      delete dependencies.functionChild;
+      return dependencies;
+    };
+
     // remove function child dependency from minima
     let originalAllMinimaReturnDeps =
       stateVariableDefinitions.allMinima.returnDependencies;
     stateVariableDefinitions.allMinima.returnDependencies = function (args) {
       let dependencies = originalAllMinimaReturnDeps(args);
-      delete dependencies.functionChild;
+      delete dependencies.functionChildrenInfoToCalculateExtrema;
       return dependencies;
     };
 
@@ -744,7 +681,7 @@ export default class FunctionOperator extends Function {
       stateVariableDefinitions.allMaxima.returnDependencies;
     stateVariableDefinitions.allMaxima.returnDependencies = function (args) {
       let dependencies = originalAllMaximaReturnDeps(args);
-      delete dependencies.functionChild;
+      delete dependencies.functionChildrenInfoToCalculateExtrema;
       return dependencies;
     };
 

@@ -1,10 +1,12 @@
 import Input from "./abstract/Input";
 import { deepCompare } from "../utils/deepFunctions";
+import me from "math-expressions";
 import {
   enumerateCombinations,
   enumeratePermutations,
 } from "../utils/enumeration";
 import { setUpVariantSeedAndRng } from "../utils/variants";
+import { returnLabelStateVariableDefinitions } from "../utils/label";
 
 export default class Choiceinput extends Input {
   constructor(args) {
@@ -37,8 +39,8 @@ export default class Choiceinput extends Input {
 
   static renderChildren = true;
 
-  static variableForPlainMacro = "values";
-  static variableForPlainCopy = "values";
+  static variableForPlainMacro = "selectedValues";
+  static variableForPlainCopy = "selectedValues";
 
   static createsVariants = true;
 
@@ -105,11 +107,22 @@ export default class Choiceinput extends Input {
       fallBackToParentStateVariable: "submitLabelNoCorrectness",
     };
 
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
   static returnChildGroups() {
     return [
+      {
+        group: "labels",
+        componentTypes: ["label"],
+      },
       {
         group: "choices",
         componentTypes: ["choice"],
@@ -119,6 +132,9 @@ export default class Choiceinput extends Input {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.inline = {
       public: true,
@@ -223,7 +239,6 @@ export default class Choiceinput extends Input {
                 );
               } else {
                 return {
-                  // makeEssential: ["choiceOrder"],
                   setValue: {
                     choiceOrder: desiredChoiceOrder,
                   },
@@ -638,6 +653,30 @@ export default class Choiceinput extends Input {
       },
     };
 
+    stateVariableDefinitions.valueChanged = {
+      public: true,
+      hasEssential: true,
+      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { valueChanged: true } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "valueChanged",
+              value: Boolean(desiredStateVariableValues.valueChanged),
+            },
+          ],
+        };
+      },
+    };
+
     stateVariableDefinitions.allSelectedIndices = {
       hasEssential: true,
       returnDependencies() {
@@ -668,10 +707,15 @@ export default class Choiceinput extends Input {
             attributeName: "bindValueTo",
             variableNames: ["value"],
           },
+          valueChanged: {
+            dependencyType: "stateVariable",
+            variableName: "valueChanged",
+            onlyToSetInInverseDefinition: true,
+          },
         };
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.bindValueTo !== null) {
+        if (dependencyValues.bindValueTo) {
           return {
             setValue: {
               allSelectedIndices: dependencyValues.indicesMatchedByBoundValue,
@@ -685,7 +729,9 @@ export default class Choiceinput extends Input {
                   let ind = dependencyValues.choicePreselects.indexOf(true);
                   if (ind !== -1) {
                     return [ind + 1];
-                  } else if (dependencyValues.preselectChoice !== null) {
+                  } else if (
+                    Number.isInteger(dependencyValues.preselectChoice)
+                  ) {
                     return [dependencyValues.preselectChoice];
                   } else {
                     return [];
@@ -697,17 +743,14 @@ export default class Choiceinput extends Input {
         }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.bindValueTo === null) {
-          return {
-            success: true,
-            instructions: [
-              {
-                setEssentialValue: "allSelectedIndices",
-                value: desiredStateVariableValues.allSelectedIndices,
-              },
-            ],
-          };
-        } else {
+        let instructions = [
+          {
+            setDependency: "valueChanged",
+            desiredValue: true,
+          },
+        ];
+
+        if (dependencyValues.bindValueTo) {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
             let choiceChildrenOrdered = dependencyValues.choiceOrder.map(
@@ -723,17 +766,18 @@ export default class Choiceinput extends Input {
             desiredText = selectedTexts.join(", ");
           }
 
-          return {
-            success: true,
-            instructions: [
-              {
-                setDependency: "bindValueTo",
-                desiredValue: desiredText,
-                variableIndex: 0,
-              },
-            ],
-          };
+          instructions.push({
+            setDependency: "bindValueTo",
+            desiredValue: desiredText,
+            variableIndex: 0,
+          });
+        } else {
+          instructions.push({
+            setEssentialValue: "allSelectedIndices",
+            value: desiredStateVariableValues.allSelectedIndices,
+          });
         }
+        return { success: true, instructions };
       },
     };
 
@@ -759,6 +803,8 @@ export default class Choiceinput extends Input {
         createComponentOfType: "number",
       },
       isArray: true,
+      allowExtraArrayKeysInInverse: true,
+      doNotCombineInverseArrayInstructions: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -787,6 +833,62 @@ export default class Choiceinput extends Input {
         }
         return { setValue: { selectedIndices } };
       },
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        globalDependencyValues,
+        stateValues,
+      }) {
+        let selectMultiple = await stateValues.selectMultiple;
+        let numChoices = await stateValues.numChoices;
+
+        let desiredIndices = {};
+        for (let key in desiredStateVariableValues.selectedIndices) {
+          let newInd = desiredStateVariableValues.selectedIndices[key];
+          if (newInd instanceof me.class) {
+            newInd = newInd.evaluate_to_constant();
+          }
+          if (Number.isInteger(newInd) && newInd >= 1 && newInd <= numChoices) {
+            desiredIndices[key] = newInd;
+          }
+        }
+
+        let newSelectedIndices = [];
+        if (selectMultiple) {
+          if (!Array.isArray(desiredStateVariableValues.selectedIndices)) {
+            newSelectedIndices = [...globalDependencyValues.allSelectedIndices];
+          }
+
+          for (let key in desiredIndices) {
+            newSelectedIndices[key] = desiredIndices[key];
+          }
+          newSelectedIndices = newSelectedIndices.reduce((a, c) => {
+            if (c !== undefined && !a.includes(c)) {
+              return [...a, c];
+            } else {
+              return a;
+            }
+          }, []);
+
+          // sort
+          newSelectedIndices.sort((a, b) => a - b);
+        } else {
+          if (desiredIndices[0] !== undefined) {
+            newSelectedIndices = [desiredIndices[0]];
+          } else {
+            newSelectedIndices = [];
+          }
+        }
+
+        return {
+          success: true,
+          instructions: [
+            {
+              setDependency: "allSelectedIndices",
+              desiredValue: newSelectedIndices,
+            },
+          ],
+        };
+      },
     };
 
     stateVariableDefinitions.selectedIndex = {
@@ -800,6 +902,7 @@ export default class Choiceinput extends Input {
         hasVariableComponentType: true,
       },
       isArray: true,
+      allowExtraArrayKeysInInverse: true,
       entryPrefixes: ["selectedValue"],
       returnArraySizeDependencies: () => ({
         numSelectedIndices: {
@@ -854,6 +957,93 @@ export default class Choiceinput extends Input {
           setValue: { selectedValues },
           setCreateComponentOfType: { selectedValues: componentType },
         };
+      },
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        globalDependencyValues,
+        stateValues,
+      }) {
+        let selectMultiple = await stateValues.selectMultiple;
+
+        let componentType = globalDependencyValues.componentType;
+
+        if (selectMultiple) {
+          let newSelectedIndices = [...globalDependencyValues.selectedIndices];
+
+          let foundValue = false;
+          for (let key in desiredStateVariableValues.selectedValues) {
+            let desiredVal = desiredStateVariableValues.selectedValues[key];
+            let ind = getIndOfDesiredValue(desiredVal);
+            if (ind !== -1) {
+              newSelectedIndices[key] = ind + 1; // 1-indexed
+              foundValue = true;
+            }
+          }
+
+          if (foundValue) {
+            // deduplicate, remove undefined,
+            newSelectedIndices = newSelectedIndices.reduce((a, c) => {
+              if (c !== undefined && !a.includes(c)) {
+                return [...a, c];
+              } else {
+                return a;
+              }
+            }, []);
+
+            // sort
+            newSelectedIndices.sort((a, b) => a - b);
+
+            return {
+              success: true,
+              instructions: [
+                {
+                  setDependency: "selectedIndices",
+                  desiredValue: newSelectedIndices,
+                },
+              ],
+            };
+          }
+        } else {
+          let desiredVal = desiredStateVariableValues.selectedValues[0];
+          let ind = getIndOfDesiredValue(desiredVal);
+
+          if (ind !== -1) {
+            return {
+              success: true,
+              instructions: [
+                {
+                  setDependency: "selectedIndices",
+                  desiredValue: [ind + 1],
+                },
+              ],
+            };
+          }
+        }
+
+        return { success: false };
+
+        function getIndOfDesiredValue(desiredVal) {
+          let ind = -1;
+
+          if (componentType === "math") {
+            if (desiredVal instanceof me.class) {
+              for (let [
+                ind2,
+                val,
+              ] of globalDependencyValues.choiceMaths.entries()) {
+                if (val.equals(desiredVal)) {
+                  ind = ind2;
+                  break;
+                }
+              }
+            }
+          } else {
+            ind = globalDependencyValues.choiceTexts.indexOf(
+              desiredVal?.toLowerCase().trim(),
+            );
+          }
+          return ind;
+        }
       },
     };
 
@@ -1182,8 +1372,6 @@ export default class Choiceinput extends Input {
         sourceInformation,
         skipRendererUpdate,
       });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -141,7 +141,7 @@ export default class CodeViewer extends BlockComponent {
       },
       hasEssential: true,
       forRenderer: true,
-      defaultValue: { size: 600, isAbsolute: true },
+      defaultValue: { size: 100, isAbsolute: false },
       returnDependencies: () => ({
         widthAttr: {
           dependencyType: "attributeComponent",
@@ -150,7 +150,7 @@ export default class CodeViewer extends BlockComponent {
         },
         parentWidth: {
           dependencyType: "parentStateVariable",
-          variableName: "width",
+          variableName: "viewerWidth",
           parentComponentType: "codeEditor",
         },
       }),
@@ -280,7 +280,7 @@ export default class CodeViewer extends BlockComponent {
     }
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -289,6 +289,5 @@ export default class CodeViewer extends BlockComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

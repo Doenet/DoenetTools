@@ -10,7 +10,6 @@ import {
   returnStandardTriggeringAttributes,
 } from "../utils/triggering";
 import InlineComponent from "./abstract/InlineComponent";
-import me from "math-expressions";
 
 export default class UpdateValue extends InlineComponent {
   constructor(args) {
@@ -66,6 +65,19 @@ export default class UpdateValue extends InlineComponent {
     attributes.propIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "propIndex",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.targetSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.targetSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
       defaultValue: null,
       public: true,
     };
@@ -178,6 +190,8 @@ export default class UpdateValue extends InlineComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "componentIndex",
+        "targetSubnames",
+        "targetSubnamesComponentIndex",
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
         let dependencies = {};
@@ -187,13 +201,26 @@ export default class UpdateValue extends InlineComponent {
             componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false,
-            })
+            }) ||
+            (componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: true,
+            }) &&
+              stateValues.componentIndex !== null)
           ) {
+            let targetSubnamesComponentIndex =
+              stateValues.targetSubnamesComponentIndex;
+            if (targetSubnamesComponentIndex) {
+              targetSubnamesComponentIndex = [...targetSubnamesComponentIndex];
+            }
+
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
               recursive: true,
               componentIndex: stateValues.componentIndex,
+              targetSubnames: stateValues.targetSubnames,
+              targetSubnamesComponentIndex,
             };
           } else if (
             stateValues.componentIndex === null ||
@@ -405,8 +432,6 @@ export default class UpdateValue extends InlineComponent {
       !(await this.stateValues.insideTriggerSet)
     ) {
       return await this.updateValue({ actionId, skipRendererUpdate: true });
-    } else {
-      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

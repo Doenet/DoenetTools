@@ -202,6 +202,7 @@ export default function SelectedCollectionLink() {
       <div>collection</div>
       <RelatedItems
         width="menu"
+        dataTest="Collection Link Selector"
         options={collectionsInCourseJSX}
         onChange={(e) => {
           //Clear out manual pages on change

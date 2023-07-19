@@ -15,19 +15,15 @@ import {
   coursePermissionsAndSettingsByCourseId,
   findFirstPageOfActivity,
 } from "../_reactComponents/Course/CourseActions";
+import { useNavigate } from "react-router";
 
 export function useCourseChooserCrumb() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
+  const navigation = useNavigate();
   return {
     label: "Courses",
     onClick: () => {
-      setPageToolView({
-        page: "course",
-        tool: "courseChooser",
-        view: "",
-      });
-    },
+      navigation('/courses')
+    }
   };
 }
 
@@ -58,28 +54,28 @@ const navigationSelectorFamily = selectorFamily({
   key: "navigationSelectorFamily/Default",
   get:
     ({ courseId, parentDoenetId }) =>
-    async ({ get }) => {
-      async function getSections({ courseId, parentDoenetId }) {
-        if (parentDoenetId === "" || parentDoenetId === undefined) {
-          return [];
+      async ({ get }) => {
+        async function getSections({ courseId, parentDoenetId }) {
+          if (parentDoenetId === "" || parentDoenetId === undefined) {
+            return [];
+          }
+          const {
+            label,
+            parentDoenetId: itemParentDoenetId,
+            type,
+          } = await get(itemByDoenetId(parentDoenetId));
+          if (courseId === itemParentDoenetId) {
+            return [{ label, parentDoenetId, type }];
+          }
+          let results = await getSections({
+            courseId,
+            parentDoenetId: itemParentDoenetId,
+          });
+          return [...results, { label, parentDoenetId, type }];
         }
-        const {
-          label,
-          parentDoenetId: itemParentDoenetId,
-          type,
-        } = await get(itemByDoenetId(parentDoenetId));
-        if (courseId === itemParentDoenetId) {
-          return [{ label, parentDoenetId, type }];
-        }
-        let results = await getSections({
-          courseId,
-          parentDoenetId: itemParentDoenetId,
-        });
-        return [...results, { label, parentDoenetId, type }];
-      }
 
-      return await getSections({ courseId, parentDoenetId });
-    },
+        return await getSections({ courseId, parentDoenetId });
+      },
 });
 
 export function useNavigationCrumbs(courseId, parentDoenetId) {

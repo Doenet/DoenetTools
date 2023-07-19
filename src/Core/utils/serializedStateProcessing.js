@@ -320,6 +320,7 @@ function substituteAttributeDeprecations(serializedComponents) {
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
+    tname: "target",
     triggerwithtnames: "triggerWith",
     updatewithtname: "updateWith",
     paginatortname: "paginator",
@@ -347,6 +348,13 @@ function substituteAttributeDeprecations(serializedComponents) {
     nvariants: "numVariants",
     nsides: "numSides",
     niterationsrequired: "numIterationsRequired",
+    numberofsamples: "numSamples",
+    numbertoselect: "numToSelect",
+    nawardscredited: "numAwardsCredited",
+    maximumnumber: "maxNumber",
+    nsignerrorsmatched: "numSignErrorsMatched",
+    nperiodicsetmatchesrequired: "numPeriodicSetMatchesRequired",
+    npages: "numPages",
   };
 
   // Note: use lower case
@@ -355,6 +363,9 @@ function substituteAttributeDeprecations(serializedComponents) {
     "suppressautonumber",
     "targetattributestoignorerecursively",
     "sourceattributestoignorerecursively",
+    "showlabel",
+    "ignoredisplaydigits",
+    "ignoredisplaydecimals",
   ]);
 
   // Note: use lower case for keys
@@ -373,6 +384,9 @@ function substituteAttributeDeprecations(serializedComponents) {
     answer: {
       maximumnumberofattempts: "maxNumAttempts",
     },
+    bestfitline: {
+      points: "data",
+    },
   };
 
   // use lower case
@@ -383,6 +397,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     constraints: ["baseongraph"],
     graph: ["xlabel", "ylabel"],
     conditionalcontent: ["maximumnumbertoshow"],
+    angle: ["draggable"],
   };
 
   for (let component of serializedComponents) {
@@ -554,6 +569,15 @@ function substitutePropertyDeprecations(serializedComponents) {
 
     if (component.children) {
       substitutePropertyDeprecations(component.children);
+    }
+
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let attrComp = component.attributes[attrName].component;
+        if (attrComp) {
+          substitutePropertyDeprecations([attrComp]);
+        }
+      }
     }
   }
 }
@@ -980,6 +1004,18 @@ function breakUpTargetIntoPropsAndIndices(
                 // to original component
                 delete component.props[targetPropName];
                 Object.assign(component.attributes, newComponent.attributes);
+                // rename attributes to refer to target rather than source
+                if (component.attributes.sourceSubnames) {
+                  component.attributes.targetSubnames =
+                    component.attributes.sourceSubnames;
+                  delete component.attributes.sourceSubnames;
+                }
+                if (component.attributes.sourceSubnamesComponentIndex) {
+                  component.attributes.targetSubnamesComponentIndex =
+                    component.attributes.sourceSubnamesComponentIndex;
+                  delete component.attributes.sourceSubnamesComponentIndex;
+                }
+
                 if (!component.doenetAttributes) {
                   component.doenetAttributes = {};
                 }

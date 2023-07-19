@@ -78,6 +78,14 @@ export default class Vector extends GraphicalComponent {
       public: true,
     };
 
+    attributes.showCoordsWhenDragging = {
+      createComponentOfType: "boolean",
+      createStateVariable: "showCoordsWhenDragging",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    };
+
     return attributes;
   }
 
@@ -2177,6 +2185,13 @@ export default class Vector extends GraphicalComponent {
   static adapters = [
     {
       stateVariable: "displacementCoords",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
+    },
+    {
+      stateVariable: "displacementCoords",
       componentType: "coords",
       stateVariablesToShadow: Object.keys(
         returnRoundingStateVariableDefinitions(),
@@ -2205,18 +2220,18 @@ export default class Vector extends GraphicalComponent {
       if (headcoords !== undefined) {
         // dragged entire vector
         if (!(await this.stateValues.draggable)) {
-          return await this.coreFunctions.resolveAction({ actionId });
+          return;
         }
       } else {
         // dragged just tail
         if (!(await this.stateValues.tailDraggable)) {
-          return await this.coreFunctions.resolveAction({ actionId });
+          return;
         }
       }
     } else {
       // dragged just head
       if (!(await this.stateValues.headDraggable)) {
-        return await this.coreFunctions.resolveAction({ actionId });
+        return;
       }
     }
 
@@ -2453,8 +2468,6 @@ export default class Vector extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async vectorFocused({
@@ -2472,7 +2485,5 @@ export default class Vector extends GraphicalComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }

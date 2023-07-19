@@ -18,10 +18,10 @@ describe("Video progress tests", function () {
     <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
     <p>State: <copy prop="state" target="v" assignNames="state" /></p>
     
-    <p>Seconds watched: <number displayDecimals="0" ignoreDisplayDigits name="seconds">$v.secondsWatched</number></p>
-    <p>Video progress: <number displayDecimals="1" ignoreDisplayDigits name="progress">$v.fractionWatched*100</number>%</p>
+    <p>Seconds watched: <number displayDecimals="0" name="seconds">$v.secondsWatched</number></p>
+    <p>Video progress: <number displayDecimals="1" name="progress">$v.fractionWatched*100</number>%</p>
 
-    <p>Credit achieved: <number displayDecimals="3" ignoreDisplayDigits name="credit">$_document1.creditAchieved</number></p>
+    <p>Credit achieved: <number displayDecimals="3" name="credit">$_document1.creditAchieved</number></p>
     
     
     <answer hide>

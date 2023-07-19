@@ -506,6 +506,7 @@ export default class MathComponent extends InlineComponent {
     };
 
     stateVariableDefinitions.unnormalizedValue = {
+      isLocation: true,
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
@@ -533,12 +534,14 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       set: convertValueToMathExpression,
+      hasEssential: true,
       defaultValue: me.fromAst("\uff3f"), // long underscore
       definition: calculateMathValue,
       inverseDefinition: invertMath,
     };
 
     stateVariableDefinitions.value = {
+      isLocation: true,
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
@@ -704,12 +707,34 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "expand",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
+        let value = dependencyValues.value;
+
+        if (
+          dependencyValues.parentNComponentsToDisplayByChild?.[componentName] >
+          0
+        ) {
+          // math is a list inside a mathList that is displaying only a fraction of the list
+          value = me.fromAst(
+            value.tree.slice(
+              0,
+              dependencyValues.parentNComponentsToDisplayByChild[
+                componentName
+              ] + 1,
+            ),
+          );
+        }
+
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
         let rounded = roundForDisplay({
-          value: dependencyValues.value,
+          value,
           dependencyValues,
         });
 
@@ -845,10 +870,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals",
         },
-        // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
           variableName: "value",
+          onlyToSetInInverseDefinition: true,
         },
         displayBlanks: {
           dependencyType: "stateVariable",
@@ -957,6 +982,10 @@ export default class MathComponent extends InlineComponent {
         fixed: {
           dependencyType: "stateVariable",
           variableName: "fixed",
+        },
+        fixLocation: {
+          dependencyType: "stateVariable",
+          variableName: "fixLocation",
         },
         codePre: {
           dependencyType: "stateVariable",
@@ -1561,7 +1590,7 @@ export default class MathComponent extends InlineComponent {
         }
 
         if (!desiredValue) {
-          desiredValue = workspace.desiredMatrix[0];
+          desiredValue = workspace.desiredMatrix["0,0"];
         }
 
         let instructions = [
@@ -1595,6 +1624,13 @@ export default class MathComponent extends InlineComponent {
       componentType: "subsetOfReals",
       stateVariable: "value",
       substituteForPrimaryStateVariable: "subsetValue",
+    },
+    {
+      stateVariable: "value",
+      componentType: "_directionComponent",
+      stateVariablesToShadow: Object.keys(
+        returnRoundingStateVariableDefinitions(),
+      ),
     },
   ];
 
@@ -1636,8 +1672,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   async mathFocused({
@@ -1655,8 +1689,6 @@ export default class MathComponent extends InlineComponent {
         skipRendererUpdate,
       });
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 }
 
@@ -1977,7 +2009,11 @@ function calculateCodesAdjacentToStrings({ dependencyValues }) {
 }
 
 function determineCanBeModified({ dependencyValues }) {
-  if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
+  if (
+    !dependencyValues.modifyIndirectly ||
+    dependencyValues.fixed ||
+    dependencyValues.fixLocation
+  ) {
     return {
       setValue: {
         canBeModified: false,

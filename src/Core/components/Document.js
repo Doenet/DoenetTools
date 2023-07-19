@@ -743,11 +743,9 @@ export default class Document extends BaseComponent {
         });
       }
     }
-
-    this.coreFunctions.resolveAction({ actionId });
   }
 
-  recordVisibilityChange({ isVisible, actionId }) {
+  recordVisibilityChange({ isVisible }) {
     this.coreFunctions.requestRecordEvent({
       verb: "visibilityChanged",
       object: {
@@ -756,7 +754,6 @@ export default class Document extends BaseComponent {
       },
       result: { isVisible },
     });
-    this.coreFunctions.resolveAction({ actionId });
   }
 
   static setUpVariant({
