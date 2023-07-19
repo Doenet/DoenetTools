@@ -1,12 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import {
-  redirect,
-  useLoaderData,
-  useNavigate,
-  // useOutletContext,
-} from "react-router";
+import { redirect, useLoaderData, useNavigate } from "react-router";
 import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
@@ -19,17 +13,16 @@ import {
   Avatar,
   Box,
   Button,
-  Center,
   Flex,
   Grid,
   GridItem,
-  HStack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
+import { findFirstPageOfActivity } from "../../../_reactComponents/Course/CourseActions";
 
 export async function action({ params }) {
   let response = await fetch(
@@ -54,7 +47,6 @@ export async function loader({ params }) {
     `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
   );
   const data = await response.json();
-
   // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
   // const doenetML = await doenetMLResponse.text();
 
@@ -65,6 +57,8 @@ export async function loader({ params }) {
   const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
   const pageIds = activityML.match(regex);
 
+  let firstPage = findFirstPageOfActivity(data.json.content);
+
   const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
   const doenetML = await doenetMLResponse.text();
 
@@ -72,10 +66,8 @@ export async function loader({ params }) {
     doenetML,
     signedIn,
     label: data.label,
-    fullName: data.firstName + " " + data.lastName,
-    courseId: data.courseId,
-    doenetId: params.doenetId,
-    pageDoenetId: data.pageDoenetId,
+    contributors: data.contributors,
+    pageDoenetId: firstPage,
   };
 }
 
@@ -87,18 +79,14 @@ const HeaderSectionRight = styled.div`
 `;
 
 export function PortfolioActivityViewer() {
-  const {
-    doenetML,
-    signedIn,
-    label,
-    fullName,
-    courseId,
-    doenetId,
-    pageDoenetId,
-  } = useLoaderData();
+  const { doenetML, signedIn, label, doenetId, pageDoenetId, contributors } =
+    useLoaderData();
+
+  const fullName = `${contributors[0].firstName} ${contributors[0].lastName}`;
+  const { courseId, isUserPortfolio, courseLabel, courseImage, courseColor } =
+    contributors[0];
 
   const navigate = useNavigate();
-  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -181,6 +169,7 @@ export function PortfolioActivityViewer() {
                   >
                     {label}
                   </Text>
+
                   <Link
                     data-test="Avatar Link"
                     style={{
@@ -191,17 +180,49 @@ export function PortfolioActivityViewer() {
                     }}
                     to={`/publicportfolio/${courseId}`}
                   >
-                    <Avatar size="sm" name={fullName} />
-                    <Text
-                      fontSize="13px"
-                      // fontSize="13pt"
-                      position="absolute"
-                      left="36px"
-                      top="6px"
-                      width="400px"
-                    >
-                      By {fullName}
-                    </Text>
+                    {isUserPortfolio == "1" ? (
+                      <>
+                        <Avatar size="sm" name={fullName} />
+                        <Text
+                          fontSize="13px"
+                          // fontSize="13pt"
+                          position="absolute"
+                          left="36px"
+                          top="6px"
+                          width="400px"
+                        >
+                          By {fullName}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        {courseColor == "none" ? (
+                          <Avatar
+                            size="sm"
+                            borderRadius="md"
+                            src={`/drive_pictures/${courseImage}`}
+                          />
+                        ) : (
+                          <Avatar
+                            size="sm"
+                            borderRadius="md"
+                            bg={`#${courseColor}`}
+                            icon={<></>}
+                          />
+                        )}
+
+                        <Text
+                          fontSize="13px"
+                          // fontSize="13pt"
+                          position="absolute"
+                          left="36px"
+                          top="6px"
+                          width="400px"
+                        >
+                          In {courseLabel}
+                        </Text>
+                      </>
+                    )}
                   </Link>
                 </VStack>
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
