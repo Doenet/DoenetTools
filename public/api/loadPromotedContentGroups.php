@@ -28,6 +28,7 @@ try {
             AND cc.isBanned = 0
             group by promotedGroupId
         ) t using(promotedGroupId)
+        order by pcg.currentlyFeatured desc, pcg.sortOrder
         ";
 
     $result = $conn->query($sql);

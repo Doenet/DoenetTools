@@ -163,7 +163,8 @@ namespace SortOrder {
                     $sortOrder = getSortOrder($neighbor, $secondNeighbor);
                 }
 
-                $combinedFilters = implode(" and ", array($groupFilter, $itemFilter));
+                // array_filter removes all falsey strings, which allows groupFilter to be blank
+                $combinedFilters = implode(" and ", array_filter(array($groupFilter, $itemFilter)));
                 $sql = 
                     "update $table 
                     set sortOrder = '$sortOrder'
@@ -179,11 +180,11 @@ namespace SortOrder {
                         throw new \Exception("Operation unexpectedly impacted more than 1 record" . $conn->error);
                     }
                 } else {
-                    throw new \Exception("Failed to add move this activity in the promoted material group. " . $conn->error);
+                    throw new \Exception("Failed to add move this item. " . $conn->error);
                 }
             }
         } else {
-            throw new \Exception("Error finding sort order of previous items in promoted group." . $conn->error);
+            throw new \Exception("Error finding sort order of previous items." . $conn->error . $result->num_rows . $sql);
         }
     }
         

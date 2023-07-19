@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include 'db_connection.php';
 include 'checkForCommunityAdminFunctions.php';
+include "lexicographicalRankingSort.php";
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -30,8 +31,17 @@ try {
         throw new Exception("A group with that name already exists.");
     }
 
+    $sql = "SELECT sortOrder
+    FROM promoted_content_group
+    ORDER BY sortOrder desc
+    LIMIT 1";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc() ;
+    $prev = $row['sortOrder'] ?: "";
+    $sortOrder = SortOrder\getSortOrder($prev, null);
+
     $sql = 
-        "insert into promoted_content_group (groupName) values ('$groupName')";
+        "insert into promoted_content_group (groupName, sortOrder) values ('$groupName', '$sortOrder')";
 
     $result = $conn->query($sql);
     if ($result && $conn->affected_rows == 1) {

@@ -74,6 +74,11 @@ export async function action({ request }) {
         groupId,
         direction,
       });
+    case "Move Promoted Group":
+      return postApiAlertOnError("/api/movePromotedContentGroup.php", {
+        groupId,
+        direction,
+      });
     case "New Group":
       return postApiAlertOnError("/api/addPromotedContentGroup.php", {
         groupName,
@@ -164,6 +169,17 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
         groupName: groupInfo.groupName,
         currentlyFeatured,
         homepage: false,
+      },
+      { method: "post" },
+    );
+  };
+
+  const moveGroup = (groupInfo, direction) => {
+    fetcher.submit(
+      {
+        _action: "Move Promoted Group",
+        groupId: groupInfo.promotedGroupId,
+        direction,
       },
       { method: "post" },
     );
@@ -270,10 +286,10 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                         <Button onClick={() => renameGroup(group)}>
                           Rename
                         </Button>
-                        <Button onClick={"" /* () => moveUp(group) */}>
+                        <Button onClick={() => moveGroup(group, "up")}>
                           ↑
                         </Button>
-                        <Button onClick={"" /* () => moveUp(group) */}>
+                        <Button onClick={() => moveGroup(group, "down")}>
                           ↓
                         </Button>
                       </Wrap>
