@@ -3,7 +3,7 @@ import { createUniqueName } from "./naming";
 import { flattenDeep } from "./array";
 import { deepClone } from "./deepFunctions";
 import { breakEmbeddedStringByCommas } from "../components/commonsugar/breakstrings";
-import { parseAndCompile } from "../../Parser/parser";
+import { parseAndCompile, printRangeOfPositions } from "../../Parser/parser";
 import subsets from "./subset-of-reals";
 import { retrieveTextFileForCid } from "./retrieveTextFile";
 
@@ -3897,6 +3897,11 @@ function indexRangeString(serializedComponent) {
       indEnd = serializedComponent.range.closeEnd;
     }
     if (indBegin !== undefined) {
+      console.log("serializedComp", serializedComponent);
+      let range = printRangeOfPositions(serializedComponent.doenetML, {
+        from: indBegin,
+        to: indEnd,
+      });
       message += ` at indices ${indBegin}-${indEnd}`;
     }
   }

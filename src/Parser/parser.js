@@ -13,8 +13,7 @@ function extractCurrentToken(inText, cursor) {
   return inText.slice(cursor.from - 1, cursor.to);
 }
 
-function printRangeOfPositions(inText, cursor) {
-  inText = inText.slice(0);
+export function printRangeOfPositions(inText, cursor) {
   let startPos = cursor.from;
   let endPos = cursor.to;
   let lineAndColStart = getLineNumberAndColumn(inText, startPos);
@@ -29,7 +28,7 @@ function printRangeOfPositions(inText, cursor) {
   }
 }
 
-function printLineNumberAndColumn(inText, pos) {
+export function printLineNumberAndColumn(inText, pos) {
   let lineAndCol = getLineNumberAndColumn(inText, pos);
   return `line: ${lineAndCol.line}, character: ${lineAndCol.character}`;
 }
@@ -48,12 +47,33 @@ function getLineNumberAndColumn(inText, pos) {
   }
   return { line: lineCount, character: charsInCurrLine };
 }
+
+function findAllNewlines(inText) {
+  let allNewlines = [];
+  for (let i = 0; i < inText.length; i++) {
+    if (inText[i] == "\n") {
+      allNewlines.push(i);
+    }
+  }
+  return allNewlines;
+}
+
+let allNewlines = [];
+function findLineColumnInfoEfficeintly(pos) {
+  for (let i = 0; i < allNewlines.length; i++) {
+    if (pos > allNewlines[i]) {
+      return { line: i + 1, character: pos - allNewlines[i] };
+    }
+  }
+}
+
 /**
  * parse string and output a convinent to use object.
  * ignores macros.
  * @param {string} inText
  */
 export function parseAndCompile(inText) {
+  allNewlines = findAllNewlines(inText);
   function compileElement(cursor) {
     function getLineCol() {
       return printLineNumberAndColumn(inText, cursor.from);
