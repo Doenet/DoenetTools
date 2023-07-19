@@ -1544,6 +1544,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     });
   });
 
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><samplePrimeNumbers name="s" minvalue="175" maxValue="205" assignnames="u v w x y" numSamples="5" /></p>
+    <p><samplePrimeNumbers copySource="s" name="s2" asList="false" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect([179, 181, 191, 193, 197, 199].includes(num));
+      }
+      cy.get(cesc2("#/_p1")).should("have.text", results.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", results.join(""));
+    });
+  });
+
   it(`different numbers when reload page if don't save state`, () => {
     let doenetML = `
     <text>a</text>

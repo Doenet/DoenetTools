@@ -1871,4 +1871,42 @@ describe("Integer Tag Tests", function () {
       expect(stateVariables["/int2"]).eq(undefined);
     });
   });
+
+  it("aslist", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+  <graph>
+    <circle name="c" />
+    <triangle name="p" />
+    <intersection name="int" styleNumber="2">$p$c</intersection>
+  </graph>
+
+  <p name="pdefault"><intersection copySource="int"/></p>
+  <p name="pnolist"><intersection asList="false" copySource="int"/></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/pdefault") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/pdefault") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(1,0)");
+
+    cy.get(cesc2("#/pdefault")).should("contain.text", "), (");
+
+    cy.get(cesc2("#/pnolist") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,1)");
+    cy.get(cesc2("#/pnolist") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(1,0)");
+    cy.get(cesc2("#/pnolist")).should("not.contain.text", "), (");
+  });
 });

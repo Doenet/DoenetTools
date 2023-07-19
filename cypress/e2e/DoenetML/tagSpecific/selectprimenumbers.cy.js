@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("SelecPrimeNumbers Tag Tests", function () {
   beforeEach(() => {
@@ -1051,6 +1051,42 @@ describe("SelecPrimeNumbers Tag Tests", function () {
         }
         expect(isprime).eq(true);
       }
+    });
+  });
+
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><selectPrimeNumbers name="s" minvalue="175" maxValue="205" assignnames="u v w x y" numToSelect="5" /></p>
+    <p><selectPrimeNumbers copySource="s" name="s2" asList="false" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect([179, 181, 191, 193, 197, 199].includes(num));
+      }
+      cy.get(cesc2("#/_p1")).should("have.text", results.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", results.join(""));
     });
   });
 

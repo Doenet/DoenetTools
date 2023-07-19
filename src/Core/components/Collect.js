@@ -67,6 +67,12 @@ export default class Collect extends CompositeComponent {
       createComponentOfType: "textList",
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 

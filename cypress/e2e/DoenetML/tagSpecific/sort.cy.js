@@ -1682,4 +1682,80 @@ describe("Sort Tag Tests", function () {
       expect(stateVariables["/x13"].stateValues.value).eq("z");
     });
   });
+
+  it("sort sugar type math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><sort name="sh" type="math">
+    z b a x y c 
+  </sort></p>
+  <p name="pNoList"><sort copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let sorted = ["aaa", "bbb", "ccc", "xxx", "yyy", "zzz"];
+
+    cy.get(cesc("#\\/pList")).should("have.text", sorted.join(", "));
+    cy.get(cesc("#\\/pNoList")).should("have.text", sorted.join(""));
+  });
+
+  it("sort sugar type number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><sort name="sh" type="number">
+    101 542 817 527 51 234 801
+  </sort></p>
+  <p name="pNoList"><sort copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let sorted = [51, 101, 234, 527, 542, 801, 817];
+
+    cy.get(cesc("#\\/pList")).should("have.text", sorted.join(", "));
+    cy.get(cesc("#\\/pNoList")).should("have.text", sorted.join(""));
+  });
+
+  it("sort sugar type text", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><sort name="sh" type="text">
+    orange
+    apple
+    banana
+    almost
+    above
+  </sort></p>
+  <p name="pNoList"><sort copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let sorted = ["above", "almost", "apple", "banana", "orange"];
+
+    cy.get(cesc("#\\/pList")).should("have.text", sorted.join(", "));
+    cy.get(cesc("#\\/pNoList")).should("have.text", sorted.join(""));
+  });
 });

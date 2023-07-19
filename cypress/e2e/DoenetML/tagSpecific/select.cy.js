@@ -434,6 +434,65 @@ describe("Select Tag Tests", function () {
     });
   });
 
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><select name="s" assignnames="u v w x y" numToSelect="5" type="number">175 176 177 178 179 180 181</select></p>
+    <p><select copySource="s" name="s2" asList="false" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect(num).gte(175).lte(181);
+      }
+
+      let roundedResults = results.map((x) => Math.round(x * 100) / 100);
+      cy.get(cesc2("#/_p1")).should("have.text", roundedResults.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", roundedResults.join(""));
+    });
+  });
+
+  it("not list if have ps", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <section>
+      <select numToSelect="4" withReplacement>
+        <option><p>hello</p></option>
+        <option><p>bye</p></option>
+      </select>
+    </section>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for page to load
+    cy.get(cesc2("#/_section1")).should("not.contain.text", ",");
+  });
+
   it("copies don't resample", () => {
     cy.window().then(async (win) => {
       win.postMessage(

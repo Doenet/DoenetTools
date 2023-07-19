@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("SelectFromSequence Tag Tests", function () {
   beforeEach(() => {
@@ -1129,6 +1129,42 @@ describe("SelectFromSequence Tag Tests", function () {
         expect([-4, -2, 2, 4].includes(num4)).eq(true);
         expect([-4, -2, 2, 4].includes(num5)).eq(true);
       }
+    });
+  });
+
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><selectFromSequence name="s" from="175" to="205" assignnames="u v w x y" numToSelect="5" /></p>
+    <p><selectFromSequence copySource="s" name="s2" asList="false" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect(num).gte(175).lte(205);
+      }
+      cy.get(cesc2("#/_p1")).should("have.text", results.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", results.join(""));
     });
   });
 

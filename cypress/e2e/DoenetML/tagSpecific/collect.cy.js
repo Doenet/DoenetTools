@@ -3840,7 +3840,7 @@ describe("Collect Tag Tests", function () {
     cy.get(cesc("#\\/_p1")).should("have.text", "Hidden by default: public");
     cy.get(cesc("#\\/_p2")).should(
       "have.text",
-      "Force to reveal: secretpublic",
+      "Force to reveal: secret, public",
     );
   });
 
@@ -3950,8 +3950,8 @@ describe("Collect Tag Tests", function () {
     </booleaninput>
     <p>Number of points <mathinput name="n" prefill="4" /></p>
 
-    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" source="_p1" /></p>
-    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" source="_p1" /></p>
+    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" source="_p1" asList="false" /></p>
+    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" source="_p1" asList="false" /></p>
     `,
         },
         "*",
@@ -4032,6 +4032,26 @@ describe("Collect Tag Tests", function () {
       "have.text",
       "collect 2: Hello, a! Hello, b! Hello, c! Hello, d! ",
     );
+  });
+
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p name="p">We an <text>apple</text>, a <text>banana</text>, and a <text>cherry</text>.</p> 
+
+    <p name="pdefault"><collect componentTypes="text" source="p" /></p>
+    <p name="pnolist"><collect componentTypes="text" source="p" aslist="false"/></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/pdefault")).should("have.text", "apple, banana, cherry");
+    cy.get(cesc2("#/pnolist")).should("have.text", "applebananacherry");
   });
 
   // Not sure how to test with with core a web worker

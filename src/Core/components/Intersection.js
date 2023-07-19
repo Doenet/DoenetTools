@@ -21,6 +21,12 @@ export default class Intersection extends CompositeComponent {
       leaveRaw: true,
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 
