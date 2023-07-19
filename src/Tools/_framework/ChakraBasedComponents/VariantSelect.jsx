@@ -56,6 +56,7 @@ export default function VariantSelect({
         >
           <Tooltip hasArrow label="Variant" isOpen={showTooltip}>
             <MenuButton
+              data-test="Variant Select Menu Button"
               borderBottomRightRadius={0}
               borderTopRightRadius={0}
               size={size}
@@ -77,6 +78,7 @@ export default function VariantSelect({
             <Input
               m={0}
               ref={inputRef}
+              data-test="Variant Select Filter Input"
               placeholder="Filter"
               value={inputValue}
               onChange={(e) => {
@@ -88,6 +90,7 @@ export default function VariantSelect({
               return (
                 <MenuItem
                   key={`mi${index}`}
+                  data-test={`Variant Select Menu Item ${index}`}
                   onClick={() => {
                     const index = array.indexOf(val);
                     setIndex(index);
@@ -105,6 +108,7 @@ export default function VariantSelect({
 
         <IconButton
           isDisabled={index == array.length - 1}
+          data-test="Variant Select Down Button"
           borderRadius={0}
           size={size}
           icon={<TriangleDownIcon />}
@@ -122,6 +126,7 @@ export default function VariantSelect({
         />
         <IconButton
           isDisabled={index < 1}
+          data-test="Variant Select Up Button"
           size={size}
           borderBottomLeftRadius={0}
           borderTopLeftRadius={0}
