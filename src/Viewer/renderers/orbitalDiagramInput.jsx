@@ -1,5 +1,6 @@
 import React, { createRef, useEffect, useState } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import styled from "styled-components";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
@@ -123,100 +124,106 @@ export default React.memo(function orbitalDiagramInput(props) {
   if (!SVs.fixed) {
     controls = (
       <div>
-        <button
-          id={`orbitaladdrow${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.addRow,
-            });
-          }}
-        >
-          Add Row
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitaladdrow${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.addRow,
+              });
+            }}
+            value="Add Row"
+          />
+        </div>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitalremoverow${id}`}
+            onClick={() => {
+              callAction({
+                action: actions.removeRow,
+              });
+            }}
+            value="Remove Row"
+          />
+        </div>
 
-        <button
-          id={`orbitalremoverow${id}`}
-          onClick={() => {
-            callAction({
-              action: actions.removeRow,
-            });
-          }}
-        >
-          Remove Row
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitaladdbox${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.addBox,
+              });
+            }}
+            value="Add Box"
+          />
+        </div>
 
-        <button
-          id={`orbitaladdbox${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.addBox,
-            });
-          }}
-        >
-          Add Box
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitalremovebox${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.removeBox,
+              });
+            }}
+            value="Remove Box"
+          />
+        </div>
 
-        <button
-          id={`orbitalremovebox${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.removeBox,
-            });
-          }}
-        >
-          Remove Box
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitaladduparrow${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.addUpArrow,
+              });
+            }}
+            value="Add Up Arrow"
+          />
+        </div>
 
-        <button
-          id={`orbitaladduparrow${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.addUpArrow,
-            });
-          }}
-        >
-          Add Up Arrow
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitaladddownarrow${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.addDownArrow,
+              });
+            }}
+            value="Add Down Arrow"
+          />
+        </div>
 
-        <button
-          id={`orbitaladddownarrow${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.addDownArrow,
-            });
-          }}
-        >
-          Add Down Arrow
-        </button>
-
-        <button
-          id={`orbitalremovearrow${id}`}
-          onBlur={(e) => {
-            deselect(e);
-          }}
-          onClick={() => {
-            callAction({
-              action: actions.removeArrow,
-            });
-          }}
-        >
-          Remove Arrow
-        </button>
+        <div style={{ display: "inline-block", marginRight: "4px" }}>
+          <Button
+            id={`orbitalremovearrow${id}`}
+            onBlur={(e) => {
+              deselect(e);
+            }}
+            onClick={() => {
+              callAction({
+                action: actions.removeArrow,
+              });
+            }}
+            value="Remove Arrow"
+          />
+        </div>
       </div>
     );
   }
