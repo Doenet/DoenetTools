@@ -130,6 +130,11 @@ export default class Core {
       stateVariablesToEvaluate: [],
     };
 
+    this.errorWarnings = {
+      errors: [],
+      warnings: [],
+    };
+
     this.cumulativeStateVariableChanges = JSON.parse(
       JSON.stringify(
         stateVariableChanges,
@@ -205,18 +210,25 @@ export default class Core {
     cids,
     fullSerializedComponents,
     allDoenetMLs,
+    errors,
+    warnings,
   }) {
     this.cid = cids[0];
     this.allDoenetMLs = allDoenetMLs;
+
+    this.errorWarnings.errors.push(...errors);
+    this.errorWarnings.warnings.push(...warnings);
 
     let serializedComponents = fullSerializedComponents[0];
 
     serializeFunctions.addDocumentIfItsMissing(serializedComponents);
 
-    serializeFunctions.createComponentNames({
+    let res = serializeFunctions.createComponentNames({
       serializedComponents,
       componentInfoObjects: this.componentInfoObjects,
     });
+    this.errorWarnings.errors.push(...res.errors);
+    this.errorWarnings.warnings.push(...res.warnings);
 
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
@@ -403,6 +415,11 @@ export default class Core {
     this.messageViewerReady();
 
     this.resolveInitialized();
+
+    console.log({
+      errors: this.errorWarnings.errors,
+      warnings: this.errorWarnings.warnings,
+    });
   }
 
   async onDocumentFirstVisible() {
@@ -1273,10 +1290,22 @@ export default class Core {
           serializedComponent.componentType
         ];
       if (componentClass === undefined) {
-        throw Error(
-          "Cannot create component of type " +
-            serializedComponent.componentType,
+        let message = `Invalid component type: ${serializedComponent.componentType}`;
+        let doenetMLrange = serializedComponent.range;
+
+        this.errorWarnings.errors.push({
+          message,
+          doenetMLrange,
+        });
+        serializeFunctions.convertToErrorComponent(
+          serializedComponent,
+          message,
         );
+
+        componentClass =
+          this.componentInfoObjects.allComponentClasses[
+            serializedComponent.componentType
+          ];
       }
 
       if (!serializedComponent.doenetAttributes) {
@@ -1315,6 +1344,7 @@ export default class Core {
         shadow,
         namespaceForUnamed,
         componentsReplacementOf,
+        componentInd,
       });
 
       let newComponent = createResult.newComponent;
@@ -1338,7 +1368,61 @@ export default class Core {
     shadow = false,
     namespaceForUnamed = "/",
     componentsReplacementOf,
+    componentInd,
   }) {
+    // Check for a component name collision before recursing to children,
+    // as children may have randomly generated names which will also collide
+    // if this component's name collides,
+    // and we want the mesage to be based on a name that will appear in the DoenetML document.
+    if (componentName in this._components) {
+      let lastSlash = componentName.lastIndexOf("/");
+      let originalName = componentName.slice(lastSlash + 1);
+
+      let parentName = ancestors[0].componentName;
+      let longNameId = parentName + "|";
+
+      if (serializedComponent.uniqueIdentifier) {
+        longNameId += serializedComponent.uniqueIdentifier;
+      } else {
+        longNameId += componentInd;
+      }
+
+      componentName = createUniqueName(
+        serializedComponent.componentType.toLowerCase(),
+        longNameId,
+      );
+
+      // add namespace
+      componentName = namespaceForUnamed + componentName;
+
+      // if already was an error, don't change anything other than the componentName for the error
+      // as we don't want to add another error and the original error message was correct.
+      if (componentClass.componentType !== "_error") {
+        let range = serializedComponent.range;
+        if (serializedComponent.downstreamDependencies) {
+          for (let name in serializedComponent.downstreamDependencies) {
+            let depArray = serializedComponent.downstreamDependencies[name];
+            for (let dep of depArray) {
+              if (dep.dependencyType === "referenceShadow") {
+                let fromComposite = this.components[dep.compositeName];
+                range = fromComposite.doenetMLrange;
+              }
+            }
+          }
+        }
+
+        let message = `Duplicate component name: ${originalName}. Found in component of type ${componentClass.componentType}`;
+        serializeFunctions.convertToErrorComponent(
+          serializedComponent,
+          message,
+        );
+        this.errorWarnings.errors.push({
+          message,
+          doenetMLrange: range,
+        });
+      }
+    }
+
     // first recursively create children and attribute components
     let serializedChildren = serializedComponent.children;
     let definingChildren = [];

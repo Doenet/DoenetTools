@@ -234,6 +234,9 @@ export function convertAttributesForComponentType({
   compositeCreatesNewNamespace,
   flags,
 }) {
+  let errors = [];
+  let warnings = [];
+
   let newClass = componentInfoObjects.allComponentClasses[componentType];
   let newAttributesObj = newClass.createAttributesObject();
   let attributeLowerCaseMapping = {};
@@ -260,11 +263,14 @@ export function convertAttributesForComponentType({
         throw Error(`Cannot repeat prop ${propName}`);
       }
 
-      newAttributes[propName] = componentFromAttribute({
+      let res = componentFromAttribute({
         attrObj,
         value: JSON.parse(JSON.stringify(attributes[attrName])),
         componentInfoObjects,
       });
+      newAttributes[propName] = res.attribute;
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
 
       if (newAttributes[propName].component?.children) {
         let serializedComponents = [newAttributes[propName].component];
