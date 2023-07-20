@@ -1,77 +1,90 @@
-// import axios from 'axios';
-import { Avatar, Box, Flex, Icon, Image, Text, Wrap } from "@chakra-ui/react";
-import React from "react";
 import {
-  redirect,
-  Form,
-  useOutletContext,
-  useLoaderData,
-  Link,
-} from "react-router-dom";
-import styled from "styled-components";
+  Avatar,
+  Box,
+  Center,
+  Flex,
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  Wrap,
+} from "@chakra-ui/react";
+import React from "react";
+import { useLoaderData } from "react-router-dom";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
 import { RiEmotionSadLine } from "react-icons/ri";
-// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-
-// export async function action() {
-//   //Create a portfilio activity and redirect to the editor for it
-//   let response = await fetch("/api/createPortfolioActivity.php");
-
-//       if (response.ok) {
-//         let { doenetId, pageDoenetId } = await response.json();
-//         return redirect(`/portfolioeditor?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
-//         // return redirect(`/portfolio/${doenetId}/settings`) //Should use doenetId next for loader
-//       }else{
-//         throw Error(response.message)
-//       }
-// }
+import axios from "axios";
 
 export async function loader({ params }) {
-  const response = await fetch(
-    `/api/getPublicPortfolio.php?courseId=${params.courseId}`,
-  );
-  const data = await response.json();
+  try {
+    const { data } = await axios.get(
+      `/api/getPublicPortfolio.php?courseId=${params.courseId}`,
+    );
 
-  return {
-    fullName: data.fullName,
-    publicActivities: data.publicActivities,
-  };
+    return {
+      success: data.success,
+      message: data.message,
+      fullName: data.fullName,
+      publicActivities: data.publicActivities,
+      isUserPortfolio: data.isUserPortfolio,
+      courseLabel: data.courseLabel,
+      courseImage: data.courseImage,
+      courseColor: data.courseColor,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
+  }
 }
 
-const PublicActivitiesSection = styled.div`
-  grid-row: 2/3;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
-  justify-content: flex-start;
-
-  align-items: center;
-  text-align: center;
-  background: var(--lightBlue);
-`;
-const CardsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
-  width: calc(100vw - 40px);
-`;
-
-const PortfolioGrid = styled.div`
-  display: grid;
-  grid-template-rows: 80px auto;
-  height: 100vh;
-`;
-
 export function PublicPortfolio() {
-  let data = useLoaderData();
-  // const navigate = useNavigate();
-  // console.log("data",data)
+  let {
+    success,
+    message,
+    fullName,
+    publicActivities,
+    isUserPortfolio,
+    courseLabel,
+    courseImage,
+    courseColor,
+  } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
+
+  //Define the avatar
+  let avatar = <Avatar size="lg" name={fullName} />;
+  if (isUserPortfolio == "0") {
+    if (courseColor == "none") {
+      avatar = (
+        <Avatar
+          size="lg"
+          borderRadius="md"
+          src={`/drive_pictures/${courseImage}`}
+        />
+      );
+    } else {
+      avatar = (
+        <Avatar
+          size="lg"
+          borderRadius="md"
+          bg={`#${courseColor}`}
+          icon={<></>}
+        />
+      );
+    }
+  }
 
   return (
-    <>
-      <PortfolioGrid>
+    <Grid
+      templateAreas={`"portfolioHeader" 
+        "activityCards"`}
+      gridTemplateRows={`80px auto`}
+      h="calc(100vh - 40px)"
+    >
+      <GridItem area="portfolioHeader">
         <Box
           as="header"
           gridRow="1/2"
@@ -87,16 +100,25 @@ export function PublicPortfolio() {
           textAlign="center"
           zIndex="1200"
         >
-          <Text fontSize="24px" fontWeight="700">
-            {data.fullName}
-          </Text>
-          <Text fontSize="16px" fontWeight="700">
-            Portfolio
-          </Text>
+          <HStack spacing={4}>
+            {avatar}
+            <VStack spacing={0}>
+              <Text fontSize="24px" fontWeight="700">
+                {isUserPortfolio == "1" ? fullName : courseLabel}
+              </Text>
+              <Text fontSize="16px" fontWeight="700">
+                {isUserPortfolio == "1"
+                  ? "User Portfolio"
+                  : "Public Course Activities"}
+              </Text>
+            </VStack>
+          </HStack>
         </Box>
-        <PublicActivitiesSection>
+      </GridItem>
+      <GridItem area="activityCards" bg="var(--lightBlue)">
+        <Center>
           <Wrap p="10px">
-            {data.publicActivities.length < 1 ? (
+            {publicActivities.length < 1 ? (
               <Flex
                 flexDirection="column"
                 justifyContent="center"
@@ -112,7 +134,7 @@ export function PublicPortfolio() {
               </Flex>
             ) : (
               <>
-                {data.publicActivities.map((activity) => {
+                {publicActivities.map((activity) => {
                   const { doenetId, label, imagePath } = activity;
                   const imageLink = `/portfolioviewer/${doenetId}`;
 
@@ -122,15 +144,19 @@ export function PublicPortfolio() {
                       imageLink={imageLink}
                       label={label}
                       imagePath={imagePath}
-                      fullName={data.fullName}
+                      fullName={fullName}
+                      isUserPortfolio={isUserPortfolio}
+                      courseLabel={courseLabel}
+                      courseImage={courseImage}
+                      courseColor={courseColor}
                     />
                   );
                 })}
               </>
             )}
           </Wrap>
-        </PublicActivitiesSection>
-      </PortfolioGrid>
-    </>
+        </Center>
+      </GridItem>
+    </Grid>
   );
 }

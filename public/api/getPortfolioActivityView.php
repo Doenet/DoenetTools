@@ -14,8 +14,6 @@ $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
 $response_arr;
 $contributors = [];
-$label;
-$json;
 try {
 
     $sql = "
