@@ -10,6 +10,7 @@ export default class Figure extends BlockComponent {
   }
   static componentType = "figure";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

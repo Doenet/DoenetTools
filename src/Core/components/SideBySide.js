@@ -1093,6 +1093,7 @@ export class SbsGroup extends BlockComponent {
   static componentType = "sbsGroup";
   static rendererType = "containerBlock";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -2102,6 +2103,7 @@ export class Stack extends BlockComponent {
   static componentType = "stack";
   static rendererType = "containerBlock";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static includeBlankStringChildren = true;
 

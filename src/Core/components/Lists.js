@@ -12,6 +12,7 @@ export class Ol extends BlockComponent {
   static componentType = "ol";
   static rendererType = "list";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -141,6 +142,7 @@ export class Li extends BaseComponent {
   static componentType = "li";
   static rendererType = "list";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static includeBlankStringChildren = true;
 

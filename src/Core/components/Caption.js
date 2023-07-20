@@ -10,6 +10,7 @@ export default class Caption extends BlockComponent {
   }
   static componentType = "caption";
   static rendererType = "containerInline";
+  static canDisplayChildErrors = true;
 
   static renderChildren = true;
 

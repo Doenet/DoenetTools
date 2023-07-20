@@ -1258,8 +1258,7 @@ export default class Core {
   }) {
     let newComponents = [];
 
-    //TODO: last message
-    let lastMessage = "";
+    let lastErrorMessage = "";
 
     for (let [
       componentInd,
@@ -1301,6 +1300,8 @@ export default class Core {
           serializedComponent,
           message,
         );
+
+        lastErrorMessage = message;
 
         componentClass =
           this.componentInfoObjects.allComponentClasses[
@@ -1350,12 +1351,17 @@ export default class Core {
       let newComponent = createResult.newComponent;
       newComponents.push(newComponent);
 
-      // TODO: need to get message
-      //lastMessage = createResult.lastMessage;
+      if (createResult.lastErrorMessage) {
+        lastErrorMessage = createResult.lastErrorMessage;
+      }
+
       // console.timeLog('core','<-Bottom serializedComponents ',serializedComponent.componentName);
     }
 
-    let results = { components: newComponents };
+    let results = {
+      components: newComponents,
+      lastErrorMessage,
+    };
 
     return results;
   }
@@ -1370,6 +1376,9 @@ export default class Core {
     componentsReplacementOf,
     componentInd,
   }) {
+    let lastErrorMessage = "";
+    let lastErrorMessageFromAttribute = "";
+
     // Check for a component name collision before recursing to children,
     // as children may have randomly generated names which will also collide
     // if this component's name collides,
@@ -1416,6 +1425,10 @@ export default class Core {
           serializedComponent,
           message,
         );
+        componentClass =
+          this.componentInfoObjects.allComponentClasses[
+            serializedComponent.componentType
+          ];
         this.errorWarnings.errors.push({
           message,
           doenetMLrange: range,
@@ -1541,6 +1554,9 @@ export default class Core {
           });
 
           definingChildren = childrenResult.components;
+          if (childrenResult.lastErrorMessage) {
+            lastErrorMessage = childrenResult.lastErrorMessage;
+          }
         }
       } else {
         //create all children
@@ -1553,6 +1569,9 @@ export default class Core {
         });
 
         definingChildren = childrenResult.components;
+        if (childrenResult.lastErrorMessage) {
+          lastErrorMessage = childrenResult.lastErrorMessage;
+        }
       }
     }
 
@@ -1573,11 +1592,37 @@ export default class Core {
             createNameContext: `attribute|${attrName}`,
           });
 
+          if (attrResult.lastErrorMessage) {
+            lastErrorMessage = attrResult.lastErrorMessage;
+            lastErrorMessageFromAttribute = attrResult.lastErrorMessage;
+          }
+
           attributes[attrName] = { component: attrResult.components[0] };
         } else {
           attributes[attrName] = serializedComponent.attributes[attrName];
         }
       }
+    }
+
+    if (serializedComponent.componentType === "_error") {
+      lastErrorMessage = serializedComponent.state.message;
+    } else if (
+      lastErrorMessageFromAttribute ||
+      (lastErrorMessage && !componentClass.canDisplayChildErrors)
+    ) {
+      // We have to deal with two special cases where errors wouldn't be displayed:
+      // 1. there is an error message from an attribute, or
+      // 2. this component cannot display errors from children
+      // In these cases, we turn this component into an error component
+      // to ensure the error message is displayed.
+      serializeFunctions.convertToErrorComponent(
+        serializedComponent,
+        lastErrorMessage,
+      );
+      componentClass =
+        this.componentInfoObjects.allComponentClasses[
+          serializedComponent.componentType
+        ];
     }
 
     let prescribedDependencies = {};
@@ -1704,7 +1749,7 @@ export default class Core {
     // remove a level from parameter stack;
     this.parameterStack.pop();
 
-    let results = { newComponent: newComponent };
+    let results = { newComponent: newComponent, lastErrorMessage };
 
     return results;
   }

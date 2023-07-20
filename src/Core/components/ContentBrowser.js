@@ -336,6 +336,7 @@ export class ContentBrowserItem extends BlockComponent {
 
   static renderChildren = true;
   static includeBlankStringChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

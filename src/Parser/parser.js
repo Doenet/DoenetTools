@@ -153,6 +153,7 @@ export function parseAndCompile(inText) {
             message,
             range: { begin: cursor.from, end: cursor.to },
           });
+          element.range = { begin: tagOpenBegin, end: cursor.to };
           element = {
             componentType: "_error",
             props: {},
@@ -286,6 +287,7 @@ export function parseAndCompile(inText) {
         props: {},
         children: [],
         state: { message },
+        range: { begin: tc.node.from, end: tc.node.to },
       };
     }
   }

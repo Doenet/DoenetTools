@@ -22,6 +22,8 @@ export class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningComponent";
   static renderChildren = true;
 
+  static canDisplayChildErrors = true;
+
   static includeBlankStringChildren = true;
 
   static createsVariants = true;
