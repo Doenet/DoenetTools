@@ -168,7 +168,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
           if (fromCopyFromURI && !haveSingleComponent) {
             warnings.push({
               message: "ignoring copyFromURI as it was not a single component",
-              range: originalCopyWithUri.range,
+              doenetMLrange: originalCopyWithUri.doenetMLrange,
             });
           } else {
             let comp = nonBlankStringChildren[0];
@@ -224,8 +224,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
 function addDoenetMLIdToRange(serializedComponents, doenetMLId) {
   for (let component of serializedComponents) {
-    if (component.range) {
-      component.range.doenetMLId = doenetMLId;
+    if (component.doenetMLrange) {
+      component.doenetMLrange.doenetMLId = doenetMLId;
     }
     if (component.children) {
       addDoenetMLIdToRange(component.children, doenetMLId);
@@ -717,7 +717,7 @@ function correctComponentTypeCapitalization(
       convertToErrorComponent(component, message);
       errors.push({
         message,
-        doenetMLrange: component.range,
+        doenetMLrange: component.doenetMLrange,
       });
     }
 
@@ -883,7 +883,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
         convertToErrorComponent(component, e.message);
         errors.push({
           message: e.message,
-          doenetMLrange: component.range,
+          doenetMLrange: component.doenetMLrange,
         });
       }
     }
@@ -1076,13 +1076,13 @@ function breakUpTargetIntoPropsAndIndices(
               if (component.componentType === "copy") {
                 warnings.push({
                   message: `invalid copy source: ${originalSource}`,
-                  doenetMLrange: component.range,
+                  doenetMLrange: component.doenetMLrange,
                   level: 2,
                 });
               } else {
                 warnings.push({
                   message: `invalid target: ${originalSource}`,
-                  doenetMLrange: component.range,
+                  doenetMLrange: component.doenetMLrange,
                   level: 2,
                 });
               }
@@ -1105,7 +1105,7 @@ function breakUpTargetIntoPropsAndIndices(
       convertToErrorComponent(component, e.message);
       errors.push({
         message: e.message,
-        doenetMLrange: component.range,
+        doenetMLrange: component.doenetMLrange,
       });
     }
 
@@ -1220,7 +1220,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
       convertToErrorComponent(component, e.message);
       errors.push({
         message: e.message,
-        doenetMLrange: component.range,
+        doenetMLrange: component.doenetMLrange,
       });
     }
 
@@ -1493,9 +1493,10 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           // keep going back and add string lengths to get actual index
           if (
             componentInd > 0 &&
-            serializedComponents[componentInd - 1].range
+            serializedComponents[componentInd - 1].doenetMLrange
           ) {
-            let previousRange = serializedComponents[componentInd - 1].range;
+            let previousRange =
+              serializedComponents[componentInd - 1].doenetMLrange;
             if (previousRange.closeEnd) {
               macroStartInd += previousRange.closeEnd;
             } else if (previousRange.selfCloseEnd) {
@@ -2484,7 +2485,7 @@ export function applySugar({
       convertToErrorComponent(component, e.message);
       errors.push({
         message: e.message,
-        doenetMLrange: component.range,
+        doenetMLrange: component.doenetMLrange,
       });
     }
   }
@@ -3298,7 +3299,7 @@ export function createComponentNames({
       convertToErrorComponent(serializedComponent, e.message);
       errors.push({
         message: e.message,
-        doenetMLrange: serializedComponent.range,
+        doenetMLrange: serializedComponent.doenetMLrange,
       });
     }
   }
@@ -4095,14 +4096,14 @@ export function restrictTNamesToNamespace({
 
 function indexRangeString(serializedComponent) {
   let message = "";
-  if (serializedComponent.range) {
+  if (serializedComponent.doenetMLrange) {
     let indBegin, indEnd;
-    if (serializedComponent.range.selfCloseBegin !== undefined) {
-      indBegin = serializedComponent.range.selfCloseBegin;
-      indEnd = serializedComponent.range.selfCloseEnd;
-    } else if (serializedComponent.range.openBegin !== undefined) {
-      indBegin = serializedComponent.range.openBegin;
-      indEnd = serializedComponent.range.closeEnd;
+    if (serializedComponent.doenetMLrange.selfCloseBegin !== undefined) {
+      indBegin = serializedComponent.doenetMLrange.selfCloseBegin;
+      indEnd = serializedComponent.doenetMLrange.selfCloseEnd;
+    } else if (serializedComponent.doenetMLrange.openBegin !== undefined) {
+      indBegin = serializedComponent.doenetMLrange.openBegin;
+      indEnd = serializedComponent.doenetMLrange.closeEnd;
     }
     if (indBegin !== undefined) {
       message += ` at indices ${indBegin}-${indEnd}`;
@@ -4136,13 +4137,14 @@ export function extractComponentNamesAndIndices(
       let componentObj = {
         componentName,
       };
-      if (serializedComponent.range) {
-        if (serializedComponent.range.selfCloseBegin !== undefined) {
-          componentObj.indBegin = serializedComponent.range.selfCloseBegin;
-          componentObj.indEnd = serializedComponent.range.selfCloseEnd;
-        } else if (serializedComponent.range.openBegin !== undefined) {
-          componentObj.indBegin = serializedComponent.range.openBegin;
-          componentObj.indEnd = serializedComponent.range.closeEnd;
+      if (serializedComponent.doenetMLrange) {
+        if (serializedComponent.doenetMLrange.selfCloseBegin !== undefined) {
+          componentObj.indBegin =
+            serializedComponent.doenetMLrange.selfCloseBegin;
+          componentObj.indEnd = serializedComponent.doenetMLrange.selfCloseEnd;
+        } else if (serializedComponent.doenetMLrange.openBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.doenetMLrange.openBegin;
+          componentObj.indEnd = serializedComponent.doenetMLrange.closeEnd;
         }
       }
 

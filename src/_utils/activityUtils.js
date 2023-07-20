@@ -265,8 +265,8 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     if (page.children.length > 0) {
       let pageDoenetML = activityDefDoenetML.slice(
-        page.range.openEnd,
-        page.range.closeBegin,
+        page.doenetMLrange.openEnd,
+        page.doenetMLrange.closeBegin,
       );
 
       if (page.children[0].componentType?.toLowerCase() !== "document") {

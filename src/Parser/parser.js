@@ -50,7 +50,7 @@ export function parseAndCompile(inText) {
 
           errors.push({
             message,
-            range: { begin: tagOpenBegin - 1, end: errorEnd },
+            doenetMLrange: { begin: tagOpenBegin - 1, end: errorEnd },
           });
           tagName = "_error";
 
@@ -67,7 +67,7 @@ export function parseAndCompile(inText) {
             message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
             errors.push({
               message,
-              range: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
             tagName = "_error";
           } else {
@@ -82,7 +82,7 @@ export function parseAndCompile(inText) {
             message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
             errors.push({
               message,
-              range: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
             tagName = "_error";
           } else {
@@ -138,7 +138,7 @@ export function parseAndCompile(inText) {
           )}.`;
           errors.push({
             message,
-            range: { begin: cursor.from, end: cursor.to },
+            doenetMLrange: { begin: cursor.from, end: cursor.to },
           });
           element = {
             componentType: "_error",
@@ -151,9 +151,9 @@ export function parseAndCompile(inText) {
           let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
           errors.push({
             message,
-            range: { begin: cursor.from, end: cursor.to },
+            doenetMLrange: { begin: cursor.from, end: cursor.to },
           });
-          element.range = { begin: tagOpenBegin, end: cursor.to };
+          element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
           element = {
             componentType: "_error",
             props: {},
@@ -170,7 +170,7 @@ export function parseAndCompile(inText) {
             let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
             errors.push({
               message,
-              range: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
             element = {
               componentType: "_error",
@@ -182,7 +182,7 @@ export function parseAndCompile(inText) {
           }
         }
       }
-      element.range = {
+      element.doenetMLrange = {
         openBegin: tagOpenBegin,
         openEnd: tagOpenEnd,
         closeBegin: cursor.from,
@@ -217,7 +217,7 @@ export function parseAndCompile(inText) {
             message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
             errors.push({
               message,
-              range: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
             tagName = "_error";
           } else {
@@ -229,7 +229,7 @@ export function parseAndCompile(inText) {
             message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
             errors.push({
               message,
-              range: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
             tagName = "_error";
           } else {
@@ -242,7 +242,10 @@ export function parseAndCompile(inText) {
         cursor.parent();
       }
 
-      let range = { selfCloseBegin: tagBegin, selfCloseEnd: cursor.to + 3 };
+      let doenetMLrange = {
+        selfCloseBegin: tagBegin,
+        selfCloseEnd: cursor.to + 3,
+      };
 
       // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
 
@@ -252,7 +255,7 @@ export function parseAndCompile(inText) {
         componentType: tagName,
         props: { ...attrs },
         children: [],
-        range,
+        doenetMLrange,
       };
     } else {
       //Unreachable case, see the grammar for why
@@ -280,14 +283,14 @@ export function parseAndCompile(inText) {
       )}`;
       errors.push({
         message,
-        range: { begin: tc.node.from, end: tc.node.to },
+        doenetMLrange: { begin: tc.node.from, end: tc.node.to },
       });
       return {
         componentType: "_error",
         props: {},
         children: [],
         state: { message },
-        range: { begin: tc.node.from, end: tc.node.to },
+        doenetMLrange: { begin: tc.node.from, end: tc.node.to },
       };
     }
   }

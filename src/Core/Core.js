@@ -1290,7 +1290,7 @@ export default class Core {
         ];
       if (componentClass === undefined) {
         let message = `Invalid component type: ${serializedComponent.componentType}`;
-        let doenetMLrange = serializedComponent.range;
+        let doenetMLrange = serializedComponent.doenetMLrange;
 
         this.errorWarnings.errors.push({
           message,
@@ -1407,14 +1407,14 @@ export default class Core {
       // if already was an error, don't change anything other than the componentName for the error
       // as we don't want to add another error and the original error message was correct.
       if (componentClass.componentType !== "_error") {
-        let range = serializedComponent.range;
+        let doenetMLrange = serializedComponent.doenetMLrange;
         if (serializedComponent.downstreamDependencies) {
           for (let name in serializedComponent.downstreamDependencies) {
             let depArray = serializedComponent.downstreamDependencies[name];
             for (let dep of depArray) {
               if (dep.dependencyType === "referenceShadow") {
                 let fromComposite = this.components[dep.compositeName];
-                range = fromComposite.doenetMLrange;
+                doenetMLrange = fromComposite.doenetMLrange;
               }
             }
           }
@@ -1431,7 +1431,7 @@ export default class Core {
           ];
         this.errorWarnings.errors.push({
           message,
-          doenetMLrange: range,
+          doenetMLrange,
         });
       }
     }
@@ -11899,28 +11899,32 @@ export default class Core {
       return null;
     }
 
-    let range = component.doenetMLrange;
+    let doenetMLrange = component.doenetMLrange;
 
-    if (!range) {
+    if (!doenetMLrange) {
       return null;
     }
 
     let startInd, endInd;
 
     if (displayOnlyChildren) {
-      if (range.selfCloseBegin !== undefined) {
+      if (doenetMLrange.selfCloseBegin !== undefined) {
         return "";
       }
-      startInd = range.openEnd + 1;
-      endInd = range.closeBegin;
+      startInd = doenetMLrange.openEnd + 1;
+      endInd = doenetMLrange.closeBegin;
     } else {
       startInd =
-        range.openBegin !== undefined ? range.openBegin : range.selfCloseBegin;
+        doenetMLrange.openBegin !== undefined
+          ? doenetMLrange.openBegin
+          : doenetMLrange.selfCloseBegin;
       endInd =
-        range.closeEnd !== undefined ? range.closeEnd : range.selfCloseEnd;
+        doenetMLrange.closeEnd !== undefined
+          ? doenetMLrange.closeEnd
+          : doenetMLrange.selfCloseEnd;
     }
 
-    let doenetMLId = range.doenetMLId || 0;
+    let doenetMLId = doenetMLrange.doenetMLId || 0;
     let componentDoenetML = this.allDoenetMLs[doenetMLId].slice(
       startInd - 1,
       endInd,

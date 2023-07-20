@@ -76,8 +76,8 @@ export default class BaseComponent {
       this.variants = serializedComponent.variants;
     }
 
-    if (serializedComponent.range) {
-      this.doenetMLrange = serializedComponent.range;
+    if (serializedComponent.doenetMLrange) {
+      this.doenetMLrange = serializedComponent.doenetMLrange;
     }
 
     this.actions = {
@@ -1204,7 +1204,7 @@ export default class BaseComponent {
     }
 
     if (this.doenetMLrange) {
-      serializedComponent.range = JSON.parse(
+      serializedComponent.doenetMLrange = JSON.parse(
         JSON.stringify(this.doenetMLrange),
       );
     }
@@ -1268,8 +1268,10 @@ export default class BaseComponent {
       delete serializedCopy.doenetAttributes.assignNames;
     }
 
-    if (serializedComponent.range !== undefined) {
-      serializedCopy.range = deepClone(serializedComponent.range);
+    if (serializedComponent.doenetMLrange !== undefined) {
+      serializedCopy.doenetMLrange = deepClone(
+        serializedComponent.doenetMLrange,
+      );
     }
 
     if (serializedComponent.state !== undefined) {
