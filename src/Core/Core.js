@@ -416,10 +416,7 @@ export default class Core {
 
     this.resolveInitialized();
 
-    console.log({
-      errors: this.errorWarnings.errors,
-      warnings: this.errorWarnings.warnings,
-    });
+    console.log(this.errorWarnings);
   }
 
   async onDocumentFirstVisible() {
@@ -1628,10 +1625,28 @@ export default class Core {
     let prescribedDependencies = {};
 
     if (serializedComponent.downstreamDependencies) {
-      Object.assign(
-        prescribedDependencies,
-        serializedComponent.downstreamDependencies,
-      );
+      for (let name in serializedComponent.downstreamDependencies) {
+        if (name === componentName) {
+          let lastSlash = componentName.lastIndexOf("/");
+          let componentNameRelative = componentName.slice(lastSlash + 1);
+          throw Error(
+            `Circular reference involving component ${componentNameRelative}.`,
+          );
+        }
+        if (this.components[name]) {
+          prescribedDependencies[name] =
+            serializedComponent.downstreamDependencies[name];
+        } else {
+          let lastSlash = componentName.lastIndexOf("/");
+          let componentNameRelative = componentName.slice(lastSlash + 1);
+          lastSlash = name.lastIndexOf("/");
+          let referencedNameRelative = name.slice(lastSlash + 1);
+
+          throw Error(
+            `Component ${componentNameRelative} references component ${referencedNameRelative} but component ${referencedNameRelative} has not been created.  Perhaps this state was created by a circular reference?`,
+          );
+        }
+      }
     }
 
     let stateVariableDefinitions = await this.createStateVariableDefinitions({
@@ -2432,7 +2447,7 @@ export default class Core {
           this._components[compositeInvolved.shadows.componentName];
       }
       throw Error(
-        `Circular reference involving ${compositeInvolved.componentName}`,
+        `Circular reference involving ${compositeInvolved.componentName}.`,
       );
     }
 
@@ -2693,18 +2708,25 @@ export default class Core {
       namespaceForUnamed = getNamespaceFromName(component.componentName);
     }
 
-    let replacementResult = await this.createIsolatedComponentsSub({
-      serializedComponents: serializedReplacements,
-      ancestors: component.ancestors,
-      shadow: true,
-      createNameContext: component.componentName + "|replacements",
-      namespaceForUnamed,
-      componentsReplacementOf: component,
-    });
-
+    try {
+      let replacementResult = await this.createIsolatedComponentsSub({
+        serializedComponents: serializedReplacements,
+        ancestors: component.ancestors,
+        shadow: true,
+        createNameContext: component.componentName + "|replacements",
+        namespaceForUnamed,
+        componentsReplacementOf: component,
+      });
+      component.replacements = replacementResult.components;
+    } catch (e) {
+      component.replacements = await this.setErrorReplacements({
+        composite: component,
+        message: e.message,
+        namespaceForUnamed,
+      });
+    }
     this.parameterStack.pop();
 
-    component.replacements = replacementResult.components;
     await this.dependencies.addBlockersFromChangedReplacements(component);
 
     component.isExpanded = true;
@@ -2989,7 +3011,7 @@ export default class Core {
         for (let dep of depArray) {
           if (dep.dependencyType === "referenceShadow") {
             if (name === componentName) {
-              throw Error(`circular reference involving ${componentName}`);
+              throw Error(`Circular reference involving ${componentName}.`);
             }
             redefineDependencies = {
               linkSource: "referenceShadow",
@@ -8400,15 +8422,23 @@ export default class Core {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
           }
 
-          let createResult = await this.createIsolatedComponentsSub({
-            serializedComponents: serializedReplacements,
-            ancestors: component.ancestors,
-            createNameContext: component.componentName + "|replacements",
-            namespaceForUnamed,
-            componentsReplacementOf: component,
-          });
+          try {
+            let createResult = await this.createIsolatedComponentsSub({
+              serializedComponents: serializedReplacements,
+              ancestors: component.ancestors,
+              createNameContext: component.componentName + "|replacements",
+              namespaceForUnamed,
+              componentsReplacementOf: component,
+            });
 
-          newComponents = createResult.components;
+            newComponents = createResult.components;
+          } catch (e) {
+            newComponents = await this.setErrorReplacements({
+              composite: component,
+              message: e.message,
+              namespaceForUnamed,
+            });
+          }
         } else {
           throw Error(`Invalid replacement change.`);
         }
@@ -8615,6 +8645,34 @@ export default class Core {
     };
 
     return results;
+  }
+
+  async setErrorReplacements({ composite, message, namespaceForUnamed }) {
+    // display error for replacements and set composite to error state
+
+    this.errorWarnings.errors.push({
+      message,
+      doenetMLrange: composite.doenetMLrange,
+    });
+    let errorReplacements = [
+      {
+        componentType: "_error",
+        state: { message },
+        doenetAttributes: { createUniqueName: true },
+      },
+    ];
+
+    composite.isInErrorState = true;
+
+    let createResult = await this.createIsolatedComponentsSub({
+      serializedComponents: errorReplacements,
+      ancestors: composite.ancestors,
+      createNameContext: composite.componentName + "|replacements",
+      namespaceForUnamed,
+      componentsReplacementOf: composite,
+    });
+
+    return createResult.components;
   }
 
   async deleteReplacementsFromShadowsThenComposite({
@@ -8845,7 +8903,7 @@ export default class Core {
       // that means it is shadowed by one of its newly created replacements
       // so we have a circular reference
       throw Error(
-        `circular reference involving ${componentToShadow.componentName}`,
+        `Circular reference involving ${componentToShadow.componentName}.`,
       );
     }
 
@@ -8867,7 +8925,7 @@ export default class Core {
         )
       ) {
         throw Error(
-          `circular dependence involving ${shadowingComponent.componentName}`,
+          `Circular dependence involving ${shadowingComponent.componentName}.`,
         );
       }
 
@@ -9004,17 +9062,25 @@ export default class Core {
           );
         }
 
-        let createResult = await this.createIsolatedComponentsSub({
-          serializedComponents: newSerializedReplacements,
-          ancestors: shadowingComponent.ancestors,
-          createNameContext: shadowingComponent.componentName + "|replacements",
-          namespaceForUnamed,
-          componentsReplacementOf: shadowingComponent,
-        });
+        try {
+          let createResult = await this.createIsolatedComponentsSub({
+            serializedComponents: newSerializedReplacements,
+            ancestors: shadowingComponent.ancestors,
+            createNameContext:
+              shadowingComponent.componentName + "|replacements",
+            namespaceForUnamed,
+            componentsReplacementOf: shadowingComponent,
+          });
+          newComponents = createResult.components;
+        } catch (e) {
+          newComponents = await this.setErrorReplacements({
+            composite: shadowingComponent,
+            message: e.message,
+            namespaceForUnamed,
+          });
+        }
 
         this.parameterStack.pop();
-
-        newComponents = createResult.components;
 
         let shadowingParent;
         if (parentToShadow) {
@@ -10125,7 +10191,8 @@ export default class Core {
         if (
           composite instanceof
             this.componentInfoObjects.allComponentClasses._composite &&
-          composite.isExpanded
+          composite.isExpanded &&
+          !composite.isInErrorState
         ) {
           if (composite.state.readyToExpandWhenResolved.initiallyResolved) {
             if (await composite.stateValues.isInactiveCompositeReplacement) {

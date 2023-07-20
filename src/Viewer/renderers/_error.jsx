@@ -2,7 +2,7 @@ import React from "react";
 import useDoenetRender from "../useDoenetRenderer";
 
 export default React.memo(function Error(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { id, SVs, children } = useDoenetRender(props);
 
   let displayedMessage = null;
 
@@ -21,9 +21,9 @@ export default React.memo(function Error(props) {
   }
 
   return (
-    <>
+    <div id={id}>
       {displayedMessage}
       {children}
-    </>
+    </div>
   );
 });

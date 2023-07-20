@@ -23,6 +23,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
     let result = parseAndCompile(doenetML);
     let serializedComponents = result.components;
     errors.push(...result.errors);
+    warnings.push(...result.warnings);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -931,13 +932,27 @@ function breakUpTargetIntoPropsAndIndices(
           let lowerCaseProp = prop.toLowerCase();
           if (lowerCaseProp === "target") {
             if (targetPropName) {
+              let propNameForError = prop;
+              if (component.componentType === "copy") {
+                propNameForError = "source";
+              }
               throw Error(
-                `Cannot repeat attribute ${prop}.  Found in component type ${component.componentType}.`,
+                `Cannot repeat attribute ${propNameForError}.  Found in component type ${component.componentType}.`,
               );
             }
 
             targetPropName = prop;
             originalSource = component.props[prop];
+
+            if (typeof originalSource !== "string") {
+              let propNameForError = prop;
+              if (component.componentType === "copy") {
+                propNameForError = "source";
+              }
+              throw Error(
+                `Must supply value for ${propNameForError}.  Found in component type ${component.componentType}.`,
+              );
+            }
 
             let sourcePiecesResult = buildSourcePieces(originalSource, true);
 
@@ -1352,7 +1367,7 @@ export function componentFromAttribute({
     if (attrObj.validationFunction) {
       newPrimitive = attrObj.validationFunction(newPrimitive);
     }
-    return { attributes: { primitive: newPrimitive }, errors, warnings };
+    return { attribute: { primitive: newPrimitive }, errors, warnings };
   } else if (attrObj && attrObj.createTargetComponentNames) {
     let newTargets = value.rawString
       .trim()
@@ -1373,7 +1388,7 @@ export function componentFromAttribute({
       });
 
     return {
-      attributes: { targetComponentNames: newTargets },
+      attribute: { targetComponentNames: newTargets },
       errors,
       warnings,
     };
@@ -1411,6 +1426,7 @@ function findPreSugarIndsAndMarkFromSugar(components) {
 export function applyMacros(serializedComponents, componentInfoObjects) {
   let errors = [];
   let warnings = [];
+
   for (let component of serializedComponents) {
     if (component.children) {
       let res = applyMacros(component.children, componentInfoObjects);
@@ -1504,7 +1520,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
             }
           }
 
-          let message = `${componentResult.message}. Found: ${strWithError}`;
+          let message = `${componentResult.errors[0].message}. Found: ${strWithError}`;
           errors.push({
             message,
             doenetMLrange: {
@@ -1513,8 +1529,8 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
             },
           });
           newComponent = {
-            componentType: "error",
-            message,
+            componentType: "_error",
+            state: { message },
           };
         }
 
@@ -2303,7 +2319,7 @@ export function applySugar({
       let componentClass =
         componentInfoObjects.allComponentClasses[componentType];
       if (!componentClass) {
-        throw Error(`Unrecognized component type ${componentType}`);
+        throw Error(`Unrecognized component type ${componentType}.`);
       }
 
       let componentAttributes = {};
@@ -2762,7 +2778,7 @@ export function createComponentNames({
               delete props[key];
             } else {
               throw Error(
-                `Cannot define name twice.  Found in component of type ${componentType}`,
+                `Cannot define name twice.  Found in component of type ${componentType}.`,
               );
             }
           } else if (lowercaseKey === "assignnames") {
@@ -2772,27 +2788,27 @@ export function createComponentNames({
                 assignNames = result.pieces;
               } else {
                 throw Error(
-                  `Invalid format for assignnames.  Found in component of type ${componentType}`,
+                  `Invalid format for assignNames: ${props[key]}.  Found in component of type ${componentType}.`,
                 );
               }
               delete props[key];
             } else {
               throw Error(
-                `Cannot define assignNames twice for a component.  Found in component of type ${componentType}`,
+                `Cannot define assignNames twice for a component.  Found in component of type ${componentType}.`,
               );
             }
           } else if (lowercaseKey === "target") {
             if (target === undefined) {
               if (typeof props[key] !== "string") {
                 throw Error(
-                  `Must specify value for target.  Found in component of type ${componentType}`,
+                  `Must specify value for target.  Found in component of type ${componentType}.`,
                 );
               }
               target = props[key].trim();
               delete props[key];
             } else {
               throw Error(
-                `Cannot define target twice for a component.  Found in component of type ${componentType}`,
+                `Cannot define target twice for a component.  Found in component of type ${componentType}.`,
               );
             }
           }
@@ -2855,6 +2871,18 @@ export function createComponentNames({
           );
         }
 
+        let assignNamesToString = (assignNames) => {
+          return assignNames.reduce((a, c) => {
+            let cstr;
+            if (Array.isArray(c)) {
+              cstr = "(" + assignNamesToString(c) + ")";
+            } else {
+              cstr = c;
+            }
+            return a ? a + " " + cstr : cstr;
+          }, "");
+        };
+
         // assignNames was specified
         // put in doenetAttributes as assignNames array
         doenetAttributes.assignNames = assignNames;
@@ -2868,12 +2896,16 @@ export function createComponentNames({
             for (let name of flattenedNames) {
               if (!/[a-zA-Z]/.test(name.substring(0, 1))) {
                 throw Error(
-                  `All assigned names must begin with a letter.  Found in component of type ${componentType}`,
+                  `Invalid assignNames: ${assignNamesToString(
+                    assignNames,
+                  )}.  All assigned names must begin with a letter.  Found in component of type ${componentType}.`,
                 );
               }
-              if (!/^[a-zA-Z0-9_\-]+$/.test(name)) {
+              if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
                 throw Error(
-                  `Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}`,
+                  `Invalid assignNames: ${assignNamesToString(
+                    assignNames,
+                  )}.  Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}.`,
                 );
               }
             }
@@ -2881,7 +2913,9 @@ export function createComponentNames({
           // check if unique names
           if (flattenedNames.length !== new Set(flattenedNames).size) {
             throw Error(
-              `Duplicate assigned names.  Found in component of type ${componentType}`,
+              `A name is duplicated in assignNames: ${assignNamesToString(
+                assignNames,
+              )}.  Found in component of type ${componentType}.`,
             );
           }
         }
@@ -2981,12 +3015,10 @@ export function createComponentNames({
         if (assignNames) {
           for (let name of flattenDeep(assignNames)) {
             if (name in currentNamespace.namesUsed) {
-              let lastSlash = componentName.lastIndexOf("/");
-              let componentNameRelative = componentName.slice(lastSlash + 1);
-              lastSlash = name.lastIndexOf("/");
+              let lastSlash = name.lastIndexOf("/");
               let nameRelative = name.slice(lastSlash + 1);
               throw Error(
-                `Duplicate component name ${nameRelative} (from assignNames of ${componentNameRelative}).  Found in component of type ${componentType}.`,
+                `Duplicate component name ${nameRelative}.  Found in assignNames of component of type ${componentType}.`,
               );
             }
             currentNamespace.namesUsed[name] = true;
