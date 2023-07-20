@@ -33,6 +33,7 @@ import {
   Select,
   Text,
   Tooltip,
+  VStack,
 } from "@chakra-ui/react";
 import {
   ExternalLinkIcon,
@@ -46,6 +47,7 @@ import { cidFromText } from "../../../Core/utils/cid";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
+import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 
 //Delete this action???
 export async function action({ params, request }) {
@@ -140,45 +142,6 @@ export async function loader({ params }) {
     supportingFileData,
   };
 }
-
-//This is separate as <Editable> wasn't updating when defaultValue was changed
-// function EditableLabel() {
-//   const { activityData } = useLoaderData();
-//   const [label, setLabel] = useState(activityData.label);
-//   const fetcher = useFetcher();
-
-//   let lastActivityDataLabel = useRef(activityData.label);
-
-//   //Update when something else updates the label
-//   if (activityData.label != lastActivityDataLabel.current) {
-//     if (label != activityData.label) {
-//       setLabel(activityData.label);
-//     }
-//   }
-//   lastActivityDataLabel.current = activityData.label;
-
-//   return (
-//     <Editable
-//       mt="4px"
-//       value={label}
-//       textAlign="center"
-//       onChange={(value) => {
-//         setLabel(value);
-//       }}
-//       onSubmit={(value) => {
-//         let submitValue = value;
-
-//         fetcher.submit(
-//           { _action: "update label", label: submitValue },
-//           { method: "post" },
-//         );
-//       }}
-//     >
-//       <EditablePreview />
-//       <EditableInput width="400px" />
-//     </Editable>
-//   );
-// }
 
 export function PublicEditor() {
   const {
@@ -302,69 +265,6 @@ export function PublicEditor() {
                   >
                     View
                   </Button>
-                  {variants.allPossibleVariants.length > 1 && (
-                    <Tooltip hasArrow label="Variant">
-                      <Select
-                        size="sm"
-                        maxWidth="120px"
-                        border="1px"
-                        borderColor="#2D5A94"
-                        onChange={(e) => {
-                          let index = variants.allPossibleVariants.indexOf(
-                            e.target.value,
-                          );
-                          index++;
-                          setVariants((prev) => {
-                            let next = { ...prev };
-                            next.index = index;
-                            return next;
-                          });
-                        }}
-                      >
-                        {variants.allPossibleVariants.map((item, i) => {
-                          return (
-                            <option key={`option${i}`} name={item}>
-                              {item}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip
-                    hasArrow
-                    label={
-                      platform == "Mac"
-                        ? "Updates Viewer cmd+s"
-                        : "Updates Viewer ctrl+s"
-                    }
-                  >
-                    <Button
-                      ml="10px"
-                      size="sm"
-                      variant="outline"
-                      data-test="Viewer Update Button"
-                      // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
-                      leftIcon={<RxUpdate />}
-                      rightIcon={
-                        codeChanged ? (
-                          <WarningTwoIcon
-                            color="doenet.mainBlue"
-                            fontSize="18px"
-                          />
-                        ) : (
-                          ""
-                        )
-                      }
-                      onClick={() => {
-                        setViewerDoenetML(textEditorDoenetML.current);
-                        setCodeChanged(false);
-                      }}
-                    >
-                      Update
-                    </Button>
-                  </Tooltip>
                 </HStack>
               </GridItem>
               <GridItem area="label">
@@ -377,16 +277,9 @@ export function PublicEditor() {
                 display="flex"
                 justifyContent="flex-end"
               >
-                <HStack mr="10px">
-                  {/* <Button colorScheme="orange">Orange</Button> */}
-                  <Link
-                    href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
-                    isExternal
-                    data-test="Documentation Navigation"
-                  >
-                    Documentation <ExternalLinkIcon mx="2px" />
-                  </Link>
-                </HStack>
+                {/* <HStack mr="10px">
+                
+                </HStack> */}
               </GridItem>
             </Grid>
             <Center mt="2px" h="30px" background="doenet.mainGray">
@@ -445,40 +338,150 @@ export function PublicEditor() {
             headerHeight={110}
             left={
               <>
-                <PageViewer
-                  doenetML={viewerDoenetML}
-                  flags={{
-                    showCorrectness: true,
-                    solutionDisplayMode: "button",
-                    showFeedback: true,
-                    showHints: true,
-                    autoSubmit: false,
-                    allowLoadState: false,
-                    allowSaveState: false,
-                    allowLocalState: false,
-                    allowSaveSubmissions: false,
-                    allowSaveEvents: false,
-                  }}
-                  attemptNumber={1}
-                  generatedVariantCallback={variantCallback} //TODO:Replace
-                  requestedVariantIndex={variants.index}
-                  // setIsInErrorState={setIsInErrorState}
-                  pageIsActive={true}
-                />
-                <Box marginBottom="50vh" />
+                <VStack spacing={0}>
+                  <HStack
+                    w="100%"
+                    h="32px"
+                    bg="doenet.lightBlue"
+                    margin="10px 0px 0px 0px" //Only need when there is an outline
+                  >
+                    <Box
+                    //bg="doenet.canvas"
+                    >
+                      <Tooltip
+                        hasArrow
+                        label={
+                          platform == "Mac"
+                            ? "Updates Viewer cmd+s"
+                            : "Updates Viewer ctrl+s"
+                        }
+                      >
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          data-test="Viewer Update Button"
+                          bg="doenet.canvas"
+                          leftIcon={<RxUpdate />}
+                          isDisabled={!codeChanged}
+                          rightIcon={
+                            codeChanged ? (
+                              <WarningTwoIcon
+                                color="doenet.mainBlue"
+                                fontSize="18px"
+                              />
+                            ) : (
+                              ""
+                            )
+                          }
+                          onClick={() => {
+                            setViewerDoenetML(textEditorDoenetML.current);
+                            setCodeChanged(false);
+                          }}
+                        >
+                          Update
+                        </Button>
+                      </Tooltip>
+                    </Box>
+                    {variants.allPossibleVariants.length > 1 && (
+                      <Box bg="doenet.lightBlue" h="32px" width="100%">
+                        <VariantSelect
+                          size="sm"
+                          menuWidth="140px"
+                          array={variants.allPossibleVariants}
+                          syncIndex={variants.index}
+                          onChange={(index) =>
+                            setVariants((prev) => {
+                              let next = { ...prev };
+                              next.index = index + 1;
+                              return next;
+                            })
+                          }
+                        />
+                      </Box>
+                    )}
+                  </HStack>
+
+                  <Box
+                    h="calc(100vh - 164px)"
+                    background="var(--canvas)"
+                    borderWidth="1px"
+                    borderStyle="solid"
+                    borderColor="doenet.mediumGray"
+                    padding="20px 5px 20px 5px"
+                    flexGrow={1}
+                    overflow="scroll"
+                    w="100%"
+                  >
+                    <PageViewer
+                      doenetML={viewerDoenetML}
+                      flags={{
+                        showCorrectness: true,
+                        solutionDisplayMode: "button",
+                        showFeedback: true,
+                        showHints: true,
+                        autoSubmit: false,
+                        allowLoadState: false,
+                        allowSaveState: false,
+                        allowLocalState: false,
+                        allowSaveSubmissions: false,
+                        allowSaveEvents: false,
+                      }}
+                      attemptNumber={1}
+                      generatedVariantCallback={variantCallback} //TODO:Replace
+                      requestedVariantIndex={variants.index}
+                      // setIsInErrorState={setIsInErrorState}
+                      pageIsActive={true}
+                    />
+                    <Box marginBottom="50vh" />
+                  </Box>
+                </VStack>
               </>
             }
             right={
-              <CodeMirror
-                editorRef={editorRef}
-                setInternalValueTo={doenetML}
-                onBeforeChange={(value) => {
-                  textEditorDoenetML.current = value;
-                  if (!codeChanged) {
-                    setCodeChanged(true);
-                  }
-                }}
-              />
+              <VStack spacing={0}>
+                <HStack
+                  w="100%"
+                  h="32px"
+                  bg="doenet.lightBlue"
+                  margin={0} //Only need when there is an outline
+                  justifyContent="flex-end"
+                >
+                  <Link
+                    borderRadius="lg"
+                    p="4px 5px 0px 5px"
+                    h="32px"
+                    bg="#EDF2F7"
+                    href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                    isExternal
+                    data-test="Documentation Link"
+                  >
+                    Documentation <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </HStack>
+                <Box
+                  top="50px"
+                  w="100%"
+                  boxSizing="border-box"
+                  background="doenet.canvas"
+                  height={`calc(100vh - 164px)`}
+                  overflowY="scroll"
+                  borderRight="solid 1px"
+                  borderTop="solid 1px"
+                  borderBottom="solid 1px"
+                  borderColor="doenet.mediumGray"
+                >
+                  <CodeMirror
+                    editorRef={editorRef}
+                    setInternalValueTo={doenetML}
+                    onBeforeChange={(value) => {
+                      textEditorDoenetML.current = value;
+                      if (!codeChanged) {
+                        setCodeChanged(true);
+                      }
+                    }}
+                  />
+                </Box>
+              </VStack>
             }
           />
         </GridItem>
@@ -563,26 +566,14 @@ const ResizeableSideBySide = ({
         maxWidth="850px"
         overflow="hidden"
       >
-        <Box
-          height={`calc(100vh - ${headerHeight + 20}px)`}
-          background="var(--canvas)"
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.mediumGray"
-          margin="10px 0px 10px 0px" //Only need when there is an outline
-          padding="20px 5px 20px 5px"
-          flexGrow={1}
-          overflow="scroll"
-        >
-          {left}
-        </Box>
+        {left}
       </GridItem>
       <GridItem
         area="middleGutter"
         background="doenet.lightBlue"
         width="100%"
         height="100%"
-        paddingTop="10px"
+        paddingTop="42px"
         alignSelf="start"
       >
         <Center
@@ -592,7 +583,7 @@ const ResizeableSideBySide = ({
           borderTop="solid 1px"
           borderBottom="solid 1px"
           borderColor="doenet.mediumGray"
-          height={`calc(100vh - ${headerHeight + 20}px)`}
+          height={`calc(100vh - ${headerHeight + 54}px)`}
           width="10px"
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
@@ -608,19 +599,7 @@ const ResizeableSideBySide = ({
         alignSelf="start"
         paddingTop="10px"
       >
-        <Box
-          top="50px"
-          boxSizing="border-box"
-          background="doenet.canvas"
-          height={`calc(100vh - ${headerHeight + 20}px)`}
-          overflowY="scroll"
-          borderRight="solid 1px"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
-          borderColor="doenet.mediumGray"
-        >
-          {right}
-        </Box>
+        {right}
       </GridItem>
     </Grid>
   );
