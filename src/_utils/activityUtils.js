@@ -13,9 +13,9 @@ import {
 let rngClass = prng_alea;
 
 export function parseActivityDefinition(activityDefDoenetML) {
-  let serializedDefinition = parseAndCompile(activityDefDoenetML).filter(
-    (x) => typeof x !== "string" || /\S/.test(x),
-  );
+  let serializedDefinition = parseAndCompile(
+    activityDefDoenetML,
+  ).components.filter((x) => typeof x !== "string" || /\S/.test(x));
 
   if (
     serializedDefinition.length !== 1 ||

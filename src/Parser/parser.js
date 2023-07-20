@@ -14,6 +14,8 @@ export function parse(inText) {
  * @param {string} inText
  */
 export function parseAndCompile(inText) {
+  let errors = [];
+
   function compileElement(cursor) {
     if (cursor.name !== "Element") {
       throw Error("compileElement() called on a non-Element");
@@ -27,24 +29,32 @@ export function parseAndCompile(inText) {
 
       let tagOpenBegin = cursor.from;
 
+      let message;
+
       let attrs = {};
       while (cursor.nextSibling()) {
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          let errorBegin = cursor.from;
+          // let errorBegin = cursor.from;
           let errorEnd = cursor.to;
           // console.error(cursor);
           // console.error(showCursor(cursor));
           // console.error(cursor.name);
           // eslint-disable-next-line no-empty
-          while (cursor.parent()) {}
+          // while (cursor.parent()) {}
 
-          throw Error(
-            `Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(
-              tagOpenBegin - 1,
-              errorEnd,
-            )}`,
-          );
+          message = `Invalid DoenetML. Error in opening <${tagName}> tag.  Found ${inText.slice(
+            tagOpenBegin - 1,
+            errorEnd,
+          )}`;
+
+          errors.push({
+            message,
+            range: { begin: tagOpenBegin - 1, end: errorEnd },
+          });
+          tagName = "_error";
+
+          break;
         }
 
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -54,22 +64,30 @@ export function parseAndCompile(inText) {
         //skip the name and equals sign
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
+            errors.push({
+              message,
+              range: { begin: cursor.from, end: cursor.to },
+            });
+            tagName = "_error";
+          } else {
+            attrs[attrName] = true;
           }
-          attrs[attrName] = true;
         } else {
           cursor.nextSibling();
           //boundry fuddling to ignore the quotes
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
 
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
+            errors.push({
+              message,
+              range: { begin: cursor.from, end: cursor.to },
+            });
+            tagName = "_error";
+          } else {
+            attrs[attrName] = attrValue;
           }
-          attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
         cursor.parent();
@@ -82,9 +100,16 @@ export function parseAndCompile(inText) {
 
       let element = {
         componentType: tagName,
-        props: { ...attrs },
+        props: {},
         children: [],
       };
+
+      if (tagName === "_error") {
+        element.state = { message };
+      } else {
+        element.props = { ...attrs };
+      }
+
       // now we go through all of the other non-terminals in this row until we get to the closing tag,
       // adding the compiled version of each non-terminal to the children section of the object we're going to return
       // for the time being we're just going to handle 2 cases:
@@ -107,27 +132,53 @@ export function parseAndCompile(inText) {
           //ignore comments
           continue;
         } else if (cursor.name === "MismatchedCloseTag") {
-          throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
-          );
+          let message = `Invalid DoenetML. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(
+            cursor.from,
+            cursor.to,
+          )}.`;
+          errors.push({
+            message,
+            range: { begin: cursor.from, end: cursor.to },
+          });
+          element = {
+            componentType: "_error",
+            props: {},
+            children: [element],
+            state: { message },
+          };
+          break;
+        } else if (cursor.name === "MissingCloseTag") {
+          let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
+          errors.push({
+            message,
+            range: { begin: cursor.from, end: cursor.to },
+          });
+          element = {
+            componentType: "_error",
+            props: {},
+            children: [element],
+            state: { message },
+          };
+          break;
         } else {
           // console.log(`error is at position ${cursor.from}, ${cursor.to}`)
           // console.log(`error part: ${inText.slice(cursor.from, cursor.to)}`)
           // console.log(`Here is cursor: ${showCursor(cursor)}`)
           // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
-          throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Expected a closing </${tagName}> tag.  Instead found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
-          );
+          if (tagName !== "_error") {
+            let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
+            errors.push({
+              message,
+              range: { begin: cursor.from, end: cursor.to },
+            });
+            element = {
+              componentType: "_error",
+              props: {},
+              children: [element],
+              state: { message },
+            };
+            break;
+          }
         }
       }
       element.range = {
@@ -145,6 +196,8 @@ export function parseAndCompile(inText) {
 
       let tagBegin = cursor.from;
 
+      let message;
+
       let attrs = {};
       while (cursor.nextSibling()) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
@@ -160,22 +213,29 @@ export function parseAndCompile(inText) {
 
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
+            errors.push({
+              message,
+              range: { begin: cursor.from, end: cursor.to },
+            });
+            tagName = "_error";
+          } else {
+            attrs[attrName] = true;
           }
-          attrs[attrName] = true;
         } else {
           cursor.nextSibling();
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}`;
+            errors.push({
+              message,
+              range: { begin: cursor.from, end: cursor.to },
+            });
+            tagName = "_error";
+          } else {
+            //fuddling to ignore the quotes
+            let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
+            attrs[attrName] = attrValue;
           }
-
-          //fuddling to ignore the quotes
-          let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
-          attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
         cursor.parent();
@@ -213,20 +273,29 @@ export function parseAndCompile(inText) {
         return txt;
       }
     } else {
-      throw Error(
-        `Invalid DoenetML at positions ${tc.node.from} to ${
-          tc.node.to
-        }.  Found ${inText.substring(tc.node.from, tc.node.to)}`,
-      );
+      let message = `Invalid DoenetML.  Found ${inText.substring(
+        tc.node.from,
+        tc.node.to,
+      )}`;
+      errors.push({
+        message,
+        range: { begin: tc.node.from, end: tc.node.to },
+      });
+      return {
+        componentType: "_error",
+        props: {},
+        children: [],
+        state: { message },
+      };
     }
   }
   if (!inText) {
-    return [];
+    return { components: [], errors };
   }
   let tc = parse(inText);
   let out = [];
   if (!tc.firstChild()) {
-    return out;
+    return { components: out, errors };
   }
   // console.log("intext",inText)
   // console.log("showCursor",showCursor(tc));
@@ -241,7 +310,8 @@ export function parseAndCompile(inText) {
       out.push(next);
     }
   }
-  return out;
+
+  return { components: out, errors };
 }
 
 /**

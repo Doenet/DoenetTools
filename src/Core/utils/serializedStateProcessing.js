@@ -20,7 +20,9 @@ export async function expandDoenetMLsToFullSerializedComponents({
   let warnings = [];
 
   for (let [ind, doenetML] of doenetMLs.entries()) {
-    let serializedComponents = parseAndCompile(doenetML);
+    let result = parseAndCompile(doenetML);
+    let serializedComponents = result.components;
+    errors.push(...result.errors);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -1784,7 +1786,11 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
   let attributesDoenetML = `<copy ${componentAttributes} />`;
   let componentsForAttributes;
   try {
-    componentsForAttributes = parseAndCompile(attributesDoenetML);
+    let result = parseAndCompile(attributesDoenetML);
+
+    componentsForAttributes = result.components;
+    errors.push(...result.errors);
+    warnings.push(...result.warnings);
   } catch (e) {
     errors.push({
       message: "Error in macro",
