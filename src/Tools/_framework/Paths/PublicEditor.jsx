@@ -141,47 +141,10 @@ export async function loader({ params }) {
   };
 }
 
-//This is separate as <Editable> wasn't updating when defaultValue was changed
-// function EditableLabel() {
-//   const { activityData } = useLoaderData();
-//   const [label, setLabel] = useState(activityData.label);
-//   const fetcher = useFetcher();
-
-//   let lastActivityDataLabel = useRef(activityData.label);
-
-//   //Update when something else updates the label
-//   if (activityData.label != lastActivityDataLabel.current) {
-//     if (label != activityData.label) {
-//       setLabel(activityData.label);
-//     }
-//   }
-//   lastActivityDataLabel.current = activityData.label;
-
-//   return (
-//     <Editable
-//       mt="4px"
-//       value={label}
-//       textAlign="center"
-//       onChange={(value) => {
-//         setLabel(value);
-//       }}
-//       onSubmit={(value) => {
-//         let submitValue = value;
-
-//         fetcher.submit(
-//           { _action: "update label", label: submitValue },
-//           { method: "post" },
-//         );
-//       }}
-//     >
-//       <EditablePreview />
-//       <EditableInput width="400px" />
-//     </Editable>
-//   );
-// }
-
 export function PublicEditor() {
   const {
+    success,
+    message,
     platform,
     doenetId,
     doenetML,
@@ -190,6 +153,10 @@ export function PublicEditor() {
     activityData,
     lastKnownCid,
   } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
