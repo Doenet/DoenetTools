@@ -2997,7 +2997,7 @@ export default class Core {
           attributeSpecification.componentStateVariableForAttributeValue;
         if (stateVariableForAttributeValue === undefined) {
           stateVariableForAttributeValue =
-            attributeClass.stateVariableForAttributeValue;
+            attributeClass.stateVariableToBeShadowed;
           if (stateVariableForAttributeValue === undefined) {
             stateVariableForAttributeValue = "value";
           }
@@ -3464,7 +3464,7 @@ export default class Core {
           attributeSpecification.componentStateVariableForAttributeValue;
         if (stateVariableForAttributeValue === undefined) {
           stateVariableForAttributeValue =
-            attributeClass.stateVariableForAttributeValue;
+            attributeClass.stateVariableToBeShadowed;
           if (stateVariableForAttributeValue === undefined) {
             stateVariableForAttributeValue = "value";
           }
@@ -7585,12 +7585,12 @@ export default class Core {
 
             if (result.updateRenderedChildren) {
               this.componentsWithChangedChildrenToRender.add(
-                component.componentName,
+                upDepComponent.componentName,
               );
             }
 
             if (result.updateDescendantRenderers) {
-              await this.markDescendantsToUpdateRenderers(component);
+              await this.markDescendantsToUpdateRenderers(upDepComponent);
             }
 
             if (result.updateActionChaining) {
@@ -7612,7 +7612,7 @@ export default class Core {
 
             if (result.updateDependencies) {
               for (let vName of result.updateDependencies) {
-                component.state[vName].needDependenciesUpdated = true;
+                upDepComponent.state[vName].needDependenciesUpdated = true;
               }
             }
 

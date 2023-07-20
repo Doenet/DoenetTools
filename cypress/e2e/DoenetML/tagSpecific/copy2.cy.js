@@ -3536,6 +3536,96 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("add children to copySource with prop and propIndex", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <mathinput name="ind" prefill="1" />
+
+    <graph>
+      <rectangle name="rect" width="4" height="6" center="(3,5)"/>
+      <point copySource="rect.vertices[$ind]" name="P">
+        <label><m>V_$ind</m></label>
+      </point>
+    </graph>
+
+    <p>P: <point name="Pa" copySource="P" /></p>
+    <p>label of P: <label copySource="P.label" name="l" /></p>
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+    cy.get(cesc2("#/l") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "V1");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/P"].stateValues.label).eq("\\(V_1\\)");
+    });
+
+    cy.log("change to vertex 2");
+    cy.get(cesc2("#/ind") + " textarea").type("{end}{backspace}2{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should("contain.text", "(5,2)");
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,2)");
+    cy.get(cesc2("#/l") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "V2");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([5, 2]);
+      expect(stateVariables["/P"].stateValues.label).eq("\\(V_2\\)");
+    });
+
+    cy.log("invalid vertex");
+    cy.get(cesc2("#/ind") + " textarea").type("{end}{backspace}{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should("contain.text", "(0,0)");
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,0)");
+    cy.get(cesc2("#/l")).should("have.text", "");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables["/P"].stateValues.label).eq("");
+    });
+
+    cy.log("change to vertex 3");
+    cy.get(cesc2("#/ind") + " textarea").type("3{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/Pa") + " .mjx-mrow").should("contain.text", "(5,8)");
+    cy.get(cesc2("#/Pa") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,8)");
+    cy.get(cesc2("#/l") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "V3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([5, 8]);
+      expect(stateVariables["/P"].stateValues.label).eq("\\(V_3\\)");
+    });
+  });
+
   it("dot and array notation", () => {
     cy.window().then(async (win) => {
       win.postMessage(

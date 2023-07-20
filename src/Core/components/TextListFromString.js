@@ -5,7 +5,7 @@ export default class TextListFromString extends InlineComponent {
   static rendererType = "asList";
   static renderChildren = true;
 
-  static stateVariableForAttributeValue = "texts";
+  static stateVariableToBeShadowed = "texts";
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();

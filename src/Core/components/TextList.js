@@ -10,7 +10,7 @@ export default class TextList extends InlineComponent {
 
   // when another component has a attribute that is a textList,
   // use the texts state variable to populate that attribute
-  static stateVariableForAttributeValue = "texts";
+  static stateVariableToBeShadowed = "texts";
   static primaryStateVariableForDefinition = "textsShadow";
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement

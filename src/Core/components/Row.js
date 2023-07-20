@@ -33,6 +33,24 @@ export default class Row extends BaseComponent {
     attributes.bottom = {
       createComponentOfType: "text",
     };
+
+    // Workaround for <row> in matrix, which is sugared into <matrixRow>.
+    // Since we are currently validating attributes before the sugar changes it,
+    // we need to put these mathList attributes on <row> for now.
+    // TODO: find a better solution (e.g., validating attributes after sugar is applied),
+    // especially necessary when we have an editor that can autocomplete attributes.
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+    };
+    attributes.sourcesAreFunctionSymbols = {
+      createComponentOfType: "textList",
+    };
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+    };
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+    };
     return attributes;
   }
 

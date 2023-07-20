@@ -6,7 +6,7 @@ export default class When extends BooleanComponent {
   static componentType = "when";
   static rendererType = undefined;
 
-  static stateVariableForAttributeValue = "conditionSatisfied";
+  static stateVariableToBeShadowed = "conditionSatisfied";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

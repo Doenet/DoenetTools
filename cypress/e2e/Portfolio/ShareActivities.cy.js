@@ -11,7 +11,6 @@ describe("Share Activities Using Portfolio", function () {
   });
   beforeEach(() => {
     cy.signin({ userId });
-
     cy.visit(`/`);
   });
 
