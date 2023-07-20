@@ -681,8 +681,13 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "padZeros",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
         let latexs = [];
         let params = {};
         if (dependencyValues.padZeros) {
@@ -722,7 +727,16 @@ export default class MathList extends InlineComponent {
           );
         }
 
-        latexs = latexs.slice(0, dependencyValues.numComponents);
+        let numComponentsToDisplay = dependencyValues.numComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent mathList, which could have limited
+          // math of components to display
+          numComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
+        }
+
+        latexs = latexs.slice(0, numComponentsToDisplay);
 
         let latex = latexs.join(", ");
 
@@ -755,8 +769,13 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "mathsShadow",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
         let texts = [];
 
         if (dependencyValues.mathAndMathListChildren.length > 0) {
@@ -783,7 +802,16 @@ export default class MathList extends InlineComponent {
           texts = dependencyValues.mathsShadow.map((x) => x.toString());
         }
 
-        texts = texts.slice(0, dependencyValues.numComponents);
+        let numComponentsToDisplay = dependencyValues.numComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent mathList, which could have limited
+          // math of components to display
+          numComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
+        }
+
+        texts = texts.slice(0, numComponentsToDisplay);
 
         let text = texts.join(", ");
 

@@ -422,10 +422,6 @@ export default class NumberList extends InlineComponent {
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
         },
-        maxNumber: {
-          dependencyType: "stateVariable",
-          variableName: "maxNumber",
-        },
         numbersShadow: {
           dependencyType: "stateVariable",
           variableName: "numbersShadow",
@@ -446,8 +442,17 @@ export default class NumberList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "padZeros",
         },
+        numComponents: {
+          dependencyType: "stateVariable",
+          variableName: "numComponents",
+        },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
         let texts = [];
         let params = {};
         if (dependencyValues.padZeros) {
@@ -475,11 +480,15 @@ export default class NumberList extends InlineComponent {
           );
         }
 
-        let maxNum = dependencyValues.maxNumber;
-        if (maxNum !== null && texts.length > maxNum) {
-          maxNum = Math.max(0, Math.floor(maxNum));
-          texts = texts.slice(0, maxNum);
+        let numComponentsToDisplay = dependencyValues.numComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent numberList, which could have limited
+          // number of components to display
+          numComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
         }
+        texts = texts.slice(0, numComponentsToDisplay);
 
         let text = texts.join(", ");
 
@@ -495,9 +504,9 @@ export default class NumberList extends InlineComponent {
           variableNames: ["componentNamesInList"],
           variablesOptional: true,
         },
-        maxNumber: {
+        numComponents: {
           dependencyType: "stateVariable",
-          variableName: "maxNumber",
+          variableName: "numComponents",
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
@@ -518,11 +527,10 @@ export default class NumberList extends InlineComponent {
           }
         }
 
-        let maxNum = dependencyValues.maxNumber;
-        if (maxNum !== null && componentNamesInList.length > maxNum) {
-          maxNum = Math.max(0, Math.floor(maxNum));
-          componentNamesInList = componentNamesInList.slice(0, maxNum);
-        }
+        componentNamesInList = componentNamesInList.slice(
+          0,
+          dependencyValues.numComponents,
+        );
 
         return { setValue: { componentNamesInList } };
       },
