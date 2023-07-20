@@ -5,9 +5,9 @@ import { isValidVariable } from "../../utils/math";
 export default class VariableNameList extends MathList {
   static componentType = "_variableNameList";
 
-  // when another component has a attribute that is a mathList,
-  // use the maths state variable to populate that attribute
-  static stateVariableForAttributeValue = "variables";
+  // when another component has a attribute that is a _variableNameList,
+  // use the variables state variable to populate that attribute
+  static stateVariableToBeShadowed = "variables";
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();

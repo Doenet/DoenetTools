@@ -11,7 +11,7 @@ export default class BooleanList extends InlineComponent {
 
   // when another component has a attribute that is a booleanList,
   // use the booleans state variable to populate that attribute
-  static stateVariableForAttributeValue = "booleans";
+  static stateVariableToBeShadowed = "booleans";
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement
   // don't required composite replacements

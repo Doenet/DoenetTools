@@ -17,7 +17,7 @@ export default class NumberList extends InlineComponent {
 
   // when another component has an attribute that is a numberList,
   // use the numbers state variable to populate that attribute
-  static stateVariableForAttributeValue = "numbers";
+  static stateVariableToBeShadowed = "numbers";
   static primaryStateVariableForDefinition = "numbersShadow";
 
   static createAttributesObject() {
