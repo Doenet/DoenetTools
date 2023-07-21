@@ -94,15 +94,30 @@ export async function action({ request }) {
   }
 }
 
-export async function loader({ params }) {
-  const { data } = await axios.get("/api/getCoursePermissionsAndSettings.php");
-  return {
-    courses: data.permissionsAndSettings,
-  };
+export async function loader() {
+  try {
+    let success = true;
+    // const resp = await axios.get("/api/getCoursePermissionsAndSettings.php");
+    const { data } = await axios.get(
+      "/api/getCoursePermissionsAndSettings.php",
+    );
+
+    return {
+      success,
+      courses: data.permissionsAndSettings,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
+  }
 }
 
 export function Courses() {
-  const { courses } = useLoaderData();
+  const { success, message, courses } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
+
   const fetcher = useFetcher();
 
   const {

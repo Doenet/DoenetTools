@@ -14,7 +14,6 @@ $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 $publicEditor = mysqli_real_escape_string($conn, $_REQUEST['publicEditor']);
 
 $response_arr;
-
 try {
 
     //Check if it's in there portfolio
