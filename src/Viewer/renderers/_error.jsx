@@ -13,9 +13,19 @@ export default React.memo(function Error(props) {
       borderWidth: 3,
       borderStyle: "solid",
     };
+    let rangeMessage = null;
+    if (SVs.rangeMessage) {
+      rangeMessage = (
+        <>
+          <br />
+          <em>{SVs.rangeMessage}</em>
+        </>
+      );
+    }
     displayedMessage = (
-      <div id={name} style={errorStyle}>
-        Error: {SVs.message}
+      <div id={id} style={errorStyle}>
+        <b>Error</b>: {SVs.message}
+        {rangeMessage}
       </div>
     );
   }

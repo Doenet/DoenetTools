@@ -28,6 +28,7 @@ export function parseAndCompile(inText) {
       cursor.nextSibling();
       let tagName = inText.substring(cursor.from, cursor.to);
       let adjustedTagName = tagName;
+      let adjustedRange = null;
 
       let tagOpenBegin = cursor.from;
 
@@ -45,16 +46,18 @@ export function parseAndCompile(inText) {
           // eslint-disable-next-line no-empty
           // while (cursor.parent()) {}
 
-          message = `Invalid DoenetML. Error in opening <${tagName}> tag.  Found ${inText.slice(
-            tagOpenBegin - 1,
-            errorEnd,
-          )}`;
+          let textOfError = inText.slice(tagOpenBegin - 1, errorEnd).trimEnd();
+
+          errorEnd = tagOpenBegin + textOfError.length - 1;
+
+          message = `Invalid DoenetML. Error in opening <${tagName}> tag.  Found ${textOfError}`;
 
           errors.push({
             message,
-            doenetMLrange: { begin: tagOpenBegin - 1, end: errorEnd },
+            doenetMLrange: { begin: tagOpenBegin, end: errorEnd },
           });
           adjustedTagName = "_error";
+          adjustedRange = { begin: tagOpenBegin, end: errorEnd };
 
           break;
         }
@@ -142,6 +145,17 @@ export function parseAndCompile(inText) {
             message,
             doenetMLrange: { begin: cursor.from, end: cursor.to },
           });
+
+          if (adjustedRange) {
+            element.doenetMLrange = { ...adjustedRange };
+          } else {
+            element.doenetMLrange = {
+              openBegin: tagOpenBegin,
+              openEnd: tagOpenEnd,
+              closeBegin: cursor.from,
+              closeEnd: cursor.to,
+            };
+          }
           element = {
             componentType: "_error",
             props: {},
@@ -155,7 +169,12 @@ export function parseAndCompile(inText) {
             message,
             doenetMLrange: { begin: cursor.from, end: cursor.to },
           });
-          element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
+
+          if (adjustedRange) {
+            element.doenetMLrange = { ...adjustedRange };
+          } else {
+            element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
+          }
           element = {
             componentType: "_error",
             props: {},
@@ -174,6 +193,12 @@ export function parseAndCompile(inText) {
               message,
               doenetMLrange: { begin: cursor.from, end: cursor.to },
             });
+
+            if (adjustedRange) {
+              element.doenetMLrange = { ...adjustedRange };
+            } else {
+              element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
+            }
             element = {
               componentType: "_error",
               props: {},
@@ -184,12 +209,16 @@ export function parseAndCompile(inText) {
           }
         }
       }
-      element.doenetMLrange = {
-        openBegin: tagOpenBegin,
-        openEnd: tagOpenEnd,
-        closeBegin: cursor.from,
-        closeEnd: cursor.to,
-      };
+      if (adjustedRange) {
+        element.doenetMLrange = adjustedRange;
+      } else {
+        element.doenetMLrange = {
+          openBegin: tagOpenBegin,
+          openEnd: tagOpenEnd,
+          closeBegin: cursor.from,
+          closeEnd: cursor.to,
+        };
+      }
       return element;
     } else if (cursor.name === "SelfClosingTag") {
       cursor.firstChild();
@@ -258,9 +287,19 @@ export function parseAndCompile(inText) {
         cursor.parent();
       }
 
+      // Note: for some reason if the "/>" of a closing tag occurs at the beginning of a line,
+      // (with only whitespace before it)
+      // then cursor.to is shifted differently compared to other cases.
+      // To compensate, we search for the location of the "/>"
+      let selfCloseEnd = cursor.to;
+      let match = inText.substring(cursor.to).match("/>");
+      if (match) {
+        selfCloseEnd += match.index + 2;
+      }
+
       let doenetMLrange = {
         selfCloseBegin: tagBegin,
-        selfCloseEnd: cursor.to + 3,
+        selfCloseEnd,
       };
 
       // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
@@ -304,14 +343,14 @@ export function parseAndCompile(inText) {
       )}`;
       errors.push({
         message,
-        doenetMLrange: { begin: tc.node.from, end: tc.node.to },
+        doenetMLrange: { begin: tc.node.from + 1, end: tc.node.to },
       });
       return {
         componentType: "_error",
         props: {},
         children: [],
         state: { message },
-        doenetMLrange: { begin: tc.node.from, end: tc.node.to },
+        doenetMLrange: { begin: tc.node.from + 1, end: tc.node.to },
       };
     }
   }

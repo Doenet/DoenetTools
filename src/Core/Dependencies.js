@@ -4,6 +4,7 @@ import {
   ancestorsIncludingComposites,
   gatherDescendants,
 } from "./utils/descendants";
+import { getLineColumnRange } from "./utils/logging";
 import { retrieveTextFileForCid } from "./utils/retrieveTextFile";
 import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
@@ -997,6 +998,14 @@ export class DependencyHandler {
         if (upDep.valuesChanged) {
           let ind = upDep.downstreamComponentNames.indexOf(componentName);
           let upValuesChanged = upDep.valuesChanged[ind][varName];
+
+          // Note (dated July 20, 2023):
+          // The code in the next two sections references a variable upValuesChangedSub
+          // that is not defined, so it will throw an error if evaluated.
+          // This code is years old at this point and all tests have been passing.
+          // Either there is a rare edge case that will call this code and we need to fix it,
+          // or this code is no longer used.
+          // TODO: determine if this code is need.  Fix it if it is needed or else delete it.
 
           if (!upValuesChanged) {
             // check if have an alias that maps to varName
@@ -7902,6 +7911,114 @@ class DoenetMLDependency extends Dependency {
 }
 
 dependencyTypeArray.push(DoenetMLDependency);
+
+class DoenetMLRangeDependency extends Dependency {
+  static dependencyType = "doenetMLrange";
+
+  setUpParameters() {
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+  }
+
+  async determineDownstreamComponents() {
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent =
+        this.dependencyHandler.updateTriggers
+          .dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent =
+          this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[
+            this.componentName
+          ] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName,
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: [],
+      };
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [this.componentName],
+      downstreamComponentTypes: [component.componentType],
+    };
+  }
+
+  async getValue() {
+    let component = this.dependencyHandler._components[this.componentName];
+
+    let doenetMLrange = component.doenetMLrange;
+    if (doenetMLrange?.doenetMLId === 0) {
+      if (doenetMLrange.lineBegin === undefined) {
+        let allNewlines = this.dependencyHandler.core.doenetMLNewlines;
+        Object.assign(
+          doenetMLrange,
+          getLineColumnRange(doenetMLrange, allNewlines),
+        );
+      }
+
+      return {
+        value: doenetMLrange,
+        changes: {},
+      };
+    } else {
+      return {
+        value: {},
+        changes: {},
+      };
+    }
+  }
+
+  deleteFromUpdateTriggers() {
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent =
+        this.dependencyHandler.updateTriggers
+          .dependenciesMissingComponentBySpecifiedName[
+          this.specifiedComponentName
+        ];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+  }
+}
+
+dependencyTypeArray.push(DoenetMLRangeDependency);
 
 class VariantsDependency extends Dependency {
   static dependencyType = "variants";

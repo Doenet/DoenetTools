@@ -20,10 +20,13 @@ export async function expandDoenetMLsToFullSerializedComponents({
   let warnings = [];
 
   for (let [ind, doenetML] of doenetMLs.entries()) {
+    let errorsForDoenetML = [];
+    let warningsForDoenetML = [];
+
     let result = parseAndCompile(doenetML);
     let serializedComponents = result.components;
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -35,33 +38,33 @@ export async function expandDoenetMLsToFullSerializedComponents({
       serializedComponents,
       componentInfoObjects.componentTypeLowerCaseMapping,
     );
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     result = copyTargetOrFromURIAttributeCreatesCopyComponent(
       serializedComponents,
       componentInfoObjects.isCompositeComponent,
     );
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     result = createAttributesFromProps(
       serializedComponents,
       componentInfoObjects,
     );
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     result = breakUpTargetIntoPropsAndIndices(
       serializedComponents,
       componentInfoObjects,
     );
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     result = applyMacros(serializedComponents, componentInfoObjects);
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     substitutePropertyDeprecations(serializedComponents);
 
@@ -72,8 +75,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
     decodeXMLEntities(serializedComponents);
 
     result = applySugar({ serializedComponents, componentInfoObjects });
-    errors.push(...result.errors);
-    warnings.push(...result.warnings);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     arrayOfSerializedComponents.push(serializedComponents);
 
@@ -87,6 +90,11 @@ export async function expandDoenetMLsToFullSerializedComponents({
     }
 
     addDoenetMLIdToRange(serializedComponents, nPreviousDoenetMLs + ind);
+    addDoenetMLIdToRange(errorsForDoenetML, nPreviousDoenetMLs + ind);
+    addDoenetMLIdToRange(warningsForDoenetML, nPreviousDoenetMLs + ind);
+
+    errors.push(...errorsForDoenetML);
+    warnings.push(...warningsForDoenetML);
   }
 
   let cidList = Object.keys(cidComponents);
@@ -3329,6 +3337,24 @@ export function createComponentNames({
       // TODO: is there any reason to run createComponentNames on attribute components?
     } catch (e) {
       convertToErrorComponent(serializedComponent, e.message);
+
+      // Name the "_error" component as though it were a component
+      // in the original DoenetML, i.e., number it consecutively.
+      let componentType = "_error";
+      let count = currentNamespace.componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+      let componentName = "";
+      for (let l = 0; l <= level; l++) {
+        componentName += namespaceStack[l].namespace + "/";
+      }
+      currentNamespace.componentCounts[componentType] = ++count;
+
+      let prescribedName = "_" + componentType.toLowerCase() + count;
+      componentName += prescribedName;
+      serializedComponent.componentName = componentName;
+
       errors.push({
         message: e.message,
         doenetMLrange: serializedComponent.doenetMLrange,
@@ -4126,24 +4152,6 @@ export function restrictTNamesToNamespace({
   }
 }
 
-function indexRangeString(serializedComponent) {
-  let message = "";
-  if (serializedComponent.doenetMLrange) {
-    let indBegin, indEnd;
-    if (serializedComponent.doenetMLrange.selfCloseBegin !== undefined) {
-      indBegin = serializedComponent.doenetMLrange.selfCloseBegin;
-      indEnd = serializedComponent.doenetMLrange.selfCloseEnd;
-    } else if (serializedComponent.doenetMLrange.openBegin !== undefined) {
-      indBegin = serializedComponent.doenetMLrange.openBegin;
-      indEnd = serializedComponent.doenetMLrange.closeEnd;
-    }
-    if (indBegin !== undefined) {
-      message += ` at indices ${indBegin}-${indEnd}`;
-    }
-  }
-  return message;
-}
-
 export function extractComponentNamesAndIndices(
   serializedComponents,
   nameSubstitutions = {},
@@ -4294,7 +4302,6 @@ export function convertToErrorComponent(component, message) {
   if (typeof component === "object") {
     component.componentType = "_error";
     component.state = { message };
-    delete component.children;
     delete component.props;
     delete component.attributes;
   }

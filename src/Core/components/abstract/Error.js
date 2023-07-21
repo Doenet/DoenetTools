@@ -1,3 +1,4 @@
+import { printDoenetMLrange } from "../../utils/logging";
 import BlockComponent from "./BlockComponent";
 
 export default class Error extends BlockComponent {
@@ -35,6 +36,29 @@ export default class Error extends BlockComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.rangeMessage = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        doenetMLrange: {
+          dependencyType: "doenetMLrange",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let rangeMessage = "";
+
+        let doenetMLrange = dependencyValues.doenetMLrange;
+        if (doenetMLrange.lineBegin !== undefined) {
+          rangeMessage = "Found at " + printDoenetMLrange(doenetMLrange) + ".";
+        }
+
+        return { setValue: { rangeMessage } };
+      },
+    };
 
     // If this error message is just a repeat of one of its children's messages,
     // then don't display the error again.

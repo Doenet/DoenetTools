@@ -26,6 +26,7 @@ import { get as idb_get, set as idb_set } from "idb-keyval";
 import { toastType } from "../Tools/_framework/ToastTypes";
 import axios from "axios";
 import { gatherVariantComponents, getNumberOfVariants } from "./utils/variants";
+import { findAllNewlines } from "./utils/logging";
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -215,6 +216,7 @@ export default class Core {
   }) {
     this.cid = cids[0];
     this.allDoenetMLs = allDoenetMLs;
+    this.doenetMLNewlines = findAllNewlines(allDoenetMLs[0]);
 
     this.errorWarnings.errors.push(...errors);
     this.errorWarnings.warnings.push(...warnings);
@@ -3314,6 +3316,7 @@ export default class Core {
         "triggerActionOnChange",
         "ignoreFixed",
         "isLocation",
+        "essentialVarName",
       ];
 
       for (let attrName2 of attributesToCopy) {
@@ -3450,6 +3453,7 @@ export default class Core {
         "propagateToProps",
         "ignoreFixed",
         "isLocation",
+        "essentialVarName",
       ];
 
       for (let attrName2 of attributesToCopy) {
@@ -3779,6 +3783,7 @@ export default class Core {
         "propagateToProps",
         "ignoreFixed",
         "isLocation",
+        "essentialVarName",
       ];
 
       for (let attrName2 of attributesToCopy) {
@@ -8659,6 +8664,7 @@ export default class Core {
         componentType: "_error",
         state: { message },
         doenetAttributes: { createUniqueName: true },
+        doenetMLrange: composite.doenetMLrange,
       },
     ];
 
@@ -9137,7 +9143,7 @@ export default class Core {
     );
     if (targetInd === -1) {
       throw Error(
-        `Something is wrong as we lost track that we were expanding ${component.componentName}`,
+        `Something is wrong as we lost track that we were expanding ${componentToShadow.componentName}`,
       );
     }
     this.updateInfo.compositesBeingExpanded.splice(targetInd, 1);
