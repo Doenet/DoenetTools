@@ -1302,114 +1302,114 @@ export function PortfolioActivityEditor() {
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
+      // {
+      //   message: "Invalid component type: bad",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 1,
+      //     selfCloseEnd: 7,
+      //     doenetMLId: 0,
+      //     lineBegin: 1,
+      //     charBegin: 1,
+      //     lineEnd: 1,
+      //     charEnd: 7,
+      //   },
+      // },
       {
         message: "Invalid component type: bad",
         doenetMLrange: {
@@ -1437,19 +1437,19 @@ export function PortfolioActivityEditor() {
           charEnd: 24,
         },
       },
-      {
-        message:
-          "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
-        doenetMLrange: {
-          selfCloseBegin: 10,
-          selfCloseEnd: 33,
-          doenetMLId: 0,
-          lineBegin: 3,
-          charBegin: 1,
-          lineEnd: 3,
-          charEnd: 24,
-        },
-      },
+      // {
+      //   message:
+      //     "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
+      //   doenetMLrange: {
+      //     selfCloseBegin: 10,
+      //     selfCloseEnd: 33,
+      //     doenetMLId: 0,
+      //     lineBegin: 3,
+      //     charBegin: 1,
+      //     lineEnd: 3,
+      //     charEnd: 24,
+      //   },
+      // },
     ],
   });
 
@@ -1897,7 +1897,16 @@ export function PortfolioActivityEditor() {
                         >
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
-                              <Tag tabIndex="0" cursor="pointer" size="md">
+                              <Tag
+                                tabIndex="0"
+                                cursor="pointer"
+                                size="md"
+                                colorScheme={
+                                  errorsAndWarnings.warnings.length == 0
+                                    ? "blackAlpha"
+                                    : "yellow"
+                                }
+                              >
                                 {errorsAndWarnings.warnings.length} Warning
                                 {errorsAndWarnings.warnings.length != 1 && "s"}
                               </Tag>
@@ -1926,6 +1935,8 @@ export function PortfolioActivityEditor() {
                                               as={MdCheckCircle}
                                               color="yellow.400"
                                             />
+                                            Line #
+                                            {warningObj.doenetMLrange.lineBegin}{" "}
                                             {warningObj.message}
                                           </ListItem>
                                         );
@@ -1939,7 +1950,16 @@ export function PortfolioActivityEditor() {
 
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
-                              <Tag cursor="pointer" size="md">
+                              <Tag
+                                tabIndex="0"
+                                cursor="pointer"
+                                size="md"
+                                colorScheme={
+                                  errorsAndWarnings.errors.length == 0
+                                    ? "blackAlpha"
+                                    : "red"
+                                }
+                              >
                                 {errorsAndWarnings.errors.length} Error
                                 {errorsAndWarnings.errors.length != 1 && "s"}
                               </Tag>
@@ -1961,14 +1981,16 @@ export function PortfolioActivityEditor() {
                                 <PopoverBody>
                                   <List spacing={2}>
                                     {errorsAndWarnings.errors.map(
-                                      (warningObj, i) => {
+                                      (errorObj, i) => {
                                         return (
                                           <ListItem key={i}>
                                             <ListIcon
                                               as={MdCheckCircle}
                                               color="red.500"
                                             />
-                                            {warningObj.message}
+                                            Line #
+                                            {errorObj.doenetMLrange.lineBegin}{" "}
+                                            {errorObj.message}
                                           </ListItem>
                                         );
                                       },
