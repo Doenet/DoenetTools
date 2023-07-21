@@ -1750,6 +1750,7 @@ export function PortfolioActivityEditor() {
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
                               <Tag
+                                data-test="Warning Button"
                                 tabIndex="0"
                                 cursor="pointer"
                                 size="md"
@@ -1764,13 +1765,13 @@ export function PortfolioActivityEditor() {
                               </Tag>
                             </PopoverTrigger>
                             {errorsAndWarnings.warnings.length == 0 ? (
-                              <PopoverContent>
+                              <PopoverContent data-test="Warning Content">
                                 <PopoverHeader fontWeight="semibold">
                                   No Warnings
                                 </PopoverHeader>
                               </PopoverContent>
                             ) : (
-                              <PopoverContent>
+                              <PopoverContent data-test="Warning Content">
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
                                   Warning
@@ -1782,7 +1783,10 @@ export function PortfolioActivityEditor() {
                                     {errorsAndWarnings.warnings.map(
                                       (warningObj, i) => {
                                         return (
-                                          <ListItem key={i}>
+                                          <ListItem
+                                            key={i}
+                                            data-test={`Warning ${i}`}
+                                          >
                                             <ListIcon
                                               as={MdCheckCircle}
                                               color="yellow.400"
@@ -1803,6 +1807,7 @@ export function PortfolioActivityEditor() {
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
                               <Tag
+                                data-test="Error Button"
                                 tabIndex="0"
                                 cursor="pointer"
                                 size="md"
@@ -1817,14 +1822,14 @@ export function PortfolioActivityEditor() {
                               </Tag>
                             </PopoverTrigger>
                             {errorsAndWarnings.errors.length == 0 ? (
-                              <PopoverContent>
+                              <PopoverContent data-test="Error Content">
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
                                   No Errors
                                 </PopoverHeader>
                               </PopoverContent>
                             ) : (
-                              <PopoverContent>
+                              <PopoverContent data-test="Error Content">
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
                                   Error
@@ -1835,7 +1840,10 @@ export function PortfolioActivityEditor() {
                                     {errorsAndWarnings.errors.map(
                                       (errorObj, i) => {
                                         return (
-                                          <ListItem key={i}>
+                                          <ListItem
+                                            key={i}
+                                            data-test={`Error ${i}`}
+                                          >
                                             <ListIcon
                                               as={MdCheckCircle}
                                               color="red.500"
