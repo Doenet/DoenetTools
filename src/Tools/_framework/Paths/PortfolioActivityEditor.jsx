@@ -1301,156 +1301,8 @@ export function PortfolioActivityEditor() {
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
-    errors: [
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      // {
-      //   message: "Invalid component type: bad",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 1,
-      //     selfCloseEnd: 7,
-      //     doenetMLId: 0,
-      //     lineBegin: 1,
-      //     charBegin: 1,
-      //     lineEnd: 1,
-      //     charEnd: 7,
-      //   },
-      // },
-      {
-        message: "Invalid component type: bad",
-        doenetMLrange: {
-          selfCloseBegin: 1,
-          selfCloseEnd: 7,
-          doenetMLId: 0,
-          lineBegin: 1,
-          charBegin: 1,
-          lineEnd: 1,
-          charEnd: 7,
-        },
-      },
-    ],
-    warnings: [
-      {
-        message:
-          "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
-        doenetMLrange: {
-          selfCloseBegin: 10,
-          selfCloseEnd: 33,
-          doenetMLId: 0,
-          lineBegin: 3,
-          charBegin: 1,
-          lineEnd: 3,
-          charEnd: 24,
-        },
-      },
-      // {
-      //   message:
-      //     "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
-      //   doenetMLrange: {
-      //     selfCloseBegin: 10,
-      //     selfCloseEnd: 33,
-      //     doenetMLId: 0,
-      //     lineBegin: 3,
-      //     charBegin: 1,
-      //     lineEnd: 3,
-      //     charEnd: 24,
-      //   },
-      // },
-    ],
+    errors: [],
+    warnings: [],
   });
 
   const {
@@ -1863,7 +1715,7 @@ export function PortfolioActivityEditor() {
                       w="100%"
                     >
                       <Box
-                        height={`calc(100vh - 164px)`}
+                        height={`calc(100vh - 166px)`}
                         w="100%"
                         overflow="hidden"
                       >
@@ -1925,7 +1777,7 @@ export function PortfolioActivityEditor() {
                                   {errorsAndWarnings.warnings.length != 1 &&
                                     "s"}
                                 </PopoverHeader>
-                                <PopoverBody>
+                                <PopoverBody maxH="40vh" overflow="scroll">
                                   <List spacing={2}>
                                     {errorsAndWarnings.warnings.map(
                                       (warningObj, i) => {
@@ -1978,7 +1830,7 @@ export function PortfolioActivityEditor() {
                                   Error
                                   {errorsAndWarnings.errors.length != 1 && "s"}
                                 </PopoverHeader>
-                                <PopoverBody>
+                                <PopoverBody maxH="40vh" overflow="scroll">
                                   <List spacing={2}>
                                     {errorsAndWarnings.errors.map(
                                       (errorObj, i) => {
