@@ -23,18 +23,16 @@ import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function action({ params }) {
-  console.log("ACTION!!!");
-  // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  // );
-  // let respObj = await response.json();
+  let { data } = await axios.get(
+    `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
+  );
 
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(
-  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  // );
-  return true;
+  const { nextActivityDoenetId, nextPageDoenetId } = data;
+  return redirect(
+    `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
+  );
 }
+
 export async function loader({ params }) {
   //Check if signedIn
   const profileInfo = await checkIfUserClearedOut();
@@ -47,8 +45,9 @@ export async function loader({ params }) {
       `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
     );
 
-    const cidResponse = await fetch(`/media/${data.json.assignedCid}.doenet`);
-    const activityML = await cidResponse.text();
+    const { data: activityML } = await axios.get(
+      `/media/${data.json.assignedCid}.doenet`,
+    );
 
     //Find the first page's doenetML
     const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
@@ -56,8 +55,7 @@ export async function loader({ params }) {
 
     let firstPage = findFirstPageIdInContent(data.json.content);
 
-    const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
-    const doenetML = await doenetMLResponse.text();
+    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
 
     return {
       success: true,
