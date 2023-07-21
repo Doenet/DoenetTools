@@ -43,10 +43,9 @@ try {
 
     if ($isPublic != '1'){
         throw new Exception("Internal Error: Activity is not public");
-    }
     }else if ($isAssigned != '1'){
         throw new Exception("Internal Error: Activity is not public");
-    }else{
+    }}else{
         throw new Exception("Internal Error: Activity is not available");
     }
 
@@ -101,7 +100,7 @@ try {
             'type' => $row['type'],
             'label' => $row['label'],
             'jsonDefinition' => $row['json'],
-            'imagePath' => $row['imagePath'],
+            'imagePath' => is_null($row['imagePath']) ? "/activity_default.jpg" : $row['imagePath'],
             'learningOutcomes' => $row['learningOutcomes'],
         ];
     }

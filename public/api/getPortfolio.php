@@ -58,19 +58,16 @@ if ($success && !$notMe) {
     }
 
     $sql = "
-    SELECT cc.doenetId,
-    cc.imagePath,
-    cc.label,
-    cc.isPublic,
+    SELECT doenetId,
+    imagePath,
+    label,
+    isPublic,
     CAST(jsonDefinition as CHAR) AS json,
-    CAST(learningOutcomes as CHAR) AS learningOutcomes,
-    p.doenetId AS 'pageDoenetId'
+    CAST(learningOutcomes as CHAR) AS learningOutcomes
     FROM course_content AS cc
-    LEFT JOIN pages AS p
-    ON p.containingDoenetId = cc.doenetId
-    WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
-    AND cc.isDeleted = 0
-    AND cc.isPublic = 0
+    WHERE courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    AND isDeleted = 0
+    AND isPublic = 0
     ORDER BY addToPrivatePortfolioDate DESC
     ";
     $result = $conn->query($sql);
@@ -86,26 +83,22 @@ if ($success && !$notMe) {
                 'imagePath' => $row['imagePath'],
                 'label' => $row['label'],
                 'public' => $row['isPublic'],
-                'pageDoenetId' => $row['pageDoenetId'],
                 'learningOutcomes' => $learningOutcomes,
             ];
             array_push($privateActivities, $activity);
         }
     }
     $sql = "
-    SELECT cc.doenetId,
-    cc.imagePath,
-    cc.label,
-    cc.isPublic,
+    SELECT doenetId,
+    imagePath,
+    label,
+    isPublic,
     CAST(jsonDefinition as CHAR) AS json,
-    CAST(learningOutcomes as CHAR) AS learningOutcomes,
-    p.doenetId AS 'pageDoenetId'
+    CAST(learningOutcomes as CHAR) AS learningOutcomes
     FROM course_content AS cc
-    LEFT JOIN pages AS p
-    ON p.containingDoenetId = cc.doenetId
-    WHERE cc.courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
-    AND cc.isDeleted = 0
-    AND cc.isPublic = 1
+    WHERE courseId = (SELECT courseId FROM course WHERE portfolioCourseForUserId = '$userId')
+    AND isDeleted = 0
+    AND isPublic = 1
     ORDER BY addToPublicPortfolioDate DESC
     ";
     $result = $conn->query($sql);
@@ -121,7 +114,6 @@ if ($success && !$notMe) {
                 'imagePath' => $row['imagePath'],
                 'label' => $row['label'],
                 'public' => $row['isPublic'],
-                'pageDoenetId' => $row['pageDoenetId'],
                 'learningOutcomes' => $learningOutcomes,
 
             ];
