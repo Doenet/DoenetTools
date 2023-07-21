@@ -6,7 +6,7 @@ export function printDoenetMLrange(doenetMLrange) {
   }
 }
 
-export function getLineColumnRange(doenetMLrange, allNewlines) {
+export function getLineCharRange(doenetMLrange, allNewlines) {
   let { indBegin, indEnd } = getBeginEndFromDoenetMLRange(doenetMLrange);
 
   if (indBegin === undefined) {

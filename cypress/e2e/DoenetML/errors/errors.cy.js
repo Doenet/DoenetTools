@@ -140,7 +140,7 @@ describe("Error Tests", function () {
 
     cy.get(cesc2("#/__error5")).should(
       "contain.text",
-      "Duplicate attribute radius.  Found in component of type circle.",
+      "Duplicate attribute radius.",
     );
     cy.get(cesc2("#/__error5")).should(
       "contain.text",
@@ -148,11 +148,11 @@ describe("Error Tests", function () {
     );
     cy.get(cesc2("#/__error6")).should(
       "contain.text",
-      "Duplicate attribute hide.  Found in component of type rectangle.",
+      "Duplicate attribute hide.",
     );
     cy.get(cesc2("#/__error6")).should(
       "contain.text",
-      "Duplicate attribute hide.  Found in component of type rectangle.",
+      "Duplicate attribute hide.",
     );
     cy.get(cesc2("#/__error6")).should(
       "contain.text",
@@ -160,7 +160,7 @@ describe("Error Tests", function () {
     );
     cy.get(cesc2("#/__error7")).should(
       "contain.text",
-      "Duplicate attribute q.  Found in component of type apple.",
+      "Duplicate attribute q.",
     );
     cy.get(cesc2("#/__error7")).should(
       "contain.text",
@@ -168,7 +168,7 @@ describe("Error Tests", function () {
     );
     cy.get(cesc2("#/__error8")).should(
       "contain.text",
-      "Duplicate attribute bad.  Found in component of type banana.",
+      "Duplicate attribute bad.",
     );
     cy.get(cesc2("#/__error8")).should(
       "contain.text",

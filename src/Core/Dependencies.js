@@ -4,7 +4,7 @@ import {
   ancestorsIncludingComposites,
   gatherDescendants,
 } from "./utils/descendants";
-import { getLineColumnRange } from "./utils/logging";
+import { getLineCharRange } from "./utils/logging";
 import { retrieveTextFileForCid } from "./utils/retrieveTextFile";
 import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
@@ -7985,7 +7985,7 @@ class DoenetMLRangeDependency extends Dependency {
         let allNewlines = this.dependencyHandler.core.doenetMLNewlines;
         Object.assign(
           doenetMLrange,
-          getLineColumnRange(doenetMLrange, allNewlines),
+          getLineCharRange(doenetMLrange, allNewlines),
         );
       }
 

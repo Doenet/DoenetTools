@@ -30,7 +30,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
-    substituteAttributeDeprecations(serializedComponents);
+    result = substituteAttributeDeprecations(serializedComponents);
+    warningsForDoenetML.push(...result.warnings);
 
     temporarilyRenameSourceBackToTarget(serializedComponents);
 
@@ -66,7 +67,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
     errorsForDoenetML.push(...result.errors);
     warningsForDoenetML.push(...result.warnings);
 
-    substitutePropertyDeprecations(serializedComponents);
+    result = substitutePropertyDeprecations(serializedComponents);
+    warningsForDoenetML.push(...result.warnings);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
@@ -357,86 +359,124 @@ function substituteAttributeDeprecations(serializedComponents) {
   // (which are called props at this point due to parser but will be renamed attributes later)
   // that are entered as attributes in the component tag
 
+  let warnings = [];
+
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
-    tname: "target",
-    triggerwithtnames: "triggerWith",
-    updatewithtname: "updateWith",
-    paginatortname: "paginator",
-    randomizeorder: "shuffleOrder",
-    copytarget: "copySource",
-    triggerwithtargets: "triggerWith",
-    triggerwhentargetsclicked: "triggerWhenObjectsClicked",
-    fortarget: "forObject",
-    targetattributestoignore: "sourceAttributesToIgnore",
-    targetattributestoignorerecursively: "sourceAttributesToIgnoreRecursively",
-    targetsareresponses: "sourcesAreResponses",
-    updatewithtarget: "updateWith",
-    targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
-    selectforvariantnames: "selectForVariants",
-    numberdecimals: "numDecimals",
-    numberdigits: "numDigits",
-    ndimensions: "numDimensions",
-    ninputs: "numInputs",
-    noutputs: "numOutputs",
-    niterates: "numIterates",
-    nrows: "numRows",
-    ncolumns: "numColumns",
-    nvertices: "numVertices",
-    npoints: "numPoints",
-    nvariants: "numVariants",
-    nsides: "numSides",
-    niterationsrequired: "numIterationsRequired",
-    numberofsamples: "numSamples",
-    numbertoselect: "numToSelect",
-    nawardscredited: "numAwardsCredited",
-    maximumnumber: "maxNumber",
-    nsignerrorsmatched: "numSignErrorsMatched",
-    nperiodicsetmatchesrequired: "numPeriodicSetMatchesRequired",
-    npages: "numPages",
+    tname: { substitute: "target", removeInVersion: "0.7" },
+    triggerwithtnames: { substitute: "triggerWith", removeInVersion: "0.7" },
+    updatewithtname: { substitute: "updateWith", removeInVersion: "0.7" },
+    paginatortname: { substitute: "paginator", removeInVersion: "0.7" },
+    randomizeorder: { substitute: "shuffleOrder", removeInVersion: "0.7" },
+    copytarget: { substitute: "copySource", removeInVersion: "0.7" },
+    triggerwithtargets: { substitute: "triggerWith", removeInVersion: "0.7" },
+    triggerwhentargetsclicked: {
+      substitute: "triggerWhenObjectsClicked",
+      removeInVersion: "0.7",
+    },
+    fortarget: { substitute: "forObject", removeInVersion: "0.7" },
+    targetattributestoignore: {
+      substitute: "sourceAttributesToIgnore",
+      removeInVersion: "0.7",
+    },
+    targetattributestoignorerecursively: {
+      substitute: "sourceAttributesToIgnoreRecursively",
+      removeInVersion: "0.7",
+    },
+    targetsareresponses: {
+      substitute: "sourcesAreResponses",
+      removeInVersion: "0.7",
+    },
+    updatewithtarget: { substitute: "updateWith", removeInVersion: "0.7" },
+    targetsarefunctionsymbols: {
+      substitute: "sourcesAreFunctionSymbols",
+      removeInVersion: "0.7",
+    },
+    selectforvariantnames: {
+      substitute: "selectForVariants",
+      removeInVersion: "0.7",
+    },
+    numberdecimals: { substitute: "numDecimals", removeInVersion: "0.7" },
+    numberdigits: { substitute: "numDigits", removeInVersion: "0.7" },
+    ndimensions: { substitute: "numDimensions", removeInVersion: "0.7" },
+    ninputs: { substitute: "numInputs", removeInVersion: "0.7" },
+    noutputs: { substitute: "numOutputs", removeInVersion: "0.7" },
+    niterates: { substitute: "numIterates", removeInVersion: "0.7" },
+    nrows: { substitute: "numRows", removeInVersion: "0.7" },
+    ncolumns: { substitute: "numColumns", removeInVersion: "0.7" },
+    nvertices: { substitute: "numVertices", removeInVersion: "0.7" },
+    npoints: { substitute: "numPoints", removeInVersion: "0.7" },
+    nvariants: { substitute: "numVariants", removeInVersion: "0.7" },
+    nsides: { substitute: "numSides", removeInVersion: "0.7" },
+    niterationsrequired: {
+      substitute: "numIterationsRequired",
+      removeInVersion: "0.7",
+    },
+    numberofsamples: { substitute: "numSamples", removeInVersion: "0.7" },
+    numbertoselect: { substitute: "numToSelect", removeInVersion: "0.7" },
+    nawardscredited: {
+      substitute: "numAwardsCredited",
+      removeInVersion: "0.7",
+    },
+    maximumnumber: { substitute: "maxNumber", removeInVersion: "0.7" },
+    nsignerrorsmatched: {
+      substitute: "numSignErrorsMatched",
+      removeInVersion: "0.7",
+    },
+    nperiodicsetmatchesrequired: {
+      substitute: "numPeriodicSetMatchesRequired",
+      removeInVersion: "0.7",
+    },
+    npages: { substitute: "numPages", removeInVersion: "0.7" },
   };
 
   // Note: use lower case
-  let deprecatedAttributeDeletions = new Set([
-    "suppressautoname",
-    "suppressautonumber",
-    "targetattributestoignorerecursively",
-    "sourceattributestoignorerecursively",
-    "showlabel",
-    "ignoredisplaydigits",
-    "ignoredisplaydecimals",
-  ]);
+  let deprecatedAttributeDeletions = {
+    suppressautoname: { removeInVersion: "0.7" },
+    suppressautonumber: { removeInVersion: "0.7" },
+    targetattributestoignorerecursively: { removeInVersion: "0.7" },
+    sourceattributestoignorerecursively: { removeInVersion: "0.7" },
+    showlabel: { removeInVersion: "0.7" },
+    ignoredisplaydigits: { removeInVersion: "0.7" },
+    ignoredisplaydecimals: { removeInVersion: "0.7" },
+  };
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutionsComponentSpecific = {
     copy: {
-      target: "source",
-      tname: "source",
+      target: { substitute: "source", removeInVersion: "0.7" },
+      tname: { substitute: "source", removeInVersion: "0.7" },
     },
     collect: {
-      target: "source",
-      tname: "source",
+      target: { substitute: "source", removeInVersion: "0.7" },
+      tname: { substitute: "source", removeInVersion: "0.7" },
     },
     summarystatistics: {
-      target: "source",
+      target: { substitute: "source", removeInVersion: "0.7" },
     },
     answer: {
-      maximumnumberofattempts: "maxNumAttempts",
+      maximumnumberofattempts: {
+        substitute: "maxNumAttempts",
+        removeInVersion: "0.7",
+      },
     },
     bestfitline: {
-      points: "data",
+      points: { substitute: "data", removeInVersion: "0.7" },
     },
   };
 
   // use lower case
   let deprecatedAttributeDeletionsComponentSpecific = {
-    textinput: ["size"],
-    constraintogrid: ["ignoregraphbounds"],
-    attracttogrid: ["ignoregraphbounds"],
-    constraints: ["baseongraph"],
-    graph: ["xlabel", "ylabel"],
-    conditionalcontent: ["maximumnumbertoshow"],
-    angle: ["draggable"],
+    textinput: { size: { removeInVersion: "0.7" } },
+    constraintogrid: { ignoregraphbounds: { removeInVersion: "0.7" } },
+    attracttogrid: { ignoregraphbounds: { removeInVersion: "0.7" } },
+    constraints: { baseongraph: { removeInVersion: "0.7" } },
+    graph: {
+      xlabel: { removeInVersion: "0.7" },
+      ylabel: { removeInVersion: "0.7" },
+    },
+    conditionalcontent: { maximumnumbertoshow: { removeInVersion: "0.7" } },
+    angle: { draggable: { removeInVersion: "0.7" } },
   };
 
   for (let component of serializedComponents) {
@@ -455,7 +495,7 @@ function substituteAttributeDeprecations(serializedComponents) {
       let typeSpecificDeletions =
         deprecatedAttributeDeletionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeletions) {
-        typeSpecificDeletions = [];
+        typeSpecificDeletions = {};
       }
       let retry = true;
       while (retry) {
@@ -463,11 +503,13 @@ function substituteAttributeDeprecations(serializedComponents) {
         for (let prop in component.props) {
           let propLower = prop.toLowerCase();
           if (propLower in typeSpecificDeps) {
-            let newProp = typeSpecificDeps[propLower];
+            let newProp = typeSpecificDeps[propLower].substitute;
+            let removeInVersion = typeSpecificDeps[propLower].removeInVersion;
 
-            console.warn(
-              `Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.`,
-            );
+            warnings.push({
+              message: `Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
+              doenetMLrange: component.doenetMLrange,
+            });
 
             component.props[newProp] = component.props[prop];
             delete component.props[prop];
@@ -477,11 +519,15 @@ function substituteAttributeDeprecations(serializedComponents) {
             retry = true;
             break;
           } else if (propLower in deprecatedAttributeSubstitutions) {
-            let newProp = deprecatedAttributeSubstitutions[propLower];
+            let newProp =
+              deprecatedAttributeSubstitutions[propLower].substitute;
+            let removeInVersion =
+              deprecatedAttributeSubstitutions[propLower].removeInVersion;
 
-            console.warn(
-              `Attribute ${prop} is deprecated.  Use ${newProp} instead.`,
-            );
+            warnings.push({
+              message: `Attribute ${prop} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
+              doenetMLrange: component.doenetMLrange,
+            });
 
             component.props[newProp] = component.props[prop];
             delete component.props[prop];
@@ -490,18 +536,30 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (typeSpecificDeletions.includes(propLower)) {
-            console.warn(
-              `Attribute ${prop} of component type ${cType} is deprecated.  It is ignored.`,
-            );
+          } else if (propLower in typeSpecificDeletions) {
+            let removeInVersion =
+              typeSpecificDeletions[propLower].removeInVersion;
+
+            warnings.push({
+              message: `Attribute ${prop} of component type ${cType} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
+              doenetMLrange: component.doenetMLrange,
+            });
+
             delete component.props[prop];
 
             // since modified object over which are looping
             // break out of loop and start over
             retry = true;
             break;
-          } else if (deprecatedAttributeDeletions.has(propLower)) {
-            console.warn(`Attribute ${prop} is deprecated.  It is ignored.`);
+          } else if (propLower in deprecatedAttributeDeletions) {
+            let removeInVersion =
+              deprecatedAttributeDeletions[propLower].removeInVersion;
+
+            warnings.push({
+              message: `Attribute ${prop} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
+              doenetMLrange: component.doenetMLrange,
+            });
+
             delete component.props[prop];
 
             // since modified object over which are looping
@@ -514,64 +572,109 @@ function substituteAttributeDeprecations(serializedComponents) {
     }
 
     if (component.children) {
-      substituteAttributeDeprecations(component.children);
+      let res = substituteAttributeDeprecations(component.children);
+      warnings.push(...res.warnings);
     }
   }
+
+  return { warnings };
 }
 
 export const deprecatedPropertySubstitutions = {
-  maximumNumberOfAttempts: "maxNumAttempts",
-  numberFeedbacks: "numFeedbacks",
-  numberOfAttemptsLeft: "numAttemptsLeft",
-  nSubmissions: "numSubmissions",
-  nSubmittedResponses: "numSubmittedResponses",
-  nAwardsCredited: "numAwardsCredited",
-  numberChoices: "numChoices",
-  numberMinima: "numMinima",
-  numberMaxima: "numMaxima",
-  numberExtrema: "numExtrema",
-  numberDecimals: "numDecimals",
-  numberDigits: "numDigits",
-  numberOfSamples: "numSamples",
-  numberToSelect: "numToSelect",
-  numberSolutions: "numSolutions",
-  maximumNumber: "maxNumber",
-  nVertices: "numVertices",
-  nPoints: "numPoints",
-  nSignErrorsMatched: "numSignErrorsMatched",
-  nPeriodicSetMatchesRequired: "numPeriodicSetMatchesRequired",
-  nValues: "numValues",
-  nResponses: "numResponses",
-  nControls: "numControls",
-  nThroughPoints: "numThroughPoints",
-  nComponents: "numComponents",
-  nChildrenToRender: "numChildrenToRender",
-  nSelectedIndices: "numSelectedIndices",
-  nDimensions: "numDimensions",
-  nCases: "numCases",
-  nDiscretizationPoints: "numDiscretizationPoints",
-  nXCriticalPoints: "numXCriticalPoints",
-  nYCriticalPoints: "numYCriticalPoints",
-  nCurvatureChangePoints: "numCurvatureChangePoints",
-  nScoredDescendants: "numScoredDescendants",
-  nInputs: "numInputs",
-  nOutputs: "numOutputs",
-  nIterates: "numIterates",
-  nDerivatives: "numDerivatives",
-  nSources: "numSources",
-  nMatches: "numMatches",
-  nRows: "numRows",
-  nColumns: "numColumns",
-  nPages: "numPages",
-  nOffsets: "numOffsets",
-  nVariants: "numVariants",
-  nSides: "numSides",
-  nItems: "numItems",
-  nLists: "numLists",
-  nIterationsRequired: "numIterationsRequired",
-  nGradedVertices: "numGradedVertices",
-  nCorrectVertices: "numCorrectVertices",
-  nIterateValues: "numIterateValues",
+  maximumNumberOfAttempts: {
+    substitute: "maxNumAttempts",
+    removeInVersion: "0.7",
+  },
+  numberFeedbacks: { substitute: "numFeedbacks", removeInVersion: "0.7" },
+  numberOfAttemptsLeft: {
+    substitute: "numAttemptsLeft",
+    removeInVersion: "0.7",
+  },
+  nSubmissions: { substitute: "numSubmissions", removeInVersion: "0.7" },
+  nSubmittedResponses: {
+    substitute: "numSubmittedResponses",
+    removeInVersion: "0.7",
+  },
+  nAwardsCredited: { substitute: "numAwardsCredited", removeInVersion: "0.7" },
+  numberChoices: { substitute: "numChoices", removeInVersion: "0.7" },
+  numberMinima: { substitute: "numMinima", removeInVersion: "0.7" },
+  numberMaxima: { substitute: "numMaxima", removeInVersion: "0.7" },
+  numberExtrema: { substitute: "numExtrema", removeInVersion: "0.7" },
+  numberDecimals: { substitute: "numDecimals", removeInVersion: "0.7" },
+  numberDigits: { substitute: "numDigits", removeInVersion: "0.7" },
+  numberOfSamples: { substitute: "numSamples", removeInVersion: "0.7" },
+  numberToSelect: { substitute: "numToSelect", removeInVersion: "0.7" },
+  numberSolutions: { substitute: "numSolutions", removeInVersion: "0.7" },
+  maximumNumber: { substitute: "maxNumber", removeInVersion: "0.7" },
+  nVertices: { substitute: "numVertices", removeInVersion: "0.7" },
+  nPoints: { substitute: "numPoints", removeInVersion: "0.7" },
+  nSignErrorsMatched: {
+    substitute: "numSignErrorsMatched",
+    removeInVersion: "0.7",
+  },
+  nPeriodicSetMatchesRequired: {
+    substitute: "numPeriodicSetMatchesRequired",
+    removeInVersion: "0.7",
+  },
+  nValues: { substitute: "numValues", removeInVersion: "0.7" },
+  nResponses: { substitute: "numResponses", removeInVersion: "0.7" },
+  nControls: { substitute: "numControls", removeInVersion: "0.7" },
+  nThroughPoints: { substitute: "numThroughPoints", removeInVersion: "0.7" },
+  nComponents: { substitute: "numComponents", removeInVersion: "0.7" },
+  nChildrenToRender: {
+    substitute: "numChildrenToRender",
+    removeInVersion: "0.7",
+  },
+  nSelectedIndices: {
+    substitute: "numSelectedIndices",
+    removeInVersion: "0.7",
+  },
+  nDimensions: { substitute: "numDimensions", removeInVersion: "0.7" },
+  nCases: { substitute: "numCases", removeInVersion: "0.7" },
+  nDiscretizationPoints: {
+    substitute: "numDiscretizationPoints",
+    removeInVersion: "0.7",
+  },
+  nXCriticalPoints: {
+    substitute: "numXCriticalPoints",
+    removeInVersion: "0.7",
+  },
+  nYCriticalPoints: {
+    substitute: "numYCriticalPoints",
+    removeInVersion: "0.7",
+  },
+  nCurvatureChangePoints: {
+    substitute: "numCurvatureChangePoints",
+    removeInVersion: "0.7",
+  },
+  nScoredDescendants: {
+    substitute: "numScoredDescendants",
+    removeInVersion: "0.7",
+  },
+  nInputs: { substitute: "numInputs", removeInVersion: "0.7" },
+  nOutputs: { substitute: "numOutputs", removeInVersion: "0.7" },
+  nIterates: { substitute: "numIterates", removeInVersion: "0.7" },
+  nDerivatives: { substitute: "numDerivatives", removeInVersion: "0.7" },
+  nSources: { substitute: "numSources", removeInVersion: "0.7" },
+  nMatches: { substitute: "numMatches", removeInVersion: "0.7" },
+  nRows: { substitute: "numRows", removeInVersion: "0.7" },
+  nColumns: { substitute: "numColumns", removeInVersion: "0.7" },
+  nPages: { substitute: "numPages", removeInVersion: "0.7" },
+  nOffsets: { substitute: "numOffsets", removeInVersion: "0.7" },
+  nVariants: { substitute: "numVariants", removeInVersion: "0.7" },
+  nSides: { substitute: "numSides", removeInVersion: "0.7" },
+  nItems: { substitute: "numItems", removeInVersion: "0.7" },
+  nLists: { substitute: "numLists", removeInVersion: "0.7" },
+  nIterationsRequired: {
+    substitute: "numIterationsRequired",
+    removeInVersion: "0.7",
+  },
+  nGradedVertices: { substitute: "numGradedVertices", removeInVersion: "0.7" },
+  nCorrectVertices: {
+    substitute: "numCorrectVertices",
+    removeInVersion: "0.7",
+  },
+  nIterateValues: { substitute: "numIterateValues", removeInVersion: "0.7" },
 };
 
 const deprecatedPropertySubstitutionsLowerCase = {};
@@ -582,6 +685,8 @@ Object.keys(deprecatedPropertySubstitutions).forEach(
 );
 
 function substitutePropertyDeprecations(serializedComponents) {
+  let warnings = [];
+
   // Note: properties are public state variables that are referenced
   // either using dot notation in a source/copysource or in a prop/copyprop
   // but will be exclusively in prop by this point
@@ -597,28 +702,39 @@ function substitutePropertyDeprecations(serializedComponents) {
       let propNameLower = propName.toLowerCase();
 
       if (propNameLower in deprecatedPropertySubstitutionsLowerCase) {
-        let newProp = deprecatedPropertySubstitutionsLowerCase[propNameLower];
-        console.warn(
-          `Property ${propName} is deprecated.  Use ${newProp} instead.`,
-        );
+        let newProp =
+          deprecatedPropertySubstitutionsLowerCase[propNameLower].substitute;
+
+        let removeInVersion =
+          deprecatedPropertySubstitutionsLowerCase[propNameLower]
+            .removeInVersion;
+
+        warnings.push({
+          message: `Property ${propName} is deprecated.  Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
+          doenetMLrange: component.doenetMLrange,
+        });
 
         component.attributes.prop.primitive = newProp;
       }
     }
 
     if (component.children) {
-      substitutePropertyDeprecations(component.children);
+      let res = substitutePropertyDeprecations(component.children);
+      warnings.push(...res.warnings);
     }
 
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attrComp = component.attributes[attrName].component;
         if (attrComp) {
-          substitutePropertyDeprecations([attrComp]);
+          let res = substitutePropertyDeprecations([attrComp]);
+          warnings.push(...res.warnings);
         }
       }
     }
   }
+
+  return { warnings };
 }
 
 function temporarilyRenameSourceBackToTarget(serializedComponents) {
@@ -767,12 +883,10 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
           let lowerCaseProp = prop.toLowerCase();
           if (lowerCaseProp === "copytarget") {
             if (foundCopyTarget) {
-              throw Error(
-                `Cannot repeat attribute ${prop}.  Found in component of type ${originalType}.`,
-              );
+              throw Error(`Cannot repeat attribute ${prop}.`);
             } else if (foundCopyFromURI) {
               throw Error(
-                `Cannot combine copyTarget and copyFromURI attributes.  Found in component of type ${originalType}.`,
+                `Cannot combine copyTarget and copyFromURI attributes.`,
               );
             } else if (foundAssignNames) {
               if (haveAnyComposite) {
@@ -796,9 +910,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             component.componentType = "copy";
             component.props.target = component.props[prop];
             if (typeof component.props.target !== "string") {
-              throw Error(
-                `Must specify value for copyTarget.  Found in component of type ${originalType}.`,
-              );
+              throw Error(`Must specify value for copyTarget.`);
             }
             delete component.props[prop];
 
@@ -808,12 +920,10 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             component.props.assignNamesSkip = "1";
           } else if (lowerCaseProp === "copyfromuri") {
             if (foundCopyFromURI) {
-              throw Error(
-                `Cannot repeat attribute ${prop}.  Found in component type ${originalType}.`,
-              );
+              throw Error(`Cannot repeat attribute ${prop}.`);
             } else if (foundCopyTarget) {
               throw Error(
-                `Cannot combine copyTarget and copyFromURI attributes.  Found in component of type ${originalType}`,
+                `Cannot combine copyTarget and copyFromURI attributes.`,
               );
             } else if (foundAssignNames) {
               if (haveAnyComposite) {
@@ -837,9 +947,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             component.componentType = "copy";
             component.props.uri = component.props[prop];
             if (typeof component.props.uri !== "string") {
-              throw Error(
-                `Must specify value for copyFromURI.  Found in component of type ${originalType}.`,
-              );
+              throw Error(`Must specify value for copyFromURI.`);
             }
             delete component.props[prop];
             component.doenetAttributes.fromCopyFromURI = true;
@@ -878,9 +986,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(
             let lowerCaseProp = prop.toLowerCase();
             if (lowerCaseProp === "copyprop") {
               if (foundCopyProp) {
-                throw Error(
-                  `Cannot repeat attribute ${prop}.  Found in component type ${originalType}.`,
-                );
+                throw Error(`Cannot repeat attribute ${prop}.`);
               }
               component.props.prop = component.props[prop];
               delete component.props[prop];
@@ -944,9 +1050,7 @@ function breakUpTargetIntoPropsAndIndices(
               if (component.componentType === "copy") {
                 propNameForError = "source";
               }
-              throw Error(
-                `Cannot repeat attribute ${propNameForError}.  Found in component type ${component.componentType}.`,
-              );
+              throw Error(`Cannot repeat attribute ${propNameForError}.`);
             }
 
             targetPropName = prop;
@@ -957,9 +1061,7 @@ function breakUpTargetIntoPropsAndIndices(
               if (component.componentType === "copy") {
                 propNameForError = "source";
               }
-              throw Error(
-                `Must supply value for ${propNameForError}.  Found in component type ${component.componentType}.`,
-              );
+              throw Error(`Must supply value for ${propNameForError}.`);
             }
 
             let sourcePiecesResult = buildSourcePieces(originalSource, true);
@@ -983,17 +1085,17 @@ function breakUpTargetIntoPropsAndIndices(
 
             if (component.attributes.prop) {
               throw Error(
-                `Cannot combine the prop attribute with an extended source attribute.  Found in component type ${component.componentType}.`,
+                `Cannot combine the prop attribute with an extended source attribute.`,
               );
             }
             if (component.attributes.propIndex) {
               throw Error(
-                `Cannot combine the propIndex attribute with an extended source attribute.  Found in component type ${component.componentType}.`,
+                `Cannot combine the propIndex attribute with an extended source attribute.`,
               );
             }
             if (component.attributes.componentIndex) {
               throw Error(
-                `Cannot combine the componentIndex attribute with an extended source attribute.  Found in component type ${component.componentType}.`,
+                `Cannot combine the componentIndex attribute with an extended source attribute.`,
               );
             }
 
@@ -1178,9 +1280,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
           let attrObj = classAttributes[propName];
           if (attrObj) {
             if (propName in attributes) {
-              throw Error(
-                `Cannot repeat attribute ${propName}.  Found in component type ${component.componentType}.`,
-              );
+              throw Error(`Cannot repeat attribute ${propName}.`);
             }
 
             let res = componentFromAttribute({
@@ -2785,9 +2885,7 @@ export function createComponentNames({
               prescribedName = props[key];
               delete props[key];
             } else {
-              throw Error(
-                `Cannot define name twice.  Found in component of type ${componentType}.`,
-              );
+              throw Error(`Cannot define name twice.`);
             }
           } else if (lowercaseKey === "assignnames") {
             if (assignNames === undefined) {
@@ -2795,29 +2893,21 @@ export function createComponentNames({
               if (result.success) {
                 assignNames = result.pieces;
               } else {
-                throw Error(
-                  `Invalid format for assignNames: ${props[key]}.  Found in component of type ${componentType}.`,
-                );
+                throw Error(`Invalid format for assignNames: ${props[key]}.`);
               }
               delete props[key];
             } else {
-              throw Error(
-                `Cannot define assignNames twice for a component.  Found in component of type ${componentType}.`,
-              );
+              throw Error(`Cannot define assignNames twice for a component.`);
             }
           } else if (lowercaseKey === "target") {
             if (target === undefined) {
               if (typeof props[key] !== "string") {
-                throw Error(
-                  `Must specify value for target.  Found in component of type ${componentType}.`,
-                );
+                throw Error(`Must specify value for target.`);
               }
               target = props[key].trim();
               delete props[key];
             } else {
-              throw Error(
-                `Cannot define target twice for a component.  Found in component of type ${componentType}.`,
-              );
+              throw Error(`Cannot define target twice for a component.`);
             }
           }
         }
@@ -2830,12 +2920,12 @@ export function createComponentNames({
         ) {
           if (!/[a-zA-Z]/.test(prescribedName.substring(0, 1))) {
             throw Error(
-              `Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${componentType}.`,
+              `Invalid component name: ${prescribedName}.  Component name must begin with a letter.`,
             );
           }
           if (!/^[a-zA-Z0-9_\-]+$/.test(prescribedName)) {
             throw Error(
-              `Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}.`,
+              `Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.`,
             );
           }
         }
@@ -2906,14 +2996,14 @@ export function createComponentNames({
                 throw Error(
                   `Invalid assignNames: ${assignNamesToString(
                     assignNames,
-                  )}.  All assigned names must begin with a letter.  Found in component of type ${componentType}.`,
+                  )}.  All assigned names must begin with a letter.`,
                 );
               }
               if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
                 throw Error(
                   `Invalid assignNames: ${assignNamesToString(
                     assignNames,
-                  )}.  Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}.`,
+                  )}.  Assigned names can contain only letters, numbers, hyphens, and underscores.`,
                 );
               }
             }
@@ -2923,7 +3013,7 @@ export function createComponentNames({
             throw Error(
               `A name is duplicated in assignNames: ${assignNamesToString(
                 assignNames,
-              )}.  Found in component of type ${componentType}.`,
+              )}.`,
             );
           }
         }
@@ -3010,9 +3100,7 @@ export function createComponentNames({
         if (prescribedName in currentNamespace.namesUsed) {
           let lastSlash = componentName.lastIndexOf("/");
           let componentNameRelative = componentName.slice(lastSlash + 1);
-          throw Error(
-            `Duplicate component name ${componentNameRelative}.  Found in component of type ${componentType}.`,
-          );
+          throw Error(`Duplicate component name ${componentNameRelative}.`);
         }
         currentNamespace.namesUsed[prescribedName] = true;
       }
@@ -3080,14 +3168,12 @@ export function createComponentNames({
       if (target) {
         if (!componentClass.acceptTarget) {
           throw Error(
-            `Component type ${componentType} does not accept a target attribute.   Found in component ${componentName}.`,
+            `Component type ${componentType} does not accept a target attribute.`,
           );
         }
 
         if (target.includes("|")) {
-          throw Error(
-            `target cannot include |.  Found in component of type ${componentType}.`,
-          );
+          throw Error(`target cannot include |.`);
         }
 
         // convert target to full name

@@ -66,13 +66,14 @@ export function parseAndCompile(inText) {
         //We scrape the content of both from the in string and add them to the attribute array here
         cursor.firstChild();
         let attrName = inText.substring(cursor.from, cursor.to);
+        let beginAttributeInd = cursor.from + 1;
         //skip the name and equals sign
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}.`;
+            message = `Duplicate attribute ${attrName}.`;
             errors.push({
               message,
-              doenetMLrange: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
             });
             adjustedTagName = "_error";
           } else {
@@ -84,10 +85,10 @@ export function parseAndCompile(inText) {
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
 
           if (attrName in attrs) {
-            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}.`;
+            message = `Duplicate attribute ${attrName}.`;
             errors.push({
               message,
-              doenetMLrange: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
             });
             adjustedTagName = "_error";
           } else {
@@ -256,13 +257,14 @@ export function parseAndCompile(inText) {
         //We scrape the content of both from the in string and add them to the attribute array here
         cursor.firstChild();
         let attrName = inText.substring(cursor.from, cursor.to);
+        let beginAttributeInd = cursor.from + 1;
 
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}.`;
+            message = `Duplicate attribute ${attrName}.`;
             errors.push({
               message,
-              doenetMLrange: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: cursor.from + 1, end: cursor.to },
             });
             adjustedTagName = "_error";
           } else {
@@ -271,10 +273,10 @@ export function parseAndCompile(inText) {
         } else {
           cursor.nextSibling();
           if (attrName in attrs) {
-            message = `Duplicate attribute ${attrName}.  Found in component of type ${tagName}.`;
+            message = `Duplicate attribute ${attrName}.`;
             errors.push({
               message,
-              doenetMLrange: { begin: cursor.from, end: cursor.to },
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
             });
             adjustedTagName = "_error";
           } else {

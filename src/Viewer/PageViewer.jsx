@@ -1306,12 +1306,9 @@ export default function PageViewer(props) {
       borderWidth: 3,
       borderStyle: "solid",
     };
-    let nErrors = errorWarnings.current.errors.length;
     errorOverview = (
       <div style={errorStyle}>
-        <b>
-          This document contains {nErrors} error{nErrors > 1 ? "s" : ""} in it!
-        </b>
+        <b>This document contains errors!</b>
       </div>
     );
   }

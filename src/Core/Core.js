@@ -26,7 +26,7 @@ import { get as idb_get, set as idb_set } from "idb-keyval";
 import { toastType } from "../Tools/_framework/ToastTypes";
 import axios from "axios";
 import { gatherVariantComponents, getNumberOfVariants } from "./utils/variants";
-import { findAllNewlines } from "./utils/logging";
+import { findAllNewlines, getLineCharRange } from "./utils/logging";
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -473,6 +473,22 @@ export default class Core {
         coreInfo: this.coreInfo,
       },
     });
+
+    for (let errorWarning of [
+      ...this.errorWarnings.errors,
+      ...this.errorWarnings.warnings,
+    ]) {
+      let doenetMLrange = errorWarning.doenetMLrange;
+      if (
+        doenetMLrange?.doenetMLId === 0 &&
+        doenetMLrange.lineBegin === undefined
+      ) {
+        Object.assign(
+          doenetMLrange,
+          getLineCharRange(doenetMLrange, this.doenetMLNewlines),
+        );
+      }
+    }
 
     postMessage({
       messageType: "coreCreated",
@@ -1420,7 +1436,7 @@ export default class Core {
           }
         }
 
-        let message = `Duplicate component name: ${originalName}. Found in component of type ${componentClass.componentType}`;
+        let message = `Duplicate component name: ${originalName}.`;
         serializeFunctions.convertToErrorComponent(
           serializedComponent,
           message,
