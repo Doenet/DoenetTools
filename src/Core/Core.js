@@ -477,6 +477,7 @@ export default class Core {
     postMessage({
       messageType: "coreCreated",
       coreId: this.coreId,
+      errorWarnings: this.errorWarnings,
     });
   }
 

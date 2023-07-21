@@ -143,6 +143,7 @@ export default function PageViewer(props) {
   const coreCreated = useRef(false);
   const coreCreationInProgress = useRef(false);
   const coreId = useRef(null);
+  const errorWarnings = useRef(null);
 
   const resolveAllStateVariables = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
@@ -202,6 +203,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          errorWarnings.current = e.data.errorWarnings;
           coreCreationInProgress.current = false;
           preventMoreAnimations.current = false;
           for (let actionArgs of actionsBeforeCoreCreated.current) {
@@ -1296,6 +1298,24 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+  let errorOverview = null;
+  if (documentRenderer && errorWarnings.current?.errors.length > 0) {
+    let errorStyle = {
+      backgroundColor: "#ff9999",
+      textAlign: "center",
+      borderWidth: 3,
+      borderStyle: "solid",
+    };
+    let nErrors = errorWarnings.current.errors.length;
+    errorOverview = (
+      <div style={errorStyle}>
+        <b>
+          This document contains {nErrors} error{nErrors > 1 ? "s" : ""} in it!
+        </b>
+      </div>
+    );
+  }
+
   //Spacing around the whole doenetML document
   return (
     <ErrorBoundary
@@ -1306,6 +1326,7 @@ export default function PageViewer(props) {
     >
       {noCoreWarning}
       <div style={pageStyle} className="doenet-viewer">
+        {errorOverview}
         {documentRenderer}
       </div>
     </ErrorBoundary>
