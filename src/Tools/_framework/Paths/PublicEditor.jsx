@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -13,15 +7,9 @@ import {
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Center,
@@ -30,7 +18,6 @@ import {
   HStack,
   Icon,
   Link,
-  Select,
   Text,
   Tooltip,
   VStack,
@@ -48,113 +35,84 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-
-//Delete this action???
-export async function action({ params, request }) {
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
-
-  return { nothingToReturn: true };
-}
-
-function findFirstPageIdInContent(content) {
-  let pageId = null;
-
-  for (let item of content) {
-    if (item?.type == "order") {
-      let recursivePageId = findFirstPageIdInContent(item.content);
-      if (recursivePageId != null) {
-        pageId = recursivePageId;
-        break;
-      }
-    } else if (item?.type == "collectionLink") {
-      //Skip
-    } else {
-      pageId = item;
-      break;
-    }
-  }
-  return pageId;
-}
+import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function loader({ params }) {
-  const response = await axios.get("/api/getPortfolioEditorData.php", {
-    params: { doenetId: params.doenetId, publicEditor: true },
-  });
-  let data = response.data;
-  const activityData = { ...data.activity };
-  const courseId = data.courseId;
+  try {
+    let success = true;
+    let message = "";
 
-  let pageId = params.pageId;
-  if (params.pageId == "_") {
-    //find pageId in data.content
-    let pageId = findFirstPageIdInContent(activityData.content);
+    const { data } = await axios.get("/api/getPortfolioEditorData.php", {
+      params: { doenetId: params.doenetId, publicEditor: true },
+    });
+    const activityData = { ...data.activity };
+    const courseId = data.courseId;
 
-    //If we found a pageId then redirect there
-    //TODO: test what happens when there are only orders and no pageIds
-    if (pageId != "_") {
-      return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
+    let pageId = params.pageId;
+    if (params.pageId == "_") {
+      //find pageId in data.content
+      let pageId = findFirstPageIdInContent(activityData.content);
+
+      //If we found a pageId then redirect there
+      //TODO: test what happens when there are only orders and no pageIds
+      if (pageId != "_") {
+        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
+      }
     }
+
+    //Get the public doenetML of the Activity
+    const { data: data2 } = await axios.get(
+      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+    );
+
+    const { data: activityML } = await axios.get(
+      `/media/${data2.json.assignedCid}.doenet`,
+    );
+    //Find the first page's doenetML
+    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
+    const pageIds = activityML.match(regex);
+
+    //NEED AXIOS GET HERE!!!
+    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
+    const lastKnownCid = await cidFromText(doenetML);
+
+    const supportingFileResp = await axios.get(
+      "/api/loadSupportingFileInfo.php",
+      {
+        params: { doenetId: params.doenetId },
+      },
+    );
+
+    let supportingFileData = supportingFileResp.data;
+
+    //Win, Mac or Linux
+    let platform = "Linux";
+    if (navigator.platform.indexOf("Win") != -1) {
+      platform = "Win";
+    } else if (navigator.platform.indexOf("Mac") != -1) {
+      platform = "Mac";
+    }
+
+    return {
+      success,
+      message,
+      platform,
+      activityData,
+      pageId,
+      courseId,
+      lastKnownCid,
+      doenetML,
+      doenetId: params.doenetId,
+      supportingFileData,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
   }
-
-  //Get the public doenetML of the Activity
-  const response2 = await fetch(
-    `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
-  );
-  const data2 = await response2.json();
-  const cidResponse = await fetch(`/media/${data2.json.assignedCid}.doenet`);
-  const activityML = await cidResponse.text();
-
-  //Find the first page's doenetML
-  const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-  const pageIds = activityML.match(regex);
-
-  const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
-  const doenetML = await doenetMLResponse.text();
-  const lastKnownCid = await cidFromText(doenetML);
-
-  const supportingFileResp = await axios.get(
-    "/api/loadSupportingFileInfo.php",
-    {
-      params: { doenetId: params.doenetId },
-    },
-  );
-
-  let supportingFileData = supportingFileResp.data;
-
-  //Win, Mac or Linux
-  let platform = "Linux";
-  if (navigator.platform.indexOf("Win") != -1) {
-    platform = "Win";
-  } else if (navigator.platform.indexOf("Mac") != -1) {
-    platform = "Mac";
-  }
-
-  return {
-    platform,
-    activityData,
-    pageId,
-    courseId,
-    lastKnownCid,
-    doenetML,
-    doenetId: params.doenetId,
-    supportingFileData,
-  };
 }
 
 export function PublicEditor() {
-  const {
-    success,
-    message,
-    platform,
-    doenetId,
-    doenetML,
-    pageId,
-    courseId,
-    activityData,
-    lastKnownCid,
-  } = useLoaderData();
+  const { success, message, platform, doenetId, doenetML, activityData } =
+    useLoaderData();
 
   if (!success) {
     throw new Error(message);
@@ -213,10 +171,8 @@ export function PublicEditor() {
   variants.allPossibleVariants.forEach((variant) => {
     variantOptions.push({ value: variant, label: variant });
   });
-  // console.log("variants", variants);
 
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(
       JSON.stringify(generatedVariantInfo),
     );

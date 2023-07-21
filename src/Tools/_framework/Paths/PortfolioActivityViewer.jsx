@@ -63,6 +63,7 @@ export async function loader({ params }) {
 
     return {
       success: true,
+      doenetId: params.doenetId,
       doenetML,
       signedIn,
       label: data.label,
