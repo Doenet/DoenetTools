@@ -30,7 +30,17 @@ import {
   HStack,
   Icon,
   Link,
+  List,
+  ListIcon,
+  ListItem,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Select,
+  Tag,
   Text,
   Tooltip,
   VStack,
@@ -48,6 +58,7 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import { MdCheckCircle } from "react-icons/md";
 
 //Delete this action???
 export async function action({ params, request }) {
@@ -153,6 +164,11 @@ export function PublicEditor() {
     activityData,
     lastKnownCid,
   } = useLoaderData();
+
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
@@ -429,6 +445,9 @@ export function PublicEditor() {
                       attemptNumber={1}
                       generatedVariantCallback={variantCallback} //TODO:Replace
                       requestedVariantIndex={variants.index}
+                      setErrorsAndWarningsCallback={
+                        setErrorsAndWarningsCallback
+                      }
                       // setIsInErrorState={setIsInErrorState}
                       pageIsActive={true}
                     />
@@ -470,16 +489,135 @@ export function PublicEditor() {
                   borderBottom="solid 1px"
                   borderColor="doenet.mediumGray"
                 >
-                  <CodeMirror
-                    editorRef={editorRef}
-                    setInternalValueTo={doenetML}
-                    onBeforeChange={(value) => {
-                      textEditorDoenetML.current = value;
-                      if (!codeChanged) {
-                        setCodeChanged(true);
-                      }
-                    }}
-                  />
+                  <Box
+                    height={`calc(100vh - 198px)`}
+                    w="100%"
+                    overflow="scroll"
+                  >
+                    <CodeMirror
+                      editorRef={editorRef}
+                      setInternalValueTo={doenetML}
+                      onBeforeChange={(value) => {
+                        textEditorDoenetML.current = value;
+                        if (!codeChanged) {
+                          setCodeChanged(true);
+                        }
+                      }}
+                    />
+                  </Box>
+                  <Box bg="doenet.mainGray" h="32px" w="100%">
+                    <HStack
+                      ml="0px"
+                      // ml="33px"
+                      h="32px"
+                      bg="doenet.mainGray"
+                      // bg="doenet.canvas"
+                      pl="10px"
+                      pt="1px"
+                    >
+                      <Popover offset={[119, 5]}>
+                        <PopoverTrigger>
+                          <Tag
+                            tabIndex="0"
+                            cursor="pointer"
+                            size="md"
+                            colorScheme={
+                              errorsAndWarnings.warnings.length == 0
+                                ? "blackAlpha"
+                                : "yellow"
+                            }
+                          >
+                            {errorsAndWarnings.warnings.length} Warning
+                            {errorsAndWarnings.warnings.length != 1 && "s"}
+                          </Tag>
+                        </PopoverTrigger>
+                        {errorsAndWarnings.warnings.length == 0 ? (
+                          <PopoverContent>
+                            <PopoverHeader fontWeight="semibold">
+                              No Warnings
+                            </PopoverHeader>
+                          </PopoverContent>
+                        ) : (
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontWeight="semibold">
+                              Warning
+                              {errorsAndWarnings.warnings.length != 1 && "s"}
+                            </PopoverHeader>
+                            <PopoverBody maxH="40vh" overflow="scroll">
+                              <List spacing={2}>
+                                {errorsAndWarnings.warnings.map(
+                                  (warningObj, i) => {
+                                    return (
+                                      <ListItem key={i}>
+                                        <ListIcon
+                                          as={MdCheckCircle}
+                                          color="yellow.400"
+                                        />
+                                        Line #
+                                        {warningObj.doenetMLrange.lineBegin}{" "}
+                                        {warningObj.message}
+                                      </ListItem>
+                                    );
+                                  },
+                                )}
+                              </List>
+                            </PopoverBody>
+                          </PopoverContent>
+                        )}
+                      </Popover>
+
+                      <Popover offset={[119, 5]}>
+                        <PopoverTrigger>
+                          <Tag
+                            tabIndex="0"
+                            cursor="pointer"
+                            size="md"
+                            colorScheme={
+                              errorsAndWarnings.errors.length == 0
+                                ? "blackAlpha"
+                                : "red"
+                            }
+                          >
+                            {errorsAndWarnings.errors.length} Error
+                            {errorsAndWarnings.errors.length != 1 && "s"}
+                          </Tag>
+                        </PopoverTrigger>
+                        {errorsAndWarnings.errors.length == 0 ? (
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontWeight="semibold">
+                              No Errors
+                            </PopoverHeader>
+                          </PopoverContent>
+                        ) : (
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontWeight="semibold">
+                              Error
+                              {errorsAndWarnings.errors.length != 1 && "s"}
+                            </PopoverHeader>
+                            <PopoverBody maxH="40vh" overflow="scroll">
+                              <List spacing={2}>
+                                {errorsAndWarnings.errors.map((errorObj, i) => {
+                                  return (
+                                    <ListItem key={i}>
+                                      <ListIcon
+                                        as={MdCheckCircle}
+                                        color="red.500"
+                                      />
+                                      Line #{errorObj.doenetMLrange.lineBegin}{" "}
+                                      {errorObj.message}
+                                    </ListItem>
+                                  );
+                                })}
+                              </List>
+                            </PopoverBody>
+                          </PopoverContent>
+                        )}
+                      </Popover>
+                    </HStack>
+                  </Box>
                 </Box>
               </VStack>
             }

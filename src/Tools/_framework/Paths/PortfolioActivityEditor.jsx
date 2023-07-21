@@ -1717,7 +1717,7 @@ export function PortfolioActivityEditor() {
                       <Box
                         height={`calc(100vh - 166px)`}
                         w="100%"
-                        overflow="hidden"
+                        overflow="scroll"
                       >
                         <CodeMirror
                           editorRef={editorRef}
