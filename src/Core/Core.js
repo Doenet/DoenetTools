@@ -1635,6 +1635,7 @@ export default class Core {
         serializedComponent,
         lastErrorMessage,
       );
+      attributes = {};
       componentClass =
         this.componentInfoObjects.allComponentClasses[
           serializedComponent.componentType

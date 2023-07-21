@@ -1,7 +1,7 @@
 import { printDoenetMLrange } from "../../utils/logging";
 import BlockComponent from "./BlockComponent";
 
-export default class Error extends BlockComponent {
+export default class ErrorComponent extends BlockComponent {
   static componentType = "_error";
   static renderChildren = true;
 

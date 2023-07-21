@@ -525,4 +525,118 @@ a />
       .eq(0)
       .should("have.text", "＿");
   });
+
+  it("Errors in macros", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<!-- make sure get right character numbers after comment -->
+$A{assignNames="a" assignnames="b"}
+<p>
+  <!-- make sure get right character numbers after comment -->
+  $B{a="b" a="c"}
+    $$f{b b}(x)
+      $C{d="b"
+  d}
+</p>
+     $D{a="$b{c c}"}
+   $$g{prop="a"}(x)
+ $E{a="$b{c='$d{e e}'}"}
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Error in macro: cannot repeat assignNames",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $A{assignNames="a" assignnames="b"}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 3, character 1 through line 3, character 35",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate attribute a",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $B{a="b" a="c"}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 6, character 3 through line 6, character 17",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate attribute b",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", `Found: $$f{b b}`);
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 7, character 5 through line 7, character 15",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate attribute d",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $C{d="b"\n  d}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 8, character 7 through line 9, character 4",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate attribute c",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $D{a="$b{c c}"}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 11, character 6 through line 11, character 20",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $$g{prop="a"}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 12, character 4 through line 12, character 19",
+    );
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate attribute e",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      `Found: $E{a="$b{c='$d{e e}'}"}`,
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 13, character 2 through line 13, character 24",
+    );
+  });
 });

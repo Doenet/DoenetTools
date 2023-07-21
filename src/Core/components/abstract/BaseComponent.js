@@ -353,7 +353,12 @@ export default class BaseComponent {
   }
 
   static returnChildGroups() {
-    return [];
+    return [
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
+    ];
   }
 
   static get childGroups() {

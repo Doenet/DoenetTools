@@ -23,7 +23,7 @@ export default React.memo(function Error(props) {
       );
     }
     displayedMessage = (
-      <div id={id} style={errorStyle}>
+      <div style={errorStyle}>
         <b>Error</b>: {SVs.message}
         {rangeMessage}
       </div>

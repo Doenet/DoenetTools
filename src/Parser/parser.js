@@ -35,6 +35,7 @@ export function parseAndCompile(inText) {
       let message;
 
       let attrs = {};
+      let attrRanges = {};
       while (cursor.nextSibling()) {
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
@@ -93,6 +94,10 @@ export function parseAndCompile(inText) {
             adjustedTagName = "_error";
           } else {
             attrs[attrName] = attrValue;
+            attrRanges[attrName] = {
+              begin: cursor.from + 2,
+              end: cursor.to - 1,
+            };
           }
         }
         //move out of Attribute to maintain loop invariant
@@ -114,6 +119,7 @@ export function parseAndCompile(inText) {
         element.state = { message };
       } else {
         element.props = { ...attrs };
+        element.attributeRanges = { ...attrRanges };
       }
 
       // now we go through all of the other non-terminals in this row until we get to the closing tag,
@@ -135,6 +141,17 @@ export function parseAndCompile(inText) {
           // Will always be the matching tag (and the last tag in the list)
           break;
         } else if (cursor.name === "Comment") {
+          // return a comment that will be ignored,
+          // but need it to calculate doenetMLrange
+          // from any strings that follow it (needed in particular for macros)
+          element.children.push({
+            componentType: "_comment",
+            state: { text: inText.substring(cursor.from, cursor.to) },
+            doenetMLrange: {
+              begin: cursor.from,
+              end: cursor.to,
+            },
+          });
           //ignore comments
           continue;
         } else if (cursor.name === "MismatchedCloseTag") {
@@ -233,6 +250,7 @@ export function parseAndCompile(inText) {
       let message;
 
       let attrs = {};
+      let attrRanges = {};
       while (cursor.nextSibling()) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
@@ -264,7 +282,7 @@ export function parseAndCompile(inText) {
             message = `Duplicate attribute ${attrName}.`;
             errors.push({
               message,
-              doenetMLrange: { begin: cursor.from + 1, end: cursor.to },
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
             });
             adjustedTagName = "_error";
           } else {
@@ -283,6 +301,7 @@ export function parseAndCompile(inText) {
             //fuddling to ignore the quotes
             let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
             attrs[attrName] = attrValue;
+            attrRanges[attrName] = { begin: cursor.from + 1, end: cursor.to };
           }
         }
         //move out of Attribute to maintain loop invariant
@@ -317,6 +336,7 @@ export function parseAndCompile(inText) {
         element.state = { message };
       } else {
         element.props = { ...attrs };
+        element.attributeRanges = { ...attrRanges };
       }
       return element;
     } else {
@@ -330,8 +350,17 @@ export function parseAndCompile(inText) {
     if (tc.node.name === "Element") {
       return compileElement(tc.node.cursor);
     } else if (tc.node.name === "Comment") {
-      //I miss result types
-      return null;
+      // return a comment that will be ignored,
+      // but need it to calculate doenetMLrange
+      // from any strings that follow it (needed in particular for macros)
+      return {
+        componentType: "_comment",
+        state: { text: inText.substring(tc.from, tc.to) },
+        doenetMLrange: {
+          begin: tc.from,
+          end: tc.to,
+        },
+      };
     } else if (tc.node.name === "Text") {
       //TODO probably don't need to trim anymore?
       let txt = inText.substring(tc.node.from, tc.node.to);

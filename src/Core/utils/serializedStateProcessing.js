@@ -74,6 +74,11 @@ export async function expandDoenetMLsToFullSerializedComponents({
     // as applying macros could create additional blank string children
     removeBlankStringChildren(serializedComponents, componentInfoObjects);
 
+    // remove comments after applying macros,
+    // aswe need the comments in place while processing macros
+    // to correctly calculate their doenetMLrange
+    serializedComponents = removeComments(serializedComponents);
+
     decodeXMLEntities(serializedComponents);
 
     result = applySugar({ serializedComponents, componentInfoObjects });
@@ -294,11 +299,31 @@ export function removeBlankStringChildren(
     // from childrenForComponent of an attribute that is not yet a component?
     for (let attrName in component.attributes) {
       let comp = component.attributes[attrName].component;
-      if (comp && comp.children) {
+      if (comp?.children) {
         removeBlankStringChildren([comp], componentInfoObjects);
       }
     }
   }
+}
+
+function removeComments(serializedComponents) {
+  let filteredComponents = serializedComponents.filter(
+    (x) => x.componentType !== "_comment",
+  );
+  for (let component of filteredComponents) {
+    if (component.children) {
+      component.children = removeComments(component.children);
+    }
+
+    for (let attrName in component.attributes) {
+      let comp = component.attributes[attrName].component;
+      if (comp?.children) {
+        comp.children = removeComments(comp.children);
+      }
+    }
+  }
+
+  return filteredComponents;
 }
 
 function findContentCopies({ serializedComponents }) {
@@ -1107,8 +1132,12 @@ function breakUpTargetIntoPropsAndIndices(
               propArray,
               componentInfoObjects,
             });
-            errors.push(...componentResult.errors);
             warnings.push(...componentResult.warnings);
+
+            // Note: we ignore errors produced by createComponentFromExtendedSource,
+            // as they won't be displayed in the document itself.
+            // Instead, these errors will make success be false,
+            // which will trigger a warning below
 
             if (componentResult.success) {
               let newComponent = componentResult.newComponent;
@@ -1286,6 +1315,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
             let res = componentFromAttribute({
               attrObj,
               value: component.props[prop],
+              attributeRange: component.attributeRanges?.[prop],
               originalComponentProps,
               componentInfoObjects,
             });
@@ -1299,6 +1329,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
             if (componentClass.acceptAnyAttribute) {
               let res = componentFromAttribute({
                 value: component.props[prop],
+                attributeRange: component.attributeRanges?.[prop],
                 originalComponentProps,
                 componentInfoObjects,
               });
@@ -1364,6 +1395,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
 export function componentFromAttribute({
   attrObj,
   value,
+  attributeRange,
   originalComponentProps,
   componentInfoObjects,
 }) {
@@ -1422,6 +1454,10 @@ export function componentFromAttribute({
       };
 
       removeBlankStringChildren([newComponent], componentInfoObjects);
+    }
+
+    if (attributeRange) {
+      newComponent.doenetMLrange = attributeRange;
     }
 
     if (
@@ -1531,27 +1567,50 @@ function findPreSugarIndsAndMarkFromSugar(components) {
   return preSugarIndsFound;
 }
 
-export function applyMacros(serializedComponents, componentInfoObjects) {
+export function applyMacros(
+  serializedComponents,
+  componentInfoObjects,
+  startDoenetMLInd = 0,
+) {
   let errors = [];
   let warnings = [];
 
   for (let component of serializedComponents) {
     if (component.children) {
-      let res = applyMacros(component.children, componentInfoObjects);
+      let startDoenetMLIndForChildren;
+      if (component.doenetMLrange) {
+        startDoenetMLIndForChildren = component.doenetMLrange.openEnd;
+        if (startDoenetMLIndForChildren === undefined) {
+          startDoenetMLIndForChildren = component.doenetMLrange.begin - 1;
+        }
+      }
+      let res = applyMacros(
+        component.children,
+        componentInfoObjects,
+        startDoenetMLIndForChildren,
+      );
       errors.push(...res.errors);
       warnings.push(...res.warnings);
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
+        let startDoenetMLIndForAttr = Number(
+          component.attributeRanges[attrName]?.begin - 1,
+        );
         if (attribute.component) {
-          let res = applyMacros([attribute.component], componentInfoObjects);
+          let res = applyMacros(
+            [attribute.component],
+            componentInfoObjects,
+            startDoenetMLIndForAttr,
+          );
           errors.push(...res.errors);
           warnings.push(...res.warnings);
         } else if (attribute.childrenForComponent) {
           let res = applyMacros(
             attribute.childrenForComponent,
             componentInfoObjects,
+            startDoenetMLIndForAttr,
           );
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -1560,15 +1619,25 @@ export function applyMacros(serializedComponents, componentInfoObjects) {
     }
   }
 
-  let res = substituteMacros(serializedComponents, componentInfoObjects);
+  let res = substituteMacros(
+    serializedComponents,
+    componentInfoObjects,
+    startDoenetMLInd,
+  );
   errors.push(...res.errors);
   warnings.push(...res.warnings);
   return { errors, warnings };
 }
 
-function substituteMacros(serializedComponents, componentInfoObjects) {
+function substituteMacros(
+  serializedComponents,
+  componentInfoObjects,
+  startDoenetMLInd = 0,
+) {
   let errors = [];
   let warnings = [];
+
+  let doenetMLcharInd = startDoenetMLInd;
 
   for (
     let componentInd = 0;
@@ -1579,6 +1648,8 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
     if (typeof component === "string") {
       let startInd = 0;
+      let nextDoenetMLcharIndAdjustment;
+
       while (startInd < component.length) {
         let str = component;
         let result = findFirstFullMacroInString(str.slice(startInd));
@@ -1601,44 +1672,45 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           propArray: result.propArray,
           componentInfoObjects,
         });
-        errors.push(...componentResult.errors);
         warnings.push(...componentResult.warnings);
+
+        // Note: we ignore errors produced by createComponentFromExtendedSource,
+        // as they won't be displayed in the document itself.
+        // Instead, these errors will make success be false,
+        // which will trigger an error below
 
         let newComponent;
         if (componentResult.success) {
           newComponent = componentResult.newComponent;
+          if (Number.isFinite(doenetMLcharInd)) {
+            newComponent.doenetMLrange = {
+              begin: doenetMLcharInd + 1 + firstIndMatched,
+              end: doenetMLcharInd + firstIndMatched + matchLength,
+            };
+          }
         } else {
           let strWithError = str.slice(
             firstIndMatched,
             firstIndMatched + matchLength,
           );
-          let macroStartInd = firstIndMatched;
-          // TODO: if previous component is a string,
-          // keep going back and add string lengths to get actual index
-          if (
-            componentInd > 0 &&
-            serializedComponents[componentInd - 1].doenetMLrange
-          ) {
-            let previousRange =
-              serializedComponents[componentInd - 1].doenetMLrange;
-            if (previousRange.closeEnd) {
-              macroStartInd += previousRange.closeEnd;
-            } else if (previousRange.selfCloseEnd) {
-              macroStartInd += previousRange.selfCloseBegin;
-            }
+
+          let doenetMLrange;
+          if (Number.isFinite(doenetMLcharInd)) {
+            doenetMLrange = {
+              begin: doenetMLcharInd + 1 + firstIndMatched,
+              end: doenetMLcharInd + firstIndMatched + matchLength,
+            };
           }
 
-          let message = `${componentResult.errors[0].message}. Found: ${strWithError}`;
+          let message = `${componentResult.errors[0].message} Found: ${strWithError}.`;
           errors.push({
             message,
-            doenetMLrange: {
-              begin: macroStartInd,
-              end: macroStartInd + matchLength,
-            },
+            doenetMLrange,
           });
           newComponent = {
             componentType: "_error",
             state: { message },
+            doenetMLrange,
           };
         }
 
@@ -1704,6 +1776,17 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
           componentsFromMacro = evaluateResult.componentsFromMacro;
 
+          if (Number.isFinite(doenetMLcharInd)) {
+            let lastInd = component.length;
+            if (componentsFromMacro.length > 1) {
+              lastInd -= componentsFromMacro[1].length;
+            }
+            componentsFromMacro[0].doenetMLrange = {
+              begin: doenetMLcharInd + 1 + firstIndMatched,
+              end: doenetMLcharInd + lastInd,
+            };
+          }
+
           numComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
           if (!includeFirstInRemaining) {
             numComponentsToRemove++;
@@ -1733,6 +1816,9 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           ...replacements,
         );
 
+        let indOfLastComponentAddedBackIn =
+          componentInd - numComponentsToRemove + replacements.length;
+
         if (firstIndMatched > 0) {
           // increment componentInd because we now have to skip
           // over two components
@@ -1741,11 +1827,41 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           componentInd++;
         }
 
+        let nextComponentThatWillProcess = componentInd + 1;
+
+        if (nextComponentThatWillProcess <= indOfLastComponentAddedBackIn) {
+          // next time, we'll reprocess the last string, so adjust doenetMLcharInd
+          let lastAddedIn = serializedComponents[indOfLastComponentAddedBackIn];
+          if (typeof lastAddedIn === "string") {
+            nextDoenetMLcharIndAdjustment = lastAddedIn.length;
+          }
+        }
+
         // break out of loop processing string,
         // as finished current one
         // (possibly breaking it into pieces, so will address remainder as other component)
 
         break;
+      }
+      doenetMLcharInd += component.length;
+
+      if (nextDoenetMLcharIndAdjustment !== undefined) {
+        doenetMLcharInd -= nextDoenetMLcharIndAdjustment;
+      }
+    } else {
+      let doenetMLrange = component.doenetMLrange;
+      if (doenetMLrange) {
+        if (doenetMLrange.selfCloseBegin !== undefined) {
+          doenetMLcharInd = doenetMLrange.selfCloseEnd;
+        } else if (doenetMLrange.openBegin !== undefined) {
+          doenetMLcharInd = doenetMLrange.closeEnd;
+        } else if (doenetMLrange.begin !== undefined) {
+          doenetMLcharInd = doenetMLrange.end;
+        } else {
+          doenetMLcharInd = NaN;
+        }
+      } else {
+        doenetMLcharInd = NaN;
       }
     }
   }
@@ -1946,7 +2062,7 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
   ) {
     errors.push({
       message:
-        "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex",
+        "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex.",
     });
     return { success: false, errors, warnings };
   }
@@ -1957,7 +2073,7 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
       if (prop.toLowerCase() === "assignnames") {
         if (assignNames) {
           errors.push({
-            message: "Error in macro: cannot repeat assignNames",
+            message: "Error in macro: cannot repeat assignNames.",
           });
           return { success: false, errors, warnings };
         } else {
