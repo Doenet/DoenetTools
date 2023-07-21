@@ -1300,6 +1300,159 @@ export function PortfolioActivityEditor() {
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+      {
+        message: "Invalid component type: bad",
+        doenetMLrange: {
+          selfCloseBegin: 1,
+          selfCloseEnd: 7,
+          doenetMLId: 0,
+          lineBegin: 1,
+          charBegin: 1,
+          lineEnd: 1,
+          charEnd: 7,
+        },
+      },
+    ],
+    warnings: [
+      {
+        message:
+          "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
+        doenetMLrange: {
+          selfCloseBegin: 10,
+          selfCloseEnd: 33,
+          doenetMLId: 0,
+          lineBegin: 3,
+          charBegin: 1,
+          lineEnd: 3,
+          charEnd: 24,
+        },
+      },
+      {
+        message:
+          "Attribute nInputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
+        doenetMLrange: {
+          selfCloseBegin: 10,
+          selfCloseEnd: 33,
+          doenetMLId: 0,
+          lineBegin: 3,
+          charBegin: 1,
+          lineEnd: 3,
+          charEnd: 24,
+        },
+      },
+    ],
+  });
+
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -1664,6 +1817,9 @@ export function PortfolioActivityEditor() {
                             generatedVariantCallback={variantCallback} //TODO:Replace
                             requestedVariantIndex={variants.index}
                             // setIsInErrorState={setIsInErrorState}
+                            setErrorsAndWarningsCallback={
+                              setErrorsAndWarningsCallback
+                            }
                             pageIsActive={true}
                           />
                           <Box marginBottom="50vh" />
@@ -1693,117 +1849,137 @@ export function PortfolioActivityEditor() {
                         Documentation <ExternalLinkIcon mx="2px" />
                       </Link>
                     </HStack>
+
                     <Box
                       top="50px"
-                      w="100%"
                       boxSizing="border-box"
                       background="doenet.canvas"
-                      height={`calc(100vh - 164px)`}
+                      height={`calc(100vh - 132px)`}
                       overflowY="scroll"
                       borderRight="solid 1px"
                       borderTop="solid 1px"
                       borderBottom="solid 1px"
                       borderColor="doenet.mediumGray"
+                      w="100%"
                     >
-                      <CodeMirror
-                        editorRef={editorRef}
-                        setInternalValueTo={initializeEditorDoenetML.current}
-                        onBeforeChange={(value) => {
-                          textEditorDoenetML.current = value;
-                          setEditorDoenetML(value);
-                          if (!codeChanged) {
-                            setCodeChanged(true);
-                          }
-                          // Debounce save to server at 3 seconds
-                          clearTimeout(timeout.current);
-                          timeout.current = setTimeout(async function () {
-                            handleSaveDraft();
-                          }, 3000); //3 seconds
-                        }}
-                      />
-                    </Box>
-
-                    <Box bg="doenet.mainGray" h="32px" w="100%">
-                      <HStack
-                        ml="0px"
-                        // ml="33px"
-                        h="32px"
-                        bg="doenet.mainGray"
-                        // bg="doenet.canvas"
-                        pl="10px"
-                        pt="1px"
+                      <Box
+                        height={`calc(100vh - 164px)`}
+                        w="100%"
+                        overflow="hidden"
                       >
-                        <Popover offset={[119, 5]}>
-                          <PopoverTrigger>
-                            <Tag tabIndex="0" cursor="pointer" size="md">
-                              2 Warnings
-                            </Tag>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader fontWeight="semibold">
-                              Warnings
-                            </PopoverHeader>
-                            <PopoverBody>
-                              <List spacing={2}>
-                                <ListItem>
-                                  <ListIcon
-                                    as={MdCheckCircle}
-                                    color="yellow.400"
-                                  />
-                                  Lorem ipsum dolor sit amet
-                                </ListItem>
-                                <ListItem>
-                                  <ListIcon
-                                    as={MdCheckCircle}
-                                    color="yellow.400"
-                                  />
-                                  Consectetur adipiscing elit
-                                </ListItem>
-                              </List>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
+                        <CodeMirror
+                          editorRef={editorRef}
+                          setInternalValueTo={initializeEditorDoenetML.current}
+                          onBeforeChange={(value) => {
+                            textEditorDoenetML.current = value;
+                            setEditorDoenetML(value);
+                            if (!codeChanged) {
+                              setCodeChanged(true);
+                            }
+                            // Debounce save to server at 3 seconds
+                            clearTimeout(timeout.current);
+                            timeout.current = setTimeout(async function () {
+                              handleSaveDraft();
+                            }, 3000); //3 seconds
+                          }}
+                        />
+                      </Box>
 
-                        <Popover offset={[119, 5]}>
-                          <PopoverTrigger>
-                            <Tag cursor="pointer" size="md">
-                              3 Errors
-                            </Tag>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader fontWeight="semibold">
-                              Errors
-                            </PopoverHeader>
-                            <PopoverBody>
-                              <List spacing={2}>
-                                <ListItem>
-                                  <ListIcon
-                                    as={MdCheckCircle}
-                                    color="red.500"
-                                  />
-                                  Lorem ipsum dolor sit amet
-                                </ListItem>
-                                <ListItem>
-                                  <ListIcon
-                                    as={MdCheckCircle}
-                                    color="red.500"
-                                  />
-                                  Consectetur adipiscing elit
-                                </ListItem>
-                                <ListItem>
-                                  <ListIcon
-                                    as={MdCheckCircle}
-                                    color="red.500"
-                                  />
-                                  Error 3
-                                </ListItem>
-                              </List>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      </HStack>
+                      <Box bg="doenet.mainGray" h="32px" w="100%">
+                        <HStack
+                          ml="0px"
+                          // ml="33px"
+                          h="32px"
+                          bg="doenet.mainGray"
+                          // bg="doenet.canvas"
+                          pl="10px"
+                          pt="1px"
+                        >
+                          <Popover offset={[119, 5]}>
+                            <PopoverTrigger>
+                              <Tag tabIndex="0" cursor="pointer" size="md">
+                                {errorsAndWarnings.warnings.length} Warning
+                                {errorsAndWarnings.warnings.length != 1 && "s"}
+                              </Tag>
+                            </PopoverTrigger>
+                            {errorsAndWarnings.warnings.length == 0 ? (
+                              <PopoverContent>
+                                <PopoverHeader fontWeight="semibold">
+                                  No Warnings
+                                </PopoverHeader>
+                              </PopoverContent>
+                            ) : (
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverHeader fontWeight="semibold">
+                                  Warning
+                                  {errorsAndWarnings.warnings.length != 1 &&
+                                    "s"}
+                                </PopoverHeader>
+                                <PopoverBody>
+                                  <List spacing={2}>
+                                    {errorsAndWarnings.warnings.map(
+                                      (warningObj, i) => {
+                                        return (
+                                          <ListItem key={i}>
+                                            <ListIcon
+                                              as={MdCheckCircle}
+                                              color="yellow.400"
+                                            />
+                                            {warningObj.message}
+                                          </ListItem>
+                                        );
+                                      },
+                                    )}
+                                  </List>
+                                </PopoverBody>
+                              </PopoverContent>
+                            )}
+                          </Popover>
+
+                          <Popover offset={[119, 5]}>
+                            <PopoverTrigger>
+                              <Tag cursor="pointer" size="md">
+                                {errorsAndWarnings.errors.length} Error
+                                {errorsAndWarnings.errors.length != 1 && "s"}
+                              </Tag>
+                            </PopoverTrigger>
+                            {errorsAndWarnings.errors.length == 0 ? (
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverHeader fontWeight="semibold">
+                                  No Errors
+                                </PopoverHeader>
+                              </PopoverContent>
+                            ) : (
+                              <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverHeader fontWeight="semibold">
+                                  Error
+                                  {errorsAndWarnings.errors.length != 1 && "s"}
+                                </PopoverHeader>
+                                <PopoverBody>
+                                  <List spacing={2}>
+                                    {errorsAndWarnings.errors.map(
+                                      (warningObj, i) => {
+                                        return (
+                                          <ListItem key={i}>
+                                            <ListIcon
+                                              as={MdCheckCircle}
+                                              color="red.500"
+                                            />
+                                            {warningObj.message}
+                                          </ListItem>
+                                        );
+                                      },
+                                    )}
+                                  </List>
+                                </PopoverBody>
+                              </PopoverContent>
+                            )}
+                          </Popover>
+                        </HStack>
+                      </Box>
                     </Box>
                   </VStack>
                 }
@@ -2024,19 +2200,7 @@ const ResizeableSideBySide = ({
         alignSelf="start"
         paddingTop="10px"
       >
-        <Box
-          top="50px"
-          boxSizing="border-box"
-          background="doenet.canvas"
-          height={`calc(100vh - ${headerHeight + 20}px)`}
-          overflowY="scroll"
-          borderRight="solid 1px"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
-          borderColor="doenet.mediumGray"
-        >
-          {right}
-        </Box>
+        {right}
       </GridItem>
     </Grid>
   );
