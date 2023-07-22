@@ -505,7 +505,10 @@ function substituteAttributeDeprecations(serializedComponents) {
     graph: {
       xlabel: { removeInVersion: "0.7" },
       ylabel: { removeInVersion: "0.7" },
+      height: { removeInVersion: "0.7" },
     },
+    image: { height: { removeInVersion: "0.7" } },
+    video: { height: { removeInVersion: "0.7" } },
     conditionalcontent: { maximumnumbertoshow: { removeInVersion: "0.7" } },
     angle: { draggable: { removeInVersion: "0.7" } },
   };

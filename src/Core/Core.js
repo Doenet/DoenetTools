@@ -418,8 +418,6 @@ export default class Core {
     this.messageViewerReady();
 
     this.resolveInitialized();
-
-    console.log(this.errorWarnings);
   }
 
   async onDocumentFirstVisible() {
@@ -495,7 +493,9 @@ export default class Core {
       errorWarnings: this.errorWarnings,
     });
 
-    this.postErrorWarnings();
+    if (this.newErrorWarning) {
+      this.postErrorWarnings();
+    }
   }
 
   async postUpdateRenderers(args, init = false) {
@@ -512,6 +512,12 @@ export default class Core {
   }
 
   postErrorWarnings() {
+    // keep only the last warnings
+    let warningLimit = 1000;
+    this.errorWarnings.warnings = this.errorWarnings.warnings.slice(
+      -warningLimit,
+    );
+
     for (let errorWarning of [
       ...this.errorWarnings.errors,
       ...this.errorWarnings.warnings,
@@ -527,13 +533,6 @@ export default class Core {
         );
       }
     }
-
-    this.errorWarnings.errors.sort(
-      (a, b) => a.doenetMLrange?.begin - b.doenetMLrange?.begin,
-    );
-    this.errorWarnings.warnings.sort(
-      (a, b) => a.doenetMLrange?.begin - b.doenetMLrange?.begin,
-    );
 
     this.newErrorWarning = false;
 
@@ -4920,6 +4919,8 @@ export default class Core {
     //   that contains a given array key (if there are many, just return one)
     //   This variable may not yet be created.
 
+    let core = this;
+
     stateVarObj.arrayValues = [];
 
     if (stateVarObj.numDimensions === undefined) {
@@ -4945,13 +4946,13 @@ export default class Core {
         let index = stateVarObj.keyToIndex(arrayKey);
         let numDimensionsInArrayKey = index.length;
         if (!numDimensionsInArrayKey > stateVarObj.numDimensions) {
-          this.errorWarnings.warnings.push({
+          core.errorWarnings.warnings.push({
             message:
               "Cannot set array value.  Number of dimensions is too large.",
             level: 2,
             doenetMLrange: component.doenetMLrange,
           });
-          this.newErrorWarning = true;
+          core.newErrorWarning = true;
           return { nFailures: 1 };
         }
         let arrayValuesDrillDown = arrayValues;
@@ -4964,12 +4965,12 @@ export default class Core {
             arrayValuesDrillDown = arrayValuesDrillDown[indComponent];
             arraySizeDrillDown = arraySizeDrillDown.slice(1);
           } else {
-            this.errorWarnings.warnings.push({
+            core.errorWarnings.warnings.push({
               message: "ignore setting array value out of bounds",
               level: 2,
               doenetMLrange: component.doenetMLrange,
             });
-            this.newErrorWarning = true;
+            core.newErrorWarning = true;
             return { nFailures: 1 };
           }
         }
@@ -4990,12 +4991,12 @@ export default class Core {
             // given that size of arrayValuesPieces is arraySizePiece
 
             if (!Array.isArray(desiredValue)) {
-              this.errorWarnings.warnings.push({
+              core.errorWarnings.warnings.push({
                 message: "ignoring array values with insufficient dimensions",
                 level: 2,
                 doenetMLrange: component.doenetMLrange,
               });
-              this.newErrorWarning = true;
+              core.newErrorWarning = true;
               return { nFailures: 1 };
             }
 
@@ -5003,12 +5004,12 @@ export default class Core {
 
             let currentSize = arraySizePiece[0];
             if (desiredValue.length > currentSize) {
-              this.errorWarnings.warnings.push({
+              core.errorWarnings.warnings.push({
                 message: "ignoring array values of out bounds",
                 level: 2,
                 doenetMLrange: component.doenetMLrange,
               });
-              this.newErrorWarning = true;
+              core.newErrorWarning = true;
               nFailuresSub += desiredValue.length - currentSize;
               desiredValue = desiredValue.slice(0, currentSize);
             }
@@ -5170,12 +5171,12 @@ export default class Core {
           arrayValues[ind] = value;
           return { nFailures: 0 };
         } else {
-          this.errorWarnings.warnings.push({
+          core.errorWarnings.warnings.push({
             message: `Ignoring setting array values out of bounds: ${arrayKey} of ${stateVariable}`,
             level: 2,
             doenetMLrange: component.doenetMLrange,
           });
-          this.newErrorWarning = true;
+          core.newErrorWarning = true;
           return { nFailures: 1 };
         }
       };
