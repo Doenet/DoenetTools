@@ -591,6 +591,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     startNum = 0,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
@@ -631,9 +634,16 @@ export default class SampleRandomNumbers extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       indOffset: startNum,
       componentInfoObjects,
+      doenetMLrange: component.doenetMLrange,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -641,6 +651,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     let replacementChanges = [];
 
     let sampledValues = await component.stateValues.sampledValues;
@@ -674,6 +688,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
           startNum: component.replacements.length,
           flags,
         });
+        errors.push(...result.errors);
+        warnings.push(...result.warnings);
 
         let replacementInstruction = {
           changeType: "add",

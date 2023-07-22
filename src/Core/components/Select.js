@@ -532,6 +532,9 @@ export default class Select extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
+    let errors = [];
+    let warnings = [];
+
     let replacements = [];
 
     let optionChildren = await component.stateValues.optionChildren;
@@ -606,12 +609,15 @@ export default class Select extends CompositeComponent {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
         indOffset: ind,
+        doenetMLrange: component.doenetMLrange,
       });
+      errors.push(...processResult.errors);
+      warnings.push(...processResult.warnings);
 
       newReplacements.push(processResult.serializedComponents[0]);
     }
 
-    return { replacements: newReplacements };
+    return { replacements: newReplacements, errors, warnings };
   }
 
   static calculateReplacementChanges() {

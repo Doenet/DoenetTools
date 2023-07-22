@@ -2444,6 +2444,15 @@ export default class Core {
         this.publicCaseInsensitiveAliasSubstitutions.bind(this),
     });
 
+    if (result.errors.length > 0) {
+      this.errorWarnings.errors.push(...result.errors);
+      this.newErrorWarning = true;
+    }
+    if (result.warnings.length > 0) {
+      this.errorWarnings.warnings.push(...result.warnings);
+      this.newErrorWarning = true;
+    }
+
     // console.log(`expand result for ${component.componentName}`)
     // console.log(JSON.parse(JSON.stringify(result)));
 
@@ -2596,9 +2605,10 @@ export default class Core {
     // console.log(`name of composite shadowing: ${component.componentName}`)
     // console.log(`name of shadowed composite: ${shadowedComposite.componentName}`)
 
+    let compositeMediatingTheShadow =
+      this.components[nameOfCompositeMediatingTheShadow];
+
     if (component.constructor.assignNamesToReplacements) {
-      let compositeMediatingTheShadow =
-        this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace =
         compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames =
@@ -2662,7 +2672,16 @@ export default class Core {
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
         shadowingComposite: true,
+        doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
       });
+      if (processResult.errors.length > 0) {
+        this.errorWarnings.errors.push(...processResult.errors);
+        this.newErrorWarning = true;
+      }
+      if (processResult.warnings.length > 0) {
+        this.errorWarnings.warnings.push(...processResult.warnings);
+        this.newErrorWarning = true;
+      }
 
       serializedReplacements = processResult.serializedComponents;
 
@@ -2694,7 +2713,16 @@ export default class Core {
           indOffset: serializedReplacements.length,
           componentInfoObjects: this.componentInfoObjects,
           originalNamesAreConsistent: true,
+          doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
         });
+        if (processResult.errors.length > 0) {
+          this.errorWarnings.errors.push(...processResult.errors);
+          this.newErrorWarning = true;
+        }
+        if (processResult.warnings.length > 0) {
+          this.errorWarnings.warnings.push(...processResult.warnings);
+          this.newErrorWarning = true;
+        }
 
         serializedReplacements.push(...processResult.serializedComponents);
       }
@@ -2711,7 +2739,16 @@ export default class Core {
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
         shadowingComposite: true,
+        doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
       });
+      if (processResult.errors.length > 0) {
+        this.errorWarnings.errors.push(...processResult.errors);
+        this.newErrorWarning = true;
+      }
+      if (processResult.warnings.length > 0) {
+        this.errorWarnings.warnings.push(...processResult.warnings);
+        this.newErrorWarning = true;
+      }
 
       serializedReplacements = processResult.serializedComponents;
     }
@@ -2727,6 +2764,15 @@ export default class Core {
       publicCaseInsensitiveAliasSubstitutions:
         this.publicCaseInsensitiveAliasSubstitutions.bind(this),
     });
+
+    if (verificationResult.errors.length > 0) {
+      this.errorWarnings.errors.push(...verificationResult.errors);
+      this.newErrorWarning = true;
+    }
+    if (verificationResult.warnings.length > 0) {
+      this.errorWarnings.warnings.push(...verificationResult.warnings);
+      this.newErrorWarning = true;
+    }
 
     serializedReplacements = verificationResult.replacements;
 
@@ -3145,6 +3191,7 @@ export default class Core {
     stateVariableDefinitions,
   }) {
     let attributes = componentClass.createAttributesObject();
+    let core = this;
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -3284,11 +3331,20 @@ export default class Core {
           }
         }
 
-        attributeValue = validateAttributeValue({
+        let res = validateAttributeValue({
           value: attributeValue,
           attributeSpecification,
           attribute: attrName,
         });
+        attributeValue = res.value;
+        if (res.errors.length > 0) {
+          core.errorWarnings.errors.push(...res.errors);
+          core.newErrorWarning = true;
+        }
+        if (res.warnings.length > 0) {
+          core.errorWarnings.warnings.push(...res.warnings);
+          core.newErrorWarning = true;
+        }
 
         return {
           setValue: { [varName]: attributeValue },
@@ -3335,11 +3391,20 @@ export default class Core {
             } else {
               // no component or primitive, so value is essential and give it the desired value, but validated
 
-              let attributeValue = validateAttributeValue({
+              let res = validateAttributeValue({
                 value: desiredStateVariableValues[varName],
                 attributeSpecification,
                 attribute: attrName,
               });
+              let attributeValue = res.value;
+              if (res.errors.length > 0) {
+                core.errorWarnings.errors.push(...res.errors);
+                core.newErrorWarning = true;
+              }
+              if (res.warnings.length > 0) {
+                core.errorWarnings.warnings.push(...res.warnings);
+                core.newErrorWarning = true;
+              }
 
               return {
                 success: true,
@@ -3589,6 +3654,7 @@ export default class Core {
     componentClass,
   }) {
     let targetComponent = this._components[redefineDependencies.targetName];
+    let core = this;
 
     if (redefineDependencies.propVariable) {
       // if we have an array entry state variable that hasn't been created yet
@@ -3753,11 +3819,20 @@ export default class Core {
           }
         }
 
-        attributeValue = validateAttributeValue({
+        let res = validateAttributeValue({
           value: attributeValue,
           attributeSpecification,
           attribute: attrName,
         });
+        attributeValue = res.value;
+        if (res.errors.length > 0) {
+          core.errorWarnings.errors.push(...res.errors);
+          core.newErrorWarning = true;
+        }
+        if (res.warnings.length > 0) {
+          core.errorWarnings.warnings.push(...res.warnings);
+          core.newErrorWarning = true;
+        }
 
         return {
           setValue: { [varName]: attributeValue },
@@ -3805,11 +3880,21 @@ export default class Core {
               };
             } else {
               // no component or primitive, so value is essential and give it the desired value, but validated
-              let attributeValue = validateAttributeValue({
+              let res = validateAttributeValue({
                 value: desiredStateVariableValues[varName],
                 attributeSpecification,
                 attribute: attrName,
               });
+              let attributeValue = res.value;
+              if (res.errors.length > 0) {
+                core.errorWarnings.errors.push(...res.errors);
+                core.newErrorWarning = true;
+              }
+              if (res.warnings.length > 0) {
+                core.errorWarnings.warnings.push(...res.warnings);
+                core.newErrorWarning = true;
+              }
+
               return {
                 success: true,
                 instructions: [
@@ -8023,7 +8108,16 @@ export default class Core {
           parentCreatesNewNamespace: shadowingNewNamespace,
           componentInfoObjects: this.componentInfoObjects,
           originalNamesAreConsistent,
+          doenetMLrange: composite.doenetMLrange,
         });
+        if (processResult.errors.length > 0) {
+          this.errorWarnings.errors.push(...processResult.errors);
+          this.newErrorWarning = true;
+        }
+        if (processResult.warnings.length > 0) {
+          this.errorWarnings.warnings.push(...processResult.warnings);
+          this.newErrorWarning = true;
+        }
 
         shadowingSerializeChildren = processResult.serializedComponents;
 
@@ -9082,11 +9176,11 @@ export default class Core {
           }
         }
 
+        let nameOfCompositeMediatingTheShadow =
+          shadowingComponent.shadows.compositeName;
+        let compositeMediatingTheShadow =
+          this.components[nameOfCompositeMediatingTheShadow];
         if (shadowingComponent.constructor.assignNamesToReplacements) {
-          let nameOfCompositeMediatingTheShadow =
-            shadowingComponent.shadows.compositeName;
-          let compositeMediatingTheShadow =
-            this.components[nameOfCompositeMediatingTheShadow];
           let mediatingNewNamespace =
             compositeMediatingTheShadow.attributes.newNamespace?.primitive;
           let mediatingAssignNames =
@@ -9112,7 +9206,16 @@ export default class Core {
             parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
+            doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
           });
+          if (processResult.errors.length > 0) {
+            this.errorWarnings.errors.push(...processResult.errors);
+            this.newErrorWarning = true;
+          }
+          if (processResult.warnings.length > 0) {
+            this.errorWarnings.warnings.push(...processResult.warnings);
+            this.newErrorWarning = true;
+          }
 
           newSerializedReplacements = processResult.serializedComponents;
         } else {
@@ -9128,7 +9231,16 @@ export default class Core {
             parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
+            doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
           });
+          if (processResult.errors.length > 0) {
+            this.errorWarnings.errors.push(...processResult.errors);
+            this.newErrorWarning = true;
+          }
+          if (processResult.warnings.length > 0) {
+            this.errorWarnings.warnings.push(...processResult.warnings);
+            this.newErrorWarning = true;
+          }
 
           newSerializedReplacements = processResult.serializedComponents;
         }
@@ -12174,6 +12286,9 @@ export default class Core {
 }
 
 function validateAttributeValue({ value, attributeSpecification, attribute }) {
+  let errors = [];
+  let warnings = [];
+
   if (
     attributeSpecification.valueTransformations &&
     value in attributeSpecification.valueTransformations
@@ -12198,11 +12313,10 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
-      this.errorWarnings.warnings.push({
+      warnings.push({
         message: `Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`,
         level: 2,
       });
-      this.newErrorWarning = true;
       value = attributeSpecification.defaultValue;
     }
   } else if (attributeSpecification.clamp) {
@@ -12215,7 +12329,7 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     }
   }
 
-  return value;
+  return { value, errors, warnings };
 }
 
 function calculateAllComponentsShadowing(component) {

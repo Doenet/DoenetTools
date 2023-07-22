@@ -221,6 +221,9 @@ export default class SelectFromSequence extends Sequence {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let componentType = await component.stateValues.type;
     if (componentType === "letters") {
       componentType = "text";
@@ -266,9 +269,16 @@ export default class SelectFromSequence extends Sequence {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
+      doenetMLrange: component.doenetMLrange,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static calculateReplacementChanges() {

@@ -176,6 +176,9 @@ export default class Split extends CompositeComponent {
     component,
     componentInfoObjects,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let serializedReplacement = {
@@ -198,8 +201,15 @@ export default class Split extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
+      doenetMLrange: component.doenetMLrange,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 }

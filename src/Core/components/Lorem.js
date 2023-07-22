@@ -139,6 +139,9 @@ export default class Lorem extends CompositeComponent {
     component,
     componentInfoObjects,
   }) {
+    let errors = [];
+    let warnings = [];
+
     const lorem = new LoremIpsum({
       sentencesPerParagraph: {
         max: await component.stateValues.maxSentencesPerParagraph,
@@ -210,26 +213,39 @@ export default class Lorem extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
+      doenetMLrange: component.doenetMLrange,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
     component,
     componentInfoObjects,
   }) {
-    let replacements = await this.createSerializedReplacements({
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
+    let replacementResults = await this.createSerializedReplacements({
       component,
       componentInfoObjects,
     });
+    errors.push(...replacementResults.errors);
+    warnings.push(...replacementResults.warnings);
 
     let replacementInstruction = {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: component.replacements.length,
-      serializedReplacements: replacements.replacements,
+      serializedReplacements: replacementResults.replacements,
     };
 
     return [replacementInstruction];

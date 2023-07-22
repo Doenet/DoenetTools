@@ -182,6 +182,9 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
@@ -219,9 +222,16 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
+      doenetMLrange: component.doenetMLrange,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 }
 
