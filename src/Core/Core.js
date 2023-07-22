@@ -135,6 +135,7 @@ export default class Core {
       errors: [],
       warnings: [],
     };
+    this.newErrorWarning = true;
 
     this.cumulativeStateVariableChanges = JSON.parse(
       JSON.stringify(
@@ -474,6 +475,43 @@ export default class Core {
       },
     });
 
+    // warning if there are any children that are unmatched
+    if (Object.keys(this.unmatchedChildren).length > 0) {
+      for (let componentName in this.unmatchedChildren) {
+        if (!this._components[componentName].isShadow) {
+          this.errorWarnings.warnings.push({
+            message: `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message}`,
+            level: 1,
+            doenetMLrange: this._components[componentName].doenetMLrange,
+          });
+          this.newErrorWarning = true;
+        }
+      }
+    }
+
+    postMessage({
+      messageType: "coreCreated",
+      coreId: this.coreId,
+      errorWarnings: this.errorWarnings,
+    });
+
+    this.postErrorWarnings();
+  }
+
+  async postUpdateRenderers(args, init = false) {
+    postMessage({
+      messageType: "updateRenderers",
+      coreId: this.coreId,
+      args,
+      init,
+    });
+
+    if (this.newErrorWarning) {
+      this.postErrorWarnings();
+    }
+  }
+
+  postErrorWarnings() {
     for (let errorWarning of [
       ...this.errorWarnings.errors,
       ...this.errorWarnings.warnings,
@@ -497,19 +535,11 @@ export default class Core {
       (a, b) => a.doenetMLrange?.begin - b.doenetMLrange?.begin,
     );
 
-    postMessage({
-      messageType: "coreCreated",
-      coreId: this.coreId,
-      errorWarnings: this.errorWarnings,
-    });
-  }
+    this.newErrorWarning = false;
 
-  async postUpdateRenderers(args, init = false) {
     postMessage({
-      messageType: "updateRenderers",
-      coreId: this.coreId,
-      args,
-      init,
+      messageType: "setErrorWarnings",
+      errorWarnings: this.errorWarnings,
     });
   }
 
@@ -531,9 +561,11 @@ export default class Core {
     if (!initialAdd) {
       parent = this._components[parentName];
       if (!parent) {
-        console.warn(
-          `Cannot add children to parent ${parentName} as ${parentName} does not exist`,
-        );
+        this.errorWarnings.warnings.push({
+          message: `Cannot add children to parent ${parentName} as ${parentName} does not exist`,
+          level: 1,
+        });
+        this.newErrorWarning = true;
         return [];
       }
 
@@ -1315,6 +1347,7 @@ export default class Core {
         let message = `Invalid component type: ${serializedComponent.componentType}.`;
         let doenetMLrange = serializedComponent.doenetMLrange;
 
+        this.newErrorWarning = true;
         this.errorWarnings.errors.push({
           message,
           doenetMLrange,
@@ -1452,6 +1485,7 @@ export default class Core {
           this.componentInfoObjects.allComponentClasses[
             serializedComponent.componentType
           ];
+        this.newErrorWarning = true;
         this.errorWarnings.errors.push({
           message,
           doenetMLrange,
@@ -4826,9 +4860,13 @@ export default class Core {
         let index = stateVarObj.keyToIndex(arrayKey);
         let numDimensionsInArrayKey = index.length;
         if (!numDimensionsInArrayKey > stateVarObj.numDimensions) {
-          console.warn(
-            "Cannot set array value.  Number of dimensions is too large.",
-          );
+          this.errorWarnings.warnings.push({
+            message:
+              "Cannot set array value.  Number of dimensions is too large.",
+            level: 2,
+            doenetMLrange: component.doenetMLrange,
+          });
+          this.newErrorWarning = true;
           return { nFailures: 1 };
         }
         let arrayValuesDrillDown = arrayValues;
@@ -4841,7 +4879,12 @@ export default class Core {
             arrayValuesDrillDown = arrayValuesDrillDown[indComponent];
             arraySizeDrillDown = arraySizeDrillDown.slice(1);
           } else {
-            console.warn("ignore setting array value out of bounds");
+            this.errorWarnings.warnings.push({
+              message: "ignore setting array value out of bounds",
+              level: 2,
+              doenetMLrange: component.doenetMLrange,
+            });
+            this.newErrorWarning = true;
             return { nFailures: 1 };
           }
         }
@@ -4853,7 +4896,7 @@ export default class Core {
           // then attempt to get additional dimensions from
           // array indices of value
 
-          function setArrayValuesPiece(
+          let setArrayValuesPiece = function (
             desiredValue,
             arrayValuesPiece,
             arraySizePiece,
@@ -4862,9 +4905,12 @@ export default class Core {
             // given that size of arrayValuesPieces is arraySizePiece
 
             if (!Array.isArray(desiredValue)) {
-              console.warn(
-                "ignoring array values with insufficient dimensions",
-              );
+              this.errorWarnings.warnings.push({
+                message: "ignoring array values with insufficient dimensions",
+                level: 2,
+                doenetMLrange: component.doenetMLrange,
+              });
+              this.newErrorWarning = true;
               return { nFailures: 1 };
             }
 
@@ -4872,7 +4918,12 @@ export default class Core {
 
             let currentSize = arraySizePiece[0];
             if (desiredValue.length > currentSize) {
-              console.warn("ignoring array values of out bounds");
+              this.errorWarnings.warnings.push({
+                message: "ignoring array values of out bounds",
+                level: 2,
+                doenetMLrange: component.doenetMLrange,
+              });
+              this.newErrorWarning = true;
               nFailuresSub += desiredValue.length - currentSize;
               desiredValue = desiredValue.slice(0, currentSize);
             }
@@ -4897,7 +4948,7 @@ export default class Core {
             }
 
             return { nFailures: nFailuresSub };
-          }
+          };
 
           let result = setArrayValuesPiece(
             value,
@@ -5034,9 +5085,12 @@ export default class Core {
           arrayValues[ind] = value;
           return { nFailures: 0 };
         } else {
-          console.warn(
-            `Ignoring setting array values out of bounds: ${arrayKey} of ${stateVariable}`,
-          );
+          this.errorWarnings.warnings.push({
+            message: `Ignoring setting array values out of bounds: ${arrayKey} of ${stateVariable}`,
+            level: 2,
+            doenetMLrange: component.doenetMLrange,
+          });
+          this.newErrorWarning = true;
           return { nFailures: 1 };
         }
       };
@@ -5821,17 +5875,23 @@ export default class Core {
           varName,
         );
       } else {
-        console.warn(
-          `Cannot get propIndex from ${varName} of ${component.componentName} as it is not an array or array entry state variable`,
-        );
+        this.errorWarnings.warnings.push({
+          message: `Cannot get propIndex from ${varName} of ${component.componentName} as it is not an array or array entry state variable`,
+          level: 1,
+          doenetMLrange: component.doenetMLrange,
+        });
+        this.newErrorWarning = true;
         newName = varName;
       }
       if (newName) {
         newVarNames.push(newName);
       } else {
-        console.warn(
-          `Cannot get propIndex from ${varName} of ${component.componentName}`,
-        );
+        this.errorWarnings.warnings.push({
+          message: `Cannot get propIndex from ${varName} of ${component.componentName}`,
+          level: 1,
+          doenetMLrange: component.doenetMLrange,
+        });
+        this.newErrorWarning = true;
         newVarNames.push(varName);
       }
     }
@@ -8680,6 +8740,7 @@ export default class Core {
   async setErrorReplacements({ composite, message, namespaceForUnamed }) {
     // display error for replacements and set composite to error state
 
+    this.newErrorWarning = true;
     this.errorWarnings.errors.push({
       message,
       doenetMLrange: composite.doenetMLrange,
@@ -9477,9 +9538,12 @@ export default class Core {
     }
 
     if (component) {
-      console.warn(
-        `Cannot run action ${actionName} on component ${componentName}`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Cannot run action ${actionName} on component ${componentName}`,
+        level: 1,
+        doenetMLrange: component.doenetMLrange,
+      });
+      this.newErrorWarning = true;
     }
   }
 
@@ -9716,9 +9780,11 @@ export default class Core {
             if (component) {
               componentsToDelete.push(component);
             } else {
-              console.warn(
-                `Cannot delete ${componentName} as it doesn't exist.`,
-              );
+              this.errorWarnings.warnings.push({
+                message: `Cannot delete ${componentName} as it doesn't exist.`,
+                level: 2,
+              });
+              this.newErrorWarning = true;
             }
           }
 
@@ -9766,21 +9832,6 @@ export default class Core {
 
     if (!skipRendererUpdate) {
       await this.updateAllChangedRenderers(sourceInformation, actionId);
-    }
-
-    // TODO: when should we actually warn of unmatchedChildren
-    // It shouldn't be just on update, but also on initial construction!
-    // Also, should be more than a console.warn
-    if (Object.keys(this.unmatchedChildren).length > 0) {
-      let childLogicMessage = "";
-      for (let componentName in this.unmatchedChildren) {
-        if (!this._components[componentName].isShadow) {
-          childLogicMessage += `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message} `;
-        }
-      }
-      if (childLogicMessage) {
-        console.warn(childLogicMessage);
-      }
     }
 
     if (recordItemSubmissions.length > 0) {
@@ -10350,16 +10401,22 @@ export default class Core {
             }
           }
 
-          console.warn(
-            `can't update state variable ${vName} of component ${cName}, as it doesn't exist.`,
-          );
+          this.errorWarnings.warnings.push({
+            message: `can't update state variable ${vName} of component ${cName}, as it doesn't exist.`,
+            level: 2,
+            doenetMLrange: this._components[cName].doenetMLrange,
+          });
+          this.newErrorWarning = true;
           continue;
         }
 
         if (!compStateObj.hasEssential) {
-          console.warn(
-            `can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`,
-          );
+          this.errorWarnings.warnings.push({
+            message: `can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`,
+            level: 2,
+            doenetMLrange: this._components[cName].doenetMLrange,
+          });
+          this.newErrorWarning = true;
           continue;
         }
 
@@ -10440,9 +10497,12 @@ export default class Core {
           // don't have array
 
           if (!compStateObj.hasEssential) {
-            console.warn(
-              `can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`,
-            );
+            this.errorWarnings.warnings.push({
+              message: `can't update state variable ${vName} of component ${cName}, as it does not have an essential state variable.`,
+              level: 2,
+              doenetMLrange: this._components[cName].doenetMLrange,
+            });
+            this.newErrorWarning = true;
             continue;
           }
 
@@ -10624,9 +10684,12 @@ export default class Core {
     if (instruction.additionalStateVariableValues) {
       for (let varName2 in instruction.additionalStateVariableValues) {
         if (!stateVarObj.additionalStateVariablesDefined.includes(varName2)) {
-          console.warn(
-            `Can't invert ${varName2} at the same time as ${stateVariable}, as not an additional state variable defined`,
-          );
+          this.errorWarnings.warnings.push({
+            message: `Can't invert ${varName2} at the same time as ${stateVariable}, as not an additional state variable defined`,
+            level: 2,
+            doenetMLrange: component.doenetMLrange,
+          });
+          this.newErrorWarning = true;
           continue;
         }
         // Note: don't check if varName2 is an array
@@ -10637,9 +10700,12 @@ export default class Core {
     }
 
     if (!stateVarObj.inverseDefinition) {
-      console.warn(
-        `Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`,
+        level: 2,
+        doenetMLrange: component.doenetMLrange,
+      });
+      this.newErrorWarning = true;
       return;
     }
 
@@ -10648,9 +10714,12 @@ export default class Core {
       !stateVarObj.ignoreFixed &&
       (await component.stateValues.fixed)
     ) {
-      console.log(
-        `Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`,
+        level: 2,
+        doenetMLrange: component.doenetMLrange,
+      });
+      this.newErrorWarning = true;
       return;
     }
 
@@ -10659,9 +10728,12 @@ export default class Core {
       stateVarObj.isLocation &&
       (await component.stateValues.fixLocation)
     ) {
-      console.log(
-        `Changing ${stateVariable} of ${component.componentName} did not succeed because fixLocation is true.`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Changing ${stateVariable} of ${component.componentName} did not succeed because fixLocation is true.`,
+        level: 2,
+        doenetMLrange: component.doenetMLrange,
+      });
+      this.newErrorWarning = true;
       return;
     }
 
@@ -10671,9 +10743,12 @@ export default class Core {
         (await component.stateValues.modifyIndirectly) !== false
       )
     ) {
-      console.log(
-        `Changing ${stateVariable} of ${component.componentName} did not succeed because modifyIndirectly is false.`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Changing ${stateVariable} of ${component.componentName} did not succeed because modifyIndirectly is false.`,
+        level: 2,
+        doenetMLrange: component.doenetMLrange,
+      });
+      this.newErrorWarning = true;
       return;
     }
 
@@ -10949,9 +11024,12 @@ export default class Core {
               !stateVarObj.ignoreFixed &&
               (await baseComponent.stateValues.fixed)
             ) {
-              console.log(
-                `Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixed is true.`,
-              );
+              this.errorWarnings.warnings.push({
+                message: `Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixed is true.`,
+                level: 2,
+                doenetMLrange: baseComponent.doenetMLrange,
+              });
+              this.newErrorWarning = true;
               return;
             }
 
@@ -10961,9 +11039,12 @@ export default class Core {
               !stateVarObj.isLocation &&
               (await baseComponent.stateValues.fixLocation)
             ) {
-              console.log(
-                `Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixLocation is true.`,
-              );
+              this.errorWarnings.warnings.push({
+                message: `Changing ${stateVariable} of ${baseComponent.componentName} did not succeed because fixLocation is true.`,
+                level: 2,
+                doenetMLrange: baseComponent.doenetMLrange,
+              });
+              this.newErrorWarning = true;
               return;
             }
           }
@@ -11158,9 +11239,12 @@ export default class Core {
                   ) && dep2.downstreamComponentNames.length === 1
                 )
               ) {
-                console.warn(
-                  `Can't simultaneously set additional dependency value ${dependencyName2} if it isn't a state variable`,
-                );
+                this.errorWarnings.warnings.push({
+                  message: `Can't simultaneously set additional dependency value ${dependencyName2} if it isn't a state variable`,
+                  level: 2,
+                  doenetMLrange: this.components[dComponentName].doenetMLrange,
+                });
+                this.newErrorWarning = true;
                 continue;
               }
 
@@ -11170,9 +11254,12 @@ export default class Core {
                 dep2.downstreamComponentNames[0] !== dComponentName ||
                 !stateVarObj.additionalStateVariablesDefined.includes(varName2)
               ) {
-                console.warn(
-                  `Can't simultaneously set additional dependency value ${dependencyName2} if it doesn't correspond to additional state variable defined of ${dependencyName}'s state variable`,
-                );
+                this.errorWarnings.warnings.push({
+                  message: `Can't simultaneously set additional dependency value ${dependencyName2} if it doesn't correspond to additional state variable defined of ${dependencyName}'s state variable`,
+                  level: 2,
+                  doenetMLrange: this.components[dComponentName].doenetMLrange,
+                });
+                this.newErrorWarning = true;
                 continue;
               }
               if (!inst.additionalStateVariableValues) {
@@ -12111,9 +12198,11 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
-      console.warn(
-        `Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`,
-      );
+      this.errorWarnings.warnings.push({
+        message: `Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`,
+        level: 2,
+      });
+      this.newErrorWarning = true;
       value = attributeSpecification.defaultValue;
     }
   } else if (attributeSpecification.clamp) {

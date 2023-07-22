@@ -126,8 +126,13 @@ export async function expandDoenetMLsToFullSerializedComponents({
       let cid = newCids[ind];
       if (!cid) {
         // wasn't able to retrieve content
+
+        // Question: what condition will get to this line that doesn't throw an error
+        // in the call to cidsToDoenetMLs, above?
         warnings.push({
           message: `Unable to retrieve content with cid = ${cidList[ind]}`,
+          level: 1,
+          doenetMLrange: cidComponents[cid]?.[0]?.doenetMLrange,
         });
         newDoenetMLs[ind] = "";
       }
@@ -185,6 +190,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
             warnings.push({
               message: "ignoring copyFromURI as it was not a single component",
               doenetMLrange: originalCopyWithUri.doenetMLrange,
+              level: 1,
             });
           } else {
             let comp = nonBlankStringChildren[0];
@@ -534,6 +540,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             warnings.push({
               message: `Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
+              level: 1,
             });
 
             component.props[newProp] = component.props[prop];
@@ -552,6 +559,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             warnings.push({
               message: `Attribute ${prop} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
+              level: 1,
             });
 
             component.props[newProp] = component.props[prop];
@@ -568,6 +576,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             warnings.push({
               message: `Attribute ${prop} of component type ${cType} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
+              level: 1,
             });
 
             delete component.props[prop];
@@ -583,6 +592,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             warnings.push({
               message: `Attribute ${prop} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
+              level: 1,
             });
 
             delete component.props[prop];
@@ -737,6 +747,7 @@ function substitutePropertyDeprecations(serializedComponents) {
         warnings.push({
           message: `Property ${propName} is deprecated.  Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
           doenetMLrange: component.doenetMLrange,
+          level: 1,
         });
 
         component.attributes.prop.primitive = newProp;
@@ -1596,7 +1607,7 @@ export function applyMacros(
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
         let startDoenetMLIndForAttr = Number(
-          component.attributeRanges[attrName]?.begin - 1,
+          component.attributeRanges?.[attrName]?.begin - 1,
         );
         if (attribute.component) {
           let res = applyMacros(
@@ -3844,9 +3855,11 @@ export function processAssignNames({
         continue;
       } else {
         // TODO: what to do when try to assign names recursively to non-composite?
-        console.warn(
-          `Cannot assign names recursively to ${component.componentType}`,
-        );
+        warnings.push({
+          message: `Cannot assign names recursively to ${component.componentType}`,
+          level: 1,
+          doenetMLrange: component.doenetMLrange,
+        });
         name = null;
       }
     }

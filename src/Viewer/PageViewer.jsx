@@ -203,8 +203,6 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
-          errorWarnings.current = e.data.errorWarnings;
-          props.setErrorsAndWarningsCallback?.(errorWarnings.current);
           coreCreationInProgress.current = false;
           preventMoreAnimations.current = false;
           for (let actionArgs of actionsBeforeCoreCreated.current) {
@@ -253,6 +251,9 @@ export default function PageViewer(props) {
             props.setIsInErrorState(true);
           }
           setErrMsg(e.data.args.errMsg);
+        } else if (e.data.messageType === "setErrorWarnings") {
+          errorWarnings.current = e.data.errorWarnings;
+          props.setErrorsAndWarningsCallback?.(errorWarnings.current);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "copyToClipboard") {
