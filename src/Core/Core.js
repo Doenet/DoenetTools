@@ -490,6 +490,13 @@ export default class Core {
       }
     }
 
+    this.errorWarnings.errors.sort(
+      (a, b) => a.doenetMLrange?.begin - b.doenetMLrange?.begin,
+    );
+    this.errorWarnings.warnings.sort(
+      (a, b) => a.doenetMLrange?.begin - b.doenetMLrange?.begin,
+    );
+
     postMessage({
       messageType: "coreCreated",
       coreId: this.coreId,

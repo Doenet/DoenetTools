@@ -7,18 +7,18 @@ export function printDoenetMLrange(doenetMLrange) {
 }
 
 export function getLineCharRange(doenetMLrange, allNewlines) {
-  let { indBegin, indEnd } = getBeginEndFromDoenetMLRange(doenetMLrange);
+  let { begin, end } = getBeginEndFromDoenetMLRange(doenetMLrange);
 
-  if (indBegin === undefined) {
+  if (begin === undefined) {
     return {};
   }
 
   let { line: lineBegin, character: charBegin } = findLineCharInfo(
-    indBegin,
+    begin,
     allNewlines,
   );
   let { line: lineEnd, character: charEnd } = findLineCharInfo(
-    indEnd,
+    end,
     allNewlines,
   );
 
@@ -26,21 +26,23 @@ export function getLineCharRange(doenetMLrange, allNewlines) {
 }
 
 function getBeginEndFromDoenetMLRange(doenetMLrange) {
-  let indBegin, indEnd;
+  let begin, end;
   if (doenetMLrange) {
-    if (doenetMLrange.selfCloseBegin !== undefined) {
-      indBegin = doenetMLrange.selfCloseBegin;
-      indEnd = doenetMLrange.selfCloseEnd;
+    if (doenetMLrange.begin !== undefined) {
+      begin = doenetMLrange.begin;
+      end = doenetMLrange.end;
+    } else if (doenetMLrange.selfCloseBegin !== undefined) {
+      begin = doenetMLrange.selfCloseBegin;
+      end = doenetMLrange.selfCloseEnd;
     } else if (doenetMLrange.openBegin !== undefined) {
-      indBegin = doenetMLrange.openBegin;
-      indEnd = doenetMLrange.closeEnd;
-    } else if (doenetMLrange.begin !== undefined) {
-      indBegin = doenetMLrange.begin;
-      indEnd = doenetMLrange.end;
+      begin = doenetMLrange.openBegin;
+      end = doenetMLrange.closeEnd;
     }
+    doenetMLrange.begin = begin;
+    doenetMLrange.end = end;
   }
 
-  return { indBegin, indEnd };
+  return { begin, end };
 }
 
 export function findAllNewlines(inText) {
