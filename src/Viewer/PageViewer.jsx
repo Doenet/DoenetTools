@@ -204,6 +204,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
           errorWarnings.current = e.data.errorWarnings;
+          props.setErrorsAndWarningsCallback?.(errorWarnings.current);
           coreCreationInProgress.current = false;
           preventMoreAnimations.current = false;
           for (let actionArgs of actionsBeforeCoreCreated.current) {

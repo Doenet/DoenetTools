@@ -1305,7 +1305,7 @@ export default class Core {
           serializedComponent.componentType
         ];
       if (componentClass === undefined) {
-        let message = `Invalid component type: ${serializedComponent.componentType}`;
+        let message = `Invalid component type: ${serializedComponent.componentType}.`;
         let doenetMLrange = serializedComponent.doenetMLrange;
 
         this.errorWarnings.errors.push({

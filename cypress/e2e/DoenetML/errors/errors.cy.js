@@ -639,4 +639,31 @@ $A{assignNames="a" assignnames="b"}
       "line 13, character 2 through line 13, character 24",
     );
   });
+
+  it("Get line/char numbers with no linebreaks", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `<bad>`,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
+    cy.get(cesc2("#/__error1")).should("contain.text", "Expected </bad>");
+    cy.get(cesc2("#/__error1")).should(
+      "contain.text",
+      "line 1, character 1 through line 1, character 5",
+    );
+
+    cy.get(cesc2("#/__error2")).should(
+      "contain.text",
+      "Invalid component type: bad",
+    );
+    cy.get(cesc2("#/__error2")).should(
+      "contain.text",
+      "line 1, character 1 through line 1, character 5",
+    );
+  });
 });

@@ -13,11 +13,11 @@ export function getLineCharRange(doenetMLrange, allNewlines) {
     return {};
   }
 
-  let { line: lineBegin, character: charBegin } = findLineColumnInfo(
+  let { line: lineBegin, character: charBegin } = findLineCharInfo(
     indBegin,
     allNewlines,
   );
-  let { line: lineEnd, character: charEnd } = findLineColumnInfo(
+  let { line: lineEnd, character: charEnd } = findLineCharInfo(
     indEnd,
     allNewlines,
   );
@@ -53,7 +53,7 @@ export function findAllNewlines(inText) {
   return allNewlines;
 }
 
-export function findLineColumnInfo(pos, allNewlines) {
+function findLineCharInfo(pos, allNewlines) {
   for (let i = 0; i < allNewlines.length; i++) {
     if (pos <= allNewlines[i]) {
       if (i === 0) {
@@ -65,6 +65,6 @@ export function findLineColumnInfo(pos, allNewlines) {
   }
   return {
     line: allNewlines.length + 1,
-    character: pos - allNewlines[allNewlines.length - 1],
+    character: pos - (allNewlines[allNewlines.length - 1] || 0),
   };
 }

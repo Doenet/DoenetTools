@@ -863,7 +863,7 @@ function correctComponentTypeCapitalization(
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
-      let message = `Invalid component type: ${component.componentType}`;
+      let message = `Invalid component type: ${component.componentType}.`;
       convertToErrorComponent(component, message);
       errors.push({
         message,
