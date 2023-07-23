@@ -26,6 +26,7 @@ export class ComponentWithSelectableType extends BaseComponent {
       componentAttributes,
       parentAttributes,
     }) {
+      let warnings = [];
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
@@ -35,7 +36,10 @@ export class ComponentWithSelectableType extends BaseComponent {
       } else if (
         !["number", "letters", "math", "text", "boolean"].includes(type)
       ) {
-        console.warn(`Invalid type ${type}, setting type to number`);
+        warnings.push({
+          message: `Invalid type ${type}, setting type to number`,
+          level: 1,
+        });
         type = "number";
       }
 
@@ -56,6 +60,7 @@ export class ComponentWithSelectableType extends BaseComponent {
             children: matchedChildren,
           },
         ],
+        warnings,
       };
     }
 
@@ -90,7 +95,8 @@ export class ComponentWithSelectableType extends BaseComponent {
           variableName: "type",
         },
       }),
-      definition: function ({ dependencyValues, componentName }) {
+      definition: function ({ dependencyValues }) {
+        let warnings = [];
         let type = dependencyValues.type;
         if (!type) {
           type = dependencyValues.parentType;
@@ -100,11 +106,14 @@ export class ComponentWithSelectableType extends BaseComponent {
         } else if (
           !["number", "letters", "math", "text", "boolean"].includes(type)
         ) {
-          console.warn(`Invalid type ${type}, setting type to number`);
+          warnings.push({
+            message: `Invalid type ${type}, setting type to number`,
+            level: 2,
+          });
           type = "number";
         }
 
-        return { setValue: { type } };
+        return { setValue: { type }, sendWarnings: warnings };
       },
     };
 
@@ -204,6 +213,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         createdFromMacro = false,
         componentInfoObjects,
       }) {
+        let warnings = [];
+
         let type = componentAttributes.type;
         if (!type) {
           type = parentAttributes.type;
@@ -213,7 +224,10 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         } else if (
           !["number", "letters", "math", "text", "boolean"].includes(type)
         ) {
-          console.warn(`Invalid type ${type}, setting type to number`);
+          warnings.push({
+            message: `Invalid type ${type}, setting type to number`,
+            level: 1,
+          });
           type = "number";
         }
 
@@ -224,7 +238,11 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
             componentType,
           });
 
-        return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
+        let result = groupIntoComponentTypesSeparatedBySpaces({
+          matchedChildren,
+        });
+        result.warnings = warnings;
+        return result;
       },
     });
 
@@ -387,6 +405,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         return { success: false };
       }
 
+      let warnings = [];
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
@@ -396,7 +415,10 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       } else if (
         !["number", "letters", "math", "text", "boolean"].includes(type)
       ) {
-        console.warn(`Invalid type ${type}, setting type to number`);
+        warnings.push({
+          message: `Invalid type ${type}, setting type to number`,
+          level: 1,
+        });
         type = "number";
       }
 
@@ -407,6 +429,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
           attributes: { type: { primitive: type } },
           children: x,
         })),
+        warnings,
       };
     };
 

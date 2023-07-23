@@ -49,6 +49,10 @@ export class Ol extends BlockComponent {
         group: "lis",
         componentTypes: ["li"],
       },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
     ];
   }
 

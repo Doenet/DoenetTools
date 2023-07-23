@@ -71,6 +71,7 @@ export default class Select extends CompositeComponent {
       }
 
       let type;
+      let warnings = [];
       if (componentAttributes.type) {
         type = componentAttributes.type;
       } else {
@@ -78,7 +79,10 @@ export default class Select extends CompositeComponent {
       }
 
       if (!["math", "text", "number", "boolean"].includes(type)) {
-        console.warn(`Invalid type ${type}`);
+        warnings.push({
+          message: `Invalid type for select: ${type}`,
+          level: 1,
+        });
         type = "math";
       }
 
@@ -109,9 +113,10 @@ export default class Select extends CompositeComponent {
           success: true,
           newChildren,
           newAttributes,
+          warnings,
         };
       } else {
-        return { success: false };
+        return { success: false, warnings };
       }
     }
 

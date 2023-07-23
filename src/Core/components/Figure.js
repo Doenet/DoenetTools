@@ -41,6 +41,10 @@ export default class Figure extends BlockComponent {
         group: "inlinesBlocks",
         componentTypes: ["_inline", "_block"],
       },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
     ];
   }
 

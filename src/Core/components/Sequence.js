@@ -447,7 +447,10 @@ export default class Sequence extends CompositeComponent {
 
     let type = "number";
     if (this.attributes.type && this.attributes.type.primitive) {
-      type = this.attributes.type.primitive;
+      type = this.attributes.type.primitive.toLowerCase();
+    }
+    if (!["number", "math", "letters"].includes(type)) {
+      type = "number";
     }
 
     let rendererType =

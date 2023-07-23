@@ -530,6 +530,7 @@ export default class AnimateFromSequence extends BaseComponent {
     skipRendererUpdate = false,
   }) {
     let updateInstructions = [];
+    let warnings = [];
 
     if (stateValues.animationOn) {
       if (!previousValues.animationOn) {
@@ -589,16 +590,18 @@ export default class AnimateFromSequence extends BaseComponent {
           });
         }
 
-        let additionalInstructions =
+        let instructionResults =
           await this.getUpdateInstructionsToSetTargetsToValue(
             (
               await this.stateValues.possibleValues
             )[me.math.mod(startIndex - 1, numValues)],
           );
-        updateInstructions.push(...additionalInstructions);
+        updateInstructions.push(...instructionResults.updateInstructions);
+        warnings.push(...instructionResults.warnings);
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          warnings,
           actionId,
           sourceInformation,
           skipRendererUpdate: true,
@@ -743,6 +746,8 @@ export default class AnimateFromSequence extends BaseComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
+    let warnings = [];
+
     let animationOn = await this.stateValues.animationOn;
 
     // especially given delays in posting messages,
@@ -797,13 +802,14 @@ export default class AnimateFromSequence extends BaseComponent {
       },
     ];
 
-    let additionalInstructions =
+    let instructionResults =
       await this.getUpdateInstructionsToSetTargetsToValue(
         (
           await this.stateValues.possibleValues
         )[me.math.mod(newSelectedIndex - 1, await this.stateValues.numValues)],
       );
-    updateInstructions.push(...additionalInstructions);
+    updateInstructions.push(...instructionResults.updateInstructions);
+    warnings.push(...instructionResults.warnings);
 
     if (!continueAnimation) {
       updateInstructions.push({
@@ -824,6 +830,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      warnings,
       actionId,
       sourceInformation,
       skipRendererUpdate,
@@ -904,9 +911,11 @@ export default class AnimateFromSequence extends BaseComponent {
   }
 
   async getUpdateInstructionsToSetTargetsToValue(value) {
+    let warnings = [];
+
     let targets = await this.stateValues.targets;
     if (targets == null) {
-      return [];
+      return { updateInstructions: [], warnings };
     }
 
     let updateInstructions = [];
@@ -914,20 +923,30 @@ export default class AnimateFromSequence extends BaseComponent {
     for (let target of targets) {
       let stateVariable = Object.keys(target.stateValues)[0];
       if (stateVariable === undefined) {
-        if (await this.stateValues.propName) {
-          console.warn(
-            `Cannot animate prop="${await this.stateValues
+        if (!this.sentWarning) {
+          // send this warning only once rather than on every attempted animation step
+          this.sentWarning = true;
+          let message;
+          if (await this.stateValues.propName) {
+            message = `Cannot animate prop="${await this.stateValues
               .propName}" of ${await this.stateValues
               .target} as could not find prop ${await this.stateValues
-              .propName} on a component of type ${target.componentType}`,
-          );
-        } else {
-          console.warn(
-            `Cannot animate ${await this.stateValues
+              .propName} on a component of type ${target.componentType}`;
+          } else {
+            message = `Cannot animate ${await this.stateValues
               .target} as could not find a value state variable on a component of type ${
               target.componentType
-            }`,
-          );
+            }`;
+          }
+          let compForRange = this;
+          while (compForRange.replacementOf) {
+            compForRange = compForRange.replacementOf;
+          }
+          warnings.push({
+            message,
+            level: 1,
+            doenetMLrange: compForRange.doenetMLrange,
+          });
         }
         continue;
       }
@@ -940,6 +959,6 @@ export default class AnimateFromSequence extends BaseComponent {
       });
     }
 
-    return updateInstructions;
+    return { updateInstructions, warnings };
   }
 }

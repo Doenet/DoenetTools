@@ -146,6 +146,7 @@ export default function PageViewer(props) {
   const errorWarnings = useRef(null);
 
   const resolveAllStateVariables = useRef(null);
+  const resolveErrorWarnings = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
   const coreWorker = useRef(null);
@@ -243,6 +244,9 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args);
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "returnErrorWarnings") {
+          console.log(e.data.args);
+          resolveErrorWarnings.current(e.data.args);
         } else if (e.data.messageType === "componentRangePieces") {
           window["componentRangePieces" + pageNumber] =
             e.data.args.componentRangePieces;
@@ -288,6 +292,16 @@ export default function PageViewer(props) {
 
         return new Promise((resolve, reject) => {
           resolveAllStateVariables.current = resolve;
+        });
+      };
+
+      window["returnErrorWarnings" + pageNumber] = function () {
+        coreWorker.current.postMessage({
+          messageType: "returnErrorWarnings",
+        });
+
+        return new Promise((resolve, reject) => {
+          resolveErrorWarnings.current = resolve;
         });
       };
 

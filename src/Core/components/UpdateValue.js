@@ -369,18 +369,25 @@ export default class UpdateValue extends InlineComponent {
     }
 
     let updateInstructions = [];
+    let warnings = [];
 
     for (let target of targets) {
       let stateVariable = "value";
       if (target.stateValues) {
         stateVariable = Object.keys(target.stateValues)[0];
         if (stateVariable === undefined) {
-          console.warn(
-            `Cannot update prop="${await this.stateValues
+          let compForRange = this;
+          while (compForRange.replacementOf) {
+            compForRange = compForRange.replacementOf;
+          }
+          warnings.push({
+            message: `Cannot update prop="${await this.stateValues
               .propName}" of ${await this.stateValues
               .target} as could not find prop ${await this.stateValues
               .propName} on a component of type ${target.componentType}`,
-          );
+            level: 1,
+            doenetMLrange: compForRange.doenetMLrange,
+          });
           continue;
         }
       }
@@ -395,6 +402,7 @@ export default class UpdateValue extends InlineComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      warnings,
       actionId,
       sourceInformation,
       skipRendererUpdate: true,

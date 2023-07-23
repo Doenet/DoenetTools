@@ -777,7 +777,7 @@ export default class Line extends GraphicalComponent {
                 points[ind1 + "," + ind2] = me.fromAst("\uff3f");
               }
             }
-            return { setValue: { points } };
+            return { setValue: { points }, sendWarnings: result.sendWarnings };
           } else {
             return { setValue: { points: result.points } };
           }
@@ -1280,6 +1280,7 @@ export default class Line extends GraphicalComponent {
                 coeffvar1: blankMath,
                 coeffvar2: blankMath,
               },
+              sendWarnings: result.sendWarnings,
             };
           }
 
@@ -1298,7 +1299,10 @@ export default class Line extends GraphicalComponent {
         let numDimens = dependencyValues.numDimensions;
 
         if (Number.isNaN(numDimens)) {
-          console.warn("Line through points of undetermined dimensions");
+          let warning = {
+            message: "Line through points of undetermined dimensions",
+            level: 2,
+          };
           return {
             setValue: {
               equation: blankMath,
@@ -1306,13 +1310,15 @@ export default class Line extends GraphicalComponent {
               coeffvar1: blankMath,
               coeffvar2: blankMath,
             },
+            sendWarnings: [warning],
           };
         }
 
         if (numDimens < 2) {
-          console.warn(
-            "Line must be through points of at least two dimensions",
-          );
+          let warning = {
+            message: "Line must be through points of at least two dimensions",
+            level: 2,
+          };
           return {
             setValue: {
               equation: blankMath,
@@ -1320,6 +1326,7 @@ export default class Line extends GraphicalComponent {
               coeffvar1: blankMath,
               coeffvar2: blankMath,
             },
+            sendWarnings: [warning],
           };
         }
 
@@ -1337,10 +1344,12 @@ export default class Line extends GraphicalComponent {
             point2x.variables().indexOf(varStrings[i]) !== -1 ||
             point2y.variables().indexOf(varStrings[i]) !== -1
           ) {
-            console.warn(
-              "Points through line depend on variables: " +
+            let warning = {
+              message:
+                "Points through line depend on variables: " +
                 varStrings.join(", "),
-            );
+              level: 2,
+            };
             return {
               setValue: {
                 equation: blankMath,
@@ -1348,6 +1357,7 @@ export default class Line extends GraphicalComponent {
                 coeffvar1: blankMath,
                 coeffvar2: blankMath,
               },
+              sendWarnings: [warning],
             };
           }
         }
@@ -2113,7 +2123,7 @@ function calculateCoeffsFromEquation({ equation, variables }) {
   for (let term of terms) {
     let coeffs = getTermCoeffs(term);
     if (!coeffs.success) {
-      return { success: false };
+      return coeffs;
     }
     coeffvar1 = coeffvar1.add(coeffs.coeffvar1);
     coeffvar2 = coeffvar2.add(coeffs.coeffvar2);
@@ -2141,32 +2151,36 @@ function calculateCoeffsFromEquation({ equation, variables }) {
     } else if (typeof term === "number") {
       c0 = term;
     } else if (!Array.isArray(term)) {
-      console.warn(
-        "Invalid format for equation of line in variables " +
+      let warning = {
+        message:
+          "Invalid format for equation of line in variables " +
           var1 +
           " and " +
           var2,
-      );
-      return { success: false };
+        level: 2,
+      };
+      return { success: false, sendWarnings: [warning] };
     } else {
       let operator = term[0];
       let operands = term.slice(1);
       if (operator === "-") {
         let coeffs = getTermCoeffs(operands[0]);
         if (!coeffs.success) {
-          return { success: false };
+          return coeffs;
         }
         cv1 = ["-", coeffs.coeffvar1.tree];
         cv2 = ["-", coeffs.coeffvar2.tree];
         c0 = ["-", coeffs.coeff0.tree];
       } else if (operator === "+") {
-        console.warn(
-          "Invalid format for equation of line in variables " +
+        let warning = {
+          message:
+            "Invalid format for equation of line in variables " +
             var1 +
             " and " +
             var2,
-        );
-        return { success: false };
+          level: 2,
+        };
+        return { success: false, sendWarnings: [warning] };
       } else if (operator === "*") {
         let var1ind = -1,
           var2ind = -1;
@@ -2199,7 +2213,7 @@ function calculateCoeffsFromEquation({ equation, variables }) {
       } else if (operator === "/") {
         let coeffs = getTermCoeffs(operands[0]);
         if (!coeffs.success) {
-          return { success: false };
+          return coeffs;
         }
         cv1 = ["/", coeffs.coeffvar1.tree, operands[1]];
         cv2 = ["/", coeffs.coeffvar2.tree, operands[1]];
@@ -2246,23 +2260,27 @@ function calculatePointsFromCoeffs({
     coeff0.variables(true).indexOf(var1String) !== -1 ||
     coeff0.variables(true).indexOf(var2String) !== -1
   ) {
-    console.warn(
-      "Invalid format for equation of line in variables " +
+    let warning = {
+      message:
+        "Invalid format for equation of line in variables " +
         var1String +
         " and " +
         var2String,
-    );
-    return { success: false };
+      level: 2,
+    };
+    return { success: false, sendWarnings: [warning] };
   }
   let zero = me.fromAst(0);
   if (coeffvar1.equals(zero) && coeffvar2.equals(zero)) {
-    console.warn(
-      "Invalid format for equation of line in variables " +
+    let warning = {
+      message:
+        "Invalid format for equation of line in variables " +
         var1String +
         " and " +
         var2String,
-    );
-    return { success: false };
+      level: 2,
+    };
+    return { success: false, sendWarnings: [warning] };
   }
 
   // console.log("coefficient of " + var1 + " is " + coeffvar1);

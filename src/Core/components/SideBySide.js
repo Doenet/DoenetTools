@@ -11,6 +11,7 @@ export class SideBySide extends BlockComponent {
   }
   static componentType = "sideBySide";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -41,6 +42,10 @@ export class SideBySide extends BlockComponent {
       {
         group: "blocks",
         componentTypes: ["_block"],
+      },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
       },
     ];
   }
@@ -454,6 +459,8 @@ export class SideBySide extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let warnings = [];
+
         let gapWidth = 0;
         let allWidths = [...dependencyValues.allWidthsSpecified];
         let allMargins = [...dependencyValues.allMarginsSpecified];
@@ -549,9 +556,11 @@ export class SideBySide extends BlockComponent {
             } else if (dependencyValues.numPanels === 1) {
               allMargins[1] = 100 - (allMargins[0] + allWidths[0]);
             } else {
-              console.warn(
-                "Invalid sideBySide, as it must have at least one block child",
-              );
+              warnings.push({
+                message:
+                  "Invalid sideBySide, as it must have at least one block child",
+                level: 2,
+              });
             }
           }
         } else {
@@ -559,7 +568,10 @@ export class SideBySide extends BlockComponent {
           // absolute measurements before get this far
         }
 
-        return { setValue: { allWidths, allMargins, gapWidth } };
+        return {
+          setValue: { allWidths, allMargins, gapWidth },
+          sendWarnings: warnings,
+        };
       },
     };
 
@@ -1125,6 +1137,10 @@ export class SbsGroup extends BlockComponent {
         group: "sideBySides",
         componentTypes: ["sideBySide"],
       },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
     ];
   }
 
@@ -1673,6 +1689,8 @@ export class SbsGroup extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
+        let warnings = [];
+
         let gapWidth = 0;
         let allWidths = [...dependencyValues.specifiedWidths];
         let allMargins = [...dependencyValues.specifiedMargins];
@@ -1772,9 +1790,11 @@ export class SbsGroup extends BlockComponent {
             } else if (dependencyValues.maxNPanelsPerRow === 1) {
               allMargins[1] = 100 - (allMargins[0] + allWidths[0]);
             } else {
-              console.warn(
-                "Invalid sideBySide, as it must have at least one block child",
-              );
+              warnings.push({
+                message:
+                  "Invalid sbsGroup, as it must have at least one block child",
+                level: 2,
+              });
             }
           }
         } else {
@@ -1782,7 +1802,10 @@ export class SbsGroup extends BlockComponent {
           // absolute measurements before get this far
         }
 
-        return { setValue: { allWidths, allMargins, gapWidth } };
+        return {
+          setValue: { allWidths, allMargins, gapWidth },
+          sendWarnings: warnings,
+        };
       },
     };
 

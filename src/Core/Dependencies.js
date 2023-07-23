@@ -6128,7 +6128,7 @@ class ReplacementDependency extends Dependency {
     }
 
     if (this.targetSubnames) {
-      function replaceComponentsUsingSubname({
+      let replaceComponentsUsingSubname = function ({
         components,
         subNames,
         subNamesComponentIndex,
@@ -6168,10 +6168,14 @@ class ReplacementDependency extends Dependency {
               )
             ) {
               // TODO: recurse to more composites
-
-              console.warn(
-                "Have not yet implemented recursing subnames to multiple levels of composites",
-              );
+              dep.dependencyHandler.core.errorWarnings.warnings.push({
+                message:
+                  "Have not yet implemented recursing subnames to multiple levels of composites",
+                doenetMLrange:
+                  dep.dependencyHandler._components[dep.upstreamComponentName]
+                    .doenetMLrange,
+                level: 1,
+              });
             } else {
               // don't have a composite
               // so add only if there are no more subnames and either no more component indices
@@ -6190,7 +6194,7 @@ class ReplacementDependency extends Dependency {
         }
 
         return newComponents;
-      }
+      };
 
       replacements = replaceComponentsUsingSubname({
         components: replacements,

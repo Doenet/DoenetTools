@@ -277,6 +277,8 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     definition: function ({ dependencyValues }) {
+      let warnings = [];
+
       let validSequence = true;
 
       if (dependencyValues.specifiedLength !== null) {
@@ -284,9 +286,11 @@ export function returnStandardSequenceStateVariableDefinitions() {
           !Number.isInteger(dependencyValues.specifiedLength) ||
           dependencyValues.specifiedLength < 0
         ) {
-          console.warn(
-            "Invalid length of sequence.  Must be a non-negative integer.",
-          );
+          warnings.push({
+            message:
+              "Invalid length of sequence.  Must be a non-negative integer.",
+            level: 2,
+          });
           validSequence = false;
         }
       }
@@ -298,11 +302,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedStep,
           );
           if (!Number.isFinite(numericalStep)) {
-            console.warn(
-              "Invalid step of sequence.  Must be a number for sequence of type " +
+            warnings.push({
+              message:
+                "Invalid step of sequence.  Must be a number for sequence of type " +
                 dependencyValues.type +
                 ".",
-            );
+              level: 2,
+            });
             validSequence = false;
           }
         }
@@ -314,11 +320,14 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedFrom,
           );
           if (!Number.isFinite(numericalFrom)) {
-            console.warn("Invalid from of number sequence.  Must be a number");
+            warnings.push({
+              message: "Invalid from of number sequence.  Must be a number",
+              level: 2,
+            });
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-          console.warn("Invalid from of sequence");
+          warnings.push({ message: "Invalid from of sequence", level: 2 });
           validSequence = false;
         }
       }
@@ -329,16 +338,19 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedTo,
           );
           if (!Number.isFinite(numericalTo)) {
-            console.warn("Invalid to of number sequence.  Must be a number");
+            warnings.push({
+              message: "Invalid to of number sequence.  Must be a number",
+              level: 2,
+            });
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-          console.warn("Invalid to of sequence");
+          warnings.push({ message: "Invalid to of sequence", level: 2 });
           validSequence = false;
         }
       }
 
-      return { setValue: { validSequence } };
+      return { setValue: { validSequence }, sendWarnings: warnings };
     },
   };
 

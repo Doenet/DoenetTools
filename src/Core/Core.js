@@ -1607,6 +1607,7 @@ export default class Core {
             ancestors: ancestorsForChildren,
             shadow,
             namespaceForUnamed,
+            componentsReplacementOf,
           });
 
           definingChildren = childrenResult.components;
@@ -1622,6 +1623,7 @@ export default class Core {
           ancestors: ancestorsForChildren,
           shadow,
           namespaceForUnamed,
+          componentsReplacementOf,
         });
 
         definingChildren = childrenResult.components;
@@ -1645,6 +1647,7 @@ export default class Core {
             ancestors: ancestorsForChildren,
             shadow,
             namespaceForUnamed,
+            componentsReplacementOf,
             createNameContext: `attribute|${attrName}`,
           });
 
@@ -2452,7 +2455,7 @@ export default class Core {
       this.newErrorWarning = true;
     }
 
-    // console.log(`expand result for ${component.componentName}`)
+    // console.log(`expand result for ${component.componentName}`);
     // console.log(JSON.parse(JSON.stringify(result)));
 
     if (component.constructor.stateVariableToEvaluateAfterReplacements) {
@@ -3335,19 +3338,11 @@ export default class Core {
           attributeSpecification,
           attribute: attrName,
         });
-        attributeValue = res.value;
-        if (res.errors.length > 0) {
-          core.errorWarnings.errors.push(...res.errors);
-          core.newErrorWarning = true;
-        }
-        if (res.warnings.length > 0) {
-          core.errorWarnings.warnings.push(...res.warnings);
-          core.newErrorWarning = true;
-        }
 
         return {
-          setValue: { [varName]: attributeValue },
+          setValue: { [varName]: res.value },
           checkForActualChange: { [varName]: true },
+          sendWarnings: res.warnings,
         };
       };
 
@@ -3395,24 +3390,16 @@ export default class Core {
                 attributeSpecification,
                 attribute: attrName,
               });
-              let attributeValue = res.value;
-              if (res.errors.length > 0) {
-                core.errorWarnings.errors.push(...res.errors);
-                core.newErrorWarning = true;
-              }
-              if (res.warnings.length > 0) {
-                core.errorWarnings.warnings.push(...res.warnings);
-                core.newErrorWarning = true;
-              }
 
               return {
                 success: true,
                 instructions: [
                   {
                     setEssentialValue: varName,
-                    value: attributeValue,
+                    value: res.value,
                   },
                 ],
+                sendWarnings: res.warnings,
               };
             }
           }
@@ -3823,19 +3810,11 @@ export default class Core {
           attributeSpecification,
           attribute: attrName,
         });
-        attributeValue = res.value;
-        if (res.errors.length > 0) {
-          core.errorWarnings.errors.push(...res.errors);
-          core.newErrorWarning = true;
-        }
-        if (res.warnings.length > 0) {
-          core.errorWarnings.warnings.push(...res.warnings);
-          core.newErrorWarning = true;
-        }
 
         return {
-          setValue: { [varName]: attributeValue },
+          setValue: { [varName]: res.value },
           checkForActualChange: { [varName]: true },
+          sendWarnings: res.warnings,
         };
       };
 
@@ -3884,24 +3863,16 @@ export default class Core {
                 attributeSpecification,
                 attribute: attrName,
               });
-              let attributeValue = res.value;
-              if (res.errors.length > 0) {
-                core.errorWarnings.errors.push(...res.errors);
-                core.newErrorWarning = true;
-              }
-              if (res.warnings.length > 0) {
-                core.errorWarnings.warnings.push(...res.warnings);
-                core.newErrorWarning = true;
-              }
 
               return {
                 success: true,
                 instructions: [
                   {
                     setEssentialValue: varName,
-                    value: attributeValue,
+                    value: res.value,
                   },
                 ],
+                sendWarnings: res.warnings,
               };
             }
           }
@@ -6776,6 +6747,24 @@ export default class Core {
         }
         valuesChanged[varName].arraySizeChanged = true;
       }
+    }
+
+    if (result.sendWarnings && result.sendWarnings.length > 0) {
+      let compForRange = component;
+      while (compForRange.replacementOf || compForRange.adaptedFrom) {
+        if (compForRange.replacementOf) {
+          compForRange = compForRange.replacementOf;
+        } else {
+          compForRange = compForRange.adaptedFrom;
+        }
+      }
+      let doenetMLrange = compForRange.doenetMLrange;
+      for (let warning of result.sendWarnings) {
+        warning.doenetMLrange = doenetMLrange;
+        this.errorWarnings.warnings.push(warning);
+      }
+
+      this.newErrorWarning = true;
     }
 
     for (let varName in receivedValue) {
@@ -9813,6 +9802,7 @@ export default class Core {
 
   async performUpdate({
     updateInstructions,
+    warnings,
     actionId,
     event,
     overrideReadOnly = false,
@@ -9822,6 +9812,11 @@ export default class Core {
     sourceInformation = {},
     suppressToast = false, // temporary
   }) {
+    if (warnings && warnings.length > 0) {
+      this.errorWarnings.warnings.push(...warnings);
+      this.newErrorWarning = true;
+    }
+
     if (this.flags.readOnly && !overrideReadOnly) {
       if (!canSkipUpdatingRenderer) {
         for (let instruction of updateInstructions) {
@@ -10868,6 +10863,25 @@ export default class Core {
     let inverseResult = await stateVarObj.inverseDefinition(
       inverseDefinitionArgs,
     );
+
+    if (inverseResult.sendWarnings && inverseResult.sendWarnings.length > 0) {
+      let compForRange = component;
+      while (compForRange.replacementOf || compForRange.adaptedFrom) {
+        if (compForRange.replacementOf) {
+          compForRange = compForRange.replacementOf;
+        } else {
+          compForRange = compForRange.adaptedFrom;
+        }
+      }
+      let doenetMLrange = compForRange.doenetMLrange;
+
+      for (let warning of inverseResult.sendWarnings) {
+        warning.doenetMLrange = doenetMLrange;
+        this.errorWarnings.warnings.push(warning);
+      }
+
+      this.newErrorWarning = true;
+    }
 
     if (!inverseResult.success) {
       // console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed.`);
@@ -12287,7 +12301,6 @@ export default class Core {
 }
 
 function validateAttributeValue({ value, attributeSpecification, attribute }) {
-  let errors = [];
   let warnings = [];
 
   if (
@@ -12314,11 +12327,22 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
 
   if (attributeSpecification.validValues) {
     if (!attributeSpecification.validValues.includes(value)) {
+      let defaultValue = attributeSpecification.defaultValue;
+      if (defaultValue === undefined) {
+        if (attributeSpecification.createPrimitiveOfType) {
+          defaultValue = attributeSpecification.defaultPrimitiveValue;
+        }
+        if (defaultValue === undefined) {
+          throw Error(
+            "Invalid attribute specification: no default value specified",
+          );
+        }
+      }
       warnings.push({
-        message: `Invalid value ${value} for attribute ${attribute}, using value ${attributeSpecification.defaultValue}`,
+        message: `Invalid value ${value} for attribute ${attribute}, using value ${defaultValue}`,
         level: 2,
       });
-      value = attributeSpecification.defaultValue;
+      value = defaultValue;
     }
   } else if (attributeSpecification.clamp) {
     if (value < attributeSpecification.clamp[0]) {
@@ -12330,7 +12354,7 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     }
   }
 
-  return { value, errors, warnings };
+  return { value, warnings };
 }
 
 function calculateAllComponentsShadowing(component) {
@@ -12344,6 +12368,11 @@ function calculateAllComponentsShadowing(component) {
       }
     }
   }
+
+  // Idea for this part: if a component is shadowing this component's composite,
+  // then it is effectively shadowing the component
+  // TODO 1: Why do we need to to this?  Why aren't these components reachable through shadowBy?
+  // TODO 2: Does this properly deal with the no-link case?
   if (component.replacementOf) {
     let additionalShadowing = calculateAllComponentsShadowing(
       component.replacementOf,

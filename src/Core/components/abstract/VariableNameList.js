@@ -64,17 +64,21 @@ export default class VariableNameList extends MathList {
       }),
       definition: function ({ dependencyValues }) {
         let validVariables = [];
+        let warnings = [];
 
         for (let variable of dependencyValues.variables) {
           let validVariable = isValidVariable(variable);
           if (!validVariable) {
-            console.warn("Invalid value for " + thisComponentType);
+            warnings.push({
+              message: "Invalid value of a variable: " + variable.toString(),
+              level: 2,
+            });
             validVariable = false;
           }
           validVariables.push(validVariable);
         }
 
-        return { setValue: { validVariables } };
+        return { setValue: { validVariables }, sendWarnings: warnings };
       },
     };
 

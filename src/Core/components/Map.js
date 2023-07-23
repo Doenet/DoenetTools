@@ -157,6 +157,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         let validBehavior = true;
+        let warnings = [];
 
         if (dependencyValues.behavior === "parallel") {
           // display warning if some sources activeChildren have differ numbers of iterates
@@ -165,17 +166,22 @@ export default class Map extends CompositeComponent {
               .slice(1)
               .some((x) => x != dependencyValues.numIterates[0])
           ) {
-            console.warn(
-              "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
+            warnings.push({
+              message:
+                "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
                 " Extra iterates will be ignored.",
-            );
+              level: 2,
+            });
           }
         } else if (dependencyValues.behavior !== "combination") {
-          console.warn("Invalid map behavior: " + dependencyValues.behavior);
+          warnings.push({
+            message: "Invalid map behavior: " + dependencyValues.behavior,
+            level: 2,
+          });
           validBehavior = false;
         }
 
-        return { setValue: { validBehavior } };
+        return { setValue: { validBehavior }, sendWarnings: warnings };
       },
     };
 

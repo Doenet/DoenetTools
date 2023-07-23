@@ -222,9 +222,10 @@ export default class Angle extends GraphicalComponent {
       arrayDefinitionByKey({ globalDependencyValues }) {
         if (globalDependencyValues.lineChildren) {
           if (globalDependencyValues.lineChildren.length > 2) {
-            console.warn(
-              `Cannot define an angle between ${globalDependencyValues.lineChildren.length} line(s)`,
-            );
+            let warning = {
+              message: `Cannot define an angle between ${globalDependencyValues.lineChildren.length} lines`,
+              level: 2,
+            };
 
             let points = {};
             for (let i = 0; i < 3; i++) {
@@ -232,7 +233,7 @@ export default class Angle extends GraphicalComponent {
                 points[i + "," + j] = me.fromAst("\uff3f");
               }
             }
-            return { setValue: { points } };
+            return { setValue: { points }, sendWarnings: [warning] };
           } else if (globalDependencyValues.lineChildren.length === 1) {
             let line1 = globalDependencyValues.lineChildren[0];
             if (line1.stateValues.numDimensions !== 2) {

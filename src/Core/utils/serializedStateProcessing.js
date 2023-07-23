@@ -541,7 +541,7 @@ function substituteAttributeDeprecations(serializedComponents) {
             let removeInVersion = typeSpecificDeps[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} of component type ${cType} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -560,7 +560,7 @@ function substituteAttributeDeprecations(serializedComponents) {
               deprecatedAttributeSubstitutions[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} is deprecated.  Use ${newProp} instead.  Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -748,7 +748,7 @@ function substitutePropertyDeprecations(serializedComponents) {
             .removeInVersion;
 
         warnings.push({
-          message: `Property ${propName} is deprecated.  Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
+          message: `Property ${propName} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
           doenetMLrange: component.doenetMLrange,
           level: 1,
         });
@@ -1146,12 +1146,14 @@ function breakUpTargetIntoPropsAndIndices(
               propArray,
               componentInfoObjects,
             });
-            warnings.push(...componentResult.warnings);
-
-            // Note: we ignore errors produced by createComponentFromExtendedSource,
-            // as they won't be displayed in the document itself.
-            // Instead, these errors will make success be false,
-            // which will trigger a warning below
+            // Note: don't need to create errors from createComponentFromExtendedSource
+            // as an error for it will be created, below
+            warnings.push(
+              ...componentResult.warnings.map((w) => {
+                w.doenetMLrange = component.doenetMLrange;
+                return w;
+              }),
+            );
 
             if (componentResult.success) {
               let newComponent = componentResult.newComponent;
@@ -1241,19 +1243,17 @@ function breakUpTargetIntoPropsAndIndices(
                 }
               }
             } else {
+              let message;
               if (component.componentType === "copy") {
-                warnings.push({
-                  message: `invalid copy source: ${originalSource}`,
-                  doenetMLrange: component.doenetMLrange,
-                  level: 2,
-                });
+                message = `invalid copy source: ${originalSource}`;
               } else {
-                warnings.push({
-                  message: `invalid target: ${originalSource}`,
-                  doenetMLrange: component.doenetMLrange,
-                  level: 2,
-                });
+                message = `invalid target: ${originalSource}`;
               }
+              convertToErrorComponent(component, message);
+              errors.push({
+                message,
+                doenetMLrange: component.doenetMLrange,
+              });
             }
           } else {
             // have copy with just a simple target prop that is a targetName
@@ -1676,6 +1676,14 @@ function substituteMacros(
         let matchLength = result.matchLength;
         let nDollarSigns = result.nDollarSigns;
 
+        let doenetMLrange;
+        if (Number.isFinite(doenetMLcharInd)) {
+          doenetMLrange = {
+            begin: doenetMLcharInd + 1 + firstIndMatched,
+            end: doenetMLcharInd + firstIndMatched + matchLength,
+          };
+        }
+
         let componentsFromMacro;
 
         let componentResult = createComponentFromExtendedSource({
@@ -1686,35 +1694,26 @@ function substituteMacros(
           propArray: result.propArray,
           componentInfoObjects,
         });
-        warnings.push(...componentResult.warnings);
-
-        // Note: we ignore errors produced by createComponentFromExtendedSource,
-        // as they won't be displayed in the document itself.
-        // Instead, these errors will make success be false,
-        // which will trigger an error below
+        // Note: don't need to create errors from createComponentFromExtendedSource
+        // as an error for it will be created, below
+        warnings.push(
+          ...componentResult.warnings.map((w) => {
+            w.doenetMLrange = doenetMLrange;
+            return w;
+          }),
+        );
 
         let newComponent;
         if (componentResult.success) {
           newComponent = componentResult.newComponent;
           if (Number.isFinite(doenetMLcharInd)) {
-            newComponent.doenetMLrange = {
-              begin: doenetMLcharInd + 1 + firstIndMatched,
-              end: doenetMLcharInd + firstIndMatched + matchLength,
-            };
+            newComponent.doenetMLrange = doenetMLrange;
           }
         } else {
           let strWithError = str.slice(
             firstIndMatched,
             firstIndMatched + matchLength,
           );
-
-          let doenetMLrange;
-          if (Number.isFinite(doenetMLcharInd)) {
-            doenetMLrange = {
-              begin: doenetMLcharInd + 1 + firstIndMatched,
-              end: doenetMLcharInd + firstIndMatched + matchLength,
-            };
-          }
 
           let message = `${componentResult.errors[0].message} Found: ${strWithError}.`;
           errors.push({
@@ -1970,6 +1969,8 @@ function createComponentFromExtendedSource({
     if (!attributesResult.success) {
       return attributesResult;
     }
+    // Don't need to add errors, as errors would make success be false
+    warnings.push(...attributesResult.warnings);
 
     Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
@@ -2017,6 +2018,8 @@ function createComponentFromExtendedSource({
       if (!attributesResult.success) {
         return attributesResult;
       }
+      // Don't need to add errors, as errors would make success be false
+      warnings.push(...attributesResult.warnings);
 
       Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
@@ -2053,7 +2056,10 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
     return { success: false, errors, warnings };
   }
 
-  let res = createAttributesFromProps(
+  let res = substituteAttributeDeprecations(componentsForAttributes);
+  warnings.push(...res.warnings);
+
+  res = createAttributesFromProps(
     componentsForAttributes,
     componentInfoObjects,
   );
@@ -2623,6 +2629,15 @@ export function applySugar({
 
             // console.log("sugarResults")
             // console.log(sugarResults)
+
+            if (sugarResults.warnings) {
+              warnings.push(
+                ...sugarResults.warnings.map((w) => {
+                  w.doenetMLrange = component.doenetMLrange;
+                  return w;
+                }),
+              );
+            }
 
             if (sugarResults.success) {
               let newChildren = sugarResults.newChildren;

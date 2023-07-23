@@ -543,16 +543,20 @@ export default class Vector extends GraphicalComponent {
           dependencyValues.tailAttr !== null &&
           dependencyValues.sourceOfDisplacement !== null
         ) {
+          let warnings = [];
           if (dependencyValues.headAttr !== null) {
             // if overprescribed by specifying head, tail, and displacement
             // we ignore head
-            console.warn(
-              `Vector is prescribed by head, tail, and displacement.  Ignoring specified head.`,
-            );
+            warnings.push({
+              message:
+                "Vector is prescribed by head, tail, and displacement.  Ignoring specified head.",
+              level: 2,
+            });
           }
           return {
             setValue: { basedOnHead: false },
             checkForActualChange: { basedOnHead: true },
+            sendWarnings: warnings,
           };
         }
 
@@ -1001,24 +1005,42 @@ export default class Vector extends GraphicalComponent {
               dependencyValues.numDimDisplacement !==
               dependencyValues.numDimTail
             ) {
-              console.warn(`numDimensions mismatch in vector`);
-              return { setValue: { numDimensions: NaN } };
+              let warning = {
+                message: "numDimensions mismatch in vector",
+                level: 2,
+              };
+              return {
+                setValue: { numDimensions: NaN },
+                sendWarnings: [warning],
+              };
             }
           } else if (dependencyValues.basedOnHead) {
             if (
               dependencyValues.numDimDisplacement !==
               dependencyValues.numDimHead
             ) {
-              console.warn(`numDimensions mismatch in vector`);
-              return { setValue: { numDimensions: NaN } };
+              let warning = {
+                message: "numDimensions mismatch in vector",
+                level: 2,
+              };
+              return {
+                setValue: { numDimensions: NaN },
+                sendWarnings: [warning],
+              };
             }
           }
           numDimensions = dependencyValues.numDimDisplacement;
         } else if (dependencyValues.basedOnTail) {
           if (dependencyValues.basedOnHead) {
             if (dependencyValues.numDimTail !== dependencyValues.numDimHead) {
-              console.warn(`numDimensions mismatch in vector`);
-              return { setValue: { numDimensions: NaN } };
+              let warning = {
+                message: "numDimensions mismatch in vector",
+                level: 2,
+              };
+              return {
+                setValue: { numDimensions: NaN },
+                sendWarnings: [warning],
+              };
             }
           }
           numDimensions = dependencyValues.numDimTail;

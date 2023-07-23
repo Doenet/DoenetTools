@@ -129,8 +129,11 @@ export default class Collect extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null) {
-          console.warn(`No copy target`);
-          return { setValue: { targetName: "" } };
+          let warning = {
+            message: "No source specified for collect",
+            level: 2,
+          };
+          return { setValue: { targetName: "" }, sendWarnings: [warning] };
         }
         return {
           setValue: {
@@ -171,6 +174,7 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let componentTypesToCollect = [];
         let componentClassesToCollect = [];
+        let warnings = [];
 
         if (dependencyValues.componentTypesAttr !== null) {
           for (let cType of dependencyValues.componentTypesAttr.stateValues
@@ -190,7 +194,7 @@ export default class Collect extends CompositeComponent {
                 "Cannot collect component type " +
                 cType +
                 ". Component type not found.";
-              console.warn(message);
+              warnings.push({ message, level: 2 });
             }
           }
         }
@@ -200,6 +204,7 @@ export default class Collect extends CompositeComponent {
             componentTypesToCollect,
             componentClassesToCollect,
           },
+          sendWarnings: warnings,
         };
       },
     };
@@ -469,6 +474,8 @@ export default class Collect extends CompositeComponent {
         numComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
       });
+      errors.push(...results.errors);
+      warnings.push(...results.warnings);
 
       serializedReplacements = results.serializedReplacements;
       propVariablesCopiedByReplacement =

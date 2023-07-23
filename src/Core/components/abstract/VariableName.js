@@ -16,13 +16,19 @@ export default class Variable extends MathComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
+        let warnings = [];
         let validVariable = isValidVariable(dependencyValues.value);
 
         if (!validVariable) {
-          console.warn("Invalid value of a " + this.componentType);
+          warnings.push({
+            message:
+              "Invalid value of a variable: " +
+              dependencyValues.value.toString(),
+            level: 2,
+          });
         }
 
-        return { setValue: { validVariable } };
+        return { setValue: { validVariable }, sendWarnings: warnings };
       },
     };
 

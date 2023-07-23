@@ -1542,6 +1542,8 @@ export default class Copy extends CompositeComponent {
         publicCaseInsensitiveAliasSubstitutions,
         flags,
       });
+      errors.push(...results.errors);
+      warnings.push(...results.warnings);
 
       let processResult = serializeFunctions.processAssignNames({
         assignNames,
@@ -2408,6 +2410,9 @@ export async function replacementFromProp({
   // console.log(`replacement from prop for ${component.componentName}`)
   // console.log(replacementSource)
 
+  let errors = [];
+  let warnings = [];
+
   let serializedReplacements = [];
   let propVariablesCopiedByReplacement = [];
   let newNamespace = component.attributes.newNamespace?.primitive;
@@ -2427,13 +2432,16 @@ export async function replacementFromProp({
 
   if (varName === undefined || varName.slice(0, 12) === "__not_public") {
     if (propName !== "__prop_name_not_found") {
-      console.warn(
-        `Could not find prop ${propName} on a component of type ${replacementSource.componentType}`,
-      );
+      warnings.push({
+        message: `Could not find prop ${propName} on a component of type ${replacementSource.componentType}`,
+        level: 2,
+      });
     }
     return {
       serializedReplacements: [],
       propVariablesCopiedByReplacement: [],
+      errors,
+      warnings,
     };
   }
 
@@ -2460,6 +2468,8 @@ export async function replacementFromProp({
         return {
           serializedReplacements: [],
           propVariablesCopiedByReplacement: [],
+          errors,
+          warnings,
         };
       }
     }
@@ -3339,6 +3349,8 @@ export async function replacementFromProp({
       return {
         serializedReplacements: [],
         propVariablesCopiedByReplacement: [],
+        errors,
+        warnings,
       };
     }
 
@@ -3553,5 +3565,10 @@ export async function replacementFromProp({
   // console.log(JSON.parse(JSON.stringify(serializedReplacements)))
   // console.log(serializedReplacements)
 
-  return { serializedReplacements, propVariablesCopiedByReplacement };
+  return {
+    serializedReplacements,
+    propVariablesCopiedByReplacement,
+    errors,
+    warnings,
+  };
 }

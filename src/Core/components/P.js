@@ -21,6 +21,10 @@ export default class P extends BlockComponent {
         group: "inlinesAndLists",
         componentTypes: ["_inline", "ol", "ul"],
       },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
     ];
   }
 

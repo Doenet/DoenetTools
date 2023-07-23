@@ -3872,6 +3872,7 @@ export default class Function extends InlineComponent {
 function calculateInterpolationPoints({ dependencyValues, numerics }) {
   let pointsWithX = [];
   let pointsWithoutX = [];
+  let warnings = [];
 
   let allPoints = {
     maximum: dependencyValues.prescribedMaxima,
@@ -3888,27 +3889,39 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
       if (point.x !== null) {
         x = point.x.evaluate_to_constant();
         if (!Number.isFinite(x)) {
-          console.warn(`Ignoring non-numerical ${type}`);
+          warnings.push({
+            message: `Ignoring non-numerical ${type}`,
+            level: 2,
+          });
           continue;
         }
       }
       if (point.y !== null) {
         y = point.y.evaluate_to_constant();
         if (!Number.isFinite(y)) {
-          console.warn(`Ignoring non-numerical ${type}`);
+          warnings.push({
+            message: `Ignoring non-numerical ${type}`,
+            level: 2,
+          });
           continue;
         }
       }
       if (point.slope !== null && point.slope !== undefined) {
         slope = point.slope.evaluate_to_constant();
         if (!Number.isFinite(slope)) {
-          console.warn(`Ignoring non-numerical slope`);
+          warnings.push({
+            message: `Ignoring non-numerical slope`,
+            level: 2,
+          });
           slope = null;
         }
       }
       if (x === null) {
         if (y === null) {
-          console.warn(`Ignoring empty ${type}`);
+          warnings.push({
+            message: `Ignoring empty ${type}`,
+            level: 2,
+          });
           continue;
         }
         pointsWithoutX.push({
@@ -3936,10 +3949,14 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
   for (let ind = 0; ind < pointsWithX.length; ind++) {
     let p = pointsWithX[ind];
     if (p.x <= xPrev + eps) {
-      console.warn(
-        `Two points with locations too close together.  Can't define function`,
-      );
-      return { setValue: { interpolationPoints: null } };
+      warnings.push({
+        message: `Two points with locations too close together.  Can't define function`,
+        level: 2,
+      });
+      return {
+        setValue: { interpolationPoints: null },
+        sendWarnings: warnings,
+      };
     }
     xPrev = p.x;
   }
@@ -4230,7 +4247,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
     }
   }
 
-  return { setValue: { interpolationPoints } };
+  return { setValue: { interpolationPoints }, sendWarnings: warnings };
 
   function monotonicSlope({ point, prevPoint, nextPoint }) {
     // monotonic cubic interpolation formula from
