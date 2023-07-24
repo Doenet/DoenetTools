@@ -1449,6 +1449,10 @@ export default class BaseComponent {
       numberOfVariants *= result.numberOfVariants;
     }
 
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
+    }
+
     serializedComponent.variants.numberOfVariants = numberOfVariants;
     serializedComponent.variants.uniqueVariantData = {
       numberOfVariantsByDescendant,

@@ -122,6 +122,12 @@ export default class SelectFromSequence extends Sequence {
           shadowVariable: true,
           immutable: true,
         },
+        {
+          variableName: "errorMessage",
+          hasEssential: true,
+          shadowVariable: true,
+          immutable: true,
+        },
       ],
       returnDependencies: ({ sharedParameters }) => ({
         numToSelect: {
@@ -223,6 +229,23 @@ export default class SelectFromSequence extends Sequence {
   }) {
     let errors = [];
     let warnings = [];
+
+    let errorMessage = await component.stateValues.errorMessage;
+    if (errorMessage) {
+      errors.push({
+        message: errorMessage,
+      });
+      return {
+        replacements: [
+          {
+            componentType: "_error",
+            state: { message: errorMessage },
+          },
+        ],
+        errors,
+        warnings,
+      };
+    }
 
     let componentType = await component.stateValues.type;
     if (componentType === "letters") {
@@ -645,6 +668,10 @@ export default class SelectFromSequence extends Sequence {
       }
     }
 
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
+    }
+
     serializedComponent.variants.numberOfVariants = numberOfVariants;
 
     return {
@@ -709,10 +736,12 @@ function makeSelection({ dependencyValues }) {
   if (dependencyValues.numToSelect < 1) {
     return {
       setEssentialValue: {
+        errorMessage: "",
         selectedValues: [],
         selectedIndices: [],
       },
       setValue: {
+        errorMessage: "",
         selectedValues: [],
         selectedIndices: [],
       },
@@ -725,12 +754,20 @@ function makeSelection({ dependencyValues }) {
   }
 
   if (numUniqueRequired > dependencyValues.length) {
-    throw Error(
+    let errorMessage =
       "Cannot select " +
-        numUniqueRequired +
-        " values from a sequence of length " +
-        dependencyValues.length,
-    );
+      numUniqueRequired +
+      " values from a sequence of length " +
+      dependencyValues.length +
+      ".";
+    return {
+      setEssentialValue: {
+        errorMessage,
+        selectedValues: null,
+        selectedIndices: null,
+      },
+      setValue: { errorMessage, selectedValues: null, selectedIndices: null },
+    };
   }
 
   // if desiredIndices is specfied, use those
@@ -741,13 +778,36 @@ function makeSelection({ dependencyValues }) {
     let desiredIndices = dependencyValues.variants.desiredVariant.indices;
     if (desiredIndices !== undefined) {
       if (desiredIndices.length !== dependencyValues.numToSelect) {
-        throw Error(
-          "Number of indices specified for select must match number to select",
-        );
+        let errorMessage =
+          "Number of indices specified for select must match number to select";
+        return {
+          setEssentialValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+          setValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+        };
       }
       desiredIndices = desiredIndices.map(Number);
       if (!desiredIndices.every(Number.isInteger)) {
-        throw Error("All indices specified for select must be integers");
+        let errorMessage = "All indices specified for select must be integers";
+        return {
+          setEssentialValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+          setValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+        };
       }
       let n = dependencyValues.length;
       desiredIndices = desiredIndices.map((x) => ((((x - 1) % n) + n) % n) + 1);
@@ -765,9 +825,20 @@ function makeSelection({ dependencyValues }) {
         });
 
         if (componentValue === null) {
-          throw Error(
-            "Specified index of selectfromsequence that was excluded",
-          );
+          let errorMessage =
+            "Specified index of selectfromsequence that was excluded";
+          return {
+            setEssentialValue: {
+              errorMessage,
+              selectedValues: null,
+              selectedIndices: null,
+            },
+            setValue: {
+              errorMessage,
+              selectedValues: null,
+              selectedIndices: null,
+            },
+          };
         }
 
         selectedValues.push(componentValue);
@@ -780,14 +851,33 @@ function makeSelection({ dependencyValues }) {
           values: selectedValues,
         })
       ) {
-        throw Error(
-          "Specified indices of selectfromsequence that was an excluded combination",
-        );
+        let errorMessage =
+          "Specified indices of selectfromsequence that was an excluded combination";
+        return {
+          setEssentialValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+          setValue: {
+            errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+        };
       }
 
       return {
-        setEssentialValue: { selectedValues, selectedIndices: desiredIndices },
-        setValue: { selectedValues, selectedIndices: desiredIndices },
+        setEssentialValue: {
+          errorMessage: "",
+          selectedValues,
+          selectedIndices: desiredIndices,
+        },
+        setValue: {
+          errorMessage: "",
+          selectedValues,
+          selectedIndices: desiredIndices,
+        },
       };
     }
   }
@@ -813,6 +903,21 @@ function makeSelection({ dependencyValues }) {
       withReplacement: dependencyValues.withReplacement,
       rng: dependencyValues.variantRng,
     });
+
+    if (selectedObj.errorMessage) {
+      return {
+        setEssentialValue: {
+          errorMessage: selectedObj.errorMessage,
+          selectedValues: null,
+          selectedIndices: null,
+        },
+        setValue: {
+          errorMessage: selectedObj.errorMessage,
+          selectedValues: null,
+          selectedIndices: null,
+        },
+      };
+    }
 
     selectedValues = selectedObj.selectedValues;
     selectedIndices = selectedObj.selectedIndices;
@@ -881,14 +986,36 @@ function makeSelection({ dependencyValues }) {
           numCombinationsExcluded -= numDuplicated;
 
           if (numCombinationsExcluded > 0.7 * numPossibilities) {
-            throw Error(
-              "Excluded over 70% of combinations in selectFromSequence",
-            );
+            let errorMessage =
+              "Excluded over 70% of combinations in selectFromSequence";
+            return {
+              setEssentialValue: {
+                errorMessage,
+                selectedValues: null,
+                selectedIndices: null,
+              },
+              setValue: {
+                errorMessage,
+                selectedValues: null,
+                selectedIndices: null,
+              },
+            };
           }
         } else {
-          throw Error(
-            "Excluded over 70% of combinations in selectFromSequence",
-          );
+          let errorMessage =
+            "Excluded over 70% of combinations in selectFromSequence";
+          return {
+            setEssentialValue: {
+              errorMessage,
+              selectedValues: null,
+              selectedIndices: null,
+            },
+            setValue: {
+              errorMessage,
+              selectedValues: null,
+              selectedIndices: null,
+            },
+          };
         }
       }
     }
@@ -904,6 +1031,21 @@ function makeSelection({ dependencyValues }) {
         withReplacement: dependencyValues.withReplacement,
         rng: dependencyValues.variantRng,
       });
+
+      if (selectedObj.errorMessage) {
+        return {
+          setEssentialValue: {
+            errorMessage: selectedObj.errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+          setValue: {
+            errorMessage: selectedObj.errorMessage,
+            selectedValues: null,
+            selectedIndices: null,
+          },
+        };
+      }
 
       selectedValues = selectedObj.selectedValues;
       selectedIndices = selectedObj.selectedIndices;
@@ -925,9 +1067,20 @@ function makeSelection({ dependencyValues }) {
 
     if (!foundValidCombination) {
       // this won't happen, as occurs with prob < 10^(-30)
-      throw Error(
-        "By extremely unlikely fluke, couldn't select combination of random values",
-      );
+      let errorMessage =
+        "By extremely unlikely fluke, couldn't select combination of random values";
+      return {
+        setEssentialValue: {
+          errorMessage,
+          selectedValues: null,
+          selectedIndices: null,
+        },
+        setValue: {
+          errorMessage,
+          selectedValues: null,
+          selectedIndices: null,
+        },
+      };
     }
   }
 
@@ -954,8 +1107,8 @@ function makeSelection({ dependencyValues }) {
   }
 
   return {
-    setEssentialValue: { selectedValues, selectedIndices },
-    setValue: { selectedValues, selectedIndices },
+    setEssentialValue: { errorMessage: "", selectedValues, selectedIndices },
+    setValue: { errorMessage: "", selectedValues, selectedIndices },
   };
 }
 
@@ -1014,9 +1167,13 @@ function selectValuesAndIndices({
 
       if (!foundValid) {
         // this won't happen, as occurs with prob < 10^(-30)
-        throw Error(
-          "By extremely unlikely fluke, couldn't select random value",
-        );
+        let errorMessage =
+          "By extremely unlikely fluke, couldn't select random value";
+        return {
+          errorMessage,
+          selectedValues: null,
+          selectedIndices: null,
+        };
       }
 
       selectedValues.push(componentValue);
@@ -1034,12 +1191,16 @@ function selectValuesAndIndices({
   let numPossibleValues = possibleValuesAndIndices.length;
 
   if (numUniqueRequired > numPossibleValues) {
-    throw Error(
+    let errorMessage =
       "Cannot select " +
-        numUniqueRequired +
-        " unique values from sequence of length " +
-        numPossibleValues,
-    );
+      numUniqueRequired +
+      " unique values from sequence of length " +
+      numPossibleValues;
+    return {
+      errorMessage,
+      selectedValues: null,
+      selectedIndices: null,
+    };
   }
 
   if (numUniqueRequired === 1) {

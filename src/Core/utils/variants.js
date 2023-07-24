@@ -424,7 +424,7 @@ export function determineVariantsForSection({
       componentInfoObjects,
     });
 
-    if (!uniqueResult.success) {
+    if (!uniqueResult.success || !(uniqueResult.numberOfVariants > 0)) {
       uniqueVariants = false;
     } else {
       uniqueVariants =

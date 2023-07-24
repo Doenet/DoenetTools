@@ -1094,4 +1094,48 @@ $A{assignNames="a" assignnames="b"}
       expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(5);
     });
   });
+
+  it("Copy section with an error", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<section name="sec">
+  <p>
+</section>
+
+<section copySource="sec" name="sec2" />
+`,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
+    cy.get(cesc2("#/__error1")).should("contain.text", "Expected </p>");
+    cy.get(cesc2("#/__error1")).should(
+      "contain.text",
+      "line 3, character 3 through line 3, character 6",
+    );
+
+    cy.get(cesc2("#/sec2")).should("contain.text", "Missing closing tag");
+    cy.get(cesc2("#/sec2")).should("contain.text", "Expected </p>");
+    cy.get(cesc2("#/sec2")).should(
+      "contain.text",
+      "line 3, character 3 through line 3, character 6",
+    );
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain("Missing closing tag");
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(6);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(6);
+    });
+  });
 });

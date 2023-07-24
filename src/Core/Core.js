@@ -480,14 +480,12 @@ export default class Core {
     // warning if there are any children that are unmatched
     if (Object.keys(this.unmatchedChildren).length > 0) {
       for (let componentName in this.unmatchedChildren) {
-        if (!this._components[componentName].isShadow) {
-          this.errorWarnings.warnings.push({
-            message: `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message}`,
-            level: 1,
-            doenetMLrange: this._components[componentName].doenetMLrange,
-          });
-          this.newErrorWarning = true;
-        }
+        this.errorWarnings.warnings.push({
+          message: `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message}`,
+          level: 1,
+          doenetMLrange: this._components[componentName].doenetMLrange,
+        });
+        this.newErrorWarning = true;
       }
     }
 
@@ -2877,6 +2875,8 @@ export default class Core {
     delete parent.placeholderActiveChildrenIndicesByComposite;
     delete parent.compositeReplacementActiveRange;
 
+    let undisplayableErrorChildren;
+
     let nPlaceholdersAdded = 0;
 
     for (
@@ -2984,6 +2984,28 @@ export default class Core {
           }
         }
 
+        if (
+          replacements.some((repl) => repl.componentType === "_error") &&
+          !parent.constructor.canDisplayChildErrors
+        ) {
+          // The composite returned an error but this parent cannot display child errors,
+          // so remove it from the replacements
+          // (to avoid a confusing warning about an invalid _error child)
+          // and store it in undisplayableErrorChildren.
+          // We will add these error children to an ancestor that can display them, below.
+
+          if (!undisplayableErrorChildren) {
+            undisplayableErrorChildren = [];
+          }
+          let errorReplacements = replacements.filter(
+            (repl) => repl.componentType === "_error",
+          );
+          replacements = replacements.filter(
+            (repl) => repl.componentType !== "_error",
+          );
+          undisplayableErrorChildren.push(...errorReplacements);
+        }
+
         parent.compositeReplacementActiveRange.push({
           compositeName: child.componentName,
           target: await child.stateValues.target,
@@ -3039,6 +3061,55 @@ export default class Core {
         childInd--;
       }
     }
+
+    if (undisplayableErrorChildren) {
+      await this.addUndisplayableErrorChildrenToAncestor(
+        parent,
+        undisplayableErrorChildren,
+      );
+    }
+  }
+
+  async addUndisplayableErrorChildrenToAncestor(
+    parent,
+    undisplayableErrorChildren,
+  ) {
+    // If parent had an error added by a composite, but it can't display errors,
+    // then look for an ancestor that can display errors
+    // (which will exist since document can display errors).
+    // Add the errors to the defining children of that ancestor.
+    // Note: this breaks the rules of DoenetML and
+    // it is possible that these errors will accumulate in the ancestor
+    // if this code is repeated. But, the DoenetML is broken anyway with errors,
+    // and the purpose is just to make sure that the error is prominently displayed.
+
+    let ancestorToDisplayErrors = parent;
+    let definingChildIndToAddError;
+    while (!ancestorToDisplayErrors.constructor.canDisplayChildErrors) {
+      let nextAncestor = this._components[ancestorToDisplayErrors.parentName];
+
+      definingChildIndToAddError = nextAncestor.definingChildren.indexOf(
+        ancestorToDisplayErrors,
+      );
+
+      ancestorToDisplayErrors = nextAncestor;
+    }
+
+    // if child wasn't a defining child, put the error as the first child
+    if (definingChildIndToAddError === -1) {
+      definingChildIndToAddError = 0;
+    }
+
+    ancestorToDisplayErrors.definingChildren.splice(
+      definingChildIndToAddError,
+      0,
+      ...undisplayableErrorChildren,
+    );
+
+    await this.processNewDefiningChildren({
+      parent: ancestorToDisplayErrors,
+      expandComposites: false,
+    });
   }
 
   async markWithheldReplacementsInactive(composite) {

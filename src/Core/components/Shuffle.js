@@ -390,6 +390,10 @@ export default class Shuffle extends CompositeComponent {
 
     let numberOfVariants = result.numberOfVariants * numberOfPermutations;
 
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
+    }
+
     // adjust variants info added by call to super
     serializedComponent.variants.numberOfVariants = numberOfVariants;
     serializedComponent.variants.uniqueVariantData = {

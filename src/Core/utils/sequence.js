@@ -20,7 +20,7 @@ export function returnStandardSequenceAttributes() {
       createComponentOfType: "math",
     },
     length: {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
     },
     exclude: {
       createComponentOfType: "_componentListWithSelectableType",
