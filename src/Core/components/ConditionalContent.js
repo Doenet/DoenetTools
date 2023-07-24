@@ -357,7 +357,6 @@ export default class ConditionalContent extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
       originalNamesAreConsistent: true,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

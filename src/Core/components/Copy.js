@@ -1159,7 +1159,6 @@ export default class Copy extends CompositeComponent {
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        doenetMLrange: component.doenetMLrange,
       });
       errors.push(...processResult.errors);
       warnings.push(...processResult.warnings);
@@ -1177,7 +1176,6 @@ export default class Copy extends CompositeComponent {
           assignNewNamespaces:
             component.attributes.assignNewNamespaces?.primitive,
           componentInfoObjects,
-          doenetMLrange: component.doenetMLrange,
         });
         errors.push(...res.errors);
         warnings.push(...res.warnings);
@@ -1231,7 +1229,6 @@ export default class Copy extends CompositeComponent {
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        doenetMLrange: component.doenetMLrange,
       });
       errors.push(...processResult.errors);
       warnings.push(...processResult.warnings);
@@ -1321,7 +1318,6 @@ export default class Copy extends CompositeComponent {
           parentName: component.componentName,
           componentInfoObjects,
           originalNamesAreConsistent: true,
-          doenetMLrange: component.doenetMLrange,
         });
         errors.push(...processResult.errors);
         warnings.push(...processResult.warnings);
@@ -1552,7 +1548,6 @@ export default class Copy extends CompositeComponent {
         parentCreatesNewNamespace: newNamespace,
         indOffset: numNonStringReplacementsSoFar,
         componentInfoObjects,
-        doenetMLrange: component.doenetMLrange,
       });
       errors.push(...processResult.errors);
       warnings.push(...processResult.warnings);
@@ -1570,7 +1565,6 @@ export default class Copy extends CompositeComponent {
           assignNewNamespaces:
             component.attributes.assignNewNamespaces?.primitive,
           componentInfoObjects,
-          doenetMLrange: component.doenetMLrange,
         });
         errors.push(...res.errors);
         warnings.push(...res.warnings);
@@ -1675,7 +1669,6 @@ export default class Copy extends CompositeComponent {
       indOffset: numNonStringReplacementsSoFar,
       componentInfoObjects,
       originalNamesAreConsistent: newNamespace && !assignNames,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);
@@ -1694,7 +1687,6 @@ export default class Copy extends CompositeComponent {
         assignNewNamespaces:
           component.attributes.assignNewNamespaces?.primitive,
         componentInfoObjects,
-        doenetMLrange: component.doenetMLrange,
       });
       errors.push(...res.errors);
       warnings.push(...res.warnings);
@@ -1711,7 +1703,6 @@ export default class Copy extends CompositeComponent {
     children,
     assignNewNamespaces,
     componentInfoObjects,
-    doenetMLrange,
   }) {
     let errors = [];
     let warnings = [];
@@ -1754,7 +1745,6 @@ export default class Copy extends CompositeComponent {
       parentCreatesNewNamespace: assignNewNamespaces,
       componentInfoObjects,
       originalNamesAreConsistent: true,
-      doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

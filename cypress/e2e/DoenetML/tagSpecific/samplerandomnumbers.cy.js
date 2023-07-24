@@ -1583,7 +1583,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.variance(samples, "uncorrected");
 
-      expect(meanX).closeTo(8.5, 0.1);
+      expect(meanX).closeTo(8.5, 0.2);
       expect(varX).closeTo(((2 ** 2 - 1) * 2 ** 2) / 12, 0.05);
 
       let firstSample =

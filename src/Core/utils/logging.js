@@ -70,3 +70,25 @@ function findLineCharInfo(pos, allNewlines) {
     character: pos - (allNewlines[allNewlines.length - 1] || 0),
   };
 }
+
+// Assign doenetMLRange to components or to error/warnings objects
+export function assignDoenetMLRange(components, doenetMLrange, init = true) {
+  for (let comp of components) {
+    if (typeof comp === "object") {
+      if (!comp.doenetMLrange || init) {
+        comp.doenetMLrange = doenetMLrange;
+      }
+      if (comp.children) {
+        assignDoenetMLRange(comp.children, doenetMLrange, false);
+      }
+      if (comp.attributes) {
+        for (let attrName in comp.attributes) {
+          let attrComp = comp.attributes[attrName].component;
+          if (attrComp) {
+            assignDoenetMLRange([attrComp], doenetMLrange, false);
+          }
+        }
+      }
+    }
+  }
+}

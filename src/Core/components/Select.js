@@ -614,7 +614,6 @@ export default class Select extends CompositeComponent {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
         indOffset: ind,
-        doenetMLrange: component.doenetMLrange,
       });
       errors.push(...processResult.errors);
       warnings.push(...processResult.warnings);

@@ -376,17 +376,13 @@ export default class UpdateValue extends InlineComponent {
       if (target.stateValues) {
         stateVariable = Object.keys(target.stateValues)[0];
         if (stateVariable === undefined) {
-          let compForRange = this;
-          while (compForRange.replacementOf) {
-            compForRange = compForRange.replacementOf;
-          }
           warnings.push({
             message: `Cannot update prop="${await this.stateValues
               .propName}" of ${await this.stateValues
               .target} as could not find prop ${await this.stateValues
               .propName} on a component of type ${target.componentType}`,
             level: 1,
-            doenetMLrange: compForRange.doenetMLrange,
+            doenetMLrange: this.doenetMLrange,
           });
           continue;
         }

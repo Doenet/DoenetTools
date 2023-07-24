@@ -161,7 +161,6 @@ export default class Intersection extends CompositeComponent {
       warnings.push({
         message: "Haven't implemented intersection for more than two items",
         level: 1,
-        doenetMLrange: component.doenetMLrange,
       });
       return { replacements: [], errors, warnings };
     }
@@ -229,7 +228,6 @@ export default class Intersection extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

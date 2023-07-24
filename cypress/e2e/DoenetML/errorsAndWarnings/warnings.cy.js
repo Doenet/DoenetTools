@@ -182,10 +182,10 @@ describe("Warning Tests", function () {
         "Cannot define an angle between 3 lines",
       );
       expect(errorWarnings.warnings[1].level).eq(2);
-      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(8);
-      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(1);
-      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(8);
-      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(41);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(51);
     });
   });
 

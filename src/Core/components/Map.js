@@ -372,7 +372,6 @@ export default class Map extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
       indOffset: iter,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);
@@ -453,7 +452,6 @@ export default class Map extends CompositeComponent {
           parentCreatesNewNamespace: newNamespace,
           componentInfoObjects,
           indOffset: iterateNumber,
-          doenetMLrange: component.doenetMLrange,
         });
         errors.push(...processResult.errors);
         warnings.push(...processResult.warnings);

@@ -521,7 +521,6 @@ export default class Collect extends CompositeComponent {
       indOffset: numReplacementsSoFar,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

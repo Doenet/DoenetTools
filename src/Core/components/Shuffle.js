@@ -272,7 +272,6 @@ export default class Shuffle extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: await component.stateValues.newNamespace,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

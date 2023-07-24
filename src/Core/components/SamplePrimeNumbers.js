@@ -235,7 +235,6 @@ export default class SamplePrimeNumbers extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       indOffset: startNum,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);

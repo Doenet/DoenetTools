@@ -161,7 +161,7 @@ export function parseAndCompile(inText) {
           )}.`;
           errors.push({
             message,
-            doenetMLrange: { begin: cursor.from, end: cursor.to },
+            doenetMLrange: { begin: cursor.from + 1, end: cursor.to },
           });
 
           if (adjustedRange) {
@@ -170,7 +170,7 @@ export function parseAndCompile(inText) {
             element.doenetMLrange = {
               openBegin: tagOpenBegin,
               openEnd: tagOpenEnd,
-              closeBegin: cursor.from,
+              closeBegin: cursor.from + 1,
               closeEnd: cursor.to,
             };
           }
@@ -233,7 +233,7 @@ export function parseAndCompile(inText) {
         element.doenetMLrange = {
           openBegin: tagOpenBegin,
           openEnd: tagOpenEnd,
-          closeBegin: cursor.from,
+          closeBegin: cursor.from + 1,
           closeEnd: cursor.to,
         };
       }

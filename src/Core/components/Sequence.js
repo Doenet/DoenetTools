@@ -177,7 +177,6 @@ export default class Sequence extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);
@@ -416,7 +415,6 @@ export default class Sequence extends CompositeComponent {
           parentCreatesNewNamespace: newNamespace,
           componentInfoObjects,
           indOffset: prevlength,
-          doenetMLrange: component.doenetMLrange,
         });
         errors.push(...processResult.errors);
         warnings.push(...processResult.warnings);

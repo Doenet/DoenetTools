@@ -945,7 +945,6 @@ export default class AnimateFromSequence extends BaseComponent {
           warnings.push({
             message,
             level: 1,
-            doenetMLrange: compForRange.doenetMLrange,
           });
         }
         continue;

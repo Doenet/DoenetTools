@@ -2950,7 +2950,6 @@ export function createComponentNames({
   indOffset = 0,
   createNameContext = "",
   initWithoutShadowingComposite = false,
-  substituteDoenetMLrange,
 }) {
   let errors = [];
   let warnings = [];
@@ -3378,7 +3377,6 @@ export function createComponentNames({
               parentName: componentName,
               useOriginalNames,
               attributesByTargetComponentName,
-              substituteDoenetMLrange,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3395,7 +3393,6 @@ export function createComponentNames({
             parentName: componentName,
             useOriginalNames,
             attributesByTargetComponentName,
-            substituteDoenetMLrange,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3434,7 +3431,6 @@ export function createComponentNames({
               parentName: componentName,
               useOriginalNames,
               attributesByTargetComponentName,
-              substituteDoenetMLrange,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3491,7 +3487,6 @@ export function createComponentNames({
                 parentName: componentName,
                 useOriginalNames,
                 attributesByTargetComponentName,
-                substituteDoenetMLrange,
               });
               errors.push(...res.errors);
               warnings.push(...res.warnings);
@@ -3512,7 +3507,6 @@ export function createComponentNames({
               parentName: componentName,
               useOriginalNames,
               attributesByTargetComponentName,
-              substituteDoenetMLrange,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3548,7 +3542,6 @@ export function createComponentNames({
               useOriginalNames,
               attributesByTargetComponentName,
               createNameContext: attrName,
-              substituteDoenetMLrange,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3565,7 +3558,6 @@ export function createComponentNames({
               useOriginalNames,
               attributesByTargetComponentName,
               createNameContext: attrName,
-              substituteDoenetMLrange,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3596,8 +3588,7 @@ export function createComponentNames({
 
       errors.push({
         message: e.message,
-        doenetMLrange:
-          substituteDoenetMLrange || serializedComponent.doenetMLrange,
+        doenetMLrange: serializedComponent.doenetMLrange,
       });
     }
   }
@@ -3734,7 +3725,6 @@ export function processAssignNames({
   indOffset = 0,
   originalNamesAreConsistent = false,
   shadowingComposite = false,
-  doenetMLrange,
 }) {
   // console.log(`process assign names`)
   // console.log(deepClone(serializedComponents));
@@ -3886,7 +3876,6 @@ export function processAssignNames({
         warnings.push({
           message: `Cannot assign names recursively to ${component.componentType}`,
           level: 1,
-          doenetMLrange,
         });
         name = null;
       }
@@ -3932,7 +3921,6 @@ export function processAssignNames({
       attributesByTargetComponentName,
       originalNamesAreConsistent,
       shadowingComposite,
-      doenetMLrange,
     });
     errors.push(...res.errors);
     warnings.push(...res.warnings);
@@ -3956,7 +3944,6 @@ function createComponentNamesFromParentName({
   attributesByTargetComponentName,
   originalNamesAreConsistent,
   shadowingComposite,
-  doenetMLrange,
 }) {
   let namespacePieces = parentName.split("/");
 
@@ -4031,7 +4018,6 @@ function createComponentNamesFromParentName({
     attributesByTargetComponentName,
     indOffset: ind,
     initWithoutShadowingComposite: !shadowingComposite,
-    substituteDoenetMLrange: doenetMLrange,
   });
 
   // console.log(`result of create componentName`)

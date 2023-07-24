@@ -26,7 +26,11 @@ import { get as idb_get, set as idb_set } from "idb-keyval";
 import { toastType } from "../Tools/_framework/ToastTypes";
 import axios from "axios";
 import { gatherVariantComponents, getNumberOfVariants } from "./utils/variants";
-import { findAllNewlines, getLineCharRange } from "./utils/logging";
+import {
+  assignDoenetMLRange,
+  findAllNewlines,
+  getLineCharRange,
+} from "./utils/logging";
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -2319,6 +2323,7 @@ export default class Core {
         }
 
         newSerializedChild.adaptedFrom = originalChild.componentName;
+        assignDoenetMLRange([newSerializedChild], originalChild.doenetMLrange);
         let newChildrenResult = await this.createIsolatedComponentsSub({
           serializedComponents: [newSerializedChild],
           shadow: true,
@@ -2445,6 +2450,11 @@ export default class Core {
       publicCaseInsensitiveAliasSubstitutions:
         this.publicCaseInsensitiveAliasSubstitutions.bind(this),
     });
+
+    let doenetMLrange = this.components[component.componentName].doenetMLrange;
+    assignDoenetMLRange(result.replacements, doenetMLrange);
+    assignDoenetMLRange(result.errors, doenetMLrange);
+    assignDoenetMLRange(result.warnings, doenetMLrange);
 
     if (result.errors.length > 0) {
       this.errorWarnings.errors.push(...result.errors);
@@ -2674,8 +2684,13 @@ export default class Core {
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
         shadowingComposite: true,
-        doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
       });
+
+      let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
+      assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+      assignDoenetMLRange(processResult.errors, doenetMLrange);
+      assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
       if (processResult.errors.length > 0) {
         this.errorWarnings.errors.push(...processResult.errors);
         this.newErrorWarning = true;
@@ -2715,8 +2730,13 @@ export default class Core {
           indOffset: serializedReplacements.length,
           componentInfoObjects: this.componentInfoObjects,
           originalNamesAreConsistent: true,
-          doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
         });
+
+        let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
+        assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+        assignDoenetMLRange(processResult.errors, doenetMLrange);
+        assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
         if (processResult.errors.length > 0) {
           this.errorWarnings.errors.push(...processResult.errors);
           this.newErrorWarning = true;
@@ -2741,8 +2761,13 @@ export default class Core {
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
         shadowingComposite: true,
-        doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
       });
+
+      let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
+      assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+      assignDoenetMLRange(processResult.errors, doenetMLrange);
+      assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
       if (processResult.errors.length > 0) {
         this.errorWarnings.errors.push(...processResult.errors);
         this.newErrorWarning = true;
@@ -6750,17 +6775,8 @@ export default class Core {
     }
 
     if (result.sendWarnings && result.sendWarnings.length > 0) {
-      let compForRange = component;
-      while (compForRange.replacementOf || compForRange.adaptedFrom) {
-        if (compForRange.replacementOf) {
-          compForRange = compForRange.replacementOf;
-        } else {
-          compForRange = compForRange.adaptedFrom;
-        }
-      }
-      let doenetMLrange = compForRange.doenetMLrange;
       for (let warning of result.sendWarnings) {
-        warning.doenetMLrange = doenetMLrange;
+        warning.doenetMLrange = component.doenetMLrange;
         this.errorWarnings.warnings.push(warning);
       }
 
@@ -8098,8 +8114,13 @@ export default class Core {
           parentCreatesNewNamespace: shadowingNewNamespace,
           componentInfoObjects: this.componentInfoObjects,
           originalNamesAreConsistent,
-          doenetMLrange: composite.doenetMLrange,
         });
+
+        let doenetMLrange = composite.doenetMLrange;
+        assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+        assignDoenetMLRange(processResult.errors, doenetMLrange);
+        assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
         if (processResult.errors.length > 0) {
           this.errorWarnings.errors.push(...processResult.errors);
           this.newErrorWarning = true;
@@ -9196,8 +9217,16 @@ export default class Core {
             parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
-            doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
           });
+
+          let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
+          assignDoenetMLRange(
+            processResult.serializedComponents,
+            doenetMLrange,
+          );
+          assignDoenetMLRange(processResult.errors, doenetMLrange);
+          assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
           if (processResult.errors.length > 0) {
             this.errorWarnings.errors.push(...processResult.errors);
             this.newErrorWarning = true;
@@ -9221,8 +9250,16 @@ export default class Core {
             parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
-            doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
           });
+
+          let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
+          assignDoenetMLRange(
+            processResult.serializedComponents,
+            doenetMLrange,
+          );
+          assignDoenetMLRange(processResult.errors, doenetMLrange);
+          assignDoenetMLRange(processResult.warnings, doenetMLrange);
+
           if (processResult.errors.length > 0) {
             this.errorWarnings.errors.push(...processResult.errors);
             this.newErrorWarning = true;
@@ -10865,18 +10902,8 @@ export default class Core {
     );
 
     if (inverseResult.sendWarnings && inverseResult.sendWarnings.length > 0) {
-      let compForRange = component;
-      while (compForRange.replacementOf || compForRange.adaptedFrom) {
-        if (compForRange.replacementOf) {
-          compForRange = compForRange.replacementOf;
-        } else {
-          compForRange = compForRange.adaptedFrom;
-        }
-      }
-      let doenetMLrange = compForRange.doenetMLrange;
-
       for (let warning of inverseResult.sendWarnings) {
-        warning.doenetMLrange = doenetMLrange;
+        warning.doenetMLrange = component.doenetMLrange;
         this.errorWarnings.warnings.push(warning);
       }
 
@@ -12224,7 +12251,7 @@ export default class Core {
         return "";
       }
       startInd = doenetMLrange.openEnd + 1;
-      endInd = doenetMLrange.closeBegin;
+      endInd = doenetMLrange.closeBegin - 1;
     } else {
       startInd =
         doenetMLrange.openBegin !== undefined

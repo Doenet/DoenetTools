@@ -222,7 +222,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      doenetMLrange: component.doenetMLrange,
     });
     errors.push(...processResult.errors);
     warnings.push(...processResult.warnings);
