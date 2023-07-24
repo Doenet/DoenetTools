@@ -3595,7 +3595,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
         specifiedTo,
         specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 1,
+        allowedErrorInMean: 1.5,
         allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables,

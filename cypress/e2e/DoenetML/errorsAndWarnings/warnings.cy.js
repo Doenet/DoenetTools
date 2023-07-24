@@ -525,7 +525,9 @@ describe("Warning Tests", function () {
 
   <p name="p2">Hello</p>
 
-  <p name="p3" copySource="p2"><graph/></p>
+  <p name="p3" copySource="p2"><graph/><p/></p>
+
+  <p name="p4" copySource="p1"><figure /></p>
 
     `,
         },
@@ -539,10 +541,13 @@ describe("Warning Tests", function () {
       let errorWarnings = await win.returnErrorWarnings1();
 
       expect(errorWarnings.errors.length).eq(0);
-      expect(errorWarnings.warnings.length).eq(2);
+      expect(errorWarnings.warnings.length).eq(3);
 
       expect(errorWarnings.warnings[0].message).contain(
-        `Invalid children for /p1`,
+        `Invalid children for <p>`,
+      );
+      expect(errorWarnings.warnings[0].message).contain(
+        `Found invalid children: <graph>`,
       );
       expect(errorWarnings.warnings[0].level).eq(1);
       expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
@@ -551,13 +556,28 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(28);
 
       expect(errorWarnings.warnings[1].message).contain(
-        `Invalid children for /p3`,
+        `Invalid children for <p>`,
+      );
+      expect(errorWarnings.warnings[1].message).contain(
+        `Found invalid children: <graph>, <p>`,
       );
       expect(errorWarnings.warnings[1].level).eq(1);
       expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(6);
       expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
       expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(6);
-      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(43);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(47);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Invalid children for <p>`,
+      );
+      expect(errorWarnings.warnings[2].message).contain(
+        `Found invalid children: <graph>, <figure>`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(8);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(45);
     });
   });
 });

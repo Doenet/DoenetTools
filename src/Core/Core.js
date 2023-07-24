@@ -480,10 +480,11 @@ export default class Core {
     // warning if there are any children that are unmatched
     if (Object.keys(this.unmatchedChildren).length > 0) {
       for (let componentName in this.unmatchedChildren) {
+        let parent = this._components[componentName];
         this.errorWarnings.warnings.push({
-          message: `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message}`,
+          message: `Invalid children for <${parent.componentType}>: ${this.unmatchedChildren[componentName].message}`,
           level: 1,
-          doenetMLrange: this._components[componentName].doenetMLrange,
+          doenetMLrange: parent.doenetMLrange,
         });
         this.newErrorWarning = true;
       }
@@ -1991,7 +1992,7 @@ export default class Core {
       parent.matchedCompositeChildrenWithPlaceholders = true;
       let unmatchedChildrenTypes = [];
       for (let child of childGroupResults.unmatchedChildren) {
-        unmatchedChildrenTypes.push(child.componentType);
+        unmatchedChildrenTypes.push("<" + child.componentType + ">");
         if (
           this.componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -2002,9 +2003,7 @@ export default class Core {
         }
       }
       this.unmatchedChildren[parent.componentName] = {
-        message: `invalid children of type(s): ${unmatchedChildrenTypes.join(
-          ", ",
-        )}`,
+        message: `Found invalid children: ${unmatchedChildrenTypes.join(", ")}`,
       };
     }
 
