@@ -29,7 +29,7 @@ function ErrorPage() {
   return (
     <Container padding="70px 0" textAlign="center" maxWidth="800px">
       {/* <Heading>Oops! Page not found.</Heading> */}
-      <Heading>{error.message}</Heading>
+      <Heading data-test="Error Message">{error.message}</Heading>
       <Heading fontSize="96">404</Heading>
       <Text>
         We are very sorry for the inconvenience. It looks like you&apos;re
