@@ -1697,24 +1697,22 @@ export default class Core {
     if (serializedComponent.downstreamDependencies) {
       for (let name in serializedComponent.downstreamDependencies) {
         if (name === componentName) {
-          let lastSlash = componentName.lastIndexOf("/");
-          let componentNameRelative = componentName.slice(lastSlash + 1);
           throw Error(
-            `Circular reference involving component ${componentNameRelative}.`,
+            this.dependencies.getCircularDependencyMessage([
+              serializedComponent,
+            ]),
           );
         }
         if (this.components[name]) {
           prescribedDependencies[name] =
             serializedComponent.downstreamDependencies[name];
         } else {
-          let lastSlash = componentName.lastIndexOf("/");
-          let componentNameRelative = componentName.slice(lastSlash + 1);
-          lastSlash = name.lastIndexOf("/");
-          let referencedNameRelative = name.slice(lastSlash + 1);
+          let message = this.dependencies.getCircularDependencyMessage([
+            serializedComponent,
+          ]);
 
-          throw Error(
-            `Component ${componentNameRelative} references component ${referencedNameRelative} but component ${referencedNameRelative} has not been created.  Perhaps this state was created by a circular reference?`,
-          );
+          message = "Possible c" + message.substring(1);
+          throw Error(message);
         }
       }
     }

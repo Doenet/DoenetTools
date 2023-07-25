@@ -734,25 +734,25 @@ a />
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Circular reference involving component a1.Found on line 2",
+      "Circular dependency involving these components: <math> (line 2).Found on line 2",
     );
 
     // temporary messages until can better detect circular references with copysource
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component b2 references component b1 but component b1 has not been created.  Perhaps this state was created by a circular reference?Found on line 4",
+      "Possible circular dependency involving these components: <math> (line 5).Found on line 4",
     );
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component c2 references component c1 but component c1 has not been created.  Perhaps this state was created by a circular reference?Found on line 7",
+      "Possible circular dependency involving these components: <math> (line 9).Found on line 7",
     );
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component d2 references component d1 but component d1 has not been created.  Perhaps this state was created by a circular reference?Found on line 11",
+      "Possible circular dependency involving these components: <math> (line 14).Found on line 11",
     );
     cy.get(cesc2("#/_document1")).should(
       "not.contain.text",
-      "Component e2 references component e1 but component e1 has not been created",
+      "Found on line 16",
     );
 
     cy.get(cesc2("#/e2") + " .mjx-mrow")
@@ -775,7 +775,7 @@ a />
       expect(errorWarnings.warnings.length).eq(0);
 
       expect(errorWarnings.errors[0].message).contain(
-        "Circular reference involving component a1",
+        "Circular dependency involving these components: <math> (line 2)",
       );
       expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(1);
@@ -783,7 +783,7 @@ a />
       expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(34);
 
       expect(errorWarnings.errors[1].message).contain(
-        "Component b2 references component b1 but component b1 has not been created",
+        "Possible circular dependency involving these components: <math> (line 5)",
       );
       expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(4);
       expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(1);
@@ -791,7 +791,7 @@ a />
       expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(34);
 
       expect(errorWarnings.errors[2].message).contain(
-        "Component c2 references component c1 but component c1 has not been created",
+        "Possible circular dependency involving these components: <math> (line 9)",
       );
       expect(errorWarnings.errors[2].doenetMLrange.lineBegin).eq(7);
       expect(errorWarnings.errors[2].doenetMLrange.charBegin).eq(1);
@@ -799,13 +799,66 @@ a />
       expect(errorWarnings.errors[2].doenetMLrange.charEnd).eq(34);
 
       expect(errorWarnings.errors[3].message).contain(
-        "Component d2 references component d1 but component d1 has not been created",
+        "Possible circular dependency involving these components: <math> (line 14)",
       );
       expect(errorWarnings.errors[3].doenetMLrange.lineBegin).eq(11);
       expect(errorWarnings.errors[3].doenetMLrange.charBegin).eq(1);
       expect(errorWarnings.errors[3].doenetMLrange.lineEnd).eq(11);
       expect(errorWarnings.errors[3].doenetMLrange.charEnd).eq(34);
     });
+  });
+
+  it("Circular references with macro children", () => {
+    let doenetML1 = `<text name="t1">$t1</text`;
+
+    let doenetML2 = `<text name="t1">$t2</text>
+      <text name="t2">$t1</text>`;
+
+    let doenetML3 = `<text name="t1">$t2</text>
+      <text name="t2">$t3</text>
+      <text name="t3">$t1</text>`;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML1,
+        },
+        "*",
+      );
+    });
+
+    cy.document().should(
+      "contain.text",
+      "Circular dependency involving these components: <text> (line 1).",
+    );
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML2,
+        },
+        "*",
+      );
+    });
+
+    cy.document().should(
+      "contain.text",
+      "Circular dependency involving these components: <text> (line 1), <text> (line 2).",
+    );
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML3,
+        },
+        "*",
+      );
+    });
+
+    cy.document().should(
+      "contain.text",
+      "Circular dependency involving these components: <text> (line 1), <text> (line 2), <text> (line 3).",
+    );
   });
 
   it("Errors in macros", () => {
