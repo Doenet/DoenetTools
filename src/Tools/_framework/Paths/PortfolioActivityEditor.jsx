@@ -1796,7 +1796,7 @@ export function PortfolioActivityEditor() {
                                             color="yellow.400"
                                           />
                                           Line #
-                                          {warningObj.doenetMLrange.lineBegin}{" "}
+                                          {warningObj?.doenetMLrange?.lineBegin}{" "}
                                           {warningObj.message}
                                         </ListItem>
                                       );
@@ -1849,7 +1849,7 @@ export function PortfolioActivityEditor() {
                                             color="red.500"
                                           />
                                           Line #
-                                          {errorObj.doenetMLrange.lineBegin}{" "}
+                                          {errorObj?.doenetMLrange?.lineBegin}{" "}
                                           {errorObj.message}
                                         </ListItem>
                                       );
