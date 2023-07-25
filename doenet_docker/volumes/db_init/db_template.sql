@@ -256,6 +256,7 @@ DROP TABLE IF EXISTS `content_contributor_history`;
 CREATE TABLE `content_contributor_history` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `prevDoenetId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `assignedCID` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `isUserPortfolio` int DEFAULT '1',
@@ -1135,4 +1136,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-25 17:49:09
+-- Dump completed on 2023-07-25 21:23:16

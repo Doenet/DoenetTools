@@ -199,8 +199,70 @@ try {
 
     // TODO: how do we handle support files?
 
+
+    //content_contributor_history
+    //Don't update history if duplicating to the same course
+    if ($nextCourseId != $prevCourseId){
+    $insert_content_contributor_history = [];
+    //Get history
+    $sql = "
+    SELECT
+    doenetId,
+    courseId,
+    assignedCID,
+    isUserPortfolio,
+    userId,
+    timestamp
+    FROM content_contributor_history
+    WHERE doenetId = '$prevActivityDoenetId'
+    ";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()){
+            $doenetId = $row['doenetId'];
+            $courseId = $row['courseId'];
+            $assignedCID = $row['assignedCID'];
+            $isUserPortfolio = $row['isUserPortfolio'];
+            $userId = $row['userId'];
+            $timestamp = $row['timestamp'];
+            array_push(
+                $insert_content_contributor_history,
+                "('$nextActivityDoenetId','$doenetId','$courseId','$assignedCID','$isUserPortfolio','$userId','$timestamp')"
+            );
+        }
+    }
+
+    //add prevous one to history with timestamp = now
+    $sql = "
+    SELECT portfolioCourseForUserId
+    FROM course
+    WHERE courseId = '$prevCourseId'
+    ";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $isUserPortfolio = is_null($row["portfolioCourseForUserId"]) ? "0" : "1";
+        $prevUserId = $row["portfolioCourseForUserId"];
+    }
+    array_push(
+        $insert_content_contributor_history,
+        "('$nextActivityDoenetId','$prevActivityDoenetId','$prevCourseId','$assignedCid','$isUserPortfolio','$prevUserId',NOW())"
+    );
+
+    $str_insert_content_contributor_history = implode(',', $insert_content_contributor_history);
+
+
+    // INSERT into content_contributor_history table
+    $sql = "
+    INSERT INTO content_contributor_history (doenetId,prevDoenetId,courseId,assignedCID,isUSerPortfolio,userId,timestamp)
+    VALUES
+    $str_insert_content_contributor_history
+    ";
+    $result = $conn->query($sql);
+    }
+
     $response_arr = [
-        'success' => $success,
+        'success' => true,
         'courseId' => $nextCourseId,
         'nextActivityDoenetId' => $nextActivityDoenetId,
         'nextPageDoenetId' => $nextFirstPageDoenetId,
