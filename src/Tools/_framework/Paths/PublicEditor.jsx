@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -13,15 +7,9 @@ import {
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Center,
@@ -31,17 +19,6 @@ import {
   HStack,
   Icon,
   Link,
-  List,
-  ListIcon,
-  ListItem,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Select,
-  Tag,
   Text,
   Tooltip,
   VStack,
@@ -59,7 +36,6 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import { MdCheckCircle } from "react-icons/md";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 
 //Delete this action???
