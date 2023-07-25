@@ -32,14 +32,15 @@ describe("Public activity tests", function () {
 <title>A public activity</title>
 <p>This is public</p>
 `;
-    const label = "Test Public Urls";
+    const courseLabel = "TPU Course";
+    const label = "Test Public Viewer Editor Urls";
     const courseId = "tpucourseid1";
-    const doenetId = "activity1id";
-    const pageDoenetId = "_page1id";
+    const doenetId = "tpuactivity1id";
+    const pageDoenetId = "_tpupage1id";
 
     cy.deleteCourseDBRows({ courseId })
 
-    cy.createCourse({ userId, courseId });
+    cy.createCourse({ userId, courseId, label: courseLabel });
 
 
     cy.createActivity({
@@ -109,7 +110,7 @@ describe("Public activity tests", function () {
     cy.get(cesc2("#/_p2")).should("have.text", "A new paragraph");
   });
 
-  it.only("Repeatedly select same internal link", () => {
+  it("Repeatedly select same internal link", () => {
     const doenetML = `
 <section>
   <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -125,6 +126,7 @@ describe("Public activity tests", function () {
 
 </section>`;
 
+    const courseLabel = "RSS Course";
     const label = "RSS Test Public Urls";
     const courseId = "rsscourseid1";
     const doenetId = "rssactivity1id";
@@ -134,7 +136,7 @@ describe("Public activity tests", function () {
 
     cy.deleteCourseDBRows({ courseId })
 
-    cy.createCourse({ userId, courseId });
+    cy.createCourse({ userId, courseId, label: courseLabel });
 
     cy.createActivity({
       courseId,
@@ -150,114 +152,114 @@ describe("Public activity tests", function () {
     cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    // cy.get('[data-test="Assign Activity"]').click();
-    // cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
-    // cy.get('[data-test="Make Publicly Visible"]').click();
-    // cy.wait(1000);
+    cy.get('[data-test="Make Publicly Visible"]').click();
+    cy.wait(1000);
 
-    // cy.get('[data-test="Show DoenetML Source"]').click();
-    // cy.wait(1000);
+    cy.get('[data-test="Show DoenetML Source"]').click();
+    cy.wait(1000);
 
-    // cy.visit(`/public?doenetId=${doenetId}`);
+    cy.visit(`/public?doenetId=${doenetId}`);
 
-    // cy.get(cesc2("#/_section1_title")).should("have.text", "Section 1");
-    // cy.url().should("match", /[^#]/);
+    cy.get(cesc2("#/_section1_title")).should("have.text", "Section 1");
+    cy.url().should("match", /[^#]/);
 
-    // cy.get('[data-test="Main Panel"]').then((el) => {
-    //   expect(el.scrollTop()).eq(0);
-    // });
+    cy.get('[data-test="Main Panel"]').then((el) => {
+      expect(el.scrollTop()).eq(0);
+    });
 
-    // cy.get(cesc2("#/asideTitle")).should("have.text", "The aside");
-    // cy.get(cesc2("#/insideAside")).should("not.exist");
+    cy.get(cesc2("#/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc2("#/insideAside")).should("not.exist");
 
-    // cy.get(cesc2("#/toAside")).click();
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.get(cesc2("#/toAside")).click();
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/aside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/aside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    // cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
 
-    // cy.get(cesc2("#/asideTitle")).click();
-    // cy.get(cesc2("#/insideAside")).should("not.exist");
+    cy.get(cesc2("#/asideTitle")).click();
+    cy.get(cesc2("#/insideAside")).should("not.exist");
 
-    // cy.get(cesc2("#/toAside")).scrollIntoView();
+    cy.get(cesc2("#/toAside")).scrollIntoView();
 
-    // cy.get(cesc2("#/toAside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/toAside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/toAside")).click();
-    // cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc2("#/toAside")).click();
+    cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
 
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/aside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/aside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    // cy.visit(`/public?tool=editor&doenetId=${doenetId}`);
+    cy.visit(`/public?tool=editor&doenetId=${doenetId}`);
 
-    // cy.get(cesc2("#/_section1_title")).should("have.text", "Section 1");
-    // cy.url().should("match", /[^#]/);
+    cy.get(cesc2("#/_section1_title")).should("have.text", "Section 1");
+    cy.url().should("match", /[^#]/);
 
-    // cy.get('[data-test="Main Panel"]').then((el) => {
-    //   expect(el.scrollTop()).eq(0);
-    // });
+    cy.get('[data-test="Main Panel"]').then((el) => {
+      expect(el.scrollTop()).eq(0);
+    });
 
-    // cy.get(cesc2("#/asideTitle")).should("have.text", "The aside");
-    // cy.get(cesc2("#/insideAside")).should("not.exist");
+    cy.get(cesc2("#/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc2("#/insideAside")).should("not.exist");
 
-    // cy.get(cesc2("#/toAside")).click();
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.get(cesc2("#/toAside")).click();
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/aside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/aside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    // cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
 
-    // cy.get(cesc2("#/asideTitle")).click();
-    // cy.get(cesc2("#/insideAside")).should("not.exist");
+    cy.get(cesc2("#/asideTitle")).click();
+    cy.get(cesc2("#/insideAside")).should("not.exist");
 
-    // cy.get(cesc2("#/toAside")).scrollIntoView();
+    cy.get(cesc2("#/toAside")).scrollIntoView();
 
-    // cy.get(cesc2("#/toAside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/toAside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
 
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/toAside")).click();
-    // cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc2("#/toAside")).click();
+    cy.get(cesc2("#/insideAside")).should("have.text", "Content in aside");
 
-    // cy.url().should("match", /#\\\/aside$/);
+    cy.url().should("match", /#\\\/aside$/);
 
-    // cy.get(cesc2("#/aside")).then((el) => {
-    //   let rect = el[0].getBoundingClientRect();
-    //   expect(rect.top)
-    //     .gt(headerPixels - 1)
-    //     .lt(headerPixels + 1);
-    // });
+    cy.get(cesc2("#/aside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
   });
 
   //Known bug
