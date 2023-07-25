@@ -66,7 +66,7 @@ describe("Porfolio Errors and Warnings ", function () {
 
     cy.get(cesc2("#/__error1")).should(
       "contain.text",
-      "Invalid component type: invalid",
+      "Invalid component type: <invalid>",
     );
 
     cy.get('[data-test="Warning Button"]').should("have.text", "0 Warnings");
@@ -78,7 +78,7 @@ describe("Porfolio Errors and Warnings ", function () {
     cy.get('[data-test="Error Button"]').click();
     cy.get('[data-test="Error Content"]').should(
       "have.text",
-      "ErrorLine #3 Invalid component type: invalid",
+      "ErrorLine #3 Invalid component type: <invalid>",
     );
 
     cy.get(".cm-content").type(`{ctrl+end}{leftarrow}{leftarrow}{backspace}`);
@@ -90,7 +90,7 @@ describe("Porfolio Errors and Warnings ", function () {
     );
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
-      "Invalid component type: invalid",
+      "Invalid component type: <invalid>",
     );
 
     cy.get('[data-test="Warning Button"]').should("have.text", "0 Warnings");
@@ -106,7 +106,7 @@ describe("Porfolio Errors and Warnings ", function () {
     );
     cy.get('[data-test="Error Content"]').should(
       "contain.text",
-      "Line #3 Invalid component type: invalid",
+      "Line #3 Invalid component type: <invalid>",
     );
 
     cy.get(".cm-content").type(

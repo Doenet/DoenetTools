@@ -934,10 +934,7 @@ describe("SelectFromSequence Tag Tests", function () {
     });
 
     cy.get(cesc2("#/_document1")).should("contain.text", "Excluded over 70%");
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 2, character 16 through line 2, character 130",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 2");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -3682,10 +3679,7 @@ describe("SelectFromSequence Tag Tests", function () {
       "contain.text",
       "Cannot select 3 values from a sequence of length 1",
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 2, character 17 through line 2, character 65",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 2");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();

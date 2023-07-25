@@ -5208,10 +5208,7 @@ describe("Select Tag Tests", function () {
       "contain.text",
       "Some variants are specified for select but no options are specified for possible variant name: banana",
     );
-    cy.get(cesc2("#/_p1")).should(
-      "contain.text",
-      "line 4, character 24 through line 7, character 13",
-    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "lines 4–7");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -5252,10 +5249,7 @@ describe("Select Tag Tests", function () {
       "contain.text",
       "Invalid variant name for select.  Variant name apple appears in 2 options but number to select is 1",
     );
-    cy.get(cesc2("#/_p1")).should(
-      "contain.text",
-      "line 4, character 18 through line 7, character 13",
-    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "lines 4–7");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -5297,10 +5291,7 @@ describe("Select Tag Tests", function () {
       "contain.text",
       "Variant name donut that is specified for select is not a possible variant name",
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 4, character 15 through line 8, character 13",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "lines 4–8");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -5340,10 +5331,7 @@ describe("Select Tag Tests", function () {
       "contain.text",
       "Cannot select 3 components from only 2",
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 4, character 12 through line 7, character 13",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "lines 4–7");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();

@@ -27,17 +27,14 @@ describe("Error Tests", function () {
     cy.get(cesc2("#/bad") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "a+b");
-    cy.get(cesc2("#/_document1")).should("contain.text", "Invalid DoenetML");
-    cy.get(cesc2("#/_document1")).should(
+    cy.get(cesc2("#/__error1")).should("contain.text", "Invalid DoenetML");
+    cy.get(cesc2("#/__error1")).should(
       "contain.text",
       "Mismatched closing tag",
     );
-    cy.get(cesc2("#/_document1")).should("contain.text", "Expected </math>");
-    cy.get(cesc2("#/_document1")).should("contain.text", "Found </number>");
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 4, character 1 through line 4, character 29",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "Expected </math>");
+    cy.get(cesc2("#/__error1")).should("contain.text", "Found </number>");
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 4");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -62,7 +59,8 @@ describe("Error Tests", function () {
   <math name="good">x+y</math>
   <math name="bad">a+b</number>
 </section>
-<text name="survive">Still here</text>
+<math>x</math>
+
     `,
         },
         "*",
@@ -75,19 +73,21 @@ describe("Error Tests", function () {
     cy.get(cesc2("#/bad") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "a+b");
-    cy.get(cesc2("#/_document1")).should("contain.text", "Invalid DoenetML");
-    cy.get(cesc2("#/_document1")).should(
+    cy.get(cesc2("#/__error1")).should("contain.text", "Invalid DoenetML");
+    cy.get(cesc2("#/__error1")).should(
       "contain.text",
       "Mismatched closing tag",
     );
-    cy.get(cesc2("#/_document1")).should("contain.text", "Expected </math>");
-    cy.get(cesc2("#/_document1")).should("contain.text", "Found </number>");
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 4, character 3 through line 4, character 31",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "Expected </math>");
+    cy.get(cesc2("#/__error1")).should("contain.text", "Found </number>");
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 4");
 
-    cy.get(cesc2("#/survive")).should("have.text", "Still here");
+    cy.log(
+      "confirm tag after section survive and component counting continues",
+    );
+    cy.get(cesc2("#/_math3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -122,8 +122,8 @@ describe("Error Tests", function () {
   <p>Hello there!</p>
 
   <circle radius="1" radius="2" />
-  <rectangle hide hide />
-  <apple q="a" q="b">hi</apple>
+  <rectangle hide hide name="rect" />
+  <apple q="a" q="b" name="ap">hi</apple>
   <banana bad bad>bye</banana>
   `,
         },
@@ -136,70 +136,33 @@ describe("Error Tests", function () {
       .should("have.text", "y");
     cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
     cy.get(cesc2("#/__error1")).should("contain.text", "Expected </math>");
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 3, character 3 through line 5, character 4",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "lines 3–5");
     cy.get(cesc2("#/__error2")).should("contain.text", "Found </");
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 7, character 1 through line 7, character 2",
-    );
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "Error in opening <p> tag",
-    );
-    cy.get(cesc2("#/__error3")).should("contain.text", `Found <p h="abc"`);
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "line 9, character 1 through line 9, character 10",
-    );
+    cy.get(cesc2("#/__error2")).should("contain.text", "line 7");
+    cy.get(cesc2("#/_p2")).should("contain.text", "Error in opening <p> tag");
+    cy.get(cesc2("#/_p2")).should("contain.text", `Found <p h="abc"`);
+    cy.get(cesc2("#/_p2")).should("contain.text", "line 9");
 
-    cy.get(cesc2("#/__error4")).should("contain.text", "Missing closing tag");
-    cy.get(cesc2("#/__error4")).should("contain.text", "Expected </section>");
-    cy.get(cesc2("#/__error4")).should(
-      "contain.text",
-      "line 11, character 1 through line 19, character 2",
-    );
+    cy.get(cesc2("#/__error3")).should("contain.text", "Missing closing tag");
+    cy.get(cesc2("#/__error3")).should("contain.text", "Expected </section>");
+    cy.get(cesc2("#/__error3")).should("contain.text", "lines 11–19");
     cy.get(cesc2("#/sec_title")).should("have.text", "Section 1");
-    cy.get(cesc2("#/_p2")).should("have.text", "Hello there!");
+    cy.get(cesc2("#/_p3")).should("have.text", "Hello there!");
 
-    cy.get(cesc2("#/__error5")).should(
+    cy.get(cesc2("#/_circle1")).should(
       "contain.text",
       "Duplicate attribute radius.",
     );
-    cy.get(cesc2("#/__error5")).should(
-      "contain.text",
-      "line 15, character 3 through line 15, character 34",
-    );
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "Duplicate attribute hide.",
-    );
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "Duplicate attribute hide.",
-    );
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "line 16, character 3 through line 16, character 25",
-    );
-    cy.get(cesc2("#/__error7")).should(
-      "contain.text",
-      "Duplicate attribute q.",
-    );
-    cy.get(cesc2("#/__error7")).should(
-      "contain.text",
-      " line 17, character 3 through line 17, character 31",
-    );
-    cy.get(cesc2("#/__error8")).should(
+    cy.get(cesc2("#/_circle1")).should("contain.text", "line 15");
+    cy.get(cesc2("#/rect")).should("contain.text", "Duplicate attribute hide.");
+    cy.get(cesc2("#/rect")).should("contain.text", "line 16");
+    cy.get(cesc2("#/ap")).should("contain.text", "Duplicate attribute q.");
+    cy.get(cesc2("#/ap")).should("contain.text", " line 17");
+    cy.get(cesc2("#/_banana1")).should(
       "contain.text",
       "Duplicate attribute bad.",
     );
-    cy.get(cesc2("#/__error8")).should(
-      "contain.text",
-      "line 18, character 3 through line 18, character 30",
-    );
+    cy.get(cesc2("#/_banana1")).should("contain.text", "line 18");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -290,34 +253,13 @@ a />
       );
     });
 
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 2, character 1 through line 2, character 7",
-    );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 3, character 3 through line 3, character 11",
-    );
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "line 4, character 1 through line 5, character 2",
-    );
-    cy.get(cesc2("#/__error4")).should(
-      "contain.text",
-      "line 6, character 5 through line 8, character 2.",
-    );
-    cy.get(cesc2("#/__error5")).should(
-      "contain.text",
-      "line 9, character 1 through line 10, character 3",
-    );
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "line 11, character 1 through line 12, character 4",
-    );
-    cy.get(cesc2("#/__error7")).should(
-      "contain.text",
-      "line 13, character 1 through line 14, character 6",
-    );
+    cy.get(cesc2("#/_abc1")).should("contain.text", "line 2");
+    cy.get(cesc2("#/_bcd1")).should("contain.text", "line 3");
+    cy.get(cesc2("#/_cde1")).should("contain.text", "lines 4–5");
+    cy.get(cesc2("#/_def1")).should("contain.text", "lines 6–8.");
+    cy.get(cesc2("#/_efg1")).should("contain.text", "lines 9–10");
+    cy.get(cesc2("#/_fgh1")).should("contain.text", "lines 11–12");
+    cy.get(cesc2("#/_ghi1")).should("contain.text", "lines 13–14");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -398,6 +340,9 @@ a />
 <graph>
   <point coords="(4,5)"
 </graph>
+
+<point>(1,2)</point>
+<text>afterwards</text>
     `,
         },
         "*",
@@ -407,38 +352,31 @@ a />
     cy.get(cesc2("#/_text1")).should("contain.text", "hello!");
     cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
     cy.get(cesc2("#/__error1")).should("contain.text", "Expected </a>");
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 5, character 5 through line 6, character 2",
-    );
-    cy.get(cesc2("#/__error2")).should(
+    cy.get(cesc2("#/__error1")).should("contain.text", "lines 5–6");
+    cy.get(cesc2("#/_a1")).should(
       "contain.text",
       "Invalid component type: <a>",
     );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 5, character 5 through line 6, character 2",
-    );
+    cy.get(cesc2("#/_a1")).should("contain.text", "lines 5–6");
 
-    cy.get(cesc2("#/__error3")).should("contain.text", "Missing closing tag");
-    cy.get(cesc2("#/__error3")).should("contain.text", "Expected </point>");
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "line 10, character 3 through line 10, character 23",
-    );
+    cy.get(cesc2("#/__error2")).should("contain.text", "Missing closing tag");
+    cy.get(cesc2("#/__error2")).should("contain.text", "Expected </point>");
+    cy.get(cesc2("#/__error2")).should("contain.text", "line 10");
 
-    cy.get(cesc2("#/__error4")).should(
+    cy.get(cesc2("#/_point1")).should(
       "contain.text",
       "Error in opening <point> tag",
     );
-    cy.get(cesc2("#/__error4")).should(
+    cy.get(cesc2("#/_point1")).should(
       "contain.text",
       `Found <point coords="(4,5)"`,
     );
-    cy.get(cesc2("#/__error4")).should(
-      "contain.text",
-      "line 10, character 3 through line 10, character 23",
-    );
+    cy.get(cesc2("#/_point1")).should("contain.text", "line 10");
+
+    cy.get(cesc2("#/_point2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,2)");
+    cy.get(cesc2("#/_text3")).should("have.text", "afterwards");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -487,6 +425,7 @@ a />
 <p name="p">
   Bye
 </p >
+<p>afterwards</p>
     `,
         },
         "*",
@@ -501,27 +440,19 @@ a />
       "contain.text",
       "Component name must begin with a letter",
     );
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 2, character 1 through line 2, character 15",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 2");
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
       "Invalid component name: p@",
     );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 3, character 5 through line 3, character 19",
-    );
+    cy.get(cesc2("#/__error2")).should("contain.text", "line 3");
     cy.get(cesc2("#/p")).should("have.text", "Hello");
     cy.get(cesc2("#/__error3")).should(
       "contain.text",
       "Duplicate component name: p",
     );
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "line 5, character 1 through line 7, character 5",
-    );
+    cy.get(cesc2("#/__error3")).should("contain.text", "lines 5–7");
+    cy.get(cesc2("#/_p5")).should("have.text", "afterwards");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -560,14 +491,14 @@ a />
       win.postMessage(
         {
           doenetML: `
-<group assignNames="(_a _b)" /><group assignNames="a/ b%" />
-<group assignNames="a) b" />   <group assignNames="a b (c a)" />
+<group assignNames="(_a _b)" /><group assignNames="a/ b%" name="g2" />
+<group assignNames="a) b" name="g3" />   <group assignNames="a b (c a)" />
 
-<group assignNames="a b" assignnames="c d" />
-<group assignNames="a b">
+<group assignNames="a b" assignnames="c d" name="g5" />
+<group assignNames="e f">
   <text>cat</text><text>dog</text>
 </group>
-<group assignNames="b c" />
+<group assignNames="f g" />
 <p assignNames="h" />
     `,
         },
@@ -575,69 +506,45 @@ a />
       );
     });
 
-    cy.get(cesc2("#/__error1")).should(
+    cy.get(cesc2("#/_group1")).should(
       "contain.text",
       "Invalid assignNames: (_a _b)",
     );
-    cy.get(cesc2("#/__error1")).should(
+    cy.get(cesc2("#/_group1")).should(
       "contain.text",
       "All assigned names must begin with a letter",
     );
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 2, character 1 through line 2, character 31",
-    );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "Invalid assignNames: a/ b%",
-    );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 2, character 32 through line 2, character 60",
-    );
-    cy.get(cesc2("#/__error3")).should(
+    cy.get(cesc2("#/_group1")).should("contain.text", "line 2");
+    cy.get(cesc2("#/g2")).should("contain.text", "Invalid assignNames: a/ b%");
+    cy.get(cesc2("#/g2")).should("contain.text", "line 2");
+    cy.get(cesc2("#/g3")).should(
       "contain.text",
       "Invalid format for assignNames: a) b",
     );
-    cy.get(cesc2("#/__error3")).should(
-      "contain.text",
-      "line 3, character 1 through line 3, character 28",
-    );
-    cy.get(cesc2("#/__error4")).should(
+    cy.get(cesc2("#/g3")).should("contain.text", "line 3");
+    cy.get(cesc2("#/_group4")).should(
       "contain.text",
       "A name is duplicated in assignNames: a b (c a)",
     );
-    cy.get(cesc2("#/__error4")).should(
-      "contain.text",
-      "line 3, character 32 through line 3, character 64",
-    );
-    cy.get(cesc2("#/__error5")).should(
+    cy.get(cesc2("#/_group4")).should("contain.text", "line 3");
+    cy.get(cesc2("#/g5")).should(
       "contain.text",
       "Cannot define assignNames twice for a component",
     );
-    cy.get(cesc2("#/__error5")).should(
+    cy.get(cesc2("#/g5")).should("contain.text", "line 5");
+    cy.get(cesc2("#/e")).should("have.text", "cat");
+    cy.get(cesc2("#/f")).should("have.text", "dog");
+    cy.get(cesc2("#/_group7")).should(
       "contain.text",
-      "line 5, character 1 through line 5, character 45",
+      "Duplicate component name: f",
     );
-    cy.get(cesc2("#/a")).should("have.text", "cat");
-    cy.get(cesc2("#/b")).should("have.text", "dog");
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "Duplicate component name: b",
-    );
-    cy.get(cesc2("#/__error6")).should("contain.text", "Found in assignNames");
-    cy.get(cesc2("#/__error6")).should(
-      "contain.text",
-      "line 9, character 1 through line 9, character 27",
-    );
-    cy.get(cesc2("#/__error7")).should(
+    cy.get(cesc2("#/_group7")).should("contain.text", "Found in assignNames");
+    cy.get(cesc2("#/_group7")).should("contain.text", "line 9");
+    cy.get(cesc2("#/_p1")).should(
       "contain.text",
       "Cannot assign names for component type p",
     );
-    cy.get(cesc2("#/__error7")).should(
-      "contain.text",
-      "line 10, character 1 through line 10, character 21",
-    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "line 10");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -659,7 +566,7 @@ a />
       expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(32);
       expect(errorWarnings.errors[1].doenetMLrange.lineEnd).eq(2);
-      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(60);
+      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(70);
 
       expect(errorWarnings.errors[2].message).contain(
         "Invalid format for assignNames: a) b",
@@ -667,15 +574,15 @@ a />
       expect(errorWarnings.errors[2].doenetMLrange.lineBegin).eq(3);
       expect(errorWarnings.errors[2].doenetMLrange.charBegin).eq(1);
       expect(errorWarnings.errors[2].doenetMLrange.lineEnd).eq(3);
-      expect(errorWarnings.errors[2].doenetMLrange.charEnd).eq(28);
+      expect(errorWarnings.errors[2].doenetMLrange.charEnd).eq(38);
 
       expect(errorWarnings.errors[3].message).contain(
         "A name is duplicated in assignNames: a b (c a)",
       );
       expect(errorWarnings.errors[3].doenetMLrange.lineBegin).eq(3);
-      expect(errorWarnings.errors[3].doenetMLrange.charBegin).eq(32);
+      expect(errorWarnings.errors[3].doenetMLrange.charBegin).eq(42);
       expect(errorWarnings.errors[3].doenetMLrange.lineEnd).eq(3);
-      expect(errorWarnings.errors[3].doenetMLrange.charEnd).eq(64);
+      expect(errorWarnings.errors[3].doenetMLrange.charEnd).eq(74);
 
       expect(errorWarnings.errors[4].message).contain(
         "Cannot define assignNames twice for a component",
@@ -683,10 +590,10 @@ a />
       expect(errorWarnings.errors[4].doenetMLrange.lineBegin).eq(5);
       expect(errorWarnings.errors[4].doenetMLrange.charBegin).eq(1);
       expect(errorWarnings.errors[4].doenetMLrange.lineEnd).eq(5);
-      expect(errorWarnings.errors[4].doenetMLrange.charEnd).eq(45);
+      expect(errorWarnings.errors[4].doenetMLrange.charEnd).eq(55);
 
       expect(errorWarnings.errors[5].message).contain(
-        "Duplicate component name: b",
+        "Duplicate component name: f",
       );
       expect(errorWarnings.errors[5].doenetMLrange.lineBegin).eq(9);
       expect(errorWarnings.errors[5].doenetMLrange.charBegin).eq(1);
@@ -700,6 +607,44 @@ a />
       expect(errorWarnings.errors[6].doenetMLrange.charBegin).eq(1);
       expect(errorWarnings.errors[6].doenetMLrange.lineEnd).eq(10);
       expect(errorWarnings.errors[6].doenetMLrange.charEnd).eq(21);
+    });
+  });
+
+  it("Invalid attribute errors", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>Good</p>
+    <p bad="not good">Unhappy</p>
+    <p>Good again</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("have.text", "Good");
+    cy.get(cesc2("#/_p2")).should(
+      "contain.text",
+      `Invalid attribute "bad" for a component of type <p>`,
+    );
+    cy.get(cesc2("#/_p2")).should("contain.text", "line 3");
+    cy.get(cesc2("#/_p3")).should("have.text", "Good again");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        `Invalid attribute "bad" for a component of type <p>`,
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(33);
     });
   });
 
@@ -720,24 +665,18 @@ a />
       );
     });
 
-    cy.get(cesc2("#/__error1")).should(
+    cy.get(cesc2("#/_copy1")).should(
       "contain.text",
       "Must supply value for source",
     );
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 4, character 5 through line 4, character 19",
-    );
+    cy.get(cesc2("#/_copy1")).should("contain.text", "line 4");
 
     // TODO: what should this error actually say?
-    cy.get(cesc2("#/__error2")).should(
+    cy.get(cesc2("#/_copy2")).should(
       "contain.text",
       "Invalid reference target: __s",
     );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 5, character 5 through line 5, character 25",
-    );
+    cy.get(cesc2("#/_copy2")).should("contain.text", "line 5");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -795,21 +734,21 @@ a />
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Circular reference involving component a1.Found at line 2, character 1 through line 2, character 34",
+      "Circular reference involving component a1.Found on line 2",
     );
 
     // temporary messages until can better detect circular references with copysource
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component b2 references component b1 but component b1 has not been created.  Perhaps this state was created by a circular reference?Found at line 4, character 1 through line 4, character 34",
+      "Component b2 references component b1 but component b1 has not been created.  Perhaps this state was created by a circular reference?Found on line 4",
     );
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component c2 references component c1 but component c1 has not been created.  Perhaps this state was created by a circular reference?Found at line 7, character 1 through line 7, character 34",
+      "Component c2 references component c1 but component c1 has not been created.  Perhaps this state was created by a circular reference?Found on line 7",
     );
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Component d2 references component d1 but component d1 has not been created.  Perhaps this state was created by a circular reference?Found at line 11, character 1 through line 11, character 34",
+      "Component d2 references component d1 but component d1 has not been created.  Perhaps this state was created by a circular reference?Found on line 11",
     );
     cy.get(cesc2("#/_document1")).should(
       "not.contain.text",
@@ -902,10 +841,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $A{assignNames="a" assignnames="b"}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 3, character 1 through line 3, character 35",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 3");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
@@ -915,20 +851,14 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $B{a="b" a="c"}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 6, character 3 through line 6, character 17",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 6");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
       "Duplicate attribute b",
     );
     cy.get(cesc2("#/_document1")).should("contain.text", `Found: $$f{b b}`);
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 7, character 5 through line 7, character 15",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 7");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
@@ -938,10 +868,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $C{d="b"\n  d}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 8, character 7 through line 9, character 4",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "lines 8–9");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
@@ -951,10 +878,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $D{a="$b{c c}"}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 11, character 6 through line 11, character 20",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 11");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
@@ -964,10 +888,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $$g{prop="a"}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 12, character 4 through line 12, character 19",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 12");
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
@@ -977,10 +898,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       `Found: $E{a="$b{c='$d{e e}'}"}`,
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 13, character 2 through line 13, character 24",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 13");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -1059,19 +977,13 @@ $A{assignNames="a" assignnames="b"}
 
     cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
     cy.get(cesc2("#/__error1")).should("contain.text", "Expected </bad>");
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 1, character 1 through line 1, character 5",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 1");
 
-    cy.get(cesc2("#/__error2")).should(
+    cy.get(cesc2("#/_bad1")).should(
       "contain.text",
       "Invalid component type: <bad>",
     );
-    cy.get(cesc2("#/__error2")).should(
-      "contain.text",
-      "line 1, character 1 through line 1, character 5",
-    );
+    cy.get(cesc2("#/_bad1")).should("contain.text", "line 1");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -1113,17 +1025,11 @@ $A{assignNames="a" assignnames="b"}
 
     cy.get(cesc2("#/__error1")).should("contain.text", "Missing closing tag");
     cy.get(cesc2("#/__error1")).should("contain.text", "Expected </p>");
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 3, character 3 through line 3, character 6",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 3");
 
     cy.get(cesc2("#/sec2")).should("contain.text", "Missing closing tag");
     cy.get(cesc2("#/sec2")).should("contain.text", "Expected </p>");
-    cy.get(cesc2("#/sec2")).should(
-      "contain.text",
-      "line 3, character 3 through line 3, character 6",
-    );
+    cy.get(cesc2("#/sec2")).should("contain.text", "line 3");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -1161,10 +1067,7 @@ $A{assignNames="a" assignnames="b"}
       "contain.text",
       "Duplicate component name: p",
     );
-    cy.get(cesc2("#/_document1")).should(
-      "contain.text",
-      "line 7, character 11 through line 7, character 35",
-    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 7");
 
     cy.get(cesc2("#/p")).should("have.text", "first");
     cy.get(cesc2("#/g2/p")).should("have.text", "first");

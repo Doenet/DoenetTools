@@ -117,6 +117,12 @@ export function parseAndCompile(inText) {
 
       if (adjustedTagName === "_error") {
         element.state = { message };
+        element.doenetAttributes = {
+          createNameFromComponentType: tagName,
+        };
+        if (attrs.name) {
+          element.props = { name: attrs.name };
+        }
       } else {
         element.props = { ...attrs };
         element.attributeRanges = { ...attrRanges };
@@ -329,11 +335,18 @@ export function parseAndCompile(inText) {
       // but if it isn't, it doesn't work ~50% of the time
       let element = {
         componentType: adjustedTagName,
+        props: {},
         children: [],
         doenetMLrange,
       };
       if (adjustedTagName === "_error") {
         element.state = { message };
+        element.doenetAttributes = {
+          createNameFromComponentType: tagName,
+        };
+        if (attrs.name) {
+          element.props = { name: attrs.name };
+        }
       } else {
         element.props = { ...attrs };
         element.attributeRanges = { ...attrRanges };

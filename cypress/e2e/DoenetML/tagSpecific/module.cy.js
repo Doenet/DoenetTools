@@ -1414,10 +1414,7 @@ describe("Module Tag Tests", function () {
       "contain.text",
       "Duplicate component name: duplicate",
     );
-    cy.get(cesc2("#/__error1")).should(
-      "contain.text",
-      "line 6, character 7 through line 6, character 104",
-    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 6");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();

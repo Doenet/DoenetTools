@@ -1,8 +1,10 @@
 export function printDoenetMLrange(doenetMLrange) {
   if (doenetMLrange.lineBegin === undefined) {
     return "";
+  } else if (doenetMLrange.lineBegin === doenetMLrange.lineEnd) {
+    return `line ${doenetMLrange.lineBegin}`;
   } else {
-    return `line ${doenetMLrange.lineBegin}, character ${doenetMLrange.charBegin} through line ${doenetMLrange.lineEnd}, character ${doenetMLrange.charEnd}`;
+    return `lines ${doenetMLrange.lineBegin}–${doenetMLrange.lineEnd}`;
   }
 }
 
