@@ -24,7 +24,6 @@ import {
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  // DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Editable,
@@ -33,14 +32,12 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  // FormHelperText,
   FormLabel,
   Grid,
   GridItem,
   HStack,
   Icon,
   IconButton,
-  // IconButton,
   Image,
   Input,
   InputGroup,
@@ -60,8 +57,6 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Progress,
-  // Spinner,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -70,17 +65,12 @@ import {
   Tag,
   Text,
   Tooltip,
-  UnorderedList,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
-import {
-  MdCheckCircle,
-  MdModeEditOutline,
-  MdOutlineCloudUpload,
-} from "react-icons/md";
+import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import { RxUpdate } from "react-icons/rx";
@@ -1744,18 +1734,17 @@ export function PortfolioActivityEditor() {
                       </Box>
 
                       <Box bg="doenet.mainGray" h="32px" w="100%">
-                        <HStack
+                        <Flex
                           ml="0px"
-                          // ml="33px"
                           h="32px"
                           bg="doenet.mainGray"
-                          // bg="doenet.canvas"
                           pl="10px"
                           pt="1px"
                         >
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
                               <Tag
+                                m="4px 2px 4px 8px"
                                 data-test="Warning Button"
                                 tabIndex="0"
                                 cursor="pointer"
@@ -1792,8 +1781,9 @@ export function PortfolioActivityEditor() {
                                           data-test={`Warning ${i}`}
                                         >
                                           <ListIcon
-                                            as={MdCheckCircle}
+                                            as={WarningTwoIcon}
                                             color="yellow.400"
+                                            marginBottom="2px"
                                           />
                                           Line #
                                           {warningObj?.doenetMLrange?.lineBegin}{" "}
@@ -1810,6 +1800,7 @@ export function PortfolioActivityEditor() {
                           <Popover offset={[119, 5]}>
                             <PopoverTrigger>
                               <Tag
+                                m="4px 8px 4px 8px"
                                 data-test="Error Button"
                                 tabIndex="0"
                                 cursor="pointer"
@@ -1845,8 +1836,9 @@ export function PortfolioActivityEditor() {
                                           data-test={`Error ${i}`}
                                         >
                                           <ListIcon
-                                            as={MdCheckCircle}
+                                            as={WarningTwoIcon}
                                             color="red.500"
+                                            marginBottom="2px"
                                           />
                                           Line #
                                           {errorObj?.doenetMLrange?.lineBegin}{" "}
@@ -1859,7 +1851,7 @@ export function PortfolioActivityEditor() {
                               </PopoverContent>
                             )}
                           </Popover>
-                        </HStack>
+                        </Flex>
                       </Box>
                     </Box>
                   </VStack>
