@@ -1305,6 +1305,12 @@ export function PortfolioActivityEditor() {
     warnings: [],
   });
 
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
+
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -1755,16 +1761,16 @@ export function PortfolioActivityEditor() {
                                 cursor="pointer"
                                 size="md"
                                 colorScheme={
-                                  errorsAndWarnings.warnings.length == 0
+                                  warningsObjs.length == 0
                                     ? "blackAlpha"
                                     : "yellow"
                                 }
                               >
-                                {errorsAndWarnings.warnings.length} Warning
-                                {errorsAndWarnings.warnings.length != 1 && "s"}
+                                {warningsObjs.length} Warning
+                                {warningsObjs.length != 1 && "s"}
                               </Tag>
                             </PopoverTrigger>
-                            {errorsAndWarnings.warnings.length == 0 ? (
+                            {warningsObjs.length == 0 ? (
                               <PopoverContent data-test="Warning Content">
                                 <PopoverHeader fontWeight="semibold">
                                   No Warnings
@@ -1775,29 +1781,26 @@ export function PortfolioActivityEditor() {
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
                                   Warning
-                                  {errorsAndWarnings.warnings.length != 1 &&
-                                    "s"}
+                                  {warningsObjs.length != 1 && "s"}
                                 </PopoverHeader>
                                 <PopoverBody maxH="40vh" overflow="scroll">
                                   <List spacing={2}>
-                                    {errorsAndWarnings.warnings.map(
-                                      (warningObj, i) => {
-                                        return (
-                                          <ListItem
-                                            key={i}
-                                            data-test={`Warning ${i}`}
-                                          >
-                                            <ListIcon
-                                              as={MdCheckCircle}
-                                              color="yellow.400"
-                                            />
-                                            Line #
-                                            {warningObj.doenetMLrange.lineBegin}{" "}
-                                            {warningObj.message}
-                                          </ListItem>
-                                        );
-                                      },
-                                    )}
+                                    {warningsObjs.map((warningObj, i) => {
+                                      return (
+                                        <ListItem
+                                          key={i}
+                                          data-test={`Warning ${i}`}
+                                        >
+                                          <ListIcon
+                                            as={MdCheckCircle}
+                                            color="yellow.400"
+                                          />
+                                          Line #
+                                          {warningObj.doenetMLrange.lineBegin}{" "}
+                                          {warningObj.message}
+                                        </ListItem>
+                                      );
+                                    })}
                                   </List>
                                 </PopoverBody>
                               </PopoverContent>
@@ -1812,16 +1815,14 @@ export function PortfolioActivityEditor() {
                                 cursor="pointer"
                                 size="md"
                                 colorScheme={
-                                  errorsAndWarnings.errors.length == 0
-                                    ? "blackAlpha"
-                                    : "red"
+                                  errorsObjs.length == 0 ? "blackAlpha" : "red"
                                 }
                               >
-                                {errorsAndWarnings.errors.length} Error
-                                {errorsAndWarnings.errors.length != 1 && "s"}
+                                {errorsObjs.length} Error
+                                {errorsObjs.length != 1 && "s"}
                               </Tag>
                             </PopoverTrigger>
-                            {errorsAndWarnings.errors.length == 0 ? (
+                            {errorsObjs.length == 0 ? (
                               <PopoverContent data-test="Error Content">
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
@@ -1833,28 +1834,26 @@ export function PortfolioActivityEditor() {
                                 <PopoverArrow />
                                 <PopoverHeader fontWeight="semibold">
                                   Error
-                                  {errorsAndWarnings.errors.length != 1 && "s"}
+                                  {errorsObjs.length != 1 && "s"}
                                 </PopoverHeader>
                                 <PopoverBody maxH="40vh" overflow="scroll">
                                   <List spacing={2}>
-                                    {errorsAndWarnings.errors.map(
-                                      (errorObj, i) => {
-                                        return (
-                                          <ListItem
-                                            key={i}
-                                            data-test={`Error ${i}`}
-                                          >
-                                            <ListIcon
-                                              as={MdCheckCircle}
-                                              color="red.500"
-                                            />
-                                            Line #
-                                            {errorObj.doenetMLrange.lineBegin}{" "}
-                                            {errorObj.message}
-                                          </ListItem>
-                                        );
-                                      },
-                                    )}
+                                    {errorsObjs.map((errorObj, i) => {
+                                      return (
+                                        <ListItem
+                                          key={i}
+                                          data-test={`Error ${i}`}
+                                        >
+                                          <ListIcon
+                                            as={MdCheckCircle}
+                                            color="red.500"
+                                          />
+                                          Line #
+                                          {errorObj.doenetMLrange.lineBegin}{" "}
+                                          {errorObj.message}
+                                        </ListItem>
+                                      );
+                                    })}
                                   </List>
                                 </PopoverBody>
                               </PopoverContent>
