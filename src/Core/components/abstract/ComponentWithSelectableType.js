@@ -37,7 +37,7 @@ export class ComponentWithSelectableType extends BaseComponent {
         !["number", "letters", "math", "text", "boolean"].includes(type)
       ) {
         warnings.push({
-          message: `Invalid type ${type}, setting type to number`,
+          message: `Invalid type ${type}, setting type to number.`,
           level: 1,
         });
         type = "number";
@@ -107,7 +107,7 @@ export class ComponentWithSelectableType extends BaseComponent {
           !["number", "letters", "math", "text", "boolean"].includes(type)
         ) {
           warnings.push({
-            message: `Invalid type ${type}, setting type to number`,
+            message: `Invalid type ${type}, setting type to number.`,
             level: 2,
           });
           type = "number";
@@ -225,7 +225,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           !["number", "letters", "math", "text", "boolean"].includes(type)
         ) {
           warnings.push({
-            message: `Invalid type ${type}, setting type to number`,
+            message: `Invalid type ${type}, setting type to number.`,
             level: 1,
           });
           type = "number";
@@ -416,7 +416,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         !["number", "letters", "math", "text", "boolean"].includes(type)
       ) {
         warnings.push({
-          message: `Invalid type ${type}, setting type to number`,
+          message: `Invalid type ${type}, setting type to number.`,
           level: 1,
         });
         type = "number";

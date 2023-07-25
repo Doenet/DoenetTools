@@ -130,8 +130,8 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null) {
           let warning = {
-            message: "No source specified for collect",
-            level: 2,
+            message: "No source found for collect.",
+            level: 1,
           };
           return { setValue: { targetName: "" }, sendWarnings: [warning] };
         }
@@ -191,10 +191,10 @@ export default class Collect extends CompositeComponent {
               componentClassesToCollect.push(cClass);
             } else {
               let message =
-                "Cannot collect component type " +
+                "Cannot collect components of type <" +
                 cType +
-                ". Component type not found.";
-              warnings.push({ message, level: 2 });
+                "> as it is an invalid component type.";
+              warnings.push({ message, level: 1 });
             }
           }
         }

@@ -24,7 +24,7 @@ export default class Variable extends MathComponent {
             message:
               "Invalid value of a variable: " +
               dependencyValues.value.toString(),
-            level: 2,
+            level: 1,
           });
         }
 

@@ -509,6 +509,38 @@ ${theDoenetML3}
     );
   });
 
+  it("doenetML inside groups", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <group name='g'>
+          <p name="p">Hello</p>
+          <p><text copySource="p.doenetML" name="dml" /></p>
+        </group>
+        
+        <text copySource="p.doenetML" name="pdml" />
+        
+        <group copySource="g" newNamespace name="g2" >
+          <p name="p2">Bye</p>
+        </group>
+        
+        <text name="g2pdml" copySource="g2/p.doenetML" />
+        <text name="g2p2dml" copySource="g2/p2.doenetML" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    let pdml = `<p name="p">Hello</p>`;
+    cy.get(cesc2("#/dml")).should("have.text", pdml);
+    cy.get(cesc2("#/pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2/dml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2p2dml")).should("have.text", `<p name="p2">Bye</p>`);
+  });
+
   it("doenetML of copySource shows the doenetML of the copy", () => {
     cy.window().then(async (win) => {
       win.postMessage(

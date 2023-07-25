@@ -232,7 +232,7 @@ export default class Ray extends GraphicalComponent {
             warnings.push({
               message:
                 "Ray is prescribed by through, endpoint, and direction.  Ignoring specified through.",
-              level: 2,
+              level: 1,
             });
           }
           return {
@@ -634,8 +634,8 @@ export default class Ray extends GraphicalComponent {
               dependencyValues.numDimEndpoint
             ) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in ray.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },
@@ -648,8 +648,8 @@ export default class Ray extends GraphicalComponent {
               dependencyValues.numDimThrough
             ) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in ray.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },
@@ -664,8 +664,8 @@ export default class Ray extends GraphicalComponent {
               dependencyValues.numDimEndpoint !== dependencyValues.numDimThrough
             ) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in ray.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },

@@ -614,7 +614,7 @@ export default class Slider extends BaseComponent {
             //Note: no markers when they don't match and not init
             warnings.push({
               message: "Markers type doesn't match slider type.",
-              level: 2,
+              level: 1,
             });
             markers = [];
           } else {

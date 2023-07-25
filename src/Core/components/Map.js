@@ -168,15 +168,15 @@ export default class Map extends CompositeComponent {
           ) {
             warnings.push({
               message:
-                "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
+                "<map> has parallel behavior but different numbers of iterates in sources." +
                 " Extra iterates will be ignored.",
-              level: 2,
+              level: 1,
             });
           }
         } else if (dependencyValues.behavior !== "combination") {
           warnings.push({
-            message: "Invalid map behavior: " + dependencyValues.behavior,
-            level: 2,
+            message: `Invalid map behavior: "${dependencyValues.behavior}".`,
+            level: 1,
           });
           validBehavior = false;
         }

@@ -289,7 +289,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
           warnings.push({
             message:
               "Invalid length of sequence.  Must be a non-negative integer.",
-            level: 2,
+            level: 1,
           });
           validSequence = false;
         }
@@ -307,7 +307,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
                 "Invalid step of sequence.  Must be a number for sequence of type " +
                 dependencyValues.type +
                 ".",
-              level: 2,
+              level: 1,
             });
             validSequence = false;
           }
@@ -321,13 +321,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
           );
           if (!Number.isFinite(numericalFrom)) {
             warnings.push({
-              message: "Invalid from of number sequence.  Must be a number",
-              level: 2,
+              message: `Invalid "from" of number sequence.  Must be a number.`,
+              level: 1,
             });
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-          warnings.push({ message: "Invalid from of sequence", level: 2 });
+          warnings.push({ message: `Invalid "from" of sequence.`, level: 1 });
           validSequence = false;
         }
       }
@@ -339,13 +339,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
           );
           if (!Number.isFinite(numericalTo)) {
             warnings.push({
-              message: "Invalid to of number sequence.  Must be a number",
-              level: 2,
+              message: `Invalid "to" of number sequence.  Must be a number.`,
+              level: 1,
             });
             validSequence = false;
           }
         } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-          warnings.push({ message: "Invalid to of sequence", level: 2 });
+          warnings.push({ message: `Invalid "to" of sequence.`, level: 1 });
           validSequence = false;
         }
       }

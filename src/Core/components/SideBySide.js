@@ -558,8 +558,8 @@ export class SideBySide extends BlockComponent {
             } else {
               warnings.push({
                 message:
-                  "Invalid sideBySide, as it must have at least one block child",
-                level: 2,
+                  "Invalid <sideBySide>: it must have at least one block child.",
+                level: 1,
               });
             }
           }
@@ -1792,8 +1792,8 @@ export class SbsGroup extends BlockComponent {
             } else {
               warnings.push({
                 message:
-                  "Invalid sbsGroup, as it must have at least one block child",
-                level: 2,
+                  "Invalid <sbsGroup>: it must have at least one block child.",
+                level: 1,
               });
             }
           }

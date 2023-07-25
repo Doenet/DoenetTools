@@ -71,7 +71,7 @@ export default class VariableNameList extends MathList {
           if (!validVariable) {
             warnings.push({
               message: "Invalid value of a variable: " + variable.toString(),
-              level: 2,
+              level: 1,
             });
             validVariable = false;
           }

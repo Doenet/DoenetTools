@@ -1346,7 +1346,11 @@ export default class Core {
           serializedComponent.componentType
         ];
       if (componentClass === undefined) {
-        let message = `Invalid component type: ${serializedComponent.componentType}.`;
+        // Note: This error shouldn't get reached from author-typed code,
+        // as it should get caught by the correctComponentTypeCapitalization function.
+        // However, it could get called from Javascript if developers
+        // create a serialized component that doesn't exist.
+        let message = `Invalid component type: <${serializedComponent.componentType}>.`;
         let doenetMLrange = serializedComponent.doenetMLrange;
 
         this.newErrorWarning = true;
@@ -2449,7 +2453,12 @@ export default class Core {
     });
 
     let doenetMLrange = this.components[component.componentName].doenetMLrange;
-    assignDoenetMLRange(result.replacements, doenetMLrange);
+    let overwriteDoenetMLRange = component.componentType === "copy";
+    assignDoenetMLRange(
+      result.replacements,
+      doenetMLrange,
+      overwriteDoenetMLRange,
+    );
     assignDoenetMLRange(result.errors, doenetMLrange);
     assignDoenetMLRange(result.warnings, doenetMLrange);
 
@@ -2684,7 +2693,11 @@ export default class Core {
       });
 
       let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-      assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+      assignDoenetMLRange(
+        processResult.serializedComponents,
+        doenetMLrange,
+        false,
+      );
       assignDoenetMLRange(processResult.errors, doenetMLrange);
       assignDoenetMLRange(processResult.warnings, doenetMLrange);
 
@@ -2730,7 +2743,11 @@ export default class Core {
         });
 
         let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-        assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+        assignDoenetMLRange(
+          processResult.serializedComponents,
+          doenetMLrange,
+          false,
+        );
         assignDoenetMLRange(processResult.errors, doenetMLrange);
         assignDoenetMLRange(processResult.warnings, doenetMLrange);
 
@@ -2761,7 +2778,11 @@ export default class Core {
       });
 
       let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-      assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+      assignDoenetMLRange(
+        processResult.serializedComponents,
+        doenetMLrange,
+        false,
+      );
       assignDoenetMLRange(processResult.errors, doenetMLrange);
       assignDoenetMLRange(processResult.warnings, doenetMLrange);
 
@@ -3288,7 +3309,6 @@ export default class Core {
     stateVariableDefinitions,
   }) {
     let attributes = componentClass.createAttributesObject();
-    let core = this;
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -8079,7 +8099,7 @@ export default class Core {
 
   registerComponent(component) {
     if (component.componentName in this._components) {
-      throw Error(`Duplicate componentName: ${component.componentName}`);
+      throw Error(`Duplicate component name: ${component.componentName}`);
     }
     this._components[component.componentName] = component;
   }
@@ -8187,7 +8207,11 @@ export default class Core {
         });
 
         let doenetMLrange = composite.doenetMLrange;
-        assignDoenetMLRange(processResult.serializedComponents, doenetMLrange);
+        assignDoenetMLRange(
+          processResult.serializedComponents,
+          doenetMLrange,
+          false,
+        );
         assignDoenetMLRange(processResult.errors, doenetMLrange);
         assignDoenetMLRange(processResult.warnings, doenetMLrange);
 
@@ -9293,6 +9317,7 @@ export default class Core {
           assignDoenetMLRange(
             processResult.serializedComponents,
             doenetMLrange,
+            false,
           );
           assignDoenetMLRange(processResult.errors, doenetMLrange);
           assignDoenetMLRange(processResult.warnings, doenetMLrange);
@@ -9326,6 +9351,7 @@ export default class Core {
           assignDoenetMLRange(
             processResult.serializedComponents,
             doenetMLrange,
+            false,
           );
           assignDoenetMLRange(processResult.errors, doenetMLrange);
           assignDoenetMLRange(processResult.warnings, doenetMLrange);

@@ -1300,8 +1300,8 @@ export default class Line extends GraphicalComponent {
 
         if (Number.isNaN(numDimens)) {
           let warning = {
-            message: "Line through points of undetermined dimensions",
-            level: 2,
+            message: "Line through points of undetermined dimensions.",
+            level: 1,
           };
           return {
             setValue: {
@@ -1316,8 +1316,8 @@ export default class Line extends GraphicalComponent {
 
         if (numDimens < 2) {
           let warning = {
-            message: "Line must be through points of at least two dimensions",
-            level: 2,
+            message: "Line must be through points of at least two dimensions.",
+            level: 1,
           };
           return {
             setValue: {
@@ -1346,9 +1346,10 @@ export default class Line extends GraphicalComponent {
           ) {
             let warning = {
               message:
-                "Points through line depend on variables: " +
-                varStrings.join(", "),
-              level: 2,
+                "Line is through points that depend on variables: " +
+                varStrings.join(", ") +
+                ".",
+              level: 1,
             };
             return {
               setValue: {
@@ -2156,8 +2157,9 @@ function calculateCoeffsFromEquation({ equation, variables }) {
           "Invalid format for equation of line in variables " +
           var1 +
           " and " +
-          var2,
-        level: 2,
+          var2 +
+          ".",
+        level: 1,
       };
       return { success: false, sendWarnings: [warning] };
     } else {
@@ -2177,8 +2179,9 @@ function calculateCoeffsFromEquation({ equation, variables }) {
             "Invalid format for equation of line in variables " +
             var1 +
             " and " +
-            var2,
-          level: 2,
+            var2 +
+            ".",
+          level: 1,
         };
         return { success: false, sendWarnings: [warning] };
       } else if (operator === "*") {
@@ -2265,8 +2268,9 @@ function calculatePointsFromCoeffs({
         "Invalid format for equation of line in variables " +
         var1String +
         " and " +
-        var2String,
-      level: 2,
+        var2String +
+        ".",
+      level: 1,
     };
     return { success: false, sendWarnings: [warning] };
   }
@@ -2277,8 +2281,9 @@ function calculatePointsFromCoeffs({
         "Invalid format for equation of line in variables " +
         var1String +
         " and " +
-        var2String,
-      level: 2,
+        var2String +
+        ".",
+      level: 1,
     };
     return { success: false, sendWarnings: [warning] };
   }

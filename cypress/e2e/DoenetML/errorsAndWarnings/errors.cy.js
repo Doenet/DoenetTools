@@ -326,7 +326,7 @@ a />
       expect(errorWarnings.warnings.length).eq(0);
 
       expect(errorWarnings.errors[0].message).contain(
-        "Invalid component type: abc",
+        "Invalid component type: <abc>",
       );
       expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(1);
@@ -334,7 +334,7 @@ a />
       expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(7);
 
       expect(errorWarnings.errors[1].message).contain(
-        "Invalid component type: bcd",
+        "Invalid component type: <bcd>",
       );
       expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(3);
       expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(3);
@@ -342,7 +342,7 @@ a />
       expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(11);
 
       expect(errorWarnings.errors[2].message).contain(
-        "Invalid component type: cde",
+        "Invalid component type: <cde>",
       );
       expect(errorWarnings.errors[2].doenetMLrange.lineBegin).eq(4);
       expect(errorWarnings.errors[2].doenetMLrange.charBegin).eq(1);
@@ -350,7 +350,7 @@ a />
       expect(errorWarnings.errors[2].doenetMLrange.charEnd).eq(2);
 
       expect(errorWarnings.errors[3].message).contain(
-        "Invalid component type: def",
+        "Invalid component type: <def>",
       );
       expect(errorWarnings.errors[3].doenetMLrange.lineBegin).eq(6);
       expect(errorWarnings.errors[3].doenetMLrange.charBegin).eq(5);
@@ -358,7 +358,7 @@ a />
       expect(errorWarnings.errors[3].doenetMLrange.charEnd).eq(2);
 
       expect(errorWarnings.errors[4].message).contain(
-        "Invalid component type: efg",
+        "Invalid component type: <efg>",
       );
       expect(errorWarnings.errors[4].doenetMLrange.lineBegin).eq(9);
       expect(errorWarnings.errors[4].doenetMLrange.charBegin).eq(1);
@@ -366,7 +366,7 @@ a />
       expect(errorWarnings.errors[4].doenetMLrange.charEnd).eq(3);
 
       expect(errorWarnings.errors[5].message).contain(
-        "Invalid component type: fgh",
+        "Invalid component type: <fgh>",
       );
       expect(errorWarnings.errors[5].doenetMLrange.lineBegin).eq(11);
       expect(errorWarnings.errors[5].doenetMLrange.charBegin).eq(1);
@@ -374,7 +374,7 @@ a />
       expect(errorWarnings.errors[5].doenetMLrange.charEnd).eq(4);
 
       expect(errorWarnings.errors[6].message).contain(
-        "Invalid component type: ghi",
+        "Invalid component type: <ghi>",
       );
       expect(errorWarnings.errors[6].doenetMLrange.lineBegin).eq(13);
       expect(errorWarnings.errors[6].doenetMLrange.charBegin).eq(1);
@@ -413,7 +413,7 @@ a />
     );
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
-      "Invalid component type: a",
+      "Invalid component type: <a>",
     );
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
@@ -467,7 +467,7 @@ a />
       expect(errorWarnings.errors[2].doenetMLrange.charEnd).eq(24);
 
       expect(errorWarnings.errors[3].message).contain(
-        "Invalid component type: a",
+        "Invalid component type: <a>",
       );
       expect(errorWarnings.errors[3].doenetMLrange.lineBegin).eq(5);
       expect(errorWarnings.errors[3].doenetMLrange.charBegin).eq(5);
@@ -516,7 +516,7 @@ a />
     cy.get(cesc2("#/p")).should("have.text", "Hello");
     cy.get(cesc2("#/__error3")).should(
       "contain.text",
-      "Duplicate component name p",
+      "Duplicate component name: p",
     );
     cy.get(cesc2("#/__error3")).should(
       "contain.text",
@@ -546,7 +546,7 @@ a />
       expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(19);
 
       expect(errorWarnings.errors[2].message).contain(
-        "Duplicate component name p",
+        "Duplicate component name: p",
       );
       expect(errorWarnings.errors[2].doenetMLrange.lineBegin).eq(5);
       expect(errorWarnings.errors[2].doenetMLrange.charBegin).eq(1);
@@ -623,7 +623,7 @@ a />
     cy.get(cesc2("#/b")).should("have.text", "dog");
     cy.get(cesc2("#/__error6")).should(
       "contain.text",
-      "Duplicate component name b",
+      "Duplicate component name: b",
     );
     cy.get(cesc2("#/__error6")).should("contain.text", "Found in assignNames");
     cy.get(cesc2("#/__error6")).should(
@@ -686,7 +686,7 @@ a />
       expect(errorWarnings.errors[4].doenetMLrange.charEnd).eq(45);
 
       expect(errorWarnings.errors[5].message).contain(
-        "Duplicate component name b",
+        "Duplicate component name: b",
       );
       expect(errorWarnings.errors[5].doenetMLrange.lineBegin).eq(9);
       expect(errorWarnings.errors[5].doenetMLrange.charBegin).eq(1);
@@ -1066,7 +1066,7 @@ $A{assignNames="a" assignnames="b"}
 
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
-      "Invalid component type: bad",
+      "Invalid component type: <bad>",
     );
     cy.get(cesc2("#/__error2")).should(
       "contain.text",
@@ -1086,7 +1086,7 @@ $A{assignNames="a" assignnames="b"}
       expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(5);
 
       expect(errorWarnings.errors[1].message).contain(
-        "Invalid component type: bad",
+        "Invalid component type: <bad>",
       );
       expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(1);
       expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(1);
@@ -1136,6 +1136,52 @@ $A{assignNames="a" assignnames="b"}
       expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(6);
       expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(3);
       expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(6);
+    });
+  });
+
+  it("Error when copying a composite", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <group name='g'>
+          <p name="p">first</p>
+        </group>
+        
+        <group copySource="g" newNamespace name="g2" >
+          <p name="p">collision</p>
+        </group>
+`,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Duplicate component name: p",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "line 7, character 11 through line 7, character 35",
+    );
+
+    cy.get(cesc2("#/p")).should("have.text", "first");
+    cy.get(cesc2("#/g2/p")).should("have.text", "first");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Duplicate component name: p",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(11);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(35);
     });
   });
 });

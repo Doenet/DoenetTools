@@ -1140,7 +1140,7 @@ export class ExtractMath extends MathBaseOperatorOneInput {
           if (dependencyValues.operandNumber === null) {
             let warning = {
               message: `Must specify a operandNumber when extracting a math operand`,
-              level: 2,
+              level: 1,
             };
             return {
               setValue: {

@@ -31,7 +31,8 @@ export default class CustomAttribute extends CompositeComponent {
           variableName: "componentNameForAttributes",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
+        console.log(dependencyValues, componentName);
         let componentNameForAttributes =
           dependencyValues.parentVariableContainingName;
         return { setValue: { componentNameForAttributes } };
@@ -87,7 +88,8 @@ export default class CustomAttribute extends CompositeComponent {
 
     if (!componentClass) {
       warnings.push({
-        message: `Could not find component type ${componentType}`,
+        message: `<customAttribute> contains an invalid component type: <${component.attributes.componentType.primitive}>.`,
+        level: 1,
       });
       return { replacements: [], errors, warnings };
     }
@@ -95,6 +97,15 @@ export default class CustomAttribute extends CompositeComponent {
     let componentForAttribute =
       components[await component.stateValues.componentNameForAttributes];
     let attributeLowerCaseMapping = {};
+
+    if (!componentForAttribute) {
+      warnings.push({
+        message:
+          "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component.",
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
+    }
 
     for (let attrName in componentForAttribute.attributes) {
       attributeLowerCaseMapping[attrName.toLowerCase()] = attrName;
@@ -109,8 +120,8 @@ export default class CustomAttribute extends CompositeComponent {
     if (attributeValue === undefined) {
       if (component.attributes.defaultValue === undefined) {
         warnings.push({
-          message:
-            "Cannot create component from attribute if neither attribute nor default value specified",
+          message: `Since a default value was not supplied for <customAttribute> with attribute="${SVattributeName}", it will not be created unless a value is specified.`,
+          level: 1,
         });
         return { replacements: [], errors, warnings };
       } else {
@@ -127,7 +138,8 @@ export default class CustomAttribute extends CompositeComponent {
     containerAttrNames.push("name", "target", "assignnames");
     if (containerAttrNames.includes(SVattributeName.toLowerCase())) {
       warnings.push({
-        message: `Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`,
+        message: `Cannot add attribute "${SVattributeName}" to a <${containerClass.componentType}> because the <${containerClass.componentType}> component type already has a "${SVattributeName}" attribute defined.`,
+        level: 1,
       });
       return { replacements: [], errors, warnings };
     }

@@ -550,7 +550,7 @@ export default class Vector extends GraphicalComponent {
             warnings.push({
               message:
                 "Vector is prescribed by head, tail, and displacement.  Ignoring specified head.",
-              level: 2,
+              level: 1,
             });
           }
           return {
@@ -1006,8 +1006,8 @@ export default class Vector extends GraphicalComponent {
               dependencyValues.numDimTail
             ) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in vector.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },
@@ -1020,8 +1020,8 @@ export default class Vector extends GraphicalComponent {
               dependencyValues.numDimHead
             ) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in vector.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },
@@ -1034,8 +1034,8 @@ export default class Vector extends GraphicalComponent {
           if (dependencyValues.basedOnHead) {
             if (dependencyValues.numDimTail !== dependencyValues.numDimHead) {
               let warning = {
-                message: "numDimensions mismatch in vector",
-                level: 2,
+                message: "numDimensions mismatch in vector.",
+                level: 1,
               };
               return {
                 setValue: { numDimensions: NaN },

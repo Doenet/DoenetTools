@@ -877,7 +877,7 @@ function correctComponentTypeCapitalization(
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
-      let message = `Invalid component type: ${component.componentType}.`;
+      let message = `Invalid component type: <${component.componentType}>.`;
       convertToErrorComponent(component, message);
       errors.push({
         message,
@@ -3245,7 +3245,7 @@ export function createComponentNames({
         if (prescribedName in currentNamespace.namesUsed) {
           let lastSlash = componentName.lastIndexOf("/");
           let componentNameRelative = componentName.slice(lastSlash + 1);
-          throw Error(`Duplicate component name ${componentNameRelative}.`);
+          throw Error(`Duplicate component name: ${componentNameRelative}.`);
         }
         currentNamespace.namesUsed[prescribedName] = true;
       }
@@ -3259,7 +3259,7 @@ export function createComponentNames({
               let lastSlash = name.lastIndexOf("/");
               let nameRelative = name.slice(lastSlash + 1);
               throw Error(
-                `Duplicate component name ${nameRelative}.  Found in assignNames of component of type ${componentType}.`,
+                `Duplicate component name: ${nameRelative}.  Found in assignNames of a <${componentType}> component.`,
               );
             }
             currentNamespace.namesUsed[name] = true;
@@ -4535,6 +4535,7 @@ export function convertToErrorComponent(component, message) {
     component.componentType = "_error";
     component.state = { message };
     delete component.props;
-    delete component.attributes;
+    component.attributes = {};
+    component.doenetAttributes = {};
   }
 }

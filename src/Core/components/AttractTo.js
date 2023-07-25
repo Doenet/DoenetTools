@@ -121,8 +121,8 @@ export default class AttractTo extends ConstraintComponent {
         for (let child of dependencyValues.graphicalChildren) {
           if (!child.stateValues.nearestPoint) {
             warnings.push({
-              message: `cannot attract to ${child.componentName} as it doesn't have a nearestPoint state variable`,
-              level: 2,
+              message: `Cannot attract to a <${child.componentType}> as it doesn't have a nearestPoint state variable.`,
+              level: 1,
             });
             continue;
           }

@@ -124,7 +124,7 @@ export default class Extract extends CompositeComponent {
         if (!propName) {
           warnings.push({
             message: "Invalid extract.  Must have a prop.",
-            level: 2,
+            level: 1,
           });
           propName = "";
         }

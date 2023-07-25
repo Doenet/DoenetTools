@@ -3890,8 +3890,8 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         x = point.x.evaluate_to_constant();
         if (!Number.isFinite(x)) {
           warnings.push({
-            message: `Ignoring non-numerical ${type}`,
-            level: 2,
+            message: `Ignoring non-numerical ${type} of function.`,
+            level: 1,
           });
           continue;
         }
@@ -3900,8 +3900,8 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         y = point.y.evaluate_to_constant();
         if (!Number.isFinite(y)) {
           warnings.push({
-            message: `Ignoring non-numerical ${type}`,
-            level: 2,
+            message: `Ignoring non-numerical ${type} of function.`,
+            level: 1,
           });
           continue;
         }
@@ -3910,8 +3910,8 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         slope = point.slope.evaluate_to_constant();
         if (!Number.isFinite(slope)) {
           warnings.push({
-            message: `Ignoring non-numerical slope`,
-            level: 2,
+            message: `Ignoring non-numerical slope of function.`,
+            level: 1,
           });
           slope = null;
         }
@@ -3919,8 +3919,8 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
       if (x === null) {
         if (y === null) {
           warnings.push({
-            message: `Ignoring empty ${type}`,
-            level: 2,
+            message: `Ignoring empty ${type} of function.`,
+            level: 1,
           });
           continue;
         }
@@ -3950,8 +3950,8 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
     let p = pointsWithX[ind];
     if (p.x <= xPrev + eps) {
       warnings.push({
-        message: `Two points with locations too close together.  Can't define function`,
-        level: 2,
+        message: `Function contains two points with locations too close together. Can't define function.`,
+        level: 1,
       });
       return {
         setValue: { interpolationPoints: null },

@@ -213,9 +213,9 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings.length).eq(1);
 
       expect(errorWarnings.warnings[0].message).contain(
-        "Haven't implemented circle through 2 points in case where don't have numerical values",
+        "Haven't implemented <circle> through 2 points in case where the points don't have numerical values",
       );
-      expect(errorWarnings.warnings[0].level).eq(2);
+      expect(errorWarnings.warnings[0].level).eq(1);
       expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
       expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
@@ -236,18 +236,18 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings.length).eq(2);
 
       expect(errorWarnings.warnings[0].message).contain(
-        "Haven't implemented circle through 2 points in case where don't have numerical values",
+        "Haven't implemented <circle> through 2 points in case where the points don't have numerical values",
       );
-      expect(errorWarnings.warnings[0].level).eq(2);
+      expect(errorWarnings.warnings[0].level).eq(1);
       expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
       expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
       expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(43);
 
       expect(errorWarnings.warnings[1].message).contain(
-        "Can't change radius of circle with non-numerical through points",
+        "Cannot change radius of circle with non-numerical through points",
       );
-      expect(errorWarnings.warnings[1].level).eq(2);
+      expect(errorWarnings.warnings[1].level).eq(1);
       expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(2);
       expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
       expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(2);
@@ -506,7 +506,7 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings.length).eq(1);
 
       expect(errorWarnings.warnings[0].message).contain(
-        `Cannot update prop="bad" of n as could not find prop bad on a component of type number`,
+        `Invalid target for <updateValue>: cannot find a state variable named "bad" on a <number>`,
       );
       expect(errorWarnings.warnings[0].level).eq(1);
       expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
