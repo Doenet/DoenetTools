@@ -25,6 +25,7 @@ import {
   Box,
   Button,
   Center,
+  Flex,
   Grid,
   GridItem,
   HStack,
@@ -59,6 +60,7 @@ import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { MdCheckCircle } from "react-icons/md";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 
 //Delete this action???
 export async function action({ params, request }) {
@@ -169,6 +171,12 @@ export function PublicEditor() {
     errors: [],
     warnings: [],
   });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
@@ -506,117 +514,18 @@ export function PublicEditor() {
                     />
                   </Box>
                   <Box bg="doenet.mainGray" h="32px" w="100%">
-                    <HStack
+                    <Flex
                       ml="0px"
-                      // ml="33px"
                       h="32px"
                       bg="doenet.mainGray"
-                      // bg="doenet.canvas"
                       pl="10px"
                       pt="1px"
                     >
-                      <Popover offset={[119, 5]}>
-                        <PopoverTrigger>
-                          <Tag
-                            tabIndex="0"
-                            cursor="pointer"
-                            size="md"
-                            colorScheme={
-                              errorsAndWarnings.warnings.length == 0
-                                ? "blackAlpha"
-                                : "yellow"
-                            }
-                          >
-                            {errorsAndWarnings.warnings.length} Warning
-                            {errorsAndWarnings.warnings.length != 1 && "s"}
-                          </Tag>
-                        </PopoverTrigger>
-                        {errorsAndWarnings.warnings.length == 0 ? (
-                          <PopoverContent>
-                            <PopoverHeader fontWeight="semibold">
-                              No Warnings
-                            </PopoverHeader>
-                          </PopoverContent>
-                        ) : (
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader fontWeight="semibold">
-                              Warning
-                              {errorsAndWarnings.warnings.length != 1 && "s"}
-                            </PopoverHeader>
-                            <PopoverBody maxH="40vh" overflow="scroll">
-                              <List spacing={2}>
-                                {errorsAndWarnings.warnings.map(
-                                  (warningObj, i) => {
-                                    return (
-                                      <ListItem key={i}>
-                                        <ListIcon
-                                          as={MdCheckCircle}
-                                          color="yellow.400"
-                                        />
-                                        Line #
-                                        {warningObj.doenetMLrange.lineBegin}{" "}
-                                        {warningObj.message}
-                                      </ListItem>
-                                    );
-                                  },
-                                )}
-                              </List>
-                            </PopoverBody>
-                          </PopoverContent>
-                        )}
-                      </Popover>
-
-                      <Popover offset={[119, 5]}>
-                        <PopoverTrigger>
-                          <Tag
-                            tabIndex="0"
-                            cursor="pointer"
-                            size="md"
-                            colorScheme={
-                              errorsAndWarnings.errors.length == 0
-                                ? "blackAlpha"
-                                : "red"
-                            }
-                          >
-                            {errorsAndWarnings.errors.length} Error
-                            {errorsAndWarnings.errors.length != 1 && "s"}
-                          </Tag>
-                        </PopoverTrigger>
-                        {errorsAndWarnings.errors.length == 0 ? (
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader fontWeight="semibold">
-                              No Errors
-                            </PopoverHeader>
-                          </PopoverContent>
-                        ) : (
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader fontWeight="semibold">
-                              Error
-                              {errorsAndWarnings.errors.length != 1 && "s"}
-                            </PopoverHeader>
-                            <PopoverBody maxH="40vh" overflow="scroll">
-                              <List spacing={2}>
-                                {errorsAndWarnings.errors.map((errorObj, i) => {
-                                  return (
-                                    <ListItem key={i}>
-                                      <ListIcon
-                                        as={MdCheckCircle}
-                                        color="red.500"
-                                      />
-                                      Line #{errorObj.doenetMLrange.lineBegin}{" "}
-                                      {errorObj.message}
-                                    </ListItem>
-                                  );
-                                })}
-                              </List>
-                            </PopoverBody>
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    </HStack>
+                      <ErrorWarningPopovers
+                        warningsObjs={warningsObjs}
+                        errorsObjs={errorsObjs}
+                      />
+                    </Flex>
                   </Box>
                 </Box>
               </VStack>

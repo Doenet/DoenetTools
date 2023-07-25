@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import Papa from "papaparse";
 
@@ -43,26 +41,16 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  List,
-  ListIcon,
-  ListItem,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Progress,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Tag,
   Text,
   Tooltip,
   VStack,
@@ -86,6 +74,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1741,116 +1730,10 @@ export function PortfolioActivityEditor() {
                           pl="10px"
                           pt="1px"
                         >
-                          <Popover offset={[119, 5]}>
-                            <PopoverTrigger>
-                              <Tag
-                                m="4px 2px 4px 8px"
-                                data-test="Warning Button"
-                                tabIndex="0"
-                                cursor="pointer"
-                                size="md"
-                                colorScheme={
-                                  warningsObjs.length == 0
-                                    ? "blackAlpha"
-                                    : "yellow"
-                                }
-                              >
-                                {warningsObjs.length} Warning
-                                {warningsObjs.length != 1 && "s"}
-                              </Tag>
-                            </PopoverTrigger>
-                            {warningsObjs.length == 0 ? (
-                              <PopoverContent data-test="Warning Content">
-                                <PopoverHeader fontWeight="semibold">
-                                  No Warnings
-                                </PopoverHeader>
-                              </PopoverContent>
-                            ) : (
-                              <PopoverContent data-test="Warning Content">
-                                <PopoverArrow />
-                                <PopoverHeader fontWeight="semibold">
-                                  Warning
-                                  {warningsObjs.length != 1 && "s"}
-                                </PopoverHeader>
-                                <PopoverBody maxH="40vh" overflow="scroll">
-                                  <List spacing={2}>
-                                    {warningsObjs.map((warningObj, i) => {
-                                      return (
-                                        <ListItem
-                                          key={i}
-                                          data-test={`Warning ${i}`}
-                                        >
-                                          <ListIcon
-                                            as={WarningTwoIcon}
-                                            color="yellow.400"
-                                            marginBottom="2px"
-                                          />
-                                          Line #
-                                          {warningObj?.doenetMLrange?.lineBegin}{" "}
-                                          {warningObj.message}
-                                        </ListItem>
-                                      );
-                                    })}
-                                  </List>
-                                </PopoverBody>
-                              </PopoverContent>
-                            )}
-                          </Popover>
-
-                          <Popover offset={[119, 5]}>
-                            <PopoverTrigger>
-                              <Tag
-                                m="4px 8px 4px 8px"
-                                data-test="Error Button"
-                                tabIndex="0"
-                                cursor="pointer"
-                                size="md"
-                                colorScheme={
-                                  errorsObjs.length == 0 ? "blackAlpha" : "red"
-                                }
-                              >
-                                {errorsObjs.length} Error
-                                {errorsObjs.length != 1 && "s"}
-                              </Tag>
-                            </PopoverTrigger>
-                            {errorsObjs.length == 0 ? (
-                              <PopoverContent data-test="Error Content">
-                                <PopoverArrow />
-                                <PopoverHeader fontWeight="semibold">
-                                  No Errors
-                                </PopoverHeader>
-                              </PopoverContent>
-                            ) : (
-                              <PopoverContent data-test="Error Content">
-                                <PopoverArrow />
-                                <PopoverHeader fontWeight="semibold">
-                                  Error
-                                  {errorsObjs.length != 1 && "s"}
-                                </PopoverHeader>
-                                <PopoverBody maxH="40vh" overflow="scroll">
-                                  <List spacing={2}>
-                                    {errorsObjs.map((errorObj, i) => {
-                                      return (
-                                        <ListItem
-                                          key={i}
-                                          data-test={`Error ${i}`}
-                                        >
-                                          <ListIcon
-                                            as={WarningTwoIcon}
-                                            color="red.500"
-                                            marginBottom="2px"
-                                          />
-                                          Line #
-                                          {errorObj?.doenetMLrange?.lineBegin}{" "}
-                                          {errorObj.message}
-                                        </ListItem>
-                                      );
-                                    })}
-                                  </List>
-                                </PopoverBody>
-                              </PopoverContent>
-                            )}
-                          </Popover>
+                          <ErrorWarningPopovers
+                            warningsObjs={warningsObjs}
+                            errorsObjs={errorsObjs}
+                          />
                         </Flex>
                       </Box>
                     </Box>
