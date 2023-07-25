@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Center,
+  Flex,
   Grid,
   GridItem,
   HStack,
@@ -35,6 +36,7 @@ import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function loader({ params }) {
@@ -117,6 +119,17 @@ export function PublicEditor() {
   if (!success) {
     throw new Error(message);
   }
+
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
@@ -391,6 +404,9 @@ export function PublicEditor() {
                       attemptNumber={1}
                       generatedVariantCallback={variantCallback} //TODO:Replace
                       requestedVariantIndex={variants.index}
+                      setErrorsAndWarningsCallback={
+                        setErrorsAndWarningsCallback
+                      }
                       // setIsInErrorState={setIsInErrorState}
                       pageIsActive={true}
                     />
@@ -432,16 +448,36 @@ export function PublicEditor() {
                   borderBottom="solid 1px"
                   borderColor="doenet.mediumGray"
                 >
-                  <CodeMirror
-                    editorRef={editorRef}
-                    setInternalValueTo={doenetML}
-                    onBeforeChange={(value) => {
-                      textEditorDoenetML.current = value;
-                      if (!codeChanged) {
-                        setCodeChanged(true);
-                      }
-                    }}
-                  />
+                  <Box
+                    height={`calc(100vh - 198px)`}
+                    w="100%"
+                    overflow="scroll"
+                  >
+                    <CodeMirror
+                      editorRef={editorRef}
+                      setInternalValueTo={doenetML}
+                      onBeforeChange={(value) => {
+                        textEditorDoenetML.current = value;
+                        if (!codeChanged) {
+                          setCodeChanged(true);
+                        }
+                      }}
+                    />
+                  </Box>
+                  <Box bg="doenet.mainGray" h="32px" w="100%">
+                    <Flex
+                      ml="0px"
+                      h="32px"
+                      bg="doenet.mainGray"
+                      pl="10px"
+                      pt="1px"
+                    >
+                      <ErrorWarningPopovers
+                        warningsObjs={warningsObjs}
+                        errorsObjs={errorsObjs}
+                      />
+                    </Flex>
+                  </Box>
                 </Box>
               </VStack>
             }
