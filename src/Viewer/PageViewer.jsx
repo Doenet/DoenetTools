@@ -257,7 +257,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "navigateToTarget") {
           navigateToTarget(e.data.args);
         } else if (e.data.messageType === "navigateToHash") {
-          navigate(e.data.args.hash);
+          navigate(location.search + e.data.args.hash);
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
