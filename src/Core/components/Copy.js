@@ -1602,14 +1602,34 @@ export default class Copy extends CompositeComponent {
       }
     }
 
-    let serializedReplacements = [
-      await replacementSourceComponent.serialize({
-        copyAll: !link,
-        copyVariants: !link,
-        sourceAttributesToIgnore,
-        copyPrimaryEssential,
-      }),
-    ];
+    let serializedReplacements;
+    try {
+      serializedReplacements = [
+        await replacementSourceComponent.serialize({
+          copyAll: !link,
+          copyVariants: !link,
+          sourceAttributesToIgnore,
+          copyPrimaryEssential,
+          errorIfEncounterComponent: [component.componentName],
+        }),
+      ];
+    } catch (e) {
+      let message = "Circular dependency detected";
+      if (component.attributes.createComponentOfType?.primitive) {
+        message += ` involving <${component.attributes.createComponentOfType.primitive}> component`;
+      }
+      message += ".";
+      serializedReplacements = [
+        {
+          componentType: "_error",
+          state: { message },
+        },
+      ];
+      errors.push({
+        message,
+      });
+      return { serializedReplacements, errors, warnings };
+    }
 
     // when copying with link=false, ignore fixed if from essential state
     // so that, for example, a copy from a sequence with link=false is not fixed

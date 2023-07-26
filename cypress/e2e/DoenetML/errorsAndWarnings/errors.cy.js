@@ -741,7 +741,7 @@ a />
     });
   });
 
-  it("Circular references with copy source", () => {
+  it("Circular dependency with copy source", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -776,7 +776,7 @@ a />
       "Circular dependency involving these components: <math> (line 2).Found on line 2",
     );
 
-    // temporary messages until can better detect circular references with copysource
+    // temporary messages until can better detect circular dependency with copysource
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
       "Possible circular dependency involving these components: <math> (line 5).Found on line 4",
@@ -847,8 +847,8 @@ a />
     });
   });
 
-  it("Circular references with macro children", () => {
-    let doenetML1 = `<text name="t1">$t1</text`;
+  it("Circular dependency with macro children", () => {
+    let doenetML1 = `<text name="t1">$t1</text>`;
 
     let doenetML2 = `<text name="t1">$t2</text>
       <text name="t2">$t1</text>`;
@@ -898,6 +898,125 @@ a />
       "contain.text",
       "Circular dependency involving these components: <text> (line 1), <text> (line 2), <text> (line 3).",
     );
+  });
+
+  it("Circular dependency with copy source children", () => {
+    let doenetML1 = `<text name="t1"><text copySource="t1"/></text>`;
+
+    let doenetML2 = `<text name="t1"><text copySource="t2"/></text>
+<text name="t2"><text copySource="t1"/></text>`;
+
+    let doenetML3 = `<text name="t1"><text copySource="t2"/></text>
+<text name="t2"><text copySource="t3"/></text>
+<text name="t3"><text copySource="t1"/></text>`;
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML1,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Circular dependency detected involving <text> component",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "Found on line 1");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Circular dependency detected involving <text> component",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(1);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(1);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(39);
+    });
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML2,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should("contain.text", "Found on line 2");
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Circular dependency detected involving <text> component",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "Found on line 1");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(2);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Circular dependency detected involving <text> component",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(1);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(1);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(39);
+
+      expect(errorWarnings.errors[1].message).contain(
+        "Circular dependency detected involving <text> component",
+      );
+      expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[1].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(39);
+    });
+
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: doenetML3,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should("contain.text", "Found on line 3");
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Circular dependency detected involving <text> component",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "Found on line 2");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(2);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Circular dependency detected involving <text> component",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(39);
+
+      expect(errorWarnings.errors[1].message).contain(
+        "Circular dependency detected involving <text> component",
+      );
+      expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(39);
+    });
   });
 
   it("Errors in macros", () => {
@@ -1181,6 +1300,80 @@ $A{assignNames="a" assignnames="b"}
       expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(11);
       expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
       expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(55);
+    });
+  });
+
+  it("Error when copying a composite, copy again", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>
+      <group name="g" newNamespace>
+        <group name='g'>
+          <function name="f" numinputs="2">x+y</function>
+        </group>
+        
+        <group copySource="g" newNamespace name="g2" >
+          <function name="f" numinputs="2">z</function>
+        </group>
+      </group>
+    </p>
+    <p>
+      <group copySource="g" name="g2" />
+    </p>
+`,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should(
+      "contain.text",
+      "Duplicate component name: f",
+    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "line 9");
+
+    cy.get(cesc2("#/_p2")).should(
+      "contain.text",
+      "Duplicate component name: f",
+    );
+    cy.get(cesc2("#/_p2")).should("contain.text", "line 9");
+
+    cy.get(cesc2("#/g/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+    cy.get(cesc2("#/g/g2/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+    cy.get(cesc2("#/g2/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+    cy.get(cesc2("#/g2/g2/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(2);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Duplicate component name: f",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(9);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(11);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(9);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(55);
+
+      expect(errorWarnings.errors[1].message).contain(
+        "Duplicate component name: f",
+      );
+      expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(14);
+      expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.errors[1].doenetMLrange.lineEnd).eq(14);
+      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(40);
     });
   });
 });

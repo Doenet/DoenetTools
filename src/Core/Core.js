@@ -1779,6 +1779,16 @@ export default class Core {
           }
           shadowedComponent.shadowedBy.push(newComponent);
 
+          let mediatingShadowComposite =
+            this._components[shadowInfo.compositeName];
+          if (!mediatingShadowComposite.mediatesShadows) {
+            mediatingShadowComposite.mediatesShadows = [];
+          }
+          mediatingShadowComposite.mediatesShadows.push({
+            shadowing: newComponent.componentName,
+            shadowed: name,
+          });
+
           if (dep.isPrimaryShadow) {
             shadowedComponent.primaryShadow = newComponent.componentName;
 
@@ -2455,22 +2465,14 @@ export default class Core {
 
     let doenetMLrange = this.components[component.componentName].doenetMLrange;
     let overwriteDoenetMLRange = component.componentType === "copy";
-    assignDoenetMLRange(
-      result.replacements,
+
+    this.gatherErrorsAndAssignDoenetMLRange({
+      components: result.replacements,
+      errors: result.errors,
+      warnings: result.warnings,
       doenetMLrange,
       overwriteDoenetMLRange,
-    );
-    assignDoenetMLRange(result.errors, doenetMLrange);
-    assignDoenetMLRange(result.warnings, doenetMLrange);
-
-    if (result.errors.length > 0) {
-      this.errorWarnings.errors.push(...result.errors);
-      this.newErrorWarning = true;
-    }
-    if (result.warnings.length > 0) {
-      this.errorWarnings.warnings.push(...result.warnings);
-      this.newErrorWarning = true;
-    }
+    });
 
     // console.log(`expand result for ${component.componentName}`);
     // console.log(JSON.parse(JSON.stringify(result)));
@@ -2518,6 +2520,27 @@ export default class Core {
     return { success: true, compositesExpanded: [component.componentName] };
   }
 
+  gatherErrorsAndAssignDoenetMLRange({
+    components,
+    errors,
+    warnings,
+    doenetMLrange,
+    overwriteDoenetMLRange = false,
+  }) {
+    assignDoenetMLRange(components, doenetMLrange, overwriteDoenetMLRange);
+    assignDoenetMLRange(errors, doenetMLrange);
+    assignDoenetMLRange(warnings, doenetMLrange);
+
+    if (errors.length > 0) {
+      this.errorWarnings.errors.push(...errors);
+      this.newErrorWarning = true;
+    }
+    if (warnings.length > 0) {
+      this.errorWarnings.warnings.push(...warnings);
+      this.newErrorWarning = true;
+    }
+  }
+
   async expandShadowingComposite(component) {
     // console.log(`expand shadowing composite, ${component.componentName}`)
 
@@ -2526,7 +2549,7 @@ export default class Core {
         component.shadows.componentName,
       )
     ) {
-      // found a circular reference,
+      // found a circular dependency,
       // as we are in the middle of expanding a composite
       // that we are now trying to shadow
       let compositeInvolved = this._components[component.shadows.componentName];
@@ -2536,7 +2559,7 @@ export default class Core {
           this._components[compositeInvolved.shadows.componentName];
       }
       throw Error(
-        `Circular reference involving ${compositeInvolved.componentName}.`,
+        `Circular dependency involving ${compositeInvolved.componentName}.`,
       );
     }
 
@@ -2627,6 +2650,54 @@ export default class Core {
     let compositeMediatingTheShadow =
       this.components[nameOfCompositeMediatingTheShadow];
 
+    // If shadowed composite mediates the shadow of compositeMediatingTheShadow,
+    // then we have a circular reference.
+    // mediatesShadows is an array of objects with keys shadows and shadowed,
+    // that the shadow mediated by the component.
+    // We check if shadowedComposite mediates the shadow of compositeMediatingTheShadow,
+    // or, recursively, if one of those shadowed components
+    // mediates the shadow of compositeMediatingTheShadow
+
+    let foundCircular = false;
+    let shadowedByShadowed = shadowedComposite.mediatesShadows?.map(
+      (v) => v.shadowed,
+    );
+
+    while (shadowedByShadowed?.length > 0) {
+      if (shadowedByShadowed.includes(nameOfCompositeMediatingTheShadow)) {
+        foundCircular = true;
+        let message = "Circular dependency detected";
+        if (component.attributes.createComponentOfType?.primitive) {
+          message += ` involving <${component.attributes.createComponentOfType.primitive}> component`;
+        }
+        message += ".";
+        serializedReplacements = [
+          {
+            componentType: "_error",
+            state: { message },
+            doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
+          },
+        ];
+        this.errorWarnings.errors.push({
+          message,
+          doenetMLrange: compositeMediatingTheShadow.doenetMLrange,
+        });
+
+        break;
+      }
+
+      // recurse to check if one the shadowed components mediates
+      // the shadow of compositeMediatingTheShadow
+      shadowedByShadowed = shadowedByShadowed.reduce((acc, cName) => {
+        let comp = this.components[cName];
+        if (comp.mediatesShadows) {
+          return [...acc, ...comp.mediatesShadows.map((v) => v.shadowed)];
+        } else {
+          return acc;
+        }
+      }, []);
+    }
+
     if (component.constructor.assignNamesToReplacements) {
       let mediatingNewNamespace =
         compositeMediatingTheShadow.attributes.newNamespace?.primitive;
@@ -2694,22 +2765,12 @@ export default class Core {
       });
 
       let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-      assignDoenetMLRange(
-        processResult.serializedComponents,
+      this.gatherErrorsAndAssignDoenetMLRange({
+        components: processResult.serializedComponents,
+        errors: processResult.errors,
+        warnings: processResult.warnings,
         doenetMLrange,
-        false,
-      );
-      assignDoenetMLRange(processResult.errors, doenetMLrange);
-      assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-      if (processResult.errors.length > 0) {
-        this.errorWarnings.errors.push(...processResult.errors);
-        this.newErrorWarning = true;
-      }
-      if (processResult.warnings.length > 0) {
-        this.errorWarnings.warnings.push(...processResult.warnings);
-        this.newErrorWarning = true;
-      }
+      });
 
       serializedReplacements = processResult.serializedComponents;
 
@@ -2744,22 +2805,12 @@ export default class Core {
         });
 
         let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-        assignDoenetMLRange(
-          processResult.serializedComponents,
+        this.gatherErrorsAndAssignDoenetMLRange({
+          components: processResult.serializedComponents,
+          errors: processResult.errors,
+          warnings: processResult.warnings,
           doenetMLrange,
-          false,
-        );
-        assignDoenetMLRange(processResult.errors, doenetMLrange);
-        assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-        if (processResult.errors.length > 0) {
-          this.errorWarnings.errors.push(...processResult.errors);
-          this.newErrorWarning = true;
-        }
-        if (processResult.warnings.length > 0) {
-          this.errorWarnings.warnings.push(...processResult.warnings);
-          this.newErrorWarning = true;
-        }
+        });
 
         serializedReplacements.push(...processResult.serializedComponents);
       }
@@ -2779,48 +2830,40 @@ export default class Core {
       });
 
       let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-      assignDoenetMLRange(
-        processResult.serializedComponents,
+      this.gatherErrorsAndAssignDoenetMLRange({
+        components: processResult.serializedComponents,
+        errors: processResult.errors,
+        warnings: processResult.warnings,
         doenetMLrange,
-        false,
-      );
-      assignDoenetMLRange(processResult.errors, doenetMLrange);
-      assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-      if (processResult.errors.length > 0) {
-        this.errorWarnings.errors.push(...processResult.errors);
-        this.newErrorWarning = true;
-      }
-      if (processResult.warnings.length > 0) {
-        this.errorWarnings.warnings.push(...processResult.warnings);
-        this.newErrorWarning = true;
-      }
+      });
 
       serializedReplacements = processResult.serializedComponents;
     }
 
-    let verificationResult = await verifyReplacementsMatchSpecifiedType({
-      component,
-      replacements: serializedReplacements,
-      assignNames: component.doenetAttributes.assignNames,
-      componentInfoObjects: this.componentInfoObjects,
-      compositeAttributesObj: component.constructor.createAttributesObject(),
-      flags: this.flags,
-      components: this._components,
-      publicCaseInsensitiveAliasSubstitutions:
-        this.publicCaseInsensitiveAliasSubstitutions.bind(this),
-    });
+    if (!foundCircular) {
+      let verificationResult = await verifyReplacementsMatchSpecifiedType({
+        component,
+        replacements: serializedReplacements,
+        assignNames: component.doenetAttributes.assignNames,
+        componentInfoObjects: this.componentInfoObjects,
+        compositeAttributesObj: component.constructor.createAttributesObject(),
+        flags: this.flags,
+        components: this._components,
+        publicCaseInsensitiveAliasSubstitutions:
+          this.publicCaseInsensitiveAliasSubstitutions.bind(this),
+      });
 
-    if (verificationResult.errors.length > 0) {
-      this.errorWarnings.errors.push(...verificationResult.errors);
-      this.newErrorWarning = true;
-    }
-    if (verificationResult.warnings.length > 0) {
-      this.errorWarnings.warnings.push(...verificationResult.warnings);
-      this.newErrorWarning = true;
-    }
+      if (verificationResult.errors.length > 0) {
+        this.errorWarnings.errors.push(...verificationResult.errors);
+        this.newErrorWarning = true;
+      }
+      if (verificationResult.warnings.length > 0) {
+        this.errorWarnings.warnings.push(...verificationResult.warnings);
+        this.newErrorWarning = true;
+      }
 
-    serializedReplacements = verificationResult.replacements;
+      serializedReplacements = verificationResult.replacements;
+    }
 
     // console.log(`serialized replacements for ${component.componentName} who is shadowing ${shadowedComposite.componentName}`);
     // console.log(deepClone(serializedReplacements));
@@ -3237,7 +3280,7 @@ export default class Core {
         for (let dep of depArray) {
           if (dep.dependencyType === "referenceShadow") {
             if (name === componentName) {
-              throw Error(`Circular reference involving ${componentName}.`);
+              throw Error(`Circular dependency involving ${componentName}.`);
             }
             redefineDependencies = {
               linkSource: "referenceShadow",
@@ -8208,22 +8251,12 @@ export default class Core {
         });
 
         let doenetMLrange = composite.doenetMLrange;
-        assignDoenetMLRange(
-          processResult.serializedComponents,
+        this.gatherErrorsAndAssignDoenetMLRange({
+          components: processResult.serializedComponents,
+          errors: processResult.errors,
+          warnings: processResult.warnings,
           doenetMLrange,
-          false,
-        );
-        assignDoenetMLRange(processResult.errors, doenetMLrange);
-        assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-        if (processResult.errors.length > 0) {
-          this.errorWarnings.errors.push(...processResult.errors);
-          this.newErrorWarning = true;
-        }
-        if (processResult.warnings.length > 0) {
-          this.errorWarnings.warnings.push(...processResult.warnings);
-          this.newErrorWarning = true;
-        }
+        });
 
         shadowingSerializeChildren = processResult.serializedComponents;
 
@@ -9193,13 +9226,13 @@ export default class Core {
     ) {
       // If components shadowing componentToShadow increased
       // that means it is shadowed by one of its newly created replacements
-      // so we have a circular reference
+      // so we have a circular dependency
       throw Error(
-        `Circular reference involving ${componentToShadow.componentName}.`,
+        `Circular dependency involving ${componentToShadow.componentName}.`,
       );
     }
 
-    // use compositesBeingExpanded to look for circular dependence
+    // use compositesBeingExpanded to look for circular dependency
     this.updateInfo.compositesBeingExpanded.push(
       componentToShadow.componentName,
     );
@@ -9217,7 +9250,7 @@ export default class Core {
         )
       ) {
         throw Error(
-          `Circular dependence involving ${shadowingComponent.componentName}.`,
+          `Circular dependency involving ${shadowingComponent.componentName}.`,
         );
       }
 
@@ -9315,22 +9348,12 @@ export default class Core {
           });
 
           let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-          assignDoenetMLRange(
-            processResult.serializedComponents,
+          this.gatherErrorsAndAssignDoenetMLRange({
+            components: processResult.serializedComponents,
+            errors: processResult.errors,
+            warnings: processResult.warnings,
             doenetMLrange,
-            false,
-          );
-          assignDoenetMLRange(processResult.errors, doenetMLrange);
-          assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-          if (processResult.errors.length > 0) {
-            this.errorWarnings.errors.push(...processResult.errors);
-            this.newErrorWarning = true;
-          }
-          if (processResult.warnings.length > 0) {
-            this.errorWarnings.warnings.push(...processResult.warnings);
-            this.newErrorWarning = true;
-          }
+          });
 
           newSerializedReplacements = processResult.serializedComponents;
         } else {
@@ -9349,22 +9372,12 @@ export default class Core {
           });
 
           let doenetMLrange = compositeMediatingTheShadow.doenetMLrange;
-          assignDoenetMLRange(
-            processResult.serializedComponents,
+          this.gatherErrorsAndAssignDoenetMLRange({
+            components: processResult.serializedComponents,
+            errors: processResult.errors,
+            warnings: processResult.warnings,
             doenetMLrange,
-            false,
-          );
-          assignDoenetMLRange(processResult.errors, doenetMLrange);
-          assignDoenetMLRange(processResult.warnings, doenetMLrange);
-
-          if (processResult.errors.length > 0) {
-            this.errorWarnings.errors.push(...processResult.errors);
-            this.newErrorWarning = true;
-          }
-          if (processResult.warnings.length > 0) {
-            this.errorWarnings.warnings.push(...processResult.warnings);
-            this.newErrorWarning = true;
-          }
+          });
 
           newSerializedReplacements = processResult.serializedComponents;
         }
@@ -10553,7 +10566,7 @@ export default class Core {
         }
       }
       // Is it possible that could ever get an infinite loop here?
-      // I.e., is there some type of circular dependence among composites
+      // I.e., is there some type of circular dependency among composites
       // that could happen and we aren't detecting?
       // Note: have encountered cases where a composite must be updated twice
       // in this loop

@@ -1103,6 +1103,10 @@ export default class BaseComponent {
 
     // TODO: not serializing attribute children (as don't need them with forLink)
 
+    if (parameters.errorIfEncounterComponent?.includes(this.componentName)) {
+      throw Error("Encountered " + this.componentName);
+    }
+
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
