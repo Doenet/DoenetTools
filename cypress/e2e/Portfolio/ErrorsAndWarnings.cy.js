@@ -64,7 +64,7 @@ describe("Porfolio Errors and Warnings ", function () {
 
     cy.get('[data-test="Viewer Update Button"]').click();
 
-    cy.get(cesc2("#/__error1")).should(
+    cy.get(cesc2("#/_invalid1")).should(
       "contain.text",
       "Invalid component type: <invalid>",
     );
@@ -77,7 +77,7 @@ describe("Porfolio Errors and Warnings ", function () {
 
     cy.get('[data-test="Error Button"]').click();
     cy.get('[data-test="Error Content"]').should(
-      "have.text",
+      "contain.text",
       "ErrorLine #3 Invalid component type: <invalid>",
     );
 
@@ -88,7 +88,7 @@ describe("Porfolio Errors and Warnings ", function () {
       "contain.text",
       "Invalid DoenetML.  Missing closing tag",
     );
-    cy.get(cesc2("#/__error2")).should(
+    cy.get(cesc2("#/_invalid1")).should(
       "contain.text",
       "Invalid component type: <invalid>",
     );
@@ -121,12 +121,8 @@ describe("Porfolio Errors and Warnings ", function () {
 
     cy.get('[data-test="Warning Button"]').click();
     cy.get('[data-test="Warning Content"]').should(
-      "have.text",
-      "WarningLine #5 Attribute ninputs is deprecated.  Use numInputs instead.  Its use will become an error in version 0.7.",
-    );
-
-    cy.get(".cm-content").type(
-      `{ctrl+end}{enter}<function name="f" ninputs="2">x+y</function>`,
+      "contain.text",
+      "WarningLine #5 Attribute ninputs is deprecated. Use numInputs instead. Its use will become an error in version 0.7.",
     );
   });
 });

@@ -486,6 +486,45 @@ a />
     });
   });
 
+  it("Prevent auto-named child and attribute clashes on duplicate name", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <function name="f" numinputs="2">x+y</function>
+    <function name="f" numinputs="2">z</function>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+    cy.get(cesc2("#/__error1")).should(
+      "contain.text",
+      "Duplicate component name: f",
+    );
+    cy.get(cesc2("#/__error1")).should("contain.text", "line 3");
+    cy.get(cesc2("#/__error2")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Duplicate component name: f",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(49);
+    });
+  });
+
   it("assignNames errors", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -1104,11 +1143,11 @@ $A{assignNames="a" assignnames="b"}
         {
           doenetML: `
         <group name='g'>
-          <p name="p">first</p>
+          <function name="f" numinputs="2">x+y</function>
         </group>
         
         <group copySource="g" newNamespace name="g2" >
-          <p name="p">collision</p>
+          <function name="f" numinputs="2">z</function>
         </group>
 `,
         },
@@ -1118,12 +1157,16 @@ $A{assignNames="a" assignnames="b"}
 
     cy.get(cesc2("#/_document1")).should(
       "contain.text",
-      "Duplicate component name: p",
+      "Duplicate component name: f",
     );
     cy.get(cesc2("#/_document1")).should("contain.text", "line 7");
 
-    cy.get(cesc2("#/p")).should("have.text", "first");
-    cy.get(cesc2("#/g2/p")).should("have.text", "first");
+    cy.get(cesc2("#/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
+    cy.get(cesc2("#/g2/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+y");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
@@ -1132,12 +1175,12 @@ $A{assignNames="a" assignnames="b"}
       expect(errorWarnings.warnings.length).eq(0);
 
       expect(errorWarnings.errors[0].message).contain(
-        "Duplicate component name: p",
+        "Duplicate component name: f",
       );
       expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(7);
       expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(11);
       expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
-      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(35);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(55);
     });
   });
 });

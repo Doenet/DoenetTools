@@ -1495,6 +1495,10 @@ export default class Core {
           message,
           doenetMLrange,
         });
+
+        // delete children, as they could have automatically generated names
+        // that would be based on the parent name, and hence also conflict
+        delete serializedComponent.children;
       }
     }
 

@@ -3290,6 +3290,15 @@ export function createComponentNames({
           let componentNameRelative = componentName.slice(lastSlash + 1);
           errorMessage = `Duplicate component name: ${componentNameRelative}.`;
         }
+
+        // delete children and component props, as they could have automatically generated names
+        // that would be based on the parent name, and hence also conflict
+        delete serializedComponent.children;
+        for (let attrName in serializedComponent.attributes) {
+          if (serializedComponent.attributes[attrName].component) {
+            delete serializedComponent.attributes[attrName];
+          }
+        }
       }
       currentNamespace.namesUsed[prescribedName] = true;
     }
