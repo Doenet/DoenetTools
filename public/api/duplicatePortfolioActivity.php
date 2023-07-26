@@ -223,11 +223,10 @@ try {
             $courseId = $row['courseId'];
             $assignedCID = $row['assignedCID'];
             $isUserPortfolio = $row['isUserPortfolio'];
-            $userId = $row['userId'];
             $timestamp = $row['timestamp'];
             array_push(
                 $insert_content_contributor_history,
-                "('$nextActivityDoenetId','$doenetId','$courseId','$assignedCID','$isUserPortfolio','$userId','$timestamp')"
+                "('$nextActivityDoenetId','$doenetId','$courseId','$assignedCID','$isUserPortfolio','$timestamp')"
             );
         }
     }
@@ -246,7 +245,7 @@ try {
     }
     array_push(
         $insert_content_contributor_history,
-        "('$nextActivityDoenetId','$prevActivityDoenetId','$prevCourseId','$assignedCid','$isUserPortfolio','$prevUserId',NOW())"
+        "('$nextActivityDoenetId','$prevActivityDoenetId','$prevCourseId','$assignedCid','$isUserPortfolio',NOW())"
     );
 
     $str_insert_content_contributor_history = implode(',', $insert_content_contributor_history);
@@ -254,7 +253,7 @@ try {
 
     // INSERT into content_contributor_history table
     $sql = "
-    INSERT INTO content_contributor_history (doenetId,prevDoenetId,courseId,assignedCID,isUSerPortfolio,userId,timestamp)
+    INSERT INTO content_contributor_history (doenetId,prevDoenetId,courseId,assignedCID,isUSerPortfolio,timestamp)
     VALUES
     $str_insert_content_contributor_history
     ";

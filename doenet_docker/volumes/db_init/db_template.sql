@@ -260,7 +260,6 @@ CREATE TABLE `content_contributor_history` (
   `courseId` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `assignedCID` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `isUserPortfolio` int DEFAULT '1',
-  `userId` char(21) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
@@ -940,33 +939,6 @@ LOCK TABLES `support_files` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `temp_log`
---
-
-DROP TABLE IF EXISTS `temp_log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `temp_log` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `doenetIds` varchar(255) DEFAULT NULL,
-  `secretCodeRecieved` char(21) DEFAULT NULL,
-  `secretCodeMatches` int DEFAULT '0',
-  `timestamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `temp_log`
---
-
-LOCK TABLES `temp_log` WRITE;
-/*!40000 ALTER TABLE `temp_log` DISABLE KEYS */;
-INSERT INTO `temp_log` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','JaEPCQym36Uzx6vDNHVP7',1,'2022-08-04 03:34:12'),(2,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qpnk',1,'2022-08-04 14:40:32'),(3,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qp',0,'2022-08-04 14:41:05'),(4,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qp',0,'2022-08-04 14:50:22'),(5,'_Ga07DeeWjhH6Y4UpWlakE','wAo9CJ0RWBusDDQCJKEw7',1,'2022-08-04 14:50:34');
-/*!40000 ALTER TABLE `temp_log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user`
 --
 
@@ -995,7 +967,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,0),(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,0),(27,'t1LsUo14It9GJIWAs9xnB','maple bacon','kevin@doenet.org','Charles','Kevin','bird',0,0);
+INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1123,7 +1095,6 @@ CREATE TABLE `user_device` (
 
 LOCK TABLES `user_device` WRITE;
 /*!40000 ALTER TABLE `user_device` DISABLE KEYS */;
-INSERT INTO `user_device` VALUES (1,'t1LsUo14It9GJIWAs9xnB','kevin@doenet.org',664273265,'2023-03-27 14:22:08','Sycamore',1),(2,'t1LsUo14It9GJIWAs9xnB','kevin@doenet.org',280186330,'2023-03-28 21:51:38','Beech',1);
 /*!40000 ALTER TABLE `user_device` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -1136,4 +1107,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-25 21:23:16
+-- Dump completed on 2023-07-26 22:11:04

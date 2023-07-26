@@ -6,7 +6,6 @@ import {
   MenuItem,
   MenuList,
   Avatar,
-  // Text,
   Flex,
   AvatarGroup,
   Text,
