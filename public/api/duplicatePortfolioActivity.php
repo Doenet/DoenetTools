@@ -211,7 +211,6 @@ try {
     courseId,
     assignedCID,
     isUserPortfolio,
-    userId,
     timestamp
     FROM content_contributor_history
     WHERE doenetId = '$prevActivityDoenetId'
