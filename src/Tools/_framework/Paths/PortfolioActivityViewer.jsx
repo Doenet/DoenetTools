@@ -5,9 +5,8 @@ import PageViewer from "../../../Viewer/PageViewer";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { Form, Link } from "react-router-dom";
+import { Form } from "react-router-dom";
 import {
-  Avatar,
   Box,
   Button,
   Flex,
@@ -21,6 +20,7 @@ import axios from "axios";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
+import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 
 export async function action({ params }) {
   let { data } = await axios.get(
@@ -93,10 +93,6 @@ export function PortfolioActivityViewer() {
   if (!success) {
     throw new Error(message);
   }
-
-  const fullName = `${contributors[0].firstName} ${contributors[0].lastName}`;
-  const { courseId, isUserPortfolio, courseLabel, courseImage, courseColor } =
-    contributors[0];
 
   const navigate = useNavigate();
 
@@ -174,7 +170,7 @@ export function PortfolioActivityViewer() {
             ></GridItem>
             <GridItem area="headerContent" maxWidth="800px" width="100%">
               <Flex justifyContent="space-between">
-                <VStack mt="10px" alignItems="flex-start">
+                <Flex flexDirection="column" alignItems="flex-start" mt="10px">
                   <Text
                     fontSize="1.4em"
                     fontWeight="bold"
@@ -185,62 +181,10 @@ export function PortfolioActivityViewer() {
                   >
                     {label}
                   </Text>
-
-                  <Link
-                    data-test="Avatar Link"
-                    style={{
-                      textDecoration: "none",
-                      color: "black",
-                      position: "relative",
-                      justifySelf: "flex-start",
-                    }}
-                    to={`/publicportfolio/${courseId}`}
-                  >
-                    {isUserPortfolio == "1" ? (
-                      <>
-                        <Avatar size="sm" name={fullName} />
-                        <Text
-                          fontSize="13px"
-                          // fontSize="13pt"
-                          position="absolute"
-                          left="36px"
-                          top="6px"
-                          width="400px"
-                        >
-                          By {fullName}
-                        </Text>
-                      </>
-                    ) : (
-                      <>
-                        {courseColor == "none" ? (
-                          <Avatar
-                            size="sm"
-                            borderRadius="md"
-                            src={`/drive_pictures/${courseImage}`}
-                          />
-                        ) : (
-                          <Avatar
-                            size="sm"
-                            borderRadius="md"
-                            bg={`#${courseColor}`}
-                            icon={<></>}
-                          />
-                        )}
-
-                        <Text
-                          fontSize="13px"
-                          // fontSize="13pt"
-                          position="absolute"
-                          left="36px"
-                          top="6px"
-                          width="400px"
-                        >
-                          In {courseLabel}
-                        </Text>
-                      </>
-                    )}
-                  </Link>
-                </VStack>
+                  <Box mt="10px">
+                    <ContributorsMenu contributors={contributors} />
+                  </Box>
+                </Flex>
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
                   <Button
                     size="xs"

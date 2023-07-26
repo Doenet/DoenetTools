@@ -54,6 +54,34 @@ try {
         throw new Exception("Activity not found.");
     }
 
+    //Add contributor history
+    $sql = "
+    SELECT
+    cch.courseId,
+    cch.isUserPortfolio,
+    c.label as courseLabel,
+    c.image,
+    c.color
+    FROM content_contributor_history AS cch
+    LEFT JOIN course AS c
+        ON c.courseId = cch.courseId
+    WHERE cch.doenetId = '$doenetId'
+    ORDER BY cch.timestamp DESC
+    ";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()){
+        array_push($contributors, [
+            "courseId" => $row["courseId"],
+            "isUserPortfolio" => $row['isUserPortfolio'],
+            "courseLabel" => $row['courseLabel'],
+            "courseImage" => $row['image'],
+            "courseColor" => $row['color']
+        ]);
+    }
+}
+
     //Add on the first and last name for each user portfolio
     foreach($contributors as &$contributor){
         if ($contributor['isUserPortfolio'] == '1'){
