@@ -252,6 +252,14 @@ function addDoenetMLIdToRange(serializedComponents, doenetMLId) {
     if (component.children) {
       addDoenetMLIdToRange(component.children, doenetMLId);
     }
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let comp = component.attributes[attrName].component;
+        if (comp) {
+          addDoenetMLIdToRange([comp], doenetMLId);
+        }
+      }
+    }
   }
 }
 

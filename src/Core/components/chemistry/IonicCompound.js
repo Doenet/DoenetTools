@@ -65,16 +65,16 @@ export default class IonicCompound extends InlineComponent {
         if (charges.length !== 2) {
           let warning = {
             message:
-              "have not implemented ionic compound for anything other than two ions",
+              "Have not implemented ionic compound for anything other than two ions.",
             level: 1,
           };
-          return { setValue: { ionicCompound: null, sendWarnings: [warning] } };
+          return { setValue: { ionicCompound: null }, sendWarnings: [warning] };
         }
 
         if (!(charges[0] * charges[1] < 0)) {
           let warning = {
             message:
-              "ionic compound implemented only for one cation and one anion",
+              "Ionic compound implemented only for one cation and one anion.",
             level: 1,
           };
           return { setValue: { ionicCompound: null }, sendWarnings: [warning] };

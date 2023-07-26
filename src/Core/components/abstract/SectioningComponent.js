@@ -857,7 +857,7 @@ export class SectioningComponent extends BlockComponent {
             suppressAnswerSubmitButtons = true;
           } else {
             warnings.push({
-              message: `Cannot create submit all button for ${componentName} because it doesn't aggegrate scores.`,
+              message: `Cannot create submit all button for <section> because it doesn't aggegrate scores.`,
               level: 1,
             });
           }

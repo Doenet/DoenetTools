@@ -3275,6 +3275,58 @@ describe("Select Tag Tests", function () {
     });
   });
 
+  it("select invalid type with sugared string, becomes math with warning", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <aslist>
+    <select type="nothing" assignnames="m1 m2 m3 m4 m5" numToSelect="5">
+      x^2  x/y  u  a  b-c  s+t  mn  -1
+    </select>
+    </aslist>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"].map((x) =>
+      me.fromText(x),
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathsSoFar = [];
+      for (let ind = 1; ind <= 5; ind++) {
+        let math = me.fromAst(stateVariables["/m" + ind].stateValues.value);
+        expect(options.some((x) => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some((x) => x.equalsViaSyntax(math))).eq(false);
+        mathsSoFar.push(math);
+      }
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Invalid type for select: nothing",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(13);
+    });
+  });
+
   it("select weighted", () => {
     // TODO: this test seems to fail with num Y < 17 once in awhile
     // even though it should fail less than 0.1% of the time

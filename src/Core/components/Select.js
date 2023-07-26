@@ -80,7 +80,7 @@ export default class Select extends CompositeComponent {
 
       if (!["math", "text", "number", "boolean"].includes(type)) {
         warnings.push({
-          message: `Invalid type for select: ${type}`,
+          message: `Invalid type for select: ${type}.`,
           level: 1,
         });
         type = "math";

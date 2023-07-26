@@ -2721,6 +2721,49 @@ describe("Function Tag Tests", function () {
     });
   });
 
+  it("warnings for bad variable or variable attribute", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <function variables="sin(x)">x</function>
+    <function variable="cos(x)">x</function>
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid value of a variable: cos(x)`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(25);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(30);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Invalid value of a variable: sin(x)`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(26);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(31);
+    });
+  });
+
   it("function determined by function", () => {
     cy.window().then(async (win) => {
       win.postMessage(

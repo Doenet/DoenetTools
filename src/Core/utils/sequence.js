@@ -326,9 +326,21 @@ export function returnStandardSequenceStateVariableDefinitions() {
             });
             validSequence = false;
           }
-        } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-          warnings.push({ message: `Invalid "from" of sequence.`, level: 1 });
-          validSequence = false;
+        } else if (dependencyValues.type === "letters") {
+          if (lettersToNumber(dependencyValues.specifiedFrom) === undefined) {
+            warnings.push({
+              message: `Invalid "from" of letters sequence.  Must be a letter combination.`,
+              level: 1,
+            });
+            validSequence = false;
+          }
+        } else {
+          // type === math
+
+          if (Number.isNaN(dependencyValues.specifiedFrom.tree)) {
+            warnings.push({ message: `Invalid "from" of sequence.`, level: 1 });
+            validSequence = false;
+          }
         }
       }
 
@@ -344,9 +356,21 @@ export function returnStandardSequenceStateVariableDefinitions() {
             });
             validSequence = false;
           }
-        } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-          warnings.push({ message: `Invalid "to" of sequence.`, level: 1 });
-          validSequence = false;
+        } else if (dependencyValues.type === "letters") {
+          if (lettersToNumber(dependencyValues.specifiedTo) === undefined) {
+            warnings.push({
+              message: `Invalid "to" of letters sequence.  Must be a letter combination.`,
+              level: 1,
+            });
+            validSequence = false;
+          }
+        } else {
+          // type === math
+
+          if (Number.isNaN(dependencyValues.specifiedTo.tree)) {
+            warnings.push({ message: `Invalid "to" of sequence.`, level: 1 });
+            validSequence = false;
+          }
         }
       }
 
@@ -729,7 +753,6 @@ export function lettersToNumber(letters) {
   try {
     letters = letters.toUpperCase();
   } catch (e) {
-    console.warn("Cannot convert " + letters + " to a number");
     return undefined;
   }
 
@@ -739,7 +762,6 @@ export function lettersToNumber(letters) {
   while ((pos -= 1) > -1) {
     let numForLetter = letters.charCodeAt(pos) - 64;
     if (numForLetter < 1 || numForLetter > 26) {
-      console.warn("Cannot convert " + letters + " to a number");
       return undefined;
     }
     number += numForLetter * Math.pow(26, len - 1 - pos);

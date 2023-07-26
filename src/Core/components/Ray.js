@@ -1365,7 +1365,7 @@ export default class Ray extends GraphicalComponent {
 
       definition({ dependencyValues }) {
         if (Number.isNaN(dependencyValues.numDimensions)) {
-          return null;
+          return { setValue: { numericalEndpoint: [] } };
         }
 
         let endpoint = dependencyValues.endpoint;
@@ -1396,7 +1396,7 @@ export default class Ray extends GraphicalComponent {
 
       definition({ dependencyValues }) {
         if (Number.isNaN(dependencyValues.numDimensions)) {
-          return null;
+          return { setValue: { numericalThroughpoint: [] } };
         }
 
         let through = dependencyValues.through;

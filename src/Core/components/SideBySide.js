@@ -152,6 +152,8 @@ export class SideBySide extends BlockComponent {
       definition({ dependencyValues }) {
         let allWidthsSpecified = [];
         let widthsAbsolute = null;
+        let foundAbsolute = false;
+        let warnings = [];
 
         let nWidthsSpecifiedFromAttrs;
         let usingSingleWidth = false;
@@ -208,24 +210,28 @@ export class SideBySide extends BlockComponent {
             }
           }
 
-          if (widthsAbsolute === null) {
-            widthsAbsolute = thisAbsolute;
-          } else if (thisAbsolute !== null && widthsAbsolute !== thisAbsolute) {
-            throw Error(
-              `SideBySide is not implemented for absolute measurements`,
-            );
-            throw Error(
-              `Cannot mix absolute and relative widths for sideBySide`,
-            );
+          if (thisAbsolute) {
+            foundAbsolute = true;
           }
         }
+
+        if (foundAbsolute) {
+          warnings.push({
+            message: `<sideBySide> is not implemented for absolute measurements. Setting widths to relative.`,
+            level: 1,
+          });
+        }
+        widthsAbsolute = false;
 
         // treat any non-numeric widths as being unspecified
         allWidthsSpecified = allWidthsSpecified.map((x) =>
           Number.isFinite(x) ? x : null,
         );
 
-        return { setValue: { allWidthsSpecified, widthsAbsolute } };
+        return {
+          setValue: { allWidthsSpecified, widthsAbsolute },
+          sendWarnings: warnings,
+        };
       },
     };
 
@@ -298,6 +304,8 @@ export class SideBySide extends BlockComponent {
       definition({ dependencyValues }) {
         let allMarginsSpecified = [];
         let marginsAbsolute = null;
+        let secondMarginAbsolute = null;
+        let warnings = [];
 
         if (dependencyValues.marginsAttr === null) {
           if (dependencyValues.parentMargins) {
@@ -347,7 +355,6 @@ export class SideBySide extends BlockComponent {
           } else {
             marginsAbsolute = false;
           }
-          let secondMarginAbsolute;
           if (dependencyValues.marginsAttr.stateValues.componentSizes[1]) {
             secondMarginAbsolute = Boolean(
               dependencyValues.marginsAttr.stateValues.componentSizes[1]
@@ -357,21 +364,25 @@ export class SideBySide extends BlockComponent {
             secondMarginAbsolute = false;
           }
 
-          if (secondMarginAbsolute !== marginsAbsolute) {
-            throw Error(
-              `SideBySide is not implemented for absolute measurements`,
-            );
-            throw Error(
-              `Cannot mix absolute and relative margins for sideBySide`,
-            );
-          }
           allMarginsSpecified =
             dependencyValues.marginsAttr.stateValues.componentSizes
               .slice(0, 2)
               .map((x) => (x && Number.isFinite(x.size) ? x.size : null));
         }
 
-        return { setValue: { allMarginsSpecified, marginsAbsolute } };
+        if (secondMarginAbsolute || marginsAbsolute) {
+          warnings.push({
+            message: `<sideBySide> is not implemented for absolute measurements. Setting margins to relative.`,
+            level: 1,
+          });
+        }
+
+        marginsAbsolute = false;
+
+        return {
+          setValue: { allMarginsSpecified, marginsAbsolute },
+          sendWarnings: warnings,
+        };
       },
     };
 
@@ -392,39 +403,13 @@ export class SideBySide extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let absoluteMeasurements;
-        if (dependencyValues.widthsAbsolute === null) {
-          if (dependencyValues.marginsAbsolute === null) {
-            absoluteMeasurements = false;
-          } else {
-            absoluteMeasurements = dependencyValues.marginsAbsolute;
-          }
-        } else {
-          if (dependencyValues.marginsAbsolute === null) {
-            absoluteMeasurements = dependencyValues.widthsAbsolute;
-          } else {
-            if (
-              dependencyValues.widthsAbsolute !==
-              dependencyValues.marginsAbsolute
-            ) {
-              throw Error(
-                `SideBySide is not implemented for absolute measurements`,
-              );
-              throw Error(
-                `Cannot mix absolute and relative widths and margins for sideBySide`,
-              );
-            }
-            absoluteMeasurements = dependencyValues.widthsAbsolute;
-          }
-        }
+        // Note: this currently doesn't do anything,
+        // as we set widthsAbsolute and marginsAbsolute to false.
 
-        if (absoluteMeasurements === true) {
-          throw Error(
-            `SideBySide is not implemented for absolute measurements`,
-          );
-        }
+        // TODO: if we don't plan on implementing absolute sizes,
+        // we could delete this state variable
 
-        return { setValue: { absoluteMeasurements } };
+        return { setValue: { absoluteMeasurements: false } };
       },
     };
 
@@ -564,8 +549,7 @@ export class SideBySide extends BlockComponent {
             }
           }
         } else {
-          // we won't reach here, as we throw an error about not implementing
-          // absolute measurements before get this far
+          // we won't reach here, as we've set all measurements to relative
         }
 
         return {
@@ -1351,25 +1335,28 @@ export class SbsGroup extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let widthsAbsolute = null;
+        let foundAbsolute = false;
+        let warnings = [];
 
         for (let ind in dependencyValues.widthsAbsoluteArray) {
           let thisAbsolute = dependencyValues.widthsAbsoluteArray[ind];
           if (thisAbsolute !== null) {
             thisAbsolute = Boolean(thisAbsolute);
-            if (widthsAbsolute === null) {
-              widthsAbsolute = thisAbsolute;
-            } else if (widthsAbsolute !== thisAbsolute) {
-              throw Error(
-                `SbsGroup is not implemented for absolute measurements`,
-              );
-              throw Error(
-                `Cannot mix absolute and relative widths for sbsGroup`,
-              );
+            if (thisAbsolute) {
+              foundAbsolute = true;
             }
           }
         }
 
-        return { setValue: { widthsAbsolute } };
+        if (foundAbsolute) {
+          warnings.push({
+            message: `<sbsGroup> is not implemented for absolute measurements. Setting widths to relative.`,
+            level: 1,
+          });
+        }
+        widthsAbsolute = false;
+
+        return { setValue: { widthsAbsolute }, sendWarnings: warnings };
       },
     };
 
@@ -1585,25 +1572,29 @@ export class SbsGroup extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let marginsAbsolute = null;
+        let foundAbsolute = false;
+        let warnings = [];
 
         for (let ind in dependencyValues.marginsAbsoluteArray) {
           let thisAbsolute = dependencyValues.marginsAbsoluteArray[ind];
           if (thisAbsolute !== null) {
             thisAbsolute = Boolean(thisAbsolute);
-            if (marginsAbsolute === null) {
-              marginsAbsolute = thisAbsolute;
-            } else if (marginsAbsolute !== thisAbsolute) {
-              throw Error(
-                `SbsGroup is not implemented for absolute measurements`,
-              );
-              throw Error(
-                `Cannot mix absolute and relative margins for sbsGroup`,
-              );
+
+            if (thisAbsolute) {
+              foundAbsolute = true;
             }
           }
         }
 
-        return { setValue: { marginsAbsolute } };
+        if (foundAbsolute) {
+          warnings.push({
+            message: `<sbsGroup> is not implemented for absolute measurements. Setting margins to relative.`,
+            level: 1,
+          });
+        }
+        marginsAbsolute = false;
+
+        return { setValue: { marginsAbsolute }, sendWarnings: warnings };
       },
     };
 
@@ -1624,37 +1615,13 @@ export class SbsGroup extends BlockComponent {
         },
       }),
       definition({ dependencyValues }) {
-        let absoluteMeasurements;
-        if (dependencyValues.widthsAbsolute === null) {
-          if (dependencyValues.marginsAbsolute === null) {
-            absoluteMeasurements = false;
-          } else {
-            absoluteMeasurements = dependencyValues.marginsAbsolute;
-          }
-        } else {
-          if (dependencyValues.marginsAbsolute === null) {
-            absoluteMeasurements = dependencyValues.widthsAbsolute;
-          } else {
-            if (
-              dependencyValues.widthsAbsolute !==
-              dependencyValues.marginsAbsolute
-            ) {
-              throw Error(
-                `SbsGroup is not implemented for absolute measurements`,
-              );
-              throw Error(
-                `Cannot mix absolute and relative widths and margins for sbsGroup`,
-              );
-            }
-            absoluteMeasurements = dependencyValues.widthsAbsolute;
-          }
-        }
+        // Note: this currently doesn't do anything,
+        // as we set widthsAbsolute and marginsAbsolute to false.
 
-        if (absoluteMeasurements === true) {
-          throw Error(`SbsGroup is not implemented for absolute measurements`);
-        }
+        // TODO: if we don't plan on implementing absolute sizes,
+        // we could delete this state variable
 
-        return { setValue: { absoluteMeasurements } };
+        return { setValue: { absoluteMeasurements: false } };
       },
     };
 
@@ -1798,8 +1765,7 @@ export class SbsGroup extends BlockComponent {
             }
           }
         } else {
-          // we won't reach here, as we throw an error about not implementing
-          // absolute measurements before get this far
+          // we won't reach here, as we've set all measurements to relative
         }
 
         return {

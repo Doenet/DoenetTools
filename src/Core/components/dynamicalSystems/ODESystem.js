@@ -210,7 +210,7 @@ export default class ODESystem extends InlineComponent {
         ) {
           warnings.push({
             message:
-              "Variables of odesystem must be different than independent variable.",
+              "Variables of <odesystem> must be different than independent variable.",
             level: 1,
           });
         }
@@ -292,6 +292,7 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.initialConditions = {
       isArray: true,
       public: true,
+      hasEssential: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         addAttributeComponentsShadowingStateVariables:
@@ -550,22 +551,14 @@ export default class ODESystem extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
+        console.log(dependencyValues);
         let warnings = [];
 
         let valid = true;
         if (!dependencyValues.validIndependentVariable) {
-          warnings.push({
-            message:
-              "Can't define ODE RHS functions with invalid independent variable.",
-            level: 1,
-          });
           valid = false;
         }
         if (!dependencyValues.validVariables.every((x) => x)) {
-          warnings.push({
-            message: "Can't define ODE RHS functions with an invalid variable.",
-            level: 1,
-          });
           valid = false;
         }
 
@@ -576,18 +569,13 @@ export default class ODESystem extends InlineComponent {
         );
 
         if (varNames.includes(indVarName)) {
-          warnings.push({
-            message:
-              "Can't define ODE RHS functions when independent variable is a dependent variable",
-            level: 1,
-          });
           valid = false;
         }
 
         if ([...new Set(varNames)].length !== varNames.length) {
           warnings.push({
             message:
-              "Can't define ODE RHS functions with duplicate dependent variable names",
+              "Can't define ODE RHS functions with duplicate dependent variable names.",
             level: 1,
           });
           valid = false;
@@ -599,7 +587,7 @@ export default class ODESystem extends InlineComponent {
         } catch (e) {
           warnings.push({
             message:
-              "Cannot define ODE RHS function.  Error creating mathjs function",
+              "Cannot define ODE RHS function.  Error creating mathjs function.",
             level: 1,
           });
           valid = false;

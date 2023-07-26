@@ -6,7 +6,7 @@ describe("Error Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
-  it("mismatched tags at base level", () => {
+  it("Mismatched tags at base level", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
