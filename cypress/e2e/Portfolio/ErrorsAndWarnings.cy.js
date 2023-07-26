@@ -122,7 +122,7 @@ describe("Porfolio Errors and Warnings ", function () {
     cy.get('[data-test="Warning Button"]').click();
     cy.get('[data-test="Warning Content"]').should(
       "contain.text",
-      "WarningLine #5 Attribute ninputs is deprecated. Use numInputs instead. Its use will become an error in version 0.7.",
+      "WarningLine #5 Attribute ninputs is deprecated. Use numInputs instead. Its use will become an error in the next major version (0.7). Version 0.6 will be phased out in summer 2024.",
     );
   });
 });

@@ -6,6 +6,7 @@ import { breakEmbeddedStringByCommas } from "../components/commonsugar/breakstri
 import { parseAndCompile } from "../../Parser/parser";
 import subsets from "./subset-of-reals";
 import { retrieveTextFileForCid } from "./retrieveTextFile";
+import { returnDeprecationMessage } from "./doenetMLversion";
 
 export async function expandDoenetMLsToFullSerializedComponents({
   cids,
@@ -402,123 +403,123 @@ function substituteAttributeDeprecations(serializedComponents) {
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
-    tname: { substitute: "target", removeInVersion: "0.7" },
-    triggerwithtnames: { substitute: "triggerWith", removeInVersion: "0.7" },
-    updatewithtname: { substitute: "updateWith", removeInVersion: "0.7" },
-    paginatortname: { substitute: "paginator", removeInVersion: "0.7" },
-    randomizeorder: { substitute: "shuffleOrder", removeInVersion: "0.7" },
-    copytarget: { substitute: "copySource", removeInVersion: "0.7" },
-    triggerwithtargets: { substitute: "triggerWith", removeInVersion: "0.7" },
+    tname: { substitute: "target", removeInVersion: 0.7 },
+    triggerwithtnames: { substitute: "triggerWith", removeInVersion: 0.7 },
+    updatewithtname: { substitute: "updateWith", removeInVersion: 0.7 },
+    paginatortname: { substitute: "paginator", removeInVersion: 0.7 },
+    randomizeorder: { substitute: "shuffleOrder", removeInVersion: 0.7 },
+    copytarget: { substitute: "copySource", removeInVersion: 0.7 },
+    triggerwithtargets: { substitute: "triggerWith", removeInVersion: 0.7 },
     triggerwhentargetsclicked: {
       substitute: "triggerWhenObjectsClicked",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    fortarget: { substitute: "forObject", removeInVersion: "0.7" },
+    fortarget: { substitute: "forObject", removeInVersion: 0.7 },
     targetattributestoignore: {
       substitute: "sourceAttributesToIgnore",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
     targetattributestoignorerecursively: {
       substitute: "sourceAttributesToIgnoreRecursively",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
     targetsareresponses: {
       substitute: "sourcesAreResponses",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    updatewithtarget: { substitute: "updateWith", removeInVersion: "0.7" },
+    updatewithtarget: { substitute: "updateWith", removeInVersion: 0.7 },
     targetsarefunctionsymbols: {
       substitute: "sourcesAreFunctionSymbols",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
     selectforvariantnames: {
       substitute: "selectForVariants",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    numberdecimals: { substitute: "numDecimals", removeInVersion: "0.7" },
-    numberdigits: { substitute: "numDigits", removeInVersion: "0.7" },
-    ndimensions: { substitute: "numDimensions", removeInVersion: "0.7" },
-    ninputs: { substitute: "numInputs", removeInVersion: "0.7" },
-    noutputs: { substitute: "numOutputs", removeInVersion: "0.7" },
-    niterates: { substitute: "numIterates", removeInVersion: "0.7" },
-    nrows: { substitute: "numRows", removeInVersion: "0.7" },
-    ncolumns: { substitute: "numColumns", removeInVersion: "0.7" },
-    nvertices: { substitute: "numVertices", removeInVersion: "0.7" },
-    npoints: { substitute: "numPoints", removeInVersion: "0.7" },
-    nvariants: { substitute: "numVariants", removeInVersion: "0.7" },
-    nsides: { substitute: "numSides", removeInVersion: "0.7" },
+    numberdecimals: { substitute: "numDecimals", removeInVersion: 0.7 },
+    numberdigits: { substitute: "numDigits", removeInVersion: 0.7 },
+    ndimensions: { substitute: "numDimensions", removeInVersion: 0.7 },
+    ninputs: { substitute: "numInputs", removeInVersion: 0.7 },
+    noutputs: { substitute: "numOutputs", removeInVersion: 0.7 },
+    niterates: { substitute: "numIterates", removeInVersion: 0.7 },
+    nrows: { substitute: "numRows", removeInVersion: 0.7 },
+    ncolumns: { substitute: "numColumns", removeInVersion: 0.7 },
+    nvertices: { substitute: "numVertices", removeInVersion: 0.7 },
+    npoints: { substitute: "numPoints", removeInVersion: 0.7 },
+    nvariants: { substitute: "numVariants", removeInVersion: 0.7 },
+    nsides: { substitute: "numSides", removeInVersion: 0.7 },
     niterationsrequired: {
       substitute: "numIterationsRequired",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    numberofsamples: { substitute: "numSamples", removeInVersion: "0.7" },
-    numbertoselect: { substitute: "numToSelect", removeInVersion: "0.7" },
+    numberofsamples: { substitute: "numSamples", removeInVersion: 0.7 },
+    numbertoselect: { substitute: "numToSelect", removeInVersion: 0.7 },
     nawardscredited: {
       substitute: "numAwardsCredited",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    maximumnumber: { substitute: "maxNumber", removeInVersion: "0.7" },
+    maximumnumber: { substitute: "maxNumber", removeInVersion: 0.7 },
     nsignerrorsmatched: {
       substitute: "numSignErrorsMatched",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
     nperiodicsetmatchesrequired: {
       substitute: "numPeriodicSetMatchesRequired",
-      removeInVersion: "0.7",
+      removeInVersion: 0.7,
     },
-    npages: { substitute: "numPages", removeInVersion: "0.7" },
+    npages: { substitute: "numPages", removeInVersion: 0.7 },
   };
 
   // Note: use lower case
   let deprecatedAttributeDeletions = {
-    suppressautoname: { removeInVersion: "0.7" },
-    suppressautonumber: { removeInVersion: "0.7" },
-    targetattributestoignorerecursively: { removeInVersion: "0.7" },
-    sourceattributestoignorerecursively: { removeInVersion: "0.7" },
-    showlabel: { removeInVersion: "0.7" },
-    ignoredisplaydigits: { removeInVersion: "0.7" },
-    ignoredisplaydecimals: { removeInVersion: "0.7" },
+    suppressautoname: { removeInVersion: 0.7 },
+    suppressautonumber: { removeInVersion: 0.7 },
+    targetattributestoignorerecursively: { removeInVersion: 0.7 },
+    sourceattributestoignorerecursively: { removeInVersion: 0.7 },
+    showlabel: { removeInVersion: 0.7 },
+    ignoredisplaydigits: { removeInVersion: 0.7 },
+    ignoredisplaydecimals: { removeInVersion: 0.7 },
   };
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutionsComponentSpecific = {
     copy: {
-      target: { substitute: "source", removeInVersion: "0.7" },
-      tname: { substitute: "source", removeInVersion: "0.7" },
+      target: { substitute: "source", removeInVersion: 0.7 },
+      tname: { substitute: "source", removeInVersion: 0.7 },
     },
     collect: {
-      target: { substitute: "source", removeInVersion: "0.7" },
-      tname: { substitute: "source", removeInVersion: "0.7" },
+      target: { substitute: "source", removeInVersion: 0.7 },
+      tname: { substitute: "source", removeInVersion: 0.7 },
     },
     summarystatistics: {
-      target: { substitute: "source", removeInVersion: "0.7" },
+      target: { substitute: "source", removeInVersion: 0.7 },
     },
     answer: {
       maximumnumberofattempts: {
         substitute: "maxNumAttempts",
-        removeInVersion: "0.7",
+        removeInVersion: 0.7,
       },
     },
     bestfitline: {
-      points: { substitute: "data", removeInVersion: "0.7" },
+      points: { substitute: "data", removeInVersion: 0.7 },
     },
   };
 
   // use lower case
   let deprecatedAttributeDeletionsComponentSpecific = {
-    textinput: { size: { removeInVersion: "0.7" } },
-    constraintogrid: { ignoregraphbounds: { removeInVersion: "0.7" } },
-    attracttogrid: { ignoregraphbounds: { removeInVersion: "0.7" } },
-    constraints: { baseongraph: { removeInVersion: "0.7" } },
+    textinput: { size: { removeInVersion: 0.7 } },
+    constraintogrid: { ignoregraphbounds: { removeInVersion: 0.7 } },
+    attracttogrid: { ignoregraphbounds: { removeInVersion: 0.7 } },
+    constraints: { baseongraph: { removeInVersion: 0.7 } },
     graph: {
-      xlabel: { removeInVersion: "0.7" },
-      ylabel: { removeInVersion: "0.7" },
-      height: { removeInVersion: "0.7" },
+      xlabel: { removeInVersion: 0.7 },
+      ylabel: { removeInVersion: 0.7 },
+      height: { removeInVersion: 0.7 },
     },
-    image: { height: { removeInVersion: "0.7" } },
-    video: { height: { removeInVersion: "0.7" } },
-    conditionalcontent: { maximumnumbertoshow: { removeInVersion: "0.7" } },
-    angle: { draggable: { removeInVersion: "0.7" } },
+    image: { height: { removeInVersion: 0.7 } },
+    video: { height: { removeInVersion: 0.7 } },
+    conditionalcontent: { maximumnumbertoshow: { removeInVersion: 0.7 } },
+    angle: { draggable: { removeInVersion: 0.7 } },
   };
 
   for (let component of serializedComponents) {
@@ -549,7 +550,9 @@ function substituteAttributeDeprecations(serializedComponents) {
             let removeInVersion = typeSpecificDeps[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} of component type ${cType} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} of component type ${cType} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -568,7 +571,9 @@ function substituteAttributeDeprecations(serializedComponents) {
               deprecatedAttributeSubstitutions[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -585,7 +590,9 @@ function substituteAttributeDeprecations(serializedComponents) {
               typeSpecificDeletions[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} of component type ${cType} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} of component type ${cType} is deprecated. It is ignored. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -601,7 +608,9 @@ function substituteAttributeDeprecations(serializedComponents) {
               deprecatedAttributeDeletions[propLower].removeInVersion;
 
             warnings.push({
-              message: `Attribute ${prop} is deprecated. It is ignored. Its use will become an error in version ${removeInVersion}.`,
+              message: `Attribute ${prop} is deprecated. It is ignored. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
               doenetMLrange: component.doenetMLrange,
               level: 1,
             });
@@ -629,98 +638,98 @@ function substituteAttributeDeprecations(serializedComponents) {
 export const deprecatedPropertySubstitutions = {
   maximumNumberOfAttempts: {
     substitute: "maxNumAttempts",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  numberFeedbacks: { substitute: "numFeedbacks", removeInVersion: "0.7" },
+  numberFeedbacks: { substitute: "numFeedbacks", removeInVersion: 0.7 },
   numberOfAttemptsLeft: {
     substitute: "numAttemptsLeft",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nSubmissions: { substitute: "numSubmissions", removeInVersion: "0.7" },
+  nSubmissions: { substitute: "numSubmissions", removeInVersion: 0.7 },
   nSubmittedResponses: {
     substitute: "numSubmittedResponses",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nAwardsCredited: { substitute: "numAwardsCredited", removeInVersion: "0.7" },
-  numberChoices: { substitute: "numChoices", removeInVersion: "0.7" },
-  numberMinima: { substitute: "numMinima", removeInVersion: "0.7" },
-  numberMaxima: { substitute: "numMaxima", removeInVersion: "0.7" },
-  numberExtrema: { substitute: "numExtrema", removeInVersion: "0.7" },
-  numberDecimals: { substitute: "numDecimals", removeInVersion: "0.7" },
-  numberDigits: { substitute: "numDigits", removeInVersion: "0.7" },
-  numberOfSamples: { substitute: "numSamples", removeInVersion: "0.7" },
-  numberToSelect: { substitute: "numToSelect", removeInVersion: "0.7" },
-  numberSolutions: { substitute: "numSolutions", removeInVersion: "0.7" },
-  maximumNumber: { substitute: "maxNumber", removeInVersion: "0.7" },
-  nVertices: { substitute: "numVertices", removeInVersion: "0.7" },
-  nPoints: { substitute: "numPoints", removeInVersion: "0.7" },
+  nAwardsCredited: { substitute: "numAwardsCredited", removeInVersion: 0.7 },
+  numberChoices: { substitute: "numChoices", removeInVersion: 0.7 },
+  numberMinima: { substitute: "numMinima", removeInVersion: 0.7 },
+  numberMaxima: { substitute: "numMaxima", removeInVersion: 0.7 },
+  numberExtrema: { substitute: "numExtrema", removeInVersion: 0.7 },
+  numberDecimals: { substitute: "numDecimals", removeInVersion: 0.7 },
+  numberDigits: { substitute: "numDigits", removeInVersion: 0.7 },
+  numberOfSamples: { substitute: "numSamples", removeInVersion: 0.7 },
+  numberToSelect: { substitute: "numToSelect", removeInVersion: 0.7 },
+  numberSolutions: { substitute: "numSolutions", removeInVersion: 0.7 },
+  maximumNumber: { substitute: "maxNumber", removeInVersion: 0.7 },
+  nVertices: { substitute: "numVertices", removeInVersion: 0.7 },
+  nPoints: { substitute: "numPoints", removeInVersion: 0.7 },
   nSignErrorsMatched: {
     substitute: "numSignErrorsMatched",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nPeriodicSetMatchesRequired: {
     substitute: "numPeriodicSetMatchesRequired",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nValues: { substitute: "numValues", removeInVersion: "0.7" },
-  nResponses: { substitute: "numResponses", removeInVersion: "0.7" },
-  nControls: { substitute: "numControls", removeInVersion: "0.7" },
-  nThroughPoints: { substitute: "numThroughPoints", removeInVersion: "0.7" },
-  nComponents: { substitute: "numComponents", removeInVersion: "0.7" },
+  nValues: { substitute: "numValues", removeInVersion: 0.7 },
+  nResponses: { substitute: "numResponses", removeInVersion: 0.7 },
+  nControls: { substitute: "numControls", removeInVersion: 0.7 },
+  nThroughPoints: { substitute: "numThroughPoints", removeInVersion: 0.7 },
+  nComponents: { substitute: "numComponents", removeInVersion: 0.7 },
   nChildrenToRender: {
     substitute: "numChildrenToRender",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nSelectedIndices: {
     substitute: "numSelectedIndices",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nDimensions: { substitute: "numDimensions", removeInVersion: "0.7" },
-  nCases: { substitute: "numCases", removeInVersion: "0.7" },
+  nDimensions: { substitute: "numDimensions", removeInVersion: 0.7 },
+  nCases: { substitute: "numCases", removeInVersion: 0.7 },
   nDiscretizationPoints: {
     substitute: "numDiscretizationPoints",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nXCriticalPoints: {
     substitute: "numXCriticalPoints",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nYCriticalPoints: {
     substitute: "numYCriticalPoints",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nCurvatureChangePoints: {
     substitute: "numCurvatureChangePoints",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
   nScoredDescendants: {
     substitute: "numScoredDescendants",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nInputs: { substitute: "numInputs", removeInVersion: "0.7" },
-  nOutputs: { substitute: "numOutputs", removeInVersion: "0.7" },
-  nIterates: { substitute: "numIterates", removeInVersion: "0.7" },
-  nDerivatives: { substitute: "numDerivatives", removeInVersion: "0.7" },
-  nSources: { substitute: "numSources", removeInVersion: "0.7" },
-  nMatches: { substitute: "numMatches", removeInVersion: "0.7" },
-  nRows: { substitute: "numRows", removeInVersion: "0.7" },
-  nColumns: { substitute: "numColumns", removeInVersion: "0.7" },
-  nPages: { substitute: "numPages", removeInVersion: "0.7" },
-  nOffsets: { substitute: "numOffsets", removeInVersion: "0.7" },
-  nVariants: { substitute: "numVariants", removeInVersion: "0.7" },
-  nSides: { substitute: "numSides", removeInVersion: "0.7" },
-  nItems: { substitute: "numItems", removeInVersion: "0.7" },
-  nLists: { substitute: "numLists", removeInVersion: "0.7" },
+  nInputs: { substitute: "numInputs", removeInVersion: 0.7 },
+  nOutputs: { substitute: "numOutputs", removeInVersion: 0.7 },
+  nIterates: { substitute: "numIterates", removeInVersion: 0.7 },
+  nDerivatives: { substitute: "numDerivatives", removeInVersion: 0.7 },
+  nSources: { substitute: "numSources", removeInVersion: 0.7 },
+  nMatches: { substitute: "numMatches", removeInVersion: 0.7 },
+  nRows: { substitute: "numRows", removeInVersion: 0.7 },
+  nColumns: { substitute: "numColumns", removeInVersion: 0.7 },
+  nPages: { substitute: "numPages", removeInVersion: 0.7 },
+  nOffsets: { substitute: "numOffsets", removeInVersion: 0.7 },
+  nVariants: { substitute: "numVariants", removeInVersion: 0.7 },
+  nSides: { substitute: "numSides", removeInVersion: 0.7 },
+  nItems: { substitute: "numItems", removeInVersion: 0.7 },
+  nLists: { substitute: "numLists", removeInVersion: 0.7 },
   nIterationsRequired: {
     substitute: "numIterationsRequired",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nGradedVertices: { substitute: "numGradedVertices", removeInVersion: "0.7" },
+  nGradedVertices: { substitute: "numGradedVertices", removeInVersion: 0.7 },
   nCorrectVertices: {
     substitute: "numCorrectVertices",
-    removeInVersion: "0.7",
+    removeInVersion: 0.7,
   },
-  nIterateValues: { substitute: "numIterateValues", removeInVersion: "0.7" },
+  nIterateValues: { substitute: "numIterateValues", removeInVersion: 0.7 },
 };
 
 const deprecatedPropertySubstitutionsLowerCase = {};
@@ -756,7 +765,9 @@ function substitutePropertyDeprecations(serializedComponents) {
             .removeInVersion;
 
         warnings.push({
-          message: `Property ${propName} is deprecated. Use ${newProp} instead. Its use will become an error in version ${removeInVersion}.`,
+          message: `Property ${propName} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+            removeInVersion,
+          )}`,
           doenetMLrange: component.doenetMLrange,
           level: 1,
         });
