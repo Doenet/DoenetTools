@@ -13,72 +13,100 @@ $userId = $jwtArray['userId'];
 $success = true;
 $message = '';
 
-// if ($userId == '') {
-//     $success = false;
-//     $message = 'Error: You need to sign in';
-// }
 
-$publicActivities = [];
-$fullName = '';
 
 $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
-//Assume we are updating the activity and need the current settings
-if ($success) {
-    $sql = "
-    SELECT u.firstName,
-    u.lastName
-    FROM user AS u
-    LEFT JOIN course AS c
-    ON u.userId = c.portfolioCourseForUserId
-    WHERE c.courseId = '$courseId'
-    ";
-    $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $fullName = $row['firstName'] . ' ' . $row['lastName'];
-    }
+$response_arr;
+$publicActivities = [];
+$fullName = '';
+$courseLabel = '';
+$courseImage = '';
+$courseColor = '';
+try {
 
+    //Get all the public activites in a course
+    //And if it's a user's portfolio 
     $sql = "
-    SELECT cc.doenetId,
+    SELECT 
+    cc.doenetId,
     cc.imagePath,
     cc.label,
-    p.doenetId AS 'pageDoenetId'
+    cc.courseId,
+    c.portfolioCourseForUserId,
+    c.label as courseLabel,
+    c.image as courseImage,
+    c.color as courseColor
     FROM course_content AS cc
-    LEFT JOIN pages AS p
-    ON p.containingDoenetId = cc.doenetId
+    LEFT JOIN course AS c
+        ON c.courseId = cc.courseId
     WHERE cc.courseId = '$courseId'
     AND cc.isPublic = '1'
     AND cc.isDeleted = '0'
+    AND cc.isBanned = '0'
     ";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $activity = [
+            array_push($publicActivities, [
                 'doenetId' => $row['doenetId'],
-                'imagePath' => $row['imagePath'],
+                'imagePath' => is_null($row['imagePath']) ? "/activity_default.jpg" : $row['imagePath'],
                 'label' => $row['label'],
-                'pageDoenetId' => $row['pageDoenetId'],
-            ];
-            array_push($publicActivities, $activity);
+            ]);
+            $isUserPortfolio = is_null($row["portfolioCourseForUserId"]) ? "0" : "1";
+            $courseLabel = $row['courseLabel'];
+            $courseImage = $row['courseImage'];
+            $courseColor = $row['courseColor'];
         }
     }
+
+    if ($isUserPortfolio == "1"){
+        $sql = "
+        SELECT u.firstName,
+        u.lastName
+        FROM user AS u
+        LEFT JOIN course AS c
+        ON u.userId = c.portfolioCourseForUserId
+        WHERE c.courseId = '$courseId'
+        ";
+        $result = $conn->query($sql);
+    
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $fullName = $row['firstName'] . ' ' . $row['lastName'];
+        }else{
+            throw new Exception("Error retrieving User's Information.");
+        }
+    }
+
+
+    $response_arr = [
+        'success' => true,
+        'publicActivities' => $publicActivities,
+        'fullName' => $fullName,
+        'isUserPortfolio' => $isUserPortfolio,
+        'courseLabel' => $courseLabel,
+        'courseImage' => $courseImage,
+        'courseColor' => $courseColor,
+    ];
+    // set response code - 200 OK
+    http_response_code(200);
+
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+    http_response_code(400);
+
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
 }
 
-$response_arr = [
-    'success' => $success,
-    'message' => $message,
-    'publicActivities' => $publicActivities,
-    'fullName' => $fullName,
-];
 
-http_response_code(200);
-
-// make it json format
-echo json_encode($response_arr);
-
-$conn->close();
 
 ?>

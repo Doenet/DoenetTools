@@ -43,10 +43,9 @@ try {
 
     if ($isPublic != '1'){
         throw new Exception("Internal Error: Activity is not public");
-    }
     }else if ($isAssigned != '1'){
         throw new Exception("Internal Error: Activity is not public");
-    }else{
+    }}else{
         throw new Exception("Internal Error: Activity is not available");
     }
 
@@ -101,7 +100,7 @@ try {
             'type' => $row['type'],
             'label' => $row['label'],
             'jsonDefinition' => $row['json'],
-            'imagePath' => $row['imagePath'],
+            'imagePath' => is_null($row['imagePath']) ? "/activity_default.jpg" : $row['imagePath'],
             'learningOutcomes' => $row['learningOutcomes'],
         ];
     }
@@ -172,16 +171,19 @@ try {
         );
     }
 
+    $learningOutcomes = $previous_activity_content['learningOutcomes'];
+    if (is_null($learningOutcomes)){
+        $learningOutcomes = '[""]';
+    }
 
     $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
     $imagePath = $previous_activity_content['imagePath'];
     $type = $previous_activity_content['type'];
-    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
-    
+    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath','$learningOutcomes',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
     
     //INSERT the new activity into course_content
     $sql = "
-    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
+    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,learningOutcomes,addToPrivatePortfolioDate)
     VALUES
     $str_insert_to_course_content
     ";
@@ -200,8 +202,68 @@ try {
 
     // TODO: how do we handle support files?
 
+
+    //content_contributor_history
+    //Don't update history if duplicating to the same course
+    if ($nextCourseId != $prevCourseId){
+        $insert_content_contributor_history = [];
+        //Get history
+        $sql = "
+        SELECT
+        doenetId,
+        courseId,
+        assignedCID,
+        isUserPortfolio,
+        timestamp
+        FROM content_contributor_history
+        WHERE doenetId = '$prevActivityDoenetId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()){
+                $doenetId = $row['doenetId'];
+                $courseId = $row['courseId'];
+                $assignedCID = $row['assignedCID'];
+                $isUserPortfolio = $row['isUserPortfolio'];
+                $timestamp = $row['timestamp'];
+                array_push(
+                    $insert_content_contributor_history,
+                    "('$nextActivityDoenetId','$doenetId','$courseId','$assignedCID','$isUserPortfolio','$timestamp')"
+                );
+            }
+        }
+
+        //add prevous one to history with timestamp = now
+        $sql = "
+        SELECT portfolioCourseForUserId
+        FROM course
+        WHERE courseId = '$prevCourseId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $isUserPortfolio = is_null($row["portfolioCourseForUserId"]) ? "0" : "1";
+            $prevUserId = $row["portfolioCourseForUserId"];
+        }
+        array_push(
+            $insert_content_contributor_history,
+            "('$nextActivityDoenetId','$prevActivityDoenetId','$prevCourseId','$assignedCid','$isUserPortfolio',NOW())"
+        );
+
+        $str_insert_content_contributor_history = implode(',', $insert_content_contributor_history);
+
+
+        // INSERT into content_contributor_history table
+        $sql = "
+        INSERT INTO content_contributor_history (doenetId,prevDoenetId,courseId,assignedCID,isUSerPortfolio,timestamp)
+        VALUES
+        $str_insert_content_contributor_history
+        ";
+        $result = $conn->query($sql);
+    }
+
     $response_arr = [
-        'success' => $success,
+        'success' => true,
         'courseId' => $nextCourseId,
         'nextActivityDoenetId' => $nextActivityDoenetId,
         'nextPageDoenetId' => $nextFirstPageDoenetId,

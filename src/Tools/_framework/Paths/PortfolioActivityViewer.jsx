@@ -5,9 +5,8 @@ import PageViewer from "../../../Viewer/PageViewer";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { Link } from "react-router-dom";
+import { Form } from "react-router-dom";
 import {
-  Avatar,
   Box,
   Button,
   Flex,
@@ -20,14 +19,15 @@ import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import findFirstPageIdInContent from "../../../_utils/findFirstPage";
+import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 
 export async function action({ params }) {
-  let response = await fetch(
+  let { data } = await axios.get(
     `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
   );
-  let respObj = await response.json();
 
-  const { nextActivityDoenetId, nextPageDoenetId } = respObj;
+  const { nextActivityDoenetId, nextPageDoenetId } = data;
   return redirect(
     `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
   );
@@ -40,33 +40,35 @@ export async function loader({ params }) {
   if (profileInfo.cookieRemoved) {
     signedIn = false;
   }
-  const response = await fetch(
-    `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
-  );
-  const data = await response.json();
+  try {
+    const { data } = await axios.get(
+      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+    );
 
-  // const doenetMLResponse = await fetch(`/media/byPageId/${data.pageDoenetId}.doenet`);
-  // const doenetML = await doenetMLResponse.text();
+    const { data: activityML } = await axios.get(
+      `/media/${data.json.assignedCid}.doenet`,
+    );
 
-  const cidResponse = await fetch(`/media/${data.json.assignedCid}.doenet`);
-  const activityML = await cidResponse.text();
+    //Find the first page's doenetML
+    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
+    const pageIds = activityML.match(regex);
 
-  //Find the first page's doenetML
-  const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-  const pageIds = activityML.match(regex);
+    let firstPage = findFirstPageIdInContent(data.json.content);
 
-  const doenetMLResponse = await fetch(`/media/${pageIds[1]}.doenet`);
-  const doenetML = await doenetMLResponse.text();
+    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
 
-  return {
-    doenetML,
-    signedIn,
-    label: data.label,
-    fullName: data.firstName + " " + data.lastName,
-    courseId: data.courseId,
-    doenetId: params.doenetId,
-    pageDoenetId: data.pageDoenetId,
-  };
+    return {
+      success: true,
+      doenetId: params.doenetId,
+      doenetML,
+      signedIn,
+      label: data.label,
+      contributors: data.contributors,
+      pageDoenetId: firstPage,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
+  }
 }
 
 const HeaderSectionRight = styled.div`
@@ -78,14 +80,19 @@ const HeaderSectionRight = styled.div`
 
 export function PortfolioActivityViewer() {
   const {
+    success,
+    message,
     doenetML,
     signedIn,
     label,
-    fullName,
-    courseId,
     doenetId,
     pageDoenetId,
+    contributors,
   } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
 
   const navigate = useNavigate();
 
@@ -163,7 +170,7 @@ export function PortfolioActivityViewer() {
             ></GridItem>
             <GridItem area="headerContent" maxWidth="800px" width="100%">
               <Flex justifyContent="space-between">
-                <VStack mt="10px" alignItems="flex-start">
+                <Flex flexDirection="column" alignItems="flex-start" mt="10px">
                   <Text
                     fontSize="1.4em"
                     fontWeight="bold"
@@ -174,29 +181,10 @@ export function PortfolioActivityViewer() {
                   >
                     {label}
                   </Text>
-                  <Link
-                    data-test="Avatar Link"
-                    style={{
-                      textDecoration: "none",
-                      color: "black",
-                      position: "relative",
-                      justifySelf: "flex-start",
-                    }}
-                    to={`/publicportfolio/${courseId}`}
-                  >
-                    <Avatar size="sm" name={fullName} />
-                    <Text
-                      fontSize="13px"
-                      // fontSize="13pt"
-                      position="absolute"
-                      left="36px"
-                      top="6px"
-                      width="400px"
-                    >
-                      By {fullName}
-                    </Text>
-                  </Link>
-                </VStack>
+                  <Box mt="10px">
+                    <ContributorsMenu contributors={contributors} />
+                  </Box>
+                </Flex>
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
                   <Button
                     size="xs"
@@ -210,24 +198,16 @@ export function PortfolioActivityViewer() {
                   </Button>
                   {signedIn ? (
                     <HeaderSectionRight>
-                      <Button
-                        data-test="Remix Button"
-                        size="xs"
-                        colorScheme="blue"
-                        onClick={async () => {
-                          let resp = await axios.get(
-                            `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
-                          );
-                          const { nextActivityDoenetId, nextPageDoenetId } =
-                            resp.data;
-
-                          navigate(
-                            `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
-                          );
-                        }}
-                      >
-                        Remix
-                      </Button>
+                      <Form method="post">
+                        <Button
+                          data-test="Remix Button"
+                          size="xs"
+                          colorScheme="blue"
+                          type="submit"
+                        >
+                          Remix
+                        </Button>
+                      </Form>
                     </HeaderSectionRight>
                   ) : (
                     <Button
@@ -346,44 +326,6 @@ export function PortfolioActivityViewer() {
                 </Box>
                 <Box marginBottom="50vh" />
               </VStack>
-              {/* <Box
-                height="calc(100vh - 160px)" //Has a menu on the viewer
-                // height="calc(100vh - 160px)" //40px header height
-                background="var(--canvas)"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="doenet.mediumGray"
-                margin="10px 0px 10px 0px" //Only need when there is an outline
-                padding="20px 5px 20px 5px"
-                overflow="scroll"
-              >
-                <>
-                  <PageViewer
-                    key={`HPpageViewer`}
-                    doenetML={doenetML}
-                    // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    // doenetId={doenetId}
-                    attemptNumber={1}
-                    generatedVariantCallback={variantCallback} //TODO:Replace
-                    requestedVariantIndex={variantInfo.index}
-                    // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
-                  />
-                  <Box marginBottom="50vh" />
-                </>
-              </Box> */}
             </GridItem>
           </Grid>
         </GridItem>

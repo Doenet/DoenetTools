@@ -94,15 +94,29 @@ export async function action({ request }) {
   }
 }
 
-export async function loader({ params }) {
-  const { data } = await axios.get("/api/getCoursePermissionsAndSettings.php");
-  return {
-    courses: data.permissionsAndSettings,
-  };
+export async function loader() {
+  try {
+    let success = true;
+    const { data } = await axios.get(
+      "/api/getCoursePermissionsAndSettings.php",
+    );
+
+    return {
+      success,
+      courses: data.permissionsAndSettings,
+    };
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
+  }
 }
 
 export function Courses() {
-  const { courses } = useLoaderData();
+  const { success, message, courses } = useLoaderData();
+
+  if (!success) {
+    throw new Error(message);
+  }
+
   const fetcher = useFetcher();
 
   const {
@@ -339,7 +353,7 @@ export function Courses() {
             minHeight={200}
             width="100%"
           >
-            <Wrap overflow="visible" p="10px">
+            <Wrap overflow="visible" p="10px" data-test="List of courses">
               {optimisticCourses.map((course, index) => (
                 <CourseCard
                   course={course}

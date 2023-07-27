@@ -39,8 +39,8 @@ INSERT INTO user
 SET userId='$userId',
 screenName='screen name',
 email='$userId@doenet.org',
-lastName='$firstName',
-firstName='$lastName'
+lastName='$lastName',
+firstName='$firstName'
 ";
 $result = $conn->query($sql); 
 
