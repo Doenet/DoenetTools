@@ -143,8 +143,10 @@ export default function PageViewer(props) {
   const coreCreated = useRef(false);
   const coreCreationInProgress = useRef(false);
   const coreId = useRef(null);
+  const errorWarnings = useRef(null);
 
   const resolveAllStateVariables = useRef(null);
+  const resolveErrorWarnings = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
   const coreWorker = useRef(null);
@@ -170,10 +172,14 @@ export default function PageViewer(props) {
   const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
+  // Note: useRef for location
+  // to make sure get current value of location in navigateToHash
+  const location = useRef(null);
+
   let navigate = useNavigate();
 
-  let location = useLocation();
-  let hash = location.hash;
+  location.current = useLocation();
+  let hash = location.current.hash;
 
   useEffect(() => {
     if (coreWorker.current) {
@@ -242,6 +248,9 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args);
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "returnErrorWarnings") {
+          console.log(e.data.args);
+          resolveErrorWarnings.current(e.data.args);
         } else if (e.data.messageType === "componentRangePieces") {
           window["componentRangePieces" + pageNumber] =
             e.data.args.componentRangePieces;
@@ -250,6 +259,9 @@ export default function PageViewer(props) {
             props.setIsInErrorState(true);
           }
           setErrMsg(e.data.args.errMsg);
+        } else if (e.data.messageType === "setErrorWarnings") {
+          errorWarnings.current = e.data.errorWarnings;
+          props.setErrorsAndWarningsCallback?.(errorWarnings.current);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "copyToClipboard") {
@@ -257,7 +269,9 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "navigateToTarget") {
           navigateToTarget(e.data.args);
         } else if (e.data.messageType === "navigateToHash") {
-          navigate(e.data.args.hash);
+          navigate(location.current.search + e.data.args.hash, {
+            replace: true,
+          });
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -284,6 +298,16 @@ export default function PageViewer(props) {
 
         return new Promise((resolve, reject) => {
           resolveAllStateVariables.current = resolve;
+        });
+      };
+
+      window["returnErrorWarnings" + pageNumber] = function () {
+        coreWorker.current.postMessage({
+          messageType: "returnErrorWarnings",
+        });
+
+        return new Promise((resolve, reject) => {
+          resolveErrorWarnings.current = resolve;
         });
       };
 
@@ -338,22 +362,22 @@ export default function PageViewer(props) {
         });
       }
     }
-  }, [location, hash, coreCreated.current, coreWorker.current]);
+  }, [location.current, hash, coreCreated.current, coreWorker.current]);
 
   useEffect(() => {
     if (hash && documentRenderer && props.pageIsActive) {
       let anchor = hash.slice(1);
       if (
-        (!previousLocationKeys.current.includes(location.key) ||
-          location.key === "default") &&
+        (!previousLocationKeys.current.includes(location.current.key) ||
+          location.current.key === "default") &&
         anchor.length > prefixForIds.length &&
         anchor.substring(0, prefixForIds.length) === prefixForIds
       ) {
         document.getElementById(anchor)?.scrollIntoView();
       }
-      previousLocationKeys.current.push(location.key);
+      previousLocationKeys.current.push(location.current.key);
     }
-  }, [location, hash, documentRenderer, props.pageIsActive]);
+  }, [location.current, hash, documentRenderer, props.pageIsActive]);
 
   useEffect(() => {
     callAction({
@@ -1129,8 +1153,8 @@ export default function PageViewer(props) {
       targetName,
       pageToolView,
       inCourse: Object.keys(itemInCourse).length > 0,
-      pathname: location.pathname,
-      search: location.search,
+      pathname: location.current.pathname,
+      search: location.current.search,
       id,
     });
 
@@ -1296,6 +1320,21 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+  let errorOverview = null;
+  if (documentRenderer && errorWarnings.current?.errors.length > 0) {
+    let errorStyle = {
+      backgroundColor: "#ff9999",
+      textAlign: "center",
+      borderWidth: 3,
+      borderStyle: "solid",
+    };
+    errorOverview = (
+      <div style={errorStyle}>
+        <b>This document contains errors!</b>
+      </div>
+    );
+  }
+
   //Spacing around the whole doenetML document
   return (
     <ErrorBoundary
@@ -1306,6 +1345,7 @@ export default function PageViewer(props) {
     >
       {noCoreWarning}
       <div style={pageStyle} className="doenet-viewer">
+        {errorOverview}
         {documentRenderer}
       </div>
     </ErrorBoundary>

@@ -10,6 +10,7 @@ export default class Caption extends BlockComponent {
   }
   static componentType = "caption";
   static rendererType = "containerInline";
+  static canDisplayChildErrors = true;
 
   static renderChildren = true;
 
@@ -20,6 +21,10 @@ export default class Caption extends BlockComponent {
       {
         group: "inlinesBlocks",
         componentTypes: ["_inline", "_block"],
+      },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
       },
     ];
   }

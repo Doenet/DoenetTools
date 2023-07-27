@@ -157,6 +157,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         let validBehavior = true;
+        let warnings = [];
 
         if (dependencyValues.behavior === "parallel") {
           // display warning if some sources activeChildren have differ numbers of iterates
@@ -165,17 +166,22 @@ export default class Map extends CompositeComponent {
               .slice(1)
               .some((x) => x != dependencyValues.numIterates[0])
           ) {
-            console.warn(
-              "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
+            warnings.push({
+              message:
+                "<map> has parallel behavior but different numbers of iterates in sources." +
                 " Extra iterates will be ignored.",
-            );
+              level: 1,
+            });
           }
         } else if (dependencyValues.behavior !== "combination") {
-          console.warn("Invalid map behavior: " + dependencyValues.behavior);
+          warnings.push({
+            message: `Invalid map behavior: "${dependencyValues.behavior}".`,
+            level: 1,
+          });
           validBehavior = false;
         }
 
-        return { setValue: { validBehavior } };
+        return { setValue: { validBehavior }, sendWarnings: warnings };
       },
     };
 
@@ -260,6 +266,9 @@ export default class Map extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
+    let errors = [];
+    let warnings = [];
+
     if (!(await component.stateValues.validBehavior)) {
       workspace.lastReplacementParameters = {
         sourcesNames: [],
@@ -268,7 +277,7 @@ export default class Map extends CompositeComponent {
         numIterates: undefined,
         minNIterates: undefined,
       };
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     }
 
     workspace.lastReplacementParameters = {
@@ -289,14 +298,15 @@ export default class Map extends CompositeComponent {
         iter < (await component.stateValues.minNIterates);
         iter++
       ) {
-        replacements.push(
-          ...(await this.parallelReplacement({
-            component,
-            iter,
-            componentInfoObjects,
-            flags,
-          })),
-        );
+        let res = await this.parallelReplacement({
+          component,
+          iter,
+          componentInfoObjects,
+          flags,
+        });
+        replacements.push(...res.replacements);
+        errors.push(...res.errors);
+        warnings.push(...res.warnings);
       }
     } else {
       //behavior is combination
@@ -310,11 +320,13 @@ export default class Map extends CompositeComponent {
         flags,
       });
       replacements = results.replacements;
+      errors.push(...results.errors);
+      warnings.push(...results.warnings);
     }
 
     // console.log(`replacements of map`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
-    return { replacements };
+    return { replacements, errors, warnings };
   }
 
   static async parallelReplacement({
@@ -323,6 +335,9 @@ export default class Map extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [deepClone(await component.stateValues.template)];
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -358,6 +373,8 @@ export default class Map extends CompositeComponent {
       componentInfoObjects,
       indOffset: iter,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     replacements = processResult.serializedComponents;
 
@@ -367,7 +384,7 @@ export default class Map extends CompositeComponent {
       Array(await component.stateValues.numSources).fill(iter),
     );
 
-    return replacements;
+    return { replacements, errors, warnings };
   }
 
   static async recurseThroughCombinations({
@@ -378,6 +395,9 @@ export default class Map extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
     let newNamespace = component.attributes.newNamespace?.primitive;
@@ -433,6 +453,8 @@ export default class Map extends CompositeComponent {
           componentInfoObjects,
           indOffset: iterateNumber,
         });
+        errors.push(...processResult.errors);
+        warnings.push(...processResult.warnings);
 
         let thisRepl = processResult.serializedComponents[0];
 
@@ -450,10 +472,12 @@ export default class Map extends CompositeComponent {
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber;
+        errors.push(...results.errors);
+        warnings.push(...results.warnings);
       }
     }
 
-    return { replacements, iterateNumber };
+    return { replacements, iterateNumber, errors, warnings };
   }
 
   static async calculateReplacementChanges({
@@ -464,6 +488,10 @@ export default class Map extends CompositeComponent {
     flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`)
+
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
 
     let replacementChanges = [];
 
@@ -565,12 +593,16 @@ export default class Map extends CompositeComponent {
     }
 
     if (recreateReplacements) {
-      let newSerializedReplacements = await this.createSerializedReplacements({
+      let replacementResults = await this.createSerializedReplacements({
         component,
         workspace,
         componentInfoObjects,
         flags,
-      }).replacements;
+      });
+
+      let newSerializedReplacements = replacementResults.replacements;
+      errors.push(...replacementResults.errors);
+      warnings.push(...replacementResults.warnings);
 
       let replacementInstruction = {
         changeType: "add",
@@ -711,19 +743,15 @@ export default class Map extends CompositeComponent {
         let replacements = [];
 
         for (let iter = prevMinNIterates; iter < currentMinNIterates; iter++) {
-          replacements.push(
-            ...(await this.parallelReplacement({
-              component,
-              iter,
-              componentInfoObjects,
-              flags,
-            })),
-          );
-        }
-
-        let nAssignNames = 0;
-        if (component.doenetAttributes.assignNames) {
-          nAssignNames = component.doenetAttributes.assignNames.length;
+          let res = await this.parallelReplacement({
+            component,
+            iter,
+            componentInfoObjects,
+            flags,
+          });
+          replacements.push(...res.replacements);
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         }
 
         let replacementInstruction = {

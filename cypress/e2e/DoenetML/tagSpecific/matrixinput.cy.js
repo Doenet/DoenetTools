@@ -14569,14 +14569,14 @@ describe("MatrixInput Tag Tests", function () {
 
     // not sure why have to wait so that MathJax can correctly process
     // change to immediate value
-    cy.wait(100);
+    cy.wait(200);
 
     cy.log("type b in second row of mi");
     cy.get(cesc("#\\/mi_component_1_0") + " textarea").type(
       "{end}{backspace}b",
       {
         force: true,
-        delay: 50,
+        delay: 200,
       },
     );
 

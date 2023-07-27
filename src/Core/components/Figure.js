@@ -10,6 +10,7 @@ export default class Figure extends BlockComponent {
   }
   static componentType = "figure";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -39,6 +40,10 @@ export default class Figure extends BlockComponent {
       {
         group: "inlinesBlocks",
         componentTypes: ["_inline", "_block"],
+      },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
       },
     ];
   }

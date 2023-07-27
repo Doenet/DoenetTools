@@ -19,6 +19,7 @@ export default class VariableNameList extends MathList {
       },
       isArray: true,
       entryPrefixes: ["var"],
+      additionalStateVariablesDefined: ["validVariables"],
       returnArraySizeDependencies: () => ({
         numComponents: {
           dependencyType: "stateVariable",
@@ -44,37 +45,25 @@ export default class VariableNameList extends MathList {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let variables = {};
+        let validVariables = {};
+        let warnings = [];
         for (let arrayKey of arrayKeys) {
-          variables[arrayKey] = dependencyValuesByKey[arrayKey].math;
-        }
-        return {
-          setValue: { variables },
-        };
-      },
-    };
-
-    let thisComponentType = this.componentType;
-
-    stateVariableDefinitions.validVariables = {
-      returnDependencies: () => ({
-        variables: {
-          dependencyType: "stateVariable",
-          variableName: "variables",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let validVariables = [];
-
-        for (let variable of dependencyValues.variables) {
+          let variable = dependencyValuesByKey[arrayKey].math;
           let validVariable = isValidVariable(variable);
           if (!validVariable) {
-            console.warn("Invalid value for " + thisComponentType);
+            warnings.push({
+              message: "Invalid value of a variable: " + variable.toString(),
+              level: 1,
+            });
             validVariable = false;
           }
-          validVariables.push(validVariable);
+          variables[arrayKey] = variable;
+          validVariables[arrayKey] = validVariable;
         }
-
-        return { setValue: { validVariables } };
+        return {
+          setValue: { variables, validVariables },
+          sendWarnings: warnings,
+        };
       },
     };
 

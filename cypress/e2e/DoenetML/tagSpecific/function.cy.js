@@ -1452,6 +1452,152 @@ describe("Function Tag Tests", function () {
       assert.isNaN(f(1));
       assert.isNaN(f(2));
     });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Function contains two points with locations too close together. Can't define function`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(44);
+    });
+  });
+
+  it("function with non-numerical points and slope", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <function through="(1,2) (a,b)" extrema="(5,6) (2,a)" maxima="(c,3)" minima="(d,e)" throughSlopes="5a" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(
+        stateVariables["/_function1"].stateValues.fDefinitions[0],
+      );
+      let fleft = (x) => 6 - (x - 5) ** 2 / 4;
+      let fright = (x) => 6 - (x - 5) ** 2;
+      expect(f(5)).closeTo(6, 1e-12);
+      expect(f(1)).closeTo(2, 1e-12);
+      expect(f(-2)).closeTo(fleft(-2), 1e-12);
+      expect(f(7)).closeTo(fright(7), 1e-12);
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(5);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Ignoring non-numerical maximum of function`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(109);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Ignoring non-numerical minimum of function`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(109);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Ignoring non-numerical extremum of function`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(109);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        `Ignoring non-numerical slope of function`,
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(109);
+
+      expect(errorWarnings.warnings[4].message).contain(
+        `Ignoring non-numerical point of function`,
+      );
+      expect(errorWarnings.warnings[4].level).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[4].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[4].doenetMLrange.charEnd).eq(109);
+    });
+  });
+
+  it("function with empty maximum", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <function maxima="(,)" minima="(4,)" />
+    </graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(
+        stateVariables["/_function1"].stateValues.fDefinitions[0],
+      );
+      let factual = (x) => (x - 4) ** 2;
+      expect(f(4)).closeTo(0, 1e-12);
+      expect(f(-2)).closeTo(factual(-2), 1e-12);
+      expect(f(7)).closeTo(factual(7), 1e-12);
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Ignoring empty maximum of function`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(45);
+    });
   });
 
   it("copy function and overwrite through points and slopes", () => {
@@ -2572,6 +2718,49 @@ describe("Function Tag Tests", function () {
       // expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
       // expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
       // expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
+    });
+  });
+
+  it("warnings for bad variable or variable attribute", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <function variables="sin(x)">x</function>
+    <function variable="cos(x)">x</function>
+    `,
+        },
+        "*",
+      );
+    });
+
+    //wait for window to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid value of a variable: cos(x)`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(25);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(30);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Invalid value of a variable: sin(x)`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(26);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(31);
     });
   });
 
