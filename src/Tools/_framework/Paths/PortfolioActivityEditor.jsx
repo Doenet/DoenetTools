@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import Papa from "papaparse";
 
@@ -24,7 +22,6 @@ import {
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  // DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Editable,
@@ -33,14 +30,12 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  // FormHelperText,
   FormLabel,
   Grid,
   GridItem,
   HStack,
   Icon,
   IconButton,
-  // IconButton,
   Image,
   Input,
   InputGroup,
@@ -51,8 +46,6 @@ import {
   MenuItem,
   MenuList,
   Progress,
-  // Spinner,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -81,6 +74,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1285,6 +1279,17 @@ export function PortfolioActivityEditor() {
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
+
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -1649,6 +1654,9 @@ export function PortfolioActivityEditor() {
                             generatedVariantCallback={variantCallback} //TODO:Replace
                             requestedVariantIndex={variants.index}
                             // setIsInErrorState={setIsInErrorState}
+                            setErrorsAndWarningsCallback={
+                              setErrorsAndWarningsCallback
+                            }
                             pageIsActive={true}
                           />
                           <Box marginBottom="50vh" />
@@ -1678,9 +1686,9 @@ export function PortfolioActivityEditor() {
                         Documentation <ExternalLinkIcon mx="2px" />
                       </Link>
                     </HStack>
+
                     <Box
                       top="50px"
-                      w="100%"
                       boxSizing="border-box"
                       background="doenet.canvas"
                       height={`calc(100vh - 132px)`}
@@ -1689,23 +1697,45 @@ export function PortfolioActivityEditor() {
                       borderTop="solid 1px"
                       borderBottom="solid 1px"
                       borderColor="doenet.mediumGray"
+                      w="100%"
                     >
-                      <CodeMirror
-                        editorRef={editorRef}
-                        setInternalValueTo={initializeEditorDoenetML.current}
-                        onBeforeChange={(value) => {
-                          textEditorDoenetML.current = value;
-                          setEditorDoenetML(value);
-                          if (!codeChanged) {
-                            setCodeChanged(true);
-                          }
-                          // Debounce save to server at 3 seconds
-                          clearTimeout(timeout.current);
-                          timeout.current = setTimeout(async function () {
-                            handleSaveDraft();
-                          }, 3000); //3 seconds
-                        }}
-                      />
+                      <Box
+                        height={`calc(100vh - 166px)`}
+                        w="100%"
+                        overflow="scroll"
+                      >
+                        <CodeMirror
+                          editorRef={editorRef}
+                          setInternalValueTo={initializeEditorDoenetML.current}
+                          onBeforeChange={(value) => {
+                            textEditorDoenetML.current = value;
+                            setEditorDoenetML(value);
+                            if (!codeChanged) {
+                              setCodeChanged(true);
+                            }
+                            // Debounce save to server at 3 seconds
+                            clearTimeout(timeout.current);
+                            timeout.current = setTimeout(async function () {
+                              handleSaveDraft();
+                            }, 3000); //3 seconds
+                          }}
+                        />
+                      </Box>
+
+                      <Box bg="doenet.mainGray" h="32px" w="100%">
+                        <Flex
+                          ml="0px"
+                          h="32px"
+                          bg="doenet.mainGray"
+                          pl="10px"
+                          pt="1px"
+                        >
+                          <ErrorWarningPopovers
+                            warningsObjs={warningsObjs}
+                            errorsObjs={errorsObjs}
+                          />
+                        </Flex>
+                      </Box>
                     </Box>
                   </VStack>
                 }
