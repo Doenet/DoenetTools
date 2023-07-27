@@ -321,6 +321,8 @@ export class Solution extends BlockComponent {
 export class GivenAnswer extends Solution {
   static componentType = "givenAnswer";
 
+  static excludeFromSchema = true;
+
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 

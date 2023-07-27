@@ -319,6 +319,7 @@ export default class BaseComponent {
         defaultValue: true,
         public: true,
         propagateToProps: true,
+        excludeFromSchema: true,
       },
       styleNumber: {
         createComponentOfType: "integer",
@@ -344,6 +345,7 @@ export default class BaseComponent {
         createStateVariable: "permid",
         defaultValue: "",
         public: true,
+        excludeFromSchema: true,
       },
     };
   }

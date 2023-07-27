@@ -33,6 +33,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
     attributes.prop = {
       createPrimitiveOfType: "string",
+      excludeFromSchema: true,
     };
 
     attributes.componentIndex = {
@@ -40,6 +41,7 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.propIndex = {
@@ -47,6 +49,7 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.targetSubnames = {
@@ -54,12 +57,14 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "targetSubnames",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.targetSubnamesComponentIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "targetSubnamesComponentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.animationOn = {

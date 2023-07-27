@@ -6,6 +6,8 @@ import { verifyReplacementsMatchSpecifiedType } from "../utils/copy";
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
+  static excludeFromSchema = true;
+
   static assignNamesToReplacements = true;
 
   static acceptAnyAttribute = true;
@@ -41,12 +43,14 @@ export default class Extract extends CompositeComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.propIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     return attributes;
   }

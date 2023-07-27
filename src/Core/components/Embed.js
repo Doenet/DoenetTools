@@ -10,6 +10,8 @@ export default class Embed extends BlockComponent {
   }
   static componentType = "embed";
 
+  static excludeFromSchema = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.width = {

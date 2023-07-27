@@ -225,6 +225,7 @@ export default class Graph extends BlockComponent {
         group: "childrenThatShouldNotBeHere",
         componentTypes: ["_base"],
         matchAfterAdapters: true,
+        excludeFromSchema: true,
       },
     ];
   }

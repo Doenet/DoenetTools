@@ -23,6 +23,7 @@ import { completeFromSchema } from "@codemirror/lang-xml";
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
 import { getRenderer } from "handsontable/renderers";
+import doenetSchema from "../../Core/doenetSchema.json";
 
 const editorConfigStateAtom = atom({
   key: "editorConfigStateAtom",
@@ -342,23 +343,6 @@ export default function CodeMirror({
     </>
   );
 }
-
-const doenetSchema = {
-  //TODO update schema to be more complete.
-  elements: [
-    // {
-    //     name: "p",
-    // },
-    // {
-    //     name: "div",
-    // },
-    // {
-    //     name: "mathInput",
-    //     children: [],
-    //     attributes: [{name: "TEST"}]
-    // }
-  ],
-};
 
 let parserWithMetadata = parser.configure({
   props: [
