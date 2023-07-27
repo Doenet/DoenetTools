@@ -1,6 +1,12 @@
 import { allComponentClasses } from "../ComponentTypes";
 import createComponentInfoObjects from "./componentInfoObjects";
 
+// Create schema of DoenetML by extracting component, attributes and children
+// from component classes.
+// The results are currently just stringified and printed out,
+// and then manually copied into src/Core/doenetSchema.json.
+// CodeMirrror.jsx reads in the json file to form its autocompletion scheme.
+
 export function getSchema() {
   let componentClasses = allComponentClasses();
 
@@ -13,7 +19,7 @@ export function getSchema() {
     }
   }
 
-  let inheritedTypes = {};
+  let inheritedOrAdaptedTypes = {};
 
   for (let type1 in componentClasses) {
     let inherited = [];
@@ -28,9 +34,30 @@ export function getSchema() {
         })
       ) {
         inherited.push(type2);
+      } else {
+        let cClass = componentClasses[type2];
+        let numAdapters = cClass.numAdapters;
+
+        for (let n = 0; n < numAdapters; n++) {
+          let adapterComponentType = cClass.getAdapterComponentType(
+            n,
+            componentInfoObjects.publicStateVariableInfo,
+          );
+
+          if (
+            componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: adapterComponentType,
+              baseComponentType: type1,
+            })
+          ) {
+            if (!inherited.includes(adapterComponentType)) {
+              inherited.push(adapterComponentType);
+            }
+          }
+        }
       }
     }
-    inheritedTypes[type1] = inherited;
+    inheritedOrAdaptedTypes[type1] = inherited;
   }
 
   for (let type in componentClasses) {
@@ -81,8 +108,8 @@ export function getSchema() {
     for (let groupObj of childGroups) {
       if (!groupObj.excludeFromSchema) {
         for (let type2 of groupObj.componentTypes) {
-          if (type2 in inheritedTypes) {
-            children.push(...inheritedTypes[type2]);
+          if (type2 in inheritedOrAdaptedTypes) {
+            children.push(...inheritedOrAdaptedTypes[type2]);
           }
         }
       }
