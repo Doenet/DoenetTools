@@ -1982,6 +1982,119 @@ describe("Sequence Tag Tests", function () {
     });
   });
 
+  it("warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <sequence length="-1"/>
+    <sequence step="x"/>
+    <sequence type="letters" step="x" />
+    <sequence from="y" />
+    <sequence type="letters" from="1" />
+    <sequence type="math" from="$nan" />
+    <sequence to="y" />
+    <sequence type="letters" to="1" />
+    <sequence type="math" to="$nan" />
+
+    <number name="nan" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/nan")).should("have.text", "NaN");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(9);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid length of sequence.  Must be a non-negative integer`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(27);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Invalid step of sequence.  Must be a number for sequence of type number`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(24);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Invalid step of sequence.  Must be a number for sequence of type letters`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(40);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        `Invalid "from" of number sequence.  Must be a number`,
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(25);
+
+      expect(errorWarnings.warnings[4].message).contain(
+        `Invalid "from" of letters sequence.  Must be a letter combination`,
+      );
+      expect(errorWarnings.warnings[4].level).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[4].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[4].doenetMLrange.charEnd).eq(40);
+
+      expect(errorWarnings.warnings[5].message).contain(
+        `Invalid "from" of sequence`,
+      );
+      expect(errorWarnings.warnings[5].level).eq(1);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[5].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[5].doenetMLrange.charEnd).eq(40);
+
+      expect(errorWarnings.warnings[6].message).contain(
+        `Invalid "to" of number sequence.  Must be a number.`,
+      );
+      expect(errorWarnings.warnings[6].level).eq(1);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineBegin).eq(8);
+      expect(errorWarnings.warnings[6].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[6].doenetMLrange.charEnd).eq(23);
+
+      expect(errorWarnings.warnings[7].message).contain(
+        `Invalid "to" of letters sequence.  Must be a letter combination`,
+      );
+      expect(errorWarnings.warnings[7].level).eq(1);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineBegin).eq(9);
+      expect(errorWarnings.warnings[7].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineEnd).eq(9);
+      expect(errorWarnings.warnings[7].doenetMLrange.charEnd).eq(38);
+
+      expect(errorWarnings.warnings[8].message).contain(
+        `Invalid "to" of sequence`,
+      );
+      expect(errorWarnings.warnings[8].level).eq(1);
+      expect(errorWarnings.warnings[8].doenetMLrange.lineBegin).eq(10);
+      expect(errorWarnings.warnings[8].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[8].doenetMLrange.lineEnd).eq(10);
+      expect(errorWarnings.warnings[8].doenetMLrange.charEnd).eq(38);
+    });
+  });
+
   it("rounding", () => {
     cy.window().then(async (win) => {
       win.postMessage(

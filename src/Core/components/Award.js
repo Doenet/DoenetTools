@@ -268,7 +268,8 @@ export default class Award extends BaseComponent {
       if (parentAttributes.type) {
         type = parentAttributes.type;
         if (!["math", "text", "boolean"].includes(type)) {
-          console.warn(`Invalid type ${type}`);
+          // Note: no need to send warning here, as answer sends a warning
+          // (and is the location of the type attribute)
           type = "math";
         }
       } else {

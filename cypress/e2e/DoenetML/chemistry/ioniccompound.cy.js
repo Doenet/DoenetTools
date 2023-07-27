@@ -130,4 +130,48 @@ describe("Ion Compounds Tests", function () {
       cy.get(mathinputSrICorrectAnchor).should("be.visible");
     });
   });
+
+  it("warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <atom name="Li" symbol="Li" /> <atom name="O" symbol="O" /> <atom name="Ca" symbol="Ca" />
+
+  <ionicCompound>$Li$O$Ca</ionicCompound>
+  <ionicCompound>$Li$Ca</ionicCompound>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Have not implemented ionic compound for anything other than two ions`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(41);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Ionic compound implemented only for one cation and one anion`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(39);
+    });
+  });
 });

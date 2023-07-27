@@ -257,7 +257,7 @@ export default class ConditionalContent extends CompositeComponent {
     workspace,
     componentInfoObjects,
   }) {
-    let replacements = await this.getReplacements(
+    let replacementResults = await this.getReplacements(
       component,
       components,
       componentInfoObjects,
@@ -271,12 +271,15 @@ export default class ConditionalContent extends CompositeComponent {
     // console.log(JSON.parse(JSON.stringify(replacements)));
     // console.log(replacements);
 
-    return { replacements };
+    return replacementResults;
   }
 
   static async getReplacements(component, components, componentInfoObjects) {
+    let errors = [];
+    let warnings = [];
+
     if (!(await component.stateValues.baseConditionSatisfied)) {
-      return [];
+      return { replacements: [], errors, warnings };
     }
 
     let replacements = [];
@@ -355,8 +358,14 @@ export default class ConditionalContent extends CompositeComponent {
       componentInfoObjects,
       originalNamesAreConsistent: true,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return processResult.serializedComponents;
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -368,6 +377,10 @@ export default class ConditionalContent extends CompositeComponent {
     // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
     // console.log(workspace.previousSelectedIndex);
     // console.log(component.stateValues.selectedIndex);
+
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
 
     let selectedIndex = await component.stateValues.selectedIndex;
     let baseConditionSatisfied = await component.stateValues
@@ -412,18 +425,20 @@ export default class ConditionalContent extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let replacements = await this.getReplacements(
+    let replacementResults = await this.getReplacements(
       component,
       components,
       componentInfoObjects,
     );
+    errors.push(...replacementResults.errors);
+    warnings.push(...replacementResults.warnings);
 
     let replacementInstruction = {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: component.replacements.length,
-      serializedReplacements: replacements,
+      serializedReplacements: replacementResults.replacements,
       replacementsToWithhold: 0,
     };
 

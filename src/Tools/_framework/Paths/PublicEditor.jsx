@@ -131,6 +131,17 @@ export function PublicEditor() {
   );
   const errorsObjs = [...errorsAndWarnings.errors];
 
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
+
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
 

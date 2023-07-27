@@ -275,6 +275,8 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";
   static rendererType = "section";
 
+  static excludeFromSchema = true;
+
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
@@ -293,6 +295,8 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
 export class externalContent extends SectioningComponent {
   static componentType = "externalContent";
   static rendererType = "section";
+
+  static excludeFromSchema = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

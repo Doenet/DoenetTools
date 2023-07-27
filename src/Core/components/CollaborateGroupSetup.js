@@ -3,6 +3,8 @@ import BaseComponent from "./abstract/BaseComponent";
 export default class CollaborateGroupSetup extends BaseComponent {
   static componentType = "collaborateGroupSetup";
 
+  static excludeFromSchema = true;
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

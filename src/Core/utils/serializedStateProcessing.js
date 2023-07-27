@@ -6,6 +6,7 @@ import { breakEmbeddedStringByCommas } from "../components/commonsugar/breakstri
 import { parseAndCompile } from "../../Parser/parser";
 import subsets from "./subset-of-reals";
 import { retrieveTextFileForCid } from "./retrieveTextFile";
+import { returnDeprecationMessage } from "./doenetMLversion";
 
 export async function expandDoenetMLsToFullSerializedComponents({
   cids,
@@ -16,44 +17,74 @@ export async function expandDoenetMLsToFullSerializedComponents({
   let arrayOfSerializedComponents = [];
   let cidComponents = {};
   let allDoenetMLs = [...doenetMLs];
+  let errors = [];
+  let warnings = [];
 
   for (let [ind, doenetML] of doenetMLs.entries()) {
-    let serializedComponents = parseAndCompile(doenetML);
+    let errorsForDoenetML = [];
+    let warningsForDoenetML = [];
+
+    let result = parseAndCompile(doenetML);
+    let serializedComponents = result.components;
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
-    substituteAttributeDeprecations(serializedComponents);
+    result = substituteAttributeDeprecations(serializedComponents);
+    warningsForDoenetML.push(...result.warnings);
 
     temporarilyRenameSourceBackToTarget(serializedComponents);
 
-    correctComponentTypeCapitalization(
+    result = correctComponentTypeCapitalization(
       serializedComponents,
       componentInfoObjects.componentTypeLowerCaseMapping,
     );
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
-    copyTargetOrFromURIAttributeCreatesCopyComponent(
+    result = copyTargetOrFromURIAttributeCreatesCopyComponent(
       serializedComponents,
       componentInfoObjects.isCompositeComponent,
     );
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
-    createAttributesFromProps(serializedComponents, componentInfoObjects);
-
-    breakUpTargetIntoPropsAndIndices(
+    result = createAttributesFromProps(
       serializedComponents,
       componentInfoObjects,
     );
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
-    applyMacros(serializedComponents, componentInfoObjects);
+    result = breakUpTargetIntoPropsAndIndices(
+      serializedComponents,
+      componentInfoObjects,
+    );
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
-    substitutePropertyDeprecations(serializedComponents);
+    result = applyMacros(serializedComponents, componentInfoObjects);
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
+
+    result = substitutePropertyDeprecations(serializedComponents);
+    warningsForDoenetML.push(...result.warnings);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
     removeBlankStringChildren(serializedComponents, componentInfoObjects);
 
+    // remove comments after applying macros,
+    // aswe need the comments in place while processing macros
+    // to correctly calculate their doenetMLrange
+    serializedComponents = removeComments(serializedComponents);
+
     decodeXMLEntities(serializedComponents);
 
-    applySugar({ serializedComponents, componentInfoObjects });
+    result = applySugar({ serializedComponents, componentInfoObjects });
+    errorsForDoenetML.push(...result.errors);
+    warningsForDoenetML.push(...result.warnings);
 
     arrayOfSerializedComponents.push(serializedComponents);
 
@@ -67,6 +98,11 @@ export async function expandDoenetMLsToFullSerializedComponents({
     }
 
     addDoenetMLIdToRange(serializedComponents, nPreviousDoenetMLs + ind);
+    addDoenetMLIdToRange(errorsForDoenetML, nPreviousDoenetMLs + ind);
+    addDoenetMLIdToRange(warningsForDoenetML, nPreviousDoenetMLs + ind);
+
+    errors.push(...errorsForDoenetML);
+    warnings.push(...warningsForDoenetML);
   }
 
   let cidList = Object.keys(cidComponents);
@@ -91,21 +127,34 @@ export async function expandDoenetMLsToFullSerializedComponents({
       let cid = newCids[ind];
       if (!cid) {
         // wasn't able to retrieve content
-        console.warn(`Unable to retrieve content with cid = ${cidList[ind]}`);
+
+        // Question: what condition will get to this line that doesn't throw an error
+        // in the call to cidsToDoenetMLs, above?
+        warnings.push({
+          message: `Unable to retrieve content with cid = ${cidList[ind]}`,
+          level: 1,
+          doenetMLrange: cidComponents[cid]?.[0]?.doenetMLrange,
+        });
         newDoenetMLs[ind] = "";
       }
     }
 
     // recurse to additional doenetMLs
-    let { fullSerializedComponents, allDoenetMLs: additionalDoenetMLs } =
-      await expandDoenetMLsToFullSerializedComponents({
-        doenetMLs: newDoenetMLs,
-        cids: newCids,
-        componentInfoObjects,
-        nPreviousDoenetMLs: nPreviousDoenetMLs + doenetMLs.length,
-      });
+    let {
+      fullSerializedComponents,
+      allDoenetMLs: additionalDoenetMLs,
+      errors: additionalErrors,
+      warnings: additionalWarnings,
+    } = await expandDoenetMLsToFullSerializedComponents({
+      doenetMLs: newDoenetMLs,
+      cids: newCids,
+      componentInfoObjects,
+      nPreviousDoenetMLs: nPreviousDoenetMLs + doenetMLs.length,
+    });
 
     allDoenetMLs.push(...additionalDoenetMLs);
+    errors.push(...additionalErrors);
+    warnings.push(...additionalWarnings);
 
     for (let [ind, cid] of cidList.entries()) {
       let serializedComponentsForCid = fullSerializedComponents[ind];
@@ -139,9 +188,11 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
         if (fromCopyFromURI || haveSingleComponent) {
           if (fromCopyFromURI && !haveSingleComponent) {
-            console.warn(
-              "ignoring copyFromURI as it was not a single component",
-            );
+            warnings.push({
+              message: "ignoring copyFromURI as it was not a single component",
+              doenetMLrange: originalCopyWithUri.doenetMLrange,
+              level: 1,
+            });
           } else {
             let comp = nonBlankStringChildren[0];
 
@@ -189,16 +240,26 @@ export async function expandDoenetMLsToFullSerializedComponents({
     cids,
     fullSerializedComponents: arrayOfSerializedComponents,
     allDoenetMLs,
+    errors,
+    warnings,
   };
 }
 
 function addDoenetMLIdToRange(serializedComponents, doenetMLId) {
   for (let component of serializedComponents) {
-    if (component.range) {
-      component.range.doenetMLId = doenetMLId;
+    if (component.doenetMLrange) {
+      component.doenetMLrange.doenetMLId = doenetMLId;
     }
     if (component.children) {
       addDoenetMLIdToRange(component.children, doenetMLId);
+    }
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let comp = component.attributes[attrName].component;
+        if (comp) {
+          addDoenetMLIdToRange([comp], doenetMLId);
+        }
+      }
     }
   }
 }
@@ -253,11 +314,31 @@ export function removeBlankStringChildren(
     // from childrenForComponent of an attribute that is not yet a component?
     for (let attrName in component.attributes) {
       let comp = component.attributes[attrName].component;
-      if (comp && comp.children) {
+      if (comp?.children) {
         removeBlankStringChildren([comp], componentInfoObjects);
       }
     }
   }
+}
+
+function removeComments(serializedComponents) {
+  let filteredComponents = serializedComponents.filter(
+    (x) => x.componentType !== "_comment",
+  );
+  for (let component of filteredComponents) {
+    if (component.children) {
+      component.children = removeComments(component.children);
+    }
+
+    for (let attrName in component.attributes) {
+      let comp = component.attributes[attrName].component;
+      if (comp?.children) {
+        comp.children = removeComments(comp.children);
+      }
+    }
+  }
+
+  return filteredComponents;
 }
 
 function findContentCopies({ serializedComponents }) {
@@ -318,86 +399,127 @@ function substituteAttributeDeprecations(serializedComponents) {
   // (which are called props at this point due to parser but will be renamed attributes later)
   // that are entered as attributes in the component tag
 
+  let warnings = [];
+
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutions = {
-    tname: "target",
-    triggerwithtnames: "triggerWith",
-    updatewithtname: "updateWith",
-    paginatortname: "paginator",
-    randomizeorder: "shuffleOrder",
-    copytarget: "copySource",
-    triggerwithtargets: "triggerWith",
-    triggerwhentargetsclicked: "triggerWhenObjectsClicked",
-    fortarget: "forObject",
-    targetattributestoignore: "sourceAttributesToIgnore",
-    targetattributestoignorerecursively: "sourceAttributesToIgnoreRecursively",
-    targetsareresponses: "sourcesAreResponses",
-    updatewithtarget: "updateWith",
-    targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
-    selectforvariantnames: "selectForVariants",
-    numberdecimals: "numDecimals",
-    numberdigits: "numDigits",
-    ndimensions: "numDimensions",
-    ninputs: "numInputs",
-    noutputs: "numOutputs",
-    niterates: "numIterates",
-    nrows: "numRows",
-    ncolumns: "numColumns",
-    nvertices: "numVertices",
-    npoints: "numPoints",
-    nvariants: "numVariants",
-    nsides: "numSides",
-    niterationsrequired: "numIterationsRequired",
-    numberofsamples: "numSamples",
-    numbertoselect: "numToSelect",
-    nawardscredited: "numAwardsCredited",
-    maximumnumber: "maxNumber",
-    nsignerrorsmatched: "numSignErrorsMatched",
-    nperiodicsetmatchesrequired: "numPeriodicSetMatchesRequired",
-    npages: "numPages",
+    tname: { substitute: "target", removeInVersion: 0.7 },
+    triggerwithtnames: { substitute: "triggerWith", removeInVersion: 0.7 },
+    updatewithtname: { substitute: "updateWith", removeInVersion: 0.7 },
+    paginatortname: { substitute: "paginator", removeInVersion: 0.7 },
+    randomizeorder: { substitute: "shuffleOrder", removeInVersion: 0.7 },
+    copytarget: { substitute: "copySource", removeInVersion: 0.7 },
+    triggerwithtargets: { substitute: "triggerWith", removeInVersion: 0.7 },
+    triggerwhentargetsclicked: {
+      substitute: "triggerWhenObjectsClicked",
+      removeInVersion: 0.7,
+    },
+    fortarget: { substitute: "forObject", removeInVersion: 0.7 },
+    targetattributestoignore: {
+      substitute: "sourceAttributesToIgnore",
+      removeInVersion: 0.7,
+    },
+    targetattributestoignorerecursively: {
+      substitute: "sourceAttributesToIgnoreRecursively",
+      removeInVersion: 0.7,
+    },
+    targetsareresponses: {
+      substitute: "sourcesAreResponses",
+      removeInVersion: 0.7,
+    },
+    updatewithtarget: { substitute: "updateWith", removeInVersion: 0.7 },
+    targetsarefunctionsymbols: {
+      substitute: "sourcesAreFunctionSymbols",
+      removeInVersion: 0.7,
+    },
+    selectforvariantnames: {
+      substitute: "selectForVariants",
+      removeInVersion: 0.7,
+    },
+    numberdecimals: { substitute: "numDecimals", removeInVersion: 0.7 },
+    numberdigits: { substitute: "numDigits", removeInVersion: 0.7 },
+    ndimensions: { substitute: "numDimensions", removeInVersion: 0.7 },
+    ninputs: { substitute: "numInputs", removeInVersion: 0.7 },
+    noutputs: { substitute: "numOutputs", removeInVersion: 0.7 },
+    niterates: { substitute: "numIterates", removeInVersion: 0.7 },
+    nrows: { substitute: "numRows", removeInVersion: 0.7 },
+    ncolumns: { substitute: "numColumns", removeInVersion: 0.7 },
+    nvertices: { substitute: "numVertices", removeInVersion: 0.7 },
+    npoints: { substitute: "numPoints", removeInVersion: 0.7 },
+    nvariants: { substitute: "numVariants", removeInVersion: 0.7 },
+    nsides: { substitute: "numSides", removeInVersion: 0.7 },
+    niterationsrequired: {
+      substitute: "numIterationsRequired",
+      removeInVersion: 0.7,
+    },
+    numberofsamples: { substitute: "numSamples", removeInVersion: 0.7 },
+    numbertoselect: { substitute: "numToSelect", removeInVersion: 0.7 },
+    nawardscredited: {
+      substitute: "numAwardsCredited",
+      removeInVersion: 0.7,
+    },
+    maximumnumber: { substitute: "maxNumber", removeInVersion: 0.7 },
+    nsignerrorsmatched: {
+      substitute: "numSignErrorsMatched",
+      removeInVersion: 0.7,
+    },
+    nperiodicsetmatchesrequired: {
+      substitute: "numPeriodicSetMatchesRequired",
+      removeInVersion: 0.7,
+    },
+    npages: { substitute: "numPages", removeInVersion: 0.7 },
   };
 
   // Note: use lower case
-  let deprecatedAttributeDeletions = new Set([
-    "suppressautoname",
-    "suppressautonumber",
-    "targetattributestoignorerecursively",
-    "sourceattributestoignorerecursively",
-    "showlabel",
-    "ignoredisplaydigits",
-    "ignoredisplaydecimals",
-  ]);
+  let deprecatedAttributeDeletions = {
+    suppressautoname: { removeInVersion: 0.7 },
+    suppressautonumber: { removeInVersion: 0.7 },
+    targetattributestoignorerecursively: { removeInVersion: 0.7 },
+    sourceattributestoignorerecursively: { removeInVersion: 0.7 },
+    showlabel: { removeInVersion: 0.7 },
+    ignoredisplaydigits: { removeInVersion: 0.7 },
+    ignoredisplaydecimals: { removeInVersion: 0.7 },
+  };
 
   // Note: use lower case for keys
   let deprecatedAttributeSubstitutionsComponentSpecific = {
     copy: {
-      target: "source",
-      tname: "source",
+      target: { substitute: "source", removeInVersion: 0.7 },
+      tname: { substitute: "source", removeInVersion: 0.7 },
     },
     collect: {
-      target: "source",
-      tname: "source",
+      target: { substitute: "source", removeInVersion: 0.7 },
+      tname: { substitute: "source", removeInVersion: 0.7 },
     },
     summarystatistics: {
-      target: "source",
+      target: { substitute: "source", removeInVersion: 0.7 },
     },
     answer: {
-      maximumnumberofattempts: "maxNumAttempts",
+      maximumnumberofattempts: {
+        substitute: "maxNumAttempts",
+        removeInVersion: 0.7,
+      },
     },
     bestfitline: {
-      points: "data",
+      points: { substitute: "data", removeInVersion: 0.7 },
     },
   };
 
   // use lower case
   let deprecatedAttributeDeletionsComponentSpecific = {
-    textinput: ["size"],
-    constraintogrid: ["ignoregraphbounds"],
-    attracttogrid: ["ignoregraphbounds"],
-    constraints: ["baseongraph"],
-    graph: ["xlabel", "ylabel"],
-    conditionalcontent: ["maximumnumbertoshow"],
-    angle: ["draggable"],
+    textinput: { size: { removeInVersion: 0.7 } },
+    constraintogrid: { ignoregraphbounds: { removeInVersion: 0.7 } },
+    attracttogrid: { ignoregraphbounds: { removeInVersion: 0.7 } },
+    constraints: { baseongraph: { removeInVersion: 0.7 } },
+    graph: {
+      xlabel: { removeInVersion: 0.7 },
+      ylabel: { removeInVersion: 0.7 },
+      height: { removeInVersion: 0.7 },
+    },
+    image: { height: { removeInVersion: 0.7 } },
+    video: { height: { removeInVersion: 0.7 } },
+    conditionalcontent: { maximumnumbertoshow: { removeInVersion: 0.7 } },
+    angle: { draggable: { removeInVersion: 0.7 } },
   };
 
   for (let component of serializedComponents) {
@@ -416,7 +538,7 @@ function substituteAttributeDeprecations(serializedComponents) {
       let typeSpecificDeletions =
         deprecatedAttributeDeletionsComponentSpecific[cTypeLower];
       if (!typeSpecificDeletions) {
-        typeSpecificDeletions = [];
+        typeSpecificDeletions = {};
       }
       let retry = true;
       while (retry) {
@@ -424,11 +546,16 @@ function substituteAttributeDeprecations(serializedComponents) {
         for (let prop in component.props) {
           let propLower = prop.toLowerCase();
           if (propLower in typeSpecificDeps) {
-            let newProp = typeSpecificDeps[propLower];
+            let newProp = typeSpecificDeps[propLower].substitute;
+            let removeInVersion = typeSpecificDeps[propLower].removeInVersion;
 
-            console.warn(
-              `Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.`,
-            );
+            warnings.push({
+              message: `Attribute ${prop} of component type ${cType} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
+              doenetMLrange: component.doenetMLrange,
+              level: 1,
+            });
 
             component.props[newProp] = component.props[prop];
             delete component.props[prop];
@@ -438,11 +565,18 @@ function substituteAttributeDeprecations(serializedComponents) {
             retry = true;
             break;
           } else if (propLower in deprecatedAttributeSubstitutions) {
-            let newProp = deprecatedAttributeSubstitutions[propLower];
+            let newProp =
+              deprecatedAttributeSubstitutions[propLower].substitute;
+            let removeInVersion =
+              deprecatedAttributeSubstitutions[propLower].removeInVersion;
 
-            console.warn(
-              `Attribute ${prop} is deprecated.  Use ${newProp} instead.`,
-            );
+            warnings.push({
+              message: `Attribute ${prop} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
+              doenetMLrange: component.doenetMLrange,
+              level: 1,
+            });
 
             component.props[newProp] = component.props[prop];
             delete component.props[prop];
@@ -451,18 +585,36 @@ function substituteAttributeDeprecations(serializedComponents) {
             // break out of loop and start over
             retry = true;
             break;
-          } else if (typeSpecificDeletions.includes(propLower)) {
-            console.warn(
-              `Attribute ${prop} of component type ${cType} is deprecated.  It is ignored.`,
-            );
+          } else if (propLower in typeSpecificDeletions) {
+            let removeInVersion =
+              typeSpecificDeletions[propLower].removeInVersion;
+
+            warnings.push({
+              message: `Attribute ${prop} of component type ${cType} is deprecated. It is ignored. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
+              doenetMLrange: component.doenetMLrange,
+              level: 1,
+            });
+
             delete component.props[prop];
 
             // since modified object over which are looping
             // break out of loop and start over
             retry = true;
             break;
-          } else if (deprecatedAttributeDeletions.has(propLower)) {
-            console.warn(`Attribute ${prop} is deprecated.  It is ignored.`);
+          } else if (propLower in deprecatedAttributeDeletions) {
+            let removeInVersion =
+              deprecatedAttributeDeletions[propLower].removeInVersion;
+
+            warnings.push({
+              message: `Attribute ${prop} is deprecated. It is ignored. ${returnDeprecationMessage(
+                removeInVersion,
+              )}`,
+              doenetMLrange: component.doenetMLrange,
+              level: 1,
+            });
+
             delete component.props[prop];
 
             // since modified object over which are looping
@@ -475,64 +627,109 @@ function substituteAttributeDeprecations(serializedComponents) {
     }
 
     if (component.children) {
-      substituteAttributeDeprecations(component.children);
+      let res = substituteAttributeDeprecations(component.children);
+      warnings.push(...res.warnings);
     }
   }
+
+  return { warnings };
 }
 
 export const deprecatedPropertySubstitutions = {
-  maximumNumberOfAttempts: "maxNumAttempts",
-  numberFeedbacks: "numFeedbacks",
-  numberOfAttemptsLeft: "numAttemptsLeft",
-  nSubmissions: "numSubmissions",
-  nSubmittedResponses: "numSubmittedResponses",
-  nAwardsCredited: "numAwardsCredited",
-  numberChoices: "numChoices",
-  numberMinima: "numMinima",
-  numberMaxima: "numMaxima",
-  numberExtrema: "numExtrema",
-  numberDecimals: "numDecimals",
-  numberDigits: "numDigits",
-  numberOfSamples: "numSamples",
-  numberToSelect: "numToSelect",
-  numberSolutions: "numSolutions",
-  maximumNumber: "maxNumber",
-  nVertices: "numVertices",
-  nPoints: "numPoints",
-  nSignErrorsMatched: "numSignErrorsMatched",
-  nPeriodicSetMatchesRequired: "numPeriodicSetMatchesRequired",
-  nValues: "numValues",
-  nResponses: "numResponses",
-  nControls: "numControls",
-  nThroughPoints: "numThroughPoints",
-  nComponents: "numComponents",
-  nChildrenToRender: "numChildrenToRender",
-  nSelectedIndices: "numSelectedIndices",
-  nDimensions: "numDimensions",
-  nCases: "numCases",
-  nDiscretizationPoints: "numDiscretizationPoints",
-  nXCriticalPoints: "numXCriticalPoints",
-  nYCriticalPoints: "numYCriticalPoints",
-  nCurvatureChangePoints: "numCurvatureChangePoints",
-  nScoredDescendants: "numScoredDescendants",
-  nInputs: "numInputs",
-  nOutputs: "numOutputs",
-  nIterates: "numIterates",
-  nDerivatives: "numDerivatives",
-  nSources: "numSources",
-  nMatches: "numMatches",
-  nRows: "numRows",
-  nColumns: "numColumns",
-  nPages: "numPages",
-  nOffsets: "numOffsets",
-  nVariants: "numVariants",
-  nSides: "numSides",
-  nItems: "numItems",
-  nLists: "numLists",
-  nIterationsRequired: "numIterationsRequired",
-  nGradedVertices: "numGradedVertices",
-  nCorrectVertices: "numCorrectVertices",
-  nIterateValues: "numIterateValues",
+  maximumNumberOfAttempts: {
+    substitute: "maxNumAttempts",
+    removeInVersion: 0.7,
+  },
+  numberFeedbacks: { substitute: "numFeedbacks", removeInVersion: 0.7 },
+  numberOfAttemptsLeft: {
+    substitute: "numAttemptsLeft",
+    removeInVersion: 0.7,
+  },
+  nSubmissions: { substitute: "numSubmissions", removeInVersion: 0.7 },
+  nSubmittedResponses: {
+    substitute: "numSubmittedResponses",
+    removeInVersion: 0.7,
+  },
+  nAwardsCredited: { substitute: "numAwardsCredited", removeInVersion: 0.7 },
+  numberChoices: { substitute: "numChoices", removeInVersion: 0.7 },
+  numberMinima: { substitute: "numMinima", removeInVersion: 0.7 },
+  numberMaxima: { substitute: "numMaxima", removeInVersion: 0.7 },
+  numberExtrema: { substitute: "numExtrema", removeInVersion: 0.7 },
+  numberDecimals: { substitute: "numDecimals", removeInVersion: 0.7 },
+  numberDigits: { substitute: "numDigits", removeInVersion: 0.7 },
+  numberOfSamples: { substitute: "numSamples", removeInVersion: 0.7 },
+  numberToSelect: { substitute: "numToSelect", removeInVersion: 0.7 },
+  numberSolutions: { substitute: "numSolutions", removeInVersion: 0.7 },
+  maximumNumber: { substitute: "maxNumber", removeInVersion: 0.7 },
+  nVertices: { substitute: "numVertices", removeInVersion: 0.7 },
+  nPoints: { substitute: "numPoints", removeInVersion: 0.7 },
+  nSignErrorsMatched: {
+    substitute: "numSignErrorsMatched",
+    removeInVersion: 0.7,
+  },
+  nPeriodicSetMatchesRequired: {
+    substitute: "numPeriodicSetMatchesRequired",
+    removeInVersion: 0.7,
+  },
+  nValues: { substitute: "numValues", removeInVersion: 0.7 },
+  nResponses: { substitute: "numResponses", removeInVersion: 0.7 },
+  nControls: { substitute: "numControls", removeInVersion: 0.7 },
+  nThroughPoints: { substitute: "numThroughPoints", removeInVersion: 0.7 },
+  nComponents: { substitute: "numComponents", removeInVersion: 0.7 },
+  nChildrenToRender: {
+    substitute: "numChildrenToRender",
+    removeInVersion: 0.7,
+  },
+  nSelectedIndices: {
+    substitute: "numSelectedIndices",
+    removeInVersion: 0.7,
+  },
+  nDimensions: { substitute: "numDimensions", removeInVersion: 0.7 },
+  nCases: { substitute: "numCases", removeInVersion: 0.7 },
+  nDiscretizationPoints: {
+    substitute: "numDiscretizationPoints",
+    removeInVersion: 0.7,
+  },
+  nXCriticalPoints: {
+    substitute: "numXCriticalPoints",
+    removeInVersion: 0.7,
+  },
+  nYCriticalPoints: {
+    substitute: "numYCriticalPoints",
+    removeInVersion: 0.7,
+  },
+  nCurvatureChangePoints: {
+    substitute: "numCurvatureChangePoints",
+    removeInVersion: 0.7,
+  },
+  nScoredDescendants: {
+    substitute: "numScoredDescendants",
+    removeInVersion: 0.7,
+  },
+  nInputs: { substitute: "numInputs", removeInVersion: 0.7 },
+  nOutputs: { substitute: "numOutputs", removeInVersion: 0.7 },
+  nIterates: { substitute: "numIterates", removeInVersion: 0.7 },
+  nDerivatives: { substitute: "numDerivatives", removeInVersion: 0.7 },
+  nSources: { substitute: "numSources", removeInVersion: 0.7 },
+  nMatches: { substitute: "numMatches", removeInVersion: 0.7 },
+  nRows: { substitute: "numRows", removeInVersion: 0.7 },
+  nColumns: { substitute: "numColumns", removeInVersion: 0.7 },
+  nPages: { substitute: "numPages", removeInVersion: 0.7 },
+  nOffsets: { substitute: "numOffsets", removeInVersion: 0.7 },
+  nVariants: { substitute: "numVariants", removeInVersion: 0.7 },
+  nSides: { substitute: "numSides", removeInVersion: 0.7 },
+  nItems: { substitute: "numItems", removeInVersion: 0.7 },
+  nLists: { substitute: "numLists", removeInVersion: 0.7 },
+  nIterationsRequired: {
+    substitute: "numIterationsRequired",
+    removeInVersion: 0.7,
+  },
+  nGradedVertices: { substitute: "numGradedVertices", removeInVersion: 0.7 },
+  nCorrectVertices: {
+    substitute: "numCorrectVertices",
+    removeInVersion: 0.7,
+  },
+  nIterateValues: { substitute: "numIterateValues", removeInVersion: 0.7 },
 };
 
 const deprecatedPropertySubstitutionsLowerCase = {};
@@ -543,6 +740,8 @@ Object.keys(deprecatedPropertySubstitutions).forEach(
 );
 
 function substitutePropertyDeprecations(serializedComponents) {
+  let warnings = [];
+
   // Note: properties are public state variables that are referenced
   // either using dot notation in a source/copysource or in a prop/copyprop
   // but will be exclusively in prop by this point
@@ -558,28 +757,42 @@ function substitutePropertyDeprecations(serializedComponents) {
       let propNameLower = propName.toLowerCase();
 
       if (propNameLower in deprecatedPropertySubstitutionsLowerCase) {
-        let newProp = deprecatedPropertySubstitutionsLowerCase[propNameLower];
-        console.warn(
-          `Property ${propName} is deprecated.  Use ${newProp} instead.`,
-        );
+        let newProp =
+          deprecatedPropertySubstitutionsLowerCase[propNameLower].substitute;
+
+        let removeInVersion =
+          deprecatedPropertySubstitutionsLowerCase[propNameLower]
+            .removeInVersion;
+
+        warnings.push({
+          message: `Property ${propName} is deprecated. Use ${newProp} instead. ${returnDeprecationMessage(
+            removeInVersion,
+          )}`,
+          doenetMLrange: component.doenetMLrange,
+          level: 1,
+        });
 
         component.attributes.prop.primitive = newProp;
       }
     }
 
     if (component.children) {
-      substitutePropertyDeprecations(component.children);
+      let res = substitutePropertyDeprecations(component.children);
+      warnings.push(...res.warnings);
     }
 
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attrComp = component.attributes[attrName].component;
         if (attrComp) {
-          substitutePropertyDeprecations([attrComp]);
+          let res = substitutePropertyDeprecations([attrComp]);
+          warnings.push(...res.warnings);
         }
       }
     }
   }
+
+  return { warnings };
 }
 
 function temporarilyRenameSourceBackToTarget(serializedComponents) {
@@ -667,6 +880,9 @@ function correctComponentTypeCapitalization(
   serializedComponents,
   componentTypeLowerCaseMapping,
 ) {
+  let errors = [];
+  let warnings = [];
+
   //special case for macros before application
   // componentTypeLowerCaseMapping["macro"] = "macro";
   for (let component of serializedComponents) {
@@ -680,200 +896,181 @@ function correctComponentTypeCapitalization(
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
-      throw Error(
-        `Invalid component type${indexRangeString(component)}: ${
-          component.componentType
-        }`,
-      );
+      let message = `Invalid component type: <${component.componentType}>.`;
+      convertToErrorComponent(component, message);
+      errors.push({
+        message,
+        doenetMLrange: component.doenetMLrange,
+      });
     }
 
     if (component.children) {
-      correctComponentTypeCapitalization(
+      let res = correctComponentTypeCapitalization(
         component.children,
         componentTypeLowerCaseMapping,
       );
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
   }
+  return { errors, warnings };
 }
 
 function copyTargetOrFromURIAttributeCreatesCopyComponent(
   serializedComponents,
   isCompositeComponent,
 ) {
+  let errors = [];
+  let warnings = [];
   for (let component of serializedComponents) {
     if (component.props) {
-      let foundCopyTarget = false;
-      let foundCopyFromURI = false;
-      let foundAssignNames = false;
-      let originalType = component.componentType;
-      let haveComposite = isCompositeComponent({
-        componentType: originalType,
-        includeNonStandard: false,
-      });
-      let haveAnyComposite = isCompositeComponent({
-        componentType: originalType,
-        includeNonStandard: true,
-      });
-      for (let prop of Object.keys(component.props)) {
-        let lowerCaseProp = prop.toLowerCase();
-        if (lowerCaseProp === "copytarget") {
-          if (foundCopyTarget) {
-            throw Error(
-              `Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          } else if (foundCopyFromURI) {
-            throw Error(
-              `Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          } else if (foundAssignNames) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
-          }
-          foundCopyTarget = true;
-          if (!component.doenetAttributes) {
-            component.doenetAttributes = {};
-          }
-          if (!haveComposite) {
-            component.props.createComponentOfType = originalType;
-            component.doenetAttributes.nameBecomesAssignNames = true;
-          }
-          component.componentType = "copy";
-          component.props.target = component.props[prop];
-          if (typeof component.props.target !== "string") {
-            throw Error(
-              `Must specify value for copyTarget.  Found in component of type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          }
-          delete component.props[prop];
-
-          component.doenetAttributes.fromCopyTarget = true;
-          component.doenetAttributes.createNameFromComponentType = originalType;
-          component.props.assignNamesSkip = "1";
-        } else if (lowerCaseProp === "copyfromuri") {
-          if (foundCopyFromURI) {
-            throw Error(
-              `Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          } else if (foundCopyTarget) {
-            throw Error(
-              `Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          } else if (foundAssignNames) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyFromURI.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
-          }
-          foundCopyFromURI = true;
-          if (!component.doenetAttributes) {
-            component.doenetAttributes = {};
-          }
-          if (!haveComposite) {
-            component.props.createComponentOfType = originalType;
-            component.doenetAttributes.nameBecomesAssignNames = true;
-          }
-          component.componentType = "copy";
-          component.props.uri = component.props[prop];
-          if (typeof component.props.uri !== "string") {
-            throw Error(
-              `Must specify value for copyFromURI.  Found in component of type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          }
-          delete component.props[prop];
-          component.doenetAttributes.fromCopyFromURI = true;
-          component.doenetAttributes.createNameFromComponentType = originalType;
-          component.props.assignNamesSkip = "1";
-        } else if (lowerCaseProp === "assignnames" && !haveComposite) {
-          if (foundCopyTarget || foundCopyFromURI) {
-            if (haveAnyComposite) {
-              throw Error(
-                `A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(
-                  component,
-                )}.`,
-              );
-            } else {
-              throw Error(
-                `Invalid attribute assignNames for component of type ${originalType}${indexRangeString(
-                  component,
-                )}`,
-              );
-            }
-          }
-          foundAssignNames = true;
-        }
-      }
-
-      if (foundCopyTarget) {
-        // give error if have prop name "prop"
-        // after that rename copyProp to "prop"
+      try {
+        let foundCopyTarget = false;
+        let foundCopyFromURI = false;
+        let foundAssignNames = false;
+        let originalType = component.componentType;
+        let haveComposite = isCompositeComponent({
+          componentType: originalType,
+          includeNonStandard: false,
+        });
+        let haveAnyComposite = isCompositeComponent({
+          componentType: originalType,
+          includeNonStandard: true,
+        });
         for (let prop of Object.keys(component.props)) {
           let lowerCaseProp = prop.toLowerCase();
-          if (lowerCaseProp === "prop") {
-            throw Error(
-              `Invalid attribute prop for component of type ${originalType}${indexRangeString(
-                component,
-              )}`,
-            );
-          }
-        }
-        let foundCopyProp = false;
-        for (let prop of Object.keys(component.props)) {
-          let lowerCaseProp = prop.toLowerCase();
-          if (lowerCaseProp === "copyprop") {
-            if (foundCopyProp) {
+          if (lowerCaseProp === "copytarget") {
+            if (foundCopyTarget) {
+              throw Error(`Cannot repeat attribute ${prop}.`);
+            } else if (foundCopyFromURI) {
               throw Error(
-                `Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(
-                  component,
-                )}`,
+                `Cannot combine copyTarget and copyFromURI attributes.`,
               );
+            } else if (foundAssignNames) {
+              if (haveAnyComposite) {
+                throw Error(
+                  `A component of type ${originalType} cannot have both assignNames and copyTarget.`,
+                );
+              } else {
+                throw Error(
+                  `Invalid attribute "assignNames" for a component of type <${originalType}>`,
+                );
+              }
             }
-            component.props.prop = component.props[prop];
+            foundCopyTarget = true;
+            if (!component.doenetAttributes) {
+              component.doenetAttributes = {};
+            }
+            if (!haveComposite) {
+              component.props.createComponentOfType = originalType;
+              component.doenetAttributes.nameBecomesAssignNames = true;
+            }
+            component.componentType = "copy";
+            component.props.target = component.props[prop];
+            if (typeof component.props.target !== "string") {
+              throw Error(`Must specify value for copyTarget.`);
+            }
             delete component.props[prop];
-            foundCopyProp = true;
+
+            component.doenetAttributes.fromCopyTarget = true;
+            component.doenetAttributes.createNameFromComponentType =
+              originalType;
+            component.props.assignNamesSkip = "1";
+          } else if (lowerCaseProp === "copyfromuri") {
+            if (foundCopyFromURI) {
+              throw Error(`Cannot repeat attribute ${prop}.`);
+            } else if (foundCopyTarget) {
+              throw Error(
+                `Cannot combine copyTarget and copyFromURI attributes.`,
+              );
+            } else if (foundAssignNames) {
+              if (haveAnyComposite) {
+                throw Error(
+                  `A component of type ${originalType} cannot have both assignNames and copyFromURI.`,
+                );
+              } else {
+                throw Error(
+                  `Invalid attribute "assignNames" for a component of type <${originalType}>.`,
+                );
+              }
+            }
+            foundCopyFromURI = true;
+            if (!component.doenetAttributes) {
+              component.doenetAttributes = {};
+            }
+            if (!haveComposite) {
+              component.props.createComponentOfType = originalType;
+              component.doenetAttributes.nameBecomesAssignNames = true;
+            }
+            component.componentType = "copy";
+            component.props.uri = component.props[prop];
+            if (typeof component.props.uri !== "string") {
+              throw Error(`Must specify value for copyFromURI.`);
+            }
+            delete component.props[prop];
+            component.doenetAttributes.fromCopyFromURI = true;
+            component.doenetAttributes.createNameFromComponentType =
+              originalType;
+            component.props.assignNamesSkip = "1";
+          } else if (lowerCaseProp === "assignnames" && !haveComposite) {
+            if (foundCopyTarget || foundCopyFromURI) {
+              if (haveAnyComposite) {
+                throw Error(
+                  `A component of type ${originalType} cannot have both assignNames and copyTarget.`,
+                );
+              } else {
+                throw Error(
+                  `Invalid attribute "assignNames" for a component of type <${originalType}>.`,
+                );
+              }
+            }
+            foundAssignNames = true;
           }
         }
+
+        if (foundCopyTarget) {
+          // give error if have prop name "prop"
+          // after that rename copyProp to "prop"
+          for (let prop of Object.keys(component.props)) {
+            let lowerCaseProp = prop.toLowerCase();
+            if (lowerCaseProp === "prop") {
+              throw Error(
+                `Invalid attribute "prop" for a component of type <${originalType}>.`,
+              );
+            }
+          }
+          let foundCopyProp = false;
+          for (let prop of Object.keys(component.props)) {
+            let lowerCaseProp = prop.toLowerCase();
+            if (lowerCaseProp === "copyprop") {
+              if (foundCopyProp) {
+                throw Error(`Cannot repeat attribute ${prop}.`);
+              }
+              component.props.prop = component.props[prop];
+              delete component.props[prop];
+              foundCopyProp = true;
+            }
+          }
+        }
+      } catch (e) {
+        convertToErrorComponent(component, e.message);
+        errors.push({
+          message: e.message,
+          doenetMLrange: component.doenetMLrange,
+        });
       }
     }
 
     if (component.children) {
-      copyTargetOrFromURIAttributeCreatesCopyComponent(
+      let res = copyTargetOrFromURIAttributeCreatesCopyComponent(
         component.children,
         isCompositeComponent,
       );
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
   }
+  return { errors, warnings };
 }
 
 function breakUpTargetIntoPropsAndIndices(
@@ -881,141 +1078,110 @@ function breakUpTargetIntoPropsAndIndices(
   componentInfoObjects,
   ancestorString = "",
 ) {
+  let errors = [];
+  let warnings = [];
+
   for (let [component_ind, component] of serializedComponents.entries()) {
     // Note: do not do this for collect, as this dot notation would be confusing for collect
 
-    if (
-      component.props &&
-      ["copy", "updateValue", "animateFromSequence"].includes(
-        component.componentType,
-      )
-    ) {
-      let targetPropName;
-      let sourceName;
-      let componentIndex;
-      let componentAttributes;
-      let propArray;
-      let subNames;
+    try {
+      if (
+        component.props &&
+        ["copy", "updateValue", "animateFromSequence"].includes(
+          component.componentType,
+        )
+      ) {
+        let targetPropName;
+        let sourceName;
+        let componentIndex;
+        let componentAttributes;
+        let propArray;
+        let subNames;
 
-      let originalSource;
+        let originalSource;
 
-      for (let prop of Object.keys(component.props)) {
-        let lowerCaseProp = prop.toLowerCase();
-        if (lowerCaseProp === "target") {
-          if (targetPropName) {
-            throw Error(
-              `Cannot repeat attribute ${prop}.  Found in component type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
-          }
+        for (let prop of Object.keys(component.props)) {
+          let lowerCaseProp = prop.toLowerCase();
+          if (lowerCaseProp === "target") {
+            if (targetPropName) {
+              let propNameForError = prop;
+              if (component.componentType === "copy") {
+                propNameForError = "source";
+              }
+              throw Error(`Cannot repeat attribute ${propNameForError}.`);
+            }
 
-          targetPropName = prop;
-          originalSource = component.props[prop];
+            targetPropName = prop;
+            originalSource = component.props[prop];
 
-          let sourcePiecesResult = buildSourcePieces(originalSource, true);
+            if (typeof originalSource !== "string") {
+              let propNameForError = prop;
+              if (component.componentType === "copy") {
+                propNameForError = "source";
+              }
+              throw Error(`Must supply value for ${propNameForError}.`);
+            }
 
-          if (
-            sourcePiecesResult.success &&
-            sourcePiecesResult.matchLength === originalSource.length
-          ) {
-            sourceName = sourcePiecesResult.sourceName;
-            componentIndex = sourcePiecesResult.componentIndex;
-            componentAttributes = sourcePiecesResult.componentAttributes;
-            propArray = sourcePiecesResult.propArray;
-            subNames = sourcePiecesResult.subNames;
+            let sourcePiecesResult = buildSourcePieces(originalSource, true);
+
+            if (
+              sourcePiecesResult.success &&
+              sourcePiecesResult.matchLength === originalSource.length
+            ) {
+              sourceName = sourcePiecesResult.sourceName;
+              componentIndex = sourcePiecesResult.componentIndex;
+              componentAttributes = sourcePiecesResult.componentAttributes;
+              propArray = sourcePiecesResult.propArray;
+              subNames = sourcePiecesResult.subNames;
+            }
           }
         }
-      }
 
-      if (targetPropName && sourceName) {
-        if (componentIndex || componentAttributes || propArray.length > 0) {
-          // found an extended target
+        if (targetPropName && sourceName) {
+          if (componentIndex || componentAttributes || propArray.length > 0) {
+            // found an extended target
 
-          if (component.attributes.prop) {
-            throw Error(
-              `Cannot combine the prop attribute with an extended source attribute.  Found in component type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
-          }
-          if (component.attributes.propIndex) {
-            throw Error(
-              `Cannot combine the propIndex attribute with an extended source attribute.  Found in component type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
-          }
-          if (component.attributes.componentIndex) {
-            throw Error(
-              `Cannot combine the componentIndex attribute with an extended source attribute.  Found in component type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
-          }
-
-          let componentResult = createComponentFromExtendedSource({
-            sourceName,
-            componentIndex,
-            subNames,
-            componentAttributes,
-            propArray,
-            componentInfoObjects,
-          });
-
-          if (componentResult.success) {
-            let newComponent = componentResult.newComponent;
-
-            if (component.componentType === "copy") {
-              // assign new componentType, attributes, and doenetAttributes
-              // to original component
-              delete component.props[targetPropName];
-              Object.assign(component.attributes, newComponent.attributes);
-              if (!component.doenetAttributes) {
-                component.doenetAttributes = {};
-              }
-              Object.assign(
-                component.doenetAttributes,
-                newComponent.doenetAttributes,
+            if (component.attributes.prop) {
+              throw Error(
+                `Cannot combine the prop attribute with an extended source attribute.`,
               );
-              if (!component.doenetAttributes.createNameFromComponentType) {
-                component.doenetAttributes.createNameFromComponentType =
-                  component.componentType;
-              }
-              component.componentType = newComponent.componentType;
+            }
+            if (component.attributes.propIndex) {
+              throw Error(
+                `Cannot combine the propIndex attribute with an extended source attribute.`,
+              );
+            }
+            if (component.attributes.componentIndex) {
+              throw Error(
+                `Cannot combine the componentIndex attribute with an extended source attribute.`,
+              );
+            }
 
-              if (
-                propArray.length === 0 &&
-                !(component.attributes.prop || component.attributes.propIndex)
-              ) {
-                component.doenetAttributes.isPlainCopy = true;
-              }
+            let componentResult = createComponentFromExtendedSource({
+              sourceName,
+              componentIndex,
+              subNames,
+              componentAttributes,
+              propArray,
+              componentInfoObjects,
+            });
+            // Note: don't need to create errors from createComponentFromExtendedSource
+            // as an error for it will be created, below
+            warnings.push(
+              ...componentResult.warnings.map((w) => {
+                w.doenetMLrange = component.doenetMLrange;
+                return w;
+              }),
+            );
 
-              if (newComponent.children) {
-                component.children = newComponent.children;
-              }
-            } else {
-              // have updateValue or animateFromSequence
-              if (newComponent.componentType === "copy") {
-                // if the new component created was a copy
-                // then we can just add the attributes to the original component
+            if (componentResult.success) {
+              let newComponent = componentResult.newComponent;
 
+              if (component.componentType === "copy") {
                 // assign new componentType, attributes, and doenetAttributes
                 // to original component
                 delete component.props[targetPropName];
                 Object.assign(component.attributes, newComponent.attributes);
-                // rename attributes to refer to target rather than source
-                if (component.attributes.sourceSubnames) {
-                  component.attributes.targetSubnames =
-                    component.attributes.sourceSubnames;
-                  delete component.attributes.sourceSubnames;
-                }
-                if (component.attributes.sourceSubnamesComponentIndex) {
-                  component.attributes.targetSubnamesComponentIndex =
-                    component.attributes.sourceSubnamesComponentIndex;
-                  delete component.attributes.sourceSubnamesComponentIndex;
-                }
-
                 if (!component.doenetAttributes) {
                   component.doenetAttributes = {};
                 }
@@ -1023,163 +1189,252 @@ function breakUpTargetIntoPropsAndIndices(
                   component.doenetAttributes,
                   newComponent.doenetAttributes,
                 );
-              } else {
-                // if the new component created was an extract
-                // then wrap the extract in a setup and append
-                // and modify the updateValue/animateFromSequence to point to the extract
-
-                let longNameId =
-                  "fromExtendedSource" + ancestorString + "|" + component_ind;
-                let nameForExtract = createUniqueName("extract", longNameId);
-                newComponent.doenetAttributes.prescribedName = nameForExtract;
-                newComponent.doenetAttributes.createdFromMacro = true;
-
-                let setupComponent = {
-                  componentType: "setup",
-                  children: [newComponent],
-                  doenetAttributes: { createdFromMacro: true },
-                };
-                serializedComponents.push(setupComponent);
-
-                delete component.props[targetPropName];
-
-                if (!component.doenetAttributes) {
-                  component.doenetAttributes = {};
+                if (!component.doenetAttributes.createNameFromComponentType) {
+                  component.doenetAttributes.createNameFromComponentType =
+                    component.componentType;
                 }
-                component.doenetAttributes.target = nameForExtract;
-                component.doenetAttributes.allowDoubleUnderscoreTarget = true;
+                component.componentType = newComponent.componentType;
+
+                if (
+                  propArray.length === 0 &&
+                  !(component.attributes.prop || component.attributes.propIndex)
+                ) {
+                  component.doenetAttributes.isPlainCopy = true;
+                }
+
+                if (newComponent.children) {
+                  component.children = newComponent.children;
+                }
+              } else {
+                // have updateValue or animateFromSequence
+                if (newComponent.componentType === "copy") {
+                  // if the new component created was a copy
+                  // then we can just add the attributes to the original component
+
+                  // assign new componentType, attributes, and doenetAttributes
+                  // to original component
+                  delete component.props[targetPropName];
+                  Object.assign(component.attributes, newComponent.attributes);
+                  // rename attributes to refer to target rather than source
+                  if (component.attributes.sourceSubnames) {
+                    component.attributes.targetSubnames =
+                      component.attributes.sourceSubnames;
+                    delete component.attributes.sourceSubnames;
+                  }
+                  if (component.attributes.sourceSubnamesComponentIndex) {
+                    component.attributes.targetSubnamesComponentIndex =
+                      component.attributes.sourceSubnamesComponentIndex;
+                    delete component.attributes.sourceSubnamesComponentIndex;
+                  }
+
+                  if (!component.doenetAttributes) {
+                    component.doenetAttributes = {};
+                  }
+                  Object.assign(
+                    component.doenetAttributes,
+                    newComponent.doenetAttributes,
+                  );
+                } else {
+                  // if the new component created was an extract
+                  // then wrap the extract in a setup and append
+                  // and modify the updateValue/animateFromSequence to point to the extract
+
+                  let longNameId =
+                    "fromExtendedSource" + ancestorString + "|" + component_ind;
+                  let nameForExtract = createUniqueName("extract", longNameId);
+                  newComponent.doenetAttributes.prescribedName = nameForExtract;
+                  newComponent.doenetAttributes.createdFromMacro = true;
+
+                  let setupComponent = {
+                    componentType: "setup",
+                    children: [newComponent],
+                    doenetAttributes: { createdFromMacro: true },
+                  };
+                  serializedComponents.push(setupComponent);
+
+                  delete component.props[targetPropName];
+
+                  if (!component.doenetAttributes) {
+                    component.doenetAttributes = {};
+                  }
+                  component.doenetAttributes.target = nameForExtract;
+                  component.doenetAttributes.allowDoubleUnderscoreTarget = true;
+                }
               }
+            } else {
+              let message;
+              if (component.componentType === "copy") {
+                message = `invalid copy source: ${originalSource}`;
+              } else {
+                message = `invalid target: ${originalSource}`;
+              }
+              convertToErrorComponent(component, message);
+              errors.push({
+                message,
+                doenetMLrange: component.doenetMLrange,
+              });
             }
           } else {
-            if (component.componentType === "copy") {
-              console.warn(`invalid copy source: ${originalSource}`);
-            } else {
-              console.warn(`invalid target: ${originalSource}`);
+            // have copy with just a simple target prop that is a targetName
+            if (
+              component.componentType === "copy" &&
+              !(component.attributes.prop || component.attributes.propIndex)
+            ) {
+              if (!component.doenetAttributes) {
+                component.doenetAttributes = {};
+              }
+              component.doenetAttributes.isPlainCopy = true;
             }
-          }
-        } else {
-          // have copy with just a simple target prop that is a targetName
-          if (
-            component.componentType === "copy" &&
-            !(component.attributes.prop || component.attributes.propIndex)
-          ) {
-            if (!component.doenetAttributes) {
-              component.doenetAttributes = {};
-            }
-            component.doenetAttributes.isPlainCopy = true;
           }
         }
       }
+    } catch (e) {
+      convertToErrorComponent(component, e.message);
+      errors.push({
+        message: e.message,
+        doenetMLrange: component.doenetMLrange,
+      });
     }
 
     if (component.children) {
-      breakUpTargetIntoPropsAndIndices(
+      let res = breakUpTargetIntoPropsAndIndices(
         component.children,
         componentInfoObjects,
         ancestorString + "|" + component_ind,
       );
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
   }
+
+  return { errors, warnings };
 }
 
 function createAttributesFromProps(serializedComponents, componentInfoObjects) {
+  let errors = [];
+  let warnings = [];
+
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
     }
 
-    let componentClass =
-      componentInfoObjects.allComponentClasses[component.componentType];
-    let classAttributes = componentClass.createAttributesObject();
+    try {
+      let componentClass =
+        componentInfoObjects.allComponentClasses[component.componentType];
+      let classAttributes = componentClass.createAttributesObject();
 
-    let attributeLowerCaseMapping = {};
+      let attributeLowerCaseMapping = {};
 
-    for (let propName in classAttributes) {
-      attributeLowerCaseMapping[propName.toLowerCase()] = propName;
-    }
+      for (let propName in classAttributes) {
+        attributeLowerCaseMapping[propName.toLowerCase()] = propName;
+      }
 
-    let attributes = {};
+      let attributes = {};
 
-    // if there are any props of json that match attributes for component class
-    // create the specified components or primitives
+      // if there are any props of json that match attributes for component class
+      // create the specified components or primitives
 
-    let originalComponentProps = Object.assign({}, component.props);
-    if (component.props) {
-      for (let prop in component.props) {
-        let propName = attributeLowerCaseMapping[prop.toLowerCase()];
-        let attrObj = classAttributes[propName];
-        if (attrObj) {
-          if (propName in attributes) {
-            throw Error(
-              `Cannot repeat attribute ${propName}.  Found in component type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
-          }
+      let originalComponentProps = Object.assign({}, component.props);
+      if (component.props) {
+        for (let prop in component.props) {
+          let propName = attributeLowerCaseMapping[prop.toLowerCase()];
+          let attrObj = classAttributes[propName];
+          if (attrObj) {
+            if (propName in attributes) {
+              throw Error(`Cannot repeat attribute ${propName}.`);
+            }
 
-          attributes[propName] = componentFromAttribute({
-            attrObj,
-            value: component.props[prop],
-            originalComponentProps,
-            componentInfoObjects,
-          });
-          delete component.props[prop];
-        } else if (
-          !["name", "assignnames", "target"].includes(prop.toLowerCase())
-        ) {
-          if (componentClass.acceptAnyAttribute) {
-            attributes[prop] = componentFromAttribute({
+            let res = componentFromAttribute({
+              attrObj,
               value: component.props[prop],
+              attributeRange: component.attributeRanges?.[prop],
               originalComponentProps,
               componentInfoObjects,
             });
+            attributes[propName] = res.attribute;
+            errors.push(...res.errors);
+            warnings.push(...res.warnings);
             delete component.props[prop];
-          } else {
-            throw Error(
-              `Invalid attribute ${prop} for component of type ${
-                component.componentType
-              }${indexRangeString(component)}`,
-            );
+          } else if (
+            !["name", "assignnames", "target"].includes(prop.toLowerCase())
+          ) {
+            if (componentClass.acceptAnyAttribute) {
+              let res = componentFromAttribute({
+                value: component.props[prop],
+                attributeRange: component.attributeRanges?.[prop],
+                originalComponentProps,
+                componentInfoObjects,
+              });
+              attributes[prop] = res.attribute;
+              errors.push(...res.errors);
+              warnings.push(...res.warnings);
+              delete component.props[prop];
+            } else {
+              throw Error(
+                `Invalid attribute "${prop}" for a component of type <${component.componentType}>.`,
+              );
+            }
           }
         }
       }
-    }
 
-    // if there are any primitive attributes that define a default value
-    // but were not specified via props, add them with their default value
+      // if there are any primitive attributes that define a default value
+      // but were not specified via props, add them with their default value
 
-    for (let attrName in classAttributes) {
-      let attrObj = classAttributes[attrName];
+      for (let attrName in classAttributes) {
+        let attrObj = classAttributes[attrName];
 
-      if (
-        attrObj.createPrimitiveOfType &&
-        "defaultPrimitiveValue" in attrObj &&
-        !(attrName in attributes)
-      ) {
-        attributes[attrName] = componentFromAttribute({
-          attrObj,
-          originalComponentProps,
-          value: attrObj.defaultPrimitiveValue.toString(),
-          componentInfoObjects,
-        });
+        if (
+          attrObj.createPrimitiveOfType &&
+          "defaultPrimitiveValue" in attrObj &&
+          !(attrName in attributes)
+        ) {
+          let res = componentFromAttribute({
+            attrObj,
+            originalComponentProps,
+            value: attrObj.defaultPrimitiveValue.toString(),
+            componentInfoObjects,
+          });
+          attributes[attrName] = res.attribute;
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
+        }
       }
-    }
 
-    component.attributes = attributes;
+      component.attributes = attributes;
+    } catch (e) {
+      convertToErrorComponent(component, e.message);
+      errors.push({
+        message: e.message,
+        doenetMLrange: component.doenetMLrange,
+      });
+    }
 
     //recurse on children
     if (component.children !== undefined) {
-      createAttributesFromProps(component.children, componentInfoObjects);
+      let res = createAttributesFromProps(
+        component.children,
+        componentInfoObjects,
+      );
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
   }
+
+  return { errors, warnings };
 }
 
 export function componentFromAttribute({
   attrObj,
   value,
+  attributeRange,
   originalComponentProps,
   componentInfoObjects,
 }) {
+  let errors = [];
+  let warnings = [];
+
   if (typeof value !== "object") {
     // typically this would mean value is a string.
     // However, if had an attribute with no value, would get true.
@@ -1234,6 +1489,10 @@ export function componentFromAttribute({
       removeBlankStringChildren([newComponent], componentInfoObjects);
     }
 
+    if (attributeRange) {
+      newComponent.doenetMLrange = attributeRange;
+    }
+
     if (
       attrObj.attributesForCreatedComponent ||
       attrObj.copyComponentAttributesForCreatedComponent
@@ -1254,14 +1513,16 @@ export function componentFromAttribute({
         }
       }
 
-      createAttributesFromProps([newComponent], componentInfoObjects);
+      let res = createAttributesFromProps([newComponent], componentInfoObjects);
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
 
     let attr = { component: newComponent };
     if (attrObj.ignoreFixed) {
       attr.ignoreFixed = true;
     }
-    return attr;
+    return { attribute: attr, errors, warnings };
   } else if (attrObj && attrObj.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
@@ -1283,7 +1544,7 @@ export function componentFromAttribute({
     if (attrObj.validationFunction) {
       newPrimitive = attrObj.validationFunction(newPrimitive);
     }
-    return { primitive: newPrimitive };
+    return { attribute: { primitive: newPrimitive }, errors, warnings };
   } else if (attrObj && attrObj.createTargetComponentNames) {
     let newTargets = value.rawString
       .trim()
@@ -1303,12 +1564,16 @@ export function componentFromAttribute({
         return { relativeName: str };
       });
 
-    return { targetComponentNames: newTargets };
+    return {
+      attribute: { targetComponentNames: newTargets },
+      errors,
+      warnings,
+    };
   } else {
     if (!value.childrenForComponent) {
       value.childrenForComponent = [value.rawString];
     }
-    return value;
+    return { attribute: value, errors, warnings };
   }
 }
 
@@ -1335,27 +1600,78 @@ function findPreSugarIndsAndMarkFromSugar(components) {
   return preSugarIndsFound;
 }
 
-export function applyMacros(serializedComponents, componentInfoObjects) {
+export function applyMacros(
+  serializedComponents,
+  componentInfoObjects,
+  startDoenetMLInd = 0,
+) {
+  let errors = [];
+  let warnings = [];
+
   for (let component of serializedComponents) {
     if (component.children) {
-      applyMacros(component.children, componentInfoObjects);
+      let startDoenetMLIndForChildren;
+      if (component.doenetMLrange) {
+        startDoenetMLIndForChildren = component.doenetMLrange.openEnd;
+        if (startDoenetMLIndForChildren === undefined) {
+          startDoenetMLIndForChildren = component.doenetMLrange.begin - 1;
+        }
+      }
+      let res = applyMacros(
+        component.children,
+        componentInfoObjects,
+        startDoenetMLIndForChildren,
+      );
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
+        let startDoenetMLIndForAttr = Number(
+          component.attributeRanges?.[attrName]?.begin - 1,
+        );
         if (attribute.component) {
-          applyMacros([attribute.component], componentInfoObjects);
+          let res = applyMacros(
+            [attribute.component],
+            componentInfoObjects,
+            startDoenetMLIndForAttr,
+          );
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         } else if (attribute.childrenForComponent) {
-          applyMacros(attribute.childrenForComponent, componentInfoObjects);
+          let res = applyMacros(
+            attribute.childrenForComponent,
+            componentInfoObjects,
+            startDoenetMLIndForAttr,
+          );
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         }
       }
     }
   }
 
-  substituteMacros(serializedComponents, componentInfoObjects);
+  let res = substituteMacros(
+    serializedComponents,
+    componentInfoObjects,
+    startDoenetMLInd,
+  );
+  errors.push(...res.errors);
+  warnings.push(...res.warnings);
+  return { errors, warnings };
 }
 
-function substituteMacros(serializedComponents, componentInfoObjects) {
+function substituteMacros(
+  serializedComponents,
+  componentInfoObjects,
+  startDoenetMLInd = 0,
+) {
+  let errors = [];
+  let warnings = [];
+
+  let doenetMLcharInd = startDoenetMLInd;
+
   for (
     let componentInd = 0;
     componentInd < serializedComponents.length;
@@ -1365,6 +1681,8 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
     if (typeof component === "string") {
       let startInd = 0;
+      let nextDoenetMLcharIndAdjustment;
+
       while (startInd < component.length) {
         let str = component;
         let result = findFirstFullMacroInString(str.slice(startInd));
@@ -1377,6 +1695,14 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         let matchLength = result.matchLength;
         let nDollarSigns = result.nDollarSigns;
 
+        let doenetMLrange;
+        if (Number.isFinite(doenetMLcharInd)) {
+          doenetMLrange = {
+            begin: doenetMLcharInd + 1 + firstIndMatched,
+            end: doenetMLcharInd + firstIndMatched + matchLength,
+          };
+        }
+
         let componentsFromMacro;
 
         let componentResult = createComponentFromExtendedSource({
@@ -1387,35 +1713,37 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           propArray: result.propArray,
           componentInfoObjects,
         });
+        // Note: don't need to create errors from createComponentFromExtendedSource
+        // as an error for it will be created, below
+        warnings.push(
+          ...componentResult.warnings.map((w) => {
+            w.doenetMLrange = doenetMLrange;
+            return w;
+          }),
+        );
 
         let newComponent;
         if (componentResult.success) {
           newComponent = componentResult.newComponent;
+          if (Number.isFinite(doenetMLcharInd)) {
+            newComponent.doenetMLrange = doenetMLrange;
+          }
         } else {
           let strWithError = str.slice(
             firstIndMatched,
             firstIndMatched + matchLength,
           );
-          let macroStartInd = firstIndMatched;
-          // TODO: if previous component is a string,
-          // keep going back and add string lengths to get actual index
-          if (
-            componentInd > 0 &&
-            serializedComponents[componentInd - 1].range
-          ) {
-            let previousRange = serializedComponents[componentInd - 1].range;
-            if (previousRange.closeEnd) {
-              macroStartInd += previousRange.closeEnd;
-            } else if (previousRange.selfCloseEnd) {
-              macroStartInd += previousRange.selfCloseBegin;
-            }
-          }
 
-          throw Error(
-            `${componentResult.message}. At indices ${macroStartInd}-${
-              macroStartInd + matchLength
-            }.  Found: ${strWithError}`,
-          );
+          let message = `${componentResult.errors[0].message} Found: ${strWithError}.`;
+          errors.push({
+            message,
+            doenetMLrange,
+          });
+          newComponent = {
+            componentType: "_error",
+            state: { message },
+            doenetMLrange,
+          };
         }
 
         markCreatedFromMacro([newComponent]);
@@ -1468,6 +1796,8 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
             includeFirstInRemaining,
             componentInfoObjects,
           });
+          errors.push(...evaluateResult.errors);
+          warnings.push(...evaluateResult.warnings);
 
           if (!evaluateResult.success) {
             // if couldn't create evaluate,
@@ -1477,6 +1807,17 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           }
 
           componentsFromMacro = evaluateResult.componentsFromMacro;
+
+          if (Number.isFinite(doenetMLcharInd)) {
+            let lastInd = component.length;
+            if (componentsFromMacro.length > 1) {
+              lastInd -= componentsFromMacro[1].length;
+            }
+            componentsFromMacro[0].doenetMLrange = {
+              begin: doenetMLcharInd + 1 + firstIndMatched,
+              end: doenetMLcharInd + lastInd,
+            };
+          }
 
           numComponentsToRemove = evaluateResult.lastComponentIndMatched + 1;
           if (!includeFirstInRemaining) {
@@ -1507,6 +1848,9 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           ...replacements,
         );
 
+        let indOfLastComponentAddedBackIn =
+          componentInd - numComponentsToRemove + replacements.length;
+
         if (firstIndMatched > 0) {
           // increment componentInd because we now have to skip
           // over two components
@@ -1515,14 +1859,46 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           componentInd++;
         }
 
+        let nextComponentThatWillProcess = componentInd + 1;
+
+        if (nextComponentThatWillProcess <= indOfLastComponentAddedBackIn) {
+          // next time, we'll reprocess the last string, so adjust doenetMLcharInd
+          let lastAddedIn = serializedComponents[indOfLastComponentAddedBackIn];
+          if (typeof lastAddedIn === "string") {
+            nextDoenetMLcharIndAdjustment = lastAddedIn.length;
+          }
+        }
+
         // break out of loop processing string,
         // as finished current one
         // (possibly breaking it into pieces, so will address remainder as other component)
 
         break;
       }
+      doenetMLcharInd += component.length;
+
+      if (nextDoenetMLcharIndAdjustment !== undefined) {
+        doenetMLcharInd -= nextDoenetMLcharIndAdjustment;
+      }
+    } else {
+      let doenetMLrange = component.doenetMLrange;
+      if (doenetMLrange) {
+        if (doenetMLrange.selfCloseBegin !== undefined) {
+          doenetMLcharInd = doenetMLrange.selfCloseEnd;
+        } else if (doenetMLrange.openBegin !== undefined) {
+          doenetMLcharInd = doenetMLrange.closeEnd;
+        } else if (doenetMLrange.begin !== undefined) {
+          doenetMLcharInd = doenetMLrange.end;
+        } else {
+          doenetMLcharInd = NaN;
+        }
+      } else {
+        doenetMLcharInd = NaN;
+      }
     }
   }
+
+  return { errors, warnings };
 }
 
 function createComponentFromExtendedSource({
@@ -1533,6 +1909,9 @@ function createComponentFromExtendedSource({
   subNames,
   componentInfoObjects,
 }) {
+  let errors = [];
+  let warnings = [];
+
   let newComponent = {
     componentType: "copy",
     doenetAttributes: { target: sourceName },
@@ -1541,7 +1920,12 @@ function createComponentFromExtendedSource({
 
   if (componentIndex) {
     let childrenForAttribute = [componentIndex];
-    applyMacros(childrenForAttribute, componentInfoObjects);
+    let res = applyMacros(childrenForAttribute, componentInfoObjects);
+    errors.push(...res.errors);
+    warnings.push(...res.warnings);
+    if (errors.length > 0) {
+      return { success: false, errors, warnings };
+    }
 
     newComponent.attributes.componentIndex = {
       component: {
@@ -1576,7 +1960,12 @@ function createComponentFromExtendedSource({
     };
     if (sourceSubnamesComponentIndex.length > 0) {
       let childrenForAttribute = [sourceSubnamesComponentIndex.join(" ")];
-      applyMacros(childrenForAttribute, componentInfoObjects);
+      let res = applyMacros(childrenForAttribute, componentInfoObjects);
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
+      if (errors.length > 0) {
+        return { success: false, errors, warnings };
+      }
 
       newComponent.attributes.sourceSubnamesComponentIndex = {
         component: {
@@ -1599,6 +1988,8 @@ function createComponentFromExtendedSource({
     if (!attributesResult.success) {
       return attributesResult;
     }
+    // Don't need to add errors, as errors would make success be false
+    warnings.push(...attributesResult.warnings);
 
     Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
@@ -1623,7 +2014,12 @@ function createComponentFromExtendedSource({
 
     if (propObj.propIndex) {
       let childrenForAttribute = [propObj.propIndex.join(" ")];
-      applyMacros(childrenForAttribute, componentInfoObjects);
+      let res = applyMacros(childrenForAttribute, componentInfoObjects);
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
+      if (errors.length > 0) {
+        return { success: false, errors, warnings };
+      }
 
       newComponent.attributes.propIndex = {
         component: {
@@ -1641,6 +2037,8 @@ function createComponentFromExtendedSource({
       if (!attributesResult.success) {
         return attributesResult;
       }
+      // Don't need to add errors, as errors would make success be false
+      warnings.push(...attributesResult.warnings);
 
       Object.assign(newComponent.attributes, attributesResult.newAttributes);
 
@@ -1652,26 +2050,47 @@ function createComponentFromExtendedSource({
     propsAddExtract = true;
   }
 
-  return { success: true, newComponent };
+  return { success: errors.length === 0, newComponent, errors, warnings };
 }
 
 function createAttributesFromString(componentAttributes, componentInfoObjects) {
   // parse a copy component with those attributes
   // to get attributes parsed
 
+  let errors = [];
+  let warnings = [];
+
   let attributesDoenetML = `<copy ${componentAttributes} />`;
   let componentsForAttributes;
   try {
-    componentsForAttributes = parseAndCompile(attributesDoenetML);
+    let result = parseAndCompile(attributesDoenetML);
+
+    componentsForAttributes = result.components;
+    errors.push(...result.errors);
+    warnings.push(...result.warnings);
   } catch (e) {
-    return { success: false, message: "Error in macro" };
+    errors.push({
+      message: "Error in macro",
+    });
+    return { success: false, errors, warnings };
   }
 
-  createAttributesFromProps(componentsForAttributes, componentInfoObjects);
+  let res = substituteAttributeDeprecations(componentsForAttributes);
+  warnings.push(...res.warnings);
+
+  res = createAttributesFromProps(
+    componentsForAttributes,
+    componentInfoObjects,
+  );
+  errors.push(...res.errors);
+  warnings.push(...res.warnings);
+
   markCreatedFromMacro(componentsForAttributes);
 
   // recurse in case there were more macros in additionalAttributes
-  applyMacros(componentsForAttributes, componentInfoObjects);
+  res = applyMacros(componentsForAttributes, componentInfoObjects);
+  errors.push(...res.errors);
+  warnings.push(...res.warnings);
 
   let newAttributes = componentsForAttributes[0].attributes;
 
@@ -1680,11 +2099,11 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
     newAttributes.propIndex ||
     newAttributes.componentIndex
   ) {
-    return {
-      success: false,
+    errors.push({
       message:
-        "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex",
-    };
+        "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex.",
+    });
+    return { success: false, errors, warnings };
   }
 
   let assignNames;
@@ -1692,10 +2111,10 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
     for (let prop in componentsForAttributes[0].props) {
       if (prop.toLowerCase() === "assignnames") {
         if (assignNames) {
-          return {
-            success: false,
-            message: "Error in macro: cannot repeat assignNames",
-          };
+          errors.push({
+            message: "Error in macro: cannot repeat assignNames.",
+          });
+          return { success: false, errors, warnings };
         } else {
           assignNames = componentsForAttributes[0].props[prop];
         }
@@ -1703,7 +2122,13 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
     }
   }
 
-  return { success: true, newAttributes, assignNames };
+  return {
+    success: errors.length === 0,
+    newAttributes,
+    assignNames,
+    errors,
+    warnings,
+  };
 }
 
 function findFirstFullMacroInString(str) {
@@ -1964,10 +2389,13 @@ function createEvaluateIfFindMatchedClosingParens({
   includeFirstInRemaining,
   componentInfoObjects,
 }) {
+  let errors = [];
+  let warnings = [];
+
   let result = findFirstUnmatchedClosingParens(remainingComponents);
 
   if (!result.success) {
-    return result;
+    return { success: false, errors, warnings };
   }
   // found unmatched closing parenthesis, so is the one
   // matching the opening parenthesis
@@ -2003,7 +2431,11 @@ function createEvaluateIfFindMatchedClosingParens({
   });
 
   // recurse on pieces
-  breakResults.pieces.forEach((x) => applyMacros(x, componentInfoObjects));
+  breakResults.pieces.forEach((x) => {
+    let res = applyMacros(x, componentInfoObjects);
+    errors.push(...res.errors);
+    warnings.push(...res.warnings);
+  });
 
   let inputArray = breakResults.pieces.map((x) => {
     if (x.length === 1 && typeof x[0] !== "string") {
@@ -2051,6 +2483,8 @@ function createEvaluateIfFindMatchedClosingParens({
     success: true,
     componentsFromMacro: replacements,
     lastComponentIndMatched: lastComponentInd,
+    errors,
+    warnings,
   };
 }
 
@@ -2135,188 +2569,216 @@ export function applySugar({
   componentInfoObjects,
   isAttributeComponent = false,
 }) {
+  let errors = [];
+  let warnings = [];
+
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
     }
 
-    let componentType = component.componentType;
-    let componentClass =
-      componentInfoObjects.allComponentClasses[componentType];
-    if (!componentClass) {
-      throw Error(`Unrecognized component type ${componentType}`);
-    }
-
-    let componentAttributes = {};
-    // add primitive attributes to componentAttributes
-    for (let attrName in component.attributes) {
-      let attribute = component.attributes[attrName];
-      if (attribute.primitive !== undefined) {
-        componentAttributes[attrName] = attribute.primitive;
+    try {
+      let componentType = component.componentType;
+      let componentClass =
+        componentInfoObjects.allComponentClasses[componentType];
+      if (!componentClass) {
+        throw Error(`Unrecognized component type ${componentType}.`);
       }
-    }
 
-    if (component.children) {
-      let newParentParametersFromSugar = {};
+      let componentAttributes = {};
+      // add primitive attributes to componentAttributes
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.primitive !== undefined) {
+          componentAttributes[attrName] = attribute.primitive;
+        }
+      }
 
-      if (!component.skipSugar) {
-        for (let sugarInstruction of componentClass.returnSugarInstructions()) {
-          // if (component.children.length === 0) {
-          //   break;
-          // }
+      if (component.children) {
+        let newParentParametersFromSugar = {};
 
-          let childTypes = component.children
-            .map((x) => (typeof x === "string" ? "s" : "n"))
-            .join("");
+        if (!component.skipSugar) {
+          for (let sugarInstruction of componentClass.returnSugarInstructions()) {
+            // if (component.children.length === 0) {
+            //   break;
+            // }
 
-          if (sugarInstruction.childrenRegex) {
-            let match = childTypes.match(sugarInstruction.childrenRegex);
+            let childTypes = component.children
+              .map((x) => (typeof x === "string" ? "s" : "n"))
+              .join("");
 
-            if (!match || match[0].length !== component.children.length) {
-              // sugar pattern didn't match all children
-              // so don't apply sugar
+            if (sugarInstruction.childrenRegex) {
+              let match = childTypes.match(sugarInstruction.childrenRegex);
 
-              continue;
+              if (!match || match[0].length !== component.children.length) {
+                // sugar pattern didn't match all children
+                // so don't apply sugar
+
+                continue;
+              }
             }
-          }
 
-          let matchedChildren = deepClone(component.children);
+            let matchedChildren = deepClone(component.children);
 
-          let nNonStrings = 0;
-          for (let child of matchedChildren) {
-            if (typeof child !== "string") {
-              child.preSugarInd = nNonStrings;
-              nNonStrings++;
+            let nNonStrings = 0;
+            for (let child of matchedChildren) {
+              if (typeof child !== "string") {
+                child.preSugarInd = nNonStrings;
+                nNonStrings++;
+              }
             }
-          }
 
-          let createdFromMacro = false;
-          if (
-            component.doenetAttributes &&
-            component.doenetAttributes.createdFromMacro
-          ) {
-            createdFromMacro = true;
-          }
-
-          let sugarResults = sugarInstruction.replacementFunction({
-            matchedChildren,
-            parentParametersFromSugar,
-            parentAttributes,
-            componentAttributes,
-            componentInfoObjects,
-            isAttributeComponent,
-            createdFromMacro,
-          });
-
-          // console.log("sugarResults")
-          // console.log(sugarResults)
-
-          if (sugarResults.success) {
-            let newChildren = sugarResults.newChildren;
-            let newAttributes = sugarResults.newAttributes;
-
-            let preSugarIndsFoundInChildren = [],
-              preSugarIndsFoundInAttributes = [];
-
-            if (newChildren) {
-              preSugarIndsFoundInChildren =
-                findPreSugarIndsAndMarkFromSugar(newChildren);
+            let createdFromMacro = false;
+            if (
+              component.doenetAttributes &&
+              component.doenetAttributes.createdFromMacro
+            ) {
+              createdFromMacro = true;
             }
-            if (newAttributes) {
-              for (let attrName in newAttributes) {
-                let comp = newAttributes[attrName].component;
-                if (comp) {
-                  preSugarIndsFoundInAttributes.push(
-                    ...findPreSugarIndsAndMarkFromSugar(comp.children),
+
+            let sugarResults = sugarInstruction.replacementFunction({
+              matchedChildren,
+              parentParametersFromSugar,
+              parentAttributes,
+              componentAttributes,
+              componentInfoObjects,
+              isAttributeComponent,
+              createdFromMacro,
+            });
+
+            // console.log("sugarResults")
+            // console.log(sugarResults)
+
+            if (sugarResults.warnings) {
+              warnings.push(
+                ...sugarResults.warnings.map((w) => {
+                  w.doenetMLrange = component.doenetMLrange;
+                  return w;
+                }),
+              );
+            }
+
+            if (sugarResults.success) {
+              let newChildren = sugarResults.newChildren;
+              let newAttributes = sugarResults.newAttributes;
+
+              let preSugarIndsFoundInChildren = [],
+                preSugarIndsFoundInAttributes = [];
+
+              if (newChildren) {
+                preSugarIndsFoundInChildren =
+                  findPreSugarIndsAndMarkFromSugar(newChildren);
+              }
+              if (newAttributes) {
+                for (let attrName in newAttributes) {
+                  let comp = newAttributes[attrName].component;
+                  if (comp) {
+                    preSugarIndsFoundInAttributes.push(
+                      ...findPreSugarIndsAndMarkFromSugar(comp.children),
+                    );
+                  }
+                }
+              }
+
+              let preSugarIndsFound = [
+                ...preSugarIndsFoundInChildren,
+                ...preSugarIndsFoundInAttributes,
+              ];
+
+              if (
+                preSugarIndsFound.length !== nNonStrings ||
+                !preSugarIndsFound
+                  .sort((a, b) => a - b)
+                  .every((v, i) => v === i)
+              ) {
+                throw Error(
+                  `Invalid sugar for ${componentType} as didn't return set of original components`,
+                );
+              }
+
+              if (preSugarIndsFoundInChildren.length > 0) {
+                let sortedList = [...preSugarIndsFoundInChildren].sort(
+                  (a, b) => a - b,
+                );
+                if (
+                  !sortedList.every(
+                    (v, i) => v === preSugarIndsFoundInChildren[i],
+                  )
+                ) {
+                  throw Error(
+                    `Invalid sugar for ${componentType} as didn't return original components in order`,
                   );
                 }
               }
-            }
 
-            let preSugarIndsFound = [
-              ...preSugarIndsFoundInChildren,
-              ...preSugarIndsFoundInAttributes,
-            ];
-
-            if (
-              preSugarIndsFound.length !== nNonStrings ||
-              !preSugarIndsFound.sort((a, b) => a - b).every((v, i) => v === i)
-            ) {
-              throw Error(
-                `Invalid sugar for ${componentType} as didn't return set of original components`,
-              );
-            }
-
-            if (preSugarIndsFoundInChildren.length > 0) {
-              let sortedList = [...preSugarIndsFoundInChildren].sort(
-                (a, b) => a - b,
-              );
-              if (
-                !sortedList.every(
-                  (v, i) => v === preSugarIndsFoundInChildren[i],
-                )
-              ) {
-                throw Error(
-                  `Invalid sugar for ${componentType} as didn't return original components in order`,
+              if (sugarResults.parametersForChildrenSugar) {
+                Object.assign(
+                  newParentParametersFromSugar,
+                  sugarResults.parametersForChildrenSugar,
                 );
               }
-            }
 
-            if (sugarResults.parametersForChildrenSugar) {
-              Object.assign(
-                newParentParametersFromSugar,
-                sugarResults.parametersForChildrenSugar,
-              );
-            }
-
-            if (newChildren) {
-              component.children = newChildren;
-            } else {
-              component.children = [];
-            }
-
-            if (newAttributes) {
-              if (!component.attributes) {
-                component.attributes = {};
+              if (newChildren) {
+                component.children = newChildren;
+              } else {
+                component.children = [];
               }
-              Object.assign(component.attributes, newAttributes);
+
+              if (newAttributes) {
+                if (!component.attributes) {
+                  component.attributes = {};
+                }
+                Object.assign(component.attributes, newAttributes);
+              }
             }
           }
         }
+
+        if (componentClass.removeBlankStringChildrenPostSugar) {
+          component.children = component.children.filter(
+            (x) => typeof x !== "string" || /\S/.test(x),
+          );
+        }
+
+        // Note: don't pass in isAttributeComponent
+        // as that flag should be set just for the top level attribute component
+
+        let res = applySugar({
+          serializedComponents: component.children,
+          parentParametersFromSugar: newParentParametersFromSugar,
+          parentAttributes: componentAttributes,
+          componentInfoObjects,
+        });
+        errors.push(...res.errors);
+        warnings.push(...res.warnings);
       }
 
-      if (componentClass.removeBlankStringChildrenPostSugar) {
-        component.children = component.children.filter(
-          (x) => typeof x !== "string" || /\S/.test(x),
-        );
-      }
+      if (component.attributes) {
+        for (let attrName in component.attributes) {
+          let attribute = component.attributes[attrName];
 
-      // Note: don't pass in isAttributeComponent
-      // as that flag should be set just for the top level attribute component
-
-      applySugar({
-        serializedComponents: component.children,
-        parentParametersFromSugar: newParentParametersFromSugar,
-        parentAttributes: componentAttributes,
-        componentInfoObjects,
-      });
-    }
-
-    if (component.attributes) {
-      for (let attrName in component.attributes) {
-        let attribute = component.attributes[attrName];
-
-        if (attribute.component) {
-          applySugar({
-            serializedComponents: [attribute.component],
-            parentAttributes: componentAttributes,
-            componentInfoObjects,
-            isAttributeComponent: true,
-          });
+          if (attribute.component) {
+            let res = applySugar({
+              serializedComponents: [attribute.component],
+              parentAttributes: componentAttributes,
+              componentInfoObjects,
+              isAttributeComponent: true,
+            });
+            errors.push(...res.errors);
+            warnings.push(...res.warnings);
+          }
         }
       }
+    } catch (e) {
+      convertToErrorComponent(component, e.message);
+      errors.push({
+        message: e.message,
+        doenetMLrange: component.doenetMLrange,
+      });
     }
   }
+
+  return { errors, warnings };
 }
 
 function breakStringInPiecesBySpacesOrParens(string) {
@@ -2508,6 +2970,9 @@ export function createComponentNames({
   createNameContext = "",
   initWithoutShadowingComposite = false,
 }) {
+  let errors = [];
+  let warnings = [];
+
   if (namespaceStack.length === 0) {
     namespaceStack.push({ namespace: "", componentCounts: {}, namesUsed: {} });
   }
@@ -2526,6 +2991,10 @@ export function createComponentNames({
     if (typeof serializedComponent !== "object") {
       continue;
     }
+    let foundError = false;
+    let createUniqueNameDueToError = false;
+    let errorMessage = "";
+
     let componentType = serializedComponent.componentType;
     let componentClass =
       componentInfoObjects.allComponentClasses[componentType];
@@ -2581,52 +3050,48 @@ export function createComponentNames({
         if (lowercaseKey === "name") {
           if (prescribedName === undefined) {
             prescribedName = props[key];
-            delete props[key];
           } else {
-            throw Error(
-              `Cannot define name twice.  Found in component of type ${componentType}${indexRangeString(
-                serializedComponent,
-              )}`,
-            );
+            foundError = true;
+            if (!errorMessage) {
+              errorMessage = `Cannot define name twice.`;
+            }
           }
+          delete props[key];
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
             let result = breakStringInPiecesBySpacesOrParens(props[key]);
             if (result.success) {
               assignNames = result.pieces;
             } else {
-              throw Error(
-                `Invalid format for assignnames.  Found in component of type ${componentType}${indexRangeString(
-                  serializedComponent,
-                )}`,
-              );
+              foundError = true;
+              if (!errorMessage) {
+                errorMessage = `Invalid format for assignNames: ${props[key]}.`;
+              }
             }
-            delete props[key];
           } else {
-            throw Error(
-              `Cannot define assignNames twice for a component.  Found in component of type ${componentType}${indexRangeString(
-                serializedComponent,
-              )}`,
-            );
+            foundError = true;
+            if (!errorMessage) {
+              errorMessage = `Cannot define assignNames twice for a component.`;
+            }
           }
+          delete props[key];
         } else if (lowercaseKey === "target") {
           if (target === undefined) {
             if (typeof props[key] !== "string") {
-              throw Error(
-                `Must specify value for target.  Found in component of type ${componentType}${indexRangeString(
-                  serializedComponent,
-                )}`,
-              );
+              foundError = true;
+              if (!errorMessage) {
+                errorMessage = `Must specify value for target.`;
+              }
+            } else {
+              target = props[key].trim();
             }
-            target = props[key].trim();
-            delete props[key];
           } else {
-            throw Error(
-              `Cannot define target twice for a component.  Found in component of type ${componentType}${indexRangeString(
-                serializedComponent,
-              )}`,
-            );
+            foundError = true;
+            if (!errorMessage) {
+              errorMessage = `Cannot define target twice for a component.`;
+            }
           }
+          delete props[key];
         }
       }
     }
@@ -2637,18 +3102,17 @@ export function createComponentNames({
         !doenetAttributes.createdFromSugar
       ) {
         if (!/[a-zA-Z]/.test(prescribedName.substring(0, 1))) {
-          throw Error(
-            `Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${componentType}${indexRangeString(
-              serializedComponent,
-            )}`,
-          );
-        }
-        if (!/^[a-zA-Z0-9_\-]+$/.test(prescribedName)) {
-          throw Error(
-            `Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(
-              serializedComponent,
-            )}`,
-          );
+          foundError = true;
+          createUniqueNameDueToError = true;
+          if (!errorMessage) {
+            errorMessage = `Invalid component name: ${prescribedName}.  Component name must begin with a letter.`;
+          }
+        } else if (!/^[a-zA-Z0-9_-]+$/.test(prescribedName)) {
+          foundError = true;
+          createUniqueNameDueToError = true;
+          if (!errorMessage) {
+            errorMessage = `Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.`;
+          }
         }
       }
 
@@ -2684,47 +3148,70 @@ export function createComponentNames({
     if (assignNames) {
       let assignNamesToReplacements = componentClass.assignNamesToReplacements;
       if (!assignNamesToReplacements) {
-        throw Error(
-          `Cannot assign names for component type ${componentType}${indexRangeString(
-            serializedComponent,
-          )}`,
-        );
-      }
-
-      // assignNames was specified
-      // put in doenetAttributes as assignNames array
-      doenetAttributes.assignNames = assignNames;
-
-      if (!doenetAttributes.createUniqueAssignNames) {
-        let flattenedNames = flattenDeep(assignNames);
-        if (
-          !doenetAttributes.fromCopyTarget &&
-          !doenetAttributes.fromCopyFromURI
-        ) {
-          for (let name of flattenedNames) {
-            if (!/[a-zA-Z]/.test(name.substring(0, 1))) {
-              throw Error(
-                `All assigned names must begin with a letter.  Found in component of type ${componentType}${indexRangeString(
-                  serializedComponent,
-                )}`,
-              );
+        foundError = true;
+        if (!errorMessage) {
+          errorMessage = `Cannot assign names for component type ${componentType}.`;
+        }
+        assignNames = undefined;
+      } else {
+        let assignNamesToString = (assignNames) => {
+          return assignNames.reduce((a, c) => {
+            let cstr;
+            if (Array.isArray(c)) {
+              cstr = "(" + assignNamesToString(c) + ")";
+            } else {
+              cstr = c;
             }
-            if (!/^[a-zA-Z0-9_\-]+$/.test(name)) {
-              throw Error(
-                `Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(
-                  serializedComponent,
-                )}`,
-              );
+            return a ? a + " " + cstr : cstr;
+          }, "");
+        };
+
+        // assignNames was specified
+        // put in doenetAttributes as assignNames array
+        doenetAttributes.assignNames = assignNames;
+
+        if (!doenetAttributes.createUniqueAssignNames) {
+          let flattenedNames = flattenDeep(assignNames);
+          if (
+            !doenetAttributes.fromCopyTarget &&
+            !doenetAttributes.fromCopyFromURI
+          ) {
+            for (let name of flattenedNames) {
+              if (!/[a-zA-Z]/.test(name.substring(0, 1))) {
+                foundError = true;
+                if (!errorMessage) {
+                  errorMessage = `Invalid assignNames: ${assignNamesToString(
+                    assignNames,
+                  )}.  All assigned names must begin with a letter.`;
+                }
+                assignNames = undefined;
+                delete doenetAttributes.assignNames;
+                break;
+              }
+              if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+                foundError = true;
+                if (!errorMessage) {
+                  errorMessage = `Invalid assignNames: ${assignNamesToString(
+                    assignNames,
+                  )}.  Assigned names can contain only letters, numbers, hyphens, and underscores.`;
+                }
+                assignNames = undefined;
+                delete doenetAttributes.assignNames;
+                break;
+              }
             }
           }
-        }
-        // check if unique names
-        if (flattenedNames.length !== new Set(flattenedNames).size) {
-          throw Error(
-            `Duplicate assigned names.  Found in component of type ${componentType}${indexRangeString(
-              serializedComponent,
-            )}`,
-          );
+          // check if unique names
+          if (flattenedNames.length !== new Set(flattenedNames).size) {
+            foundError = true;
+            if (!errorMessage) {
+              errorMessage = `A name is duplicated in assignNames: ${assignNamesToString(
+                assignNames,
+              )}.`;
+            }
+            assignNames = undefined;
+            delete doenetAttributes.assignNames;
+          }
         }
       }
     }
@@ -2740,7 +3227,7 @@ export function createComponentNames({
       count = 0;
     }
 
-    // if created from a attribute/sugar/macro, don't include in component counts
+    // if created from an attribute/sugar/macro, don't include in component counts
     if (
       !(
         doenetAttributes.isAttributeChild ||
@@ -2807,11 +3294,22 @@ export function createComponentNames({
     serializedComponent.componentName = componentName;
     if (prescribedName) {
       if (prescribedName in currentNamespace.namesUsed) {
-        throw Error(
-          `Duplicate component name ${componentName}.  Found in component of type ${componentType}${indexRangeString(
-            serializedComponent,
-          )}`,
-        );
+        foundError = true;
+        createUniqueNameDueToError = true;
+        if (!errorMessage) {
+          let lastSlash = componentName.lastIndexOf("/");
+          let componentNameRelative = componentName.slice(lastSlash + 1);
+          errorMessage = `Duplicate component name: ${componentNameRelative}.`;
+        }
+
+        // delete children and component props, as they could have automatically generated names
+        // that would be based on the parent name, and hence also conflict
+        delete serializedComponent.children;
+        for (let attrName in serializedComponent.attributes) {
+          if (serializedComponent.attributes[attrName].component) {
+            delete serializedComponent.attributes[attrName];
+          }
+        }
       }
       currentNamespace.namesUsed[prescribedName] = true;
     }
@@ -2822,11 +3320,15 @@ export function createComponentNames({
       if (assignNames) {
         for (let name of flattenDeep(assignNames)) {
           if (name in currentNamespace.namesUsed) {
-            throw Error(
-              `Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${componentType}${indexRangeString(
-                serializedComponent,
-              )}`,
-            );
+            foundError = true;
+            assignNames = undefined;
+            delete doenetAttributes.assignNames;
+            if (!errorMessage) {
+              let lastSlash = name.lastIndexOf("/");
+              let nameRelative = name.slice(lastSlash + 1);
+              errorMessage = `Duplicate component name: ${nameRelative}.  Found in assignNames of a <${componentType}> component.`;
+            }
+            break;
           }
           currentNamespace.namesUsed[name] = true;
         }
@@ -2878,48 +3380,86 @@ export function createComponentNames({
 
     if (target) {
       if (!componentClass.acceptTarget) {
-        throw Error(
-          `Component type ${componentType} does not accept a target attribute.   Found in component ${componentName}${indexRangeString(
-            serializedComponent,
-          )}`,
-        );
+        foundError = true;
+        target = undefined;
+        if (!errorMessage) {
+          errorMessage = `Component type <${componentType}> does not accept a target attribute.`;
+        }
       }
 
       if (target.includes("|")) {
-        throw Error(
-          `target cannot include |.  Found in component of type ${componentType}${indexRangeString(
-            serializedComponent,
-          )}`,
-        );
+        foundError = true;
+        target = undefined;
+        if (!errorMessage) {
+          errorMessage = `target cannot include |.`;
+        }
       }
 
-      // convert target to full name
-      doenetAttributes.target = target;
-
-      doenetAttributes.targetComponentName = convertComponentTarget({
-        relativeName: target,
-        oldAbsoluteName: doenetAttributes.targetComponentName,
-        namespaceStack,
-        acceptDoubleUnderscore:
-          doenetAttributes.createdFromSugar ||
-          doenetAttributes.allowDoubleUnderscoreTarget,
-      });
-    }
-
-    for (let attrName in attributes) {
-      let attr = attributes[attrName];
-      if (attr.targetComponentNames) {
-        for (let nameObj of attr.targetComponentNames) {
-          nameObj.absoluteName = convertComponentTarget({
-            relativeName: nameObj.relativeName,
-            oldAbsoluteName: nameObj.absoluteName,
+      if (target) {
+        // convert target to full name
+        doenetAttributes.target = target;
+        try {
+          doenetAttributes.targetComponentName = convertComponentTarget({
+            relativeName: target,
+            oldAbsoluteName: doenetAttributes.targetComponentName,
             namespaceStack,
             acceptDoubleUnderscore:
               doenetAttributes.createdFromSugar ||
               doenetAttributes.allowDoubleUnderscoreTarget,
           });
+        } catch (e) {
+          foundError = true;
+          if (!errorMessage) {
+            errorMessage = e.message;
+          }
         }
       }
+    }
+
+    try {
+      for (let attrName in attributes) {
+        let attr = attributes[attrName];
+        if (attr.targetComponentNames) {
+          for (let nameObj of attr.targetComponentNames) {
+            nameObj.absoluteName = convertComponentTarget({
+              relativeName: nameObj.relativeName,
+              oldAbsoluteName: nameObj.absoluteName,
+              namespaceStack,
+              acceptDoubleUnderscore:
+                doenetAttributes.createdFromSugar ||
+                doenetAttributes.allowDoubleUnderscoreTarget,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      foundError = true;
+      if (!errorMessage) {
+        errorMessage = e.message;
+      }
+    }
+
+    // Need to rename component now if had error
+    // as it will be used for namespace of children
+
+    if (createUniqueNameDueToError) {
+      // Name the "_error" component as though it were a component
+      // in the original DoenetML, i.e., number it consecutively.
+      componentType = "_error";
+
+      let count = currentNamespace.componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+      let componentName = "";
+      for (let l = 0; l <= level; l++) {
+        componentName += namespaceStack[l].namespace + "/";
+      }
+      currentNamespace.componentCounts[componentType] = ++count;
+
+      let prescribedName = "_" + componentType.toLowerCase() + count;
+      componentName += prescribedName;
+      serializedComponent.componentName = componentName;
     }
 
     if (serializedComponent.children) {
@@ -2941,7 +3481,7 @@ export function createComponentNames({
           currentNamespace.namesUsed = {};
           currentNamespace.componentCounts = {};
 
-          createComponentNames({
+          let res = createComponentNames({
             serializedComponents: [serializedComponent.children[0]],
             namespaceStack,
             componentInfoObjects,
@@ -2950,12 +3490,14 @@ export function createComponentNames({
             useOriginalNames,
             attributesByTargetComponentName,
           });
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
 
           currentNamespace.namesUsed = originalNamesUsed;
           currentNamespace.componentCounts = originalComponentCounts;
         }
 
-        createComponentNames({
+        let res = createComponentNames({
           serializedComponents: children,
           namespaceStack,
           componentInfoObjects,
@@ -2964,6 +3506,8 @@ export function createComponentNames({
           useOriginalNames,
           attributesByTargetComponentName,
         });
+        errors.push(...res.errors);
+        warnings.push(...res.warnings);
       } else {
         // if newNamespace, then need to make sure that assigned names
         // don't conflict with new names added,
@@ -2991,7 +3535,7 @@ export function createComponentNames({
           };
           namespaceStack.push(separateNewNamespaceInfo);
 
-          createComponentNames({
+          let res = createComponentNames({
             serializedComponents: [serializedComponent.children[0]],
             namespaceStack,
             componentInfoObjects,
@@ -3000,6 +3544,8 @@ export function createComponentNames({
             useOriginalNames,
             attributesByTargetComponentName,
           });
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
 
           namespaceStack.pop();
         }
@@ -3045,7 +3591,7 @@ export function createComponentNames({
               );
             }
 
-            createComponentNames({
+            let res = createComponentNames({
               serializedComponents: nextChildren,
               namespaceStack,
               componentInfoObjects,
@@ -3054,6 +3600,8 @@ export function createComponentNames({
               useOriginalNames,
               attributesByTargetComponentName,
             });
+            errors.push(...res.errors);
+            warnings.push(...res.warnings);
 
             if (addingNewNamespace) {
               namespaceStack.pop();
@@ -3063,7 +3611,7 @@ export function createComponentNames({
           }
         } else {
           namespaceStack.push(newNamespaceInfo);
-          createComponentNames({
+          let res = createComponentNames({
             serializedComponents: children,
             namespaceStack,
             componentInfoObjects,
@@ -3072,6 +3620,8 @@ export function createComponentNames({
             useOriginalNames,
             attributesByTargetComponentName,
           });
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
           namespaceStack.pop();
         }
       }
@@ -3095,7 +3645,7 @@ export function createComponentNames({
             comp.doenetAttributes.ignoreParentFixed = true;
           }
 
-          createComponentNames({
+          let res = createComponentNames({
             serializedComponents: [comp],
             namespaceStack,
             componentInfoObjects,
@@ -3105,11 +3655,13 @@ export function createComponentNames({
             attributesByTargetComponentName,
             createNameContext: attrName,
           });
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         } else if (attribute.childrenForComponent) {
           // TODO: what to do about parentName/parentDoenetAttributes
           // since parent of these isn't created
           // Note: the main (only?) to recurse here is to rename targets
-          createComponentNames({
+          let res = createComponentNames({
             serializedComponents: attribute.childrenForComponent,
             namespaceStack,
             componentInfoObjects,
@@ -3119,14 +3671,25 @@ export function createComponentNames({
             attributesByTargetComponentName,
             createNameContext: attrName,
           });
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         }
       }
     }
 
     // TODO: is there any reason to run createComponentNames on attribute components?
+
+    if (foundError) {
+      convertToErrorComponent(serializedComponent, errorMessage);
+
+      errors.push({
+        message: errorMessage,
+        doenetMLrange: serializedComponent.doenetMLrange,
+      });
+    }
   }
 
-  return serializedComponents;
+  return { errors, warnings };
 }
 
 function createNewAssignNamesAndrenameMatchingTargetNames({
@@ -3262,6 +3825,9 @@ export function processAssignNames({
   // console.log(`process assign names`)
   // console.log(deepClone(serializedComponents));
   // console.log(`originalNamesAreConsistent: ${originalNamesAreConsistent}`)
+
+  let errors = [];
+  let warnings = [];
 
   let numComponents = serializedComponents.length;
 
@@ -3403,9 +3969,10 @@ export function processAssignNames({
         continue;
       } else {
         // TODO: what to do when try to assign names recursively to non-composite?
-        console.warn(
-          `Cannot assign names recursively to ${component.componentType}`,
-        );
+        warnings.push({
+          message: `Cannot assign names recursively to ${component.componentType}`,
+          level: 1,
+        });
         name = null;
       }
     }
@@ -3441,7 +4008,7 @@ export function processAssignNames({
         component.originalDoenetAttributes.assignNames;
     }
 
-    createComponentNamesFromParentName({
+    let res = createComponentNamesFromParentName({
       parentName,
       ind: indForNames,
       component,
@@ -3451,12 +4018,16 @@ export function processAssignNames({
       originalNamesAreConsistent,
       shadowingComposite,
     });
+    errors.push(...res.errors);
+    warnings.push(...res.warnings);
 
     processedComponents.push(component);
   }
 
   return {
     serializedComponents: processedComponents,
+    errors,
+    warnings,
   };
 }
 
@@ -3534,7 +4105,7 @@ function createComponentNamesFromParentName({
   // console.log(useOriginalNames);
   // console.log(component.attributes.newNamespace);
 
-  createComponentNames({
+  return createComponentNames({
     serializedComponents: [component],
     namespaceStack,
     componentInfoObjects,
@@ -3909,24 +4480,6 @@ export function restrictTNamesToNamespace({
   }
 }
 
-function indexRangeString(serializedComponent) {
-  let message = "";
-  if (serializedComponent.range) {
-    let indBegin, indEnd;
-    if (serializedComponent.range.selfCloseBegin !== undefined) {
-      indBegin = serializedComponent.range.selfCloseBegin;
-      indEnd = serializedComponent.range.selfCloseEnd;
-    } else if (serializedComponent.range.openBegin !== undefined) {
-      indBegin = serializedComponent.range.openBegin;
-      indEnd = serializedComponent.range.closeEnd;
-    }
-    if (indBegin !== undefined) {
-      message += ` at indices ${indBegin}-${indEnd}`;
-    }
-  }
-  return message;
-}
-
 export function extractComponentNamesAndIndices(
   serializedComponents,
   nameSubstitutions = {},
@@ -3952,13 +4505,14 @@ export function extractComponentNamesAndIndices(
       let componentObj = {
         componentName,
       };
-      if (serializedComponent.range) {
-        if (serializedComponent.range.selfCloseBegin !== undefined) {
-          componentObj.indBegin = serializedComponent.range.selfCloseBegin;
-          componentObj.indEnd = serializedComponent.range.selfCloseEnd;
-        } else if (serializedComponent.range.openBegin !== undefined) {
-          componentObj.indBegin = serializedComponent.range.openBegin;
-          componentObj.indEnd = serializedComponent.range.closeEnd;
+      if (serializedComponent.doenetMLrange) {
+        if (serializedComponent.doenetMLrange.selfCloseBegin !== undefined) {
+          componentObj.indBegin =
+            serializedComponent.doenetMLrange.selfCloseBegin;
+          componentObj.indEnd = serializedComponent.doenetMLrange.selfCloseEnd;
+        } else if (serializedComponent.doenetMLrange.openBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.doenetMLrange.openBegin;
+          componentObj.indEnd = serializedComponent.doenetMLrange.closeEnd;
         }
       }
 
@@ -4070,4 +4624,24 @@ export function countComponentTypes(serializedComponents) {
   }
 
   return componentTypeCounts;
+}
+
+export function convertToErrorComponent(component, message) {
+  if (typeof component === "object") {
+    component.doenetAttributes = {
+      createNameFromComponentType: component.componentType,
+    };
+    component.componentType = "_error";
+    component.state = { message };
+
+    // If a name was supplied, we'll have the error keep that name.
+    // Note: at the point where this function is called, the name may have already been extracted,
+    // so this condition doesn't do anything there.
+    if (component.props.name) {
+      component.props = { name: component.props.name };
+    } else {
+      delete component.props;
+    }
+    component.attributes = {};
+  }
 }

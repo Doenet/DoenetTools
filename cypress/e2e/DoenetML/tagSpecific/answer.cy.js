@@ -3911,6 +3911,45 @@ describe("Answer Tag Tests", function () {
     });
   });
 
+  it("warning for sugar with invalid type", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p><answer type="bad">x</answer></p>
+  <p>Credit for submitted response: $_answer1.creditAchieved</p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Invalid type for answer: bad",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(34);
+    });
+
+    cy.get(cesc2("#/_answer1") + " textarea").type("x{enter}", { force: true });
+    cy.get(cesc2("#/_p2")).should(
+      "have.text",
+      "Credit for submitted response: 1",
+    );
+  });
+
   it("answer award with math", () => {
     cy.window().then(async (win) => {
       win.postMessage(

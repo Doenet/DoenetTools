@@ -188,6 +188,8 @@ export default class ODESystem extends InlineComponent {
         return { globalDependencies };
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
+        let warnings = [];
+
         let variablesSpecified = [];
         let validVariables = [];
         let numDims = globalDependencyValues.numDimensions;
@@ -206,9 +208,11 @@ export default class ODESystem extends InlineComponent {
             x.equals(globalDependencyValues.independentVariable),
           )
         ) {
-          console.warn(
-            "Variables of odesystem must be different than independent variable.",
-          );
+          warnings.push({
+            message:
+              "Variables of <odesystem> must be different than independent variable.",
+            level: 1,
+          });
         }
 
         if (validVariables.length < numDims) {
@@ -219,6 +223,7 @@ export default class ODESystem extends InlineComponent {
 
         return {
           setValue: { variables, validVariables },
+          sendWarnings: warnings,
         };
       },
     };
@@ -287,6 +292,7 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.initialConditions = {
       isArray: true,
       public: true,
+      hasEssential: true,
       shadowingInstructions: {
         createComponentOfType: "math",
         addAttributeComponentsShadowingStateVariables:
@@ -545,17 +551,14 @@ export default class ODESystem extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
+        console.log(dependencyValues);
+        let warnings = [];
+
         let valid = true;
         if (!dependencyValues.validIndependentVariable) {
-          console.warn(
-            "Can't define ODE RHS functions with invalid independent variable.",
-          );
           valid = false;
         }
         if (!dependencyValues.validVariables.every((x) => x)) {
-          console.warn(
-            "Can't define ODE RHS functions with an invalid variable.",
-          );
           valid = false;
         }
 
@@ -566,16 +569,15 @@ export default class ODESystem extends InlineComponent {
         );
 
         if (varNames.includes(indVarName)) {
-          console.warn(
-            "Can't define ODE RHS functions when independent variable is a dependent variable",
-          );
           valid = false;
         }
 
         if ([...new Set(varNames)].length !== varNames.length) {
-          console.warn(
-            "Can't define ODE RHS functions with duplicate dependent variable names",
-          );
+          warnings.push({
+            message:
+              "Can't define ODE RHS functions with duplicate dependent variable names.",
+            level: 1,
+          });
           valid = false;
         }
 
@@ -583,9 +585,11 @@ export default class ODESystem extends InlineComponent {
         try {
           fs = dependencyValues.rhss.map((x) => x.subscripts_to_strings().f());
         } catch (e) {
-          console.warn(
-            "Cannot define ODE RHS function.  Error creating mathjs function",
-          );
+          warnings.push({
+            message:
+              "Cannot define ODE RHS function.  Error creating mathjs function.",
+            level: 1,
+          });
           valid = false;
         }
 
@@ -596,6 +600,7 @@ export default class ODESystem extends InlineComponent {
               numericalRHSf: () => NaN,
               numericalRHSfDefinitions: Array(n).fill({}),
             },
+            sendWarnings: warnings,
           };
         }
 

@@ -1831,4 +1831,79 @@ describe("ODEsystem Tag Tests", function () {
       ).eqls(3);
     });
   });
+
+  it("warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<text>a</text>
+<odesystem variables="y" independentVariable="y">
+  <righthandside>5y</righthandside>
+</odesystem>
+
+<odesystem variables="y" independentVariable="sin(x)">
+  <righthandside>5y</righthandside>
+</odesystem>
+
+<odesystem variables="sin(y)" independentVariable="t">
+  <righthandside>5y</righthandside>
+</odesystem>
+
+<odesystem variables="x x" independentVariable="t">
+  <righthandside>5x</righthandside>
+  <righthandside>3x</righthandside>
+</odesystem>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(4);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid value of a variable: sin(x)`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(47);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(52);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Variables of <odesystem> must be different than independent variable`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(12);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Invalid value of a variable: sin(y)`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(11);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(23);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(11);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(28);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        `Can't define ODE RHS functions with duplicate dependent variable names`,
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(15);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(18);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(12);
+    });
+  });
 });

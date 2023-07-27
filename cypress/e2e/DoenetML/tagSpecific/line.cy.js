@@ -12170,18 +12170,100 @@ describe("Line Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
-    <graph>
-      <line through="A" />
-    </graph>
+    <line through="A" />
+    <line through="(x,y) (a,b)" />
+    <line through="(c,d) (a,b)" />
+    <line through="(c,d) (a,b)" variables="a c" />
     `,
         },
         "*",
       );
     });
 
-    // page loads
-    cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_line1")).should("contain.text", "\uff3f");
+    cy.get(cesc2("#/_line2")).should("contain.text", "\uff3f");
+    cy.get(cesc2("#/_line3")).should("not.contain.text", "\uff3f");
+    cy.get(cesc2("#/_line4")).should("contain.text", "\uff3f");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(3);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Line must be through points of at least two dimensions",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(24);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "Line is through points that depend on variables: x, y",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(34);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "Line is through points that depend on variables: a, c",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(50);
+    });
+  });
+
+  it("handle bad equation", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <line>y=x^2</line>
+  <line>1=2</line>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_line1") + " .mjx-mrow")
+      .eq(0)
+      .should("contain.text", "y=x2");
+    cy.get(cesc2("#/_line2") + " .mjx-mrow")
+      .eq(0)
+      .should("contain.text", "1=2");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Invalid format for equation of line in variables x and y",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(20);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "Invalid format for equation of line in variables x and y",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(18);
+    });
   });
 
   it("line perpendicular to another line", () => {
