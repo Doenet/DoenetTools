@@ -10,6 +10,7 @@ export default class Input extends InlineComponent {
       createStateVariable: "collaborateGroups",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     return attributes;
   }
