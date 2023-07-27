@@ -24,10 +24,15 @@ try {
     c.portfolioCourseForUserId,
     c.label as courseLabel,
     c.image,
-    c.color
+    c.color,
+    u.firstName,
+    u.lastName,
+    u.profilePicture
     FROM course_content AS cc
     LEFT JOIN course AS c
         ON c.courseId = cc.courseId
+    LEFT JOIN user As u
+        ON u.userId = c.portfolioCourseForUserId
     WHERE cc.doenetId = '$doenetId'
     AND cc.isPublic = '1'
     ";
@@ -46,7 +51,10 @@ try {
         "isUserPortfolio" => is_null($row["portfolioCourseForUserId"]) ? "0" : "1",
         "courseLabel" => $row['courseLabel'],
         "courseImage" => $row['image'],
-        "courseColor" => $row['color']
+        "courseColor" => $row['color'],
+        "firstName" => $row['firstName'],
+        "lastName" => $row['lastName'],
+        "profilePicture" => $row['profilePicture'],
     ]);
     
 
@@ -61,10 +69,15 @@ try {
     cch.isUserPortfolio,
     c.label as courseLabel,
     c.image,
-    c.color
+    c.color,
+    u.firstName,
+    u.lastName,
+    u.profilePicture
     FROM content_contributor_history AS cch
     LEFT JOIN course AS c
         ON c.courseId = cch.courseId
+    LEFT JOIN user As u
+        ON u.userId = c.portfolioCourseForUserId
     WHERE cch.doenetId = '$doenetId'
     ORDER BY cch.timestamp DESC
     ";
@@ -77,35 +90,13 @@ try {
                 "isUserPortfolio" => $row['isUserPortfolio'],
                 "courseLabel" => $row['courseLabel'],
                 "courseImage" => $row['image'],
-                "courseColor" => $row['color']
+                "courseColor" => $row['color'],
+                "firstName" => $row['firstName'],
+                "lastName" => $row['lastName'],
+                "profilePicture" => $row['profilePicture'],
             ]);
         }
-}
-
-    //Add on the first and last name for each user portfolio
-    foreach($contributors as &$contributor){
-        if ($contributor['isUserPortfolio'] == '1'){
-         $courseId = $contributor['courseId'];
-         $sql = "
-            SELECT u.firstName,
-            u.lastName,
-            u.profilePicture
-            FROM user AS u
-            LEFT JOIN course AS c
-            ON u.userId = c.portfolioCourseForUserId
-            WHERE c.courseId = '$courseId'
-            ";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $contributor['firstName'] = $row['firstName'];
-            $contributor['lastName'] = $row['lastName'];
-            $contributor['profilePicture'] = $row['profilePicture'];
-        }
-        }
     }
-
 
 
     $response_arr = [
