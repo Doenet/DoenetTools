@@ -35,12 +35,20 @@ export default function ContributorsMenu({ contributors }) {
   const avatars = deduppedContributors.map((contributor, i) => {
     const fullName = `${contributor.firstName} ${contributor.lastName}`;
     let avatar = (
-      <Avatar key={i} m={0} border="0" size="sm" name={fullName} mr="4px" />
+      <Avatar
+        key={`avatar${i}`}
+        m={0}
+        border="0"
+        size="sm"
+        name={fullName}
+        mr="4px"
+      />
     );
     if (contributor.isUserPortfolio == "0") {
       if (contributor.courseColor == "none") {
         avatar = (
           <Avatar
+            key={`avatar${i}`}
             size="sm"
             border="0"
             borderRadius="md"
@@ -50,6 +58,7 @@ export default function ContributorsMenu({ contributors }) {
       } else {
         avatar = (
           <Avatar
+            key={`avatar${i}`}
             size="sm"
             border="0"
             borderRadius="md"
@@ -65,7 +74,7 @@ export default function ContributorsMenu({ contributors }) {
   return (
     <Flex>
       <Menu>
-        <MenuButton as="Button">
+        <MenuButton as="button">
           <Flex>
             <AvatarGroup size="sm" max={2}>
               {avatars}
