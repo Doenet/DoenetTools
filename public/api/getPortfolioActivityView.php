@@ -71,15 +71,15 @@ try {
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()){
-        array_push($contributors, [
-            "courseId" => $row["courseId"],
-            "isUserPortfolio" => $row['isUserPortfolio'],
-            "courseLabel" => $row['courseLabel'],
-            "courseImage" => $row['image'],
-            "courseColor" => $row['color']
-        ]);
-    }
+        while($row = $result->fetch_assoc()){
+            array_push($contributors, [
+                "courseId" => $row["courseId"],
+                "isUserPortfolio" => $row['isUserPortfolio'],
+                "courseLabel" => $row['courseLabel'],
+                "courseImage" => $row['image'],
+                "courseColor" => $row['color']
+            ]);
+        }
 }
 
     //Add on the first and last name for each user portfolio

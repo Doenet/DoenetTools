@@ -204,18 +204,6 @@ export function PortfolioActivityViewer() {
                           size="xs"
                           colorScheme="blue"
                           type="submit"
-                          // onClick={async () => {
-                          //   alert("test");
-                          //   //   let resp = await axios.get(
-                          //   //     `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
-                          //   //   );
-                          //   //   const { nextActivityDoenetId, nextPageDoenetId } =
-                          //   //     resp.data;
-
-                          //   //   navigate(
-                          //   //     `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
-                          //   //   );
-                          // }}
                         >
                           Remix
                         </Button>
