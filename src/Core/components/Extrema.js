@@ -7,6 +7,7 @@ import {
 export class Extremum extends BaseComponent {
   static componentType = "extremum";
   static rendererType = undefined;
+  static excludeFromSchema = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -248,6 +249,8 @@ export class Extrema extends BaseComponent {
       this.componentType.charAt(0).toUpperCase() + this.componentType.slice(1)
     );
   }
+
+  static excludeFromSchema = true;
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();

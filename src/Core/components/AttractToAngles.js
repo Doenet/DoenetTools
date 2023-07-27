@@ -3,6 +3,8 @@ import ConstraintComponent from "./abstract/ConstraintComponent";
 export default class AttractToAngles extends ConstraintComponent {
   static componentType = "attractToAngles";
 
+  static excludeFromSchema = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.threshold = {

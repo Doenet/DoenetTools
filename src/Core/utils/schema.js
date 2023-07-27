@@ -82,6 +82,15 @@ export function getSchema() {
       }
     }
 
+    if (
+      componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: type,
+        baseComponentType: "_composite",
+      })
+    ) {
+      attributes.push({ name: "assignNames" });
+    }
+
     let attrObj = cClass.createAttributesObject();
 
     for (let attrName in attrObj) {

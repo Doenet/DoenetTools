@@ -3,6 +3,8 @@ import ConstraintComponent from "./abstract/ConstraintComponent";
 export default class ConstrainToAngles extends ConstraintComponent {
   static componentType = "constrainToAngles";
 
+  static excludeFromSchema = true;
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

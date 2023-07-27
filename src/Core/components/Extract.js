@@ -6,6 +6,8 @@ import { verifyReplacementsMatchSpecifiedType } from "../utils/copy";
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
+  static excludeFromSchema = true;
+
   static assignNamesToReplacements = true;
 
   static acceptAnyAttribute = true;

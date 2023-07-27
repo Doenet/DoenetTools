@@ -5,6 +5,8 @@ export default class TextListFromString extends InlineComponent {
   static rendererType = "asList";
   static renderChildren = true;
 
+  static excludeFromSchema = true;
+
   static stateVariableToBeShadowed = "texts";
 
   static returnSugarInstructions() {

@@ -12,6 +12,8 @@ import { deepClone } from "../utils/deepFunctions";
 export default class Copy extends CompositeComponent {
   static componentType = "copy";
 
+  static excludeFromSchema = true;
+
   static assignNamesToReplacements = true;
 
   static acceptTarget = true;
