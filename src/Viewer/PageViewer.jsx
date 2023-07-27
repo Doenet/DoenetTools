@@ -170,10 +170,14 @@ export default function PageViewer(props) {
   const itemInCourse = useRecoilValue(itemByDoenetId(props.doenetId));
   const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
+  // Note: useRef for location
+  // to make sure get current value of location in navigateToHash
+  const location = useRef(null);
+
   let navigate = useNavigate();
 
-  let location = useLocation();
-  let hash = location.hash;
+  location.current = useLocation();
+  let hash = location.current.hash;
 
   useEffect(() => {
     if (coreWorker.current) {
@@ -257,7 +261,9 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "navigateToTarget") {
           navigateToTarget(e.data.args);
         } else if (e.data.messageType === "navigateToHash") {
-          navigate(location.search + e.data.args.hash);
+          navigate(location.current.search + e.data.args.hash, {
+            replace: true,
+          });
         } else if (e.data.messageType === "terminated") {
           terminateCoreAndAnimations();
         }
@@ -338,22 +344,22 @@ export default function PageViewer(props) {
         });
       }
     }
-  }, [location, hash, coreCreated.current, coreWorker.current]);
+  }, [location.current, hash, coreCreated.current, coreWorker.current]);
 
   useEffect(() => {
     if (hash && documentRenderer && props.pageIsActive) {
       let anchor = hash.slice(1);
       if (
-        (!previousLocationKeys.current.includes(location.key) ||
-          location.key === "default") &&
+        (!previousLocationKeys.current.includes(location.current.key) ||
+          location.current.key === "default") &&
         anchor.length > prefixForIds.length &&
         anchor.substring(0, prefixForIds.length) === prefixForIds
       ) {
         document.getElementById(anchor)?.scrollIntoView();
       }
-      previousLocationKeys.current.push(location.key);
+      previousLocationKeys.current.push(location.current.key);
     }
-  }, [location, hash, documentRenderer, props.pageIsActive]);
+  }, [location.current, hash, documentRenderer, props.pageIsActive]);
 
   useEffect(() => {
     callAction({
@@ -1129,8 +1135,8 @@ export default function PageViewer(props) {
       targetName,
       pageToolView,
       inCourse: Object.keys(itemInCourse).length > 0,
-      pathname: location.pathname,
-      search: location.search,
+      pathname: location.current.pathname,
+      search: location.current.search,
       id,
     });
 
