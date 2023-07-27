@@ -491,6 +491,73 @@ describe("doenetEditor test", function () {
     });
   });
 
+  it("Autocompletion", () => {
+    cy.get(".cm-content").type(`<sec`);
+
+    cy.get(".cm-tooltip-autocomplete").should("be.visible");
+
+    selectTopAutoCompleteOptionWhenNamed("section");
+
+    cy.get(".cm-content").type(` includeAutoNumberI`);
+    selectTopAutoCompleteOptionWhenNamed("includeAutoNumberIfNoTitle");
+
+    cy.get(".cm-content").type(`="f`);
+    selectTopAutoCompleteOptionWhenNamed(`"false"`);
+
+    cy.get(".cm-content").type(`>{enter}{enter}{enter}</`);
+    selectTopAutoCompleteOptionWhenNamed("section>");
+
+    cy.get(".cm-content").type(`{ctrl+s}`);
+
+    cy.get(cesc2("#/_section1_title")).should("have.text", "Section");
+
+    cy.get(".cm-content").type(`{ctrl+home}{downArrow}{downArrow}<answer sym`);
+    selectTopAutoCompleteOptionWhenNamed("symbolicEquality");
+
+    cy.get(".cm-content").type(` simp`);
+    selectTopAutoCompleteOptionWhenNamed("simplifyOnCompare");
+
+    cy.get(".cm-content").type(`="f`);
+    selectTopAutoCompleteOptionWhenNamed(`"full"`);
+
+    cy.get(".cm-content").type(` na`);
+    selectTopAutoCompleteOptionWhenNamed("name");
+
+    cy.get(".cm-content").type(`="ans">{enter}<a`);
+    selectTopAutoCompleteOptionWhenNamed(`award`);
+
+    cy.get(".cm-content").type(`><math fo`);
+    selectTopAutoCompleteOptionWhenNamed(`format`);
+
+    cy.get(".cm-content").type(`="l`);
+    selectTopAutoCompleteOptionWhenNamed(`"latex"`);
+
+    cy.get(".cm-content").type(`>\\frac{{}x}{{}y}</`);
+    selectTopAutoCompleteOptionWhenNamed("math>");
+
+    cy.get(".cm-content").type(`</`);
+    selectTopAutoCompleteOptionWhenNamed("award>");
+
+    cy.get(".cm-content").type(`{enter}</`);
+    selectTopAutoCompleteOptionWhenNamed("answer>");
+
+    cy.get(".cm-content").type(`<num`);
+    selectTopAutoCompleteOptionWhenNamed("number");
+
+    cy.get(".cm-content").type(` cop`);
+    selectTopAutoCompleteOptionWhenNamed("copySource");
+
+    cy.get(".cm-content").type(`="ans.creditAchieved" />`);
+
+    cy.get(".cm-content").type(`{ctrl+s}`);
+
+    cy.get(cesc2("#/ans") + " textarea").type("(x+1-1)/y{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/_number1")).should("have.text", "1");
+  });
+
   //This is broken
   it.skip("Navigating back remembers position where clicked internal link", () => {
     const doenetMLString = `
@@ -568,3 +635,20 @@ describe("doenetEditor test", function () {
     });
   });
 });
+
+function selectTopAutoCompleteOptionWhenNamed(value) {
+  // wait autocompletion list has value at the top
+  cy.waitUntil(() =>
+    cy
+      .get(".cm-tooltip-autocomplete ul li")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        return text === value;
+      }),
+  );
+
+  // for some reason, still have to wait longer
+  cy.wait(100);
+  cy.get(".cm-content").type(`{enter}`);
+}
