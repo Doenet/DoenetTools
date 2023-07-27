@@ -171,16 +171,19 @@ try {
         );
     }
 
+    $learningOutcomes = $previous_activity_content['learningOutcomes'];
+    if (is_null($learningOutcomes)){
+        $learningOutcomes = '[""]';
+    }
 
     $escapedLabel = mysqli_real_escape_string($conn, $previous_activity_content['label']);
     $imagePath = $previous_activity_content['imagePath'];
     $type = $previous_activity_content['type'];
-    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
-    
+    $str_insert_to_course_content = "('$type','$nextCourseId','$nextActivityDoenetId','$nextCourseId','$escapedLabel',NOW(),'0','0','0','1','n','$nextActivityJsonDefinition','$imagePath','$learningOutcomes',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
     
     //INSERT the new activity into course_content
     $sql = "
-    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,addToPrivatePortfolioDate)
+    INSERT INTO course_content (type,courseId,doenetId,parentDoenetId,label,creationDate,isAssigned,isGloballyAssigned,isPublic,userCanViewSource,sortOrder,jsonDefinition,imagePath,learningOutcomes,addToPrivatePortfolioDate)
     VALUES
     $str_insert_to_course_content
     ";
