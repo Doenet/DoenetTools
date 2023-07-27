@@ -2293,5 +2293,21 @@ describe("Extract Tag Tests", function () {
     });
 
     cy.get(cesc2("#/_p1")).should("have.text", "Nothing here: ");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Invalid extract.  Must have a prop",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(22);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(54);
+    });
   });
 });

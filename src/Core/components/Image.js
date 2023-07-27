@@ -47,11 +47,6 @@ export default class Image extends BlockComponent {
       createComponentOfType: "number",
     };
 
-    // Note: height attribute is deprecated and will be removed in the future
-    attributes.height = {
-      createComponentOfType: "_componentSize",
-    };
-
     attributes.displayMode = {
       createComponentOfType: "text",
       createStateVariable: "displayMode",

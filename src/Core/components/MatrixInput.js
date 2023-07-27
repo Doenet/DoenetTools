@@ -2576,7 +2576,7 @@ export class MatrixInputGrid extends CompositeComponent {
       });
     }
 
-    return { replacements: serializedComponents };
+    return { replacements: serializedComponents, errors: [], warnings: [] };
   }
 
   static async calculateReplacementChanges({
@@ -2737,7 +2737,7 @@ export class MatrixInputRow extends CompositeComponent {
       });
     }
 
-    return { replacements: serializedComponents };
+    return { replacements: serializedComponents, errors: [], warnings: [] };
   }
 
   static async calculateReplacementChanges({

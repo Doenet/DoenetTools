@@ -2725,6 +2725,64 @@ describe("AnimateFromSequence Tag Tests", function () {
     });
   });
 
+  it("animate warnings with invalid targets", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <number name="n">1</number>
+  <p name="p">1</p>
+  <line name="l" through="(1,2) (3,4)" />
+  <animateFromSequence target='n.invalid' animationOn="true" />
+  <animateFromSequence target='p' animationOn="true" />
+  <animateFromSequence target='l.points[1].bad' animationOn="true" />
+  <booleaninput name="bi" /><boolean copySource="bi" name="b" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.log("make sure core has responded");
+    cy.get(cesc2("#/b")).should("have.text", "false");
+    cy.get(cesc2("#/bi")).click();
+    cy.get(cesc2("#/b")).should("have.text", "true");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(3);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        'Invalid animation target: cannot find a state variable named "invalid" on a <number>',
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(63);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        'Invalid animation target: cannot find a state variable named "value" on a <p>',
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(55);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "Invalid animation target: cannot find target",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(69);
+    });
+  });
+
   it("animation stops when triggered by its own variable", () => {
     cy.window().then(async (win) => {
       win.postMessage(

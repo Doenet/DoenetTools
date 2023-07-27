@@ -191,6 +191,8 @@ import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
 import ListOfNumberLists from "./components/abstract/ListOfNumberLists";
 import DirectionComponent from "./components/abstract/DirectionComponent";
+import ErrorComponent from "./components/abstract/Error";
+import Comment from "./components/abstract/Comment";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -384,6 +386,8 @@ const componentTypeArray = [
   VariableName,
   ListOfNumberLists,
   DirectionComponent,
+  ErrorComponent,
+  Comment,
 ];
 
 export function allComponentClasses() {

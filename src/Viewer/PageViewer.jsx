@@ -143,8 +143,10 @@ export default function PageViewer(props) {
   const coreCreated = useRef(false);
   const coreCreationInProgress = useRef(false);
   const coreId = useRef(null);
+  const errorWarnings = useRef(null);
 
   const resolveAllStateVariables = useRef(null);
+  const resolveErrorWarnings = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
   const coreWorker = useRef(null);
@@ -246,6 +248,9 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args);
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "returnErrorWarnings") {
+          console.log(e.data.args);
+          resolveErrorWarnings.current(e.data.args);
         } else if (e.data.messageType === "componentRangePieces") {
           window["componentRangePieces" + pageNumber] =
             e.data.args.componentRangePieces;
@@ -254,6 +259,9 @@ export default function PageViewer(props) {
             props.setIsInErrorState(true);
           }
           setErrMsg(e.data.args.errMsg);
+        } else if (e.data.messageType === "setErrorWarnings") {
+          errorWarnings.current = e.data.errorWarnings;
+          props.setErrorsAndWarningsCallback?.(errorWarnings.current);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "copyToClipboard") {
@@ -290,6 +298,16 @@ export default function PageViewer(props) {
 
         return new Promise((resolve, reject) => {
           resolveAllStateVariables.current = resolve;
+        });
+      };
+
+      window["returnErrorWarnings" + pageNumber] = function () {
+        coreWorker.current.postMessage({
+          messageType: "returnErrorWarnings",
+        });
+
+        return new Promise((resolve, reject) => {
+          resolveErrorWarnings.current = resolve;
         });
       };
 
@@ -1302,6 +1320,21 @@ export default function PageViewer(props) {
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
+  let errorOverview = null;
+  if (documentRenderer && errorWarnings.current?.errors.length > 0) {
+    let errorStyle = {
+      backgroundColor: "#ff9999",
+      textAlign: "center",
+      borderWidth: 3,
+      borderStyle: "solid",
+    };
+    errorOverview = (
+      <div style={errorStyle}>
+        <b>This document contains errors!</b>
+      </div>
+    );
+  }
+
   //Spacing around the whole doenetML document
   return (
     <ErrorBoundary
@@ -1312,6 +1345,7 @@ export default function PageViewer(props) {
     >
       {noCoreWarning}
       <div style={pageStyle} className="doenet-viewer">
+        {errorOverview}
         {documentRenderer}
       </div>
     </ErrorBoundary>

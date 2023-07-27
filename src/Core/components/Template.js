@@ -206,11 +206,14 @@ export default class Template extends CompositeComponent {
     flags,
     publicCaseInsensitiveAliasSubstitutions,
   }) {
+    let errors = [];
+    let warnings = [];
+
     // evaluate numComponentsSpecified so get error if specify numComponents without createComponentOfType
     await component.stateValues.numComponentsSpecified;
 
     if (!(await component.stateValues.rendered)) {
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     } else {
       let replacements = deepClone(
         await component.state.serializedChildren.value,
@@ -261,6 +264,8 @@ export default class Template extends CompositeComponent {
         componentInfoObjects,
         originalNamesAreConsistent: true,
       });
+      errors.push(...processResult.errors);
+      warnings.push(...processResult.warnings);
 
       let verificationResult = await verifyReplacementsMatchSpecifiedType({
         component,
@@ -272,11 +277,17 @@ export default class Template extends CompositeComponent {
         components,
         publicCaseInsensitiveAliasSubstitutions,
       });
+      errors.push(...verificationResult.errors);
+      warnings.push(...verificationResult.warnings);
 
       // console.log(`serialized replacements for ${component.componentName}`)
       // console.log(JSON.parse(JSON.stringify(verificationResult.replacements)))
 
-      return { replacements: verificationResult.replacements };
+      return {
+        replacements: verificationResult.replacements,
+        errors,
+        warnings,
+      };
     }
   }
 
@@ -285,6 +296,10 @@ export default class Template extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     if (!(await component.stateValues.rendered)) {
       if (
         component.replacements.length > 0 &&
@@ -318,6 +333,8 @@ export default class Template extends CompositeComponent {
         });
 
         let replacements = createResult.replacements;
+        errors.push(...createResult.errors);
+        warnings.push(...createResult.warnings);
 
         let replacementInstruction = {
           changeType: "add",

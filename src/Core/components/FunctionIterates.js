@@ -72,10 +72,17 @@ export default class FunctionIterates extends InlineComponent {
           dependencyValues.functionAttr.stateValues.numInputs !==
           dependencyValues.functionAttr.stateValues.numOutputs
         ) {
-          console.warn(
-            `Function iterates are possible only if the number of inputs is equal to the number of outputs`,
-          );
-          return { setValue: { numDimensions: 0 } };
+          let numInputs = dependencyValues.functionAttr.stateValues.numInputs;
+          let numInputsPhrase =
+            numInputs.toString() + (numInputs === 1 ? " input" : " inputs");
+          let numOutputs = dependencyValues.functionAttr.stateValues.numOutputs;
+          let numOutputsPhrase =
+            numOutputs.toString() + (numOutputs === 1 ? " output" : " outputs");
+          let warning = {
+            message: `Function iterates are possible only if the number of inputs of the function is equal to the number of outputs. This function has ${numInputsPhrase} and ${numOutputsPhrase}.`,
+            level: 1,
+          };
+          return { setValue: { numDimensions: 0 }, sendWarnings: [warning] };
         } else {
           return {
             setValue: {

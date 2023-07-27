@@ -248,7 +248,15 @@ export default class UpdateValue extends InlineComponent {
             targetIdentities = [targetIdentities];
           }
         }
-        return { setValue: { targetIdentities } };
+        let warnings = [];
+        if (targetIdentities === null || targetIdentities.length === 0) {
+          warnings.push({
+            message: "Invalid target for <updateValue>: cannot find target.",
+            level: 1,
+          });
+        }
+
+        return { setValue: { targetIdentities }, sendWarnings: warnings };
       },
     };
 
@@ -264,10 +272,18 @@ export default class UpdateValue extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "targetIdentities",
           },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName",
+          },
+          propIndex: {
+            dependencyType: "stateVariable",
+            variableName: "propIndex",
+          },
         };
 
         if (stateValues.targetIdentities !== null) {
-          for (let [ind, source] of stateValues.targetIdentities.entries()) {
+          for (let [ind, target] of stateValues.targetIdentities.entries()) {
             let thisTarget;
 
             if (stateValues.propName) {
@@ -280,7 +296,7 @@ export default class UpdateValue extends InlineComponent {
               }
               thisTarget = {
                 dependencyType: "stateVariable",
-                componentName: source.componentName,
+                componentName: target.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
@@ -291,8 +307,11 @@ export default class UpdateValue extends InlineComponent {
               };
             } else {
               thisTarget = {
-                dependencyType: "componentIdentity",
-                componentName: source.componentName,
+                dependencyType: "stateVariable",
+                componentName: target.componentName,
+                variableName: "value",
+                returnAsComponentObject: true,
+                variablesOptional: true,
               };
             }
 
@@ -304,18 +323,37 @@ export default class UpdateValue extends InlineComponent {
       },
       definition({ dependencyValues }) {
         let targets = null;
+        let warnings = [];
 
         if (dependencyValues.targetIdentities !== null) {
           targets = [];
 
           for (let ind in dependencyValues.targetIdentities) {
-            if (dependencyValues["target" + ind]) {
-              targets.push(dependencyValues["target" + ind]);
+            let target = dependencyValues["target" + ind];
+            targets.push(target);
+            if (Object.keys(target.stateValues)[0] === undefined) {
+              if (dependencyValues.propName) {
+                let prop = dependencyValues.propName;
+                if (dependencyValues.propIndex) {
+                  prop = `prop[${dependencyValues.propIndex}]`;
+                }
+                let message = `Invalid target for <updateValue>: cannot find a state variable named "${prop}" on a <${target.componentType}>.`;
+                warnings.push({
+                  message,
+                  level: 1,
+                });
+              } else {
+                let message = `Invalid target for <updateValue>: cannot find a state variable named "value" on a <${target.componentType}>.`;
+                warnings.push({
+                  message,
+                  level: 1,
+                });
+              }
             }
           }
         }
 
-        return { setValue: { targets } };
+        return { setValue: { targets }, sendWarnings: warnings };
       },
     };
 
@@ -376,18 +414,9 @@ export default class UpdateValue extends InlineComponent {
     let updateInstructions = [];
 
     for (let target of targets) {
-      let stateVariable = "value";
-      if (target.stateValues) {
-        stateVariable = Object.keys(target.stateValues)[0];
-        if (stateVariable === undefined) {
-          console.warn(
-            `Cannot update prop="${await this.stateValues
-              .propName}" of ${await this.stateValues
-              .target} as could not find prop ${await this.stateValues
-              .propName} on a component of type ${target.componentType}`,
-          );
-          continue;
-        }
+      let stateVariable = Object.keys(target.stateValues)[0];
+      if (stateVariable === undefined) {
+        continue;
       }
 
       updateInstructions.push({
