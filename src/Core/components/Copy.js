@@ -42,6 +42,7 @@ export default class Copy extends CompositeComponent {
     };
     attributes.prop = {
       createPrimitiveOfType: "string",
+      excludeFromSchema: true,
     };
     attributes.obtainPropFromComposite = {
       createPrimitiveOfType: "boolean",
@@ -60,24 +61,28 @@ export default class Copy extends CompositeComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.sourceSubnames = {
       createPrimitiveOfType: "stringArray",
       createStateVariable: "targetSubnames",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.sourceSubnamesComponentIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "targetSubnamesComponentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.propIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.uri = {
       createPrimitiveOfType: "string",

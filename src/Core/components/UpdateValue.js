@@ -49,6 +49,7 @@ export default class UpdateValue extends InlineComponent {
 
     attributes.prop = {
       createPrimitiveOfType: "string",
+      excludeFromSchema: true,
     };
 
     attributes.newValue = {
@@ -60,6 +61,7 @@ export default class UpdateValue extends InlineComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.propIndex = {
@@ -67,6 +69,7 @@ export default class UpdateValue extends InlineComponent {
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.targetSubnames = {
@@ -74,12 +77,14 @@ export default class UpdateValue extends InlineComponent {
       createStateVariable: "targetSubnames",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.targetSubnamesComponentIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "targetSubnamesComponentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.draggable = {

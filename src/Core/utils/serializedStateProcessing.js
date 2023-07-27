@@ -913,17 +913,19 @@ function breakUpTargetIntoPropsAndIndices(
           targetPropName = prop;
           originalSource = component.props[prop];
 
-          let sourcePiecesResult = buildSourcePieces(originalSource, true);
+          if (typeof originalSource === "string") {
+            let sourcePiecesResult = buildSourcePieces(originalSource, true);
 
-          if (
-            sourcePiecesResult.success &&
-            sourcePiecesResult.matchLength === originalSource.length
-          ) {
-            sourceName = sourcePiecesResult.sourceName;
-            componentIndex = sourcePiecesResult.componentIndex;
-            componentAttributes = sourcePiecesResult.componentAttributes;
-            propArray = sourcePiecesResult.propArray;
-            subNames = sourcePiecesResult.subNames;
+            if (
+              sourcePiecesResult.success &&
+              sourcePiecesResult.matchLength === originalSource.length
+            ) {
+              sourceName = sourcePiecesResult.sourceName;
+              componentIndex = sourcePiecesResult.componentIndex;
+              componentAttributes = sourcePiecesResult.componentAttributes;
+              propArray = sourcePiecesResult.propArray;
+              subNames = sourcePiecesResult.subNames;
+            }
           }
         }
       }

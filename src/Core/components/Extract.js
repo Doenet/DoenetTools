@@ -41,12 +41,14 @@ export default class Extract extends CompositeComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     attributes.propIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
     return attributes;
   }
