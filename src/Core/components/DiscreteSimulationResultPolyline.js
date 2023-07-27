@@ -14,6 +14,8 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   static componentType = "discreteSimulationResultPolyline";
   static rendererType = "polyline";
 
+  static excludeFromSchema = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 

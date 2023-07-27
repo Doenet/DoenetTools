@@ -10,6 +10,8 @@ export default class RenderDoenetML extends BlockComponent {
   }
   static componentType = "renderDoenetML";
 
+  static excludeFromSchema = true;
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;

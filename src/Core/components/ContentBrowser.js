@@ -14,6 +14,8 @@ export class ContentBrowser extends BlockComponent {
 
   static componentType = "contentBrowser";
 
+  static excludeFromSchema = true;
+
   static renderChildren = true;
 
   static returnChildGroups() {
@@ -334,6 +336,8 @@ export class ContentBrowserItem extends BlockComponent {
   static componentType = "contentBrowserItem";
   static rendererType = "containerBlock";
 
+  static excludeFromSchema = true;
+
   static renderChildren = true;
   static includeBlankStringChildren = true;
 
@@ -409,6 +413,8 @@ export class ContentBrowserItem extends BlockComponent {
 
 export class ContentBrowserContent extends Template {
   static componentType = "contentBrowserContent";
+
+  static excludeFromSchema = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
