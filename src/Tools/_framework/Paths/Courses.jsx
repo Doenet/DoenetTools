@@ -353,7 +353,7 @@ export function Courses() {
             minHeight={200}
             width="100%"
           >
-            <Wrap overflow="visible" p="10px">
+            <Wrap overflow="visible" p="10px" data-test="List of courses">
               {optimisticCourses.map((course, index) => (
                 <CourseCard
                   course={course}

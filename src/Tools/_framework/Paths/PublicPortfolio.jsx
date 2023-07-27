@@ -84,7 +84,7 @@ export function PublicPortfolio() {
       gridTemplateRows={`80px auto`}
       h="calc(100vh - 40px)"
     >
-      <GridItem area="portfolioHeader">
+      <GridItem area="portfolioHeader" data-test="Heading Bar">
         <Box
           as="header"
           gridRow="1/2"
@@ -103,10 +103,10 @@ export function PublicPortfolio() {
           <HStack spacing={4}>
             {avatar}
             <VStack spacing={0}>
-              <Text fontSize="24px" fontWeight="700">
+              <Text fontSize="24px" fontWeight="700" data-test="heading1">
                 {isUserPortfolio == "1" ? fullName : courseLabel}
               </Text>
-              <Text fontSize="16px" fontWeight="700">
+              <Text fontSize="16px" fontWeight="700" data-test="heading2">
                 {isUserPortfolio == "1"
                   ? "User Portfolio"
                   : "Public Course Activities"}
@@ -117,7 +117,7 @@ export function PublicPortfolio() {
       </GridItem>
       <GridItem area="activityCards" bg="var(--lightBlue)">
         <Center>
-          <Wrap p="10px">
+          <Wrap p="10px" data-test="list of activities">
             {publicActivities.length < 1 ? (
               <Flex
                 flexDirection="column"

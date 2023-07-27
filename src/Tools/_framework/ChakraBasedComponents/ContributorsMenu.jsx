@@ -74,7 +74,7 @@ export default function ContributorsMenu({ contributors }) {
   return (
     <Flex>
       <Menu>
-        <MenuButton as="button">
+        <MenuButton as="button" data-test="contributors menu">
           <Flex>
             <AvatarGroup size="sm" max={2}>
               {avatars}
@@ -92,14 +92,19 @@ export default function ContributorsMenu({ contributors }) {
               label = contributor.courseLabel;
             }
             return (
-              <MenuItem key={`mi${i}`} as={Link} to={href}>
+              <MenuItem
+                key={`mi${i}`}
+                as={Link}
+                to={href}
+                data-test={`contributors menu item ${i}`}
+              >
                 {avatars[i]} <Text ml="4px">{label}</Text>
               </MenuItem>
             );
           })}
         </MenuList>
       </Menu>
-      <Flex flexDirection="column" pt="10px">
+      <Flex flexDirection="column" pt="10px" data-test="info on contributors">
         <Text fontSize="14px" ml="4px" lineHeight="1">
           {byLine}
         </Text>
