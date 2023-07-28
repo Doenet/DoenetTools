@@ -1,8 +1,5 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
-import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-// import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
+import React, { lazy, Suspense, useEffect } from "react";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 import PageViewer from "../../../Viewer/PageViewer";
 import {
   pageVariantInfoAtom,
@@ -22,11 +19,24 @@ import {
   useColorModeValue,
   Button,
   VStack,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-// import { Link } from 'react-router-dom';
-// import RouterLogo from '../RouterLogo';
+import { MdBuild } from "react-icons/md";
+import axios from "axios";
+import { useFetcher } from "react-router-dom";
+
+export async function action() {
+  //Create a portfolio activity and redirect to the editor for it
+  let { data } = await axios.get("/api/createPortfolioActivity.php");
+
+  let { doenetId, pageDoenetId } = data;
+  return redirect(
+    `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
+  );
+}
 
 export async function loader() {
   const response = await fetch("/api/loadPromotedContent.php");
@@ -35,34 +45,6 @@ export async function loader() {
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
-
-// const CarouselSection = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   padding: 60px 10px 60px 10px;
-//   margin: 0px;
-//   row-gap: 45px;
-//   justify-content: center;
-//   align-items: center;
-//   text-align: center;
-//   background: var(--mainGray);
-//   height: 300px;
-// `;
-
-// const CreateContentSection = styled.div`
-//   display: flex;
-//   column-gap: 20px;
-//   justify-content: center;
-//   align-items: center;
-//   height: 500px;
-//   background: #0e1111;
-//   @media (max-width: 1024px) {
-//     /* height: 300px; */
-//     flex-direction: column;
-//     row-gap: 20px;
-//     height: 600px;
-//   }
-// `;
 
 let doenetML = `
 <example>
@@ -118,30 +100,31 @@ let doenetML = `
   
 </example>
 `;
-function Heading(props) {
+function Heading({
+  heading,
+  subheading,
+  background = "white",
+  color = "black",
+}) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100px",
-      }}
-    >
-      <Text fontSize="24px" fontWeight="700">
-        {props.heading}
-      </Text>
-      <Text fontSize="16px" fontWeight="700">
-        {props.subheading}
-      </Text>
-    </div>
+    <Center p="10px" bg={background}>
+      <VStack spacing={0}>
+        <Text fontSize="24px" fontWeight="700" color={color}>
+          {heading}
+        </Text>
+        <Text fontSize="16px" fontWeight="700" color={color}>
+          {subheading}
+        </Text>
+      </VStack>
+    </Center>
   );
 }
 
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
+  const fetcher = useFetcher();
+
   const favorites = loaderData?.carouselData?.Homepage;
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -200,132 +183,93 @@ export function Home() {
           </Center>
         </Flex>
       </Center>
-      <Heading
-        heading="Announcements"
-        // subheading="Quickly create interactive activities"
-      />
-      <Center background={blueColor} padding="20px">
-        <VStack>
-          <Flex flexDirection="column">
-            <Text fontSize="16px" fontWeight="700" textAlign="left">
-              Doenet Learning Experiment Mini-Grants
-            </Text>
-            <Text maxWidth="800px">
-              <p style={{ marginBottom: "10px" }}>
-                Applications for a Doenet Learning Experiment Mini-Grant are now
-                being accepted. These mini-grants are awards of $500 that will
-                be given to instructors to run learning experiments using
-                Doenet.
-              </p>
-
-              <p style={{ marginBottom: "10px" }}>
-                To be eligible for one of these mini-grants, instructors must
-                design a learning experiment and give that learning experiment
-                to their students on the Doenet platform during the 2023-24
-                academic year.
-              </p>
-
-              <p style={{ marginBottom: "10px" }}>
-                To apply for a mini-grant, submit a one-paragraph description on
-                the proposed learning experiment to{" "}
-                <Link href="mailto:info@doenet.org" isExternal>
-                  <Text as="u">info@doenet.org</Text>
-                </Link>{" "}
-                by August 21, 2023. Priority will be given to participants of a
-                previous Doenet workshop, but attending a previous workshop is
-                not a requirement.
-              </p>
-
-              <p>
-                Questions? Contact{" "}
-                <Link href="mailto:info@doenet.org" isExternal>
-                  <Text as="u">info@doenet.org</Text>
-                </Link>{" "}
-                or post a question on the{" "}
-                <Link href="https://discord.gg/PUduwtKJ5h" isExternal>
-                  <Text as="u">Doenet Discord server</Text>.
-                </Link>
-              </p>
-            </Text>
-          </Flex>
-          <Flex flexDirection="column">
-            <Text fontSize="16px" fontWeight="700" textAlign="left">
-              Doenet Office Hours
-            </Text>
-            <Text maxWidth="800px">
-              Doenet Staff we will be available to help you author learning
-              activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
-              <Link
-                href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
-                isExternal
-              >
-                <Text as="u">Zoom</Text>.
-              </Link>
-            </Text>
-          </Flex>
-        </VStack>
-      </Center>
-      <Heading
-        heading="Create Content"
-        subheading="Quickly create interactive activities"
-      />
       <Flex
         alignItems="center"
         justifyContent="center"
         bg={blackColor}
         py="30px"
       >
-        <Flex alignItems="center" justifyContent="center" gap={6} maxW="900px">
-          <Flex
-            textAlign="left"
-            flexDirection="column"
-            justifyContent="center"
-            gap={4}
-          >
-            <Text color={textColor} fontSize="16pt">
-              Introducing DoenetML
-            </Text>
-            <Text color={textColor} fontSize="10pt">
-              DoenetML is the markup language we&apos;ve created to let you
-              focus on the meaning of the elements you wish to create.
-            </Text>
-            <Button
-              // dataTest="Nav to course"
-              size="xs"
-              borderRadius={20}
-              onClick={() =>
-                window.open(
-                  "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
-                  "_blank",
-                )
-              }
-            >
-              See Inside
-            </Button>
-            <Button
-              // dataTest="Nav to course"
-              size="xs"
-              borderRadius={20}
-              onClick={() =>
-                window.open(
-                  "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
-                  "_blank",
-                )
-              }
-            >
-              Documentation
-            </Button>
-          </Flex>
-          <Suspense fallback={"Loading..."}>
-            {" "}
-            {/* Does this lazy loading do anything? */}
-            <HomeIntroVideo />
-          </Suspense>
-        </Flex>
+        <Grid
+          gridTemplateAreas={`"Start null"
+        "Description Video"
+        `}
+          gridTemplateRows={"80px auto"}
+          gridTemplateColumns={"300px auto"}
+        >
+          <GridItem area="Start">
+            <Center>
+              <Button
+                leftIcon={<MdBuild />}
+                size="2xl"
+                p="10px"
+                colorScheme="blue"
+                mb="180px"
+                w="240px"
+                onClick={
+                  context.signedIn
+                    ? () => {
+                        fetcher.submit(
+                          { _action: "Add Activity" },
+                          { method: "post" },
+                        );
+                      }
+                    : () => {
+                        location.href = "/portfolioviewer/tutorialactivity";
+                      }
+                }
+              >
+                Start Creating
+              </Button>
+            </Center>
+          </GridItem>
+          <GridItem area="Description" p="20px">
+            <Flex textAlign="left" flexDirection="column" gap={4}>
+              <Text color={textColor} fontSize="16pt">
+                Introducing DoenetML
+              </Text>
+              <Text color={textColor} fontSize="10pt">
+                DoenetML is the markup language we&apos;ve created to let you
+                focus on the meaning of the elements you wish to create.
+              </Text>
+              <Button
+                size="xs"
+                borderRadius={20}
+                onClick={() =>
+                  window.open(
+                    "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
+                    "_blank",
+                  )
+                }
+              >
+                See Inside
+              </Button>
+              <Button
+                size="xs"
+                borderRadius={20}
+                onClick={() =>
+                  window.open(
+                    "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+                    "_blank",
+                  )
+                }
+              >
+                Documentation
+              </Button>
+            </Flex>
+          </GridItem>
+          <GridItem area="Video">
+            <Suspense fallback={"Loading..."}>
+              {/* Does this lazy loading do anything? */}
+              <HomeIntroVideo />
+            </Suspense>
+          </GridItem>
+        </Grid>
       </Flex>
       <Heading
         heading="Explore"
         subheading="Interact with our existing content"
+        background={grayColor}
+        color={blackColor}
       />
       <Flex
         justifyContent="center"
@@ -338,6 +282,8 @@ export function Home() {
       <Heading
         heading="Learn"
         subheading="Designed for the In-Person Classroom"
+        background={blueColor}
+        color={blackColor}
       />
       <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
