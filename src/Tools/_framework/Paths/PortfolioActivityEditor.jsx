@@ -1306,6 +1306,8 @@ export function PortfolioActivityEditor() {
   // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
   let [codeChanged, setCodeChanged] = useState(false);
+  const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
+  codeChangedRef.current = codeChanged;
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1710,7 +1712,7 @@ export function PortfolioActivityEditor() {
                           onBeforeChange={(value) => {
                             textEditorDoenetML.current = value;
                             setEditorDoenetML(value);
-                            if (!codeChanged) {
+                            if (!codeChangedRef.current) {
                               setCodeChanged(true);
                             }
                             // Debounce save to server at 3 seconds
