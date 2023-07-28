@@ -6,6 +6,8 @@ import { processAssignNames } from "../utils/serializedStateProcessing";
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
+  static allowInSchemaAsComponent = ["_graphical"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";

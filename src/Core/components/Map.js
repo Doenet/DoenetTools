@@ -13,6 +13,8 @@ import {
 export default class Map extends CompositeComponent {
   static componentType = "map";
 
+  static allowInSchemaAsComponent = ["_inline", "_block"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;

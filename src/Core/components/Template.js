@@ -10,6 +10,8 @@ import { setUpVariantSeedAndRng } from "../utils/variants";
 export default class Template extends CompositeComponent {
   static componentType = "template";
 
+  static inSchemaOnlyInheritAs = [];
+
   static treatAsComponentForRecursiveReplacements = true;
   static includeBlankStringChildren = true;
   static renderedDefault = false;

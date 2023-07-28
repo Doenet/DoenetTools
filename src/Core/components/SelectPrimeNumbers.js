@@ -13,6 +13,8 @@ import CompositeComponent from "./abstract/CompositeComponent";
 export default class SelectPrimeNumbers extends CompositeComponent {
   static componentType = "selectPrimeNumbers";
 
+  static allowInSchemaAsComponent = ["integer"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;

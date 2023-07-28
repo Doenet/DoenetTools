@@ -14,6 +14,10 @@ export default class Setup extends CompositeComponent {
         componentTypes: ["feedbackDefinitions"],
       },
       {
+        group: "customAttributes",
+        componentTypes: ["customAttribute"],
+      },
+      {
         group: "anything",
         componentTypes: ["_base"],
       },
