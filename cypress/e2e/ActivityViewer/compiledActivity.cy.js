@@ -13,7 +13,7 @@ describe("Compiled activity tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition: `
+          doenetML: `
           <document type="activity">
             <order>
               <page>hi</page>
@@ -33,7 +33,7 @@ describe("Compiled activity tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition: `
+          doenetML: `
           <document type="activity" xmlns="https://doenet.org/spec/doenetml/v0.1.0">
             <order behavior="sequence">
               <page>hi</page>
@@ -55,7 +55,7 @@ describe("Compiled activity tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition: `
+          doenetML: `
           <document type="page">hi</document>
         `,
         },
@@ -70,7 +70,7 @@ describe("Compiled activity tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition: `
+          doenetML: `
           <document type="page" xmlns="https://doenet.org/spec/doenetml/v0.1.0">hi</document>
         `,
         },

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { ActivityViewer } from "../../../Viewer/ActivityViewer";
 import {
   useRecoilValue,
   atom,
@@ -19,6 +19,7 @@ import {
   useSetCourseIdFromDoenetId,
 } from "../../../_reactComponents/Course/CourseActions";
 import { activityVariantPanelAtom } from "../../../_sharedRecoil/PageViewerRecoil";
+import { useLocation, useNavigate } from "react-router";
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
@@ -55,6 +56,9 @@ export default function DraftAssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
+  let navigate = useNavigate();
+  let location = useLocation();
+
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
@@ -77,11 +81,11 @@ export default function DraftAssignmentViewer() {
   // const loadProfile = useRecoilValueLoadable(profileAtom);
   // userId.current = loadProfile.contents.userId;
 
-  function variantCallback(variantIndex, numberOfVariants) {
-    // console.log(">>>variantCallback",variantIndex,numberOfVariants)
+  function variantCallback(variantIndex, numVariants) {
+    // console.log(">>>variantCallback",variantIndex,numVariants)
     setVariantPanel({
       index: variantIndex,
-      numberOfVariants,
+      numVariants,
     });
   }
 
@@ -133,15 +137,16 @@ export default function DraftAssignmentViewer() {
 
         let result = await returnNumberOfActivityVariantsForCid(cid);
 
-        if (!result.success) {
+        // TODO: better display of errors
+        if (result.errors.length > 0) {
           setStage("Problem");
-          setMessage(result.message);
+          setMessage(result.errors[0].message);
           return;
         }
 
-        allPossibleVariants.current = [
-          ...Array(result.numberOfVariants).keys(),
-        ].map((x) => x + 1);
+        allPossibleVariants.current = [...Array(result.numVariants).keys()].map(
+          (x) => x + 1,
+        );
 
         setLoad({
           showCorrectness,
@@ -182,7 +187,7 @@ export default function DraftAssignmentViewer() {
       <ActivityViewer
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -199,6 +204,8 @@ export default function DraftAssignmentViewer() {
         requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
         paginate={paginate}
+        location={location}
+        navigate={navigate}
       />
     </>
   );

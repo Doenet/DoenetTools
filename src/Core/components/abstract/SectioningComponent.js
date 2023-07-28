@@ -1007,7 +1007,7 @@ export class SectioningComponent extends BlockComponent {
       return;
     }
 
-    let numVariants = serializedComponent.variants.numberOfVariants;
+    let numVariants = serializedComponent.variants.numVariants;
 
     let variantIndex;
     // check if desiredVariant was specified

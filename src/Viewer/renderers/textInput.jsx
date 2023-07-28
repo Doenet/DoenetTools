@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -76,7 +76,7 @@ export default function TextInput(props) {
     ignoreUpdate,
     rendererName,
     callAction,
-  } = useDoenetRender(props);
+  } = useDoenetRenderer(props);
 
   let width = sizeToCSS(SVs.width);
   let height = sizeToCSS(SVs.height); // only for TextArea

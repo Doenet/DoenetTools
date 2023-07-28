@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { ActivityViewer } from "../../../Viewer/ActivityViewer";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
+import { useLocation, useNavigate } from "react-router";
 
 import axios from "axios";
 
@@ -11,6 +12,9 @@ export default function Public(props) {
   const [cid, setCid] = useState(null);
 
   const [errMsg, setErrMsg] = useState(null);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -55,7 +59,7 @@ export default function Public(props) {
       <ActivityViewer
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness: true,
           readOnly: false,
@@ -70,6 +74,8 @@ export default function Public(props) {
           allowSaveEvents: false,
         }}
         paginate={true}
+        location={location}
+        navigate={navigate}
       />
     </>
   );

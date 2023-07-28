@@ -3,11 +3,12 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useLocation,
   useOutletContext,
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import PageViewer from "../../../Viewer/PageViewer";
+import { ActivityViewer } from "../../../Viewer/ActivityViewer";
 
 import {
   Box,
@@ -133,6 +134,7 @@ export function PublicEditor() {
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -387,7 +389,7 @@ export function PublicEditor() {
                     overflow="scroll"
                     w="100%"
                   >
-                    <PageViewer
+                    <ActivityViewer
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
@@ -408,7 +410,8 @@ export function PublicEditor() {
                         setErrorsAndWarningsCallback
                       }
                       // setIsInErrorState={setIsInErrorState}
-                      pageIsActive={true}
+                      location={location}
+                      navigate={navigate}
                     />
                     <Box marginBottom="50vh" />
                   </Box>

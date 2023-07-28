@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
-import PageViewer from "../PageViewer";
+import { ActivityViewer } from "../ActivityViewer";
 
 export default React.memo(function Container(props) {
   let { name, id, SVs, children, actions, callAction } =
@@ -33,7 +33,7 @@ export default React.memo(function Container(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <PageViewer
+      <ActivityViewer
         doenetML={SVs.doenetML}
         flags={{
           showCorrectness: true,
@@ -47,9 +47,7 @@ export default React.memo(function Container(props) {
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
-        pageIsActive={true}
         prefixForIds={id}
-        pageNumber={id.replace(/[#\\\/]/g, "")}
       />
     </VisibilitySensor>
   );

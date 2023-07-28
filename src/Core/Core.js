@@ -25,7 +25,7 @@ import createComponentInfoObjects from "./utils/componentInfoObjects";
 import { get as idb_get, set as idb_set } from "idb-keyval";
 import { toastType } from "../Tools/_framework/ToastTypes";
 import axios from "axios";
-import { gatherVariantComponents, getNumberOfVariants } from "./utils/variants";
+import { gatherVariantComponents, getNumVariants } from "./utils/variants";
 import {
   assignDoenetMLRange,
   findAllNewlines,
@@ -38,7 +38,9 @@ import {
 export default class Core {
   constructor({
     doenetML,
-    doenetId,
+    preliminarySerializedComponents,
+    activityId,
+    cid,
     activityCid,
     pageNumber,
     attemptNumber = 1,
@@ -58,13 +60,14 @@ export default class Core {
     // console.time('core');
 
     this.coreId = coreId;
-    this.doenetId = doenetId;
+    this.activityId = activityId;
     this.activityCid = activityCid;
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
     this.activityVariantIndex = activityVariantIndex;
     this.doenetML = doenetML;
+    this.cid = cid;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -192,15 +195,13 @@ export default class Core {
       }
     };
 
-    cidFromText(doenetML)
-      .then((cid) =>
-        serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-          cids: [cid],
-          doenetMLs: [doenetML],
-          componentInfoObjects: this.componentInfoObjects,
-          flags: this.flags,
-        }),
-      )
+    serializeFunctions
+      .expandDoenetMLsToFullSerializedComponents({
+        doenetMLs: [doenetML],
+        preliminarySerializedComponents: [preliminarySerializedComponents],
+        componentInfoObjects: this.componentInfoObjects,
+        flags: this.flags,
+      })
       .then(this.finishCoreConstruction)
       .catch((e) => {
         // throw e;
@@ -213,13 +214,11 @@ export default class Core {
   }
 
   async finishCoreConstruction({
-    cids,
     fullSerializedComponents,
     allDoenetMLs,
     errors,
     warnings,
   }) {
-    this.cid = cids[0];
     this.allDoenetMLs = allDoenetMLs;
     this.doenetMLNewlines = findAllNewlines(allDoenetMLs[0]);
 
@@ -321,10 +320,10 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    let numVariants = getNumberOfVariants({
+    let numVariants = getNumVariants({
       serializedComponent: serializedComponents[0],
       componentInfoObjects: this.componentInfoObjects,
-    }).numberOfVariants;
+    }).numVariants;
 
     if (!this.requestedVariant) {
       // don't have full variant, just requested variant index
@@ -10296,7 +10295,7 @@ export default class Core {
     }
 
     const payload = {
-      doenetId: this.doenetId,
+      doenetId: this.activityId,
       activityCid: this.activityCid,
       pageCid: this.cid,
       pageNumber: this.pageNumber,
@@ -11725,7 +11724,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       await idb_set(
-        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
+        `${this.activityId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -11757,7 +11756,7 @@ export default class Core {
       ),
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      doenetId: this.doenetId,
+      doenetId: this.activityId,
       saveId,
       serverSaveId: this.serverSaveId,
       updateDataOnContentChange: this.updateDataOnContentChange,
@@ -11858,7 +11857,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       await idb_set(
-        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
+        `${this.activityId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId,
       );
     }
@@ -11872,7 +11871,7 @@ export default class Core {
       ) {
         if (this.flags.allowLocalState) {
           await idb_set(
-            `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
+            `${this.activityId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(
                 data.coreState,
@@ -11923,7 +11922,7 @@ export default class Core {
     }
 
     const payload = {
-      doenetId: this.doenetId,
+      doenetId: this.activityId,
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
@@ -12164,7 +12163,7 @@ export default class Core {
 
     try {
       const resp = await axios.post("/api/reportSolutionViewed.php", {
-        doenetId: this.doenetId,
+        doenetId: this.activityId,
         itemNumber: this.itemNumber,
         pageNumber: this.pageNumber,
         attemptNumber: this.attemptNumber,

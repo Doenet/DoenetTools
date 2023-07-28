@@ -9,8 +9,8 @@ import { retrieveTextFileForCid } from "./retrieveTextFile";
 import { returnDeprecationMessage } from "./doenetMLversion";
 
 export async function expandDoenetMLsToFullSerializedComponents({
-  cids,
   doenetMLs,
+  preliminarySerializedComponents = [],
   componentInfoObjects,
   nPreviousDoenetMLs = 0,
 }) {
@@ -23,11 +23,20 @@ export async function expandDoenetMLsToFullSerializedComponents({
   for (let [ind, doenetML] of doenetMLs.entries()) {
     let errorsForDoenetML = [];
     let warningsForDoenetML = [];
+    let result;
 
-    let result = parseAndCompile(doenetML);
-    let serializedComponents = result.components;
-    errorsForDoenetML.push(...result.errors);
-    warningsForDoenetML.push(...result.warnings);
+    // if we happened to send in the parsed preliminary serialized components,
+    // then we don't need to parse the DoenetML again
+    let serializedComponents;
+    if (preliminarySerializedComponents[ind]) {
+      serializedComponents = JSON.parse(
+        JSON.stringify(preliminarySerializedComponents[ind]),
+      );
+    } else {
+      result = parseAndCompile(doenetML);
+      serializedComponents = result.components;
+      errorsForDoenetML.push(...result.errors);
+    }
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -147,7 +156,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
       warnings: additionalWarnings,
     } = await expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
-      cids: newCids,
       componentInfoObjects,
       nPreviousDoenetMLs: nPreviousDoenetMLs + doenetMLs.length,
     });
@@ -237,7 +245,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
   }
 
   return {
-    cids,
     fullSerializedComponents: arrayOfSerializedComponents,
     allDoenetMLs,
     errors,
@@ -2067,7 +2074,6 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
 
     componentsForAttributes = result.components;
     errors.push(...result.errors);
-    warnings.push(...result.warnings);
   } catch (e) {
     errors.push({
       message: "Error in macro",

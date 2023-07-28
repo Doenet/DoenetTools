@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
@@ -8,7 +8,7 @@ import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { textRendererStyle } from "../../Core/utils/style";
 
 export default React.memo(function Line(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
 
   Line.ignoreActionsWithoutCore = () => true;
 

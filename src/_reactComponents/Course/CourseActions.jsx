@@ -2196,8 +2196,8 @@ export const useCourse = (courseId) => {
           attributeString += ` shuffleItemWeights="true"`;
         }
 
-        if (activity.numberOfVariants !== undefined) {
-          attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
+        if (activity.numVariants !== undefined) {
+          attributeString += ` numVariants="${activity.numVariants}"`;
         }
 
         if (activity.isSinglePage) {

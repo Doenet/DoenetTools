@@ -22,10 +22,10 @@ import {
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import axios from "axios";
 import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
-import PageViewer from "../../../Viewer/PageViewer";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { ActivityViewer } from "../../../Viewer/ActivityViewer";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
+import { useLocation, useNavigate } from "react-router";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -58,6 +58,9 @@ export default function GradebookStudentAssignmentView() {
   );
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let overview = useRecoilValueLoadable(overviewData);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   const totalPointsOrPercent = Number(
     assignments.contents[doenetId]?.totalPointsOrPercent,
@@ -303,7 +306,7 @@ export default function GradebookStudentAssignmentView() {
         cid={cid}
         // cidChanged={cidChanged}
         // doenetML={doenetML}
-        doenetId={doenetId}
+        activityId={doenetId}
         userId={userId}
         forceDisable={true}
         forceShowCorrectness={true}
@@ -332,6 +335,8 @@ export default function GradebookStudentAssignmentView() {
         // generatedVariantCallback={variantCallback}
         // pageChangedCallback={pageChanged}
         paginate={paginate}
+        location={location}
+        navigate={navigate}
       />
     );
 

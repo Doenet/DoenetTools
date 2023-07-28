@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import {
@@ -54,7 +54,7 @@ export default function MathInput(props) {
     ignoreUpdate,
     rendererName,
     callAction,
-  } = useDoenetRender(props);
+  } = useDoenetRenderer(props);
 
   MathInput.baseStateVariable = "rawRendererValue";
 

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, POINT_LAYER_OFFSET } from "./graph";
 import { MathJax } from "better-react-mathjax";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
@@ -15,7 +15,7 @@ import {
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Point.ignoreActionsWithoutCore = () => true;
 

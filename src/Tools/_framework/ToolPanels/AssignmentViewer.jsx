@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer, {
-  saveStateToDBTimerIdAtom,
+import {
+  ActivityViewer,
+  //   saveStateToDBTimerIdAtom,
 } from "../../../Viewer/ActivityViewer";
 import {
   useRecoilValue,
@@ -165,13 +166,13 @@ export default function AssignmentViewer() {
   let userId = useRef(null);
   let individualize = useRef(null);
 
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        return await snapshot.getPromise(saveStateToDBTimerIdAtom);
-      },
-    [saveStateToDBTimerIdAtom],
-  );
+  // const getValueOfTimeoutWithoutARefresh = useRecoilCallback(
+  //   ({ snapshot }) =>
+  //     async () => {
+  //       return await snapshot.getPromise(saveStateToDBTimerIdAtom);
+  //     },
+  //   [saveStateToDBTimerIdAtom],
+  // );
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -183,7 +184,8 @@ export default function AssignmentViewer() {
   let [itemObj, setItemObj] = useRecoilState(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
-  let { search, hash } = useLocation();
+  let location = useLocation();
+  let { search, hash } = location;
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -400,9 +402,9 @@ export default function AssignmentViewer() {
           return;
         }
 
-        allPossibleVariants.current = [
-          ...Array(result.numberOfVariants).keys(),
-        ].map((x) => x + 1);
+        allPossibleVariants.current = [...Array(result.numVariants).keys()].map(
+          (x) => x + 1,
+        );
 
         if (needNewVariant) {
           // determine if should individualize
@@ -777,7 +779,7 @@ export default function AssignmentViewer() {
       <ActivityViewer
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -797,6 +799,8 @@ export default function AssignmentViewer() {
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
+        location={location}
+        navigate={navigate}
         showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
         setActivityAsCompleted={setActivityAsCompleted}
@@ -815,10 +819,11 @@ async function returnNumberOfActivityVariants(cid) {
     return { success: false, message: "Could not retrieve file" };
   }
 
-  let result = parseActivityDefinition(activityDefinitionDoenetML);
+  let result = await parseActivityDefinition(activityDefinitionDoenetML, cid);
 
-  if (!result.success) {
-    return result;
+  // TODO: handle communication of errors better
+  if (result.errors.length > 0) {
+    return { success: false, message: result.errors[0].message };
   }
 
   try {
@@ -827,5 +832,5 @@ async function returnNumberOfActivityVariants(cid) {
     return { success: false, message: e.message };
   }
 
-  return { success: true, numberOfVariants: result.numberOfVariants };
+  return { success: true, numVariants: result.numVariants };
 }

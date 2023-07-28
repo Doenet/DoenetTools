@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
 import { createFunctionFromDefinition } from "../../Core/utils/function";
 import { useRecoilValue } from "recoil";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let { name, id, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRenderer(props);
 
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = () => true;
 

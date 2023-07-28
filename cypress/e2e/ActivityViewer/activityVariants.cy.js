@@ -13,14 +13,14 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition;
+    let doenetML;
 
     let attemptNumber = 0;
 
     for (let ind = 1; ind <= 200; ind += 97) {
       cy.window().then(async (win) => {
         attemptNumber++;
-        activityDefinition = `
+        doenetML = `
         <document type="activity">
           <order>
             <page>
@@ -33,7 +33,7 @@ describe("Activity variants tests", function () {
         `;
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
             attemptNumber,
           },
@@ -82,7 +82,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: ind,
               attemptNumber,
             },
@@ -121,7 +121,7 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -152,7 +152,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -198,7 +198,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: 1,
             },
             "*",
@@ -237,7 +237,7 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -270,7 +270,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -316,7 +316,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: 1,
             },
             "*",
@@ -350,7 +350,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages few variants, page variants enumerated", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -375,7 +375,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -422,13 +422,13 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Two pages, numberOfVariants not specified, defaults to 1000", () => {
+  it("Two pages, numVariants not specified, defaults to 1000", () => {
     cy.get("#testRunner_toggleControls").click();
     cy.get("#testRunner_allowLocalState").click();
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -458,7 +458,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -551,7 +551,7 @@ describe("Activity variants tests", function () {
           cy.window().then(async (win) => {
             win.postMessage(
               {
-                activityDefinition,
+                doenetML,
                 requestedVariantIndex: 1,
               },
               "*",
@@ -643,9 +643,9 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Two pages, specify numberOfVariants is 2", () => {
-    let activityDefinition = `
-    <document type="activity" numberOfVariants="2">
+  it("Two pages, specify numVariants is 2", () => {
+    let doenetML = `
+    <document type="activity" numVariants="2">
       <order>
         <page>
           <text>a</text>
@@ -673,7 +673,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -776,8 +776,8 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Shuffle and select orders, numberOfVariants not specified", () => {
-    let activityDefinition = `
+  it("Shuffle and select orders, numVariants not specified", () => {
+    let doenetML = `
     <document type="activity">
       <order behavior="shuffle">
         <page>
@@ -811,7 +811,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -893,7 +893,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, unique variants, variants to exclude", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -918,7 +918,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -971,7 +971,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, unique variants, variants to include", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -996,7 +996,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1049,7 +1049,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, named variants, variants to exclude", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1088,7 +1088,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1139,7 +1139,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, named variants, variants to include", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1178,7 +1178,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1229,7 +1229,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from problem, variant to exclude", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1264,7 +1264,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1315,7 +1315,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from problem, variant to include", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1350,7 +1350,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1401,7 +1401,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variants to exclude in problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1438,7 +1438,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1489,7 +1489,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variants to include in problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1526,7 +1526,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1577,7 +1577,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variant to exclude in document and problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1614,7 +1614,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1673,7 +1673,7 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variant to include in document and problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -1710,7 +1710,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",

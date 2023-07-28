@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { BoardContext, TEXT_LAYER_OFFSET } from "./graph";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import me from "math-expressions";
 import { useRecoilValue } from "recoil";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
@@ -9,7 +9,7 @@ import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 
 export default React.memo(function Text(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Text.ignoreActionsWithoutCore = () => true;
 

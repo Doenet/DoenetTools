@@ -7,7 +7,7 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Problem numbering continues across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
       <order>
         <page>
@@ -49,7 +49,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -160,7 +160,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -194,7 +194,7 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Section numbering continues across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
       <document type="activity">
         <order>
           <page>
@@ -254,7 +254,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -365,7 +365,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -400,7 +400,7 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Links across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
       <document type="activity">
         <order>
           <page>
@@ -456,7 +456,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -543,7 +543,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -596,7 +596,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -637,7 +637,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );

@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import ActivityViewer from "../../Viewer/ActivityViewer.jsx";
-import PageViewer from "../../Viewer/PageViewer.jsx";
-import testActivityDefinition from "./testActivityDefinition.doenet?raw";
+import { DoenetML } from "../../Viewer/DoenetML";
 import testCodeDoenetML from "./testCode.doenet?raw";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "../../Core/utils/math.js";
 import { useRecoilState } from "recoil";
 import { darkModeAtom } from "../_framework/DarkmodeController.jsx";
+import { useLocation, useNavigate } from "react-router";
 
 function Test() {
   // console.log("===Test")
 
   const [doenetML, setDoenetML] = useState(null);
-  const [activityDefinition, setActivityDefinition] = useState(null);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   //New ActivityViewer when code changes
   useEffect(() => {
     setDoenetML(testCodeDoenetML);
   }, [testCodeDoenetML]);
-  useEffect(() => {
-    setActivityDefinition(testActivityDefinition);
-  }, [testActivityDefinition]);
 
   const defaultTestSettings = {
     updateNumber: 0,
@@ -36,7 +34,6 @@ function Test() {
     allowSaveSubmissions: false,
     allowSaveEvents: false,
     autoSubmit: false,
-    useTestCode: false,
     paginate: true,
   };
   let testSettings = JSON.parse(localStorage.getItem("test settings"));
@@ -77,7 +74,6 @@ function Test() {
     testSettings.allowSaveEvents,
   );
   const [autoSubmit, setAutoSubmit] = useState(testSettings.autoSubmit);
-  const [useTestCode, setUseTestCode] = useState(testSettings.useTestCode);
   const [paginate, setPaginate] = useState(testSettings.paginate);
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
@@ -88,7 +84,7 @@ function Test() {
   let requestedVariantIndex = useRef(undefined);
 
   //Don't construct core until we have the doenetML defined
-  if (doenetML === null && activityDefinition === null) {
+  if (doenetML === null) {
     return null;
   }
 
@@ -339,26 +335,6 @@ function Test() {
             {" "}
             <input
               type="checkbox"
-              checked={useTestCode}
-              onChange={() => {
-                testSettings.useTestCode = !testSettings.useTestCode;
-                localStorage.setItem(
-                  "test settings",
-                  JSON.stringify(testSettings),
-                );
-                setUseTestCode((was) => !was);
-                setUpdateNumber((was) => was + 1);
-              }}
-            />
-            Use testCode
-          </label>
-        </div>
-        <hr />
-        <div>
-          <label>
-            {" "}
-            <input
-              type="checkbox"
               checked={paginate}
               onChange={() => {
                 testSettings.paginate = !testSettings.paginate;
@@ -392,61 +368,34 @@ function Test() {
     );
   }
 
-  let viewer;
-
-  if (useTestCode) {
-    viewer = (
-      <PageViewer
-        key={"pageviewer" + updateNumber}
-        doenetML={doenetML}
-        // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-        updateDataOnContentChange={true}
-        flags={{
-          showCorrectness,
-          readOnly,
-          solutionDisplayMode,
-          showFeedback,
-          showHints,
-          allowLoadState,
-          allowSaveState,
-          allowLocalState,
-          allowSaveSubmissions,
-          allowSaveEvents,
-          autoSubmit,
-        }}
-        attemptNumber={attemptNumber}
-        requestedVariantIndex={requestedVariantIndex.current}
-        doenetId="doenetIdFromTest"
-        pageIsActive={true}
-      />
-    );
-  } else {
-    viewer = (
-      <ActivityViewer
-        key={"activityViewer" + updateNumber}
-        activityDefinition={activityDefinition}
-        // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
-        updateDataOnContentChange={true}
-        flags={{
-          showCorrectness,
-          readOnly,
-          solutionDisplayMode,
-          showFeedback,
-          showHints,
-          allowLoadState,
-          allowSaveState,
-          allowLocalState,
-          allowSaveSubmissions,
-          allowSaveEvents,
-          autoSubmit,
-        }}
-        attemptNumber={attemptNumber}
-        requestedVariantIndex={requestedVariantIndex.current}
-        doenetId="doenetIdFromTest"
-        paginate={paginate}
-      />
-    );
-  }
+  let viewer = (
+    <DoenetML
+      key={"activityViewer" + updateNumber}
+      doenetML={doenetML}
+      // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
+      updateDataOnContentChange={true}
+      flags={{
+        showCorrectness,
+        readOnly,
+        solutionDisplayMode,
+        showFeedback,
+        showHints,
+        allowLoadState,
+        allowSaveState,
+        allowLocalState,
+        allowSaveSubmissions,
+        allowSaveEvents,
+        autoSubmit,
+      }}
+      attemptNumber={attemptNumber}
+      requestedVariantIndex={requestedVariantIndex.current}
+      activityId="activityIdFromTest"
+      idsIncludeActivityId={false}
+      paginate={paginate}
+      location={location}
+      navigate={navigate}
+    />
+  );
 
   return (
     <div

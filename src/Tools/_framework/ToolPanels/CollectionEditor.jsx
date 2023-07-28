@@ -54,9 +54,11 @@ export default function CollectionEditor() {
           if (typeof response === "object") {
             response = response.data;
           }
+
+          // TODO: returnAllPossibleVariants no longer has a callback argument
           returnAllPossibleVariants({
             doenetML: response,
-            callback: ({ allPossibleVariants }) => {
+            callback: (allPossibleVariants) => {
               set(possibleVariantsByDoenetId(doenetId), allPossibleVariants);
             },
           });

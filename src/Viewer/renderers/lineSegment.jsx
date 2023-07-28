@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from "./graph";
 import { useRecoilValue } from "recoil";
 import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 
 export default React.memo(function LineSegment(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   LineSegment.ignoreActionsWithoutCore = () => true;
 

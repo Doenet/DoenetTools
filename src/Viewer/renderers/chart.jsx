@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef, createContext } from "react";
 import { sizeToCSS } from "./utils/css";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import Plotly from "plotly.js-dist-min";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
 export const BoardContext = createContext();
 
 export default React.memo(function Chart(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
   // console.log({ name, SVs })
 
   let onChangeVisibility = (isVisible) => {

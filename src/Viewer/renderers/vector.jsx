@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from "./graph";
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
@@ -9,7 +9,7 @@ import { textRendererStyle } from "../../Core/utils/style";
 
 export default React.memo(function Vector(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Vector.ignoreActionsWithoutCore = () => true;
 

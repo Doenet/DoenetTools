@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { createFunctionFromDefinition } from "../../Core/utils/function";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import {
   BoardContext,
   CONTROL_POINT_LAYER_OFFSET,
@@ -12,7 +12,7 @@ import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 
 export default React.memo(function Curve(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Curve.ignoreActionsWithoutCore = () => true;
 

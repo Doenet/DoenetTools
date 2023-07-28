@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import PageViewer, {
-  scrollableContainerAtom,
-} from "../../../Viewer/PageViewer";
+import {
+  ActivityViewer,
+  // scrollableContainerAtom,
+} from "../../../Viewer/ActivityViewer";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -22,7 +23,7 @@ import {
   updateTextEditorDoenetMLAtom,
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -46,6 +47,7 @@ export default function EditorViewer() {
 
   const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
+  let navigate = useNavigate();
   let location = useLocation();
 
   const previousLocations = useRef({});
@@ -92,9 +94,15 @@ export default function EditorViewer() {
         return;
       }
 
-      let parseResult = parseActivityDefinition(activityDefinition);
-      if (!parseResult.success) {
-        setErrMsg(`Invalid activity definition: ${parseResult.message}`);
+      let parseResult = await parseActivityDefinition(
+        activityDefinition,
+        activityCid,
+      );
+      // TODO: handle diplsay of errors better
+      if (parseResult.errors.length > 0) {
+        setErrMsg(
+          `Invalid activity definition: ${parseResult.errors[0].message}`,
+        );
         return;
       }
 
@@ -219,7 +227,7 @@ export default function EditorViewer() {
   }
 
   return (
-    <PageViewer
+    <ActivityViewer
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -235,12 +243,13 @@ export default function EditorViewer() {
         allowSaveSubmissions: false,
         allowSaveEvents: false,
       }}
-      doenetId={doenetId}
+      activityId={doenetId}
       attemptNumber={attemptNumber}
       generatedVariantCallback={variantCallback} //TODO:Replace
       requestedVariantIndex={variantInfo.index}
       setIsInErrorState={setIsInErrorState}
-      pageIsActive={true}
+      location={location}
+      navigate={navigate}
     />
   );
 }

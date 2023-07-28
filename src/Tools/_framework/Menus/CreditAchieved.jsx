@@ -13,11 +13,11 @@ import {
 } from "../ToolPanels/AssignmentViewer";
 import styled from "styled-components";
 import { itemByDoenetId } from "../../../_reactComponents/Course/CourseActions";
-import {
-  activityAttemptNumberSetUpAtom,
-  currentPageAtom,
-  itemWeightsAtom,
-} from "../../../Viewer/ActivityViewer";
+// import {
+//   activityAttemptNumberSetUpAtom,
+//   currentPageAtom,
+//   itemWeightsAtom,
+// } from "../../../Viewer/ActivityViewer";
 import { useLocation, useNavigate } from "react-router";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
@@ -125,11 +125,12 @@ export default function CreditAchieved() {
   const recoilUserId = useRecoilValue(searchParamAtomFamily("userId"));
   const recoilTool = useRecoilValue(searchParamAtomFamily("tool"));
   const itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
-  const itemWeights = useRecoilValue(itemWeightsAtom);
-  const currentPage = useRecoilValue(currentPageAtom);
-  const activityAttemptNumberSetUp = useRecoilValue(
-    activityAttemptNumberSetUpAtom,
-  );
+  const itemWeights = [];// useRecoilValue(itemWeightsAtom);
+  const currentPage = 1;//useRecoilValue(currentPageAtom);
+  const activityAttemptNumberSetUp = 1;
+  // useRecoilValue(
+  //   activityAttemptNumberSetUpAtom,
+  // );
 
   let { search } = useLocation();
   let navigate = useNavigate();

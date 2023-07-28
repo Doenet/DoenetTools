@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
 export default React.memo(function Table(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

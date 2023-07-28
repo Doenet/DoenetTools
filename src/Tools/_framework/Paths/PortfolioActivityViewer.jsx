@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useNavigate } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useLocation,
+} from "react-router";
 import styled from "styled-components";
-import PageViewer from "../../../Viewer/PageViewer";
+import { ActivityViewer } from "../../../Viewer/ActivityViewer";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
@@ -95,6 +100,7 @@ export function PortfolioActivityViewer() {
   }
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -300,7 +306,7 @@ export function PortfolioActivityViewer() {
                   width="100%"
                   overflow="scroll"
                 >
-                  <PageViewer
+                  <ActivityViewer
                     key={`HPpageViewer`}
                     doenetML={doenetML}
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
@@ -321,7 +327,8 @@ export function PortfolioActivityViewer() {
                     generatedVariantCallback={variantCallback} //TODO:Replace
                     requestedVariantIndex={variants.index}
                     // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
+                    location={location}
+                    navigate={navigate}
                   />
                 </Box>
                 <Box marginBottom="50vh" />

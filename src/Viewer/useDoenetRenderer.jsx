@@ -71,6 +71,8 @@ export default function useDoenetRenderer(
       flags: props.flags,
       coreId: props.coreId,
       callAction: props.callAction,
+      navigate: props.navigate,
+      location: props.location,
     };
 
     let rendererClass = props.rendererClasses[childInstructions.rendererType];
@@ -120,5 +122,7 @@ export default function useDoenetRenderer(
     rendererName,
     initializeChildren: () => {},
     callAction,
+    navigate: props.navigate,
+    location: props.location,
   };
 }
