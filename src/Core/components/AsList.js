@@ -4,12 +4,17 @@ import InlineComponent from "./abstract/InlineComponent";
 export default class AsList extends InlineComponent {
   static componentType = "asList";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static returnChildGroups() {
     return [
       {
         group: "inline",
         componentTypes: ["_inline"],
+      },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
       },
     ];
   }

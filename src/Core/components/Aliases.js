@@ -6,11 +6,6 @@ import Label from "./Label";
 import MathList from "./MathList";
 import { Div } from "./Divisions";
 
-export class Columns extends TextComponent {
-  static componentType = "columns";
-  static rendererType = "text";
-}
-
 export class Title extends TextOrInline {
   static componentType = "title";
 }
@@ -42,11 +37,13 @@ export class Ylabel extends Label {
 export class MatrixRow extends MathList {
   static componentType = "matrixRow";
   static rendererType = "mathList";
+  static excludeFromSchema = true;
 }
 
 export class MatrixColumn extends MathList {
   static componentType = "matrixColumn";
   static rendererType = "mathList";
+  static excludeFromSchema = true;
 }
 
 export class Statement extends Div {

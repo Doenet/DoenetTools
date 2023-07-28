@@ -13520,6 +13520,43 @@ describe("Math Operator Tag Tests", function () {
     });
   });
 
+  it("warning with operand", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text>a</text>
+      <p>original expression: <math name="expr">x+y</math></p>
+      <p>Bad operand: <extractMath type="Operand" name="operand1">$expr</extractMath></p>
+      `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.get(cesc2("#/operand1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "\uff3f");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Must specify a operandNumber when extracting a math operand`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(23);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(85);
+    });
+  });
+
   it("math operators that take multiple inputs ignore composites with no replacements", () => {
     cy.window().then(async (win) => {
       win.postMessage(

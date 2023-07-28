@@ -4,6 +4,7 @@ export default class Panel extends InlineComponent {
   static componentType = "panel";
   static rendererType = "containerInline";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

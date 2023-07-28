@@ -171,6 +171,8 @@ export default class Shuffle extends CompositeComponent {
         return dependencies;
       },
       definition({ dependencyValues }) {
+        let warnings = [];
+
         let numComponents = dependencyValues.numComponents;
 
         // if desiredIndices is specfied, use those
@@ -178,9 +180,11 @@ export default class Shuffle extends CompositeComponent {
           dependencyValues.variants?.desiredVariant?.indices;
         if (desiredComponentOrder !== undefined) {
           if (desiredComponentOrder.length !== numComponents) {
-            console.warn(
-              "Ignoring indices specified for shuffle as number of indices doesn't match number of components.",
-            );
+            warnings.push({
+              message:
+                "Ignoring indices specified for shuffle as number of indices doesn't match number of components.",
+              level: 2,
+            });
           } else {
             desiredComponentOrder = desiredComponentOrder.map(Number);
             if (!desiredComponentOrder.every(Number.isInteger)) {
@@ -189,9 +193,11 @@ export default class Shuffle extends CompositeComponent {
             if (
               !desiredComponentOrder.every((x) => x >= 1 && x <= numComponents)
             ) {
-              console.warn(
-                "Ignoring indices specified for shuffle as some indices out of range.",
-              );
+              warnings.push({
+                message:
+                  "Ignoring indices specified for shuffle as some indices out of range.",
+                level: 2,
+              });
             } else {
               return {
                 setValue: {
@@ -221,6 +227,7 @@ export default class Shuffle extends CompositeComponent {
           setValue: {
             componentOrder,
           },
+          sendWarnings: warnings,
         };
       },
     };
@@ -305,6 +312,9 @@ export default class Shuffle extends CompositeComponent {
     componentInfoObjects,
     workspace,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [];
 
     let componentsCopied = [];
@@ -342,10 +352,16 @@ export default class Shuffle extends CompositeComponent {
       parentCreatesNewNamespace: await component.stateValues.newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     workspace.componentsCopied = componentsCopied;
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -354,6 +370,10 @@ export default class Shuffle extends CompositeComponent {
     componentInfoObjects,
     workspace,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     let componentsToCopy = [];
 
     let originalComponentNames = await component.stateValues
@@ -375,14 +395,16 @@ export default class Shuffle extends CompositeComponent {
     }
 
     // for now, just recreate
-    let replacements = (
-      await this.createSerializedReplacements({
-        component,
-        components,
-        componentInfoObjects,
-        workspace,
-      })
-    ).replacements;
+    let replacementResults = await this.createSerializedReplacements({
+      component,
+      components,
+      componentInfoObjects,
+      workspace,
+    });
+
+    let replacements = replacementResults.replacements;
+    errors.push(...replacementResults.errors);
+    warnings.push(...replacementResults.warnings);
 
     let replacementChanges = [
       {
@@ -446,6 +468,10 @@ export default class Shuffle extends CompositeComponent {
     }
 
     let numberOfVariants = result.numberOfVariants * numberOfPermutations;
+
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
+    }
 
     // adjust variants info added by call to super
     serializedComponent.variants.numberOfVariants = numberOfVariants;

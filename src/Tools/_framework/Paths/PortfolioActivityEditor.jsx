@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import PageViewer from "../../../Viewer/PageViewer";
 import Papa from "papaparse";
 
@@ -24,7 +22,6 @@ import {
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  // DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Editable,
@@ -33,14 +30,12 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  // FormHelperText,
   FormLabel,
   Grid,
   GridItem,
   HStack,
   Icon,
   IconButton,
-  // IconButton,
   Image,
   Input,
   InputGroup,
@@ -51,8 +46,6 @@ import {
   MenuItem,
   MenuList,
   Progress,
-  // Spinner,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -80,6 +73,8 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
+import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1284,6 +1279,17 @@ export function PortfolioActivityEditor() {
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
+
   const {
     isOpen: controlsAreOpen,
     onOpen: controlsOnOpen,
@@ -1479,74 +1485,6 @@ export function PortfolioActivityEditor() {
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
-                {variants.allPossibleVariants.length > 1 && (
-                  <Tooltip hasArrow label="Variant">
-                    <Select
-                      size="sm"
-                      maxWidth="120px"
-                      border="1px"
-                      borderColor="#2D5A94"
-                      onChange={(e) => {
-                        let index = variants.allPossibleVariants.indexOf(
-                          e.target.value,
-                        );
-                        index++;
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index;
-                          return next;
-                        });
-                      }}
-                    >
-                      {variants.allPossibleVariants.map((item, i) => {
-                        return (
-                          <option key={`option${i}`} name={item}>
-                            {item}
-                          </option>
-                        );
-                      })}
-                    </Select>
-                  </Tooltip>
-                )}
-
-                {mode == "Edit" && (
-                  <Tooltip
-                    hasArrow
-                    label={
-                      platform == "Mac"
-                        ? "Updates Viewer cmd+s"
-                        : "Updates Viewer ctrl+s"
-                    }
-                  >
-                    <Button
-                      ml="10px"
-                      size="sm"
-                      variant="outline"
-                      data-test="Viewer Update Button"
-                      // backgroundColor={codeChanged ? "doenet.lightBlue" : null}
-                      leftIcon={<RxUpdate />}
-                      rightIcon={
-                        codeChanged ? (
-                          <WarningTwoIcon
-                            color="doenet.mainBlue"
-                            fontSize="18px"
-                          />
-                        ) : (
-                          ""
-                        )
-                      }
-                      isDisabled={!codeChanged}
-                      onClick={() => {
-                        setViewerDoenetML(textEditorDoenetML.current);
-                        setCodeChanged(false);
-                        clearTimeout(timeout.current);
-                        handleSaveDraft();
-                      }}
-                    >
-                      Update
-                    </Button>
-                  </Tooltip>
-                )}
               </HStack>
             </GridItem>
             <GridItem area="label">
@@ -1589,13 +1527,7 @@ export function PortfolioActivityEditor() {
                     Update Public Activity
                   </Button>
                 )}
-                <Link
-                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
-                  isExternal
-                  data-test="Documentation Link"
-                >
-                  Documentation <ExternalLinkIcon mx="2px" />
-                </Link>
+
                 <Tooltip
                   hasArrow
                   label={
@@ -1627,46 +1559,185 @@ export function PortfolioActivityEditor() {
               <ResizeableSideBySide
                 left={
                   <>
-                    <PageViewer
-                      doenetML={viewerDoenetML}
-                      flags={{
-                        showCorrectness: true,
-                        solutionDisplayMode: "button",
-                        showFeedback: true,
-                        showHints: true,
-                        autoSubmit: false,
-                        allowLoadState: false,
-                        allowSaveState: false,
-                        allowLocalState: false,
-                        allowSaveSubmissions: false,
-                        allowSaveEvents: false,
-                      }}
-                      attemptNumber={1}
-                      generatedVariantCallback={variantCallback} //TODO:Replace
-                      requestedVariantIndex={variants.index}
-                      // setIsInErrorState={setIsInErrorState}
-                      pageIsActive={true}
-                    />
-                    <Box marginBottom="50vh" />
+                    <VStack spacing={0}>
+                      <HStack
+                        w="100%"
+                        h="32px"
+                        bg="doenet.lightBlue"
+                        margin="10px 0px 0px 0px" //Only need when there is an outline
+                      >
+                        <Box
+                        //bg="doenet.canvas"
+                        >
+                          <Tooltip
+                            hasArrow
+                            label={
+                              platform == "Mac"
+                                ? "Updates Viewer cmd+s"
+                                : "Updates Viewer ctrl+s"
+                            }
+                          >
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              data-test="Viewer Update Button"
+                              bg="doenet.canvas"
+                              leftIcon={<RxUpdate />}
+                              rightIcon={
+                                codeChanged ? (
+                                  <WarningTwoIcon
+                                    color="doenet.mainBlue"
+                                    fontSize="18px"
+                                  />
+                                ) : (
+                                  ""
+                                )
+                              }
+                              isDisabled={!codeChanged}
+                              onClick={() => {
+                                setViewerDoenetML(textEditorDoenetML.current);
+                                setCodeChanged(false);
+                                clearTimeout(timeout.current);
+                                handleSaveDraft();
+                              }}
+                            >
+                              Update
+                            </Button>
+                          </Tooltip>
+                        </Box>
+                        {variants.allPossibleVariants.length > 1 && (
+                          <Box bg="doenet.lightBlue" h="32px" width="100%">
+                            <VariantSelect
+                              size="sm"
+                              menuWidth="140px"
+                              array={variants.allPossibleVariants}
+                              syncIndex={variants.index}
+                              onChange={(index) =>
+                                setVariants((prev) => {
+                                  let next = { ...prev };
+                                  next.index = index + 1;
+                                  return next;
+                                })
+                              }
+                            />
+                          </Box>
+                        )}
+                      </HStack>
+
+                      <Box
+                        height={`calc(100vh - 132px)`}
+                        background="var(--canvas)"
+                        borderWidth="1px"
+                        borderStyle="solid"
+                        borderColor="doenet.mediumGray"
+                        padding="20px 5px 20px 5px"
+                        flexGrow={1}
+                        overflow="scroll"
+                        w="100%"
+                      >
+                        <>
+                          <PageViewer
+                            doenetML={viewerDoenetML}
+                            flags={{
+                              showCorrectness: true,
+                              solutionDisplayMode: "button",
+                              showFeedback: true,
+                              showHints: true,
+                              autoSubmit: false,
+                              allowLoadState: false,
+                              allowSaveState: false,
+                              allowLocalState: false,
+                              allowSaveSubmissions: false,
+                              allowSaveEvents: false,
+                            }}
+                            attemptNumber={1}
+                            generatedVariantCallback={variantCallback} //TODO:Replace
+                            requestedVariantIndex={variants.index}
+                            // setIsInErrorState={setIsInErrorState}
+                            setErrorsAndWarningsCallback={
+                              setErrorsAndWarningsCallback
+                            }
+                            pageIsActive={true}
+                          />
+                          <Box marginBottom="50vh" />
+                        </>
+                      </Box>
+                    </VStack>
                   </>
                 }
                 right={
-                  <CodeMirror
-                    editorRef={editorRef}
-                    setInternalValueTo={initializeEditorDoenetML.current}
-                    onBeforeChange={(value) => {
-                      textEditorDoenetML.current = value;
-                      setEditorDoenetML(value);
-                      if (!codeChanged) {
-                        setCodeChanged(true);
-                      }
-                      // Debounce save to server at 3 seconds
-                      clearTimeout(timeout.current);
-                      timeout.current = setTimeout(async function () {
-                        handleSaveDraft();
-                      }, 3000); //3 seconds
-                    }}
-                  />
+                  <VStack spacing={0}>
+                    <HStack
+                      w="100%"
+                      h="32px"
+                      bg="doenet.lightBlue"
+                      margin={0} //Only need when there is an outline
+                      justifyContent="flex-end"
+                    >
+                      <Link
+                        borderRadius="lg"
+                        p="4px 5px 0px 5px"
+                        h="32px"
+                        bg="#EDF2F7"
+                        href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                        isExternal
+                        data-test="Documentation Link"
+                      >
+                        Documentation <ExternalLinkIcon mx="2px" />
+                      </Link>
+                    </HStack>
+
+                    <Box
+                      top="50px"
+                      boxSizing="border-box"
+                      background="doenet.canvas"
+                      height={`calc(100vh - 132px)`}
+                      overflowY="scroll"
+                      borderRight="solid 1px"
+                      borderTop="solid 1px"
+                      borderBottom="solid 1px"
+                      borderColor="doenet.mediumGray"
+                      w="100%"
+                    >
+                      <Box
+                        height={`calc(100vh - 166px)`}
+                        w="100%"
+                        overflow="scroll"
+                      >
+                        <CodeMirror
+                          editorRef={editorRef}
+                          setInternalValueTo={initializeEditorDoenetML.current}
+                          onBeforeChange={(value) => {
+                            textEditorDoenetML.current = value;
+                            setEditorDoenetML(value);
+                            if (!codeChanged) {
+                              setCodeChanged(true);
+                            }
+                            // Debounce save to server at 3 seconds
+                            clearTimeout(timeout.current);
+                            timeout.current = setTimeout(async function () {
+                              handleSaveDraft();
+                            }, 3000); //3 seconds
+                          }}
+                        />
+                      </Box>
+
+                      <Box bg="doenet.mainGray" h="32px" w="100%">
+                        <Flex
+                          ml="0px"
+                          h="32px"
+                          bg="doenet.mainGray"
+                          pl="10px"
+                          pt="1px"
+                        >
+                          <ErrorWarningPopovers
+                            warningsObjs={warningsObjs}
+                            errorsObjs={errorsObjs}
+                          />
+                        </Flex>
+                      </Box>
+                    </Box>
+                  </VStack>
                 }
               />
             </GridItem>
@@ -1705,42 +1776,67 @@ export function PortfolioActivityEditor() {
                   maxWidth="850px"
                   overflow="hidden"
                 >
-                  <Box
-                    // minHeight="calc(100vh - 100px)"
-                    height="calc(100vh - 100px)" //40px header height
-                    background="var(--canvas)"
-                    borderWidth="1px"
-                    borderStyle="solid"
-                    borderColor="doenet.mediumGray"
+                  <VStack
+                    spacing={0}
                     margin="10px 0px 10px 0px" //Only need when there is an outline
-                    padding="20px 5px 20px 5px"
-                    flexGrow={1}
-                    overflow="scroll"
                   >
-                    <>
-                      <PageViewer
-                        doenetML={viewerDoenetML}
-                        flags={{
-                          showCorrectness: true,
-                          solutionDisplayMode: "button",
-                          showFeedback: true,
-                          showHints: true,
-                          autoSubmit: false,
-                          allowLoadState: false,
-                          allowSaveState: false,
-                          allowLocalState: false,
-                          allowSaveSubmissions: false,
-                          allowSaveEvents: false,
-                        }}
-                        attemptNumber={1}
-                        generatedVariantCallback={variantCallback} //TODO:Replace
-                        requestedVariantIndex={variants.index}
-                        // setIsInErrorState={setIsInErrorState}
-                        pageIsActive={true}
-                      />
-                      <Box marginBottom="50vh" />
-                    </>
-                  </Box>
+                    {variants.allPossibleVariants.length > 1 && (
+                      <Box bg="doenet.lightBlue" h="32px" width="100%">
+                        <VariantSelect
+                          size="sm"
+                          menuWidth="140px"
+                          syncIndex={variants.index}
+                          array={variants.allPossibleVariants}
+                          onChange={(index) =>
+                            setVariants((prev) => {
+                              let next = { ...prev };
+                              next.index = index + 1;
+                              return next;
+                            })
+                          }
+                        />
+                      </Box>
+                    )}
+                    <Box
+                      h={
+                        variants.allPossibleVariants.length > 1
+                          ? "calc(100vh - 132px)"
+                          : "calc(100vh - 100px)"
+                      }
+                      background="var(--canvas)"
+                      borderWidth="1px"
+                      borderStyle="solid"
+                      borderColor="doenet.mediumGray"
+                      padding="20px 5px 20px 5px"
+                      flexGrow={1}
+                      overflow="scroll"
+                      w="100%"
+                    >
+                      <>
+                        <PageViewer
+                          doenetML={viewerDoenetML}
+                          flags={{
+                            showCorrectness: true,
+                            solutionDisplayMode: "button",
+                            showFeedback: true,
+                            showHints: true,
+                            autoSubmit: false,
+                            allowLoadState: false,
+                            allowSaveState: false,
+                            allowLocalState: false,
+                            allowSaveSubmissions: false,
+                            allowSaveEvents: false,
+                          }}
+                          attemptNumber={1}
+                          generatedVariantCallback={variantCallback} //TODO:Replace
+                          requestedVariantIndex={variants.index}
+                          // setIsInErrorState={setIsInErrorState}
+                          pageIsActive={true}
+                        />
+                        <Box marginBottom="50vh" />
+                      </>
+                    </Box>
+                  </VStack>
                 </GridItem>
               </Grid>
             </GridItem>
@@ -1827,26 +1923,14 @@ const ResizeableSideBySide = ({
         maxWidth="850px"
         overflow="hidden"
       >
-        <Box
-          height={`calc(100vh - ${headerHeight + 20}px)`}
-          background="var(--canvas)"
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.mediumGray"
-          margin="10px 0px 10px 0px" //Only need when there is an outline
-          padding="20px 5px 20px 5px"
-          flexGrow={1}
-          overflow="scroll"
-        >
-          {left}
-        </Box>
+        {left}
       </GridItem>
       <GridItem
         area="middleGutter"
         background="doenet.lightBlue"
         width="100%"
         height="100%"
-        paddingTop="10px"
+        paddingTop="42px"
         alignSelf="start"
       >
         <Center
@@ -1856,7 +1940,7 @@ const ResizeableSideBySide = ({
           borderTop="solid 1px"
           borderBottom="solid 1px"
           borderColor="doenet.mediumGray"
-          height={`calc(100vh - ${headerHeight + 20}px)`}
+          height={`calc(100vh - ${headerHeight + 52}px)`}
           width="10px"
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
@@ -1872,19 +1956,7 @@ const ResizeableSideBySide = ({
         alignSelf="start"
         paddingTop="10px"
       >
-        <Box
-          top="50px"
-          boxSizing="border-box"
-          background="doenet.canvas"
-          height={`calc(100vh - ${headerHeight + 20}px)`}
-          overflowY="scroll"
-          borderRight="solid 1px"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
-          borderColor="doenet.mediumGray"
-        >
-          {right}
-        </Box>
+        {right}
       </GridItem>
     </Grid>
   );

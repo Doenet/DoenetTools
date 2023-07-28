@@ -600,6 +600,7 @@ export default class Slider extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         let markers = [];
+        let warnings = [];
 
         if (dependencyValues.markersChild.length > 0) {
           let markerType =
@@ -610,14 +611,17 @@ export default class Slider extends BaseComponent {
             markers = [...dependencyValues.items];
           } else if (markerType !== dependencyValues.type) {
             //Note: no markers when they don't match and not init
-            console.warn("Markers type doesn't match slider type.");
+            warnings.push({
+              message: "Markers type doesn't match slider type.",
+              level: 1,
+            });
             markers = [];
           } else {
             markers = dependencyValues.markersChild[0].stateValues.markers;
           }
         }
 
-        return { setValue: { markers } };
+        return { setValue: { markers }, sendWarnings: warnings };
       },
     };
 

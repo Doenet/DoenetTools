@@ -758,6 +758,100 @@ describe("Numberlist Tag Tests", function () {
     });
   });
 
+  it("maxNumber with numberlist or mathlist child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+  <mathinput prefill="2" name="maxn" />
+
+  <p name="pnl"><numberlist name="nl" maxNumber="$maxn">1 2 3</numberList></p>
+  <p name="pnlnl"><numberlist name="nlnl" maxNumber="$maxn"><numberList>1 2 3</numberList></numberlist></p>
+  <p name="pnlml"><numberlist name="nlml" maxNumber="$maxn"><mathlist>1 2 3</mathlist></numberlist></p>
+  
+  <p name="pnumbersnl"><aslist>$nl.numbers</aslist></p>
+  <p name="pnumbersnlnl"><aslist>$nlnl.numbers</aslist></p>
+  <p name="pnumbersnlml"><aslist>$nlml.numbers</aslist></p>
+
+  <p name="pcopynl">$nl</p>
+  <p name="pcopynlnl">$nlnl</p>
+  <p name="pcopynlml">$nlml</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/pnl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pnlnl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pnlml")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pnumbersnl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pnumbersnlnl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pnumbersnlml")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pcopynl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pcopynlnl")).should("have.text", "1, 2");
+    cy.get(cesc2("#/pcopynlml")).should("have.text", "1, 2");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/nl"].stateValues.numbers).eqls([1, 2]);
+      expect(stateVariables["/nl"].stateValues.text).eqls("1, 2");
+      expect(stateVariables["/nlnl"].stateValues.numbers).eqls([1, 2]);
+      expect(stateVariables["/nlnl"].stateValues.text).eqls("1, 2");
+      expect(stateVariables["/nlml"].stateValues.numbers).eqls([1, 2]);
+      expect(stateVariables["/nlml"].stateValues.text).eqls("1, 2");
+    });
+
+    cy.get(cesc2("#/maxn") + " textarea").type("{end}{backspace}4{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/pnl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pnlnl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pnlml")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pnumbersnl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pnumbersnlnl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pnumbersnlml")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pcopynl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pcopynlnl")).should("have.text", "1, 2, 3");
+    cy.get(cesc2("#/pcopynlml")).should("have.text", "1, 2, 3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/nl"].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables["/nl"].stateValues.text).eqls("1, 2, 3");
+      expect(stateVariables["/nlnl"].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables["/nlnl"].stateValues.text).eqls("1, 2, 3");
+      expect(stateVariables["/nlml"].stateValues.numbers).eqls([1, 2, 3]);
+      expect(stateVariables["/nlml"].stateValues.text).eqls("1, 2, 3");
+    });
+
+    cy.get(cesc2("#/maxn") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/pnl")).should("have.text", "1");
+    cy.get(cesc2("#/pnlnl")).should("have.text", "1");
+    cy.get(cesc2("#/pnlml")).should("have.text", "1");
+    cy.get(cesc2("#/pnumbersnl")).should("have.text", "1");
+    cy.get(cesc2("#/pnumbersnlnl")).should("have.text", "1");
+    cy.get(cesc2("#/pnumbersnlml")).should("have.text", "1");
+    cy.get(cesc2("#/pcopynl")).should("have.text", "1");
+    cy.get(cesc2("#/pcopynlnl")).should("have.text", "1");
+    cy.get(cesc2("#/pcopynlml")).should("have.text", "1");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/nl"].stateValues.numbers).eqls([1]);
+      expect(stateVariables["/nl"].stateValues.text).eqls("1");
+      expect(stateVariables["/nlnl"].stateValues.numbers).eqls([1]);
+      expect(stateVariables["/nlnl"].stateValues.text).eqls("1");
+      expect(stateVariables["/nlml"].stateValues.numbers).eqls([1]);
+      expect(stateVariables["/nlml"].stateValues.text).eqls("1");
+    });
+  });
+
   it("numberlist within numberlists, with child hide", () => {
     cy.window().then(async (win) => {
       win.postMessage(

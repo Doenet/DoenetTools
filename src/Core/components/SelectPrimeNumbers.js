@@ -231,6 +231,9 @@ export default class SelectPrimeNumbers extends CompositeComponent {
     component,
     componentInfoObjects,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let replacements = [];
@@ -249,8 +252,14 @@ export default class SelectPrimeNumbers extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static calculateReplacementChanges() {

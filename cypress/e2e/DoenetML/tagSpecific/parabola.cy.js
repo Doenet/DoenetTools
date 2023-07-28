@@ -7924,6 +7924,40 @@ describe("Parabola Tag Tests", function () {
     });
   });
 
+  it("warning with parabola through four points", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+    <parabola through="(1,2) (3,4) (5,6) (7,8)" />
+    </graph>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Haven't implemented parabola through more than 3 points`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(50);
+    });
+  });
+
   // test unfinished
   it.skip("parabola through variable number of points", () => {
     cy.window().then(async (win) => {

@@ -10768,6 +10768,74 @@ describe("Ray Tag Tests", function () {
       .should("have.text", "(5,624)");
   });
 
+  it("warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <ray through="(1,2)" endpoint="(3,4)" direction="(5,6)" />
+      <ray through="(1,2)" endpoint="(3,4,5)" />
+      <ray through="(1,2)" direction="(3,4,5)" />
+      <ray endpoint="(1,2)" direction="(3,4,5)" />
+    </graph>
+
+    <vector copySource="_ray1.direction" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_vector1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(4);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Ray is prescribed by through, endpoint, and direction.  Ignoring specified through",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(64);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "numDimensions mismatch in ray",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(48);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "numDimensions mismatch in ray",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(49);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        "numDimensions mismatch in ray",
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(50);
+    });
+  });
+
   it("handle bad through/endpoint", () => {
     cy.window().then(async (win) => {
       win.postMessage(

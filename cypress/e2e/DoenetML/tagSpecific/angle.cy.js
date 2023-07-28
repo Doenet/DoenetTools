@@ -347,6 +347,45 @@ describe("Angle Tag Tests", function () {
     });
   });
 
+  it("angle warning when determined by three lines", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+
+  <graph>
+    <line />
+    <line through="(1,2) (3,4)" />
+    <line through="(-1,2) (-3,4)" />
+
+    <angle betweenLines="$_line1 $_line2 $_line3" />
+  </graph>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Cannot define an angle between 3 lines",
+      );
+      expect(errorWarnings.warnings[0].level).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(9);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(9);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(52);
+    });
+  });
+
   it("parallel and undefined lines", () => {
     cy.window().then(async (win) => {
       win.postMessage(

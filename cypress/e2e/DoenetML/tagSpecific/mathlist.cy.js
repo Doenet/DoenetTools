@@ -3144,6 +3144,296 @@ describe("MathList Tag Tests", function () {
       .should("not.exist");
   });
 
+  it("maxNumber with mathlist or numberlist child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+  <mathinput prefill="2" name="maxn" />
+
+  <p><mathlist name="ml" maxNumber="$maxn">1 2 3</mathlist></p>
+  <p><mathlist name="mlml" maxNumber="$maxn"><mathlist>1 2 3</mathlist></mathlist></p>
+  <p><mathlist name="mlnl"  maxNumber="$maxn"><numberlist>1 2 3</numberlist></mathlist></p>
+
+  <p name="pmathsml"><aslist>$ml.maths</aslist></p>
+  <p name="pmathsmlml"><aslist>$mlml.maths</aslist></p>
+  <p name="pmathsmlnl"><aslist>$mlnl.maths</aslist></p>
+
+  <p name="pcopyml">$ml</p>
+  <p name="pcopymlml">$mlml</p>
+  <p name="pcopymlnl">$mlnl</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    for (let i = 0; i < 2; i++) {
+      cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ml"].stateValues.maths).eqls([1, 2]);
+      expect(stateVariables["/ml"].stateValues.latex).eqls("1, 2");
+      expect(stateVariables["/ml"].stateValues.text).eqls("1, 2");
+      expect(stateVariables["/mlml"].stateValues.maths).eqls([1, 2]);
+      expect(stateVariables["/mlml"].stateValues.latex).eqls("1, 2");
+      expect(stateVariables["/mlml"].stateValues.text).eqls("1, 2");
+      expect(stateVariables["/mlnl"].stateValues.maths).eqls([1, 2]);
+      expect(stateVariables["/mlnl"].stateValues.latex).eqls("1, 2");
+      expect(stateVariables["/mlnl"].stateValues.text).eqls("1, 2");
+    });
+
+    cy.get(cesc2("#/maxn") + " textarea").type("{end}{backspace}4{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("contain.text", "3");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "3");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "3");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2,3");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    for (let i = 0; i < 3; i++) {
+      cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "3");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "2");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "3");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(3)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1,2,3");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(2)
+      .should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ml"].stateValues.maths).eqls([1, 2, 3]);
+      expect(stateVariables["/ml"].stateValues.latex).eqls("1, 2, 3");
+      expect(stateVariables["/ml"].stateValues.text).eqls("1, 2, 3");
+      expect(stateVariables["/mlml"].stateValues.maths).eqls([1, 2, 3]);
+      expect(stateVariables["/mlml"].stateValues.latex).eqls("1, 2, 3");
+      expect(stateVariables["/mlml"].stateValues.text).eqls("1, 2, 3");
+      expect(stateVariables["/mlnl"].stateValues.maths).eqls([1, 2, 3]);
+      expect(stateVariables["/mlnl"].stateValues.latex).eqls("1, 2, 3");
+      expect(stateVariables["/mlnl"].stateValues.text).eqls("1, 2, 3");
+    });
+
+    cy.get(cesc2("#/maxn") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow").should("not.contain.text", "2");
+
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/ml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mlml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/mlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    for (let i = 0; i < 1; i++) {
+      cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+      cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+        .eq(i)
+        .should("have.text", `${i + 1}`);
+    }
+    cy.get(cesc2("#/pmathsml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/pmathsmlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopyml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopymlml") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "1");
+    cy.get(cesc2("#/pcopymlnl") + " .mjx-mrow")
+      .eq(1)
+      .should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ml"].stateValues.maths).eqls([1]);
+      expect(stateVariables["/ml"].stateValues.latex).eqls("1");
+      expect(stateVariables["/ml"].stateValues.text).eqls("1");
+      expect(stateVariables["/mlml"].stateValues.maths).eqls([1]);
+      expect(stateVariables["/mlml"].stateValues.latex).eqls("1");
+      expect(stateVariables["/mlml"].stateValues.text).eqls("1");
+      expect(stateVariables["/mlnl"].stateValues.maths).eqls([1]);
+      expect(stateVariables["/mlnl"].stateValues.latex).eqls("1");
+      expect(stateVariables["/mlnl"].stateValues.text).eqls("1");
+    });
+  });
+
   // TODO: deal with hidden children of a mathlist
   it("mathlist within mathlists, with child hide", () => {
     cy.window().then(async (win) => {
@@ -3336,6 +3626,196 @@ describe("MathList Tag Tests", function () {
 
     cy.log("Test value displayed in browser");
     cy.get(cesc("#\\/_boolean1")).should("have.text", "true");
+  });
+
+  it("functionSymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><mathlist name="mldef">f(x) h(x) a(x)</mathlist></p>
+    <p><mathlist name="mlh" functionSymbols="h">f(x) h(x) a(x)</mathlist></p>
+    <p><mathlist name="mlmixed" functionSymbols="h a">
+      <math functionSymbols="g">h(x)</math> <math functionSymbols="g">g(x)</math> a(x)
+    </mathlist>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "f(x)");
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "hx");
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "ax");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "fx");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "h(x)");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "ax");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "hx");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "g(x)");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "a(x)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mldef"].stateValues.maths).eqls([
+        ["apply", "f", "x"],
+        ["*", "h", "x"],
+        ["*", "a", "x"],
+      ]);
+      expect(stateVariables["/mlh"].stateValues.maths).eqls([
+        ["*", "f", "x"],
+        ["apply", "h", "x"],
+        ["*", "a", "x"],
+      ]);
+      expect(stateVariables["/mlmixed"].stateValues.maths).eqls([
+        ["*", "h", "x"],
+        ["apply", "g", "x"],
+        ["apply", "a", "x"],
+      ]);
+    });
+  });
+
+  it("sourcesAreFunctionSymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <setup>
+      <math name="fun1">f</math>
+      <math name="fun2">g</math>
+      <math name="fun3">h</math>
+      <math name="fun4">a</math>
+    </setup>
+    <p><mathlist name="mldef">$fun1(x) $fun3(x) $fun4(x)</mathlist></p>
+    <p><mathlist name="mlh" sourcesAreFunctionSymbols="fun3">$fun1(x) $fun3(x) $fun4(x)</mathlist></p>
+    <p><mathlist name="mlmixed" sourcesAreFunctionSymbols="fun3 fun4">
+      <math sourcesAreFunctionSymbols="fun2">$fun3(x)</math> <math sourcesAreFunctionSymbols="fun2">$fun2(x)</math> $fun4(x)
+    </mathlist>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "fx");
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "hx");
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "ax");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "fx");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "h(x)");
+    cy.get(cesc2("#/mlh") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "ax");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "hx");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "g(x)");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(3)
+      .should("have.text", "a(x)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mldef"].stateValues.maths).eqls([
+        ["*", "f", "x"],
+        ["*", "h", "x"],
+        ["*", "a", "x"],
+      ]);
+      expect(stateVariables["/mlh"].stateValues.maths).eqls([
+        ["*", "f", "x"],
+        ["apply", "h", "x"],
+        ["*", "a", "x"],
+      ]);
+      expect(stateVariables["/mlmixed"].stateValues.maths).eqls([
+        ["*", "h", "x"],
+        ["apply", "g", "x"],
+        ["apply", "a", "x"],
+      ]);
+    });
+  });
+
+  it("splitSymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><mathlist name="mldef">xy yz</mathlist></p>
+    <p><mathlist name="mln" splitSymbols="false">xy yz</mathlist></p>
+    <p><mathlist name="mlmixed" splitSymbols="false">
+      xy <math splitSymbols>yz</math> <math>zx</math>
+    </mathlist>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "xy");
+    cy.get(cesc2("#/mldef") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "yz");
+    cy.get(cesc2("#/mln") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "xy");
+    cy.get(cesc2("#/mln") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "yz");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "xy");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "yz");
+    cy.get(cesc2("#/mlmixed") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "zx");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mldef"].stateValues.maths).eqls([
+        ["*", "x", "y"],
+        ["*", "y", "z"],
+      ]);
+      expect(stateVariables["/mln"].stateValues.maths).eqls(["xy", "yz"]);
+      expect(stateVariables["/mlmixed"].stateValues.maths).eqls([
+        "xy",
+        ["*", "y", "z"],
+        "zx",
+      ]);
+    });
   });
 
   it("mathlist and rounding, from strings", () => {

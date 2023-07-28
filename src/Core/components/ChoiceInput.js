@@ -213,6 +213,7 @@ export default class Choiceinput extends Input {
       }),
       definition: function ({ dependencyValues }) {
         let numChoices = dependencyValues.choiceChildren.length;
+        let warnings = [];
         let choiceOrder;
         if (!dependencyValues.shuffleOrder) {
           choiceOrder = [...Array(numChoices).keys()].map((x) => x + 1);
@@ -222,9 +223,11 @@ export default class Choiceinput extends Input {
             dependencyValues.variants?.desiredVariant?.indices;
           if (desiredChoiceOrder !== undefined) {
             if (desiredChoiceOrder.length !== numChoices) {
-              console.warn(
-                "Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.",
-              );
+              warnings.push({
+                message:
+                  "Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.",
+                level: 2,
+              });
             } else {
               desiredChoiceOrder = desiredChoiceOrder.map(Number);
               if (!desiredChoiceOrder.every(Number.isInteger)) {
@@ -233,9 +236,11 @@ export default class Choiceinput extends Input {
                 );
               }
               if (!desiredChoiceOrder.every((x) => x >= 1 && x <= numChoices)) {
-                console.warn(
-                  "Ignoring indices specified for choiceInput as some indices out of range.",
-                );
+                warnings.push({
+                  message:
+                    "Ignoring indices specified for choiceInput as some indices out of range.",
+                  level: 2,
+                });
               } else {
                 return {
                   setValue: {
@@ -259,7 +264,7 @@ export default class Choiceinput extends Input {
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
           }
         }
-        return { setValue: { choiceOrder } };
+        return { setValue: { choiceOrder }, sendWarnings: warnings };
       },
     };
 

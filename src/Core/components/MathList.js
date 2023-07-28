@@ -45,6 +45,37 @@ export default class MathList extends InlineComponent {
 
     Object.assign(attributes, returnRoundingAttributes());
 
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "functionSymbols",
+      defaultValue: ["f", "g"],
+      public: true,
+      fallBackToParentStateVariable: "functionSymbols",
+    };
+
+    attributes.sourcesAreFunctionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "sourcesAreFunctionSymbols",
+      defaultValue: [],
+      fallBackToParentStateVariable: "sourcesAreFunctionSymbols",
+    };
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
+    };
+
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+      createStateVariable: "parseScientificNotation",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "parseScientificNotation",
+    };
+
     return attributes;
   }
 
@@ -650,8 +681,13 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "padZeros",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
         let latexs = [];
         let params = {};
         if (dependencyValues.padZeros) {
@@ -691,7 +727,16 @@ export default class MathList extends InlineComponent {
           );
         }
 
-        latexs = latexs.slice(0, dependencyValues.numComponents);
+        let numComponentsToDisplay = dependencyValues.numComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent mathList, which could have limited
+          // math of components to display
+          numComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
+        }
+
+        latexs = latexs.slice(0, numComponentsToDisplay);
 
         let latex = latexs.join(", ");
 
@@ -724,8 +769,13 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "mathsShadow",
         },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "numComponentsToDisplayByChild",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentName }) {
         let texts = [];
 
         if (dependencyValues.mathAndMathListChildren.length > 0) {
@@ -752,7 +802,16 @@ export default class MathList extends InlineComponent {
           texts = dependencyValues.mathsShadow.map((x) => x.toString());
         }
 
-        texts = texts.slice(0, dependencyValues.numComponents);
+        let numComponentsToDisplay = dependencyValues.numComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent mathList, which could have limited
+          // math of components to display
+          numComponentsToDisplay =
+            dependencyValues.parentNComponentsToDisplayByChild[componentName];
+        }
+
+        texts = texts.slice(0, numComponentsToDisplay);
 
         let text = texts.join(", ");
 

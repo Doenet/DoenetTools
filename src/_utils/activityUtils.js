@@ -13,9 +13,9 @@ import {
 let rngClass = prng_alea;
 
 export function parseActivityDefinition(activityDefDoenetML) {
-  let serializedDefinition = parseAndCompile(activityDefDoenetML).filter(
-    (x) => typeof x !== "string" || /\S/.test(x),
-  );
+  let serializedDefinition = parseAndCompile(
+    activityDefDoenetML,
+  ).components.filter((x) => typeof x !== "string" || /\S/.test(x));
 
   if (
     serializedDefinition.length !== 1 ||
@@ -265,8 +265,8 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     if (page.children.length > 0) {
       let pageDoenetML = activityDefDoenetML.slice(
-        page.range.openEnd,
-        page.range.closeBegin,
+        page.doenetMLrange.openEnd,
+        page.doenetMLrange.closeBegin,
       );
 
       if (page.children[0].componentType?.toLowerCase() !== "document") {

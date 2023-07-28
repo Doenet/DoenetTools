@@ -4054,6 +4054,50 @@ describe("Collect Tag Tests", function () {
     cy.get(cesc2("#/pnolist")).should("have.text", "applebananacherry");
   });
 
+  it("collect warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+
+    <graph name="g" />
+    <collect source="nothing" />
+    <collect source="g" componentTypes="abc" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Cannot collect components of type <abc> as it is an invalid component type",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(47);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "No source found for collect",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(32);
+    });
+  });
+
   // Not sure how to test with with core a web worker
   it.skip("allChildrenOrdered consistent with dynamic collect and adapters", () => {
     cy.window().then(async (win) => {

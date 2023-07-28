@@ -21,6 +21,7 @@ import {
   Tooltip,
   useColorModeValue,
   Button,
+  VStack,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -204,21 +205,65 @@ export function Home() {
         // subheading="Quickly create interactive activities"
       />
       <Center background={blueColor} padding="20px">
-        <Flex flexDirection="column">
-          <Text fontSize="16px" fontWeight="700" textAlign="left">
-            Doenet Office Hours
-          </Text>
-          <Text maxWidth="800px">
-            Doenet Staff we will be available to help you author learning
-            activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
-            <Link
-              href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
-              isExternal
-            >
-              <Text as="u">Zoom</Text>.
-            </Link>
-          </Text>
-        </Flex>
+        <VStack>
+          <Flex flexDirection="column">
+            <Text fontSize="16px" fontWeight="700" textAlign="left">
+              Doenet Learning Experiment Mini-Grants
+            </Text>
+            <Text maxWidth="800px">
+              <p style={{ marginBottom: "10px" }}>
+                Applications for a Doenet Learning Experiment Mini-Grant are now
+                being accepted. These mini-grants are awards of $500 that will
+                be given to instructors to run learning experiments using
+                Doenet.
+              </p>
+
+              <p style={{ marginBottom: "10px" }}>
+                To be eligible for one of these mini-grants, instructors must
+                design a learning experiment and give that learning experiment
+                to their students on the Doenet platform during the 2023-24
+                academic year.
+              </p>
+
+              <p style={{ marginBottom: "10px" }}>
+                To apply for a mini-grant, submit a one-paragraph description on
+                the proposed learning experiment to{" "}
+                <Link href="mailto:info@doenet.org" isExternal>
+                  <Text as="u">info@doenet.org</Text>
+                </Link>{" "}
+                by August 21, 2023. Priority will be given to participants of a
+                previous Doenet workshop, but attending a previous workshop is
+                not a requirement.
+              </p>
+
+              <p>
+                Questions? Contact{" "}
+                <Link href="mailto:info@doenet.org" isExternal>
+                  <Text as="u">info@doenet.org</Text>
+                </Link>{" "}
+                or post a question on the{" "}
+                <Link href="https://discord.gg/PUduwtKJ5h" isExternal>
+                  <Text as="u">Doenet Discord server</Text>.
+                </Link>
+              </p>
+            </Text>
+          </Flex>
+          <Flex flexDirection="column">
+            <Text fontSize="16px" fontWeight="700" textAlign="left">
+              Doenet Office Hours
+            </Text>
+            <Text maxWidth="800px">
+              Doenet Staff we will be available to help you author learning
+              activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
+              <Link
+                href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
+                isExternal
+              >
+                <Text as="u">Zoom</Text>.
+              </Link>
+            </Text>
+          </Flex>
+        </VStack>
       </Center>
       <Heading
         heading="Create Content"

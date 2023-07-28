@@ -20,7 +20,7 @@ export function returnStandardSequenceAttributes() {
       createComponentOfType: "math",
     },
     length: {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
     },
     exclude: {
       createComponentOfType: "_componentListWithSelectableType",
@@ -277,6 +277,8 @@ export function returnStandardSequenceStateVariableDefinitions() {
       },
     }),
     definition: function ({ dependencyValues }) {
+      let warnings = [];
+
       let validSequence = true;
 
       if (dependencyValues.specifiedLength !== null) {
@@ -284,9 +286,11 @@ export function returnStandardSequenceStateVariableDefinitions() {
           !Number.isInteger(dependencyValues.specifiedLength) ||
           dependencyValues.specifiedLength < 0
         ) {
-          console.warn(
-            "Invalid length of sequence.  Must be a non-negative integer.",
-          );
+          warnings.push({
+            message:
+              "Invalid length of sequence.  Must be a non-negative integer.",
+            level: 1,
+          });
           validSequence = false;
         }
       }
@@ -298,11 +302,13 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedStep,
           );
           if (!Number.isFinite(numericalStep)) {
-            console.warn(
-              "Invalid step of sequence.  Must be a number for sequence of type " +
+            warnings.push({
+              message:
+                "Invalid step of sequence.  Must be a number for sequence of type " +
                 dependencyValues.type +
                 ".",
-            );
+              level: 1,
+            });
             validSequence = false;
           }
         }
@@ -314,12 +320,27 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedFrom,
           );
           if (!Number.isFinite(numericalFrom)) {
-            console.warn("Invalid from of number sequence.  Must be a number");
+            warnings.push({
+              message: `Invalid "from" of number sequence.  Must be a number.`,
+              level: 1,
+            });
             validSequence = false;
           }
-        } else if (Number.isNaN(dependencyValues.specifiedFrom)) {
-          console.warn("Invalid from of sequence");
-          validSequence = false;
+        } else if (dependencyValues.type === "letters") {
+          if (lettersToNumber(dependencyValues.specifiedFrom) === undefined) {
+            warnings.push({
+              message: `Invalid "from" of letters sequence.  Must be a letter combination.`,
+              level: 1,
+            });
+            validSequence = false;
+          }
+        } else {
+          // type === math
+
+          if (Number.isNaN(dependencyValues.specifiedFrom.tree)) {
+            warnings.push({ message: `Invalid "from" of sequence.`, level: 1 });
+            validSequence = false;
+          }
         }
       }
 
@@ -329,16 +350,31 @@ export function returnStandardSequenceStateVariableDefinitions() {
             dependencyValues.specifiedTo,
           );
           if (!Number.isFinite(numericalTo)) {
-            console.warn("Invalid to of number sequence.  Must be a number");
+            warnings.push({
+              message: `Invalid "to" of number sequence.  Must be a number.`,
+              level: 1,
+            });
             validSequence = false;
           }
-        } else if (Number.isNaN(dependencyValues.specifiedTo)) {
-          console.warn("Invalid to of sequence");
-          validSequence = false;
+        } else if (dependencyValues.type === "letters") {
+          if (lettersToNumber(dependencyValues.specifiedTo) === undefined) {
+            warnings.push({
+              message: `Invalid "to" of letters sequence.  Must be a letter combination.`,
+              level: 1,
+            });
+            validSequence = false;
+          }
+        } else {
+          // type === math
+
+          if (Number.isNaN(dependencyValues.specifiedTo.tree)) {
+            warnings.push({ message: `Invalid "to" of sequence.`, level: 1 });
+            validSequence = false;
+          }
         }
       }
 
-      return { setValue: { validSequence } };
+      return { setValue: { validSequence }, sendWarnings: warnings };
     },
   };
 
@@ -717,7 +753,6 @@ export function lettersToNumber(letters) {
   try {
     letters = letters.toUpperCase();
   } catch (e) {
-    console.warn("Cannot convert " + letters + " to a number");
     return undefined;
   }
 
@@ -727,7 +762,6 @@ export function lettersToNumber(letters) {
   while ((pos -= 1) > -1) {
     let numForLetter = letters.charCodeAt(pos) - 64;
     if (numForLetter < 1 || numForLetter > 26) {
-      console.warn("Cannot convert " + letters + " to a number");
       return undefined;
     }
     number += numForLetter * Math.pow(26, len - 1 - pos);

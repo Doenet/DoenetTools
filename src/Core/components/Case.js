@@ -45,7 +45,7 @@ export default class Case extends Template {
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
     if (!component.stateValues.conditionSatisfied) {
-      return { replacements: [] };
+      return { replacements: [], errors: [], warnings: [] };
     }
 
     return super.createSerializedReplacements({

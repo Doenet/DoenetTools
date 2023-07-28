@@ -12,6 +12,8 @@ export default class P extends BlockComponent {
   static componentType = "p";
   static renderChildren = true;
 
+  static canDisplayChildErrors = true;
+
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {
@@ -19,6 +21,10 @@ export default class P extends BlockComponent {
       {
         group: "inlinesAndLists",
         componentTypes: ["_inline", "ol", "ul"],
+      },
+      {
+        group: "errors",
+        componentTypes: ["_error"],
       },
     ];
   }

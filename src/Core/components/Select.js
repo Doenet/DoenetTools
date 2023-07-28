@@ -77,6 +77,7 @@ export default class Select extends CompositeComponent {
       }
 
       let type;
+      let warnings = [];
       if (componentAttributes.type) {
         type = componentAttributes.type;
       } else {
@@ -84,7 +85,10 @@ export default class Select extends CompositeComponent {
       }
 
       if (!["math", "text", "number", "boolean"].includes(type)) {
-        console.warn(`Invalid type ${type}`);
+        warnings.push({
+          message: `Invalid type for select: ${type}.`,
+          level: 1,
+        });
         type = "math";
       }
 
@@ -115,9 +119,10 @@ export default class Select extends CompositeComponent {
           success: true,
           newChildren,
           newAttributes,
+          warnings,
         };
       } else {
-        return { success: false };
+        return { success: false, warnings };
       }
     }
 
@@ -195,6 +200,7 @@ export default class Select extends CompositeComponent {
     };
 
     stateVariableDefinitions.availableVariants = {
+      additionalStateVariablesDefined: ["errorMessageVariants"],
       returnDependencies: () => ({
         optionChildren: {
           dependencyType: "stateVariable",
@@ -229,14 +235,18 @@ export default class Select extends CompositeComponent {
             availableVariants[variantName].length !==
             dependencyValues.numToSelect
           ) {
-            throw Error(
+            let errorMessageVariants =
               "Invalid variant name for select.  Variant name " +
-                variantName +
-                " appears in " +
-                availableVariants[variantName].length +
-                " options but number to select is " +
-                numToSelect,
-            );
+              variantName +
+              " appears in " +
+              availableVariants[variantName].length +
+              " options but number to select is " +
+              dependencyValues.numToSelect +
+              ".";
+
+            return {
+              setValue: { errorMessageVariants, availableVariants: [] },
+            };
           }
         }
 
@@ -245,25 +255,32 @@ export default class Select extends CompositeComponent {
           // then require that all possible variants have a variant specified
           for (let variantName of dependencyValues.allVariantNames) {
             if (!(variantName in availableVariants)) {
-              throw Error(
+              let errorMessageVariants =
                 "Some variants are specified for select but no options are specified for possible variant name: " +
-                  variantName,
-              );
+                variantName +
+                ".";
+
+              return {
+                setValue: { errorMessageVariants, availableVariants: [] },
+              };
             }
           }
           for (let variantName in availableVariants) {
             if (!dependencyValues.allVariantNames.includes(variantName)) {
-              throw Error(
+              let errorMessageVariants =
                 "Variant name " +
-                  variantName +
-                  " that is specified for select is not a possible variant name.",
-              );
+                variantName +
+                " that is specified for select is not a possible variant name.";
+
+              return {
+                setValue: { errorMessageVariants, availableVariants: [] },
+              };
             }
           }
         }
 
         return {
-          setValue: { availableVariants },
+          setValue: { errorMessageVariants: "", availableVariants },
         };
       },
     };
@@ -272,6 +289,14 @@ export default class Select extends CompositeComponent {
       immutable: true,
       hasEssential: true,
       shadowVariable: true,
+      additionalStateVariablesDefined: [
+        {
+          variableName: "errorMessage",
+          hasEssential: true,
+          shadowVariable: true,
+          immutable: true,
+        },
+      ],
       returnDependencies: ({ sharedParameters }) => ({
         numToSelect: {
           dependencyType: "stateVariable",
@@ -301,6 +326,10 @@ export default class Select extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "availableVariants",
         },
+        errorMessageVariants: {
+          dependencyType: "stateVariable",
+          variableName: "errorMessageVariants",
+        },
         variantRng: {
           dependencyType: "value",
           value: sharedParameters.variantRng,
@@ -311,13 +340,21 @@ export default class Select extends CompositeComponent {
         // console.log(`definition of selected Indices`)
         // console.log(dependencyValues);
 
+        if (dependencyValues.errorMessageVariants) {
+          let errorMessage = dependencyValues.errorMessageVariants;
+          return {
+            setEssentialValue: { errorMessage, selectedIndices: [] },
+            setValue: { errorMessage, selectedIndices: [] },
+          };
+        }
+
         if (
           !(dependencyValues.numToSelect >= 1) ||
           dependencyValues.nOptions === 0
         ) {
           return {
-            setEssentialValue: { selectedIndices: [] },
-            setValue: { selectedIndices: [] },
+            setEssentialValue: { errorMessage: "", selectedIndices: [] },
+            setValue: { errorMessage: "", selectedIndices: [] },
           };
         }
 
@@ -343,8 +380,11 @@ export default class Select extends CompositeComponent {
             );
 
             return {
-              setEssentialValue: { selectedIndices: desiredIndices },
-              setValue: { selectedIndices: desiredIndices },
+              setEssentialValue: {
+                errorMessage: "",
+                selectedIndices: desiredIndices,
+              },
+              setValue: { errorMessage: "", selectedIndices: desiredIndices },
             };
           }
         }
@@ -372,8 +412,11 @@ export default class Select extends CompositeComponent {
             }
           }
           return {
-            setEssentialValue: { selectedIndices: variantOptions },
-            setValue: { selectedIndices: variantOptions },
+            setEssentialValue: {
+              errorMessage: "",
+              selectedIndices: variantOptions,
+            },
+            setValue: { errorMessage: "", selectedIndices: variantOptions },
           };
         }
 
@@ -385,12 +428,16 @@ export default class Select extends CompositeComponent {
         }
 
         if (numUniqueRequired > dependencyValues.nOptions) {
-          throw Error(
+          let errorMessage =
             "Cannot select " +
-              numUniqueRequired +
-              " components from only " +
-              dependencyValues.nOptions,
-          );
+            numUniqueRequired +
+            " components from only " +
+            dependencyValues.nOptions +
+            ".";
+          return {
+            setEssentialValue: { errorMessage, selectedIndices: [] },
+            setValue: { errorMessage, selectedIndices: [] },
+          };
         }
 
         // normalize selectWeights to sum to 1
@@ -448,8 +495,8 @@ export default class Select extends CompositeComponent {
         }
 
         return {
-          setEssentialValue: { selectedIndices },
-          setValue: { selectedIndices },
+          setEssentialValue: { errorMessage: "", selectedIndices },
+          setValue: { errorMessage: "", selectedIndices },
         };
       },
     };
@@ -538,6 +585,26 @@ export default class Select extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
+    let errors = [];
+    let warnings = [];
+
+    let errorMessage = await component.stateValues.errorMessage;
+    if (errorMessage) {
+      errors.push({
+        message: errorMessage,
+      });
+      return {
+        replacements: [
+          {
+            componentType: "_error",
+            state: { message: errorMessage },
+          },
+        ],
+        errors,
+        warnings,
+      };
+    }
+
     let replacements = [];
 
     let optionChildren = await component.stateValues.optionChildren;
@@ -613,11 +680,13 @@ export default class Select extends CompositeComponent {
         componentInfoObjects,
         indOffset: ind,
       });
+      errors.push(...processResult.errors);
+      warnings.push(...processResult.warnings);
 
       newReplacements.push(processResult.serializedComponents[0]);
     }
 
-    return { replacements: newReplacements };
+    return { replacements: newReplacements, errors, warnings };
   }
 
   static calculateReplacementChanges() {
@@ -768,6 +837,10 @@ export default class Select extends CompositeComponent {
         // have select without replacement where options have different numbers of variants
         numberOfVariants = countOptions(numberOfVariantsByChild, numToSelect);
       }
+    }
+
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
     }
 
     serializedComponent.variants.numberOfVariants = numberOfVariants;

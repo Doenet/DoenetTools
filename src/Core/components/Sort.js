@@ -375,6 +375,9 @@ export default class Sort extends CompositeComponent {
     componentInfoObjects,
     workspace,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [];
 
     let componentsCopied = [];
@@ -416,10 +419,16 @@ export default class Sort extends CompositeComponent {
       parentCreatesNewNamespace: await component.stateValues.newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     workspace.componentsCopied = componentsCopied;
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -428,6 +437,10 @@ export default class Sort extends CompositeComponent {
     componentInfoObjects,
     workspace,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     let componentsToCopy = [];
 
     for (let valueObj of await component.stateValues.sortedValues) {
@@ -453,14 +466,16 @@ export default class Sort extends CompositeComponent {
     }
 
     // for now, just recreated
-    let replacements = (
-      await this.createSerializedReplacements({
-        component,
-        components,
-        componentInfoObjects,
-        workspace,
-      })
-    ).replacements;
+    let replacementResults = await this.createSerializedReplacements({
+      component,
+      components,
+      componentInfoObjects,
+      workspace,
+    });
+
+    let replacements = replacementResults.replacements;
+    errors.push(...replacementResults.errors);
+    warnings.push(...replacementResults.warnings);
 
     let replacementChanges = [
       {

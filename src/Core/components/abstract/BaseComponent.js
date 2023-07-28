@@ -76,8 +76,8 @@ export default class BaseComponent {
       this.variants = serializedComponent.variants;
     }
 
-    if (serializedComponent.range) {
-      this.doenetMLrange = serializedComponent.range;
+    if (serializedComponent.doenetMLrange) {
+      this.doenetMLrange = serializedComponent.doenetMLrange;
     }
 
     this.actions = {
@@ -319,6 +319,7 @@ export default class BaseComponent {
         defaultValue: true,
         public: true,
         propagateToProps: true,
+        excludeFromSchema: true,
       },
       styleNumber: {
         createComponentOfType: "integer",
@@ -344,6 +345,7 @@ export default class BaseComponent {
         createStateVariable: "permid",
         defaultValue: "",
         public: true,
+        excludeFromSchema: true,
       },
     };
   }
@@ -353,7 +355,12 @@ export default class BaseComponent {
   }
 
   static returnChildGroups() {
-    return [];
+    return [
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
+    ];
   }
 
   static get childGroups() {
@@ -1098,6 +1105,10 @@ export default class BaseComponent {
 
     // TODO: not serializing attribute children (as don't need them with forLink)
 
+    if (parameters.errorIfEncounterComponent?.includes(this.componentName)) {
+      throw Error("Encountered " + this.componentName);
+    }
+
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
@@ -1205,7 +1216,7 @@ export default class BaseComponent {
     }
 
     if (this.doenetMLrange) {
-      serializedComponent.range = JSON.parse(
+      serializedComponent.doenetMLrange = JSON.parse(
         JSON.stringify(this.doenetMLrange),
       );
     }
@@ -1271,8 +1282,10 @@ export default class BaseComponent {
       delete serializedCopy.doenetAttributes.assignNames;
     }
 
-    if (serializedComponent.range !== undefined) {
-      serializedCopy.range = deepClone(serializedComponent.range);
+    if (serializedComponent.doenetMLrange !== undefined) {
+      serializedCopy.doenetMLrange = deepClone(
+        serializedComponent.doenetMLrange,
+      );
     }
 
     if (serializedComponent.state !== undefined) {
@@ -1443,6 +1456,10 @@ export default class BaseComponent {
       }
       numberOfVariantsByDescendant.push(result.numberOfVariants);
       numberOfVariants *= result.numberOfVariants;
+    }
+
+    if (!(numberOfVariants > 0)) {
+      return { success: false };
     }
 
     serializedComponent.variants.numberOfVariants = numberOfVariants;

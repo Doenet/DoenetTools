@@ -234,6 +234,9 @@ export function convertAttributesForComponentType({
   dontSkipAttributes = [],
   compositeCreatesNewNamespace,
 }) {
+  let errors = [];
+  let warnings = [];
+
   let newClass = componentInfoObjects.allComponentClasses[componentType];
   let newAttributesObj = newClass.createAttributesObject();
   let attributeLowerCaseMapping = {};
@@ -262,11 +265,14 @@ export function convertAttributesForComponentType({
         throw Error(`Cannot repeat prop ${propName}`);
       }
 
-      newAttributes[propName] = componentFromAttribute({
+      let res = componentFromAttribute({
         attrObj,
         value: JSON.parse(JSON.stringify(attributes[attrName])),
         componentInfoObjects,
       });
+      newAttributes[propName] = res.attribute;
+      errors.push(...res.errors);
+      warnings.push(...res.warnings);
 
       if (newAttributes[propName].component?.children) {
         let serializedComponents = [newAttributes[propName].component];
@@ -314,11 +320,14 @@ export async function verifyReplacementsMatchSpecifiedType({
   components,
   publicCaseInsensitiveAliasSubstitutions,
 }) {
+  let errors = [];
+  let warnings = [];
+
   if (
     !component.attributes.createComponentOfType?.primitive &&
     !component.sharedParameters.compositesMustHaveAReplacement
   ) {
-    return { replacements, replacementChanges };
+    return { replacements, replacementChanges, errors, warnings };
   }
 
   let replacementsToWithhold = component.replacementsToWithhold;
@@ -409,7 +418,7 @@ export async function verifyReplacementsMatchSpecifiedType({
     // no changes since only reason we got this far was that
     // composites must have a replacement
     // and we have at least one replacement
-    return { replacements, replacementChanges };
+    return { replacements, replacementChanges, errors, warnings };
   }
 
   let requiredComponentType =
@@ -456,7 +465,7 @@ export async function verifyReplacementsMatchSpecifiedType({
         primitive: requiredComponentType,
       };
       replacements[0].attributes.numComponents = { primitive: requiredLength };
-      return { replacements, replacementChanges };
+      return { replacements, replacementChanges, errors, warnings };
     }
 
     // if the only discrepancy is the components are the wrong type,
@@ -622,6 +631,8 @@ export async function verifyReplacementsMatchSpecifiedType({
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     replacements = processResult.serializedComponents;
 
@@ -656,5 +667,5 @@ export async function verifyReplacementsMatchSpecifiedType({
     }
   }
 
-  return { replacements, replacementChanges };
+  return { replacements, replacementChanges, errors, warnings };
 }

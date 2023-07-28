@@ -20181,6 +20181,74 @@ describe("Vector Tag Tests", function () {
       .should("have.text", "(5,624)");
   });
 
+  it("warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <graph>
+      <vector head="(1,2)" tail="(3,4)" displacement="(5,6)" />
+      <vector head="(1,2)" tail="(3,4,5)" />
+      <vector head="(1,2)" displacement="(3,4,5)" />
+      <vector tail="(1,2)" displacement="(3,4,5)" />
+    </graph>
+
+    <vector copySource="_vector1.displacement" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_vector5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,6)");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(4);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Vector is prescribed by head, tail, and displacement.  Ignoring specified head",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(63);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "numDimensions mismatch in vector",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(44);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "numDimensions mismatch in vector",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(52);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        "numDimensions mismatch in vector",
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(52);
+    });
+  });
+
   it("handle bad head/tail", () => {
     cy.window().then(async (win) => {
       win.postMessage(

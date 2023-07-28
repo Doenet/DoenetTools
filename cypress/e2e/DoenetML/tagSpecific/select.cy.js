@@ -3068,6 +3068,58 @@ describe("Select Tag Tests", function () {
     });
   });
 
+  it("select invalid type with sugared string, becomes math with warning", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <aslist>
+    <select type="nothing" assignnames="m1 m2 m3 m4 m5" numToSelect="5">
+      x^2  x/y  u  a  b-c  s+t  mn  -1
+    </select>
+    </aslist>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let options = ["x^2", "x/y", "u", "a", "b-c", "s+t", "mn", "-1"].map((x) =>
+      me.fromText(x),
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathsSoFar = [];
+      for (let ind = 1; ind <= 5; ind++) {
+        let math = me.fromAst(stateVariables["/m" + ind].stateValues.value);
+        expect(options.some((x) => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some((x) => x.equalsViaSyntax(math))).eq(false);
+        mathsSoFar.push(math);
+      }
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Invalid type for select: nothing",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(13);
+    });
+  });
+
   it("select weighted", () => {
     // TODO: this test seems to fail with num Y < 17 once in awhile
     // even though it should fail less than 0.1% of the time
@@ -4919,6 +4971,170 @@ describe("Select Tag Tests", function () {
       cy.get(cesc2("#" + p1)).should("have.text", `q,r = ab`);
       cy.get(cesc2("#" + p2)).should("have.text", `q2 = a`);
       cy.get(cesc2("#" + p3)).should("have.text", `r2 = b`);
+    });
+  });
+
+  it("display error when miss a name in selectForVariants, inside text", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <variantControl variantNames="apple banana cherry" numVariants="3" />
+    
+    <p>We have a <text><select>
+      <option selectForVariants="apple">apple</option>
+      <option selectForVariants="cherry">cherry</option>
+    </select></text>!</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("contain.text", "We have a ");
+    cy.get(cesc2("#/_p1")).should("contain.text", "!");
+    cy.get(cesc2("#/_p1")).should(
+      "contain.text",
+      "Some variants are specified for select but no options are specified for possible variant name: banana",
+    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "lines 4–7");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Some variants are specified for select but no options are specified for possible variant name: banana",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(24);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(13);
+    });
+  });
+
+  it("display error when repeat name in selectForVariants more times than numToSelect, inside p", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <variantControl variantNames="apple banana cherry" numVariants="3" />
+    
+    <p>We have a <select>
+      <option selectForVariants="apple">apple</option>
+      <option selectForVariants="apple">cherry</option>
+    </select>!</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("contain.text", "We have a ");
+    cy.get(cesc2("#/_p1")).should("contain.text", "!");
+    cy.get(cesc2("#/_p1")).should(
+      "contain.text",
+      "Invalid variant name for select.  Variant name apple appears in 2 options but number to select is 1",
+    );
+    cy.get(cesc2("#/_p1")).should("contain.text", "lines 4–7");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Invalid variant name for select.  Variant name apple appears in 2 options but number to select is 1",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(18);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(13);
+    });
+  });
+
+  it("display error when repeat name in selectForVariants more times than numToSelect, inside document", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <variantControl variantNames="apple banana" numVariants="2" />
+    
+    We have a <select>
+      <option selectForVariants="apple">apple</option>
+      <option selectForVariants="banana">banana</option>
+      <option selectForVariants="donut">donut</option>
+    </select>!
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should("contain.text", "We have a ");
+    cy.get(cesc2("#/_document1")).should("contain.text", "!");
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Variant name donut that is specified for select is not a possible variant name",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "lines 4–8");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Variant name donut that is specified for select is not a possible variant name",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(15);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(13);
+    });
+  });
+
+  it("display error when numToSelect is larger than number of options, inside graph", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p>No points for graph!</p>
+
+    <graph><select numToSelect="3">
+      <option><point>(3,4)</point></option>
+      <option><point>(5,6)</point></option>
+    </select></graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("contain.text", "No points for graph!");
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Cannot select 3 components from only 2",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "lines 4–7");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Cannot select 3 components from only 2",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(12);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(13);
     });
   });
 

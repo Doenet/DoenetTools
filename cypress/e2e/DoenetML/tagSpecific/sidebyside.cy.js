@@ -3021,6 +3021,61 @@ describe("SideBySide Tag Tests", function () {
       });
   });
 
+  it("sideBySide absolute measurements turned to absolute with warning", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <sidebyside width="100px" margins="1px">
+      <p>Hello</p>
+      <p>Hello</p>
+    </sidebyside>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_sidebyside1"].stateValues.marginsAbsolute).eq(
+        false,
+      );
+      expect(stateVariables["/_sidebyside1"].stateValues.widthsAbsolute).eq(
+        false,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `<sideBySide> is not implemented for absolute measurements. Setting widths to relative`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(17);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `<sideBySide> is not implemented for absolute measurements. Setting margins to relative`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(17);
+    });
+  });
+
   it("sbsGroup with no arguments, one panel", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -7408,6 +7463,63 @@ describe("SideBySide Tag Tests", function () {
           ignoreInitialDOMChecks: true,
         });
       });
+  });
+
+  it("sbsGroup absolute measurements turned to absolute with warning", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <sbsGroup width="100px" margins="1px">
+      <sidebyside>
+        <p>Hello</p>
+        <p>Hello</p>
+      </sidebyside>
+    </sbsGroup>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_sbsgroup1"].stateValues.marginsAbsolute).eq(
+        false,
+      );
+      expect(stateVariables["/_sbsgroup1"].stateValues.widthsAbsolute).eq(
+        false,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(2);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `<sbsGroup> is not implemented for absolute measurements. Setting widths to relative`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(15);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `<sbsGroup> is not implemented for absolute measurements. Setting margins to relative`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(15);
+    });
   });
 
   it("sideBySide with a stack", () => {

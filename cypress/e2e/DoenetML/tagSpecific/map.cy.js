@@ -636,6 +636,75 @@ describe("Map Tag Tests", function () {
     });
   });
 
+  it("parallel map with unequal numbers of iterates", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><map behavior="parallel">
+      <template>hi</template>
+      <sources><number>1</number></sources>
+      <sources><number>1</number><number>2</number></sources>
+    </map></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("have.text", "hi");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "<map> has parallel behavior but different numbers of iterates in sources. Extra iterates will be ignored",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(8);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(10);
+    });
+  });
+
+  it("map with invalid behavior", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><map behavior="bad">
+      <template>hi</template>
+      <sources><number>1</number></sources>
+    </map></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("have.text", "");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid map behavior: "bad"`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(8);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(10);
+    });
+  });
+
   it("two nested maps", () => {
     cy.window().then(async (win) => {
       win.postMessage(

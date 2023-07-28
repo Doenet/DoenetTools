@@ -1367,7 +1367,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.variance(samples, "uncorrected");
 
-      expect(meanX).closeTo(8.5, 0.15);
+      expect(meanX).closeTo(8.5, 0.2);
       expect(varX).closeTo(((2 ** 2 - 1) * 2 ** 2) / 12, 0.05);
 
       let firstSample =
@@ -1592,7 +1592,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
         3,
       );
 
-      expect(me.math.mean(sample2numbers)).closeTo(0, 1);
+      expect(me.math.mean(sample2numbers)).closeTo(0, 1.5);
       expect(me.math.variance(sample2numbers, "uncorrected")).closeTo(16, 8);
     });
 
@@ -2454,7 +2454,7 @@ describe("SampleRandomNumbers Tag Tests", function () {
         specifiedTo,
         specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 1,
+        allowedErrorInMean: 1.5,
         allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables,

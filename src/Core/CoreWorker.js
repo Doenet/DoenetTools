@@ -25,6 +25,11 @@ onmessage = function (e) {
         args: componentsObj,
       });
     });
+  } else if (e.data.messageType === "returnErrorWarnings") {
+    postMessage({
+      messageType: "returnErrorWarnings",
+      args: core.errorWarnings,
+    });
   } else if (e.data.messageType === "visibilityChange") {
     core.handleVisibilityChange(e.data.args);
   } else if (e.data.messageType === "terminate") {

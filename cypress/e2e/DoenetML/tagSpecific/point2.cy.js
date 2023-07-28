@@ -9414,6 +9414,71 @@ describe("Point Tag Tests 2", function () {
     });
   });
 
+  it("warnings from attractTo and constrainTo", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<text>a</text>
+<graph name="g">
+  <legend name="lg"><label>point</label></legend>
+  <point>
+    <constraints>
+      <attractTo>$lg</attractTo>
+    </constraints>
+  </point>
+</graph>
+
+<graph copySource="g">
+  <point>(3,4)
+    <constraints>
+      <constrainTo>$lg</constrainTo>
+    </constraints>
+  </point>
+</graph>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(3);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Cannot attract to a <legend> as it doesn't have a nearestPoint state variable",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(32);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "Cannot attract to a <legend> as it doesn't have a nearestPoint state variable",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(32);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "Cannot constrain to a <legend> as it doesn't have a nearestPoint state variable",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(15);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(15);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(36);
+    });
+  });
+
   it("copy point with no arguments, specify individual coordinates", () => {
     cy.window().then(async (win) => {
       win.postMessage(

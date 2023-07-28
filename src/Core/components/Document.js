@@ -19,6 +19,8 @@ export default class Document extends BaseComponent {
   static rendererType = "section";
   static renderChildren = true;
 
+  static canDisplayChildErrors = true;
+
   static createsVariants = true;
 
   static includeBlankStringChildren = true;

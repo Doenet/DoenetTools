@@ -4,6 +4,7 @@ import {
   ancestorsIncludingComposites,
   gatherDescendants,
 } from "./utils/descendants";
+import { getLineCharRange } from "./utils/logging";
 import { retrieveTextFileForCid } from "./utils/retrieveTextFile";
 import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
@@ -522,41 +523,18 @@ export class DependencyHandler {
 
     if (previouslyVisited.includes(stateVariableIdentifier)) {
       // Found circular dependency
-      // Create error message with list of component names involved
+      // Create error message with list of component types and names involved
 
       console.log("found circular", stateVariableIdentifier, previouslyVisited);
 
       let componentNameRe = /^(.*):/;
-      let componentNamesInvolved = previouslyVisited.map(
-        (x) => x.match(componentNameRe)[1],
+      let componentsInvolved = previouslyVisited.map(
+        (x) => this.components[x.match(componentNameRe)[1]],
       );
 
-      // remove internally created component names
-      // and deduplicate while keeping order (so don't use Set)
-      let uniqueComponentNames = componentNamesInvolved
-        .filter((x) => x.slice(0, 2) !== "__")
-        .reduce((a, b) => (a.includes(b) ? a : [...a, b]), []);
+      let message = this.getCircularDependencyMessage(componentsInvolved);
 
-      // If had only internally created component names, just give first componentName
-      if (uniqueComponentNames.length === 0) {
-        uniqueComponentNames = [componentNamesInvolved[0]];
-      }
-
-      let nameString;
-      if (uniqueComponentNames.length === 1) {
-        nameString = uniqueComponentNames[0];
-      } else if (uniqueComponentNames.length === 2) {
-        nameString = uniqueComponentNames.join(" and ");
-      } else {
-        uniqueComponentNames[uniqueComponentNames.length - 2] =
-          uniqueComponentNames
-            .slice(uniqueComponentNames.length - 2)
-            .join(", and ");
-        uniqueComponentNames.pop();
-        nameString = uniqueComponentNames.join(", ");
-      }
-
-      throw Error(`Circular dependency involving ${nameString}`);
+      throw Error(message);
     } else {
       // shallow copy so don't change original
       previouslyVisited = [...previouslyVisited, stateVariableIdentifier];
@@ -997,6 +975,14 @@ export class DependencyHandler {
         if (upDep.valuesChanged) {
           let ind = upDep.downstreamComponentNames.indexOf(componentName);
           let upValuesChanged = upDep.valuesChanged[ind][varName];
+
+          // Note (dated July 20, 2023):
+          // The code in the next two sections references a variable upValuesChangedSub
+          // that is not defined, so it will throw an error if evaluated.
+          // This code is years old at this point and all tests have been passing.
+          // Either there is a rare edge case that will call this code and we need to fix it,
+          // or this code is no longer used.
+          // TODO: determine if this code is need.  Fix it if it is needed or else delete it.
 
           if (!upValuesChanged) {
             // check if have an alias that maps to varName
@@ -2311,88 +2297,18 @@ export class DependencyHandler {
 
     if (previouslyVisited.includes(identifier)) {
       // Found circular dependency
-      // Create error message with list of component names involved
+      // Create error message with list of component types and names involved
 
       console.log("found circular", identifier, previouslyVisited);
 
-      let componentNameRe = /^([^\|]*)\|/;
-      let componentNamesInvolved = previouslyVisited.map(
-        (x) => x.match(componentNameRe)[1],
+      let componentNameRe = /^([^|]*)\|/;
+
+      let componentsInvolved = previouslyVisited.map(
+        (x) => this.components[x.match(componentNameRe)[1]],
       );
 
-      // remove internally created component names
-      // and deduplicate while keeping order (so don't use Set)
-      let uniqueComponentNames = componentNamesInvolved
-        .filter((x) => x.slice(0, 2) !== "__")
-        .reduce((a, b) => (a.includes(b) ? a : [...a, b]), []);
+      let message = this.getCircularDependencyMessage(componentsInvolved);
 
-      // If had only internally created component names, just give first componentName
-      if (uniqueComponentNames.length === 0) {
-        uniqueComponentNames = [componentNamesInvolved[0]];
-      }
-
-      let nameString;
-      if (uniqueComponentNames.length === 1) {
-        nameString = uniqueComponentNames[0];
-      } else if (uniqueComponentNames.length === 2) {
-        nameString = uniqueComponentNames.join(" and ");
-      } else {
-        uniqueComponentNames[uniqueComponentNames.length - 2] =
-          uniqueComponentNames
-            .slice(uniqueComponentNames.length - 2)
-            .join(", and ");
-        uniqueComponentNames.pop();
-        nameString = uniqueComponentNames.join(", ");
-      }
-
-      // look for a composite with state variables readyToExpandWhenResolved
-      // and needsReplacementsUpdatedWhenStale
-
-      let compositesWithReadyToExpandWhenResolved = [];
-      let compositesWithStateVariableToEvaluateAfterReplacements = [];
-      for (let identifier of previouslyVisited) {
-        let [componentName, stateVariable] = identifier.split("|");
-        let component = this._components[componentName];
-        if (component) {
-          let isComposite = this.componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: component.componentType,
-            baseComponentType: "_composite",
-          });
-          if (
-            isComposite &&
-            !component.attributes.createComponentOfType?.primitive
-          ) {
-            if (stateVariable === "readyToExpandWhenResolved") {
-              compositesWithReadyToExpandWhenResolved.push(componentName);
-            } else if (
-              stateVariable ===
-              component.constructor.stateVariableToEvaluateAfterReplacements
-            ) {
-              compositesWithStateVariableToEvaluateAfterReplacements.push(
-                componentName,
-              );
-            }
-          }
-        }
-      }
-
-      let foundCompositeWithCombination = false;
-      for (let componentName of compositesWithReadyToExpandWhenResolved) {
-        if (
-          compositesWithStateVariableToEvaluateAfterReplacements.includes(
-            componentName,
-          )
-        ) {
-          foundCompositeWithCombination = true;
-          break;
-        }
-      }
-
-      let message = `Circular dependency involving ${nameString}.`;
-      if (foundCompositeWithCombination) {
-        message +=
-          "  Specifying the type of a composite component may address this circular dependency.";
-      }
       throw Error(message);
     } else {
       // shallow copy so don't change original
@@ -2424,6 +2340,94 @@ export class DependencyHandler {
         }
       }
     }
+  }
+
+  getCircularDependencyMessage(componentsInvolved) {
+    let uniqueComponentNames = [];
+    let componentTypesForUniqueNames = [];
+    let linesForUniqueNames = [];
+
+    // remove namespaces and internally created component names
+    // and deduplicate while keeping order (so don't use Set)
+    for (let comp of componentsInvolved) {
+      let name = comp.componentName;
+      let relativeName = name;
+      if (relativeName) {
+        let lastSlash = name.lastIndexOf("/");
+        relativeName = name.slice(lastSlash + 1);
+      } else {
+        relativeName = comp.doenetAttributes?.prescribedName;
+      }
+
+      if (relativeName && relativeName.slice(0, 2) !== "__") {
+        if (!uniqueComponentNames.includes(relativeName)) {
+          uniqueComponentNames.push(relativeName);
+          componentTypesForUniqueNames.push(comp.componentType);
+          let doenetMLrange = comp.doenetMLrange;
+          let addedLine = false;
+          if (doenetMLrange) {
+            if (
+              doenetMLrange.doenetMLId === 0 &&
+              doenetMLrange.lineBegin === undefined
+            ) {
+              Object.assign(
+                doenetMLrange,
+                getLineCharRange(doenetMLrange, this.core.doenetMLNewlines),
+              );
+            }
+            let lineBegin = doenetMLrange.lineBegin;
+            if (lineBegin) {
+              addedLine = true;
+              let lineEnd = doenetMLrange.lineEnd;
+              if (lineEnd === lineBegin) {
+                linesForUniqueNames.push(`line ${lineBegin}`);
+              } else {
+                linesForUniqueNames.push(`lines ${lineBegin}–${lineEnd}`);
+              }
+            }
+          }
+          if (!addedLine) {
+            linesForUniqueNames.push(null);
+          }
+        }
+      }
+    }
+
+    // If had only internally created component names, just give first componentName
+    if (uniqueComponentNames.length === 0) {
+      let comp = componentsInvolved[0];
+      let name = comp.componentName;
+      let relativeName = name;
+      if (relativeName) {
+        let lastSlash = name.lastIndexOf("/");
+        relativeName = name.slice(lastSlash + 1);
+      } else {
+        relativeName = comp.doenetAttributes?.prescribedName;
+      }
+      uniqueComponentNames = [relativeName];
+      // TODO: which of these two options to use or do we need to test for both?
+      componentTypesForUniqueNames = [comp.componentType];
+      // componentTypesForUniqueNames = [this.components[name].componentType];
+    }
+
+    let message = "";
+    for (let [ind, cType] of componentTypesForUniqueNames.entries()) {
+      if (message) {
+        message += ", ";
+      }
+      message += `<${cType}>`;
+      let lineRange = linesForUniqueNames[ind];
+      if (lineRange) {
+        message += ` (${lineRange})`;
+      } else {
+        let name = uniqueComponentNames[ind];
+        if (name[0] !== "_") {
+          message += ` (named "${name}")`;
+        }
+      }
+    }
+
+    return `Circular dependency involving these components: ${message}.`;
   }
 
   resetCircularResolveBlockerCheckPassed({
@@ -7890,6 +7894,114 @@ class DoenetMLDependency extends Dependency {
 }
 
 dependencyTypeArray.push(DoenetMLDependency);
+
+class DoenetMLRangeDependency extends Dependency {
+  static dependencyType = "doenetMLrange";
+
+  setUpParameters() {
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+  }
+
+  async determineDownstreamComponents() {
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent =
+        this.dependencyHandler.updateTriggers
+          .dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent =
+          this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[
+            this.componentName
+          ] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName,
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: [],
+      };
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [this.componentName],
+      downstreamComponentTypes: [component.componentType],
+    };
+  }
+
+  async getValue() {
+    let component = this.dependencyHandler._components[this.componentName];
+
+    let doenetMLrange = component.doenetMLrange;
+    if (doenetMLrange?.doenetMLId === 0) {
+      if (doenetMLrange.lineBegin === undefined) {
+        let allNewlines = this.dependencyHandler.core.doenetMLNewlines;
+        Object.assign(
+          doenetMLrange,
+          getLineCharRange(doenetMLrange, allNewlines),
+        );
+      }
+
+      return {
+        value: doenetMLrange,
+        changes: {},
+      };
+    } else {
+      return {
+        value: {},
+        changes: {},
+      };
+    }
+  }
+
+  deleteFromUpdateTriggers() {
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent =
+        this.dependencyHandler.updateTriggers
+          .dependenciesMissingComponentBySpecifiedName[
+          this.specifiedComponentName
+        ];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+  }
+}
+
+dependencyTypeArray.push(DoenetMLRangeDependency);
 
 class VariantsDependency extends Dependency {
   static dependencyType = "variants";
