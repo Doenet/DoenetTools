@@ -23,7 +23,7 @@ import {
 } from "./Tools/_framework/Paths/SiteHeader";
 import {
   loader as caroselLoader,
-  action as homeAction,
+  // action as homeAction,
   Home,
 } from "./Tools/_framework/Paths/Home";
 
@@ -133,7 +133,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: caroselLoader,
-        action: homeAction,
+        // action: homeAction,
         errorElement: (
           <ChakraProvider theme={theme}>
             <ErrorPage />

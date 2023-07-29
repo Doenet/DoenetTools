@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import SwiperCore, {
   // Navigation,
@@ -16,37 +16,11 @@ import "swiper/css/pagination";
 import "swiper/css/keyboard";
 import "./Carousel.css";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-import { Avatar, Box, Image, Text, MenuItem } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import ActivityCard from "./ActivityCard";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 SwiperCore.use([Keyboard, Mousewheel]);
-
-const LeftChevron = styled(FontAwesomeIcon)`
-  color: #949494;
-  font-size: 50px;
-  margin-top: 65px;
-  cursor: pointer;
-  &: hover {
-    color: #0e1111;
-  }
-`;
-
-const RightChevron = styled(FontAwesomeIcon)`
-  color: #949494;
-  font-size: 50px;
-  margin-top: 65px;
-  cursor: pointer;
-  &: hover {
-    color: #0e1111;
-  }
-`;
 
 export function Carousel({ title = "", data = [] }) {
   const swiperElRef = useRef(null);
@@ -74,25 +48,20 @@ export function Carousel({ title = "", data = [] }) {
 
   return (
     <>
-      <div
-        style={{
-          border: "2px solid #949494",
-          borderRadius: "6px",
-          padding: "10px",
-          minWidth: "320px",
-          maxWidth: "1000px",
-          width: "80%",
-          textAlign: "center",
-        }}
-      >
-        <Text fontSize="18px" fontWeight="700" color="black">
+      <Box padding="10px" minWidth="320px" maxWidth="1000px" width="80%">
+        <Text fontSize="18px" fontWeight="700" color="black" mb="10px">
           {title}
         </Text>
-        <br />
-
-        <Box display="flex">
-          <LeftChevron
-            icon={faChevronLeft}
+        <Flex>
+          <IconButton
+            mt="40px"
+            h="80px"
+            mr="10px"
+            p={0}
+            colorScheme="blue"
+            borderRadius="lg"
+            variant="ghost"
+            icon={<ChevronLeftIcon fontSize="50px" color="black" />}
             onClick={() => {
               swiperElRef.current.swiper.slidePrev();
             }}
@@ -100,7 +69,7 @@ export function Carousel({ title = "", data = [] }) {
 
           <Swiper
             ref={swiperElRef}
-            style={{ height: "230px" }}
+            style={{ height: "220px" }}
             modules={[Pagination, A11y]}
             // modules={[Navigation, Pagination, A11y]}
             // navigation
@@ -167,14 +136,21 @@ export function Carousel({ title = "", data = [] }) {
               </SwiperSlide> */}
           </Swiper>
 
-          <RightChevron
-            icon={faChevronRight}
+          <IconButton
+            mt="40px"
+            h="80px"
+            ml="10px"
+            p={0}
+            colorScheme="blue"
+            borderRadius="lg"
+            variant="ghost"
+            icon={<ChevronRightIcon fontSize="50px" color="black" />}
             onClick={() => {
               swiperElRef.current.swiper.slideNext();
             }}
           />
-        </Box>
-      </div>
+        </Flex>
+      </Box>
     </>
   );
 }

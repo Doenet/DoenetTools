@@ -21,6 +21,7 @@ import {
   VStack,
   Grid,
   GridItem,
+  HStack,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -28,15 +29,15 @@ import { MdBuild } from "react-icons/md";
 import axios from "axios";
 import { useFetcher } from "react-router-dom";
 
-export async function action() {
-  //Create a portfolio activity and redirect to the editor for it
-  let { data } = await axios.get("/api/createPortfolioActivity.php");
+// export async function action() {
+//   //Create a portfolio activity and redirect to the editor for it
+//   let { data } = await axios.get("/api/createPortfolioActivity.php");
 
-  let { doenetId, pageDoenetId } = data;
-  return redirect(
-    `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-  );
-}
+//   let { doenetId, pageDoenetId } = data;
+//   return redirect(
+//     `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
+//   );
+// }
 
 export async function loader() {
   const response = await fetch("/api/loadPromotedContent.php");
@@ -107,15 +108,26 @@ function Heading({
   color = "black",
 }) {
   return (
-    <Center p="10px" bg={background}>
-      <VStack spacing={0}>
-        <Text fontSize="24px" fontWeight="700" color={color}>
+    <Center w="100%" bg={background}>
+      <HStack maxWidth="750px" w="100%" spacing={4}>
+        <Text
+          fontSize={["12px", "20px", "30px", "40px", "60px"]}
+          // fontSize="60px"
+          fontWeight="700"
+          color={color}
+        >
           {heading}
         </Text>
-        <Text fontSize="16px" fontWeight="700" color={color}>
+        <Text
+          pt="24px"
+          fontSize={["8px", "10px", "12px", "18px", "24px"]}
+          // fontSize="20px"
+          fontWeight="700"
+          color={color}
+        >
           {subheading}
         </Text>
-      </VStack>
+      </HStack>
     </Center>
   );
 }
@@ -123,7 +135,6 @@ function Heading({
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
-  const fetcher = useFetcher();
 
   const favorites = loaderData?.carouselData?.Homepage;
 
@@ -161,19 +172,30 @@ export function Home() {
 
   return (
     <>
-      <Center background={grayColor} padding="20px">
+      <Center background={blackColor} padding="20px">
+        {/* <Center background={grayColor} padding="20px"> */}
         <Flex>
-          <Box w="120px" h="120px" mr="20px">
+          <Box
+            w={["60px", "80px", "100px", "160px", "200px"]}
+            h={["60px", "80px", "100px", "160px", "200px"]}
+            mr="20px"
+          >
             <Image src="Doenet_Logo_Frontpage.png" />
           </Box>
           <Center>
             <Box>
-              <Text color="black" fontSize="30px" fontWeight="700">
+              <Text
+                color="white"
+                fontSize={["12px", "20px", "30px", "40px", "60px"]}
+                fontWeight="700"
+              >
+                {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
                 The Distributed Open Education Network
               </Text>
               <Text
-                color="black"
-                fontSize="16px"
+                color="white"
+                // color="black"
+                fontSize={["8px", "10px", "12px", "18px", "24px"]}
                 fontWeight="700"
                 textAlign="center"
               >
@@ -193,33 +215,29 @@ export function Home() {
           gridTemplateAreas={`"Start null"
         "Description Video"
         `}
-          gridTemplateRows={"80px auto"}
+          gridTemplateRows={"200px auto"}
           gridTemplateColumns={"300px auto"}
         >
           <GridItem area="Start">
             <Center>
-              <Button
-                leftIcon={<MdBuild />}
-                size="2xl"
-                p="10px"
-                colorScheme="blue"
-                mb="180px"
-                w="240px"
-                onClick={
-                  context.signedIn
-                    ? () => {
-                        fetcher.submit(
-                          { _action: "Add Activity" },
-                          { method: "post" },
-                        );
-                      }
-                    : () => {
-                        location.href = "/portfolioviewer/tutorialactivity";
-                      }
-                }
-              >
-                Start Creating
-              </Button>
+              <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+                <Button
+                  leftIcon={<MdBuild />}
+                  mt="40px"
+                  // size="2xl"
+                  p="10px"
+                  colorScheme="blue"
+                  mb="180px"
+                  // w="260px"
+                  // h="60px"
+                  w={["120px", "140px", "180px", "200px", "260px"]}
+                  h={["20px", "30px", "40px", "50px", "60px"]}
+                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
+                  // fontSize="26px"
+                >
+                  Start Creating
+                </Button>
+              </Link>
             </Center>
           </GridItem>
           <GridItem area="Description" p="20px">
@@ -257,7 +275,7 @@ export function Home() {
               </Button>
             </Flex>
           </GridItem>
-          <GridItem area="Video">
+          <GridItem area="Video" p="40px">
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
               <HomeIntroVideo />
@@ -277,7 +295,37 @@ export function Home() {
         bg={grayColor}
         p="60px 10px"
       >
-        <Carousel title="Doenet Team Favorites" data={favorites} />
+        <Carousel
+          title="Doenet Team Favorites"
+          data={[
+            {
+              firstName: "Guy",
+              lastName: "Smiley",
+              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
+            },
+            {
+              firstName: "Guy",
+              lastName: "Smiley",
+              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
+            },
+            {
+              firstName: "Guy",
+              lastName: "Smiley",
+              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
+            },
+            {
+              firstName: "Guy",
+              lastName: "Smiley",
+              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
+            },
+            {
+              firstName: "Guy",
+              lastName: "Smiley",
+              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
+            },
+          ]}
+        />
+        {/* <Carousel title="Doenet Team Favorites" data={favorites} /> */}
       </Flex>
       <Heading
         heading="Learn"
@@ -354,7 +402,8 @@ export function Home() {
       </Flex>
       <Center
         width="100%"
-        bg={grayColor}
+        bg={blackColor}
+        // bg={grayColor}
         color="doenet.canvastext"
         padding="20px 40px"
         display="flex"
@@ -365,18 +414,33 @@ export function Home() {
         <Flex columnGap="10px" m="10px">
           <Link href="mailto:info@doenet.org">
             <Tooltip label="mailto:info@doenet.org">
-              <IconButton size="sm" fontSize="16pt" icon={<HiOutlineMail />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<HiOutlineMail />}
+              />
             </Tooltip>
           </Link>
 
           <Link href="https://github.com/Doenet/">
             <Tooltip label="Doenet Github">
-              <IconButton size="sm" fontSize="16pt" icon={<BsGithub />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<BsGithub />}
+              />
             </Tooltip>
           </Link>
           <Link href="https://discord.gg/PUduwtKJ5h">
             <Tooltip label="Doenet Discord">
-              <IconButton size="sm" fontSize="16pt" icon={<BsDiscord />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<BsDiscord />}
+              />
             </Tooltip>
           </Link>
 
@@ -384,8 +448,14 @@ export function Home() {
             <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
           </Link>
         </Flex>
-        <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
-          <Text>
+        <Text
+          as="div"
+          fontSize="14px"
+          maxWidth="750px"
+          textAlign="center"
+          color="white"
+        >
+          <Text color="white">
             This work is licensed under a{" "}
             <Link
               color="doenet.mainBlue"
