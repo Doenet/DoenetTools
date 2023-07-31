@@ -33,6 +33,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
     attributes.prop = {
       createPrimitiveOfType: "string",
+      excludeFromSchema: true,
     };
 
     attributes.componentIndex = {
@@ -40,6 +41,7 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
     };
 
     attributes.propIndex = {
@@ -47,6 +49,22 @@ export default class AnimateFromSequence extends BaseComponent {
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
+      excludeFromSchema: true,
+    };
+
+    attributes.targetSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+      excludeFromSchema: true,
+    };
+    attributes.targetSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
+      defaultValue: null,
+      public: true,
+      excludeFromSchema: true,
     };
 
     attributes.animationOn = {
@@ -363,6 +381,8 @@ export default class AnimateFromSequence extends BaseComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "componentIndex",
+        "targetSubnames",
+        "targetSubnamesComponentIndex",
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
         let dependencies = {};
@@ -372,13 +392,26 @@ export default class AnimateFromSequence extends BaseComponent {
             componentInfoObjects.isCompositeComponent({
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false,
-            })
+            }) ||
+            (componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: true,
+            }) &&
+              stateValues.componentIndex !== null)
           ) {
+            let targetSubnamesComponentIndex =
+              stateValues.targetSubnamesComponentIndex;
+            if (targetSubnamesComponentIndex) {
+              targetSubnamesComponentIndex = [...targetSubnamesComponentIndex];
+            }
+
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
               recursive: true,
               componentIndex: stateValues.componentIndex,
+              targetSubnames: stateValues.targetSubnames,
+              targetSubnamesComponentIndex,
             };
           } else if (
             stateValues.componentIndex === null ||
@@ -401,7 +434,16 @@ export default class AnimateFromSequence extends BaseComponent {
             targetIdentities = [targetIdentities];
           }
         }
-        return { setValue: { targetIdentities } };
+
+        let warnings = [];
+        if (targetIdentities === null || targetIdentities.length === 0) {
+          warnings.push({
+            message: "Invalid animation target: cannot find target.",
+            level: 1,
+          });
+        }
+
+        return { setValue: { targetIdentities }, sendWarnings: warnings };
       },
     };
 
@@ -417,10 +459,18 @@ export default class AnimateFromSequence extends BaseComponent {
             dependencyType: "stateVariable",
             variableName: "targetIdentities",
           },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName",
+          },
+          propIndex: {
+            dependencyType: "stateVariable",
+            variableName: "propIndex",
+          },
         };
 
         if (stateValues.targetIdentities !== null) {
-          for (let [ind, source] of stateValues.targetIdentities.entries()) {
+          for (let [ind, target] of stateValues.targetIdentities.entries()) {
             let thisTarget;
 
             if (stateValues.propName) {
@@ -433,7 +483,7 @@ export default class AnimateFromSequence extends BaseComponent {
               }
               thisTarget = {
                 dependencyType: "stateVariable",
-                componentName: source.componentName,
+                componentName: target.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
@@ -445,7 +495,7 @@ export default class AnimateFromSequence extends BaseComponent {
             } else {
               thisTarget = {
                 dependencyType: "stateVariable",
-                componentName: source.componentName,
+                componentName: target.componentName,
                 variableName: "value",
                 returnAsComponentObject: true,
                 variablesOptional: true,
@@ -460,18 +510,37 @@ export default class AnimateFromSequence extends BaseComponent {
       },
       definition({ dependencyValues }) {
         let targets = null;
+        let warnings = [];
 
         if (dependencyValues.targetIdentities !== null) {
           targets = [];
 
           for (let ind in dependencyValues.targetIdentities) {
-            if (dependencyValues["target" + ind]) {
-              targets.push(dependencyValues["target" + ind]);
+            let target = dependencyValues["target" + ind];
+            targets.push(target);
+            if (Object.keys(target.stateValues)[0] === undefined) {
+              if (dependencyValues.propName) {
+                let prop = dependencyValues.propName;
+                if (dependencyValues.propIndex) {
+                  prop = `prop[${dependencyValues.propIndex}]`;
+                }
+                let message = `Invalid animation target: cannot find a state variable named "${prop}" on a <${target.componentType}>.`;
+                warnings.push({
+                  message,
+                  level: 1,
+                });
+              } else {
+                let message = `Invalid animation target: cannot find a state variable named "value" on a <${target.componentType}>.`;
+                warnings.push({
+                  message,
+                  level: 1,
+                });
+              }
             }
           }
         }
 
-        return { setValue: { targets } };
+        return { setValue: { targets }, sendWarnings: warnings };
       },
     };
 
@@ -815,12 +884,12 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation({
+  async startAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -835,12 +904,12 @@ export default class AnimateFromSequence extends BaseComponent {
     });
   }
 
-  stopAnimation({
+  async stopAnimation({
     actionId,
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -860,7 +929,7 @@ export default class AnimateFromSequence extends BaseComponent {
     sourceInformation = {},
     skipRendererUpdate = false,
   }) {
-    this.coreFunctions.performUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions: [
         {
           updateType: "updateValue",
@@ -886,21 +955,6 @@ export default class AnimateFromSequence extends BaseComponent {
     for (let target of targets) {
       let stateVariable = Object.keys(target.stateValues)[0];
       if (stateVariable === undefined) {
-        if (await this.stateValues.propName) {
-          console.warn(
-            `Cannot animate prop="${await this.stateValues
-              .propName}" of ${await this.stateValues
-              .target} as could not find prop ${await this.stateValues
-              .propName} on a component of type ${target.componentType}`,
-          );
-        } else {
-          console.warn(
-            `Cannot animate ${await this.stateValues
-              .target} as could not find a value state variable on a component of type ${
-              target.componentType
-            }`,
-          );
-        }
         continue;
       }
 

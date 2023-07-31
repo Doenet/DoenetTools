@@ -12,6 +12,7 @@ export default class Hint extends BlockComponent {
   }
   static componentType = "hint";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static includeBlankStringChildren = true;
 

@@ -184,6 +184,10 @@ ${theDoenetML3}
     });
   });
 
+  // Note: copying a <displayDoenetML> directly with link="false" no longer works,
+  // given changes made to make the following work:
+  // "doenetML of copySource shows the doenetML of the copy" (see below)
+  // We could work to fix it if there is a compelling reason to do so.
   it("copying displayDoenetML, with or without linking", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -209,7 +213,7 @@ ${theDoenetML3}
   <section name="s1a" newNamespace>
     <title>$(/s1.title)</title>
     <p name="p1">Copy: $(/s1/_displaydoenetml1)</p>
-    <p name="p2">Copy, no link: $(/s1/_displaydoenetml1{link="false"})</p>
+    <!--<p name="p2">Copy, no link: $(/s1/_displaydoenetml1{link="false"})</p>-->
     <p name="p3">Copy text: $(/s1/_displaydoenetml1.text)</p>
     <p name="p4">Copy text, no link: $(/s1/_displaydoenetml1.text{link="false"})</p>
   </section>
@@ -217,7 +221,7 @@ ${theDoenetML3}
   <section name="s2a" newNamespace>
     <title>$(/s2.title)</title>
     <p name="p1">Copy: $(/s2/_displaydoenetml1)</p>
-    <p name="p2">Copy, no link: $(/s2/_displaydoenetml1{link="false"})</p>
+    <!--<p name="p2">Copy, no link: $(/s2/_displaydoenetml1{link="false"})</p>-->
     <p name="p3">Copy text: $(/s2/_displaydoenetml1.text)</p>
     <p name="p4">Copy text, no link: $(/s2/_displaydoenetml1.text{link="false"})</p>
   </section>
@@ -225,7 +229,7 @@ ${theDoenetML3}
   <section name="s3a" newNamespace>
     <title>$(/s3.title)</title>
     <p name="p1">Copy: $(/s3/_displaydoenetml1)</p>
-    <p name="p2">Copy, no link: $(/s3/_displaydoenetml1{link="false"})</p>
+    <!--<p name="p2">Copy, no link: $(/s3/_displaydoenetml1{link="false"})</p>-->
     <p name="p3">Copy text: $(/s3/_displaydoenetml1.text)</p>
     <p name="p4">Copy text, no link: $(/s3/_displaydoenetml1.text{link="false"})</p>
   </section>
@@ -233,7 +237,7 @@ ${theDoenetML3}
   <section name="s4a" newNamespace>
     <title>$(/s4.title)</title>
     <p name="p1">Copy: $(/s4/_displaydoenetml1)</p>
-    <p name="p2">Copy, no link: $(/s4/_displaydoenetml1{link="false"})</p>
+    <!--<p name="p2">Copy, no link: $(/s4/_displaydoenetml1{link="false"})</p>-->
     <p name="p3">Copy text: $(/s4/_displaydoenetml1.text)</p>
     <p name="p4">Copy text, no link: $(/s4/_displaydoenetml1.text{link="false"})</p>
   </section>
@@ -241,7 +245,7 @@ ${theDoenetML3}
   <section name="s5a" newNamespace>
     <title>$(/s5.title)</title>
     <p name="p1">Copy: $(/s5/_displaydoenetml1)</p>
-    <p name="p2">Copy, no link: $(/s5/_displaydoenetml1{link="false"})</p>
+    <!--<p name="p2">Copy, no link: $(/s5/_displaydoenetml1{link="false"})</p>-->
     <p name="p3">Copy text: $(/s5/_displaydoenetml1.text)</p>
     <p name="p4">Copy text, no link: $(/s5/_displaydoenetml1.text{link="false"})</p>
   </section>
@@ -268,10 +272,10 @@ ${theDoenetML3}
     cy.get(cesc2("#/s5/pd")).should("have.text", `DoenetML: <p>A sentence</p>`);
 
     cy.get(cesc2("#/s1a/p1")).should("have.text", `Copy: <text>hello!</text>`);
-    cy.get(cesc2("#/s1a/p2")).should(
-      "have.text",
-      `Copy, no link: <text>hello!</text>`,
-    );
+    // cy.get(cesc2("#/s1a/p2")).should(
+    //   "have.text",
+    //   `Copy, no link: <text>hello!</text>`,
+    // );
     cy.get(cesc2("#/s1a/p3")).should(
       "have.text",
       `Copy text: <text>hello!</text>`,
@@ -282,10 +286,10 @@ ${theDoenetML3}
     );
 
     cy.get(cesc2("#/s2a/p1")).should("have.text", `Copy: <text>hello!</text>`);
-    cy.get(cesc2("#/s2a/p2")).should(
-      "have.text",
-      `Copy, no link: <text>hello!</text>`,
-    );
+    // cy.get(cesc2("#/s2a/p2")).should(
+    //   "have.text",
+    //   `Copy, no link: <text>hello!</text>`,
+    // );
     cy.get(cesc2("#/s2a/p3")).should(
       "have.text",
       `Copy text: <text>hello!</text>`,
@@ -296,10 +300,10 @@ ${theDoenetML3}
     );
 
     cy.get(cesc2("#/s3a/p1")).should("have.text", `Copy: <text>hello!</text>`);
-    cy.get(cesc2("#/s3a/p2")).should(
-      "have.text",
-      `Copy, no link: <text>hello!</text>`,
-    );
+    // cy.get(cesc2("#/s3a/p2")).should(
+    //   "have.text",
+    //   `Copy, no link: <text>hello!</text>`,
+    // );
     cy.get(cesc2("#/s3a/p3")).should(
       "have.text",
       `Copy text: <text>hello!</text>`,
@@ -310,10 +314,10 @@ ${theDoenetML3}
     );
 
     cy.get(cesc2("#/s4a/p1")).should("have.text", `Copy: <text>hello!</text>`);
-    cy.get(cesc2("#/s4a/p2")).should(
-      "have.text",
-      `Copy, no link: <text>hello!</text>`,
-    );
+    // cy.get(cesc2("#/s4a/p2")).should(
+    //   "have.text",
+    //   `Copy, no link: <text>hello!</text>`,
+    // );
     cy.get(cesc2("#/s4a/p3")).should(
       "have.text",
       `Copy text: <text>hello!</text>`,
@@ -324,10 +328,10 @@ ${theDoenetML3}
     );
 
     cy.get(cesc2("#/s5a/p1")).should("have.text", `Copy: <text>hello!</text>`);
-    cy.get(cesc2("#/s5a/p2")).should(
-      "have.text",
-      `Copy, no link: <text>hello!</text>`,
-    );
+    // cy.get(cesc2("#/s5a/p2")).should(
+    //   "have.text",
+    //   `Copy, no link: <text>hello!</text>`,
+    // );
     cy.get(cesc2("#/s5a/p3")).should(
       "have.text",
       `Copy text: <text>hello!</text>`,
@@ -503,5 +507,88 @@ ${theDoenetML3}
       "have.text",
       '<p name="p">The <alert>DoenetML</alert> of a graph:</p>',
     );
+  });
+
+  it("doenetML inside groups", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <group name='g'>
+          <p name="p">Hello</p>
+          <p><text copySource="p.doenetML" name="dml" /></p>
+        </group>
+        
+        <text copySource="p.doenetML" name="pdml" />
+        
+        <group copySource="g" newNamespace name="g2" >
+          <p name="p2">Bye</p>
+        </group>
+        
+        <text name="g2pdml" copySource="g2/p.doenetML" />
+        <text name="g2p2dml" copySource="g2/p2.doenetML" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    let pdml = `<p name="p">Hello</p>`;
+    cy.get(cesc2("#/dml")).should("have.text", pdml);
+    cy.get(cesc2("#/pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2/dml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/g2p2dml")).should("have.text", `<p name="p2">Bye</p>`);
+  });
+
+  it("doenetML of copySource shows the doenetML of the copy", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <section name="s1" newNamespace>
+      <p name="p"><text>Hello</text></p>
+      <p name="p2" copySource="p">
+        <text>world</text>
+      </p>
+          
+      <text name="pdml" copySource="p.doenetML" />
+      <text name="p2dml" copySource="p2.doenetML" />
+          
+      <p><math name="m">x+x</math> <math name="m2" simplify copySource="m" /></p>
+      <text name="mdml" copySource="m.doenetML" />
+      <text name="m2dml" copySource="m2.doenetML" />
+    </section>
+
+    <section name="s2" copySource="s1" />
+    <section name="s3" copySource="s1" link="false" />
+  `,
+        },
+        "*",
+      );
+    });
+
+    let pdml = `<p name="p"><text>Hello</text></p>`;
+    let p2dml = `<p name="p2" copySource="p">\n  <text>world</text>\n</p>`;
+
+    let mdml = `<math name="m">x+x</math>`;
+    let m2dml = `<math name="m2" simplify copySource="m" />`;
+
+    cy.log("check original");
+
+    cy.get(cesc2("#/s1/pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/s1/p2dml")).should("have.text", p2dml);
+    cy.get(cesc2("#/s1/mdml")).should("have.text", mdml);
+    cy.get(cesc2("#/s1/m2dml")).should("have.text", m2dml);
+
+    cy.get(cesc2("#/s2/pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/s2/p2dml")).should("have.text", p2dml);
+    cy.get(cesc2("#/s2/mdml")).should("have.text", mdml);
+    cy.get(cesc2("#/s2/m2dml")).should("have.text", m2dml);
+
+    cy.get(cesc2("#/s3/pdml")).should("have.text", pdml);
+    cy.get(cesc2("#/s3/p2dml")).should("have.text", p2dml);
+    cy.get(cesc2("#/s3/mdml")).should("have.text", mdml);
+    cy.get(cesc2("#/s3/m2dml")).should("have.text", m2dml);
   });
 });

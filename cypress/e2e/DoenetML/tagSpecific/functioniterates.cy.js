@@ -698,6 +698,41 @@ describe("FunctionIterates Tag Tests", function () {
     checkIterates({ a: -4, b: 7, c: 6, d: -1, u1: -8, u2: 9, n: 5 });
   });
 
+  it("warning for scalar function of two variables", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <m>f(x, y) =</m> <function name="f" variables="x y">x+y</function>
+
+  <functionIterates function="$f" initialValue="(0,0)" numIterates="5" name="fis" />
+  <p>Iterates: $fis.iterates</p>
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_p1")).should("contain.text", "Iterates: \uff3f");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Function iterates are possible only if the number of inputs of the function is equal to the number of outputs. This function has 2 inputs and 1 output",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(84);
+    });
+  });
+
   it("change dimensions", () => {
     cy.window().then(async (win) => {
       win.postMessage(

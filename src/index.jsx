@@ -11,7 +11,6 @@ import { createRoot } from "react-dom/client";
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "./Core/utils/math";
-// import DarkmodeController from "./Tools/_framework/DarkmodeController";
 import {
   loader as communityLoader,
   action as communityAction,
@@ -29,6 +28,11 @@ import {
   action as portfolioAction,
   Portfolio,
 } from "./Tools/_framework/Paths/Portfolio";
+import {
+  loader as courseLoader,
+  action as courseAction,
+  Courses,
+} from "./Tools/_framework/Paths/Courses";
 import {
   loader as publicPortfolioLoader,
   PublicPortfolio,
@@ -54,9 +58,11 @@ import {
 import {
   PublicEditor,
   loader as publicEditorLoader,
-  action as publicEditorAction,
 } from "./Tools/_framework/Paths/PublicEditor";
-// import { loader as portfolioEditorMenuCapLoader } from './Tools/_framework/MenuPanelCaps/PortfolioEditorInfoCap';
+
+{
+  /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
+}
 
 const theme = extendTheme({
   fonts: {
@@ -74,6 +80,17 @@ const theme = extendTheme({
     // useSystemColorMode: true,
   },
   colors: {
+    doenet_blue: {
+      100: "#a6f19f", //Ghost/Outline Click
+      200: "#c1292e", //Normal Button - Dark Mode - Background
+      300: "#f5ed85", //Normal Button - Dark Mode - Hover
+      400: "#949494", //Normal Button - Dark Mode - Click
+      500: "#1a5a99", //Normal Button - Light Mode - Background
+      600: "#757c0d", //Normal Button - Light Mode - Hover //Ghost/Outline BG
+      700: "#d1e6f9", //Normal Button - Light Mode - Click
+      800: "#6d4445",
+      900: "#4a03d9",
+    },
     doenet: {
       mainBlue: "#1a5a99",
       lightBlue: "#b8d2ea",
@@ -93,48 +110,6 @@ const theme = extendTheme({
       whiteBlankLink: "#6d4445",
       mainYellow: "#94610a",
       mainPurple: "#4a03d9",
-    },
-  },
-  components: {
-    Button: {
-      baseStyle: {
-        fontWeight: "normal",
-        letterSpacing: ".5px",
-        _focus: {
-          outline: "2px solid #2D5994",
-          outlineOffset: "2px",
-        },
-        _disabled: {
-          bg: "#E2E2E2",
-          color: "black",
-          cursor: "none",
-        },
-      },
-      variants: {
-        // We can override existing variants
-        solid: {
-          bg: "doenet.mainBlue",
-          color: "white",
-          _hover: {
-            bg: "doenet.solidLightBlue",
-            color: "black",
-          },
-        },
-        outline: {
-          borderColor: "#2D5994",
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        ghost: {
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        link: {
-          color: "solidLightBlue",
-        },
-      },
     },
   },
 });
@@ -205,8 +180,29 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "courses",
+        loader: courseLoader,
+        action: courseAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+
+        element: (
+          <ChakraProvider theme={theme}>
+            <Courses />
+          </ChakraProvider>
+        ),
+      },
+      {
         path: "publicportfolio/:courseId",
         loader: publicPortfolioLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           <ChakraProvider theme={theme}>
             <PublicPortfolio />
@@ -217,6 +213,11 @@ const router = createBrowserRouter([
         path: "portfolioviewer/:doenetId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -274,8 +275,11 @@ const router = createBrowserRouter([
       {
         path: "publiceditor/:doenetId/:pageId",
         loader: publicEditorLoader,
-        action: publicEditorAction,
-        // errorElement: <div>Error!</div>,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           <MathJaxContext
             version={2}
@@ -283,7 +287,6 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <PublicEditor />
-            {/* <ToolRoot /> */}
           </MathJaxContext>
         ),
       },
@@ -306,7 +309,6 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    // errorElement: <div>Error!</div>,
     element: (
       <MathJaxContext
         version={2}

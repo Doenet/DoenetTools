@@ -14,6 +14,7 @@ $success = TRUE;
 $courseId = $_POST['courseId'];
 $userId = $_POST['userId'];
 $studentUserId = $_POST['studentUserId'];
+$label = $_POST['label'];
 // $emailaddress = 'devuser@example.com';
 // $userId = 'devuserid';
 
@@ -23,14 +24,19 @@ if ($userId == ''){
 if ($studentUserId == ''){
   $studentUserId = 'cyStudentUserId';
 }
+if ($label == ''){
+  $label = 'Cypress Generated';
+}
 
+$studentRoleId = $courseId . "SId";
+$ownerRoleId = $courseId . "OId";
 
 $sql = "
 INSERT INTO course
 SET courseId='$courseId',
-label='Cypress Generated',
+label='$label',
 image='picture1.jpg',
-defaultRoleId = 'studentRoleId'
+defaultRoleId = '$studentRoleId'
 ";
 $result = $conn->query($sql); 
 
@@ -39,7 +45,7 @@ $result = $conn->query(
   "INSERT INTO course_role
   SET
   courseId = '$courseId',
-  roleId = 'ownerRoleId',
+  roleId = '$ownerRoleId',
   label = 'Owner',
   canViewContentSource = '1',
   canEditContent = '1',
@@ -62,7 +68,7 @@ $result = $conn->query(
   "INSERT INTO course_role
   SET
   courseId= '$courseId', 
-  roleId= 'studentRoleId', 
+  roleId= '$studentRoleId', 
   label= 'Student', 
   isIncludedInGradebook = '1'"
 );
@@ -82,7 +88,7 @@ if ($result->num_rows == 0) {
     INSERT INTO course_user
     (userId,courseId,roleId)
     VALUES
-    ('$userId','$courseId','ownerRoleId')
+    ('$userId','$courseId','$ownerRoleId')
     ";
 
     $result = $conn->query($sql); 
@@ -103,7 +109,7 @@ if ($result->num_rows == 0) {
     INSERT INTO course_user
     (userId,courseId,roleId)
     VALUES
-    ('$studentUserId','$courseId','studentRoleId')
+    ('$studentUserId','$courseId','$studentRoleId')
     ";
 
     $result = $conn->query($sql); 

@@ -531,7 +531,7 @@ export default class CodeEditor extends BlockComponent {
     skipRendererUpdate = false,
   }) {
     if (!(await this.stateValues.disabled)) {
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [
           {
             updateType: "updateValue",
@@ -606,33 +606,30 @@ export default class CodeEditor extends BlockComponent {
           };
         }
 
-        return this.coreFunctions
-          .performUpdate({
-            updateInstructions,
-            actionId,
-            sourceInformation,
-            skipRendererUpdate: true,
-            event,
-          })
-          .then(() => {
-            this.coreFunctions.triggerChainedActions({
-              componentName: this.componentName,
-              actionId,
-              sourceInformation,
-              skipRendererUpdate,
-            });
-            if (
-              this.attributes.staticName &&
-              this.definingChildren[1]?.componentType === "codeViewer" &&
-              this.definingChildren[1].doenetAttributes.createdFromSugar
-            ) {
-              this.coreFunctions.performAction({
-                componentName: this.definingChildren[1].componentName,
-                actionName: "updateComponents",
-                args: { sourceInformation, skipRendererUpdate },
-              });
-            }
+        await this.coreFunctions.performUpdate({
+          updateInstructions,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate: true,
+          event,
+        });
+        await this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+          actionId,
+          sourceInformation,
+          skipRendererUpdate,
+        });
+        if (
+          this.attributes.staticName &&
+          this.definingChildren[1]?.componentType === "codeViewer" &&
+          this.definingChildren[1].doenetAttributes.createdFromSugar
+        ) {
+          await this.coreFunctions.performAction({
+            componentName: this.definingChildren[1].componentName,
+            actionName: "updateComponents",
+            args: { sourceInformation, skipRendererUpdate },
           });
+        }
       }
     }
   }

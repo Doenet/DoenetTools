@@ -1828,6 +1828,45 @@ describe("Sectioning Tag Tests", function () {
     });
   });
 
+  it("warning that cannot add section-wide checkwork button if not aggregating scores", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <section sectionWideCheckwork>
+      <p>Enter x: <answer><mathinput />x</answer></p>
+    </section>
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc2("#/_p1")).should("have.text", "Enter x: ");
+
+    cy.get(cesc2("#/_mathinput1") + " textarea").type("x{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/_mathinput1_correct")).should("be.visible");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Cannot create submit all button for <section> because it doesn't aggegrate scores.`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(14);
+    });
+  });
+
   it("paragraphs", () => {
     cy.window().then(async (win) => {
       win.postMessage(

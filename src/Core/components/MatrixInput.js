@@ -17,6 +17,8 @@ import {
   returnRoundingStateVariableDefinitions,
 } from "../utils/rounding";
 
+const vectorAndListOperators = ["list", ...vectorOperators];
+
 export class MatrixInput extends Input {
   constructor(args) {
     super(args);
@@ -227,6 +229,10 @@ export class MatrixInput extends Input {
           dependencyType: "stateVariable",
           variableName: "prefill",
         },
+        defaultEntry: {
+          dependencyType: "stateVariable",
+          variableName: "defaultEntry",
+        },
         valueChanged: {
           dependencyType: "stateVariable",
           variableName: "valueChanged",
@@ -239,7 +245,7 @@ export class MatrixInput extends Input {
         },
       }),
       set: convertValueToMathExpression,
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.mathChild.length > 0) {
           return {
             setValue: {
@@ -253,10 +259,13 @@ export class MatrixInput extends Input {
             },
           };
         } else {
+          let defaultValue = usedDefault.prefill
+            ? dependencyValues.defaultEntry
+            : dependencyValues.prefill;
           return {
             useEssentialOrDefaultValue: {
               valueOriginal: {
-                defaultValue: dependencyValues.prefill,
+                defaultValue,
               },
             },
           };
@@ -1139,13 +1148,17 @@ export class MatrixInput extends Input {
             if (valueData.length < numRows) {
               // pad first column with blanks
               for (let rowInd = valueData.length; rowInd < numRows; rowInd++) {
-                valueData.push(["\uff3f"]);
+                valueData.push([globalDependencyValues.defaultEntry.tree]);
               }
             }
             if (numColumns > 1) {
               // add additional blank columns
               for (let rowInd = 0; rowInd < numRows; rowInd++) {
-                valueData[rowInd].push(...Array(numColumns - 1).fill("\uff3f"));
+                valueData[rowInd].push(
+                  ...Array(numColumns - 1).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsRowVector) {
@@ -1157,13 +1170,19 @@ export class MatrixInput extends Input {
             if (valueData[0].length < numColumns) {
               // pad first row with blanks
               valueData[0].push(
-                ...Array(numColumns - valueData[0].length).fill("\uff3f"),
+                ...Array(numColumns - valueData[0].length).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsMatrix) {
@@ -1178,7 +1197,7 @@ export class MatrixInput extends Input {
               for (let rowInd = 0; rowInd < valueData.length; rowInd++) {
                 valueData[rowInd].push(
                   ...Array(numColumns - valueData[rowInd].length).fill(
-                    "\uff3f",
+                    globalDependencyValues.defaultEntry.tree,
                   ),
                 );
               }
@@ -1186,7 +1205,11 @@ export class MatrixInput extends Input {
 
             if (valueData.length < numRows) {
               for (let rowInd = valueData.length; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else {
@@ -1194,12 +1217,20 @@ export class MatrixInput extends Input {
             valueData = [[originalTree]];
             if (numColumns > 1) {
               // pad first row with blanks
-              valueData[0].push(...Array(numColumns - 1).fill("\uff3f"));
+              valueData[0].push(
+                ...Array(numColumns - 1).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
+              );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                valueData.push(Array(numColumns).fill("\uff3f"));
+                valueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           }
@@ -1579,14 +1610,18 @@ export class MatrixInput extends Input {
                 rowInd < numRows;
                 rowInd++
               ) {
-                immediateValueData.push(["\uff3f"]);
+                immediateValueData.push([
+                  globalDependencyValues.defaultEntry.tree,
+                ]);
               }
             }
             if (numColumns > 1) {
               // add additional blank columns
               for (let rowInd = 0; rowInd < numRows; rowInd++) {
                 immediateValueData[rowInd].push(
-                  ...Array(numColumns - 1).fill("\uff3f"),
+                  ...Array(numColumns - 1).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
                 );
               }
             }
@@ -1600,14 +1635,18 @@ export class MatrixInput extends Input {
               // pad first row with blanks
               immediateValueData[0].push(
                 ...Array(numColumns - immediateValueData[0].length).fill(
-                  "\uff3f",
+                  globalDependencyValues.defaultEntry.tree,
                 ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else if (originalIsMatrix) {
@@ -1626,7 +1665,7 @@ export class MatrixInput extends Input {
               ) {
                 immediateValueData[rowInd].push(
                   ...Array(numColumns - immediateValueData[rowInd].length).fill(
-                    "\uff3f",
+                    globalDependencyValues.defaultEntry.tree,
                   ),
                 );
               }
@@ -1638,7 +1677,11 @@ export class MatrixInput extends Input {
                 rowInd < numRows;
                 rowInd++
               ) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           } else {
@@ -1647,13 +1690,19 @@ export class MatrixInput extends Input {
             if (numColumns > 1) {
               // pad first row with blanks
               immediateValueData[0].push(
-                ...Array(numColumns - 1).fill("\uff3f"),
+                ...Array(numColumns - 1).fill(
+                  globalDependencyValues.defaultEntry.tree,
+                ),
               );
             }
 
             if (numRows > 1) {
               for (let rowInd = 1; rowInd < numRows; rowInd++) {
-                immediateValueData.push(Array(numColumns).fill("\uff3f"));
+                immediateValueData.push(
+                  Array(numColumns).fill(
+                    globalDependencyValues.defaultEntry.tree,
+                  ),
+                );
               }
             }
           }
@@ -2083,6 +2132,283 @@ export class MatrixInput extends Input {
       },
     };
 
+    stateVariableDefinitions.matrix = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+        returnWrappingComponents(prefix) {
+          if (prefix === "matrixEntry") {
+            return [];
+          } else if (prefix === "row") {
+            return [["matrix", "matrixRow"]];
+          } else if (prefix === "column") {
+            return [["matrix", "matrixColumn"]];
+          } else {
+            // entire matrix
+            // wrap inner dimension by matrixRow and outer dimension by matrix
+            // don't wrap outer dimension (for entire array)
+            return [["matrixRow"], ["matrix"]];
+          }
+        },
+      },
+      isArray: true,
+      numDimensions: 2,
+      entryPrefixes: ["matrixEntry", "row", "column", "rows", "columns"],
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "matrixEntry") {
+          // matrixEntry1_2 is the 2nd entry from the first row
+          let indices = varEnding.split("_").map((x) => Number(x) - 1);
+          if (
+            indices.length === 2 &&
+            indices.every((x) => Number.isInteger(x) && x >= 0)
+          ) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else if (arrayEntryPrefix === "row") {
+          // row3 is all components of the third row
+
+          let rowInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(rowInd) && rowInd >= 0)) {
+            return [];
+          }
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [rowInd + ",0"];
+          }
+          if (rowInd < arraySize[0]) {
+            // array of "rowInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => rowInd + "," + i);
+          } else {
+            return [];
+          }
+        } else if (arrayEntryPrefix === "column") {
+          // column3 is all components of the third column
+
+          let colInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(colInd) && colInd >= 0)) {
+            return [];
+          }
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return ["0," + colInd];
+          }
+          if (colInd < arraySize[1]) {
+            // array of "i,colInd", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[0]), (_, i) => i + "," + colInd);
+          } else {
+            return [];
+          }
+        } else if (
+          arrayEntryPrefix === "rows" ||
+          arrayEntryPrefix === "columns"
+        ) {
+          // rows or columns is the whole matrix
+          // (this are designed for getting rows and columns using propIndex)
+          // (rows and matrix are the same, but rows is added to be parallel to columns)
+
+          if (!arraySize) {
+            // If don't have array size, we justr eturn the first entry
+            return ["0,0"];
+          }
+          let keys = [];
+          for (let rowInd = 0; rowInd < arraySize[0]; rowInd++) {
+            keys.push(
+              ...Array.from(Array(arraySize[1]), (_, i) => rowInd + "," + i),
+            );
+          }
+          return keys;
+        }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "matrix" || varName === "rows") {
+          if (propIndex.length === 1) {
+            return "row" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `matrixEntry${propIndex[0]}_${propIndex[1]}`;
+          }
+        }
+        if (varName === "columns") {
+          if (propIndex.length === 1) {
+            return "column" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `matrixEntry${propIndex[1]}_${propIndex[0]}`;
+          }
+        }
+        if (varName.slice(0, 3) === "row") {
+          let rowNum = Number(varName.slice(3));
+          if (Number.isInteger(rowNum) && rowNum > 0) {
+            // if propIndex has additional entries, ignore them
+            return `matrixEntry${rowNum}_${propIndex[0]}`;
+          }
+        }
+        if (varName.slice(0, 6) === "column") {
+          let colNum = Number(varName.slice(6));
+          if (Number.isInteger(colNum) && colNum > 0) {
+            // if propIndex has additional entries, ignore them
+            return `matrixEntry${propIndex[0]}_${colNum}`;
+          }
+        }
+        return null;
+      },
+      returnArraySizeDependencies: () => ({
+        numRows: {
+          dependencyType: "stateVariable",
+          variableName: "numRows",
+        },
+        numColumns: {
+          dependencyType: "stateVariable",
+          variableName: "numColumns",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numRows, dependencyValues.numColumns];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          value: {
+            dependencyType: "stateVariable",
+            variableName: "value",
+          },
+        };
+        return { globalDependencies };
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+        let tree = globalDependencyValues.value.tree;
+
+        let createdMatrix = false;
+
+        let matrix = {};
+        if (Array.isArray(tree)) {
+          if (vectorAndListOperators.includes(tree[0])) {
+            for (let ind = 0; ind < arraySize[0]; ind++) {
+              matrix[ind + ",0"] = me.fromAst(tree[ind + 1]);
+            }
+            createdMatrix = true;
+          } else if (tree[0] === "matrix") {
+            let matVals = tree[2];
+            for (let i = 0; i < arraySize[0]; i++) {
+              for (let j = 0; j < arraySize[1]; j++) {
+                matrix[`${i},${j}`] = me.fromAst(matVals[i + 1][j + 1]);
+              }
+            }
+            createdMatrix = true;
+          } else if (
+            vectorOperators.includes(tree[1][0]) &&
+            ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
+          ) {
+            for (let ind = 0; ind < arraySize[1]; ind++) {
+              matrix["0," + ind] = me.fromAst(tree[1][ind + 1]);
+            }
+            createdMatrix = true;
+          }
+        }
+        if (!createdMatrix) {
+          matrix["0,0"] = globalDependencyValues.value;
+        }
+
+        return { setValue: { matrix } };
+      },
+      async inverseArrayDefinitionByKey({
+        desiredStateVariableValues,
+        globalDependencyValues,
+        stateValues,
+        workspace,
+        arraySize,
+      }) {
+        // in case just one ind specified, merge with previous values
+        if (!workspace.desiredMatrix) {
+          workspace.desiredMatrix = [];
+        }
+        for (let i = 0; i < arraySize[0]; i++) {
+          for (let j = 0; j < arraySize[1]; j++) {
+            let arrayKey = i + "," + j;
+            if (desiredStateVariableValues.matrix[arrayKey] !== undefined) {
+              workspace.desiredMatrix[arrayKey] = convertValueToMathExpression(
+                desiredStateVariableValues.matrix[arrayKey],
+              );
+            } else if (workspace.desiredMatrix[arrayKey] === undefined) {
+              workspace.desiredMatrix[arrayKey] = (await stateValues.matrix)[i][
+                j
+              ];
+            }
+          }
+        }
+
+        let desiredValue;
+        let tree = globalDependencyValues.value.tree;
+        if (Array.isArray(tree)) {
+          if (vectorAndListOperators.includes(tree[0])) {
+            desiredValue = [tree[0]];
+            for (let ind = 0; ind < arraySize[0]; ind++) {
+              desiredValue.push(workspace.desiredMatrix[ind + ",0"].tree);
+            }
+          } else if (tree[0] === "matrix") {
+            let desiredMatrixVals = ["tuple"];
+
+            for (let i = 0; i < arraySize[0]; i++) {
+              let row = ["tuple"];
+              for (let j = 0; j < arraySize[1]; j++) {
+                row.push(workspace.desiredMatrix[`${i},${j}`].tree);
+              }
+              desiredMatrixVals.push(row);
+            }
+            desiredValue = me.fromAst(["matrix", tree[1], desiredMatrixVals]);
+          } else if (
+            vectorOperators.includes(tree[1][0]) &&
+            ((tree[0] === "^" && tree[2] === "T") || tree[0] === "prime")
+          ) {
+            desiredValue = [tree[0]];
+            let desiredVector = [tree[1][0]];
+            for (let ind = 0; ind < arraySize[1]; ind++) {
+              desiredVector.push(workspace.desiredMatrix["0," + ind].tree);
+            }
+            desiredValue = [tree[0], desiredVector];
+            if (tree[2]) {
+              desiredValue.push(tree[2]);
+            }
+            desiredValue = me.fromAst(desiredValue);
+          }
+        }
+
+        if (!desiredValue) {
+          desiredValue = workspace.desiredMatrix["0,0"];
+        }
+
+        let instructions = [
+          {
+            setDependency: "value",
+            desiredValue,
+          },
+        ];
+
+        return {
+          success: true,
+          instructions,
+        };
+      },
+    };
+
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { componentType: "matrix" } }),
@@ -2250,7 +2576,7 @@ export class MatrixInputGrid extends CompositeComponent {
       });
     }
 
-    return { replacements: serializedComponents };
+    return { replacements: serializedComponents, errors: [], warnings: [] };
   }
 
   static async calculateReplacementChanges({
@@ -2411,7 +2737,7 @@ export class MatrixInputRow extends CompositeComponent {
       });
     }
 
-    return { replacements: serializedComponents };
+    return { replacements: serializedComponents, errors: [], warnings: [] };
   }
 
   static async calculateReplacementChanges({

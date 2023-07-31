@@ -101,6 +101,7 @@ export async function action({ request }) {
   }
 }
 
+//TODO: update to try/catch axios not fetch
 export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
@@ -434,16 +435,29 @@ export function Community() {
               >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
-                    const { doenetId, imagePath, label, fullName } = itemObj;
+                    const {
+                      doenetId,
+                      imagePath,
+                      label,
+                      fullName,
+                      isUserPortfolio,
+                      courseLabel,
+                      courseImage,
+                      courseColor,
+                    } = itemObj;
                     const imageLink = `/portfolioviewer/${doenetId}`;
 
                     return (
                       <ActivityCard
-                        key={doenetId}
+                        key={`ActivityCard${doenetId}`}
                         imageLink={imageLink}
-                        imagePath={imagePath}
                         label={label}
+                        imagePath={imagePath}
                         fullName={fullName}
+                        isUserPortfolio={isUserPortfolio}
+                        courseLabel={courseLabel}
+                        courseImage={courseImage}
+                        courseColor={courseColor}
                         menuItems={
                           isAdmin ? (
                             <>

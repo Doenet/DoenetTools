@@ -1,5 +1,6 @@
 // import axios from 'axios';
 import {
+  Button,
   Box,
   Icon,
   Text,
@@ -23,12 +24,12 @@ import {
   useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
+import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -107,24 +108,34 @@ export async function action({ request }) {
 export async function loader({ params }) {
   //If we didn't create the course yet for this user then create it
   if (params.courseId == "not_created") {
-    const response = await fetch("/api/createPortfolioCourse.php");
-    const data = await response.json();
+    const { data } = await axios.get("/api/createPortfolioCourse.php");
     return redirect(`/portfolio/${data.portfolioCourseId}`);
   }
 
-  const response = await fetch(
+  const { data } = await axios.get(
     `/api/getPortfolio.php?courseId=${params.courseId}`,
   );
-  const data = await response.json();
   if (data.notMe) {
     return redirect(`/publicportfolio/${params.courseId}`);
   }
 
+  //Add pageDoenetId to all activities
+  let publicActivities = [];
+  data.publicActivities.map((activity) => {
+    const pageDoenetId = findFirstPageIdInContent(activity.content);
+    publicActivities.push({ ...activity, pageDoenetId });
+  });
+  let privateActivities = [];
+  data.privateActivities.map((activity) => {
+    const pageDoenetId = findFirstPageIdInContent(activity.content);
+    privateActivities.push({ ...activity, pageDoenetId });
+  });
+
   return {
     courseId: params.courseId,
     fullName: data.fullName,
-    publicActivities: data.publicActivities,
-    privateActivities: data.privateActivities,
+    publicActivities,
+    privateActivities,
   };
 }
 
@@ -276,8 +287,9 @@ export function Portfolio() {
           </Text>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
-              value="Add Activity"
-              dataTest="Add Activity"
+              data-test="Add Activity"
+              size="xs"
+              colorScheme="blue"
               onClick={async () => {
                 //Create a portfilio activity and redirect to the editor for it
                 let response = await fetch("/api/createPortfolioActivity.php");
@@ -289,7 +301,9 @@ export function Portfolio() {
                   throw Error(response.message);
                 }
               }}
-            />
+            >
+              Add Activity
+            </Button>
           </div>
         </Box>
         <PublicActivitiesSection data-test="Public Activities">

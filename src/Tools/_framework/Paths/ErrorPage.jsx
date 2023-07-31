@@ -1,13 +1,6 @@
-import {
-  ChakraProvider,
-  Container,
-  Box,
-  Button,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { Container, Button, Heading, Text } from "@chakra-ui/react";
+import React from "react";
+import { useNavigate, useRouteError } from "react-router";
 
 const mouths = [
   "M 23.485 28.879 C 23.474 28.835 22.34 24.5 18 24.5 S 12.526 28.835 12.515 28.879 C 12.462 29.092 12.559 29.31 12.747 29.423 C 12.935 29.535 13.18 29.509 13.343 29.363 C 13.352 29.355 14.356 28.5 18 28.5 C 21.59 28.5 22.617 29.33 22.656 29.363 C 22.751 29.453 22.875 29.5 23 29.5 C 23.084 29.5 23.169 29.479 23.246 29.436 C 23.442 29.324 23.54 29.097 23.485 28.879 Z",
@@ -28,20 +21,19 @@ const rightEyes = [
   "M 19.35 3.281 C 20.209 0.85 22.875 -0.426 25.306 0.431 C 26.782 0.951 27.827 2.142 28.235 3.535 C 29.426 2.706 30.986 2.435 32.46 2.955 C 34.89 3.813 36.167 6.48 35.31 8.911 C 35.187 9.255 35.026 9.574 34.837 9.869 C 32.886 13.451 27.249 15.969 23.835 16 C 21.198 13.833 18.39 8.335 19.118 4.323 C 19.155 3.975 19.23 3.625 19.35 3.281 Z",
 ];
 
-const eyeColours = ["black", "black", "black"];
-
 function ErrorPage() {
-  const [activeIndex, setActiveIndex] = useState(0);
   let navigate = useNavigate();
+  const error = useRouteError();
+  console.error(error);
 
   return (
     <Container padding="70px 0" textAlign="center" maxWidth="800px">
-      {/* <Container centerContent margin="0" position="absolute" top="50%"> */}
-      <Heading>Oops! Page not found.</Heading>
+      {/* <Heading>Oops! Page not found.</Heading> */}
+      <Heading data-test="Error Message">{error.message}</Heading>
       <Heading fontSize="96">404</Heading>
       <Text>
-        We are very sorry for the inconvenience. It looks like you're trying to
-        access a page that has been deleted or never even existed.
+        We are very sorry for the inconvenience. It looks like you&apos;re
+        trying to access a page that has been deleted or never even existed.
       </Text>
       <Container centerContent padding="36px">
         <svg
@@ -54,9 +46,9 @@ function ErrorPage() {
           <circle cx="18" cy="18" r="18" fill="#eea177" />
           <circle cx="18" cy="18" r="15" fill="#6d4445" />
           <circle cx="18" cy="18" r="6" fill="white" />
-          <path d={rightEyes[0]} fill={eyeColours[activeIndex]} />
-          <path d={leftEyes[0]} fill={eyeColours[activeIndex]} />
-          <path d={mouths[0]} fill={eyeColours[activeIndex]} />
+          <path d={rightEyes[0]} fill={"black"} />
+          <path d={leftEyes[0]} fill={"black"} />
+          <path d={mouths[0]} fill={"black"} />
         </svg>
       </Container>
       <Button
@@ -67,7 +59,6 @@ function ErrorPage() {
       >
         Back to Home
       </Button>
-      {/* </Container> */}
     </Container>
   );
 }

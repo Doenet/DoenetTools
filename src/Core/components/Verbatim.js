@@ -105,6 +105,7 @@ export class DisplayDoenetML extends InlineComponent {
     Object.assign(stateVariableDefinitions, styleDescriptionDefinitions);
 
     stateVariableDefinitions.value = {
+      shadowVariable: true,
       returnDependencies: () => ({
         childrenDoenetML: {
           dependencyType: "doenetML",

@@ -142,39 +142,105 @@ Cypress.Commands.add("clearCoursePeople", ({ courseId }) => {
   // })
 });
 
-Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId }) => {
+Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId, label }) => {
   cy.request("POST", `/cyapi/cypressCreateCourse.php`, {
     userId,
     courseId,
     studentUserId,
+    label
   });
   // .then((resp)=>{
   //   cy.log(resp.body)
   // })
 });
 
-Cypress.Commands.add("deletePortfolioActivity", ({ userId, label }) => {
+Cypress.Commands.add("deleteCourseDBRows", ({ courseId }) => {
   cy.task(
     "queryDb",
-    `DELETE cc
-      FROM course_content AS cc
-      LEFT JOIN course AS c
-      ON cc.courseId = c.courseId
-      WHERE cc.label = '${label}'
-      AND c.portfolioCourseForUserId = '${userId}'
-      `,
+    `
+    DELETE FROM course_user 
+    WHERE courseId="${courseId}"
+    `,
+  )
+  cy.task(
+    "queryDb",
+    `
+    DELETE FROM course_content 
+    WHERE courseId="${courseId}"
+    `,
   );
+  cy.task(
+    "queryDb",
+    `
+    DELETE FROM course_role 
+    WHERE courseId="${courseId}"
+    `,
+  )
+  cy.task(
+    "queryDb",
+    `
+    DELETE FROM course 
+    WHERE courseId="${courseId}"
+    `,
+  )
+});
+
+Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
+  if (courseId) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE courseId="${courseId}"
+    `,
+    );
+  } else if (label) {
+    cy.task(
+      "queryDb",
+      `
+    UPDATE course 
+    SET isDeleted = TRUE
+    WHERE label="${label}"
+    `,
+    );
+  }
+
+
 });
 
 Cypress.Commands.add(
+  "deletePortfolioActivity",
+  ({ userId, label }) => {
+    cy.task(
+      "queryDb",
+      `DELETE
+      FROM course_content 
+      WHERE label = '${label}'
+      `,
+    );
+    // cy.task(
+    //   "queryDb",
+    //   `DELETE cc
+    //   FROM course_content AS cc
+    //   LEFT JOIN course AS c
+    //   ON cc.courseId = c.courseId
+    //   WHERE cc.label = '${label}'
+    //   AND c.portfolioCourseForUserId = '${userId}'
+    //   `,
+    // );
+  });
+
+Cypress.Commands.add(
   "createActivity",
-  ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "" }) => {
+  ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "", label = "Cypress Activity" }) => {
     cy.request("POST", `/cyapi/cypressCreateActivity.php`, {
       courseId,
       doenetId,
       parentDoenetId,
       pageDoenetId,
       doenetML,
+      label,
     });
   },
 );

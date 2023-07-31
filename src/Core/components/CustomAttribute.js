@@ -31,7 +31,8 @@ export default class CustomAttribute extends CompositeComponent {
           variableName: "componentNameForAttributes",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
+        console.log(dependencyValues, componentName);
         let componentNameForAttributes =
           dependencyValues.parentVariableContainingName;
         return { setValue: { componentNameForAttributes } };
@@ -73,6 +74,9 @@ export default class CustomAttribute extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let componentType =
@@ -83,13 +87,25 @@ export default class CustomAttribute extends CompositeComponent {
       componentInfoObjects.allComponentClasses[componentType];
 
     if (!componentClass) {
-      console.warn(`Could not find component type ${componentType}`);
-      return { replacements: [] };
+      warnings.push({
+        message: `<customAttribute> contains an invalid component type: <${component.attributes.componentType.primitive}>.`,
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
     }
 
     let componentForAttribute =
       components[await component.stateValues.componentNameForAttributes];
     let attributeLowerCaseMapping = {};
+
+    if (!componentForAttribute) {
+      warnings.push({
+        message:
+          "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component.",
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
+    }
 
     for (let attrName in componentForAttribute.attributes) {
       attributeLowerCaseMapping[attrName.toLowerCase()] = attrName;
@@ -103,10 +119,11 @@ export default class CustomAttribute extends CompositeComponent {
 
     if (attributeValue === undefined) {
       if (component.attributes.defaultValue === undefined) {
-        console.warn(
-          "Cannot create component from attribute if neither attribute nor default value specified",
-        );
-        return { replacements: [] };
+        warnings.push({
+          message: `Since a default value was not supplied for <customAttribute> with attribute="${SVattributeName}", it will not be created unless a value is specified.`,
+          level: 1,
+        });
+        return { replacements: [], errors, warnings };
       } else {
         attributeValue = component.attributes.defaultValue;
       }
@@ -120,21 +137,26 @@ export default class CustomAttribute extends CompositeComponent {
     ).map((x) => x.toLowerCase());
     containerAttrNames.push("name", "target", "assignnames");
     if (containerAttrNames.includes(SVattributeName.toLowerCase())) {
-      console.warn(
-        `Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`,
-      );
-      return { replacements: [] };
+      warnings.push({
+        message: `Cannot add attribute "${SVattributeName}" to a <${containerClass.componentType}> because the <${containerClass.componentType}> component type already has a "${SVattributeName}" attribute defined.`,
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
     }
 
     let attrObj = {
       createComponentOfType: componentType,
     };
 
-    let serializedComponent = serializeFunctions.componentFromAttribute({
+    let res = serializeFunctions.componentFromAttribute({
       attrObj,
       value: attributeValue,
       componentInfoObjects,
-    }).component;
+    });
+
+    let serializedComponent = res.attribute.component;
+    errors.push(...res.errors);
+    warnings.push(...res.warnings);
 
     if (serializedComponent.children) {
       serializeFunctions.applyMacros(
@@ -169,7 +191,13 @@ export default class CustomAttribute extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 }

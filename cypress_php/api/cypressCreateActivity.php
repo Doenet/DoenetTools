@@ -18,6 +18,7 @@ $doenetId = $_POST['doenetId'];
 $parentDoenetId = $_POST['parentDoenetId'];
 $pageDoenetId = $_POST['pageDoenetId'];
 $doenetML = $_POST['doenetML'];
+$label = $_POST['label'];
 
 if ($parentDoenetId == ""){
   $parentDoenetId = $courseId;
@@ -46,7 +47,6 @@ if ($success){
   //Don't create another if it already exists 
   if ($result->num_rows == 0) {
 
-    $label = 'Cypress Activity';
 
     $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"content":["'.$pageDoenetId.'"],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 

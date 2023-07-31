@@ -1,4 +1,4 @@
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("Matrix Tag Tests", function () {
   beforeEach(() => {
@@ -1859,6 +1859,320 @@ describe("Matrix Tag Tests", function () {
       expect(stateVariables["/A7"].stateValues.matrix).eqls(matrixValue);
       expect(stateVariables["/A8"].stateValues.matrix).eqls(matrixValue);
     });
+  });
+
+  it("functionSymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><matrix name="Adef">
+      <row>f(x) g(x)</row>
+      <row>h(x) a(x)</row>
+    </matrix>
+    </p>
+    <p><matrix name="Ah" functionSymbols="h">
+      <row>f(x) g(x)</row>
+      <row>h(x) a(x)</row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbyrow" functionSymbols="h a">
+      <row><math functionSymbols="g">h(x)</math> <math functionSymbols="g">g(x)</math> a(x)</row>
+      <row functionSymbols="h">h(x) a(x) <math functionSymbols="b">b(x)</math></row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbycolumn" functionSymbols="h a">
+      <column><math functionSymbols="g">h(x)</math> <math functionSymbols="g">g(x)</math> a(x)</column>
+      <column functionSymbols="h">h(x) a(x) <math functionSymbols="b">b(x)</math></column>
+    </matrix>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Adef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[f(x)g(x)hxax]");
+    cy.get(cesc2("#/Ah") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[fxgxh(x)ax]");
+    cy.get(cesc2("#/Amixedbyrow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[hxg(x)a(x)h(x)axb(x)]");
+    cy.get(cesc2("#/Amixedbycolumn") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣hxh(x)g(x)axa(x)b(x)⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixdefAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        [
+          "tuple",
+          ["tuple", ["apply", "f", "x"], ["apply", "g", "x"]],
+          ["tuple", ["*", "h", "x"], ["*", "a", "x"]],
+        ],
+      ];
+      let matrixhAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        [
+          "tuple",
+          ["tuple", ["*", "f", "x"], ["*", "g", "x"]],
+          ["tuple", ["apply", "h", "x"], ["*", "a", "x"]],
+        ],
+      ];
+      let matrixmixedbyrowAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        [
+          "tuple",
+          ["tuple", ["*", "h", "x"], ["apply", "g", "x"], ["apply", "a", "x"]],
+          ["tuple", ["apply", "h", "x"], ["*", "a", "x"], ["apply", "b", "x"]],
+        ],
+      ];
+      let matrixmixedbycolumnAst = [
+        "matrix",
+        ["tuple", 3, 2],
+        [
+          "tuple",
+          ["tuple", ["*", "h", "x"], ["apply", "h", "x"]],
+          ["tuple", ["apply", "g", "x"], ["*", "a", "x"]],
+          ["tuple", ["apply", "a", "x"], ["apply", "b", "x"]],
+        ],
+      ];
+      expect(stateVariables["/Adef"].stateValues.value).eqls(matrixdefAst);
+      expect(stateVariables["/Ah"].stateValues.value).eqls(matrixhAst);
+      expect(stateVariables["/Amixedbyrow"].stateValues.value).eqls(
+        matrixmixedbyrowAst,
+      );
+      expect(stateVariables["/Amixedbycolumn"].stateValues.value).eqls(
+        matrixmixedbycolumnAst,
+      );
+    });
+  });
+
+  it("sourcesAreFunctionSymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <setup>
+      <math name="fun1">f</math>
+      <math name="fun2">g</math>
+      <math name="fun3">h</math>
+      <math name="fun4">a</math>
+      <math name="fun5">b</math>
+    </setup>
+    <p><matrix name="Adef">
+      <row>$fun1(x) $fun2(x)</row>
+      <row>$fun3(x) $fun4(x)</row>
+    </matrix>
+    </p>
+    <p><matrix name="Ah" sourcesAreFunctionSymbols="fun1 fun4">
+      <row>$fun1(x) $fun2(x)</row>
+      <row>$fun3(x) $fun4(x)</row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbyrow" sourcesAreFunctionSymbols="fun3 fun4">
+      <row><math sourcesAreFunctionSymbols="fun2">$fun3(x)</math> <math sourcesAreFunctionSymbols="fun2">$fun2(x)</math> $fun4(x)</row>
+      <row sourcesAreFunctionSymbols="fun3">$fun3(x) $fun4(x) <math sourcesAreFunctionSymbols="fun5">$fun5(x)</math></row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbycolumn" sourcesAreFunctionSymbols="fun3 fun4">
+      <column><math sourcesAreFunctionSymbols="fun2">h(x)</math> <math sourcesAreFunctionSymbols="fun2">$fun2(x)</math> $fun4(x)</column>
+      <column sourcesAreFunctionSymbols="fun3">$fun3(x) $fun4(x) <math sourcesAreFunctionSymbols="fun5">$fun5(x)</math></column>
+    </matrix>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Adef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[fxgxhxax]");
+    cy.get(cesc2("#/Ah") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[f(x)gxhxa(x)]");
+    cy.get(cesc2("#/Amixedbyrow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[hxg(x)a(x)h(x)axb(x)]");
+    cy.get(cesc2("#/Amixedbycolumn") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣hxh(x)g(x)axa(x)b(x)⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixdefAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        [
+          "tuple",
+          ["tuple", ["*", "f", "x"], ["*", "g", "x"]],
+          ["tuple", ["*", "h", "x"], ["*", "a", "x"]],
+        ],
+      ];
+      let matrixhAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        [
+          "tuple",
+          ["tuple", ["apply", "f", "x"], ["*", "g", "x"]],
+          ["tuple", ["*", "h", "x"], ["apply", "a", "x"]],
+        ],
+      ];
+      let matrixmixedbyrowAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        [
+          "tuple",
+          ["tuple", ["*", "h", "x"], ["apply", "g", "x"], ["apply", "a", "x"]],
+          ["tuple", ["apply", "h", "x"], ["*", "a", "x"], ["apply", "b", "x"]],
+        ],
+      ];
+      let matrixmixedbycolumnAst = [
+        "matrix",
+        ["tuple", 3, 2],
+        [
+          "tuple",
+          ["tuple", ["*", "h", "x"], ["apply", "h", "x"]],
+          ["tuple", ["apply", "g", "x"], ["*", "a", "x"]],
+          ["tuple", ["apply", "a", "x"], ["apply", "b", "x"]],
+        ],
+      ];
+      expect(stateVariables["/Adef"].stateValues.value).eqls(matrixdefAst);
+      expect(stateVariables["/Ah"].stateValues.value).eqls(matrixhAst);
+      expect(stateVariables["/Amixedbyrow"].stateValues.value).eqls(
+        matrixmixedbyrowAst,
+      );
+      expect(stateVariables["/Amixedbycolumn"].stateValues.value).eqls(
+        matrixmixedbycolumnAst,
+      );
+    });
+  });
+
+  it("splitsymbols", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><matrix name="Adef">
+      <row>xy yz</row>
+      <row>ab bc</row>
+    </matrix>
+    </p>
+    <p><matrix name="Ah" splitSymbols="false">
+    <row>xy yz</row>
+    <row>ab bc</row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbyrow" splitSymbols="false">
+      <row>xy <math splitSymbols>yz</math> <math>zx</math></row>
+      <row splitSymbols>ab <math splitSymbols="false">bc</math> <math>ca</math></row>
+    </matrix>
+    </p>
+    <p><matrix name="Amixedbycolumn" splitSymbols="false">
+    <column>xy <math splitSymbols>yz</math> <math>zx</math></column>
+    <column splitSymbols>ab <math splitSymbols="false">bc</math> <math>ca</math></column>
+    </matrix>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Adef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xyyzabbc]");
+    cy.get(cesc2("#/Ah") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xyyzabbc]");
+    cy.get(cesc2("#/Amixedbyrow") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xyyzzxabbcca]");
+    cy.get(cesc2("#/Amixedbycolumn") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "⎡⎢⎣xyabyzbczxca⎤⎥⎦");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let matrixdefAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        [
+          "tuple",
+          ["tuple", ["*", "x", "y"], ["*", "y", "z"]],
+          ["tuple", ["*", "a", "b"], ["*", "b", "c"]],
+        ],
+      ];
+      let matrixnAst = [
+        "matrix",
+        ["tuple", 2, 2],
+        ["tuple", ["tuple", "xy", "yz"], ["tuple", "ab", "bc"]],
+      ];
+      let matrixmixedbyrowAst = [
+        "matrix",
+        ["tuple", 2, 3],
+        [
+          "tuple",
+          ["tuple", "xy", ["*", "y", "z"], "zx"],
+          ["tuple", ["*", "a", "b"], "bc", ["*", "c", "a"]],
+        ],
+      ];
+      let matrixmixedbycolumnAst = [
+        "matrix",
+        ["tuple", 3, 2],
+        [
+          "tuple",
+          ["tuple", "xy", ["*", "a", "b"]],
+          ["tuple", ["*", "y", "z"], "bc"],
+          ["tuple", "zx", ["*", "c", "a"]],
+        ],
+      ];
+      expect(stateVariables["/Adef"].stateValues.value).eqls(matrixdefAst);
+      expect(stateVariables["/Ah"].stateValues.value).eqls(matrixnAst);
+      expect(stateVariables["/Amixedbyrow"].stateValues.value).eqls(
+        matrixmixedbyrowAst,
+      );
+      expect(stateVariables["/Amixedbycolumn"].stateValues.value).eqls(
+        matrixmixedbycolumnAst,
+      );
+    });
+  });
+
+  it("displayBlanks", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p><matrix name="Adef">
+      <row>x_ y_</row>
+      <row>a_ b_</row>
+    </matrix>
+    </p>
+    <p><matrix name="Ah" displayBlanks="false">
+    <row>x_ y_</row>
+    <row>a_ b_</row>
+    </matrix>
+    </p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/Adef") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[x＿y＿a＿b＿]");
+    cy.get(cesc2("#/Ah") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[xyab]");
   });
 
   it("2x3 matrix by rows", () => {

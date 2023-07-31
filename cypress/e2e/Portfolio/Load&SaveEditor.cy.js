@@ -49,6 +49,7 @@ describe("doenetEditor test", function () {
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
 
     cy.get('[data-test="Portfolio"]').click();
+    cy.wait(500)
     cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ').eq(0).click();
     cy.get(cesc2("#/draft")).should("have.text", "Draft content");
   });
