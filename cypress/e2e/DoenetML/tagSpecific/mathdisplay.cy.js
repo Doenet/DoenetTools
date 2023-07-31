@@ -2686,4 +2686,35 @@ describe("Math Display Tag Tests", function () {
         .should("have.text", "(−5,−4)");
     });
   });
+
+  it("waring if have child with string text or latex state varaible", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `<m>x = <answer>x</answer></m>`,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_m1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x=");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Child <answer> of <m> ignored as it does not have a string "text" or "latex" state variable`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(29);
+    });
+  });
 });
