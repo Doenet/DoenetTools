@@ -219,7 +219,7 @@ export function Home() {
         >
           <GridItem area="Description">
             <Center>
-              <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+              <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
                 <Button
                   leftIcon={<MdBuild />}
                   mt="40px"
