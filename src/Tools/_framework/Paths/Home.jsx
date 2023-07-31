@@ -101,36 +101,6 @@ let doenetML = `
   
 </example>
 `;
-function Heading({
-  heading,
-  subheading,
-  background = "white",
-  color = "black",
-}) {
-  return (
-    <Center w="100%" bg={background}>
-      <HStack maxWidth="750px" w="100%" spacing={4}>
-        <Text
-          fontSize={["12px", "20px", "30px", "40px", "60px"]}
-          // fontSize="60px"
-          fontWeight="700"
-          color={color}
-        >
-          {heading}
-        </Text>
-        <Text
-          pt="24px"
-          fontSize={["8px", "10px", "12px", "18px", "24px"]}
-          // fontSize="20px"
-          fontWeight="700"
-          color={color}
-        >
-          {subheading}
-        </Text>
-      </HStack>
-    </Center>
-  );
-}
 
 export function Home() {
   let context = useOutletContext();
@@ -275,56 +245,58 @@ export function Home() {
           </GridItem>
         </Grid>
       </Flex>
-      <Heading
-        heading="Explore"
-        subheading="Interact with our existing content"
-        background={grayColor}
-        color={blackColor}
-      />
+
+      <Center w="100%" bg={grayColor}>
+      <HStack maxWidth="750px" w="100%" spacing={4}>
+        <Text
+          fontSize={["12px", "20px", "30px", "40px", "60px"]}
+          // fontSize="60px"
+          fontWeight="700"
+          color={blackColor}
+        >
+          Explore
+        </Text>
+        <Text
+          pt="24px"
+          fontSize={["8px", "10px", "12px", "18px", "24px"]}
+          // fontSize="20px"
+          fontWeight="700"
+          color={blackColor}
+        >
+          Interact with <Link href="/community" textDecoration="underline" >our existing content</Link>
+        </Text>
+      </HStack>
+    </Center>
       <Flex
         justifyContent="center"
         alignItems="center"
         bg={grayColor}
         p="60px 10px"
       >
-        <Carousel
-          title="Doenet Team Favorites"
-          data={[
-            {
-              firstName: "Guy",
-              lastName: "Smiley",
-              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
-            },
-            {
-              firstName: "Guy",
-              lastName: "Smiley",
-              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
-            },
-            {
-              firstName: "Guy",
-              lastName: "Smiley",
-              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
-            },
-            {
-              firstName: "Guy",
-              lastName: "Smiley",
-              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
-            },
-            {
-              firstName: "Guy",
-              lastName: "Smiley",
-              doenetId: "_uIQGjzXuLsHmxpFLqj1jn",
-            },
-          ]}
-        />
-        {/* <Carousel title="Doenet Team Favorites" data={favorites} /> */}
+        <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
-      <Heading
-        heading="Learn"
-        subheading="Designed for the In-Person Classroom"
-        background={blueColor}
-        color={blackColor}
-      />
+
+      <Center w="100%" bg={blueColor}>
+      <HStack maxWidth="750px" w="100%" spacing={4}>
+        <Text
+          fontSize={["12px", "20px", "30px", "40px", "60px"]}
+          // fontSize="60px"
+          fontWeight="700"
+          color={blackColor}
+        >
+          Learn
+        </Text>
+        <Text
+          pt="24px"
+          fontSize={["8px", "10px", "12px", "18px", "24px"]}
+          // fontSize="20px"
+          fontWeight="700"
+          color={blackColor}
+        >
+          Designed for the In-Person Classroom
+        </Text>
+      </HStack>
+    </Center>
       <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
