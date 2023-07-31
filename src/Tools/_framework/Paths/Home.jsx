@@ -212,36 +212,28 @@ export function Home() {
         py="30px"
       >
         <Grid
-          gridTemplateAreas={`"Start null"
-        "Description Video"
+          gridTemplateAreas={`"Description Video"
         `}
-          gridTemplateRows={"200px auto"}
+          // gridTemplateRows={"120px auto"}
           gridTemplateColumns={"300px auto"}
         >
-          <GridItem area="Start">
+          <GridItem area="Description">
             <Center>
               <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
                 <Button
                   leftIcon={<MdBuild />}
                   mt="40px"
-                  // size="2xl"
                   p="10px"
                   colorScheme="blue"
-                  mb="180px"
-                  // w="260px"
-                  // h="60px"
                   w={["120px", "140px", "180px", "200px", "260px"]}
                   h={["20px", "30px", "40px", "50px", "60px"]}
                   fontSize={["10px", "14px", "18px", "22px", "26px"]}
-                  // fontSize="26px"
                 >
                   Start Creating
                 </Button>
               </Link>
             </Center>
-          </GridItem>
-          <GridItem area="Description" p="20px">
-            <Flex textAlign="left" flexDirection="column" gap={4}>
+            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
               <Text color={textColor} fontSize="16pt">
                 Introducing DoenetML
               </Text>
