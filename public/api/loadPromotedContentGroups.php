@@ -28,6 +28,7 @@ try {
             AND cc.isBanned = 0
             group by promotedGroupId
         ) t using(promotedGroupId)
+        order by pcg.currentlyFeatured desc, pcg.sortOrder
         ";
 
     $result = $conn->query($sql);
@@ -36,6 +37,8 @@ try {
     } else {
         $promotedGroups = [];
         while ($row = $result->fetch_assoc()) {
+            $row['currentlyFeatured'] = $row['currentlyFeatured'] == '1' ? true : false;
+            $row['homepage'] = $row['homepage'] == '1' ? true : false;
             $promotedGroups[] = $row;
         }
     }

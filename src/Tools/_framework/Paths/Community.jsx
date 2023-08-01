@@ -37,7 +37,15 @@ import AuthorCard from "../../../_reactComponents/PanelHeaderComponents/AuthorCa
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  let { doenetId, groupName, groupId, currentlyFeatured, homepage } = formObj;
+  let {
+    direction,
+    doenetId,
+    groupName,
+    newGroupName,
+    groupId,
+    currentlyFeatured,
+    homepage,
+  } = formObj;
 
   async function postApiAlertOnError(url, uploadData) {
     try {
@@ -58,16 +66,33 @@ export async function action({ request }) {
         doenetId,
         groupId,
       });
+    case "Move Promoted Content":
+      return postApiAlertOnError("/api/movePromotedContent.php", {
+        doenetId,
+        groupId,
+        direction,
+      });
+    case "Move Promoted Group":
+      return postApiAlertOnError("/api/movePromotedContentGroup.php", {
+        groupId,
+        direction,
+      });
     case "New Group":
+      return postApiAlertOnError("/api/addPromotedContentGroup.php", {
+        groupName,
+      });
+    case "Rename Group":
       return postApiAlertOnError("/api/addPromotedContentGroup.php", {
         groupName,
       });
     case "Promote Group":
       // convert to real booleans
-      currentlyFeatured = currentlyFeatured == "false" ? false : true;
-      homepage = homepage == "false" ? false : true;
+      currentlyFeatured =
+        !currentlyFeatured || currentlyFeatured == "false" ? false : true;
+      homepage = !homepage || homepage == "false" ? false : true;
       return postApiAlertOnError("/api/updatePromotedContentGroup.php", {
         groupName,
+        newGroupName,
         currentlyFeatured,
         homepage,
       });
@@ -130,25 +155,83 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
     carouselGroups = [];
   }
 
+  const banContent = () => {
+    if (window.confirm("Are you sure you want to ban this content?")) {
+      fetcher.submit({ _action: "Ban Content", doenetId }, { method: "post" });
+    }
+  };
+
+  const promoteGroup = (groupInfo, currentlyFeatured) => {
+    fetcher.submit(
+      {
+        _action: "Promote Group",
+        groupName: groupInfo.groupName,
+        currentlyFeatured,
+        homepage: false,
+      },
+      { method: "post" },
+    );
+  };
+
+  const moveGroup = (groupInfo, direction) => {
+    fetcher.submit(
+      {
+        _action: "Move Promoted Group",
+        groupId: groupInfo.promotedGroupId,
+        direction,
+      },
+      { method: "post" },
+    );
+  };
+
+  const promoteContent = (groupInfo) => {
+    const uploadData = {
+      groupId: groupInfo.promotedGroupId,
+      doenetId,
+    };
+    axios
+      .post("/api/addPromotedContent.php", uploadData)
+      .then(({ data }) => {
+        onClose();
+      })
+      .catch((e) => {
+        console.log(e);
+        alert("Error - " + e.response.data.message);
+      });
+  };
+
+  const createGroup = () => {
+    const groupName = window.prompt("Enter a new group name");
+    if (groupName) {
+      fetcher.submit({ _action: "New Group", groupName }, { method: "post" });
+    }
+  };
+
+  const renameGroup = (groupInfo) => {
+    const newGroupName = window.prompt(
+      "Enter a new name for group " + groupInfo.groupName,
+      groupInfo.groupName,
+    );
+    if (newGroupName) {
+      fetcher.submit(
+        {
+          _action: "Promote Group",
+          groupName: groupInfo.groupName,
+          currentlyFeatured: groupInfo.currentlyFeatured,
+          newGroupName,
+          homepage: false,
+        },
+        { method: "post" },
+      );
+    }
+  };
+
   return (
     <>
-      <MenuItem ref={btnRef} colorScheme="teal" onClick={onOpen}>
+      <MenuItem ref={btnRef} onClick={onOpen}>
         Promote on Community Page
       </MenuItem>
-      <MenuItem
-        as="button"
-        type="submit"
-        ref={btnRef}
-        colorScheme="teal"
-        onClick={() => {
-          if (window.confirm("Are you sure you want to ban this content?")) {
-            fetcher.submit(
-              { _action: "Ban Content", doenetId },
-              { method: "post" },
-            );
-          }
-        }}
-      >
+      <MenuItem as="button" type="submit" ref={btnRef} onClick={banContent}>
         Remove from Community for TOS Violation
       </MenuItem>
       <Drawer
@@ -156,6 +239,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
         placement="right"
         onClose={onClose}
         finalFocusRef={btnRef}
+        size="lg"
       >
         <DrawerOverlay />
         <DrawerContent>
@@ -169,73 +253,50 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
                   <Button
                     mergin="5px"
                     key={group.groupName}
-                    onClick={() => {
-                      const uploadData = {
-                        groupId: group.promotedGroupId,
-                        doenetId,
-                      };
-                      axios
-                        .post("/api/addPromotedContent.php", uploadData)
-                        .then(({ data }) => {
-                          onClose();
-                        })
-                        .catch((e) => {
-                          console.log(e);
-                          alert("Error - " + e.response.data.message);
-                        });
-                    }}
+                    onClick={() => promoteContent(group)}
                   >
                     Add to group "{group.groupName}"
                   </Button>
                 );
               })}
-
-              <Button
-                colorScheme="teal"
-                onClick={() => {
-                  const groupName = window.prompt("Enter a new group name");
-                  if (groupName) {
-                    fetcher.submit(
-                      { _action: "New Group", groupName },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              >
-                Add New Group
-              </Button>
-              <Box>
-                <Text fontSize="20px">
+              <br />
+              <Button onClick={() => createGroup()}>Add New Group</Button>
+            </VStack>
+            <Box>
+              <VStack spacing="2">
+                <Text fontSize="xl">
                   Select which groups are shown on the community page
                 </Text>
+
                 <Form>
                   {carouselGroups.map((group) => {
                     return (
-                      <Wrap key={group.groupId}>
+                      <Wrap key={group.promotedGroupId}>
                         <Checkbox
                           isChecked={group.currentlyFeatured == "1"}
                           name={group.groupId}
-                          onChange={(evt) => {
-                            fetcher.submit(
-                              {
-                                _action: "Promote Group",
-                                groupName: group.groupName,
-                                currentlyFeatured: evt.target.checked,
-                                homepage: false,
-                              },
-                              { method: "post" },
-                            );
-                          }}
+                          onChange={(evt) =>
+                            promoteGroup(group, evt.target.checked)
+                          }
                         />
-                        <FormLabel for={group.groupId}>
+                        <FormLabel htmlFor={group.groupId} width="200px">
                           {group.groupName}
                         </FormLabel>
+                        <Button onClick={() => renameGroup(group)}>
+                          Rename
+                        </Button>
+                        <Button onClick={() => moveGroup(group, "up")}>
+                          ↑
+                        </Button>
+                        <Button onClick={() => moveGroup(group, "down")}>
+                          ↓
+                        </Button>
                       </Wrap>
                     );
                   })}
                 </Form>
-              </Box>
-            </VStack>
+              </VStack>
+            </Box>
           </DrawerBody>
 
           <DrawerFooter>
@@ -640,7 +701,7 @@ export function Community() {
                     )}
                     <br />
                     <br />
-                    <Wrap>
+                    <Wrap overflow="visible">
                       {group.map((cardObj, i) => {
                         return (
                           <ActivityCard
@@ -665,6 +726,36 @@ export function Community() {
                                   }}
                                 >
                                   Remove from group
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "Move Promoted Content",
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                        direction: "left",
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                >
+                                  Move Left
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "Move Promoted Content",
+                                        doenetId: cardObj.doenetId,
+                                        groupId: cardObj.promotedGroupId,
+                                        direction: "right",
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                >
+                                  Move Right
                                 </MenuItem>
                               </>
                             }
