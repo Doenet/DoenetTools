@@ -9,6 +9,8 @@ import {
 export default class Substitute extends CompositeComponent {
   static componentType = "substitute";
 
+  static allowInSchemaAsComponent = ["math", "text"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";

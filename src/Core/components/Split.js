@@ -4,6 +4,8 @@ import { processAssignNames } from "../utils/serializedStateProcessing";
 export default class Split extends CompositeComponent {
   static componentType = "split";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";

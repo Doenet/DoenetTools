@@ -17,6 +17,8 @@ export class H extends TextComponent {
 export class Idx extends CompositeComponent {
   static componentType = "idx";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static returnChildGroups() {
     return [
       {

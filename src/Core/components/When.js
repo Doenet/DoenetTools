@@ -6,6 +6,8 @@ export default class When extends BooleanComponent {
   static componentType = "when";
   static rendererType = undefined;
 
+  static inSchemaOnlyInheritAs = [];
+
   static stateVariableToBeShadowed = "conditionSatisfied";
 
   static createAttributesObject() {

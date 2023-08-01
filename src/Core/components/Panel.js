@@ -6,6 +6,8 @@ export default class Panel extends InlineComponent {
   static renderChildren = true;
   static canDisplayChildErrors = true;
 
+  static excludeFromSchema = true;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.columns = {

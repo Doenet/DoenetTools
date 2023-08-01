@@ -16,6 +16,8 @@ export default class Sequence extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static allowInSchemaAsComponent = ["number", "math", "text"];
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
