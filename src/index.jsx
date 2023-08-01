@@ -21,7 +21,11 @@ import {
   loader as siteLoader,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
-import { loader as caroselLoader, Home } from "./Tools/_framework/Paths/Home";
+import {
+  loader as caroselLoader,
+  // action as homeAction,
+  Home,
+} from "./Tools/_framework/Paths/Home";
 
 import {
   loader as portfolioLoader,
@@ -129,6 +133,12 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: caroselLoader,
+        // action: homeAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -136,9 +146,9 @@ const router = createBrowserRouter([
             config={mathjaxConfig}
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
-            {/* <ChakraProvider theme={theme}> */}
-            <Home />
-            {/* </ChakraProvider> */}
+            <ChakraProvider theme={theme}>
+              <Home />
+            </ChakraProvider>
           </MathJaxContext>
           // </DarkmodeController>
         ),
