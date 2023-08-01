@@ -74,30 +74,30 @@ namespace SortOrder {
           $num = $num + $valueOfLetterAtThePossition;
         }
         return $num;
-      }
+    }
   
-      function numberToLetters($num,$numOfLetters){
+    function numberToLetters($num,$numOfLetters){
         $valueOfA = 97;
         $letters = "";
         $remainingNum = $num;
         for ($i = $numOfLetters; $i >= 0; $i--){
-          $divisor = pow(26, $i);
-          $quotient = (int) ($remainingNum / $divisor);
-          if ($quotient > 0){
-            $char = chr($quotient + $valueOfA - 1);
-            $letters = $letters . $char;
-            $remainingNum = $remainingNum - $quotient * $divisor;
-          }
+            $divisor = pow(26, $i);
+            $quotient = (int) ($remainingNum / $divisor);
+            if ($quotient > 0){
+                $char = chr($quotient + $valueOfA - 1);
+                $letters = $letters . $char;
+                $remainingNum = $remainingNum - $quotient * $divisor;
+            }
         }
         return $letters;
-      }
+    }
   
-     //This is incomplete!
-     //After 'aay' it goes to 'ab'
-      function getNextSortOrder($str){
+    //This is incomplete!
+    //After 'aay' it goes to 'ab'
+    function getNextSortOrder($str){
         $str_as_num = lettersToANumber($str);
         return numberToLetters($str_as_num + 1,strlen($str));
-      }
+    }
 
 
     /**

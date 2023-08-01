@@ -127,8 +127,7 @@ try {
     $result = $conn->query($sql);
     if ($result && $conn->affected_rows == 1) {
         $response_arr = [
-            'success' => true,
-            'prev' => $prev
+            'success' => true
         ];
     } else {
         throw new Exception("Failed to add this activity to promoted material group. " . $conn->error);

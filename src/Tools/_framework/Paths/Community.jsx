@@ -47,8 +47,6 @@ export async function action({ request }) {
     homepage,
   } = formObj;
 
-  console.log(formObj);
-
   async function postApiAlertOnError(url, uploadData) {
     try {
       const response = await axios.post(url, uploadData);
