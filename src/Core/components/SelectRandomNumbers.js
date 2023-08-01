@@ -7,6 +7,8 @@ import SampleRandomNumbers from "./SampleRandomNumbers";
 export default class SelectRandomNumbers extends SampleRandomNumbers {
   static componentType = "selectRandomNumbers";
 
+  static allowInSchemaAsComponent = ["number"];
+
   static createsVariants = true;
 
   static createAttributesObject() {

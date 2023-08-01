@@ -2,6 +2,9 @@ import BaseComponent from "./abstract/BaseComponent";
 
 export class FeedbackDefinition extends BaseComponent {
   static componentType = "feedbackDefinition";
+  static rendererType = undefined;
+
+  static inSchemaOnlyInheritAs = [];
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -58,6 +61,8 @@ export class FeedbackDefinition extends BaseComponent {
 export class FeedbackDefinitions extends BaseComponent {
   static componentType = "feedbackDefinitions";
   static rendererType = undefined;
+
+  static inSchemaOnlyInheritAs = [];
 
   static returnChildGroups() {
     return [

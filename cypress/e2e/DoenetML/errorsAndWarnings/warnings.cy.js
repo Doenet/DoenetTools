@@ -580,4 +580,39 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(45);
     });
   });
+
+  it("Invalid string child", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <selectfromSequence>string!</selectFromSequence>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid children for <selectFromSequence>`,
+      );
+      expect(errorWarnings.warnings[0].message).contain(
+        `Found invalid children: string`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(50);
+    });
+  });
 });

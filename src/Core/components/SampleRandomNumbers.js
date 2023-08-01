@@ -15,6 +15,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
   static componentType = "sampleRandomNumbers";
 
+  static allowInSchemaAsComponent = ["number"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;

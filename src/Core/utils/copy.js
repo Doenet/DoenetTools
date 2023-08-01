@@ -333,11 +333,11 @@ export async function verifyReplacementsMatchSpecifiedType({
   let replacementTypes;
 
   if (!replacementChanges) {
-    // if have a template, filter out blank strings
+    // if have a group, filter out blank strings
     if (
       componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: component.componentType,
-        baseComponentType: "template",
+        baseComponentType: "group",
       })
     ) {
       replacements = replacements.filter(
@@ -448,13 +448,13 @@ export async function verifyReplacementsMatchSpecifiedType({
   ) {
     // console.warn(`Replacements from ${component.componentType} ${component.componentName} do not match the specified createComponentOfType and numComponents`);
 
-    // if only replacement is a template
-    // then give the template the createComponentOfType and numComponentsSpecified
+    // if only replacement is a group
+    // then give the group the createComponentOfType and numComponentsSpecified
     if (
       replacements?.length === 1 &&
       componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: replacements[0].componentType,
-        baseComponentType: "template",
+        baseComponentType: "group",
       })
     ) {
       if (!replacements[0].attributes) {

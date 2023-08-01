@@ -4,6 +4,8 @@ import * as serializeFunctions from "../utils/serializedStateProcessing";
 export default class CustomAttribute extends CompositeComponent {
   static componentType = "customAttribute";
 
+  static inSchemaOnlyInheritAs = [];
+
   static assignNamesToReplacements = true;
 
   static createAttributesObject() {

@@ -148,6 +148,8 @@ export class Li extends BaseComponent {
   static renderChildren = true;
   static canDisplayChildErrors = true;
 
+  static inSchemaOnlyInheritAs = [];
+
   static includeBlankStringChildren = true;
 
   static returnChildGroups() {

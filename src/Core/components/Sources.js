@@ -5,6 +5,8 @@ export default class Sources extends BaseComponent {
   static rendererType = "containerInline";
   static renderChildren = true;
 
+  static inSchemaOnlyInheritAs = [];
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.alias = {
