@@ -2687,7 +2687,7 @@ describe("Math Display Tag Tests", function () {
     });
   });
 
-  it("warning if have child with string text or latex state varaible", () => {
+  it("warning if have child with string text or latex state variable", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
