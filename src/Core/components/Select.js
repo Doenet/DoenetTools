@@ -14,7 +14,7 @@ import { gatherVariantComponents } from "../utils/variants";
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  static allowInSchemaAsComponent = ["_inline", "_block"];
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
 
   // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject()).map(x => x.toLowerCase());
   static assignNamesToReplacements = true;

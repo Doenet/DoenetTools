@@ -3,6 +3,10 @@ import CompositeComponent from "./abstract/CompositeComponent";
 export default class Setup extends CompositeComponent {
   static componentType = "setup";
 
+  // Note: can't add customAttribute to child groups
+  // or it won't be expanded
+  static additionalSchemaChildren = ["customAttribute"];
+
   static returnChildGroups() {
     return [
       {
@@ -12,10 +16,6 @@ export default class Setup extends CompositeComponent {
       {
         group: "feedbackDefinitions",
         componentTypes: ["feedbackDefinitions"],
-      },
-      {
-        group: "customAttributes",
-        componentTypes: ["customAttribute"],
       },
       {
         group: "anything",

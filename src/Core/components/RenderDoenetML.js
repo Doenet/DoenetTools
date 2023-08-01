@@ -12,12 +12,6 @@ export default class RenderDoenetML extends BlockComponent {
 
   static excludeFromSchema = true;
 
-  static assignNamesToReplacements = true;
-
-  static createsVariants = true;
-
-  static stateVariableToEvaluateAfterReplacements = "triggerUpdates";
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 

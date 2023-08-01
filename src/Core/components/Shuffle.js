@@ -11,7 +11,7 @@ import { setUpVariantSeedAndRng } from "../utils/variants";
 export default class Shuffle extends CompositeComponent {
   static componentType = "shuffle";
 
-  static allowInSchemaAsComponent = ["_inline", "_block"];
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
 
   static createsVariants = true;
 
