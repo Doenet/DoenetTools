@@ -887,6 +887,7 @@ CREATE TABLE `promoted_content_group` (
   `groupName` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `currentlyFeatured` int DEFAULT NULL,
   `homepage` int DEFAULT NULL,
+  `sortOrder` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`promotedGroupId`),
   UNIQUE KEY `groupName_UNIQUE` (`groupName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
