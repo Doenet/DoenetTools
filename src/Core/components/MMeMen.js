@@ -74,6 +74,8 @@ export class M extends InlineComponent {
     let anchorDefinition = returnAnchorStateVariableDefinition();
     Object.assign(stateVariableDefinitions, anchorDefinition);
 
+    let componentClass = this;
+
     stateVariableDefinitions.latex = {
       public: true,
       shadowingInstructions: {
@@ -91,6 +93,7 @@ export class M extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
+        let warnings = [];
         if (dependencyValues.inlineChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -108,10 +111,15 @@ export class M extends InlineComponent {
             latex += child.stateValues.latex;
           } else if (typeof child.stateValues.text === "string") {
             latex += child.stateValues.text;
+          } else {
+            warnings.push({
+              message: `Child <${child.componentType}> of <${componentClass.componentType}> ignored as it does not have a string "text" or "latex" state variable.`,
+              level: 1,
+            });
           }
         }
 
-        return { setValue: { latex } };
+        return { setValue: { latex }, sendWarnings: warnings };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (typeof desiredStateVariableValues.latex !== "string") {
