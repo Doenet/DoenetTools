@@ -98,7 +98,7 @@ export function getSchema() {
       }
     }
 
-    // a composite wtih assignNamesToReplacements has the assignNames attribute
+    // a composite with assignNamesToReplacements has the assignNames attribute
     if (
       componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: type,
