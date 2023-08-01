@@ -49,7 +49,7 @@ export function Carousel({ title = "", data = [] }) {
   return (
     <>
       <Box padding="10px" minWidth="320px" maxWidth="1000px" width="80%">
-        <Text fontSize="18px" fontWeight="700" color="black" mb="10px">
+        <Text fontSize="18px" fontWeight="700" color="black" mb="10px" textAlign="left">
           {title}
         </Text>
         <Flex>

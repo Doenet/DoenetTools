@@ -216,12 +216,12 @@ export function Home() {
                 borderRadius={20}
                 onClick={() =>
                   window.open(
-                    "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
+                    "https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH",
                     "_blank",
                   )
                 }
               >
-                See Inside
+                Tutorial
               </Button>
               <Button
                 size="xs"
