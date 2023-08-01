@@ -1,13 +1,10 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
-
 const { cesc2 } = require("../../../src/_utils/url");
 
-describe("doenetEditor test", function () {
+describe("Activity Controls Tests", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 
   before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
     cy.signin({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId });
     cy.clearAllOfAUsersCoursesAndItems({ userId: userId2 });

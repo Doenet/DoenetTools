@@ -1,8 +1,6 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
-
 const { cesc2 } = require("../../../src/_utils/url");
 
-describe("doenetEditor test", function () {
+describe("Load and Save Editor", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 

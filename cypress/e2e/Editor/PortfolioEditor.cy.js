@@ -1,14 +1,8 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
-
 const { cesc2 } = require("../../../src/_utils/url");
 
-describe("Share Activities Using Portfolio", function () {
+describe("Portfolio Editor Tests", function () {
   const userId = "cyuserId";
-  const userId2 = "cyuserId2";
 
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-  });
   beforeEach(() => {
     cy.signin({ userId });
     cy.visit(`/`);
