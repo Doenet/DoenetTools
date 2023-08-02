@@ -1,4 +1,3 @@
-import { allComponentClasses } from "../ComponentTypes";
 import createComponentInfoObjects from "./componentInfoObjects";
 
 // Create schema of DoenetML by extracting component, attributes and children
@@ -7,11 +6,15 @@ import createComponentInfoObjects from "./componentInfoObjects";
 // and then manually copied into src/Core/doenetSchema.json.
 // CodeMirrror.jsx reads in the json file to form its autocompletion scheme.
 
+// For now, we just run getSchema() manually, then copy and paste the output
+// to doenetSchema.json.
+
 export function getSchema() {
-  let componentClasses = allComponentClasses();
-
   let componentInfoObjects = createComponentInfoObjects();
+  let componentClasses = componentInfoObjects.allComponentClasses;
 
+  // If a component class has static variable excludeFromSchema set,
+  // then we ignore it completely.
   for (let type in componentClasses) {
     let cClass = componentClasses[type];
     if (cClass.excludeFromSchema) {
@@ -27,32 +30,40 @@ export function getSchema() {
       if (type2[0] == "_") {
         continue;
       }
+
       if (
-        componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: type2,
-          baseComponentType: type1,
+        checkIfInheritOrAdapt({
+          startingType: type2,
+          destinationType: type1,
+          componentInfoObjects,
         })
       ) {
         inherited.push(type2);
-      } else {
-        let cClass = componentClasses[type2];
-        let numAdapters = cClass.numAdapters;
+        continue;
+      }
 
-        for (let n = 0; n < numAdapters; n++) {
-          let adapterComponentType = cClass.getAdapterComponentType(
-            n,
-            componentInfoObjects.publicStateVariableInfo,
-          );
+      // If a composite component class has the static variable allowInSchemaAsComponent set
+      // then we will, in addition, treat is as though it were any of those
+      // component types when determining children for the schema
 
+      let cClass = componentClasses[type2];
+      if (
+        componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: type2,
+          baseComponentType: "_composite",
+        }) &&
+        cClass.allowInSchemaAsComponent
+      ) {
+        for (let alt_type of cClass.allowInSchemaAsComponent) {
           if (
-            componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: adapterComponentType,
-              baseComponentType: type1,
+            checkIfInheritOrAdapt({
+              startingType: alt_type,
+              destinationType: type1,
+              componentInfoObjects,
             })
           ) {
-            if (!inherited.includes(adapterComponentType)) {
-              inherited.push(adapterComponentType);
-            }
+            inherited.push(type2);
+            break;
           }
         }
       }
@@ -70,10 +81,15 @@ export function getSchema() {
 
   for (let type in componentClasses) {
     let children = [];
+
+    // All components have the name and copySource attributes,
+    // even though they aren't in the attributes object
     let attributes = [{ name: "name" }, { name: "copySource" }];
 
     let cClass = componentClasses[type];
 
+    // Until we clean up the target/source mess,
+    // we have to make a special case for this attribute
     if (cClass.acceptTarget) {
       if (type === "copy" || type === "collect") {
         attributes.push({ name: "source" });
@@ -82,11 +98,13 @@ export function getSchema() {
       }
     }
 
+    // a composite with assignNamesToReplacements has the assignNames attribute
     if (
       componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: type,
         baseComponentType: "_composite",
-      })
+      }) &&
+      cClass.assignNamesToReplacements
     ) {
       attributes.push({ name: "assignNames" });
     }
@@ -96,6 +114,8 @@ export function getSchema() {
     for (let attrName in attrObj) {
       let attrDef = attrObj[attrName];
 
+      // one can add a excludeFromSchema to an attribute definition
+      // to keep it from showing up in the schema
       if (!attrDef.excludeFromSchema) {
         let attrSpec = { name: attrName };
 
@@ -115,11 +135,28 @@ export function getSchema() {
     let childGroups = cClass.returnChildGroups();
 
     for (let groupObj of childGroups) {
+      // one can add a excludeFromSchema to a child group
+      // to keep it from showing up in the schema
       if (!groupObj.excludeFromSchema) {
         for (let type2 of groupObj.componentTypes) {
           if (type2 in inheritedOrAdaptedTypes) {
             children.push(...inheritedOrAdaptedTypes[type2]);
           }
+        }
+      }
+    }
+
+    // The static variable additionalSchemaChildren on a component class
+    // can be used to add children to the schema that wouldn't show up otherwise.
+    // Two uses are:
+    // 1. to include children that are accepted by sugar but are in a child group
+    //    because the sugar moves them to no longer be children
+    // 2. to add composite children to the schema even though they should be expanded,
+    //    (as adding a composite child to a child group will prevent it from being expanded)
+    if (cClass.additionalSchemaChildren) {
+      for (let type2 of cClass.additionalSchemaChildren) {
+        if (type2 in inheritedOrAdaptedTypes) {
+          children.push(...inheritedOrAdaptedTypes[type2]);
         }
       }
     }
@@ -130,8 +167,68 @@ export function getSchema() {
       name: type,
       children,
       attributes,
+      top: !cClass.inSchemaOnlyInheritAs,
     });
   }
 
+  // For now, we're just copying these schema from this console output
   console.log(JSON.stringify({ elements }));
+}
+
+function checkIfInheritOrAdapt({
+  startingType,
+  destinationType,
+  componentInfoObjects,
+}) {
+  let startingClass = componentInfoObjects.allComponentClasses[startingType];
+
+  // The static variable inSchemaOnlyInheritAs overrides the standard inheritance
+  // rules for determining the children of the schema.
+  // If inSchemaOnlyInheritAs is an empty array, then only the actual component type is used.
+  // Any component types in inSchemaOnlyInheritAs are not checked to see if
+  // startingType actually inherit from them, but the idea is that they should.
+  // (Otherwise, the autocompletion will suggest invalid child types.)
+  if (startingClass.inSchemaOnlyInheritAs) {
+    if (
+      startingType === destinationType ||
+      startingClass.inSchemaOnlyInheritAs.includes(destinationType)
+    ) {
+      return true;
+    }
+  } else if (
+    componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: startingType,
+      baseComponentType: destinationType,
+    })
+  ) {
+    return true;
+  }
+
+  let numAdapters = startingClass.numAdapters;
+
+  for (let n = 0; n < numAdapters; n++) {
+    let adapterComponentType = startingClass.getAdapterComponentType(
+      n,
+      componentInfoObjects.publicStateVariableInfo,
+    );
+
+    let adapterClass =
+      componentInfoObjects.allComponentClasses[adapterComponentType];
+
+    if (adapterClass.inSchemaOnlyInheritAs) {
+      if (
+        adapterComponentType === destinationType ||
+        adapterClass.inSchemaOnlyInheritAs.includes(destinationType)
+      ) {
+        return true;
+      }
+    } else if (
+      componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: adapterComponentType,
+        baseComponentType: destinationType,
+      })
+    ) {
+      return true;
+    }
+  }
 }

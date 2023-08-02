@@ -7,6 +7,8 @@ import { setUpVariantSeedAndRng } from "../utils/variants";
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalContent";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static includeBlankStringChildren = true;
 
   static assignNamesToReplacements = true;
@@ -62,6 +64,10 @@ export default class ConditionalContent extends CompositeComponent {
       {
         group: "elses",
         componentTypes: ["else"],
+      },
+      {
+        group: "anything",
+        componentTypes: ["_base"],
       },
     ];
   }

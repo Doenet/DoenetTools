@@ -20,6 +20,19 @@ export default class Answer extends InlineComponent {
   }
   static componentType = "answer";
 
+  // Include children that can be added due to sugar
+  static additionalSchemaChildren = [
+    "math",
+    "mathList",
+    "number",
+    "numberList",
+    "text",
+    "textList",
+    "boolean",
+    "booleanList",
+    "choice",
+  ];
+
   static renderChildren = true;
 
   static variableForImplicitProp = "submittedResponses";

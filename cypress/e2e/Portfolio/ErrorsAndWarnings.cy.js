@@ -1,6 +1,4 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
-
-const { cesc2 } = require("../../../src/_utils/url");
+import { cesc2 } from "../../../src/_utils/url";
 
 describe("Porfolio Errors and Warnings ", function () {
   const userId = "cyuserId";

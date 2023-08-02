@@ -6,6 +6,8 @@ export class StyleDefinition extends BaseComponent {
   static componentType = "styleDefinition";
   static rendererType = undefined;
 
+  static inSchemaOnlyInheritAs = [];
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -67,6 +69,8 @@ export class StyleDefinition extends BaseComponent {
 export class StyleDefinitions extends BaseComponent {
   static componentType = "styleDefinitions";
   static rendererType = undefined;
+
+  static inSchemaOnlyInheritAs = [];
 
   static returnChildGroups() {
     return [

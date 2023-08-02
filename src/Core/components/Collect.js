@@ -10,6 +10,8 @@ import { deepClone } from "../utils/deepFunctions";
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static assignNamesToReplacements = true;
 
   static acceptTarget = true;

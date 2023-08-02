@@ -7,6 +7,8 @@ import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./co
 export default class Sort extends CompositeComponent {
   static componentType = "sort";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
   static assignNamesToReplacements = true;
 

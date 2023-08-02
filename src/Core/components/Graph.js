@@ -53,6 +53,10 @@ export default class Graph extends BlockComponent {
     };
     attributes.size = {
       createComponentOfType: "text",
+      createStateVariable: "specifiedSize",
+      defaultValue: "medium",
+      toLowerCase: true,
+      validValues: sizePossibilities,
     };
     attributes.aspectRatio = {
       createComponentOfType: "number",
@@ -471,10 +475,9 @@ export default class Graph extends BlockComponent {
         createComponentOfType: "text",
       },
       returnDependencies: () => ({
-        sizeAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "size",
-          variableNames: ["value"],
+        specifiedSize: {
+          dependencyType: "stateVariable",
+          variableName: "specifiedSize",
         },
         widthAttr: {
           dependencyType: "attributeComponent",
@@ -482,17 +485,12 @@ export default class Graph extends BlockComponent {
           variableNames: ["componentSize"],
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, usedDefault }) {
         const defaultSize = "medium";
 
-        if (dependencyValues.sizeAttr) {
-          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
-
-          if (!sizePossibilities.includes(size)) {
-            size = defaultSize;
-          }
+        if (!usedDefault.specifiedSize) {
           return {
-            setValue: { size },
+            setValue: { size: dependencyValues.specifiedSize },
           };
         } else if (dependencyValues.widthAttr) {
           let componentSize =

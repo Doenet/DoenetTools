@@ -6,6 +6,8 @@ import { setUpVariantSeedAndRng } from "../utils/variants";
 export default class Lorem extends CompositeComponent {
   static componentType = "lorem";
 
+  static allowInSchemaAsComponent = ["text", "p"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
