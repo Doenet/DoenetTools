@@ -2126,4 +2126,30 @@ describe("Code Editor Tag Tests", function () {
       .then((str) => parseInt(str))
       .should("be.closeTo", 500, 5);
   });
+
+  it("ignore variants from children", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <text>a</text>
+          <codeEditor name="ce1" showResults ><selectFromSequence/></codeEditor>
+          `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+
+    cy.log("Have only one variant despite selectFromSequence child")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(
+        stateVariables["/_document1"].sharedParameters.allPossibleVariants,
+      ).eqls(["a"]);
+    });
+  });
 });
