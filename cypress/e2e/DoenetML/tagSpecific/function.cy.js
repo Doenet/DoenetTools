@@ -7938,34 +7938,35 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function numInputs="2">3/(y+e^(-x/2))</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1e-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1e-12);
-      // expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
-      // expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
-      // expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
-      // expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
-      // expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
     });
   });
 
@@ -7974,34 +7975,35 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function numInputs="2" variables="q r">3/(r+e^(-q/2))</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1e-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1e-12);
-      // expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
-      // expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
-      // expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
-      // expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
-      // expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
     });
   });
 
@@ -8012,32 +8014,74 @@ describe("Function Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <function variables="q r">3/(r+e^(-q/2))</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1e-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1e-12);
-      // expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
-      // expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
-      // expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
-      // expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
-      // expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
+    });
+  });
+
+  it("function of two variables determined by formula, specify variables, no numInputs specified, restrict domain", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <function variables="q r" domain="(-4,2] [1,3)">3/(r+e^(-q/2))</function>
+    <p>$_function1.domain</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−4,2]");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "[1,3)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(2);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -4, 2], ["tuple", false, true]],
+        ["interval", ["tuple", 1, 3], ["tuple", true, false]],
+      ]);
+
+      let f = createFunctionFromDefinition(
+        stateVariables["/_function1"].stateValues.fDefinitions[0],
+      );
+
+      expect(f(-4, 2)).eqls(NaN);
+      expect(f(3, 3)).eqls(NaN);
+      expect(f(2, 1)).closeTo(3 / (1 + Math.exp(-1)), 1e-12);
+      expect(f(-3, 2)).closeTo(3 / (2 + Math.exp(3 / 2)), 1e-12);
     });
   });
 
@@ -8046,34 +8090,39 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function numInputs="3">z/(y+e^(-x/2))</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1e-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1e-12);
-      // expect(numericalf(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
-      // expect(numericalf(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
-      // expect(symbolicf(-5, 7, -2).equals(me.fromText('-2/(7+e^(5/2))'))).eq(true)
-      // expect(symbolicf(1, 4, -9).equals(me.fromText('-9/(4+e^(-1/2))'))).eq(true)
-      // expect(symbolicf('z', 'a', 'u').equals(me.fromText('u/(a+e^(-z/2))'))).eq(true)
     });
   });
 
@@ -8082,34 +8131,82 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function variables="q r s">s/(r+e^(-q/2))</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1e-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1e-12);
-      // expect(numericalf(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
-      // expect(numericalf(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
-      // expect(symbolicf(-5, 7, -2).equals(me.fromText('-2/(7+e^(5/2))'))).eq(true)
-      // expect(symbolicf(1, 4, -9).equals(me.fromText('-9/(4+e^(-1/2))'))).eq(true)
-      // expect(symbolicf('z', 'a', 'u').equals(me.fromText('u/(a+e^(-z/2))'))).eq(true)
+    });
+  });
+
+  it("function of three variables determined by formula, specify variables, restrict domain", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <function variables="q r s" domain="(2,5) [-4, 4] [-3, -1)">s/(r+e^(-q/2))</function>
+    <p>$_function1.domain</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,5)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "[−4,4]");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "[−3,−1)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(3);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", 2, 5], ["tuple", false, false]],
+        ["interval", ["tuple", -4, 4], ["tuple", true, true]],
+        ["interval", ["tuple", -3, -1], ["tuple", true, false]],
+      ]);
+
+      let f = createFunctionFromDefinition(
+        stateVariables["/_function1"].stateValues.fDefinitions[0],
+      );
+
+      expect(f(5, 3, -3)).eqls(NaN);
+      expect(f(4, 3, -3)).closeTo(-3 / (3 + Math.exp(-2)), 1e-12);
+      expect(f(3, 2, -1)).eqls(NaN);
+      expect(f(3, 2, -2)).closeTo(-2 / (2 + Math.exp(-3 / 2)), 1e-12);
     });
   });
 
@@ -8118,34 +8215,43 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function numInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1e-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1e-12);
-      // expect(numericalf(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
-      // expect(numericalf(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
-      // expect(symbolicf(-5, 7, -2, 6).equals(me.fromText('-2/(7+e^(5/2))+6'))).eq(true)
-      // expect(symbolicf(1, 4, -9, -8).equals(me.fromText('-9/(4+e^(-1/2))-8'))).eq(true)
-      // expect(symbolicf('z', 'a', 'u', 'p').equals(me.fromText('u/(a+e^(-z/2))+p'))).eq(true)
     });
   });
 
@@ -8154,34 +8260,88 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <function numInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
+    <p>$_function1.domain</p>
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(−∞,∞)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
 
       let f = createFunctionFromDefinition(
         stateVariables["/_function1"].stateValues.fDefinitions[0],
       );
-      // let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
-      // let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1e-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1e-12);
-      // expect(numericalf(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
-      // expect(numericalf(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
-      // expect(symbolicf(-5, 7, -2, 6).equals(me.fromText('-2/(7+e^(5/2))+6'))).eq(true)
-      // expect(symbolicf(1, 4, -9, -8).equals(me.fromText('-9/(4+e^(-1/2))-8'))).eq(true)
-      // expect(symbolicf('z', 'a', 'u', 'p').equals(me.fromText('u/(a+e^(-z/2))+p'))).eq(true)
+    });
+  });
+
+  it("function of four variables determined by formula, specify some variables, restrict domain", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <function numInputs="4" variables="x y z" domain="[-5,1] [2,4) (4, 7] (-8, -4)">z/(y+e^(-x/2))+x_4</function>
+    <p>$_function1.domain</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−5,1]");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "[2,4)");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(4)
+      .should("have.text", "(4,7]");
+    cy.get(cesc("#\\/_p1") + " .mjx-mrow")
+      .eq(6)
+      .should("have.text", "(−8,−4)");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_function1"].stateValues.numInputs).eq(4);
+      expect(stateVariables["/_function1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -5, 1], ["tuple", true, true]],
+        ["interval", ["tuple", 2, 4], ["tuple", true, false]],
+        ["interval", ["tuple", 4, 7], ["tuple", false, true]],
+        ["interval", ["tuple", -8, -4], ["tuple", false, false]],
+      ]);
+
+      let f = createFunctionFromDefinition(
+        stateVariables["/_function1"].stateValues.fDefinitions[0],
+      );
+
+      expect(f(-5, 2, 7, -4)).eqls(NaN);
+      expect(f(-5, 2, 7, -5)).closeTo(7 / (2 + Math.exp(5 / 2)) - 5, 1e-12);
     });
   });
 
@@ -8660,6 +8820,159 @@ describe("Function Tag Tests", function () {
       expect(stateVariables["/g1"].stateValues.symbolic).eq(true);
       expect(stateVariables["/g2"].stateValues.symbolic).eq(false);
       expect(stateVariables["/g3"].stateValues.symbolic).eq(true);
+    });
+  });
+
+  it("warnings on bad domain", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <function name="f1" domain="(3,4)">x</function>
+    <function name="f2" domain="(">x</function>
+    <function name="f3" domain="(3,4,5)">x</function>
+    <function name="f4" domain="">x</function>
+    <function name="f5" domain="(3,4) (5,6)">x</function>
+
+    <p>f1 domain: <interval name="domainf1" copySource="f1.domain" /></p>
+    <p>f2 domain: <interval name="domainf2" copySource="f2.domain" /></p>
+    <p>f3 domain: <interval name="domainf3" copySource="f3.domain" /></p>
+    <p>f4 domain: <interval name="domainf4" copySource="f4.domain" /></p>
+    <p>f5 domain: <interval name="domainf5" copySource="f5.domain" /></p>
+
+    <function name="g1" numInputs="2" domain="(3,4)">x+y</function>
+    <function name="g2" numInputs="2" domain="(3,4) (5,6)">x+y</function>
+    <function name="g3" numInputs="2" domain="(3,4,5) (6,7)">x+y</function>
+    <function name="g4" numInputs="2" domain="">x+y</function>
+    <function name="g5" numInputs="2" domain="(3,4) (5,6) (7,8)">x+y</function>
+
+    <p name="pDomaing1">g1 domain: $g1.domain</p>
+    <p name="pDomaing2">g2 domain: $g2.domain</p>
+    <p name="pDomaing3">g3 domain: $g3.domain</p>
+    <p name="pDomaing4">g4 domain: $g4.domain</p>
+    <p name="pDomaing5">g5 domain: $g5.domain</p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/domainf1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/domainf2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/domainf3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/domainf4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/domainf5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+
+    cy.get(cesc2("#/pDomaing1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing1") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/pDomaing2") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(5,6)");
+    cy.get(cesc2("#/pDomaing3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing3") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing4") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/pDomaing5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/pDomaing5") + " .mjx-mrow")
+      .eq(2)
+      .should("have.text", "(5,6)");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(7);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        `Invalid format for attribute domain of <function>`,
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(33);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(33);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        `Insufficient dimensions for domain for function. Domain has 0 intervals but the function has 1 input.`,
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(47);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Invalid format for domain for function`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(53);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        `Insufficient dimensions for domain for function. Domain has 0 intervals but the function has 1 input.`,
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(46);
+
+      expect(errorWarnings.warnings[4].message).contain(
+        `Insufficient dimensions for domain for function. Domain has 1 interval but the function has 2 inputs.`,
+      );
+      expect(errorWarnings.warnings[4].level).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineBegin).eq(14);
+      expect(errorWarnings.warnings[4].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineEnd).eq(14);
+      expect(errorWarnings.warnings[4].doenetMLrange.charEnd).eq(67);
+
+      expect(errorWarnings.warnings[5].message).contain(
+        `Invalid format for domain for function`,
+      );
+      expect(errorWarnings.warnings[5].level).eq(1);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineBegin).eq(16);
+      expect(errorWarnings.warnings[5].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineEnd).eq(16);
+      expect(errorWarnings.warnings[5].doenetMLrange.charEnd).eq(75);
+
+      expect(errorWarnings.warnings[6].message).contain(
+        `Insufficient dimensions for domain for function. Domain has 0 intervals but the function has 2 inputs.`,
+      );
+      expect(errorWarnings.warnings[6].level).eq(1);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineBegin).eq(17);
+      expect(errorWarnings.warnings[6].doenetMLrange.charBegin).eq(5);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineEnd).eq(17);
+      expect(errorWarnings.warnings[6].doenetMLrange.charEnd).eq(62);
     });
   });
 
@@ -10087,10 +10400,10 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <graph>
       <function name="f">x^4-8x^2+8</function>
     </graph>
+    <p>domain: <interval name="domain" copySource="f.domain" /></p>
     <p>min results for f: $f.globalMinimum{assignNames="fmin"}, $f.globalMinimumLocation{assignNames="fminl"}, $f.globalMinimumValue{assignNames="fminv"}, $f.globalMinimum[1]{assignNames="fminla"}, $f.globalMinimum[2]{assignNames="fminva"}</p>
     <p>min compactify results for f: $f.globalInfimum{assignNames="fmincd"}, $f.globalInfimumLocation{assignNames="fmincdl"}, $f.globalInfimumValue{assignNames="fmincdv"}, $f.globalInfimum[1]{assignNames="fmincdla"}, $f.globalInfimum[2]{assignNames="fmincdva"}</p>
     <p>max results for f: $f.globalMaximum{assignNames="fmax"}, $f.globalMaximumLocation{assignNames="fmaxl"}, $f.globalMaximumValue{assignNames="fmaxv"}, $f.globalMaximum[1]{assignNames="fmaxla"}, $f.globalMaximum[2]{assignNames="fmaxva"}</p>
@@ -10101,7 +10414,9 @@ describe("Function Tag Tests", function () {
       );
     });
 
-    cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
 
     let f100 = 100 ** 4 - 8 * 100 ** 2 + 8;
 
@@ -10138,6 +10453,10 @@ describe("Function Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
+      expect(stateVariables["/f"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
+
       expect(stateVariables["/fmin"].stateValues.xs).eqls([-2, -8]);
       expect(stateVariables["/fminl"].stateValues.value).eq(-2);
       expect(stateVariables["/fminla"].stateValues.value).eq(-2);
@@ -10169,7 +10488,6 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <graph>
       <function name="f1" domain="(-2,Infinity)">x^4-8x^2+8</function>
       <function name="f2" domain="(-Infinity,2)">x^4-8x^2+8</function>
@@ -10177,6 +10495,11 @@ describe("Function Tag Tests", function () {
       <function name="f4" domain="[0,2)">x^4-8x^2+8</function>
       <function name="f5" domain="(-0.01,2.01)">x^4-8x^2+8</function>
     </graph>
+    <p>f1 domain: <interval name="f1domain" copySource="f1.domain" /></p>
+    <p>f2 domain: <interval name="f2domain" copySource="f2.domain" /></p>
+    <p>f3 domain: <interval name="f3domain" copySource="f3.domain" /></p>
+    <p>f4 domain: <interval name="f4domain" copySource="f4.domain" /></p>
+    <p>f5 domain: <interval name="f5domain" copySource="f5.domain" /></p>
     <p>f1: $f1.globalMinimum{assignNames="f1min"}, $f1.globalInfimum{assignNames="f1mincd"}, $f1.globalMaximum{assignNames="f1max"}, $f1.globalSupremum{assignNames="f1maxcd"}</p>
     <p>f2: $f2.globalMinimum{assignNames="f2min"}, $f2.globalInfimum{assignNames="f2mincd"}, $f2.globalMaximum{assignNames="f2max"}, $f2.globalSupremum{assignNames="f2maxcd"}</p>
     <p>f3: $f3.globalMinimum{assignNames="f3min"}, $f3.globalInfimum{assignNames="f3mincd"}, $f3.globalMaximum{assignNames="f3max"}, $f3.globalSupremum{assignNames="f3maxcd"}</p>
@@ -10188,12 +10511,42 @@ describe("Function Tag Tests", function () {
       );
     });
 
-    cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/f1domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−2,∞)");
+    cy.get(cesc2("#/f2domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,2)");
+    cy.get(cesc2("#/f3domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,2]");
+    cy.get(cesc2("#/f4domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[0,2)");
+    cy.get(cesc2("#/f5domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−0.01,2.01)");
 
     let f198 = 198 ** 4 - 8 * 198 ** 2 + 8;
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/f1"].stateValues.domain).eqls([
+        ["interval", ["tuple", -2, Infinity], ["tuple", false, false]],
+      ]);
+      expect(stateVariables["/f2"].stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, 2], ["tuple", false, false]],
+      ]);
+      expect(stateVariables["/f3"].stateValues.domain).eqls([
+        ["interval", ["tuple", 0, 2], ["tuple", false, true]],
+      ]);
+      expect(stateVariables["/f4"].stateValues.domain).eqls([
+        ["interval", ["tuple", 0, 2], ["tuple", true, false]],
+      ]);
+      expect(stateVariables["/f5"].stateValues.domain).eqls([
+        ["interval", ["tuple", -0.01, 2.01], ["tuple", false, false]],
+      ]);
 
       expect(stateVariables["/f1min"].stateValues.xs).eqls([2, -8]);
       expect(stateVariables["/f1mincd"].stateValues.xs).eqls([2, -8]);
@@ -10435,7 +10788,6 @@ describe("Function Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <graph>
     <function name="f1" through="(-8,7) (8,-1)" />
     <function name="f2" styleNumber="2" through="(-8,-5) (8,3)" />
@@ -10446,14 +10798,46 @@ describe("Function Tag Tests", function () {
     <function name="f7" copySource="f2" domain="[-7, 3]" />
     <function name="f8" copySource="f2" domain="(9, 10]" />
     </graph>
+
+    <p>f1 domain: <interval name="f1domain" copySource="f1.domain" /></p>
+    <p>f2 domain: <interval name="f2domain" copySource="f2.domain" /></p>
+    <p>f3 domain: <interval name="f3domain" copySource="f3.domain" /></p>
+    <p>f4 domain: <interval name="f4domain" copySource="f4.domain" /></p>
+    <p>f5 domain: <interval name="f5domain" copySource="f5.domain" /></p>
+    <p>f6 domain: <interval name="f6domain" copySource="f6.domain" /></p>
+    <p>f7 domain: <interval name="f7domain" copySource="f7.domain" /></p>
+    <p>f8 domain: <interval name="f8domain" copySource="f8.domain" /></p>
+
     `,
         },
         "*",
       );
     });
 
-    //wait for window to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/f1domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/f2domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−∞,∞)");
+    cy.get(cesc2("#/f3domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−10,−9)");
+    cy.get(cesc2("#/f4domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−7,3]");
+    cy.get(cesc2("#/f5domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,10]");
+    cy.get(cesc2("#/f6domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−10,−9)");
+    cy.get(cesc2("#/f7domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "[−7,3]");
+    cy.get(cesc2("#/f8domain") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,10]");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -10466,6 +10850,31 @@ describe("Function Tag Tests", function () {
       let f6 = stateVariables["/f6"];
       let f7 = stateVariables["/f7"];
       let f8 = stateVariables["/f8"];
+
+      expect(f1.stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
+      expect(f2.stateValues.domain).eqls([
+        ["interval", ["tuple", -Infinity, Infinity], ["tuple", false, false]],
+      ]);
+      expect(f3.stateValues.domain).eqls([
+        ["interval", ["tuple", -10, -9], ["tuple", false, false]],
+      ]);
+      expect(f4.stateValues.domain).eqls([
+        ["interval", ["tuple", -7, 3], ["tuple", true, true]],
+      ]);
+      expect(f5.stateValues.domain).eqls([
+        ["interval", ["tuple", 9, 10], ["tuple", false, true]],
+      ]);
+      expect(f6.stateValues.domain).eqls([
+        ["interval", ["tuple", -10, -9], ["tuple", false, false]],
+      ]);
+      expect(f7.stateValues.domain).eqls([
+        ["interval", ["tuple", -7, 3], ["tuple", true, true]],
+      ]);
+      expect(f8.stateValues.domain).eqls([
+        ["interval", ["tuple", 9, 10], ["tuple", false, true]],
+      ]);
 
       expect(f1.stateValues.globalMinimum).eqls([]);
       expect(f1.stateValues.globalInfimum).eqls([Infinity, -Infinity]);
