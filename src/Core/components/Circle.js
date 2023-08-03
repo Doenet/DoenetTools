@@ -2212,6 +2212,55 @@ export default class Circle extends Curve {
       },
     };
 
+    stateVariableDefinitions.circumference = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      returnDependencies: () => ({
+        radius: {
+          dependencyType: "stateVariable",
+          variableName: "radius",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            circumference: dependencyValues.radius
+              .multiply(me.fromAst(["*", 2, "pi"]))
+              .simplify(),
+          },
+        };
+      },
+    };
+
+    stateVariableDefinitions.area = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      returnDependencies: () => ({
+        radius: {
+          dependencyType: "stateVariable",
+          variableName: "radius",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            area: dependencyValues.radius
+              .multiply(dependencyValues.radius)
+              .multiply(me.fromAst("pi"))
+              .simplify(),
+          },
+        };
+      },
+    };
+
     stateVariableDefinitions.center = {
       forRenderer: true,
       isLocation: true,

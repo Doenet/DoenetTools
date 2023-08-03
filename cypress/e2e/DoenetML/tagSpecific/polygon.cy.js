@@ -5055,4 +5055,94 @@ describe("Polygon Tag Tests", function () {
     // page loads
     cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
+
+  it("area and perimeter", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <polygon vertices="(0,0) (5,0) (6,1) (5,2) (0,10)" name="p" />
+    </graph>
+    <p>Area: <number copySource="p.area" name="area" /></p>
+    <p>Perimeter: <number copySource="p.perimeter" name="perimeter" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    let area = 5 * 2 + 1 + (8 * 5) / 2;
+    let perimeter = 5 + 2 * Math.sqrt(2) + Math.sqrt(25 + 64) + 10;
+
+    cy.get(cesc2("#/area")).should("have.text", `${area}`);
+    cy.get(cesc2("#/perimeter")).should(
+      "have.text",
+      `${Math.round(perimeter * 100) / 100}`,
+    );
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: { 1: [-8, -4] },
+        },
+      });
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: { 2: [-8, 2] },
+        },
+      });
+
+      area = 2 * 8 + (4 * 8) / 2 - (5 * 8) / 2;
+      perimeter = 13 + 6 + Math.sqrt(16 + 64) + 10 + Math.sqrt(25 + 64);
+
+      cy.get(cesc2("#/area")).should("have.text", `${area}`);
+      cy.get(cesc2("#/perimeter")).should(
+        "have.text",
+        `${Math.round(perimeter * 100) / 100}`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: { 3: [8, 2] },
+        },
+      });
+
+      perimeter = 16 + 6 + Math.sqrt(16 + 64) + 10 + Math.sqrt(64 + 64);
+
+      cy.get(cesc2("#/area")).should("have.text", `0`);
+      cy.get(cesc2("#/perimeter")).should(
+        "have.text",
+        `${Math.round(perimeter * 100) / 100}`,
+      );
+    });
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/p",
+        args: {
+          pointCoords: { 0: [0, 2] },
+        },
+      });
+
+      area = (8 * 8) / 2 - (8 * 6) / 2;
+
+      perimeter = 16 + 6 + Math.sqrt(36 + 64) + 8 + Math.sqrt(64 + 64);
+
+      cy.get(cesc2("#/area")).should("have.text", `${area}`);
+      cy.get(cesc2("#/perimeter")).should(
+        "have.text",
+        `${Math.round(perimeter * 100) / 100}`,
+      );
+    });
+  });
 });
