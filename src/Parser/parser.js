@@ -34,6 +34,15 @@ export function parseAndCompile(inText) {
 
       let message;
 
+      if (tagName[0] === "_") {
+        message = `Invalid component type: <${tagName}>.`;
+        errors.push({
+          message,
+          doenetMLrange: { begin: tagOpenBegin, end: cursor.to },
+        });
+        adjustedTagName = "_error";
+      }
+
       let attrs = {};
       let attrRanges = {};
       while (cursor.nextSibling()) {
@@ -254,6 +263,15 @@ export function parseAndCompile(inText) {
       let tagBegin = cursor.from;
 
       let message;
+
+      if (tagName[0] === "_") {
+        message = `Invalid component type: <${tagName}>.`;
+        errors.push({
+          message,
+          doenetMLrange: { begin: tagBegin, end: cursor.to },
+        });
+        adjustedTagName = "_error";
+      }
 
       let attrs = {};
       let attrRanges = {};
