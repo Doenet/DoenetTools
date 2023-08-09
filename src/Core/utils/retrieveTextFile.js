@@ -2,10 +2,22 @@ import { cidFromText } from "./cid";
 
 const textByCid = {};
 
-export function retrieveTextFileForCid(cid, ext = "doenet") {
+export function retrieveTextFileForCid(cid, ext = "doenet", useIPFS = false) {
   if (textByCid[cid] !== undefined) {
     return Promise.resolve(textByCid[cid]);
   }
+
+  if (!useIPFS) {
+    // just try retrieving from server
+    let resultServer = retrieveTextFileFromServer(cid, ext);
+    return resultServer.promise.then((res) => {
+      textByCid[cid] = res;
+      return res;
+    });
+  }
+
+  // if useIPFS, then try first to retrieve from IPFS,
+  // simultaneously trying to retrieve from server after waiting 100 ms
 
   return new Promise((resolve, reject) => {
     // immediately start trying to retrieve from IPFS
