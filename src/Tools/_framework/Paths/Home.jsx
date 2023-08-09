@@ -363,6 +363,10 @@ export function Home() {
               requestedVariantIndex={variantInfo.index}
               // setIsInErrorState={setIsInErrorState}
               addBottomPadding={false}
+              linkSettings={{
+                viewURL: "/portfolioviewer",
+                editURL: "/publiceditor",
+              }}
             />
           </Flex>
         </Flex>

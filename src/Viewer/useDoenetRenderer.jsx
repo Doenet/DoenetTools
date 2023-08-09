@@ -73,6 +73,7 @@ export default function useDoenetRenderer(
       callAction: props.callAction,
       navigate: props.navigate,
       location: props.location,
+      linkSettings: props.linkSettings,
     };
 
     let rendererClass = props.rendererClasses[childInstructions.rendererType];
@@ -124,5 +125,6 @@ export default function useDoenetRenderer(
     callAction,
     navigate: props.navigate,
     location: props.location,
+    linkSettings: props.linkSettings,
   };
 }

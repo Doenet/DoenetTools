@@ -60,7 +60,7 @@ export function PageViewer({
   apiURLs = {},
   location = {},
   navigate,
-  inCourse = false,
+  linkSettings = { viewURL: "/portfolioviewer", editURL: "/publiceditor" },
   errorsActivitySpecific = {},
 }) {
   const updateRendererSVsWithRecoil = useRecoilCallback(
@@ -423,9 +423,7 @@ export function PageViewer({
         page,
         givenUri: uri,
         targetName,
-        pageToolView,
-        inCourse,
-        pathname: location.pathname,
+        linkSettings,
         search: location.search,
         id,
       });
@@ -705,6 +703,7 @@ export function PageViewer({
             callAction,
             navigate,
             location,
+            linkSettings,
           }),
         );
 
@@ -1331,65 +1330,53 @@ export function getURLFromRef({
   page,
   givenUri,
   targetName = "",
-  pageToolView = {},
-  inCourse = false,
-  pathname = "",
+  linkSettings,
   search = "",
   id = "",
 }) {
+  // possible linkSettings
+  // - viewURL
+  // - editURL
+  // - useQueryParameters
+
   let url = "";
   let targetForATag = "_blank";
   let haveValidTarget = false;
   let externalUri = false;
 
-  let portfolioModeURI =
-    pathname.substring(0, 10) === "/portfolio" ||
-    pathname.substring(0, 13) === "/publiceditor";
-
   if (cid || doenetId) {
     if (cid) {
-      url = `cid=${cid}`;
-      portfolioModeURI = false;
-    } else {
-      if (portfolioModeURI) {
-        url = `/${doenetId}`;
+      if (linkSettings.useQueryParameters) {
+        url = `cid=${cid}`;
       } else {
+        // TODO: make this URL work for create another URL to reference by cid
+        url = `/${cid}`;
+      }
+    } else {
+      if (linkSettings.useQueryParameters) {
         url = `doenetId=${doenetId}`;
+      } else {
+        url = `/${doenetId}`;
       }
     }
     if (variantIndex) {
-      if (!portfolioModeURI) {
+      // TODO: how to specify variant if don't useQueryParameters
+      if (linkSettings.useQueryParameters) {
         url += `&variant=${variantIndex}`;
       }
     }
 
-    if (portfolioModeURI) {
+    if (linkSettings.useQueryParameters) {
       if (edit == true) {
-        url = "/publiceditor" + url;
+        url = linkSettings.editURL + "&" + url;
       } else {
-        url = "/portfolioviewer" + url;
+        url = linkSettings.viewURL + "&" + url;
       }
     } else {
-      let usePublic = false;
-      if (pageToolView.page === "public") {
-        usePublic = true;
-      } else if (!inCourse) {
-        usePublic = true;
-      }
-      if (usePublic) {
-        if (
-          edit === true ||
-          (edit === null &&
-            pageToolView.page === "public" &&
-            pageToolView.tool === "editor")
-        ) {
-          url = `tool=editor&${url}`;
-        }
-        url = `/public?${url}`;
-      } else if (pageToolView.page === "placementexam") {
-        url = `?tool=exam&${url}`;
+      if (edit == true) {
+        url = linkSettings.editURL + url;
       } else {
-        url = `?tool=assignment&${url}`;
+        url = linkSettings.viewURL + url;
       }
     }
 
@@ -1418,7 +1405,7 @@ export function getURLFromRef({
       externalUri = true;
     }
   } else {
-    url += search;
+    url = search;
 
     if (page) {
       url += `#page${page}`;

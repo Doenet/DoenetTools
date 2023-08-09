@@ -62,7 +62,7 @@ export function ActivityViewer({
   location = {},
   navigate,
   idsIncludeActivityId = true,
-  inCourse = false,
+  linkSettings,
   addBottomPadding = true,
 }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -1263,11 +1263,9 @@ export function ActivityViewer({
         }
 
         generatedVariantCallback?.({
-          activityVariant: {
-            variantIndex: results.newVariantIndex,
-            numVariants: activityInfo.current.numVariants,
-            allPossibleVariants,
-          },
+          index: Number(results.newVariantIndex), // TODO: is Number is needed?
+          numVariants: activityInfo.current.numVariants,
+          allPossibleVariants,
         });
       }
       settingUp.current = false;
@@ -1352,7 +1350,7 @@ export function ActivityViewer({
           apiURLs={apiURLs}
           location={location}
           navigate={navigate}
-          inCourse={inCourse}
+          linkSettings={linkSettings}
           errorsActivitySpecific={errorsActivitySpecific.current}
         />
       );

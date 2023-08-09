@@ -1402,6 +1402,7 @@ export function PortfolioActivityEditor() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
@@ -1410,20 +1411,6 @@ export function PortfolioActivityEditor() {
     variantOptions.push({ value: variant, label: variant });
   });
   // console.log("variants", variants);
-
-  function variantCallback({ pageVariant, activityVariant }) {
-    if (pageVariant) {
-      setVariants({
-        index: Number(pageVariant.index),
-        allPossibleVariants: pageVariant.allPossibleVariants,
-      });
-    } else if (activityVariant) {
-      setVariants({
-        index: Number(activityVariant.variantIndex),
-        allPossibleVariants: activityVariant.allPossibleVariants,
-      });
-    }
-  }
 
   return (
     <>
@@ -1612,7 +1599,7 @@ export function PortfolioActivityEditor() {
                             </Button>
                           </Tooltip>
                         </Box>
-                        {variants.allPossibleVariants.length > 1 && (
+                        {variants.numVariants > 1 && (
                           <Box bg="doenet.lightBlue" h="32px" width="100%">
                             <VariantSelect
                               size="sm"
@@ -1658,7 +1645,7 @@ export function PortfolioActivityEditor() {
                               allowSaveEvents: false,
                             }}
                             attemptNumber={1}
-                            generatedVariantCallback={variantCallback} //TODO:Replace
+                            generatedVariantCallback={setVariants}
                             requestedVariantIndex={variants.index}
                             // setIsInErrorState={setIsInErrorState}
                             setErrorsAndWarningsCallback={
@@ -1667,6 +1654,10 @@ export function PortfolioActivityEditor() {
                             paginate={true}
                             location={location}
                             navigate={navigate}
+                            linkSettings={{
+                              viewURL: "/portfolioviewer",
+                              editURL: "/publiceditor",
+                            }}
                           />
                         </>
                       </Box>
@@ -1788,7 +1779,7 @@ export function PortfolioActivityEditor() {
                     spacing={0}
                     margin="10px 0px 10px 0px" //Only need when there is an outline
                   >
-                    {variants.allPossibleVariants.length > 1 && (
+                    {variants.numVariants > 1 && (
                       <Box bg="doenet.lightBlue" h="32px" width="100%">
                         <VariantSelect
                           size="sm"
@@ -1807,7 +1798,7 @@ export function PortfolioActivityEditor() {
                     )}
                     <Box
                       h={
-                        variants.allPossibleVariants.length > 1
+                        variants.numVariants > 1
                           ? "calc(100vh - 132px)"
                           : "calc(100vh - 100px)"
                       }
@@ -1836,12 +1827,16 @@ export function PortfolioActivityEditor() {
                             allowSaveEvents: false,
                           }}
                           attemptNumber={1}
-                          generatedVariantCallback={variantCallback} //TODO:Replace
+                          generatedVariantCallback={setVariants} //TODO:Replace
                           requestedVariantIndex={variants.index}
                           // setIsInErrorState={setIsInErrorState}
                           paginate={true}
                           location={location}
                           navigate={navigate}
+                          linkSettings={{
+                            viewURL: "/portfolioviewer",
+                            editURL: "/publiceditor",
+                          }}
                         />
                       </>
                     </Box>

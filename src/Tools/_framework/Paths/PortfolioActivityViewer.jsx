@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router";
 import styled from "styled-components";
-import { ActivityViewer } from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
@@ -119,6 +119,7 @@ export function PortfolioActivityViewer() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
@@ -126,17 +127,6 @@ export function PortfolioActivityViewer() {
   variants.allPossibleVariants.forEach((variant) => {
     variantOptions.push({ value: variant, label: variant });
   });
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
 
   return (
     <>
@@ -277,7 +267,7 @@ export function PortfolioActivityViewer() {
                 spacing={0}
                 width="100%"
               >
-                {variants.allPossibleVariants.length > 1 && (
+                {variants.numVariants > 1 && (
                   <Box bg="doenet.lightBlue" h="32px" width="100%">
                     <VariantSelect
                       size="sm"
@@ -295,7 +285,7 @@ export function PortfolioActivityViewer() {
                 )}
                 <Box
                   h={
-                    variants.allPossibleVariants.length > 1
+                    variants.numVariants > 1
                       ? "calc(100vh - 192px)"
                       : "calc(100vh - 160px)"
                   }
@@ -306,7 +296,7 @@ export function PortfolioActivityViewer() {
                   width="100%"
                   overflow="scroll"
                 >
-                  <ActivityViewer
+                  <DoenetML
                     key={`HPpageViewer`}
                     doenetML={doenetML}
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
@@ -324,11 +314,15 @@ export function PortfolioActivityViewer() {
                     }}
                     // doenetId={doenetId}
                     attemptNumber={1}
-                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    generatedVariantCallback={setVariants}
                     requestedVariantIndex={variants.index}
                     // setIsInErrorState={setIsInErrorState}
                     location={location}
                     navigate={navigate}
+                    linkSettings={{
+                      viewURL: "/portfolioviewer",
+                      editURL: "/publiceditor",
+                    }}
                   />
                 </Box>
                 <Box marginBottom="50vh" />

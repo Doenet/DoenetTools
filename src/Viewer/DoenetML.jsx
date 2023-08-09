@@ -129,7 +129,7 @@ export function DoenetML({
   navigate,
   updateDataOnContentChange = false,
   idsIncludeActivityId = true,
-  inCourse = false,
+  linkSettings,
 }) {
   const defaultFlags = {
     showCorrectness: true,
@@ -212,7 +212,7 @@ export function DoenetML({
               location={location}
               navigate={navigate}
               idsIncludeActivityId={idsIncludeActivityId}
-              inCourse={inCourse}
+              linkSettings={linkSettings}
               addBottomPadding={addBottomPadding}
             />
             <div className="before-keyboard" />
