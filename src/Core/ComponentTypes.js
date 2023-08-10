@@ -155,7 +155,6 @@ import RegionBetweenCurveXAxis from "./components/RegionBetweenCurveXAxis";
 import RegionHalfPlane from "./components/RegionHalfPlane";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import RenderDoenetML from "./components/RenderDoenetML";
 import HasSameFactoring from "./components/HasSameFactoring";
 import DataFrame from "./components/DataFrame";
 import SummaryStatistics from "./components/SummaryStatistics";
@@ -346,7 +345,6 @@ const componentTypeArray = [
   RegionHalfPlane,
   CodeEditor,
   CodeViewer,
-  RenderDoenetML,
   HasSameFactoring,
   DataFrame,
   SummaryStatistics,

@@ -1406,10 +1406,6 @@ export function PortfolioActivityEditor() {
     allPossibleVariants: ["a"],
   });
 
-  let variantOptions = [];
-  variants.allPossibleVariants.forEach((variant) => {
-    variantOptions.push({ value: variant, label: variant });
-  });
   // console.log("variants", variants);
 
   return (
