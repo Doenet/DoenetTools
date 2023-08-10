@@ -33,7 +33,6 @@ import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { cidFromText } from "../../../Core/utils/cid";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -182,11 +181,6 @@ export function PublicEditor() {
     allPossibleVariants: ["a"],
   });
 
-  let variantOptions = [];
-  variants.allPossibleVariants.forEach((variant) => {
-    variantOptions.push({ value: variant, label: variant });
-  });
-
   function variantCallback(generatedVariantInfo, allPossibleVariants) {
     const cleanGeneratedVariant = JSON.parse(
       JSON.stringify(generatedVariantInfo),
@@ -199,8 +193,6 @@ export function PublicEditor() {
 
   return (
     <>
-      <VirtualKeyboard />
-
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height

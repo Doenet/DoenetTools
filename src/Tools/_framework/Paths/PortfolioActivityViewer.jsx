@@ -22,7 +22,6 @@ import {
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
@@ -130,7 +129,6 @@ export function PortfolioActivityViewer() {
 
   return (
     <>
-      <VirtualKeyboard />
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
