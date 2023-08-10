@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import { sizeToCSS } from "./utils/css";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import { DoenetML } from "../DoenetML";
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, HStack, Button, Tooltip } from "@chakra-ui/react";
 import VariantSelect from "../../Tools/_framework/ChakraBasedComponents/VariantSelect";
+import { WarningTwoIcon } from "@chakra-ui/icons";
+import { RxUpdate } from "react-icons/rx";
 
 export default React.memo(function CodeViewer(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRenderer(
@@ -54,6 +55,8 @@ export default React.memo(function CodeViewer(props) {
     surroundingBoxStyle.borderRadius = "var(--mainBorderRadius)";
   }
 
+  let codeChanged = true; //TODO: Dynamically update on code change
+
   let contentPanel = (
     <div
       style={{
@@ -69,12 +72,30 @@ export default React.memo(function CodeViewer(props) {
     >
       <div style={{ height: "28px" }}>
         <HStack>
-          <Button
-            onClick={() => callAction({ action: actions.updateComponents })}
-            value="update"
-            id={id + "_updateButton"}
-            style={{ marginTop: "10px" }}
-          ></Button>
+          <Box>
+            <Tooltip hasArrow label="Updates Viewer">
+              <Button
+                size="sm"
+                variant="outline"
+                data-test="CodeViewer Update Button"
+                bg="doenet.canvas"
+                leftIcon={<RxUpdate />}
+                rightIcon={
+                  codeChanged ? (
+                    <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
+                  ) : (
+                    ""
+                  )
+                }
+                isDisabled={!codeChanged}
+                onClick={() => {
+                  callAction({ action: actions.updateComponents });
+                }}
+              >
+                Update
+              </Button>
+            </Tooltip>
+          </Box>
           {variants.numVariants > 1 && (
             <Box h="32px" width="100%">
               <VariantSelect
@@ -140,7 +161,7 @@ export default React.memo(function CodeViewer(props) {
         <div
           style={surroundingBoxStyle}
           className="codeViewerSurroundingBox"
-          id={id}
+          // id={id}
         >
           {contentPanel}
         </div>

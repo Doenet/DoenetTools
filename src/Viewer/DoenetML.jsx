@@ -54,48 +54,6 @@ const theme = extendTheme({
       mainPurple: "#4a03d9",
     },
   },
-  components: {
-    Button: {
-      baseStyle: {
-        fontWeight: "normal",
-        letterSpacing: ".5px",
-        _focus: {
-          outline: "2px solid #2D5994",
-          outlineOffset: "2px",
-        },
-        _disabled: {
-          bg: "#E2E2E2",
-          color: "black",
-          cursor: "none",
-        },
-      },
-      variants: {
-        // We can override existing variants
-        solid: {
-          bg: "doenet.mainBlue",
-          color: "white",
-          _hover: {
-            bg: "doenet.solidLightBlue",
-            color: "black",
-          },
-        },
-        outline: {
-          borderColor: "#2D5994",
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        ghost: {
-          _hover: {
-            bg: "solidLightBlue",
-          },
-        },
-        link: {
-          color: "solidLightBlue",
-        },
-      },
-    },
-  },
 });
 
 export function DoenetML({
