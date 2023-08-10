@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityViewer } from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import {
   useRecoilValue,
   atom,
@@ -184,7 +184,7 @@ export default function DraftAssignmentViewer() {
 
   return (
     <>
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
         activityId={doenetId}
@@ -206,6 +206,11 @@ export default function DraftAssignmentViewer() {
         paginate={paginate}
         location={location}
         navigate={navigate}
+        linkSettings={{
+          viewURL: "/course?tool=assignment",
+          editURL: "/course?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     </>
   );

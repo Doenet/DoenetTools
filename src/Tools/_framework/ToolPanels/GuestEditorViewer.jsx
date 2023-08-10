@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityViewer,
+  DoenetML,
   // scrollableContainerAtom,
-} from "../../../Viewer/ActivityViewer";
+} from "../../../Viewer/DoenetML";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -44,8 +44,6 @@ export default function EditorViewer() {
   const updateViewer = useUpdateViewer();
 
   const [errMsg, setErrMsg] = useState(null);
-
-  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -108,7 +106,7 @@ export default function EditorViewer() {
 
       let activityJSON = parseResult.activityJSON;
 
-      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.children));
 
       if (errMsg) {
         setErrMsg(null);
@@ -158,11 +156,6 @@ export default function EditorViewer() {
       currentLocationKey.current = location.key;
     }
   }, [location]);
-
-  useEffect(() => {
-    const mainPanel = document.getElementById("mainPanel");
-    setScrollableContainer(mainPanel);
-  }, []);
 
   let initDoenetML = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -227,7 +220,7 @@ export default function EditorViewer() {
   }
 
   return (
-    <ActivityViewer
+    <DoenetML
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -250,25 +243,30 @@ export default function EditorViewer() {
       setIsInErrorState={setIsInErrorState}
       location={location}
       navigate={navigate}
+      linkSettings={{
+        viewURL: "/public?tool=editor", // In guest editor, even view urls go back to guest editor
+        editURL: "/public?tool=editor",
+        useQueryParameters: true,
+      }}
     />
   );
 }
 
-function findFirstPageCidFromCompiledActivity(orderObj) {
-  if (!orderObj?.content) {
+function findFirstPageCidFromCompiledActivity(children) {
+  if (!children) {
     return null;
   }
   //No pages or orders in order so return null
-  if (orderObj.content.length == 0) {
+  if (children.length == 0) {
     return null;
   }
 
-  for (let item of orderObj.content) {
+  for (let item of children) {
     if (item.type === "page") {
       return item.cid;
     } else {
-      //First item of content is another order
-      let nextOrderResponse = findFirstPageOfActivity(item.content);
+      //First item is another order
+      let nextOrderResponse = findFirstPageOfActivity(item.children);
       if (nextOrderResponse) {
         return nextOrderResponse;
       }

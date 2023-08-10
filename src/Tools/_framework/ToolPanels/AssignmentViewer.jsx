@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityViewer,
+  DoenetML,
   //   saveStateToDBTimerIdAtom,
-} from "../../../Viewer/ActivityViewer";
+} from "../../../Viewer/DoenetML";
 import {
   useRecoilValue,
   atom,
@@ -161,6 +161,8 @@ export default function AssignmentViewer() {
   ] = useRecoilState(numberOfAttemptsAllowedAdjustmentAtom);
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
+
+  const pageToolView = useRecoilValue(pageToolViewAtom);
 
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
@@ -776,7 +778,7 @@ export default function AssignmentViewer() {
   return (
     <>
       {cidChangedAlert}
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
         activityId={doenetId}
@@ -805,6 +807,14 @@ export default function AssignmentViewer() {
         cidChangedCallback={() => setCidChanged(true)}
         setActivityAsCompleted={setActivityAsCompleted}
         // generatedVariantCallback={variantCallback}
+        linkSettings={{
+          viewURL:
+            pageToolView.page === "placementexam"
+              ? "/course?tool=exam"
+              : "/course?tool=assignment",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     </>
   );

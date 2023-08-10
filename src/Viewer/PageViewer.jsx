@@ -10,7 +10,6 @@ import { rendererState } from "./useDoenetRenderer";
 import { atom, atomFamily, useRecoilCallback, useRecoilValue } from "recoil";
 import { get as idb_get, set as idb_set } from "idb-keyval";
 import axios from "axios";
-import { pageToolViewAtom } from "../Tools/_framework/NewToolRoot";
 import { darkModeAtom } from "../Tools/_framework/DarkmodeController";
 import { cesc } from "../_utils/url";
 
@@ -186,7 +185,6 @@ export function PageViewer({
 
   const darkMode = useRecoilValue(darkModeAtom);
 
-  const pageToolView = useRecoilValue(pageToolViewAtom);
   // const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let hash = location.hash;
@@ -1371,11 +1369,15 @@ export function getURLFromRef({
     }
 
     if (linkSettings.useQueryParameters) {
-      if (edit == true) {
-        url = linkSettings.editURL + "&" + url;
+      let baseUrl = edit == true ? linkSettings.editURL : linkSettings.viewURL;
+      if (baseUrl.includes("?")) {
+        if (baseUrl[baseUrl.length - 1] !== "?") {
+          baseUrl += "&";
+        }
       } else {
-        url = linkSettings.viewURL + "&" + url;
+        baseUrl += "?";
       }
+      url = baseUrl + url;
     } else {
       if (edit == true) {
         url = linkSettings.editURL + url;

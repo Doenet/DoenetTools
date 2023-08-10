@@ -23,7 +23,7 @@ import { serializedComponentsReviver } from "../../../Core/utils/serializedState
 import axios from "axios";
 import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
-import { ActivityViewer } from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
 import { useLocation, useNavigate } from "react-router";
 
@@ -300,7 +300,7 @@ export default function GradebookStudentAssignmentView() {
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
     let paginate = attemptsInfo[attemptNumber].paginate;
     dViewer = (
-      <ActivityViewer
+      <DoenetML
         /** REAL below */
         key={`activityViewer${doenetId}`}
         cid={cid}
@@ -337,6 +337,11 @@ export default function GradebookStudentAssignmentView() {
         paginate={paginate}
         location={location}
         navigate={navigate}
+        linkSettings={{
+          viewURL: "/course?tool=assignment",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     );
 

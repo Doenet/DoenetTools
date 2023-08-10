@@ -8,7 +8,7 @@ import {
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import { ActivityViewer } from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 
 import {
   Box,
@@ -178,18 +178,9 @@ export function PublicEditor() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
 
   return (
     <>
@@ -351,7 +342,7 @@ export function PublicEditor() {
                         </Button>
                       </Tooltip>
                     </Box>
-                    {variants.allPossibleVariants.length > 1 && (
+                    {variants.numVariants > 1 && (
                       <Box bg="doenet.lightBlue" h="32px" width="100%">
                         <VariantSelect
                           size="sm"
@@ -381,7 +372,7 @@ export function PublicEditor() {
                     overflow="scroll"
                     w="100%"
                   >
-                    <ActivityViewer
+                    <DoenetML
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
@@ -396,7 +387,7 @@ export function PublicEditor() {
                         allowSaveEvents: false,
                       }}
                       attemptNumber={1}
-                      generatedVariantCallback={variantCallback} //TODO:Replace
+                      generatedVariantCallback={setVariants}
                       requestedVariantIndex={variants.index}
                       setErrorsAndWarningsCallback={
                         setErrorsAndWarningsCallback
@@ -404,6 +395,10 @@ export function PublicEditor() {
                       // setIsInErrorState={setIsInErrorState}
                       location={location}
                       navigate={navigate}
+                      linkSettings={{
+                        viewURL: "/portfolioviewer",
+                        editURL: "/publiceditor",
+                      }}
                     />
                     <Box marginBottom="50vh" />
                   </Box>

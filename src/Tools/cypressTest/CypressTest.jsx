@@ -430,6 +430,10 @@ function Test() {
       paginate={paginate}
       location={location}
       navigate={navigate}
+      linkSettings={{
+        viewURL: "/portfolioviewer",
+        editURL: "/publiceditor",
+      }}
     />
   );
 

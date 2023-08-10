@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ActivityViewer } from "../../../Viewer/ActivityViewer";
+import React, { useEffect, useState } from "react";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
 import { useLocation, useNavigate } from "react-router";
@@ -56,7 +56,7 @@ export default function Public(props) {
 
   return (
     <>
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
         activityId={doenetId}
@@ -76,6 +76,11 @@ export default function Public(props) {
         paginate={true}
         location={location}
         navigate={navigate}
+        linkSettings={{
+          viewURL: "/public?",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     </>
   );
