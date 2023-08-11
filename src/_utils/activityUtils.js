@@ -183,7 +183,7 @@ export async function parseActivityDefinition(activityDoenetML, activityCid) {
     let page = {
       type: "page",
       doenetML: activityDoenetML,
-      serializedComponents,
+      children: serializedComponents,
       cid: activityCid,
     };
 

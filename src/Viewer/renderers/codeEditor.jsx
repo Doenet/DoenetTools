@@ -4,6 +4,8 @@ import { sizeToCSS } from "./utils/css";
 import CodeMirror from "../../Tools/_framework/CodeMirror";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import { useSetRecoilState } from "recoil";
+import { Box, Flex } from "@chakra-ui/react";
+import ErrorWarningPopovers from "../../Tools/_framework/ChakraBasedComponents/ErrorWarningPopovers";
 
 export default React.memo(function CodeEditor(props) {
   let {
@@ -88,7 +90,7 @@ export default React.memo(function CodeEditor(props) {
     maxWidth: "100%",
     padding: "0px",
     overflowX: "hidden",
-    overflowY: "scroll",
+    overflowY: "hidden",
   };
 
   if (SVs.showResults) {
@@ -108,56 +110,88 @@ export default React.memo(function CodeEditor(props) {
   paddingBottom.size /= 2;
   paddingBottom = sizeToCSS(paddingBottom);
 
+  let errorsAndWarnings = null;
+  let errorsAndWarningsHeight = 0;
+
+  if (SVs.errorsAndWarnings) {
+    errorsAndWarningsHeight = 32;
+
+    const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+    const warningsObjs = SVs.errorsAndWarnings.warnings.filter(
+      (w) => w.level <= warningsLevel,
+    );
+    const errorsObjs = [...SVs.errorsAndWarnings.errors];
+
+    errorsAndWarnings = (
+      <Flex ml="0px" h="32px" bg="doenet.mainGray" pl="10px" pt="1px">
+        <ErrorWarningPopovers
+          warningsObjs={warningsObjs}
+          errorsObjs={errorsObjs}
+        />
+      </Flex>
+    );
+  }
+
   let editor = (
     <div key={editorKey} id={editorKey} style={editorStyle}>
-      <CodeMirror
-        editorRef={editorRef}
-        setInternalValueTo={updateInternalValueTo.current}
-        //TODO: read only isn't working <codeeditor disabled />
-        readOnly={SVs.disabled}
-        onBlur={() => {
-          clearTimeout(updateValueTimer.current);
-          callAction({
-            action: actions.updateValue,
-            baseVariableValue: currentValue.current,
-          });
-          updateValueTimer.current = null;
-        }}
-        onFocus={() => {
-          // console.log(">>codeEditor FOCUS!!!!!")
-        }}
-        onBeforeChange={(value) => {
-          if (currentValue.current !== value) {
-            currentValue.current = value;
-
-            setRendererState((was) => {
-              let newObj = { ...was };
-              newObj.ignoreUpdate = true;
-              return newObj;
-            });
-
-            callAction({
-              action: actions.updateImmediateValue,
-              args: { text: value },
-              baseVariableValue: value,
-            });
-
-            // Debounce update value at 3 seconds
+      <Box
+        height={`calc(${sizeToCSS(
+          editorHeight,
+        )} - ${errorsAndWarningsHeight}px)`}
+        w="100%"
+        overflowY="scroll"
+        overflowX="hidden"
+      >
+        <CodeMirror
+          editorRef={editorRef}
+          setInternalValueTo={updateInternalValueTo.current}
+          //TODO: read only isn't working <codeeditor disabled />
+          readOnly={SVs.disabled}
+          onBlur={() => {
             clearTimeout(updateValueTimer.current);
+            callAction({
+              action: actions.updateValue,
+              baseVariableValue: currentValue.current,
+            });
+            updateValueTimer.current = null;
+          }}
+          onFocus={() => {
+            // console.log(">>codeEditor FOCUS!!!!!")
+          }}
+          onBeforeChange={(value) => {
+            if (currentValue.current !== value) {
+              currentValue.current = value;
 
-            //TODO: when you try to leave the page before it saved you will lose work
-            //so prompt the user on page leave
-            updateValueTimer.current = setTimeout(function () {
-              callAction({
-                action: actions.updateValue,
-                baseVariableValue: currentValue.current,
+              setRendererState((was) => {
+                let newObj = { ...was };
+                newObj.ignoreUpdate = true;
+                return newObj;
               });
-              updateValueTimer.current = null;
-            }, 3000); //3 seconds
-          }
-        }}
-        paddingBottom={paddingBottom}
-      />
+
+              callAction({
+                action: actions.updateImmediateValue,
+                args: { text: value },
+                baseVariableValue: value,
+              });
+
+              // Debounce update value at 3 seconds
+              clearTimeout(updateValueTimer.current);
+
+              //TODO: when you try to leave the page before it saved you will lose work
+              //so prompt the user on page leave
+              updateValueTimer.current = setTimeout(function () {
+                callAction({
+                  action: actions.updateValue,
+                  baseVariableValue: currentValue.current,
+                });
+                updateValueTimer.current = null;
+              }, 3000); //3 seconds
+            }
+          }}
+          paddingBottom={paddingBottom}
+        />
+      </Box>
+      {errorsAndWarnings}
     </div>
   );
 

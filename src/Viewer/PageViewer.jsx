@@ -191,6 +191,11 @@ export function PageViewer({
 
   let hash = location.hash;
 
+  const prefixForIdsStripped = prefixForIds
+    .replaceAll("/", "")
+    .replaceAll("\\", "")
+    .replaceAll("-", "_");
+
   useEffect(() => {
     if (coreWorker.current) {
       coreWorker.current.onmessage = function (e) {
@@ -304,36 +309,35 @@ export function PageViewer({
 
   useEffect(() => {
     if (pageNumber !== null) {
-      window["returnAllStateVariables" + pageNumber] = function () {
-        coreWorker.current.postMessage({
-          messageType: "returnAllStateVariables",
-        });
+      window["returnAllStateVariables" + prefixForIdsStripped + pageNumber] =
+        function () {
+          coreWorker.current.postMessage({
+            messageType: "returnAllStateVariables",
+          });
 
-        return new Promise((resolve, reject) => {
-          resolveAllStateVariables.current = resolve;
-        });
-      };
+          return new Promise((resolve, reject) => {
+            resolveAllStateVariables.current = resolve;
+          });
+        };
 
-      window["returnErrorWarnings" + pageNumber] = function () {
-        coreWorker.current.postMessage({
-          messageType: "returnErrorWarnings",
-        });
+      window["returnErrorWarnings" + prefixForIdsStripped + pageNumber] =
+        function () {
+          coreWorker.current.postMessage({
+            messageType: "returnErrorWarnings",
+          });
 
-        return new Promise((resolve, reject) => {
-          resolveErrorWarnings.current = resolve;
-        });
-      };
+          return new Promise((resolve, reject) => {
+            resolveErrorWarnings.current = resolve;
+          });
+        };
 
-      window["callAction" + pageNumber] = async function ({
-        actionName,
-        componentName,
-        args,
-      }) {
-        return await callAction({
-          action: { actionName, componentName },
-          args,
-        });
-      };
+      window["callAction" + prefixForIdsStripped + pageNumber] =
+        async function ({ actionName, componentName, args }) {
+          return await callAction({
+            action: { actionName, componentName },
+            args,
+          });
+        };
     }
   }, [pageNumber]);
 

@@ -6,6 +6,7 @@ export default class CodeViewer extends BlockComponent {
 
     Object.assign(this.actions, {
       updateComponents: this.updateComponents.bind(this),
+      setErrorsAndWarnings: this.setErrorsAndWarnings.bind(this),
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
   }
@@ -274,6 +275,49 @@ export default class CodeViewer extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.codeChanged = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      hasEssential: true,
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { codeChanged: true } }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "codeChanged",
+              value: Boolean(desiredStateVariableValues.codeChanged),
+            },
+          ],
+        };
+      },
+    };
+
+    stateVariableDefinitions.errorsAndWarnings = {
+      hasEssential: true,
+      defaultValue: { errors: [], warnings: [] },
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: { errorsAndWarnings: true },
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "errorsAndWarnings",
+              value: desiredStateVariableValues.errorsAndWarnings,
+            },
+          ],
+        };
+      },
+    };
+
     return stateVariableDefinitions;
   }
 
@@ -288,6 +332,35 @@ export default class CodeViewer extends BlockComponent {
         componentName: this.componentName,
         stateVariable: "doenetML",
         value: await this.stateValues.doenetMLFromSource,
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "codeChanged",
+        value: false,
+      },
+    ];
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
+  }
+
+  async setErrorsAndWarnings({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+    errorsAndWarnings,
+  }) {
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "errorsAndWarnings",
+        value: errorsAndWarnings,
       },
     ];
 

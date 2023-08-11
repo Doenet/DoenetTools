@@ -55,8 +55,6 @@ export default React.memo(function CodeViewer(props) {
     surroundingBoxStyle.borderRadius = "var(--mainBorderRadius)";
   }
 
-  let codeChanged = true; //TODO: Dynamically update on code change
-
   let contentPanel = (
     <div
       style={{
@@ -81,13 +79,13 @@ export default React.memo(function CodeViewer(props) {
                 bg="doenet.canvas"
                 leftIcon={<RxUpdate />}
                 rightIcon={
-                  codeChanged ? (
+                  SVs.codeChanged ? (
                     <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
                   ) : (
                     ""
                   )
                 }
-                isDisabled={!codeChanged}
+                isDisabled={!SVs.codeChanged}
                 onClick={() => {
                   callAction({ action: actions.updateComponents });
                 }}
@@ -144,6 +142,12 @@ export default React.memo(function CodeViewer(props) {
           activityId={id}
           generatedVariantCallback={setVariants}
           requestedVariantIndex={variants.index}
+          setErrorsAndWarningsCallback={(errorsAndWarnings) => {
+            callAction({
+              action: actions.setErrorsAndWarnings,
+              args: { errorsAndWarnings },
+            });
+          }}
         />
       </div>
     </div>
@@ -161,7 +165,7 @@ export default React.memo(function CodeViewer(props) {
         <div
           style={surroundingBoxStyle}
           className="codeViewerSurroundingBox"
-          // id={id}
+          id={id}
         >
           {contentPanel}
         </div>
