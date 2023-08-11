@@ -276,6 +276,22 @@ describe("Auto completion test", function () {
     cy.get(".cm-content").type(`/></`);
     selectTopAutoCompleteOptionWhenNamed("feedbackDefinitions>");
   });
+
+  it("assignNames", () => {
+    cy.get(".cm-content").type(`<select as`);
+    selectTopAutoCompleteOptionWhenNamed("assignNames");
+    cy.get(".cm-content").type(`="a">a b c</select>{enter}<sequence as`);
+    selectTopAutoCompleteOptionWhenNamed("assignNames");
+    cy.get(".cm-content").type(`="n1 n2" />{enter}<samplePrimeNumbers as`);
+    selectTopAutoCompleteOptionWhenNamed("assignNames");
+    cy.get(".cm-content").type(`="p" />{enter}<setup assign`);
+    cy.get(".cm-tooltip-autocomplete").should("not.exist");
+    cy.get(".cm-content").type(
+      `{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}>{enter}<customAttribute as`,
+    );
+    selectTopAutoCompleteOptionWhenNamed("assignNames");
+    cy.get(".cm-content").type(`="c" />{enter}</setup>`);
+  });
 });
 
 function verifyTopAutoCompleteOptionIsNamed(value) {
