@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { nanoid } from "nanoid";
 import {
   serializedComponentsReplacer,
@@ -10,7 +16,6 @@ import { rendererState } from "./useDoenetRenderer";
 import { atom, atomFamily, useRecoilCallback, useRecoilValue } from "recoil";
 import { get as idb_get, set as idb_set } from "idb-keyval";
 import axios from "axios";
-import { darkModeAtom } from "../Tools/_framework/DarkmodeController";
 import { cesc } from "../_utils/url";
 
 const rendererUpdatesToIgnore = atomFamily({
@@ -18,12 +23,9 @@ const rendererUpdatesToIgnore = atomFamily({
   default: {},
 });
 
-export const scrollableContainerAtom = atom({
-  key: "scollParentAtom",
-  default: null,
-});
-
 const sendAlert = (msg, type) => console.log(msg);
+
+export const PageContext = createContext();
 
 export function PageViewer({
   userId,
@@ -61,6 +63,8 @@ export function PageViewer({
   navigate,
   linkSettings = { viewURL: "/portfolioviewer", editURL: "/publiceditor" },
   errorsActivitySpecific = {},
+  scrollableContainer,
+  darkMode,
 }) {
   const updateRendererSVsWithRecoil = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -183,16 +187,22 @@ export function PageViewer({
 
   const [ignoreRendererError, setIgnoreRendererError] = useState(false);
 
-  const darkMode = useRecoilValue(darkModeAtom);
-
-  // const scrollableContainer = useRecoilValue(scrollableContainerAtom);
-
   let hash = location.hash;
 
-  const prefixForIdsStripped = prefixForIds
-    .replaceAll("/", "")
-    .replaceAll("\\", "")
-    .replaceAll("-", "_");
+  const contextForRenderers = {
+    navigate,
+    location,
+    linkSettings,
+    scrollableContainer,
+    darkMode,
+  };
+
+  const postfixForWindowFunctions =
+    prefixForIds
+      .replace(/^page/, "")
+      .replaceAll("/", "")
+      .replaceAll("\\", "")
+      .replaceAll("-", "_") || "1";
 
   useEffect(() => {
     if (coreWorker.current) {
@@ -307,7 +317,7 @@ export function PageViewer({
 
   useEffect(() => {
     if (pageNumber !== null) {
-      window["returnAllStateVariables" + prefixForIdsStripped + pageNumber] =
+      window["returnAllStateVariables" + postfixForWindowFunctions] =
         function () {
           coreWorker.current.postMessage({
             messageType: "returnAllStateVariables",
@@ -318,24 +328,26 @@ export function PageViewer({
           });
         };
 
-      window["returnErrorWarnings" + prefixForIdsStripped + pageNumber] =
-        function () {
-          coreWorker.current.postMessage({
-            messageType: "returnErrorWarnings",
-          });
+      window["returnErrorWarnings" + postfixForWindowFunctions] = function () {
+        coreWorker.current.postMessage({
+          messageType: "returnErrorWarnings",
+        });
 
-          return new Promise((resolve, reject) => {
-            resolveErrorWarnings.current = resolve;
-          });
-        };
+        return new Promise((resolve, reject) => {
+          resolveErrorWarnings.current = resolve;
+        });
+      };
 
-      window["callAction" + prefixForIdsStripped + pageNumber] =
-        async function ({ actionName, componentName, args }) {
-          return await callAction({
-            action: { actionName, componentName },
-            args,
-          });
-        };
+      window["callAction" + postfixForWindowFunctions] = async function ({
+        actionName,
+        componentName,
+        args,
+      }) {
+        return await callAction({
+          action: { actionName, componentName },
+          args,
+        });
+      };
     }
   }, [pageNumber]);
 
@@ -706,6 +718,7 @@ export function PageViewer({
             navigate,
             location,
             linkSettings,
+            scrollableContainer,
           }),
         );
 
@@ -921,6 +934,7 @@ export function PageViewer({
                 actionName: "updateValue",
                 componentName: rendererState.__componentNeedingUpdateValue,
               },
+              args: { doNotIgnore: true },
             });
           }
 
@@ -1186,9 +1200,6 @@ export function PageViewer({
       setIsInErrorState?.(false);
     }
 
-    if (coreWorker.current) {
-      terminateCoreAndAnimations();
-    }
     coreId.current = nanoid();
     initialCoreData.current = {};
     coreInfo.current = null;
@@ -1278,7 +1289,9 @@ export function PageViewer({
       {noCoreWarning}
       <div style={pageStyle} className="doenet-viewer">
         {errorOverview}
-        {documentRenderer}
+        <PageContext.Provider value={contextForRenderers}>
+          {documentRenderer}
+        </PageContext.Provider>
       </div>
     </ErrorBoundary>
   );

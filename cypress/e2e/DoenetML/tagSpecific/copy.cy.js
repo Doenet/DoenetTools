@@ -3657,6 +3657,7 @@ describe("Copy Tag Tests", function () {
       win.postMessage(
         {
           doenetML,
+          requestedVariantIndex: 1,
         },
         "*",
       );

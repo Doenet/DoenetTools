@@ -526,14 +526,12 @@ describe("Single page activity tests", function () {
     cy.url().should("match", /#\\\/insideAside$/);
     cy.url().should("contain", doenetId);
 
-    cy.wait(200);
-
-    cy.get(cesc("#\\/insideAside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
-      expect(rect.top)
-        .gt(headerPixels - 1)
-        .lt(headerPixels + 1);
-    });
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/insideAside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
 
     cy.wait(1500); // wait for debounce
 
@@ -569,14 +567,12 @@ describe("Single page activity tests", function () {
     cy.url().should("match", /#\\\/insideAside$/);
     cy.url().should("contain", doenetId);
 
-    cy.wait(200);
-
-    cy.get(cesc("#\\/insideAside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
-      expect(rect.top)
-        .gt(headerPixels - 1)
-        .lt(headerPixels + 1);
-    });
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/insideAside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
   });
 
   it("Go directly to URLs of activity", () => {
@@ -634,12 +630,12 @@ describe("Single page activity tests", function () {
     cy.url().should("match", /#\\\/aside$/);
     cy.url().should("contain", doenetId);
 
-    cy.get(cesc("#\\/aside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
-      expect(rect.top)
-        .gt(headerPixels - 1)
-        .lt(headerPixels + 1);
-    });
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/aside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
   });
 
   it("Update to new version, infinite attempts allowed, separate student signin", () => {
@@ -686,9 +682,11 @@ describe("Single page activity tests", function () {
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get(cesc("#\\/ans") + " textarea").type("{end}{backspace}1{enter}", {
-      force: true,
-    });
+    cy.get(cesc("#\\/ans") + " textarea")
+      .type("{end}{backspace}1{enter}", {
+        force: true,
+      })
+      .then((x) => console.log("we typed in the 1"));
 
     cy.log(
       "At least for now, hitting enter before core is intialized does not submit response",
@@ -701,6 +699,10 @@ describe("Single page activity tests", function () {
     cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
+
+    // Have to wait to make sure Core has saved the changes to continue
+    // TODO: ideally wouldn't have to wait here
+    cy.wait(1000);
 
     cy.signin({ userId });
 
@@ -1890,6 +1892,7 @@ describe("Single page activity tests", function () {
       <award><when>$ti=hello</when></award>
     </answer>
     </p>
+    $ti.value, $ti.immediateValue
 `;
 
     cy.createActivity({

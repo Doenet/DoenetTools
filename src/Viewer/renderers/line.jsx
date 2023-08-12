@@ -3,9 +3,8 @@ import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { textRendererStyle } from "../../Core/utils/style";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function Line(props) {
   let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
@@ -35,7 +34,7 @@ export default React.memo(function Line(props) {
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

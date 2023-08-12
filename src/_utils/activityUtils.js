@@ -860,7 +860,7 @@ async function initializeComponentTypeCounts(pages) {
     let { fullSerializedComponents } =
       await expandDoenetMLsToFullSerializedComponents({
         doenetMLs: [page.doenetML],
-        preliminarySerializedComponents: [page.doenetML.children],
+        preliminarySerializedComponents: [page.children],
         componentInfoObjects,
       });
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { DoenetML } from "../../Viewer/DoenetML.jsx";
 import { useRecoilState } from "recoil";
-import { darkModeAtom } from "../_framework/DarkmodeController.jsx";
 // import testCodeDoenetML from './testCode.doenet?raw';
 import { useLocation, useNavigate } from "react-router";
 
@@ -23,6 +22,7 @@ function Test() {
     allowSaveEvents: false,
     autoSubmit: false,
     paginate: true,
+    darkMode: "light",
   };
   let testSettings = JSON.parse(localStorage.getItem("test settings"));
   if (!testSettings) {
@@ -46,7 +46,7 @@ function Test() {
   const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
   const [showHints, setShowHints] = useState(testSettings.showHints);
 
-  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
+  const [darkMode, setDarkMode] = useState(testSettings.darkMode);
 
   const [allowLoadState, setAllowLoadState] = useState(
     testSettings.allowLoadState,
@@ -392,9 +392,9 @@ function Test() {
             <input
               id="testRunner_darkmode"
               type="checkbox"
-              checked={darkModeToggle === "dark"}
+              checked={darkMode === "dark"}
               onChange={() => {
-                setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark");
+                setDarkMode(darkMode === "dark" ? "light" : "dark");
               }}
             />
             Dark Mode
@@ -404,42 +404,48 @@ function Test() {
     );
   }
 
-  let viewer = (
-    <DoenetML
-      key={"activityViewer" + updateNumber}
-      doenetML={doenetMLstring}
-      // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-      updateDataOnContentChange={true}
-      flags={{
-        showCorrectness,
-        readOnly,
-        solutionDisplayMode,
-        showFeedback,
-        showHints,
-        allowLoadState,
-        allowSaveState,
-        allowLocalState,
-        allowSaveSubmissions,
-        allowSaveEvents,
-        autoSubmit,
-      }}
-      attemptNumber={attemptNumber}
-      requestedVariantIndex={requestedVariantIndex.current}
-      activityId="activityIdFromCypress"
-      idsIncludeActivityId={false}
-      paginate={paginate}
-      location={location}
-      navigate={navigate}
-      linkSettings={{
-        viewURL: "/portfolioviewer",
-        editURL: "/publiceditor",
-      }}
-    />
-  );
+  let viewer = null;
+
+  if (doenetMLstring) {
+    viewer = (
+      <DoenetML
+        key={"activityViewer" + updateNumber}
+        doenetML={doenetMLstring}
+        // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+        updateDataOnContentChange={true}
+        flags={{
+          showCorrectness,
+          readOnly,
+          solutionDisplayMode,
+          showFeedback,
+          showHints,
+          allowLoadState,
+          allowSaveState,
+          allowLocalState,
+          allowSaveSubmissions,
+          allowSaveEvents,
+          autoSubmit,
+        }}
+        attemptNumber={attemptNumber}
+        requestedVariantIndex={requestedVariantIndex.current}
+        activityId="activityIdFromCypress"
+        idsIncludeActivityId={false}
+        paginate={paginate}
+        location={location}
+        navigate={navigate}
+        linkSettings={{
+          viewURL: "/portfolioviewer",
+          editURL: "/publiceditor",
+        }}
+        darkMode={darkMode}
+      />
+    );
+  }
 
   return (
     <div
       style={{ backgroundColor: "var(--canvas)", color: "var(--canvastext)" }}
+      data-theme={darkMode}
     >
       <div style={{ backgroundColor: "var(--mainGray)" }}>
         <h3>

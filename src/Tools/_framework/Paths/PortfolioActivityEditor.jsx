@@ -1630,6 +1630,7 @@ export function PortfolioActivityEditor() {
                         flexGrow={1}
                         overflow="scroll"
                         w="100%"
+                        id="viewer-container"
                       >
                         <>
                           <DoenetML
@@ -1661,6 +1662,10 @@ export function PortfolioActivityEditor() {
                               viewURL: "/portfolioviewer",
                               editURL: "/publiceditor",
                             }}
+                            scrollableContainer={
+                              document.getElementById("viewer-container") ||
+                              undefined
+                            }
                           />
                         </>
                       </Box>
@@ -1814,6 +1819,7 @@ export function PortfolioActivityEditor() {
                       flexGrow={1}
                       overflow="scroll"
                       w="100%"
+                      id="viewer-container"
                     >
                       <>
                         <DoenetML
@@ -1842,6 +1848,10 @@ export function PortfolioActivityEditor() {
                             viewURL: "/portfolioviewer",
                             editURL: "/publiceditor",
                           }}
+                          scrollableContainer={
+                            document.getElementById("viewer-container") ||
+                            undefined
+                          }
                         />
                       </>
                     </Box>

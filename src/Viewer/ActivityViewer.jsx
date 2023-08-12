@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
-import { PageViewer, scrollableContainerAtom } from "./PageViewer";
+import { PageViewer } from "./PageViewer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -64,6 +64,8 @@ export function ActivityViewer({
   idsIncludeActivityId = true,
   linkSettings,
   addBottomPadding = true,
+  scrollableContainer = window,
+  darkMode,
 }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
@@ -92,7 +94,6 @@ export function ActivityViewer({
   cidRef.current = cid;
 
   const doenetML = useRef(null);
-  const doenetMLNewlines = useRef(null);
 
   const [activityDefinition, setActivityDefinition] = useState(null);
 
@@ -129,9 +130,6 @@ export function ActivityViewer({
   const changesToBeSaved = useRef(false);
 
   const saveStateToDBTimerId = useRef(null);
-  const [scrollableContainer, setScrollableContainer] = useRecoilState(
-    scrollableContainerAtom,
-  );
 
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
@@ -165,7 +163,9 @@ export function ActivityViewer({
   const errorsActivitySpecific = useRef([]);
 
   let activityPrefix = "";
+  let activityPrefixUnescaped = "";
   if (idsIncludeActivityId) {
+    activityPrefixUnescaped = activityId;
     activityPrefix = cesc(activityId);
   }
 
@@ -215,47 +215,40 @@ export function ActivityViewer({
     itemWeights,
   ]);
 
+  function scrollListener() {
+    // find page that is at the top
+    if (ignoreNextScroll.current) {
+      ignoreNextScroll.current = false;
+    } else {
+      let topPage;
+      for (let ind = 0; ind < nPages - 1; ind++) {
+        let thePage = document.getElementById(`page${ind + 1}`);
+        if (thePage) {
+          let { bottom } = thePage.getBoundingClientRect();
+          if (bottom < 50) {
+            topPage = ind + 2;
+          } else if (!topPage) {
+            topPage = 1;
+          }
+        }
+      }
+      if (topPage && topPage !== currentPageRef.current) {
+        setCurrentPage(topPage);
+      }
+    }
+  }
+
   useEffect(() => {
     // for non-paginated activity
     // set the current page to be the page at the top of the screen
     // will be used to set the url hash
 
-    if (nodeRef.current) {
-      let newScrollableContainer =
-        nodeRef.current.parentNode.id === "mainPanel"
-          ? nodeRef.current.parentNode
-          : window;
-
-      setScrollableContainer(newScrollableContainer);
-
-      if (!paginate && nPages > 1) {
-        newScrollableContainer.addEventListener("scroll", (event) => {
-          // find page that is at the top
-
-          if (ignoreNextScroll.current) {
-            ignoreNextScroll.current = false;
-          } else {
-            let topPage;
-            for (let ind = 0; ind < nPages - 1; ind++) {
-              let thePage = document.getElementById(`page${ind + 1}`);
-              if (thePage) {
-                let { bottom } = thePage.getBoundingClientRect();
-                if (bottom < 50) {
-                  topPage = ind + 2;
-                } else if (!topPage) {
-                  topPage = 1;
-                }
-              }
-            }
-
-            if (topPage && topPage !== currentPageRef.current) {
-              setCurrentPage(topPage);
-            }
-          }
-        });
-      }
+    if (!paginate && nPages > 1) {
+      scrollableContainer.addEventListener("scroll", scrollListener);
+    } else {
+      scrollableContainer.removeEventListener("scroll", scrollListener);
     }
-  }, [nodeRef.current, nPages]);
+  }, [paginate, nPages]);
 
   useEffect(() => {
     pageChangedCallback?.(currentPage);
@@ -437,9 +430,19 @@ export function ActivityViewer({
     // at this point, doenetML.current is set, so we parse it to get the JSON for the activity definition
     let result = await parseActivityDefinition(doenetML.current, cid);
 
-    errorsActivitySpecific.current = result.errors;
+    if (result.errors.length > 0) {
+      let doenetMLNewlines = findAllNewlines(doenetML.current);
+      for (let err of result.errors) {
+        if (err.doenetMLrange && err.doenetMLrange.lineBegin === undefined) {
+          Object.assign(
+            err.doenetMLrange,
+            getLineCharRange(err.doenetMLrange, doenetMLNewlines),
+          );
+        }
+      }
+    }
 
-    doenetMLNewlines.current = findAllNewlines(doenetML.current);
+    errorsActivitySpecific.current = result.errors;
 
     setActivityDefinition(result.activityJSON);
     setStage("continue");
@@ -595,6 +598,21 @@ export function ActivityViewer({
           activityDefinition,
           requestedVariantIndex,
         });
+
+        if (results.errors.length > 0) {
+          let doenetMLNewlines = findAllNewlines(doenetML.current);
+          for (let err of results.errors) {
+            if (
+              err.doenetMLrange &&
+              err.doenetMLrange.lineBegin === undefined
+            ) {
+              Object.assign(
+                err.doenetMLrange,
+                getLineCharRange(err.doenetMLrange, doenetMLNewlines),
+              );
+            }
+          }
+        }
 
         errorsActivitySpecific.current.push(...results.errors);
 
@@ -1103,19 +1121,7 @@ export function ActivityViewer({
   }
 
   function collateErrorsAndWarnings() {
-    let allErrors = [];
-
-    for (let error of errorsActivitySpecific.current) {
-      let doenetMLrange = error.doenetMLrange;
-      if (doenetMLrange.lineBegin === undefined) {
-        Object.assign(
-          doenetMLrange,
-          getLineCharRange(doenetMLrange, doenetMLNewlines.current),
-        );
-      }
-
-      allErrors.push(error);
-    }
+    let allErrors = [...errorsActivitySpecific.current];
 
     let allWarnings = [];
 
@@ -1314,7 +1320,8 @@ export function ActivityViewer({
         thisPageIsActive = pageInfo.pageIsActive[ind];
       }
 
-      let prefixForIds = activityPrefix + (nPages > 1 ? `page${ind + 1}` : "");
+      let prefixForIds =
+        activityPrefixUnescaped + (nPages > 1 ? `page${ind + 1}` : "");
 
       let pageViewer = (
         <PageViewer
@@ -1359,6 +1366,8 @@ export function ActivityViewer({
           navigate={navigate}
           linkSettings={linkSettings}
           errorsActivitySpecific={errorsActivitySpecific.current}
+          scrollableContainer={scrollableContainer}
+          darkMode={darkMode}
         />
       );
 
@@ -1528,15 +1537,7 @@ export function ActivityViewer({
     };
     activityErrors = errorsToDisplay.map((err, i) => {
       let rangeMessage = null;
-
-      if (err.doenetMLrange.lineBegin === undefined) {
-        Object.assign(
-          err.doenetMLrange,
-          getLineCharRange(err.doenetMLrange, doenetMLNewlines.current),
-        );
-      }
-
-      if (err.doenetMLrange.lineBegin !== undefined) {
+      if (err.doenetMLrange?.lineBegin !== undefined) {
         rangeMessage = (
           <>
             <br />

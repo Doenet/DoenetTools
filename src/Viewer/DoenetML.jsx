@@ -1,11 +1,10 @@
 import "./DoenetML.css";
 import { prng_alea } from "esm-seedrandom";
-import React from "react";
+import React, { useRef } from "react";
 import { ActivityViewer } from "./ActivityViewer.jsx";
 import { RecoilRoot } from "recoil";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "../Core/utils/math";
-import DarkmodeController from "../Tools/_framework/DarkmodeController";
 import VirtualKeyboard from "../Tools/_framework/Footers/VirtualKeyboard";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
@@ -88,7 +87,20 @@ export function DoenetML({
   updateDataOnContentChange = false,
   idsIncludeActivityId = true,
   linkSettings,
+  scrollableContainer,
+  darkMode,
 }) {
+  const thisPropSet = [
+    doenetML,
+    cid,
+    activityId,
+    userId,
+    requestedVariantIndex,
+  ];
+  const lastPropSet = useRef([]);
+
+  const variantIndex = useRef(undefined);
+
   const defaultFlags = {
     showCorrectness: true,
     readOnly: false,
@@ -117,9 +129,20 @@ export function DoenetML({
     flags.allowLoadState = true;
   }
 
-  if (requestedVariantIndex === undefined) {
-    let rng = new rngClass(new Date());
-    requestedVariantIndex = Math.floor(rng() * 1000000) + 1;
+  // Normalize variant index to an integer.
+  // Generate a random variant index if the requested variant index is undefined.
+  // To preserve the generated variant index on rerender,
+  // regenerate only if one of the props in propSet has changed
+  if (thisPropSet.some((v, i) => v !== lastPropSet.current[i])) {
+    if (requestedVariantIndex === undefined) {
+      let rng = new rngClass(new Date());
+      requestedVariantIndex = Math.floor(rng() * 1000000) + 1;
+    }
+    variantIndex.current = Math.round(requestedVariantIndex);
+    if (!Number.isInteger(variantIndex.current)) {
+      variantIndex.current = 1;
+    }
+    lastPropSet.current = thisPropSet;
   }
 
   let keyboard = null;
@@ -135,48 +158,48 @@ export function DoenetML({
       disableGlobalStyle
     >
       <RecoilRoot>
-        <DarkmodeController>
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ActivityViewer
-              doenetML={doenetML}
-              updateDataOnContentChange={updateDataOnContentChange}
-              flags={flags}
-              cid={cid}
-              activityId={activityId}
-              userId={userId}
-              attemptNumber={attemptNumber}
-              requestedVariantIndex={requestedVariantIndex}
-              updateCreditAchievedCallback={updateCreditAchievedCallback}
-              updateActivityStatusCallback={updateActivityStatusCallback}
-              updateAttemptNumber={updateAttemptNumber}
-              pageChangedCallback={pageChangedCallback}
-              paginate={paginate}
-              showFinishButton={showFinishButton}
-              cidChangedCallback={cidChangedCallback}
-              checkIfCidChanged={checkIfCidChanged}
-              setActivityAsCompleted={setActivityAsCompleted}
-              setIsInErrorState={setIsInErrorState}
-              apiURLs={apiURLs}
-              generatedVariantCallback={generatedVariantCallback}
-              setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
-              forceDisable={forceDisable}
-              forceShowCorrectness={forceShowCorrectness}
-              forceShowSolution={forceShowSolution}
-              forceUnsuppressCheckwork={forceUnsuppressCheckwork}
-              location={location}
-              navigate={navigate}
-              idsIncludeActivityId={idsIncludeActivityId}
-              linkSettings={linkSettings}
-              addBottomPadding={addBottomPadding}
-            />
-            <div className="before-keyboard" />
-            {keyboard}
-          </MathJaxContext>
-        </DarkmodeController>
+        <MathJaxContext
+          version={2}
+          config={mathjaxConfig}
+          onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+        >
+          <ActivityViewer
+            doenetML={doenetML}
+            updateDataOnContentChange={updateDataOnContentChange}
+            flags={flags}
+            cid={cid}
+            activityId={activityId}
+            userId={userId}
+            attemptNumber={attemptNumber}
+            requestedVariantIndex={variantIndex.current}
+            updateCreditAchievedCallback={updateCreditAchievedCallback}
+            updateActivityStatusCallback={updateActivityStatusCallback}
+            updateAttemptNumber={updateAttemptNumber}
+            pageChangedCallback={pageChangedCallback}
+            paginate={paginate}
+            showFinishButton={showFinishButton}
+            cidChangedCallback={cidChangedCallback}
+            checkIfCidChanged={checkIfCidChanged}
+            setActivityAsCompleted={setActivityAsCompleted}
+            setIsInErrorState={setIsInErrorState}
+            apiURLs={apiURLs}
+            generatedVariantCallback={generatedVariantCallback}
+            setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+            forceDisable={forceDisable}
+            forceShowCorrectness={forceShowCorrectness}
+            forceShowSolution={forceShowSolution}
+            forceUnsuppressCheckwork={forceUnsuppressCheckwork}
+            location={location}
+            navigate={navigate}
+            idsIncludeActivityId={idsIncludeActivityId}
+            linkSettings={linkSettings}
+            addBottomPadding={addBottomPadding}
+            scrollableContainer={scrollableContainer}
+            darkMode={darkMode}
+          />
+          <div className="before-keyboard" />
+          {keyboard}
+        </MathJaxContext>
       </RecoilRoot>
     </ChakraProvider>
   );

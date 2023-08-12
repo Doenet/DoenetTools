@@ -4,10 +4,9 @@ import React, { useContext, useEffect, useRef } from "react";
 import { BoardContext, TEXT_LAYER_OFFSET } from "./graph";
 import useDoenetRenderer from "../useDoenetRenderer";
 import me from "math-expressions";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { textRendererStyle } from "../../Core/utils/style";
 import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function NumberComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -39,7 +38,7 @@ export default React.memo(function NumberComponent(props) {
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

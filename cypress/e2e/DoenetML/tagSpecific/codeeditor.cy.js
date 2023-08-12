@@ -120,10 +120,7 @@ describe("Code Editor Tag Tests", function () {
         stateVariables["/_codeeditor1"].activeChildren[0].componentName;
       let updateAnchor = "#" + cesc2(viewerName) + "_updateButton";
 
-      let rendererName =
-        stateVariables[viewerName].activeChildren[0].componentName;
-
-      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
+      cy.get(cesc2(`#${viewerName}/_document1`)).should("exist");
 
       cy.get(cesc("#\\/_p1")).should("have.text", "");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
@@ -143,8 +140,8 @@ describe("Code Editor Tag Tests", function () {
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "");
-      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("not.exist");
+      cy.get(cesc2(`#${viewerName}/_document1`)).should("exist");
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -159,8 +156,8 @@ describe("Code Editor Tag Tests", function () {
 
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
-      cy.get(cesc2(`#${rendererName}/_document1`)).should("exist");
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("not.exist");
+      cy.get(cesc2(`#${viewerName}/_document1`)).should("exist");
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -175,7 +172,7 @@ describe("Code Editor Tag Tests", function () {
       cy.log("click to update content");
       cy.get(updateAnchor).click();
 
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("have.text", "Hello!");
       cy.get(cesc("#\\/_p1")).should("have.text", "<p>Hello!</p>");
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
 
@@ -201,8 +198,8 @@ describe("Code Editor Tag Tests", function () {
       );
       cy.get(cesc("#\\/_p2")).should("have.text", "<p>Hello!</p>");
 
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
-      cy.get(cesc2(`#${rendererName}/_p2`)).should("not.exist");
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${viewerName}/_p2`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -224,8 +221,8 @@ describe("Code Editor Tag Tests", function () {
         "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
       );
 
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
-      cy.get(cesc2(`#${rendererName}/_p2`)).should("not.exist");
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${viewerName}/_p2`)).should("not.exist");
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -240,7 +237,7 @@ describe("Code Editor Tag Tests", function () {
       cy.log("click to update content");
       cy.get(updateAnchor).click();
 
-      cy.get(cesc2(`#${rendererName}/_p2`)).should("contain.text", "2");
+      cy.get(cesc2(`#${viewerName}/_p2`)).should("contain.text", "2");
 
       cy.get(cesc("#\\/_p1")).should(
         "have.text",
@@ -251,8 +248,8 @@ describe("Code Editor Tag Tests", function () {
         "<p>Hello!</p>\n<p><math simplify>1+1</math></p>",
       );
 
-      cy.get(cesc2(`#${rendererName}/_p1`)).should("have.text", "Hello!");
-      cy.get(cesc2(`#${rendererName}/_p2`) + " .mjx-mrow")
+      cy.get(cesc2(`#${viewerName}/_p1`)).should("have.text", "Hello!");
+      cy.get(cesc2(`#${viewerName}/_p2`) + " .mjx-mrow")
         .eq(0)
         .should("have.text", "2");
 
@@ -1483,8 +1480,6 @@ describe("Code Editor Tag Tests", function () {
       cy.get(cesc("#\\/_codeeditor1") + " .cm-content").type("{end}{enter}");
       cy.get(updateAnchor).click();
 
-      cy.get(updateAnchor).click();
-
       cy.get(cesc2("#/_p1")).should(
         "have.text",
         "<p>Hello!</p>\n<text name='ti'>$ti</text>\n",
@@ -2143,7 +2138,7 @@ describe("Code Editor Tag Tests", function () {
     // to wait for page to load
     cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.log("Have only one variant despite selectFromSequence child")
+    cy.log("Have only one variant despite selectFromSequence child");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 

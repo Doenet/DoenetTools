@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { getURLFromRef, scrollableContainerAtom } from "../PageViewer";
+import { PageContext, getURLFromRef } from "../PageViewer";
 import useDoenetRenderer from "../useDoenetRenderer";
 import styled from "styled-components";
 
@@ -43,10 +42,14 @@ const RefButton = styled.button`
 `;
 
 export default React.memo(function Ref(props) {
-  let { name, id, SVs, children, location, navigate, linkSettings } =
-    useDoenetRenderer(props);
+  let { name, id, SVs, children } = useDoenetRenderer(props);
 
-  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+  let {
+    location = {},
+    navigate,
+    linkSettings,
+    scrollableContainer,
+  } = useContext(PageContext) || {};
 
   let search = location.search || "";
 

@@ -52,6 +52,15 @@ export const creditAchievedAtom = atom({
   },
 });
 
+export const activityStatusAtom = atom({
+  key: "activityStatusAtom",
+  default: {
+    currentPage: 0,
+    activityAttemptNumberSetUp: 0,
+    itemWeights: [],
+  },
+});
+
 export const numberOfAttemptsAllowedAdjustmentAtom = atom({
   key: "numberOfAttemptsAllowedAdjustment",
   default: 0,
@@ -439,8 +448,6 @@ export default function AssignmentViewer() {
         let requestedVariantIndex =
           usersVariantAttempts[usersVariantAttempts.length - 1];
 
-        console.log(`requestedVariantIndex: ${requestedVariantIndex}`);
-
         setLoad({
           requestedVariantIndex,
           attemptNumber,
@@ -587,8 +594,19 @@ export default function AssignmentViewer() {
       },
   );
 
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ itemWeights, currentPage, activityAttemptNumberSetUp }) => {
+        set(activityStatusAtom, {
+          itemWeights,
+          currentPage,
+          activityAttemptNumberSetUp,
+        });
+      },
+  );
+
   function pageChanged(pageNumber) {
-    console.log(`page changed to ${pageNumber}`);
+    // console.log(`page changed to ${pageNumber}`);
   }
 
   async function incrementAttemptNumberAndAttemptsAllowed() {
@@ -613,8 +631,6 @@ export default function AssignmentViewer() {
   if (recoilDoenetId === "") {
     return null;
   }
-
-  console.log("stage", stage);
 
   // console.log(`>>>>stage -${stage}-`)
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
@@ -769,6 +785,8 @@ export default function AssignmentViewer() {
     reportSolutionViewed: "/api/reportSolutionViewed.php",
   };
 
+  const scrollableContainer = document.getElementById("mainPanel");
+
   return (
     <>
       {cidChangedAlert}
@@ -792,6 +810,7 @@ export default function AssignmentViewer() {
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
+        updateActivityStatusCallback={updateActivityStatus}
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
@@ -811,6 +830,7 @@ export default function AssignmentViewer() {
           useQueryParameters: true,
         }}
         apiURLs={apiURLs}
+        scrollableContainer={scrollableContainer}
       />
     </>
   );

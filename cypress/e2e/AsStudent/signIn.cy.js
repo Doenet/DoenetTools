@@ -44,7 +44,13 @@ describe("Student Sign-In Test", function () {
       const code = result[0].signInCode;
       cy.get('[data-test="signinCodeInput"]').type(code);
       cy.get('[data-test="signInButton"]').click();
-      cy.get('[data-test="Nav to course"]').should("be.visible");
+      cy.get('[data-test="My Courses"]').click();
+      cy.get('[data-test="Course Label"]').should(
+        "have.text",
+        "Cypress Generated",
+      );
+      cy.get('[data-test="Card Image Link"]').click();
+      cy.document().should("contain.text", "Welcome");
     });
   });
 });

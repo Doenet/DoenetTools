@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from "./graph";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function Polyline(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -36,7 +35,7 @@ export default React.memo(function Polyline(props) {
   verticesFixed.current =
     !SVs.verticesDraggable || SVs.fixed || SVs.fixLocation;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

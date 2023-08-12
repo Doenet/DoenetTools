@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, POINT_LAYER_OFFSET } from "./graph";
 import { MathJax } from "better-react-mathjax";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
-import { useRecoilValue } from "recoil";
 import { textRendererStyle } from "../../Core/utils/style";
 import { characterizeOffGraphPoint } from "./utils/offGraphIndicators";
 import {
@@ -12,6 +10,7 @@ import {
   normalizePointSize,
   normalizePointStyle,
 } from "./utils/graph";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -52,7 +51,7 @@ export default React.memo(function Point(props) {
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
   switchable.current = SVs.switchable && !SVs.fixed;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   const useOpenSymbol =
     SVs.open || ["cross", "plus"].includes(SVs.selectedStyle.markerStyle); // Cross and plus should always be treated as "open" to remain visible on graph

@@ -182,6 +182,8 @@ export default function DraftAssignmentViewer() {
     return <h1>{message}</h1>;
   }
 
+  const scrollableContainer = document.getElementById("mainPanel");
+
   return (
     <>
       <DoenetML
@@ -212,6 +214,7 @@ export default function DraftAssignmentViewer() {
           editURL: "/course?tool=editor",
           useQueryParameters: true,
         }}
+        scrollableContainer={scrollableContainer}
       />
     </>
   );

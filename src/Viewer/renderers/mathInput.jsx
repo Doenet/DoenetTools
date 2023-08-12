@@ -358,9 +358,9 @@ export default function MathInput(props) {
       <span id={id}>
         <label style={{ display: "inline-flex", maxWidth: "100%" }}>
           {label}
-          <div
+          <span
             className="mathInputWrapper"
-            style={{ cursor: mathInputWrapperCursor }}
+            style={{ cursor: mathInputWrapperCursor, display: "block" }}
           >
             <EditableMathField
               style={mathInputStyle}
@@ -416,7 +416,7 @@ export default function MathInput(props) {
                 setMathField(mf);
               }}
             />
-          </div>
+          </span>
         </label>
         {checkWorkButton}
       </span>

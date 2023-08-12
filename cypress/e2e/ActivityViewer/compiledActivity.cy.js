@@ -9,15 +9,12 @@ describe("Compiled activity tests", function () {
   it("Minimal activity definition", () => {
     // Note:
     // - missing xmlns attribute on activity document
-    // - missing behavior attribute on order (sequence is assumed)
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
           <document type="activity">
-            <order>
-              <page>hi</page>
-            </order>
+            <page>hi</page>
           </document>
 
         `,
@@ -29,15 +26,13 @@ describe("Compiled activity tests", function () {
     cy.get(cesc("#\\/_document1")).should("contain.text", "hi");
   });
 
-  it("Minimal activity definition, with attributes", () => {
+  it("Minimal activity definition, with xmlns", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
           <document type="activity" xmlns="https://doenet.org/spec/doenetml/v0.1.0">
-            <order behavior="sequence">
-              <page>hi</page>
-            </order>
+            <page>hi</page>
           </document>
 
         `,

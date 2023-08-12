@@ -4,7 +4,6 @@ import testCodeDoenetML from "./testCode.doenet?raw";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "../../Core/utils/math.js";
 import { useRecoilState } from "recoil";
-import { darkModeAtom } from "../_framework/DarkmodeController.jsx";
 import { useLocation, useNavigate } from "react-router";
 
 function Test() {
@@ -35,6 +34,7 @@ function Test() {
     allowSaveEvents: false,
     autoSubmit: false,
     paginate: true,
+    darkMode: "light",
   };
   let testSettings = JSON.parse(localStorage.getItem("test settings"));
   if (!testSettings) {
@@ -56,7 +56,7 @@ function Test() {
   const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
   const [showHints, setShowHints] = useState(testSettings.showHints);
 
-  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
+  const [darkMode, setDarkMode] = useState(testSettings.darkMode);
 
   const [allowLoadState, setAllowLoadState] = useState(
     testSettings.allowLoadState,
@@ -75,11 +75,10 @@ function Test() {
   );
   const [autoSubmit, setAutoSubmit] = useState(testSettings.autoSubmit);
   const [paginate, setPaginate] = useState(testSettings.paginate);
-  const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
   // TODO: currently, requestedVariantIndex cannot be changed from undefined
-  // so variant is always determiend by attemptNumber
+  // so variant is always determined by attemptNumber
   // Do we add the ability to specify requestedVariantIndex directly in test mode?
   let requestedVariantIndex = useRef(undefined);
 
@@ -356,9 +355,9 @@ function Test() {
             <input
               id="testRunner_darkmode"
               type="checkbox"
-              checked={darkModeToggle === "dark"}
+              checked={darkMode === "dark"}
               onChange={() => {
-                setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark");
+                setDarkMode(darkMode === "dark" ? "light" : "dark");
               }}
             />
             Dark Mode
@@ -398,12 +397,14 @@ function Test() {
         viewURL: "/portfolioviewer",
         editURL: "/publiceditor",
       }}
+      darkMode={darkMode}
     />
   );
 
   return (
     <div
       style={{ backgroundColor: "var(--canvas)", color: "var(--canvastext)" }}
+      data-theme={darkMode}
     >
       <MathJaxContext
         version={2}

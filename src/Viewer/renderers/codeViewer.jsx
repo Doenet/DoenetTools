@@ -75,7 +75,7 @@ export default React.memo(function CodeViewer(props) {
               <Button
                 size="sm"
                 variant="outline"
-                data-test="CodeViewer Update Button"
+                id={id + "_updateButton"}
                 bg="doenet.canvas"
                 leftIcon={<RxUpdate />}
                 rightIcon={

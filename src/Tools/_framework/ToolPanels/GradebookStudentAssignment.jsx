@@ -12,6 +12,7 @@ import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
+  useRecoilCallback,
 } from "recoil";
 
 import {
@@ -21,7 +22,10 @@ import {
 } from "../NewToolRoot";
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import axios from "axios";
-import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
+import {
+  activityStatusAtom,
+  currentAttemptNumber,
+} from "../ToolPanels/AssignmentViewer";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import { DoenetML } from "../../../Viewer/DoenetML";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
@@ -102,6 +106,17 @@ export default function GradebookStudentAssignmentView() {
       setSuppressMenus([]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ itemWeights, currentPage, activityAttemptNumberSetUp }) => {
+        set(activityStatusAtom, {
+          itemWeights,
+          currentPage,
+          activityAttemptNumberSetUp,
+        });
+      },
+  );
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -239,7 +254,7 @@ export default function GradebookStudentAssignmentView() {
       }
       let credit = overview.contents?.[userId]?.assignments?.[doenetId];
 
-      let score = totalPointsOrPercent * credit;
+      let score = Math.round(totalPointsOrPercent * credit * 100) / 100;
       let percentage = Math.round(credit * 1000) / 10 + "%";
 
       scoreRow["total"] = score;
@@ -299,6 +314,19 @@ export default function GradebookStudentAssignmentView() {
     // let doenetML = attemptsInfo[attemptNumber].doenetML;
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
     let paginate = attemptsInfo[attemptNumber].paginate;
+
+    const apiURLs = {
+      loadActivityState: "/api/loadActivityState.php",
+      saveActivityState: "/api/saveActivityState.php",
+      initAssignmentAttempt: "/api/initAssignmentAttempt.php",
+      recordEvent: "/api/recordEvent.php",
+      saveCompleted: "/api/saveCompleted.php",
+      loadPageState: "/api/loadPageState.php",
+      savePageState: "/api/savePageState.php",
+      saveCreditForItem: "/api/saveCreditForItem.php",
+      reportSolutionViewed: "/api/reportSolutionViewed.php",
+    };
+
     dViewer = (
       <DoenetML
         /** REAL below */
@@ -331,6 +359,7 @@ export default function GradebookStudentAssignmentView() {
         // requestedVariant={requestedVariant}
         // requestedVariant={variant}
         requestedVariantIndex={requestedVariantIndex}
+        updateActivityStatusCallback={updateActivityStatus}
         // updateAttemptNumber={setRecoilAttemptNumber}
         // updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
@@ -338,6 +367,7 @@ export default function GradebookStudentAssignmentView() {
         paginate={paginate}
         location={location}
         navigate={navigate}
+        apiURLs={apiURLs}
         linkSettings={{
           viewURL: "/course?tool=assignment",
           editURL: "/public?tool=editor",
