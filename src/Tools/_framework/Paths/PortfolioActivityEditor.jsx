@@ -1357,7 +1357,7 @@ export function PortfolioActivityEditor() {
   }, [pageId, courseId, saveDraft]);
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleEditorKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
         (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
@@ -1369,6 +1369,9 @@ export function PortfolioActivityEditor() {
         clearTimeout(timeout.current);
         handleSaveDraft();
       }
+    };
+
+    const handleDocumentKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
         (platform != "Mac" && event.ctrlKey && event.code === "KeyU")
@@ -1378,11 +1381,14 @@ export function PortfolioActivityEditor() {
         controlsOnOpen();
       }
     };
+    let codeEditorContainer = document.getElementById("codeEditorContainer");
 
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    codeEditorContainer.addEventListener("keydown", handleEditorKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+      codeEditorContainer.removeEventListener("keydown", handleEditorKeyDown);
     };
   }, [textEditorDoenetML, controlsOnOpen, platform, handleSaveDraft]);
 
@@ -1694,6 +1700,7 @@ export function PortfolioActivityEditor() {
                       borderBottom="solid 1px"
                       borderColor="doenet.mediumGray"
                       w="100%"
+                      id="codeEditorContainer"
                     >
                       <Box
                         height={`calc(100vh - 166px)`}

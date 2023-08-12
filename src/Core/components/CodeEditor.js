@@ -682,7 +682,7 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
-  async updateComponents() {
+  async updateComponents(args) {
     if (
       this.definingChildren[0]?.componentType === "codeViewer" &&
       this.definingChildren[0].doenetAttributes?.createdFromSugar
@@ -690,6 +690,7 @@ export default class CodeEditor extends BlockComponent {
       await this.coreFunctions.performAction({
         componentName: this.definingChildren[0].componentName,
         actionName: "updateComponents",
+        args,
       });
     }
   }

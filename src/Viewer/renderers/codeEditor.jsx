@@ -61,6 +61,40 @@ export default React.memo(function CodeEditor(props) {
     return null;
   }
 
+  useEffect(() => {
+    let platform = "Linux";
+    if (navigator.platform.indexOf("Win") != -1) {
+      platform = "Win";
+    } else if (navigator.platform.indexOf("Mac") != -1) {
+      platform = "Mac";
+    }
+    const handleEditorKeyDown = (event) => {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        clearTimeout(updateValueTimer.current);
+        callAction({
+          action: actions.updateValue,
+          baseVariableValue: currentValue.current,
+        });
+        updateValueTimer.current = null;
+        callAction({ action: actions.updateComponents });
+      }
+    };
+
+    let codeEditorContainer = document.getElementById(id);
+    if (SVs.showResults) {
+      codeEditorContainer.addEventListener("keydown", handleEditorKeyDown);
+    }
+
+    return () => {
+      codeEditorContainer.removeEventListener("keydown", handleEditorKeyDown);
+    };
+  }, [SVs.showResults]);
+
   const editorKey = id + "_editor";
   const viewerKey = id + "_viewer";
 
