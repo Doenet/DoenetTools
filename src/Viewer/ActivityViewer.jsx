@@ -1072,7 +1072,7 @@ export function ActivityViewer({
       //await idb_clear();
     }
     //Set assignment as completed for the user in the Data Base and Recoil
-    let resp = await axios.get("/api/saveCompleted.php", {
+    let resp = await axios.get(apiURLs.saveCompleted, {
       params: { activityId, isCompleted: true },
     });
     // console.log("resp",resp.data)
@@ -1196,6 +1196,13 @@ export function ActivityViewer({
 
     errorsAndWarningsByPage.current = [];
     errorsActivitySpecific.current = [];
+
+    // if in a timeout to save changes from a previous instance,
+    // cancel that timeout
+    let oldTimeoutId = saveStateToDBTimerId.current;
+    if (oldTimeoutId !== null) {
+      clearTimeout(oldTimeoutId);
+    }
 
     setStage("recalcParams");
     setActivityContentChanged(true);

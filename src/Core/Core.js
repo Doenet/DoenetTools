@@ -41,7 +41,7 @@ export default class Core {
     preliminarySerializedComponents,
     activityId,
     cid,
-    activityCid,
+    cidForActivity: activityCid,
     pageNumber,
     attemptNumber = 1,
     itemNumber = 1,
@@ -56,6 +56,7 @@ export default class Core {
     stateVariableChanges = {},
     coreId,
     updateDataOnContentChange,
+    apiURLs = {},
   }) {
     // console.time('core');
 
@@ -68,6 +69,7 @@ export default class Core {
     this.activityVariantIndex = activityVariantIndex;
     this.doenetML = doenetML;
     this.cid = cid;
+    this.apiURLs = apiURLs;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -10295,7 +10297,7 @@ export default class Core {
     }
 
     const payload = {
-      doenetId: this.activityId,
+      activityId: this.activityId,
       activityCid: this.activityCid,
       pageCid: this.cid,
       pageNumber: this.pageNumber,
@@ -10320,7 +10322,7 @@ export default class Core {
     };
 
     try {
-      let resp = await axios.post("/api/recordEvent.php", payload);
+      let resp = await axios.post(this.apiURLs.recordEvent, payload);
       // console.log(">>>>resp from record event", resp.data)
     } catch (e) {
       console.error(`Error saving event: ${e.message}`);
@@ -11756,7 +11758,7 @@ export default class Core {
       ),
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      doenetId: this.activityId,
+      activityId: this.activityId,
       saveId,
       serverSaveId: this.serverSaveId,
       updateDataOnContentChange: this.updateDataOnContentChange,
@@ -11809,7 +11811,7 @@ export default class Core {
 
     try {
       resp = await axios.post(
-        "/api/savePageState.php",
+        this.apiURLs.savePageState,
         this.pageStateToBeSavedToDatabase,
       );
     } catch (e) {
@@ -11922,7 +11924,7 @@ export default class Core {
     }
 
     const payload = {
-      doenetId: this.activityId,
+      activityId: this.activityId,
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
@@ -11931,7 +11933,7 @@ export default class Core {
     console.log("payload for save credit for item", payload);
 
     axios
-      .post("/api/saveCreditForItem.php", payload)
+      .post(this.apiURLs.saveCreditForItem, payload)
       .then((resp) => {
         // console.log('>>>>saveCreditForItem resp', resp.data);
 
@@ -12162,8 +12164,8 @@ export default class Core {
     }
 
     try {
-      const resp = await axios.post("/api/reportSolutionViewed.php", {
-        doenetId: this.activityId,
+      const resp = await axios.post(this.apiURLs.reportSolutionViewed, {
+        activityId: this.activityId,
         itemNumber: this.itemNumber,
         pageNumber: this.pageNumber,
         attemptNumber: this.attemptNumber,

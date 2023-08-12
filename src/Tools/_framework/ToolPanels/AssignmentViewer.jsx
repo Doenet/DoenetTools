@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  DoenetML,
-  //   saveStateToDBTimerIdAtom,
-} from "../../../Viewer/DoenetML";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import {
   useRecoilValue,
   atom,
@@ -167,14 +164,6 @@ export default function AssignmentViewer() {
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
-
-  // const getValueOfTimeoutWithoutARefresh = useRecoilCallback(
-  //   ({ snapshot }) =>
-  //     async () => {
-  //       return await snapshot.getPromise(saveStateToDBTimerIdAtom);
-  //     },
-  //   [saveStateToDBTimerIdAtom],
-  // );
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -493,13 +482,6 @@ export default function AssignmentViewer() {
       navigate(search, { replace: true });
     }
 
-    // don't attempt to save data from old attempt number
-    // (which would triggered a reset and error message);
-    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
-    if (oldTimeoutId !== null) {
-      clearTimeout(oldTimeoutId);
-    }
-
     //Check if cid has changed
 
     let cid = null;
@@ -775,6 +757,18 @@ export default function AssignmentViewer() {
   const allowLoadAndSave =
     effectivePermissions.canViewUnassignedContent === "0";
 
+  const apiURLs = {
+    loadActivityState: "/api/loadActivityState.php",
+    saveActivityState: "/api/saveActivityState.php",
+    initAssignmentAttempt: "/api/initAssignmentAttempt.php",
+    recordEvent: "/api/recordEvent.php",
+    saveCompleted: "/api/saveCompleted.php",
+    loadPageState: "/api/loadPageState.php",
+    savePageState: "/api/savePageState.php",
+    saveCreditForItem: "/api/saveCreditForItem.php",
+    reportSolutionViewed: "/api/reportSolutionViewed.php",
+  };
+
   return (
     <>
       {cidChangedAlert}
@@ -816,6 +810,7 @@ export default function AssignmentViewer() {
           editURL: "/public?tool=editor",
           useQueryParameters: true,
         }}
+        apiURLs={apiURLs}
       />
     </>
   );
