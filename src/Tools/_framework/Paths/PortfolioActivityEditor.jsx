@@ -1647,6 +1647,7 @@ export function PortfolioActivityEditor() {
                             setErrorsAndWarningsCallback={
                               setErrorsAndWarningsCallback
                             }
+                            idsIncludeActivityId={false}
                             paginate={true}
                             location={location}
                             navigate={navigate}
@@ -1826,6 +1827,7 @@ export function PortfolioActivityEditor() {
                           generatedVariantCallback={setVariants} //TODO:Replace
                           requestedVariantIndex={variants.index}
                           // setIsInErrorState={setIsInErrorState}
+                          idsIncludeActivityId={false}
                           paginate={true}
                           location={location}
                           navigate={navigate}

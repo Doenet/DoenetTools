@@ -237,6 +237,7 @@ export default function EditorViewer() {
         allowSaveEvents: false,
       }}
       activityId={doenetId}
+      idsIncludeActivityId={false}
       attemptNumber={attemptNumber}
       generatedVariantCallback={variantCallback} //TODO:Replace
       requestedVariantIndex={variantInfo.index}

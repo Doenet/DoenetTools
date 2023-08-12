@@ -307,6 +307,7 @@ export function PortfolioActivityViewer() {
                     }}
                     // doenetId={doenetId}
                     attemptNumber={1}
+                    idsIncludeActivityId={false}
                     generatedVariantCallback={setVariants}
                     requestedVariantIndex={variants.index}
                     // setIsInErrorState={setIsInErrorState}

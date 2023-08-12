@@ -404,7 +404,7 @@ export function PageViewer({
   const navigateToTarget = useCallback(
     async ({
       cid,
-      doenetId,
+      activityId,
       variantIndex,
       edit,
       hash,
@@ -418,7 +418,7 @@ export function PageViewer({
       let id = prefixForIds + cesc(effectiveName);
       let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
         cid,
-        doenetId,
+        activityId,
         variantIndex,
         edit,
         hash,
@@ -1325,7 +1325,7 @@ class ErrorBoundary extends React.Component {
 
 export function getURLFromRef({
   cid,
-  doenetId,
+  activityId,
   variantIndex,
   edit,
   hash,
@@ -1346,7 +1346,7 @@ export function getURLFromRef({
   let haveValidTarget = false;
   let externalUri = false;
 
-  if (cid || doenetId) {
+  if (cid || activityId) {
     if (cid) {
       if (linkSettings.useQueryParameters) {
         url = `cid=${cid}`;
@@ -1356,9 +1356,9 @@ export function getURLFromRef({
       }
     } else {
       if (linkSettings.useQueryParameters) {
-        url = `doenetId=${doenetId}`;
+        url = `doenetId=${activityId}`;
       } else {
-        url = `/${doenetId}`;
+        url = `/${activityId}`;
       }
     }
     if (variantIndex) {

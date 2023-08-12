@@ -61,7 +61,7 @@ export default React.memo(function Ref(props) {
 
   let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
     cid: SVs.cid,
-    doenetId: SVs.doenetId,
+    activityId: SVs.activityId,
     variantIndex: SVs.variantIndex,
     edit: SVs.edit,
     hash: SVs.hash,

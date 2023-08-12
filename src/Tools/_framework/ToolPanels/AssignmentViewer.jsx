@@ -806,6 +806,7 @@ export default function AssignmentViewer() {
         showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
         setActivityAsCompleted={setActivityAsCompleted}
+        idsIncludeActivityId={false}
         // generatedVariantCallback={variantCallback}
         linkSettings={{
           viewURL:

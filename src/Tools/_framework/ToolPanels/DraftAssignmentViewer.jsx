@@ -203,6 +203,7 @@ export default function DraftAssignmentViewer() {
         }}
         requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
+        idsIncludeActivityId={false}
         paginate={paginate}
         location={location}
         navigate={navigate}

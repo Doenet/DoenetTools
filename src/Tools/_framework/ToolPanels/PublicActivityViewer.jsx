@@ -73,6 +73,7 @@ export default function Public(props) {
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
+        idsIncludeActivityId={false}
         paginate={true}
         location={location}
         navigate={navigate}

@@ -393,6 +393,7 @@ export function PublicEditor() {
                         setErrorsAndWarningsCallback
                       }
                       // setIsInErrorState={setIsInErrorState}
+                      idsIncludeActivityId={false}
                       location={location}
                       navigate={navigate}
                       linkSettings={{

@@ -270,6 +270,7 @@ export default function EditorViewer() {
         allowSaveEvents: false,
       }}
       activityId={doenetId}
+      idsIncludeActivityId={false}
       attemptNumber={attemptNumber}
       generatedVariantCallback={variantCallback}
       requestedVariantIndex={variantInfo.index}

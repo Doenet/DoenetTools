@@ -327,6 +327,7 @@ export default function GradebookStudentAssignmentView() {
           //   pageStateSource: "submissions",
         }}
         attemptNumber={attemptNumber}
+        idsIncludeActivityId={false}
         // requestedVariant={requestedVariant}
         // requestedVariant={variant}
         requestedVariantIndex={requestedVariantIndex}
