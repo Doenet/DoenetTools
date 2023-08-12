@@ -63,6 +63,15 @@ import {
   PublicEditor,
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
+import {
+  CourseActivityEditor,
+  loader as courseActivityEditorLoader,
+  action as courseActivityEditorAction,
+} from "./Tools/_framework/Paths/CourseActivityEditor";
+import {
+  CourseHeader,
+  loader as courseHeaderLoader,
+} from "./Tools/_framework/Paths/CourseHeader";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -317,6 +326,61 @@ const router = createBrowserRouter([
       </MathJaxContext>
     ),
   },
+  {
+    path: "/courseactivityeditor/",
+    loader: courseHeaderLoader,
+    element: (
+      <>
+        <ChakraProvider theme={theme}>
+          <CourseHeader />
+        </ChakraProvider>
+      </>
+    ),
+    children: [
+      {
+        path: "/courseactivityeditor/:doenetId",
+        loader: async ({ params }) => {
+          //This leaves a location in history
+          //this is because redirect creates a standard Response object and
+          //Response objects has no way to set replace: true
+          console.log("HERE! params", params);
+
+          //Redirect as an activity can have no pageids
+          return redirect(`/courseactivityeditor/${params.doenetId}/_`);
+        },
+        element: <div>Loading...</div>,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+
+      {
+        path: "/courseactivityeditor/:doenetId/:pageId",
+        loader: courseActivityEditorLoader,
+        action: courseActivityEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <CourseActivityEditor />
+            </ChakraProvider>
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+    ],
+  },
+
   {
     path: "*",
     element: (

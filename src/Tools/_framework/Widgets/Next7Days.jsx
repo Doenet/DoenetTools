@@ -46,6 +46,7 @@ import {
   itemByDoenetId,
   useInitCourseItems,
 } from "../../../_reactComponents/Course/CourseActions";
+import { useNavigate } from "react-router";
 
 //array of objects
 //dotwIndex as a number starting at 0 for Sunday (the js standard)
@@ -488,6 +489,7 @@ export default function Next7Days({ courseId }) {
   if (selected[0]?.driveInstanceId === "currentContent") {
     selectedItemId = selected[0].itemId;
   }
+  const navigate = useNavigate();
 
   let loadAssignmentArray = useRecoilCallback(({ set }) => async (courseId) => {
     //Clear selection when click on main panel
@@ -532,15 +534,7 @@ export default function Next7Days({ courseId }) {
           let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
           let pageId = findFirstPageOfActivity(itemObj.content);
           //TODO: VariantIndex params
-          setPageToolView({
-            page: "course",
-            tool: "editor",
-            view: "",
-            params: {
-              doenetId,
-              pageId,
-            },
-          });
+          navigate(`/courseactivityeditor/${doenetId}/${pageId}`);
         } else {
           //no edit permissions
           setPageToolView({

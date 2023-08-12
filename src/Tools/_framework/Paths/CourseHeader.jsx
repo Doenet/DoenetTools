@@ -14,6 +14,9 @@ import {
   Avatar,
   VStack,
   ButtonGroup,
+  Tabs,
+  TabList,
+  Tab,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
@@ -24,35 +27,32 @@ import { useRecoilState } from "recoil";
 import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
 import axios from "axios";
 
-export async function loader() {
+export async function loader({ params }) {
+  let doenetId = params?.doenetId;
+
   //Check if signedIn
   const profileInfo = await checkIfUserClearedOut();
   let signedIn = true;
   if (profileInfo.cookieRemoved) {
     signedIn = false;
   }
-  let portfolioCourseId = null;
+  let courseId = null;
   let firstName = "";
   let lastName = "";
   let email = "";
-  let isAdmin = false;
+
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await axios.get("/api/getPorfolioCourseId.php");
-    let { data } = response;
-    portfolioCourseId = data.portfolioCourseId;
+    //TODO: In the future, when we don't have a doenetId,
+    //we need to be able to find the courseId from something else
+    const { data } = await axios.post("/api/getCourseHeader.php", { doenetId });
+    console.log(data);
+    courseId = data.courseId;
     firstName = data.firstName;
     lastName = data.lastName;
     email = data.email;
-
-    if (portfolioCourseId == "") {
-      portfolioCourseId = "not_created";
-    }
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-    const isAdminJson = await isAdminResponse.json();
-    isAdmin = isAdminJson.isAdmin;
   }
-  return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
+  return { signedIn, courseId, firstName, lastName, email };
 }
 
 function NavLinkTab({ to, children, dataTest }) {
@@ -92,9 +92,8 @@ function NavLinkTab({ to, children, dataTest }) {
   );
 }
 
-export function SiteHeader(props) {
-  let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
-    useLoaderData();
+export function CourseHeader(props) {
+  let { signedIn, courseId, firstName, lastName, email } = useLoaderData();
   const { childComponent } = props;
 
   const { colorMode, toggleColorMode, setColorMode } = useColorMode();
@@ -107,6 +106,8 @@ export function SiteHeader(props) {
     useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
+  console.log("recoilPageToolView", recoilPageToolView);
+  console.log("navigateTo", navigateTo);
 
   if (navigateTo.current != "") {
     const newHref = navigateTo.current;
@@ -114,6 +115,8 @@ export function SiteHeader(props) {
     location.href = newHref;
     navigate(newHref);
   }
+
+  let selectedTabIndex = -1; //Use this to underscore the tabs
 
   return (
     <>
@@ -150,40 +153,74 @@ export function SiteHeader(props) {
           >
             <GridItem area="leftHeader">
               <Center h="100%">
-                {/* <Button display={{ base: "flex", md: "none" }}>
-                  TABS HERE
-                </Button> */}
                 <RouterLogo />
                 <Text ml={1}>Doenet</Text>
               </Center>
             </GridItem>
             <GridItem area="menus">
-              <HStack spacing={8}>
-                <NavLinkTab to="/" dataTest="Home">
-                  Home
-                </NavLinkTab>
-                <NavLinkTab to="community" dataTest="Community">
-                  Community
-                </NavLinkTab>
-                {signedIn && (
-                  <>
-                    <NavLinkTab
-                      to={`portfolio/${portfolioCourseId}`}
-                      dataTest="Portfolio"
-                    >
-                      Portfolio
-                    </NavLinkTab>
-                    <NavLinkTab to="courses" dataTest="My Courses">
-                      My Courses
-                    </NavLinkTab>
-                    {isAdmin && (
-                      <NavLinkTab to="admin" dataTest="Admin">
-                        Admin
-                      </NavLinkTab>
-                    )}
-                  </>
-                )}
-              </HStack>
+              <Tabs index={selectedTabIndex}>
+                <TabList borderBottom="0">
+                  <Tab as="a" href="/courses">
+                    Courses
+                  </Tab>
+                  <Tab
+                    onClick={() => {
+                      navigateTo.current = "/course";
+                      setRecoilPageToolView({
+                        page: "course",
+                        tool: "dashboard",
+                        view: "",
+                        params: { courseId },
+                      });
+                    }}
+                    data-test="Dashboard"
+                  >
+                    Dashboard
+                  </Tab>
+                  <Tab
+                    onClick={() => {
+                      navigateTo.current = "/course";
+                      setRecoilPageToolView({
+                        page: "course",
+                        tool: "navigation",
+                        view: "",
+                        params: { courseId },
+                      });
+                    }}
+                    data-test="Content"
+                  >
+                    Content
+                  </Tab>
+                  <Tab
+                    onClick={() => {
+                      navigateTo.current = "/course";
+                      setRecoilPageToolView({
+                        page: "course",
+                        tool: "people",
+                        view: "",
+                        params: { courseId },
+                      });
+                    }}
+                    data-test="People"
+                  >
+                    People
+                  </Tab>
+                  <Tab
+                    onClick={() => {
+                      navigateTo.current = "/course";
+                      setRecoilPageToolView({
+                        page: "course",
+                        tool: "gradebook",
+                        view: "",
+                        params: { courseId },
+                      });
+                    }}
+                    data-test="Gradebook"
+                  >
+                    Gradebook
+                  </Tab>
+                </TabList>
+              </Tabs>
             </GridItem>
             <GridItem area="rightHeader">
               {signedIn ? (

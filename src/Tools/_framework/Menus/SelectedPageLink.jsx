@@ -61,14 +61,15 @@ export default function SelectedPageLink() {
           width="menu"
           value="View Page Link"
           onClick={() => {
-            setPageToolView({
-              page: "course",
-              tool: "editor",
-              view: "",
-              params: {
-                linkPageId: doenetId,
-              },
-            });
+            //TODO!
+            // setPageToolView({
+            //   page: "course",
+            //   tool: "editor",
+            //   view: "",
+            //   params: {
+            //     linkPageId: doenetId,
+            //   },
+            // });
           }}
         />
       </ActionButtonGroup>
