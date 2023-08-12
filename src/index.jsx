@@ -72,6 +72,10 @@ import {
   CourseHeader,
   loader as courseHeaderLoader,
 } from "./Tools/_framework/Paths/CourseHeader";
+import {
+  CourseLinkPageViewer,
+  loader as courseLinkPageViewerLoader,
+} from "./Tools/_framework/Paths/CourseLinkPageViewer";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -369,6 +373,41 @@ const router = createBrowserRouter([
           >
             <ChakraProvider theme={theme}>
               <CourseActivityEditor />
+            </ChakraProvider>
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+    ],
+  },
+
+  {
+    path: "/courselinkpageviewer/",
+    loader: courseHeaderLoader,
+    element: (
+      <>
+        <ChakraProvider theme={theme}>
+          <CourseHeader />
+        </ChakraProvider>
+      </>
+    ),
+    children: [
+      {
+        path: "/courselinkpageviewer/:doenetId",
+        loader: courseLinkPageViewerLoader,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <CourseLinkPageViewer />
             </ChakraProvider>
           </MathJaxContext>
         ),

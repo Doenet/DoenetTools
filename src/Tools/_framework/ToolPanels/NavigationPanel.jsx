@@ -144,17 +144,8 @@ export default function NavigationPanel() {
             `/courseactivityeditor/${clickedItem.containingDoenetId}/${doenetId}`,
           );
         } else if (clickedItem.type == "pageLink") {
-          //TODO!
-          // set(pageToolViewAtom, (prev) => {
-          //   return {
-          //     page: "course",
-          //     tool: "editor",
-          //     view: prev.view,
-          //     params: {
-          //       linkPageId: doenetId,
-          //     },
-          //   };
-          // });
+          clearSelections();
+          navigate(`/courselinkpageviewer/${doenetId}/`);
         } else if (clickedItem.type == "activity") {
           if (canEditContent == "1") {
             //Find first page

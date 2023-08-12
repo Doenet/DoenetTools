@@ -13,6 +13,8 @@ import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/A
 import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
 import axios from "axios";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import { useNavigate } from "react-router";
+import { selectedMenuPanelAtom } from "../Panels/NewMenuPanel";
 
 export default function SelectedPageLink() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -43,6 +45,20 @@ export default function SelectedPageLink() {
     }
   }, [doenetId]); //Only check when the pageId changes
 
+  const navigate = useNavigate();
+  let clearSelections = useRecoilCallback(({ snapshot, set }) => async () => {
+    const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom, null);
+    set(selectedCourseItems, []);
+    for (let deselectId of selectedItems) {
+      set(itemByDoenetId(deselectId), (was) => {
+        let newObj = { ...was };
+        newObj.isSelected = false;
+        return newObj;
+      });
+    }
+  });
+
   let heading = (
     <h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }}>
       <FontAwesomeIcon icon={faLink} /> Link to {pageObj.label}
@@ -61,15 +77,9 @@ export default function SelectedPageLink() {
           width="menu"
           value="View Page Link"
           onClick={() => {
-            //TODO!
-            // setPageToolView({
-            //   page: "course",
-            //   tool: "editor",
-            //   view: "",
-            //   params: {
-            //     linkPageId: doenetId,
-            //   },
-            // });
+            //Deselect and navigate to editor
+            clearSelections();
+            navigate(`/courselinkpageviewer/${doenetId}/`);
           }}
         />
       </ActionButtonGroup>

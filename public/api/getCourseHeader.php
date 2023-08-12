@@ -49,9 +49,20 @@ try {
         $row = $result->fetch_assoc();
         $courseId = $row['courseId'];
     }else {
-        throw new Exception("Failed to get content. " . $conn->error);
+        //Try link page
+        $sql = "
+        SELECT courseId
+        FROM link_pages
+        WHERE doenetId='$doenetId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $courseId = $row['courseId'];
+        }else {
+            throw new Exception("Failed to get content. " . $conn->error);
+        }
     }
-
 
     $response_arr = [
         'success' => true,
