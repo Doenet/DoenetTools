@@ -391,7 +391,7 @@ export default function MathInput(props) {
                       // can be converted to real arrays with Array.from()
                       // https://stackoverflow.com/a/22754453
                       let keyboards = Array.from(
-                        document.getElementsByClassName("keyboard"),
+                        document.getElementsByClassName("keyboardcontainer"),
                       );
                       keyboards.forEach((keyboard) => {
                         if (keyboard?.contains(e.relatedTarget)) {
