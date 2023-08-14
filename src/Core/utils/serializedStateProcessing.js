@@ -2870,7 +2870,7 @@ export function countRegularComponentTypesInNamespace(
       // if created from a attribute/sugar/macro, don't include in component counts
       if (
         !(
-          doenetAttributes?.isAttributeChild ||
+          doenetAttributes?.isAttributeChildFor ||
           doenetAttributes?.createdFromSugar ||
           doenetAttributes?.createdFromMacro
         )
@@ -2914,7 +2914,7 @@ export function renameAutonameBasedOnNewCounts(
       // if created from a attribute/sugar/macro, don't include in component counts
       if (
         !(
-          doenetAttributes?.isAttributeChild ||
+          doenetAttributes?.isAttributeChildFor ||
           doenetAttributes?.createdFromSugar ||
           doenetAttributes?.createdFromMacro
         )
@@ -3022,7 +3022,7 @@ export function createComponentNames({
     // let indexAlias = doenetAttributes.indexAlias;
 
     let mustCreateUniqueName =
-      doenetAttributes.isAttributeChild ||
+      doenetAttributes.isAttributeChildFor ||
       doenetAttributes.createdFromSugar ||
       doenetAttributes.createdFromMacro ||
       doenetAttributes.createUniqueName;
@@ -3230,7 +3230,7 @@ export function createComponentNames({
     // if created from an attribute/sugar/macro, don't include in component counts
     if (
       !(
-        doenetAttributes.isAttributeChild ||
+        doenetAttributes.isAttributeChildFor ||
         doenetAttributes.createdFromSugar ||
         doenetAttributes.createdFromMacro
       )
@@ -3640,7 +3640,7 @@ export function createComponentNames({
             comp.doenetAttributes = {};
           }
 
-          comp.doenetAttributes.isAttributeChild = true;
+          comp.doenetAttributes.isAttributeChildFor = attrName;
           if (attribute.ignoreFixed) {
             comp.doenetAttributes.ignoreParentFixed = true;
           }

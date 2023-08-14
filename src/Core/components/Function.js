@@ -402,51 +402,101 @@ export default class Function extends InlineComponent {
     };
 
     stateVariableDefinitions.domain = {
-      returnDependencies: () => ({
-        domainAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "domain",
-          variableNames: ["intervals"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["domain"],
-        },
+      isArray: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "interval",
+      },
+      returnArraySizeDependencies: () => ({
         numInputs: {
           dependencyType: "stateVariable",
           variableName: "numInputs",
         },
       }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.domainAttr !== null) {
-          let numInputs = dependencyValues.numInputs;
-          let domain = dependencyValues.domainAttr.stateValues.intervals.slice(
-            0,
-            numInputs,
-          );
-          if (domain.length !== numInputs) {
-            return { setValue: { domain: null } };
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numInputs];
+      },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          domainAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "domain",
+            variableNames: ["intervals"],
+          },
+          functionChild: {
+            dependencyType: "child",
+            childGroups: ["functions"],
+            variableNames: ["domain"],
+          },
+          numInputs: {
+            dependencyType: "stateVariable",
+            variableName: "numInputs",
+          },
+        },
+      }),
+      arrayDefinitionByKey({ globalDependencyValues, componentName }) {
+        if (globalDependencyValues.domainAttr !== null) {
+          let numInputs = globalDependencyValues.numInputs;
+          let specifiedDomain =
+            globalDependencyValues.domainAttr.stateValues.intervals.slice(
+              0,
+              numInputs,
+            );
+          if (specifiedDomain.length !== numInputs) {
+            let warning = {
+              message: `Insufficient dimensions for domain for function. Domain has ${
+                specifiedDomain.length
+              } interval${
+                specifiedDomain.length === 1 ? "" : "s"
+              } but the function has ${numInputs} input${
+                numInputs === 1 ? "" : "s"
+              }.`,
+              level: 1,
+            };
+            let infDomain = me.fromAst([
+              "interval",
+              ["tuple", -Infinity, Infinity],
+              ["tuple", false, false],
+            ]);
+            let domain = Array(numInputs).fill(infDomain);
+            return { setValue: { domain }, sendWarnings: [warning] };
           }
 
           if (
-            !domain.every(
+            !specifiedDomain.every(
               (interval) =>
                 Array.isArray(interval.tree) && interval.tree[0] === "interval",
             )
           ) {
-            return { setValue: { domain: null } };
+            let warning = {
+              message: `Invalid format for domain for function.`,
+              level: 1,
+            };
+            let infDomain = me.fromAst([
+              "interval",
+              ["tuple", -Infinity, Infinity],
+              ["tuple", false, false],
+            ]);
+            let domain = Array(numInputs).fill(infDomain);
+            return { setValue: { domain }, sendWarnings: [warning] };
           }
 
-          return { setValue: { domain } };
-        } else if (dependencyValues.functionChild.length > 0) {
+          return { setValue: { domain: specifiedDomain } };
+        } else if (globalDependencyValues.functionChild.length > 0) {
           return {
             setValue: {
-              domain: dependencyValues.functionChild[0].stateValues.domain,
+              domain:
+                globalDependencyValues.functionChild[0].stateValues.domain,
             },
           };
         } else {
-          return { setValue: { domain: null } };
+          let infDomain = me.fromAst([
+            "interval",
+            ["tuple", -Infinity, Infinity],
+            ["tuple", false, false],
+          ]);
+          let domain = Array(globalDependencyValues.numInputs).fill(infDomain);
+          return { setValue: { domain } };
         }
       },
     };

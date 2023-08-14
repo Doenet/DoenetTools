@@ -482,7 +482,7 @@ export default class Core {
       for (let componentName in this.unmatchedChildren) {
         let parent = this._components[componentName];
         this.errorWarnings.warnings.push({
-          message: `Invalid children for <${parent.componentType}>: ${this.unmatchedChildren[componentName].message}`,
+          message: this.unmatchedChildren[componentName].message,
           level: 1,
           doenetMLrange: parent.doenetMLrange,
         });
@@ -2005,25 +2005,37 @@ export default class Core {
     } else {
       parent.childrenMatchedWithPlaceholders = false;
       parent.matchedCompositeChildrenWithPlaceholders = true;
-      let unmatchedChildrenTypes = [];
-      for (let child of childGroupResults.unmatchedChildren) {
-        if (typeof child === "string") {
-          unmatchedChildrenTypes.push("string");
-        } else {
-          unmatchedChildrenTypes.push("<" + child.componentType + ">");
-          if (
-            this.componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "_composite",
-            })
-          ) {
-            parent.matchedCompositeChildrenWithPlaceholders = false;
+
+      if (parent.doenetAttributes.isAttributeChildFor) {
+        let attributeForComponentType =
+          parent.ancestors[0].componentClass.componentType;
+        this.unmatchedChildren[parent.componentName] = {
+          message: `Invalid format for attribute ${parent.doenetAttributes.isAttributeChildFor} of <${attributeForComponentType}>.`,
+        };
+      } else {
+        let unmatchedChildrenTypes = [];
+        for (let child of childGroupResults.unmatchedChildren) {
+          if (typeof child === "string") {
+            unmatchedChildrenTypes.push("string");
+          } else {
+            unmatchedChildrenTypes.push("<" + child.componentType + ">");
+            if (
+              this.componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "_composite",
+              })
+            ) {
+              parent.matchedCompositeChildrenWithPlaceholders = false;
+            }
           }
         }
+
+        this.unmatchedChildren[parent.componentName] = {
+          message: `Invalid children for <${
+            parent.componentType
+          }>: Found invalid children: ${unmatchedChildrenTypes.join(", ")}`,
+        };
       }
-      this.unmatchedChildren[parent.componentName] = {
-        message: `Found invalid children: ${unmatchedChildrenTypes.join(", ")}`,
-      };
     }
 
     await this.dependencies.addBlockersFromChangedActiveChildren({ parent });
