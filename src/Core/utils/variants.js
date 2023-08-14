@@ -131,7 +131,15 @@ export function gatherVariantComponents({
       continue;
     }
 
-    if (!serializedComponent.children) {
+    let compClass =
+      componentInfoObjects.allComponentClasses[
+        serializedComponent.componentType
+      ];
+
+    if (
+      compClass?.ignoreVariantsFromChildren ||
+      !serializedComponent.children
+    ) {
       continue;
     }
 

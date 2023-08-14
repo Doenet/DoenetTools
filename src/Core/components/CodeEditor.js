@@ -18,6 +18,8 @@ export default class CodeEditor extends BlockComponent {
 
   static renderChildren = true;
 
+  static ignoreVariantsFromChildren = true;
+
   static processWhenJustUpdatedForNewComponent = true;
 
   static get stateVariablesShadowedForReference() {
