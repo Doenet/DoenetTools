@@ -44,7 +44,7 @@ if ($permissions["canModifyActivitySettings"] != '1'){
 }
 
 $settingKeys = array(
-  "userCanViewSource"
+  "individualize"
 );
 
 $providedValues = [];
@@ -67,7 +67,7 @@ unset($key, $value);
 
 //protect against invalid boolean values
 $boolKeys = array(
-  "userCanViewSource"
+  "individualize"
 );
 
 foreach ($boolKeys as $key) {
@@ -101,7 +101,7 @@ $updates = implode(
 
   if(count($providedValues) > 0) {
 
-    $sql = "UPDATE course_content SET
+    $sql = "UPDATE assignment SET
         $updates
         WHERE doenetId='$doenetId'
         AND courseId='$courseId'
@@ -112,24 +112,6 @@ $updates = implode(
     if ($result == false) {
       throw new Exception("Database error.");
     }
-  }
-
-  if(array_key_exists("itemWeights", $_POST)) {
-
-    $itemWeights = implode(",",$_POST['itemWeights']);
-
-    $sql = "
-    UPDATE course_content
-    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.itemWeights',JSON_ARRAY($itemWeights))
-    WHERE doenetId='$doenetId'
-    AND courseId='$courseId'
-    ";
-    $result = $conn->query($sql);
-
-    if ($result == false) {
-      throw new Exception("Database error.");
-    }
-
   }
 
     // set response code - 200 OK

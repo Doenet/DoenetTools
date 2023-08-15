@@ -139,11 +139,26 @@ export async function action({ params, request }) {
       success: resp.data.success,
     };
   }
-  if (formObj._action == "update via keyToUpdate") {
+  if (formObj._action == "update content via keyToUpdate") {
     let resp = await axios.post("/api/updateContentSettingsByKey.php", {
       doenetId: formObj.doenetId,
       [formObj.keyToUpdate]: formObj.value,
     });
+    console.log("formObj", formObj);
+    console.log("resp", resp);
+
+    return {
+      _action: formObj._action,
+      success: resp.data.success,
+    };
+  }
+  if (formObj._action == "update assignment via keyToUpdate") {
+    let resp = await axios.post("/api/updateAssignmentSettingsByKey.php", {
+      doenetId: formObj.doenetId,
+      [formObj.keyToUpdate]: formObj.value,
+    });
+    console.log("formObj", formObj);
+    console.log("resp", resp);
 
     return {
       _action: formObj._action,
@@ -1187,7 +1202,7 @@ export function GeneralActivityControls({
                 setCheckboxShowDoenetMLSource(showDoenetMLSource);
                 fetcher.submit(
                   {
-                    _action: "update via keyToUpdate",
+                    _action: "update content via keyToUpdate",
                     keyToUpdate: "userCanViewSource",
                     value: showDoenetMLSource,
                     doenetId,
@@ -1207,6 +1222,57 @@ export function GeneralActivityControls({
         <input type="hidden" name="_action" value="update general" />
       </Form>
     </>
+  );
+}
+
+function PresentationControls({ courseId, doenetId, activityData }) {
+  const fetcher = useFetcher();
+
+  const [individualize, setIndividualize] = useState(
+    activityData.individualize,
+  );
+
+  if (!activityData.has_assignment_table) {
+    return (
+      <Text>
+        Presentation controls are available after activity is assigned.
+      </Text>
+    );
+  }
+
+  return (
+    <VStack alignItems="flex-start">
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show DoenetML Checkbox"
+          name="showDoenetML"
+          value="on"
+          isChecked={individualize == "1"}
+          onChange={(e) => {
+            let individualize = "0";
+            if (e.target.checked) {
+              individualize = "1";
+            }
+            setIndividualize(individualize);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "individualize",
+                value: individualize,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Individualize{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+    </VStack>
   );
 }
 
@@ -1711,7 +1777,13 @@ function CourseActivitySettingsDrawer({
                 <TabPanel>
                   <SupportFilesControls onClose={onClose} />
                 </TabPanel>
-                <TabPanel>Presentation</TabPanel>
+                <TabPanel>
+                  <PresentationControls
+                    doenetId={doenetId}
+                    activityData={activityData}
+                    courseId={courseId}
+                  />
+                </TabPanel>
                 <TabPanel>Assign</TabPanel>
                 <TabPanel>Grade</TabPanel>
               </TabPanels>

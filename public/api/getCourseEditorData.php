@@ -52,26 +52,95 @@ if ($isBanned == '1'){
     throw new Exception("Activity has been banned.");
 }
 
+$contentTable = [
+    "type"=>$type,
+    "label"=>$label,
+    "isBanned"=>$isBanned,
+    "isAssigned"=>$isAssigned,
+    "userCanViewSource"=>$userCanViewSource,
+    "isGloballyAssigned"=>$isGloballyAssigned,
+    "isPublic"=>$isPublic,
+    "imagePath"=>$imagePath,
+    "content"=>$json['content'],
+    "isSinglePage"=>$json['isSinglePage'],
+    "isPublic"=>$isPublic,
+    "version"=>$json['version'],
+    "learningOutcomes"=>$learningOutcomes,
+];
+
 }else{
-throw new Exception("Activity not found.");
+    throw new Exception("Activity not found.");
 }
+
+//Try to add on the activity table settings
+$assignmentTable = [];
+
+$sql = "SELECT
+  a.assignedDate AS assignedDate,
+  a.dueDate AS dueDate,
+  a.pinnedAfterDate As pinnedAfterDate,
+  a.pinnedUntilDate As pinnedUntilDate,
+  a.timeLimit AS timeLimit,
+  a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+  a.attemptAggregation AS attemptAggregation,
+  a.totalPointsOrPercent AS totalPointsOrPercent,
+  a.gradeCategory AS gradeCategory,
+  a.individualize AS individualize,
+  a.showSolution AS showSolution,
+  a.showSolutionInGradebook AS showSolutionInGradebook,
+  a.showFeedback AS showFeedback,
+  a.showHints AS showHints,
+  a.showCorrectness AS showCorrectness,
+  a.showCreditAchievedMenu AS showCreditAchievedMenu,
+  a.paginate AS paginate,
+  a.showFinishButton AS showFinishButton,
+  a.proctorMakesAvailable AS proctorMakesAvailable,
+  a.autoSubmit AS autoSubmit,
+  a.doenetId AS doenetId
+  FROM assignment AS a
+  WHERE a.doenetId = '$doenetId' 
+  ";
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0){
+    $row = $result->fetch_assoc();
+
+    $assignmentTable = array(
+          "has_assignment_table" => true,
+          "assignment_title" => $row['assignment_title'],
+          "assignedDate" => $row['assignedDate'],
+          "pinnedAfterDate" => $row['pinnedAfterDate'],
+          "pinnedUntilDate" => $row['pinnedUntilDate'],
+          "dueDate" => $row['dueDate'],
+          "timeLimit" => $row['timeLimit'],
+          "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
+          "attemptAggregation" => $row['attemptAggregation'],
+          "totalPointsOrPercent" => $row['totalPointsOrPercent'],
+          "gradeCategory" => $row['gradeCategory'],
+          "individualize" => $row['individualize'],
+          "showSolution" => $row['showSolution'],
+          "showSolutionInGradebook" => $row['showSolutionInGradebook'],
+          "showFeedback" => $row['showFeedback'],
+          "showHints" => $row['showHints'],
+          "showCorrectness" => $row['showCorrectness'],
+          "showCreditAchievedMenu" => $row['showCreditAchievedMenu'],
+          "paginate" => $row['paginate'],
+          "showFinishButton" => $row['showFinishButton'],
+          "proctorMakesAvailable" => $row['proctorMakesAvailable'],
+          "autoSubmit" => $row['autoSubmit'],
+          "doenetId" => $row['doenetId']
+    );
+  }else{
+    $assignmentTable = array(
+    "has_assignment_table" => false,
+    );
+  }
+
+  $activity = array_merge($contentTable,$assignmentTable);
+
+
     $response_arr = [
         'success' => true,
-        "activity"=>[
-            "type"=>$type,
-            "label"=>$label,
-            "isBanned"=>$isBanned,
-            "isAssigned"=>$isAssigned,
-            "userCanViewSource"=>$userCanViewSource,
-            "isGloballyAssigned"=>$isGloballyAssigned,
-            "isPublic"=>$isPublic,
-            "imagePath"=>$imagePath,
-            "content"=>$json['content'],
-            "isSinglePage"=>$json['isSinglePage'],
-            "isPublic"=>$isPublic,
-            "version"=>$json['version'],
-            "learningOutcomes"=>$learningOutcomes,
-        ],
+        "activity"=>$activity,
         "courseId"=>$courseId,
 
     ];
