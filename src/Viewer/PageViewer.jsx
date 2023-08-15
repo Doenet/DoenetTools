@@ -16,7 +16,7 @@ import { rendererState } from "./useDoenetRenderer";
 import { atom, atomFamily, useRecoilCallback, useRecoilValue } from "recoil";
 import { get as idb_get, set as idb_set } from "idb-keyval";
 import axios from "axios";
-import { cesc } from "../_utils/url";
+import { cesc } from "../utils/url";
 
 const rendererUpdatesToIgnore = atomFamily({
   key: "rendererUpdatesToIgnore",

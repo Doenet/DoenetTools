@@ -5,7 +5,7 @@ import { MathJax } from "better-react-mathjax";
 import me from "math-expressions";
 import { textRendererStyle } from "../../Core/utils/style";
 import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
-import { cesc } from "../../_utils/url";
+import { cesc } from "../../utils/url";
 import { PageContext } from "../PageViewer";
 
 export default React.memo(function MathComponent(props) {

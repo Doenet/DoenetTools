@@ -1,0 +1,54 @@
+todos for converting to <DoenetML>
+
+fix setActivityAsCompleted in ActivityViewer
+
+Do we do anything with the PageViewer generatedVariantCallback?
+If not, should just remove it
+
+in php, change activityId to doenetId
+in php, change cidForActivity to activityCid
+
+X in core, change cidForActivity to activityCid
+
+
+Why are we JSON.stringifying lastDoenetMLFromProps on line 404 of ActivityViewer?
+I removed it to make it
+      cid = await cidFromText(lastDoenetMLFromProps);
+Is that going to cause problems?
+
+
+check that pageDoenetML used to calculate cid for embeded pages has right doenetML slice
+
+check attributeRanges for open or self-close, with or without value
+
+
+
+test:
+- <page><text>hello</text> <text>there</text></page>
+- editor with viewer
+  - activity variants
+  - update button disabling
+  - errors and warnings
+  - errors and warnings in children not showing up in main editor (at least in most cases)
+- links
+  - placement exam links go to the right place
+  - public editor links go to public editor
+- ref with activityId, and deprecated doenetId
+  
+
+Determine a way to pass down the scollable container into <DoenetML>
+and implement for each case where call it
+
+find all places where assume old structure of compiled activity
+(with content and an initial order)
+and fix
+(This might be complete)
+
+more ignore errors from children?
+
+apiURLs or functions
+
+
+More general: selectMultiple inline choiceinput needs help
+
+if load in activity data from database/local storage, activity specific errors won't be in error object

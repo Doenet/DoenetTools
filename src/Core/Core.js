@@ -23,7 +23,6 @@ import { nanoid } from "nanoid";
 import { cidFromText } from "./utils/cid";
 import createComponentInfoObjects from "./utils/componentInfoObjects";
 import { get as idb_get, set as idb_set } from "idb-keyval";
-import { toastType } from "../Tools/_framework/ToastTypes";
 import axios from "axios";
 import { gatherVariantComponents, getNumVariants } from "./utils/variants";
 import {
@@ -10540,7 +10539,7 @@ export default class Core {
       //   coreId: this.coreId,
       //   args: {
       //     message: `Error saving event: ${e.message}`,
-      //     toastType: toastType.ERROR
+      //     alertType: "error"
       //   }
       // })
     }
@@ -12012,7 +12011,7 @@ export default class Core {
     //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
-    //     toastType: toastType.ERROR
+    //     alertType: "error"
     //   }
     // })
 
@@ -12030,7 +12029,7 @@ export default class Core {
         args: {
           message:
             "Error synchronizing data.  Changes not saved to the server.",
-          toastType: toastType.ERROR,
+          alertType: "error",
         },
       });
       return;
@@ -12044,7 +12043,7 @@ export default class Core {
         coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
-          toastType: toastType.ERROR,
+          alertType: "error",
         },
       });
       return;
@@ -12058,7 +12057,7 @@ export default class Core {
         coreId: this.coreId,
         args: {
           message: data.message,
-          toastType: toastType.ERROR,
+          alertType: "error",
         },
       });
       return;
@@ -12152,7 +12151,7 @@ export default class Core {
             coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
-              toastType: toastType.ERROR,
+              alertType: "error",
             },
           });
         } else if (!resp.data.success) {
@@ -12161,7 +12160,7 @@ export default class Core {
             coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
-              toastType: toastType.ERROR,
+              alertType: "error",
             },
           });
         } else {
@@ -12187,7 +12186,7 @@ export default class Core {
                 coreId: this.coreId,
                 args: {
                   message: "No credit awarded since solution was viewed.",
-                  toastType: toastType.INFO,
+                  alertType: "info",
                 },
               });
             }
@@ -12200,7 +12199,7 @@ export default class Core {
                 args: {
                   message:
                     "No credit awarded since the time allowed has expired.",
-                  toastType: toastType.INFO,
+                  alertType: "info",
                 },
               });
             }
@@ -12212,7 +12211,7 @@ export default class Core {
                 coreId: this.coreId,
                 args: {
                   message: "No credit awarded since the due date has passed.",
-                  toastType: toastType.INFO,
+                  alertType: "info",
                 },
               });
             }
@@ -12225,7 +12224,7 @@ export default class Core {
                 args: {
                   message:
                     "No credit awarded since no more attempts are allowed.",
-                  toastType: toastType.INFO,
+                  alertType: "info",
                 },
               });
             }
@@ -12236,7 +12235,7 @@ export default class Core {
               coreId: this.coreId,
               args: {
                 message: "Credit not saved due to database error.",
-                toastType: toastType.ERROR,
+                alertType: "error",
               },
             });
           }
@@ -12248,7 +12247,7 @@ export default class Core {
           coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
-            toastType: toastType.ERROR,
+            alertType: "error",
           },
         });
       });
@@ -12387,7 +12386,7 @@ export default class Core {
           coreId: this.coreId,
           args: {
             message,
-            toastType: toastType.ERROR,
+            alertType: "error",
           },
         });
         return {
@@ -12420,7 +12419,7 @@ export default class Core {
         coreId: this.coreId,
         args: {
           message,
-          toastType: toastType.ERROR,
+          alertType: "error",
         },
       });
 

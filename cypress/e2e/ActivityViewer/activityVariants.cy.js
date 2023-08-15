@@ -1,5 +1,5 @@
 import { numberToLetters } from "../../../src/Core/utils/sequence";
-import { cesc, cesc2 } from "../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../src/utils/url";
 
 describe("Activity variants tests", function () {
   beforeEach(() => {

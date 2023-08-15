@@ -1,103 +1,154 @@
-# Welcome to Doenet!
+# DoenetML
 
-The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages. It includes tools for authoring interactive educational content, including our custom DoenetML markup language, and conducting educational research using the content. Our ultimate goal is to provide research-based tools to help instructors and learners discover the most effective content. Simply put, Doenet gives teachers complete flexibility over their educational content and gives them power of anonymized student data to track learning outcomes. With Doenet, we hope to help teachers teach better and students learn better.
+Semantic markup for building interactive web activities.
+[Read more about Doenet](https://www.doenet.org)
 
-Although we are still in the early stages, we are excited to introduce Doenet and illustrate the richly interactive activities that one can author with it.
+```xml
+<p>Drag the point to the 4th quadrant.</p>
+<graph>
+    <point xs='2 3'/>
+</graph>
+```
 
-For more background and information on the Doenet project, see this [MAA DUE Point](https://www.mathvalues.org/masterblog/reimagining-online-mathematics) article.
+![](media/graph_example.png)
 
-We would love to hear from you! Join our [Discord](https://discord.gg/PUduwtKJ5h) to ask questions and stay updated on our progress!
+## Features
 
-## What We Use
+- Internally manages a directed acyclic graph of dependencies to coordinate updates of self-referential worksheets
 
-Doenet is built using React and bundled for the web using Snowpack. Data for Doenet is stored in MySQL tables and components have been tested in Cypress. We use Docker to ship and run Doenet and our container uses Apache, Snowpack, PHP, MySQL, and RTNode. For reference, the container is set up to use port 80 for the local Downet website, port 8080 for the build site, and port 3306 for MySQL. You may have to change the ports used on your local device.
+## Quickstart
 
-<!-- Need build instructions from Kevin  -->
+In the project folder:
 
-## Getting Started
+`$ npm install`
 
-Doenet is open-source so that instructors and learners can customize it to best serve their needs. To start developing:
+`$ npm run dev`
 
-1. Fork the DoenetTools repository.
+Paste demo code into `src/test/testCode.doenet`
 
-   To enable the v2 docker compose CLI on Linux, [install the docker-compose-plugin](https://docs.docker.com/compose/install/linux/).
+Navigate to `localhost:5173`
 
-2. Open the repository and run `npm install` to install all modules used by Doenet.
+## Demos
 
-3. To start your local version of Doenet, run `npm start` and view it in the browser at http://localhost:80.
+<details>
+<summary>Point and Collect</summary>
 
-- If you are working with databases, we recommend installing [Sequel Ace](https://sequel-ace.com/) on MacOS or [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) on Windows and Linux.
+```xml
+<graph name="graph">
+	<point name="p1" xs="2 3"/>
+	<point name="p2" xs="$p1.y $p1.x"/>
+</graph>
+<asList>
+	<collect source="graph" componentTypes="point"/>
+</asList>
+```
 
-## Basic Scripts
+</details>
 
-### - npm start / docker compose up
+<details>
+<summary>Text Input</summary>
 
-Creates and starts the Docker container and runs the app in development mode.
-Open http://localhost:80 to view it in the browser.
+```xml
+<textInput name="t1" prefill="Cake"/>
+<text>$t1.value is good.</text>
+```
 
-The page will reload if you make edits.
-You will also see any lint errors in the console.
+</details>
 
-### - docker compose down
+<details>
+<summary>Sequence and Math Input</summary>
 
-Stops and removes the Docker container created by `docker compose up`.
+```xml
+<mathInput name="n1" prefill="4"/>
+<mathInput name="n2" prefill="14"/>
+<p>
+	Count from $n1.value to $n2.value:
+	<aslist><sequence name="seq" from="$n1.value" to="$n2.value"/></aslist>.
 
-While switching between branches, it is good practice to `docker compose down` and then `docker compose up` to view the correct version of the development site.
+	And the fifth number is $seq[5].value.
+</p>
+```
 
-### - npm run start:db
+</details>
 
-Starts the MySQL database.
+<details>
+<summary>Point Parallelogram</summary>
 
-### - npm run reset:db
+```xml
+<graph>
+	<point name="p1" xs="0 4"/>
+	<point name="p2" xs="3 0"/>
+	<point name="p3" xs="$p1.x+$p2.x $p1.y+$p2.y"/>
+</graph>
+```
 
-Resets the MySQL database.
-Running this command often fixes minor database loading issues.
+</details>
 
-### - npm run publish:db
+<details>
+<summary>Boolean Input</summary>
 
-Takes the current local database and replaces the default one in the project to propagate database changes for the local code developers.
+```xml
+<booleanInput name="bool"/>
 
-### - npm run build
+I think<text hide="$bool"> therefore I am</text>.
 
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
+<booleanInput name="bool2"/>
+<text hide="$bool2">Yin</text>
+<text hide="!$bool2">Yang</text>
+```
 
-**For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
+</details>
 
-### - npm test
+<details>
+<summary>Value vs Immediate Value</summary>
 
-Launches the application test runner.
-Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
+```xml
+<graph name="graph">
+	<point name="p1" xs="$n1.value $n2.value"/>
+	<point name="p2" xs="$n1.immediateValue+0.5 $n2.immediateValue"/>
+</graph>
 
-## Troubleshooting Common Issues
+<mathInput name="n1" prefill="0"/>
+<mathInput name="n2" prefill="0"/>
 
-- Can not find the `doenet_local` database
-  - run `npm create:db` and then `npm reset:db`
-- esbuild fails to install
-  - move to a node version `17.4` or higher
-- cypress does not run
-  - run `npm install` on your local machine first
-- dev container crashes due to cypress error
-  - make sure you have placed all cypress related dependencies in the optional category with `--save-optional`
-- course creation or other basic functions are not working after an update
-  - run `npm reset:db` 
+One point uses immediate value plus an offset
+```
 
-### - Can not find the doenet_local database
+</details>
 
-Run `npm create:db` and then `npm reset:db`.
+<details>
+<summary>Collect Component Index</summary>
 
-### - Esbuild fails to install
+```xmlThe following paragraph contains numbers and sequences based on the number
+<number name="n" copySource="/_mathinput1" />:
 
-Move to a node version 17.4 or higher.
+<p name="p1">
+This paragraphs contains:
+number
+<number>23</number>
+sequence
+<aslist><sequence from="1" to="$n"/></aslist>
+number
+<number>42</number>
+number
+<number>2</number>
+sequence
+<aslist><sequence from="$n" to="2*$n"/></aslist>
+number
+<number>30</number>
+</p>
 
-### - Cypress does not run
+Collect the numbers in that paragraph: <aslist><collect name="c1" source="p1" componentTypes="number"/></aslist>.
 
-Remember to run `npm install` on your local machine.
+The fifth number is $c1[5].value.
 
-### - Dev container crashes due to cypress error
+Now try changing the number
+<mathInput prefill="6"/>
+```
 
-Make sure all cypress related dependencies have been placed in the optional category with `--save-optional` tag.
+</details>
 
-### - Course creation or other basic functions are not working after an update
+<!-- ## Technical Documentation
+JavaScript parses the DoenetML and calls Rust functions, passing in strings. On core creation, Rust returns a pointer to its main struct, existing in WASM linear memory. Javascript uses this to access the other core functions. Rust returns rendering data as strings.
 
-Run `npm reset:db`.
+The Doenet Rust code is in the doenet-core crate, doenet-core/src/lib.rs being the main file. The crate can be built as a library independent of javascript, but without a parser, one would need pre-parsed DoenetML objects as its input. -->

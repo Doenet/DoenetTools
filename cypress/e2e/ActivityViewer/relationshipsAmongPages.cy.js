@@ -1,4 +1,4 @@
-import { cesc } from "../../../src/_utils/url";
+import { cesc } from "../../../src/utils/url";
 
 describe("Relationships among pages tests", function () {
   beforeEach(() => {

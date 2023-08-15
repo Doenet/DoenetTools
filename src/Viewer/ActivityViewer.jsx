@@ -10,20 +10,13 @@ import { nanoid } from "nanoid";
 import {
   calculateOrderAndVariants,
   parseActivityDefinition,
-} from "../_utils/activityUtils";
+} from "../utils/activityUtils";
 import VisibilitySensor from "react-visibility-sensor-v2";
-import {
-  atom,
-  useRecoilCallback,
-  useRecoilState,
-  useSetRecoilState,
-} from "recoil";
-import Button from "../_reactComponents/PanelHeaderComponents/Button";
-import ActionButton from "../_reactComponents/PanelHeaderComponents/ActionButton";
-import ButtonGroup from "../_reactComponents/PanelHeaderComponents/ButtonGroup";
-import { pageToolViewAtom } from "../Tools/_framework/NewToolRoot";
+import Button from "../uiComponents/Button";
+import ActionButton from "../uiComponents/ActionButton";
+import ButtonGroup from "../uiComponents/ButtonGroup";
 import { clear as idb_clear } from "idb-keyval";
-import { cesc } from "../_utils/url";
+import { cesc } from "../utils/url";
 import { returnAllPossibleVariants } from "../Core/utils/returnAllPossibleVariants";
 import {
   findAllNewlines,
@@ -67,7 +60,6 @@ export function ActivityViewer({
   scrollableContainer = window,
   darkMode,
 }) {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const [errMsg, setErrMsg] = useState(null);
 

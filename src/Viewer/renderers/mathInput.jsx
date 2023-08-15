@@ -15,7 +15,7 @@ import {
   focusedMathFieldReturn,
   palletRef,
   handleRef,
-} from "../../Tools/_framework/Footers/MathInputSelector";
+} from "../../Tools/Footers/MathInputSelector";
 import { MathJax } from "better-react-mathjax";
 
 import { useRecoilValue, useSetRecoilState } from "recoil";

@@ -1,5 +1,5 @@
 import React from "react";
-import { cesc } from "../../../_utils/url";
+import { cesc } from "../../../utils/url";
 
 // If consecutive children are from a composite with asList set,
 // then display those children separated by commas.

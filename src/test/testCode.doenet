@@ -1,0 +1,10 @@
+<graph>
+<point />
+</graph>
+
+$_point1
+
+<mathinput>$_point1</mathinput>
+
+
+<codeEditor showResults resultsLocation="left"/>
