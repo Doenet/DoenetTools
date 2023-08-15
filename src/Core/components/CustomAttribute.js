@@ -81,6 +81,14 @@ export default class CustomAttribute extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
+    if (!component.attributes.componentType) {
+      warnings.push({
+        message: `<customAttribute> must contain a componentType attribute.`,
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
+    }
+
     let componentType =
       componentInfoObjects.componentTypeLowerCaseMapping[
         component.attributes.componentType.primitive.toLowerCase()
