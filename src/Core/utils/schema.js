@@ -71,6 +71,7 @@ export function getSchema() {
     inheritedOrAdaptedTypes[type1] = inherited;
   }
 
+  componentClasses = { ...componentClasses };
   for (let type in componentClasses) {
     if (type[0] === "_") {
       delete componentClasses[type];

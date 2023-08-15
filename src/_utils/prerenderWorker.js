@@ -23,16 +23,20 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
     return;
   }
 
-  let parseResult = parseActivityDefinition(activityDefDoenetML);
+  let parseResult = await parseActivityDefinition(activityDefDoenetML, cid);
 
-  if (!parseResult.success) {
-    postMessage({ messageType: "error", message: parseResult.message });
+  // TODO: handle error display better
+  if (parseResult.errors.length > 0) {
+    postMessage({
+      messageType: "error",
+      message: parseResult.errors[0].message,
+    });
     return;
   }
 
   let activityDefinition = parseResult.activityJSON;
 
-  let { numberOfVariants } = await determineNumberOfActivityVariants(
+  let { numVariants } = await determineNumberOfActivityVariants(
     activityDefinition,
   );
 
@@ -43,15 +47,15 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
   const variantsNeededByPage = {};
   const doenetMLByPage = {};
 
-  for (let variantIndex = 1; variantIndex <= numberOfVariants; variantIndex++) {
-    console.log(`Gathering ${variantIndex} of ${numberOfVariants}`);
+  for (let variantIndex = 1; variantIndex <= numVariants; variantIndex++) {
+    console.log(`Gathering ${variantIndex} of ${numVariants}`);
 
     let result = await calculateOrderAndVariants({
       activityDefinition,
       requestedVariantIndex: variantIndex,
     });
 
-    if (!result.success) {
+    if (result.errors.length > 0) {
       console.error(`Couldn't save initial renderer state: ${result.message}`);
       continue;
     }
@@ -77,7 +81,7 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
       postMessage({
         messageType: "status",
         stage: "Gathering",
-        complete: variantIndex / numberOfVariants,
+        complete: variantIndex / numVariants,
       });
     }
   }

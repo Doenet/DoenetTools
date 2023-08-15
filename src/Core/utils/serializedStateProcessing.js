@@ -9,8 +9,8 @@ import { retrieveTextFileForCid } from "./retrieveTextFile";
 import { returnDeprecationMessage } from "./doenetMLversion";
 
 export async function expandDoenetMLsToFullSerializedComponents({
-  cids,
   doenetMLs,
+  preliminarySerializedComponents = [],
   componentInfoObjects,
   nPreviousDoenetMLs = 0,
 }) {
@@ -23,11 +23,20 @@ export async function expandDoenetMLsToFullSerializedComponents({
   for (let [ind, doenetML] of doenetMLs.entries()) {
     let errorsForDoenetML = [];
     let warningsForDoenetML = [];
+    let result;
 
-    let result = parseAndCompile(doenetML);
-    let serializedComponents = result.components;
-    errorsForDoenetML.push(...result.errors);
-    warningsForDoenetML.push(...result.warnings);
+    // if we happened to send in the parsed preliminary serialized components,
+    // then we don't need to parse the DoenetML again
+    let serializedComponents;
+    if (preliminarySerializedComponents[ind]) {
+      serializedComponents = JSON.parse(
+        JSON.stringify(preliminarySerializedComponents[ind]),
+      );
+    } else {
+      result = parseAndCompile(doenetML);
+      serializedComponents = result.components;
+      errorsForDoenetML.push(...result.errors);
+    }
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -38,7 +47,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     result = correctComponentTypeCapitalization(
       serializedComponents,
-      componentInfoObjects.componentTypeLowerCaseMapping,
+      componentInfoObjects,
     );
     errorsForDoenetML.push(...result.errors);
     warningsForDoenetML.push(...result.warnings);
@@ -147,7 +156,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
       warnings: additionalWarnings,
     } = await expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
-      cids: newCids,
       componentInfoObjects,
       nPreviousDoenetMLs: nPreviousDoenetMLs + doenetMLs.length,
     });
@@ -237,7 +245,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
   }
 
   return {
-    cids,
     fullSerializedComponents: arrayOfSerializedComponents,
     allDoenetMLs,
     errors,
@@ -878,7 +885,8 @@ function cleanIfHaveJustDocument(serializedComponents) {
 
 function correctComponentTypeCapitalization(
   serializedComponents,
-  componentTypeLowerCaseMapping,
+  componentInfoObjects,
+  ignoreErrors = false,
 ) {
   let errors = [];
   let warnings = [];
@@ -891,23 +899,30 @@ function correctComponentTypeCapitalization(
     }
 
     let componentTypeFixed =
-      componentTypeLowerCaseMapping[component.componentType.toLowerCase()];
+      componentInfoObjects.componentTypeLowerCaseMapping[
+        component.componentType.toLowerCase()
+      ];
 
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
       let message = `Invalid component type: <${component.componentType}>.`;
       convertToErrorComponent(component, message);
-      errors.push({
-        message,
-        doenetMLrange: component.doenetMLrange,
-      });
+      if (!ignoreErrors) {
+        errors.push({
+          message,
+          doenetMLrange: component.doenetMLrange,
+        });
+      }
     }
 
     if (component.children) {
+      let cClass =
+        componentInfoObjects.allComponentClasses[component.componentType];
       let res = correctComponentTypeCapitalization(
         component.children,
-        componentTypeLowerCaseMapping,
+        componentInfoObjects,
+        ignoreErrors || cClass?.ignoreErrorsFromChildren,
       );
       errors.push(...res.errors);
       warnings.push(...res.warnings);
@@ -1296,7 +1311,11 @@ function breakUpTargetIntoPropsAndIndices(
   return { errors, warnings };
 }
 
-function createAttributesFromProps(serializedComponents, componentInfoObjects) {
+function createAttributesFromProps(
+  serializedComponents,
+  componentInfoObjects,
+  ignoreErrors = false,
+) {
   let errors = [];
   let warnings = [];
 
@@ -1305,9 +1324,10 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
       continue;
     }
 
+    let componentClass =
+      componentInfoObjects.allComponentClasses[component.componentType];
+
     try {
-      let componentClass =
-        componentInfoObjects.allComponentClasses[component.componentType];
       let classAttributes = componentClass.createAttributesObject();
 
       let attributeLowerCaseMapping = {};
@@ -1391,17 +1411,22 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
       component.attributes = attributes;
     } catch (e) {
       convertToErrorComponent(component, e.message);
-      errors.push({
-        message: e.message,
-        doenetMLrange: component.doenetMLrange,
-      });
+      if (!ignoreErrors) {
+        errors.push({
+          message: e.message,
+          doenetMLrange: component.doenetMLrange,
+        });
+      }
     }
 
     //recurse on children
     if (component.children !== undefined) {
+      let ignoreErrorsInChildren =
+        ignoreErrors || componentClass.ignoreErrorsFromChildren;
       let res = createAttributesFromProps(
         component.children,
         componentInfoObjects,
+        ignoreErrorsInChildren,
       );
       errors.push(...res.errors);
       warnings.push(...res.warnings);
@@ -2092,7 +2117,6 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
 
     componentsForAttributes = result.components;
     errors.push(...result.errors);
-    warnings.push(...result.warnings);
   } catch (e) {
     errors.push({
       message: "Error in macro",
@@ -2905,7 +2929,7 @@ export function countRegularComponentTypesInNamespace(
       // if created from a attribute/sugar/macro, don't include in component counts
       if (
         !(
-          doenetAttributes?.isAttributeChild ||
+          doenetAttributes?.isAttributeChildFor ||
           doenetAttributes?.createdFromSugar ||
           doenetAttributes?.createdFromMacro ||
           doenetAttributes?.excludeFromComponentCounts
@@ -2950,7 +2974,7 @@ export function renameAutonameBasedOnNewCounts(
       // if created from a attribute/sugar/macro, don't include in component counts
       if (
         !(
-          doenetAttributes?.isAttributeChild ||
+          doenetAttributes?.isAttributeChildFor ||
           doenetAttributes?.createdFromSugar ||
           doenetAttributes?.createdFromMacro ||
           doenetAttributes?.excludeFromComponentCounts
@@ -3006,6 +3030,7 @@ export function createComponentNames({
   indOffset = 0,
   createNameContext = "",
   initWithoutShadowingComposite = false,
+  ignoreErrors = false,
 }) {
   let errors = [];
   let warnings = [];
@@ -3059,7 +3084,7 @@ export function createComponentNames({
     // let indexAlias = doenetAttributes.indexAlias;
 
     let mustCreateUniqueName =
-      doenetAttributes.isAttributeChild ||
+      doenetAttributes.isAttributeChildFor ||
       doenetAttributes.createdFromSugar ||
       doenetAttributes.createUniqueName;
 
@@ -3278,7 +3303,7 @@ export function createComponentNames({
     // if created from a attribute/sugar/macro, don't include in component counts
     // (and we'll give a unique name if we haven't already)
     let excludeFromComponentCounts =
-      doenetAttributes.isAttributeChild ||
+      doenetAttributes.isAttributeChildFor ||
       doenetAttributes.createdFromSugar ||
       doenetAttributes.createdFromMacro ||
       doenetAttributes.excludeFromComponentCounts;
@@ -3564,6 +3589,9 @@ export function createComponentNames({
     if (serializedComponent.children) {
       // recurse on child, creating new namespace if specified
 
+      let ignoreErrorsInChildren =
+        ignoreErrors || componentClass.ignoreErrorsFromChildren;
+
       if (!(newNamespace || attributes.assignNewNamespaces?.primitive)) {
         let children = serializedComponent.children;
 
@@ -3588,6 +3616,7 @@ export function createComponentNames({
             parentName: componentName,
             useOriginalNames,
             attributesByTargetComponentName,
+            ignoreErrors: ignoreErrorsInChildren,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3604,6 +3633,7 @@ export function createComponentNames({
           parentName: componentName,
           useOriginalNames,
           attributesByTargetComponentName,
+          ignoreErrors: ignoreErrorsInChildren,
         });
         errors.push(...res.errors);
         warnings.push(...res.warnings);
@@ -3642,6 +3672,7 @@ export function createComponentNames({
             parentName: componentName,
             useOriginalNames,
             attributesByTargetComponentName,
+            ignoreErrors: ignoreErrorsInChildren,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3698,6 +3729,7 @@ export function createComponentNames({
               parentName: componentName,
               useOriginalNames,
               attributesByTargetComponentName,
+              ignoreErrors: ignoreErrorsInChildren,
             });
             errors.push(...res.errors);
             warnings.push(...res.warnings);
@@ -3718,6 +3750,7 @@ export function createComponentNames({
             parentName: componentName,
             useOriginalNames,
             attributesByTargetComponentName,
+            ignoreErrors: ignoreErrorsInChildren,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3739,7 +3772,7 @@ export function createComponentNames({
             comp.doenetAttributes = {};
           }
 
-          comp.doenetAttributes.isAttributeChild = true;
+          comp.doenetAttributes.isAttributeChildFor = attrName;
           if (attribute.ignoreFixed) {
             comp.doenetAttributes.ignoreParentFixed = true;
           }
@@ -3753,6 +3786,7 @@ export function createComponentNames({
             useOriginalNames,
             attributesByTargetComponentName,
             createNameContext: attrName,
+            ignoreErrors,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3769,6 +3803,7 @@ export function createComponentNames({
             useOriginalNames,
             attributesByTargetComponentName,
             createNameContext: attrName,
+            ignoreErrors,
           });
           errors.push(...res.errors);
           warnings.push(...res.warnings);
@@ -3781,10 +3816,12 @@ export function createComponentNames({
     if (foundError) {
       convertToErrorComponent(serializedComponent, errorMessage);
 
-      errors.push({
-        message: errorMessage,
-        doenetMLrange: serializedComponent.doenetMLrange,
-      });
+      if (!ignoreErrors) {
+        errors.push({
+          message: errorMessage,
+          doenetMLrange: serializedComponent.doenetMLrange,
+        });
+      }
     }
   }
 

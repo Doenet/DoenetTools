@@ -22047,4 +22047,78 @@ $c7.radius
     // page loads
     cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
+
+  it("area and circumference", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <circle center="(1,4)" name="c" />
+    </graph>
+    <p>Area: <math copySource="c.area" name="area" /></p>
+    <p>Area as number: <number copySource="c.area" name="area2" /></p>
+    <p>Circumference: <math copySource="c.circumference" name="circumference" /></p>
+    <p>Circumference as number: <number copySource="c.circumference" name="circumference2" /></p>
+    <p>Change radius: <mathinput name="r">$c.radius</mathinput></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "π");
+    cy.get(cesc2("#/area2")).should("have.text", "3.14");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "6.28");
+
+    cy.log("change radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "28.27");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9π");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "18.85");
+
+    cy.log("change to symbolic radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}a{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "NaN");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "πa2");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2aπ");
+    cy.get(cesc2("#/circumference2")).should("have.text", "NaN");
+
+    cy.log("back to numeric radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}5{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "78.54");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "25π");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "10π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "31.42");
+  });
 });

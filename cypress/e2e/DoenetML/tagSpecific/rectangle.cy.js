@@ -1429,6 +1429,49 @@ describe("Rectangle Tag Tests", function () {
       .eq(0)
       .should("have.text", "(2,−1)");
   });
+
+  it("area and perimeter", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <rectangle name="r"/>
+  </graph>
+  <p>Area: <number copySource="r.area" name="area" /></p>
+  <p>Perimeter: <number copySource="r.perimeter" name="perimeter" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    let area = 1;
+    let perimeter = 4;
+
+    cy.get(cesc2("#/area")).should("have.text", `${area}`);
+    cy.get(cesc2("#/perimeter")).should(
+      "have.text",
+      `${Math.round(perimeter * 100) / 100}`,
+    );
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/r",
+        args: { pointCoords: { 1: [9, -3] } },
+      });
+
+      area = 9 * 4;
+      perimeter = 2 * 9 + 2 * 4;
+
+      cy.get(cesc2("#/area")).should("have.text", `${area}`);
+      cy.get(cesc2("#/perimeter")).should(
+        "have.text",
+        `${Math.round(perimeter * 100) / 100}`,
+      );
+    });
+  });
 });
 
 function setupScene({ rectangleProperties, rectangleChildren }) {

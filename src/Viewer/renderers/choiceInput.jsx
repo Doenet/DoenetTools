@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -46,7 +46,7 @@ export default React.memo(function ChoiceInput(props) {
     ignoreUpdate,
     rendererName,
     callAction,
-  } = useDoenetRender(props);
+  } = useDoenetRenderer(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
 

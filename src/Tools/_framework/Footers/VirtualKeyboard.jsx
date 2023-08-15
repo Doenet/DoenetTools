@@ -676,8 +676,12 @@ export default function VirtualKeyboard() {
         bg="doenet.canvas"
         borderTop="1px"
         borderTopColor="doenet.mediumGray"
+        className="keyboardcontainer"
       >
-        <Tooltip hasArrow label="Open Keyboard">
+        <Tooltip
+          hasArrow
+          label={keyboardIsOpen ? "Close Keyboard" : "Open Keyboard"}
+        >
           <IconButton
             position="absolute"
             left="10px"

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 // import me from 'math-expressions';
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
@@ -68,7 +68,8 @@ const Button = styled.button`
 `;
 
 export default React.memo(function MatrixInput(props) {
-  let { name, id, SVs, actions, children, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, children, callAction } =
+    useDoenetRenderer(props);
 
   let validationState = useRef(null);
 

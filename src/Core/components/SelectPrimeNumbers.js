@@ -453,39 +453,39 @@ export default class SelectPrimeNumbers extends CompositeComponent {
 
     serializedComponent.variants.uniqueVariantData = uniqueVariantData;
 
-    let numberOfVariants;
+    let numVariants;
 
     if (withReplacement || numToSelect === 1) {
-      numberOfVariants = Math.pow(primes.length, numToSelect);
+      numVariants = Math.pow(primes.length, numToSelect);
     } else {
-      numberOfVariants = primes.length;
+      numVariants = primes.length;
       for (let n = primes.length - 1; n > primes.length - numToSelect; n--) {
-        numberOfVariants *= n;
+        numVariants *= n;
       }
     }
 
-    if (!(numberOfVariants > 0)) {
+    if (!(numVariants > 0)) {
       return { success: false };
     }
 
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numVariants = numVariants;
 
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
+      numVariants: numVariants,
     };
   }
 
   static getUniqueVariant({ serializedComponent, variantIndex }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }

@@ -655,39 +655,39 @@ export default class SelectFromSequence extends Sequence {
 
     serializedComponent.variants.uniqueVariantData = uniqueVariantData;
 
-    let numberOfVariants;
+    let numVariants;
 
     if (withReplacement || numToSelect === 1) {
-      numberOfVariants = Math.pow(nOptions, numToSelect);
+      numVariants = Math.pow(nOptions, numToSelect);
     } else {
-      numberOfVariants = nOptions;
+      numVariants = nOptions;
       for (let n = nOptions - 1; n > nOptions - numToSelect; n--) {
-        numberOfVariants *= n;
+        numVariants *= n;
       }
     }
 
-    if (!(numberOfVariants > 0)) {
+    if (!(numVariants > 0)) {
       return { success: false };
     }
 
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numVariants = numVariants;
 
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
+      numVariants: numVariants,
     };
   }
 
   static getUniqueVariant({ serializedComponent, variantIndex }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }

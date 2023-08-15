@@ -4720,4 +4720,51 @@ describe("Polyline Tag Tests", function () {
     // page loads
     cy.get(cesc2("#/_text1")).should("have.text", "a");
   });
+
+  it("length", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <polyline vertices="(0,0) (5,0) (6,1) (5,2) (0,10)" name="p" />
+    </graph>
+    <p>length: <number copySource="p.length" name="length" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    let length = 5 + 2 * Math.sqrt(2) + Math.sqrt(25 + 64);
+
+    cy.get(cesc2("#/length")).should(
+      "have.text",
+      `${Math.round(length * 100) / 100}`,
+    );
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 1: [-8, -4] },
+        },
+      });
+      win.callAction1({
+        actionName: "movePolyline",
+        componentName: "/p",
+        args: {
+          pointCoords: { 2: [-8, 2] },
+        },
+      });
+
+      length = 13 + 6 + Math.sqrt(16 + 64) + Math.sqrt(25 + 64);
+
+      cy.get(cesc2("#/length")).should(
+        "have.text",
+        `${Math.round(length * 100) / 100}`,
+      );
+    });
+  });
 });

@@ -607,6 +607,33 @@ export default class Polyline extends GraphicalComponent {
       },
     };
 
+    stateVariableDefinitions.length = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      returnDependencies: () => ({
+        numericalVertices: {
+          dependencyType: "stateVariable",
+          variableName: "numericalVertices",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let length = 0;
+        let verts = dependencyValues.numericalVertices;
+        let nVerts = dependencyValues.numericalVertices.length;
+        for (let i = 0; i < nVerts - 1; i++) {
+          let dx = verts[i + 1][0] - verts[i][0];
+          let dy = verts[i + 1][1] - verts[i][1];
+          length += Math.sqrt(dx * dx + dy * dy);
+        }
+
+        return { setValue: { length } };
+      },
+    };
+
     return stateVariableDefinitions;
   }
 

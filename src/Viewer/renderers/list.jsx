@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import { addCommasForCompositeRanges } from "./utils/composites";
 
 export default React.memo(function List(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

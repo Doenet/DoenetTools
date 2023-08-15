@@ -2181,6 +2181,7 @@ describe("Paginator Tag Tests", function () {
       win.postMessage(
         {
           doenetML: allDoenetMLs[0],
+          requestedVariantIndex: 1,
         },
         "*",
       );
@@ -2200,6 +2201,7 @@ describe("Paginator Tag Tests", function () {
           win.postMessage(
             {
               doenetML: allDoenetMLs[attemptNumber - 1],
+              requestedVariantIndex: attemptNumber,
             },
             "*",
           );

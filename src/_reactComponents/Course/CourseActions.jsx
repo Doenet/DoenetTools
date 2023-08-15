@@ -228,17 +228,17 @@ function buildDoenetIdToParentDoenetIdObj(contentArray, parentDoenetId = null) {
   return returnObj;
 }
 
-export function findFirstPageOfActivity(content = []) {
+export function findFirstPageOfActivity(children = []) {
   let response = null;
 
-  for (let item of content) {
+  for (let item of children) {
     if (typeof item === "string" || item instanceof String) {
-      //First content is a string so return the doenetId
+      //First item is a string so return the doenetId
       response = item;
       break;
     } else {
-      //First item of content is another order
-      let nextOrderResponse = findFirstPageOfActivity(item.content);
+      //First item of children is another order
+      let nextOrderResponse = findFirstPageOfActivity(item.children);
 
       if (
         typeof nextOrderResponse === "string" ||
@@ -2196,8 +2196,8 @@ export const useCourse = (courseId) => {
           attributeString += ` shuffleItemWeights="true"`;
         }
 
-        if (activity.numberOfVariants !== undefined) {
-          attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
+        if (activity.numVariants !== undefined) {
+          attributeString += ` numVariants="${activity.numVariants}"`;
         }
 
         if (activity.isSinglePage) {

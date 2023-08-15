@@ -796,10 +796,10 @@ export default class Map extends CompositeComponent {
     serializedComponent,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    let numVariants = serializedComponent.variants?.numVariants;
 
-    if (numberOfVariants !== undefined) {
-      return { success: true, numberOfVariants };
+    if (numVariants !== undefined) {
+      return { success: true, numVariants };
     }
 
     let descendantVariantComponents = gatherVariantComponents({
@@ -807,7 +807,7 @@ export default class Map extends CompositeComponent {
       componentInfoObjects,
     });
 
-    let numberOfVariantsByDescendant = [];
+    let numVariantsByDescendant = [];
     for (let descendant of descendantVariantComponents) {
       let descendantClass =
         componentInfoObjects.allComponentClasses[descendant.componentType];
@@ -818,20 +818,20 @@ export default class Map extends CompositeComponent {
       if (!result.success) {
         return { success: false };
       }
-      numberOfVariantsByDescendant.push(result.numberOfVariants);
+      numVariantsByDescendant.push(result.numVariants);
     }
 
     if (
-      numberOfVariantsByDescendant.length === 1 &&
-      numberOfVariantsByDescendant[0] === 1
+      numVariantsByDescendant.length === 1 &&
+      numVariantsByDescendant[0] === 1
     ) {
       // just have a template with one variant
       // so will have a single variant even if don't know how many times the template is repeated
-      serializedComponent.variants.numberOfVariants = 1;
+      serializedComponent.variants.numVariants = 1;
 
       return {
         success: true,
-        numberOfVariants: 1,
+        numVariants: 1,
       };
     }
 
@@ -843,15 +843,15 @@ export default class Map extends CompositeComponent {
     variantIndex,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }

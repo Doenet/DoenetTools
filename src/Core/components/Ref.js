@@ -151,7 +151,7 @@ export default class Ref extends InlineComponent {
       forRenderer: true,
       additionalStateVariablesDefined: [
         {
-          variableName: "doenetId",
+          variableName: "activityId",
           forRenderer: true,
         },
         {
@@ -185,7 +185,7 @@ export default class Ref extends InlineComponent {
           return {
             setValue: {
               cid: null,
-              doenetId: null,
+              activityId: null,
               variantIndex: null,
               edit: null,
               draft: null,
@@ -195,19 +195,38 @@ export default class Ref extends InlineComponent {
         }
 
         let cid = null,
-          doenetId = null,
+          activityId = null,
           variantIndex = null;
         let draft = null,
           edit = null,
           hash = null;
 
+        let warnings = [];
+
         let result = dependencyValues.uri.match(/[:&]cid=([^&^#]+)/i);
         if (result) {
           cid = result[1];
         }
-        result = dependencyValues.uri.match(/[:&]doenetid=([^&^#]+)/i);
+        result = dependencyValues.uri.match(/[:&]activityId=([^&^#]+)/i);
         if (result) {
-          doenetId = result[1];
+          activityId = result[1];
+        }
+        result = dependencyValues.uri.match(/[:&]doenetId=([^&^#]+)/i);
+        if (result) {
+          if (activityId) {
+            warnings.push({
+              message:
+                "The deprecated URI parameter doenetId is ignored as activityId is present.",
+              level: 1,
+            });
+          } else {
+            warnings.push({
+              message:
+                "The doenetId URI parameters is deprecated. Use activityId instead. Its will be ignored starting with the next major version (0.7). Version 0.6 will be phased out in summer 2024.",
+              level: 1,
+            });
+            activityId = result[1];
+          }
         }
         result = dependencyValues.uri.match(/[:&]variant=([^&^#]+)/i);
         if (result) {
@@ -237,9 +256,10 @@ export default class Ref extends InlineComponent {
           hash = result[1];
         }
 
-        // console.log('url parameter results', { cid, doenetId, variantIndex, edit, draft, hash })
-
-        return { setValue: { cid, doenetId, variantIndex, edit, draft, hash } };
+        return {
+          setValue: { cid, activityId, variantIndex, edit, draft, hash },
+          sendWarnings: warnings,
+        };
       },
     };
 
@@ -323,7 +343,7 @@ export default class Ref extends InlineComponent {
     }
 
     let cid = await this.stateValues.cid;
-    let doenetId = await this.stateValues.doenetId;
+    let activityId = await this.stateValues.activityId;
     let variantIndex = await this.stateValues.variantIndex;
     let edit = await this.stateValues.edit;
     let hash = await this.stateValues.hash;
@@ -335,7 +355,7 @@ export default class Ref extends InlineComponent {
 
     this.coreFunctions.navigateToTarget({
       cid,
-      doenetId,
+      activityId,
       variantIndex,
       edit,
       hash,

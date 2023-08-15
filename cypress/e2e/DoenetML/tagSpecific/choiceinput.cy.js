@@ -1094,13 +1094,13 @@ describe("ChoiceInput Tag Tests", function () {
       cy.log("select cat from first input");
       selectedChoices = ["  dog ", "caT"];
       selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b));
-      selectedIndex = choices.indexOf(selectedChoices[0]) + 1;
+      selectedIndex = choices.indexOf("caT") + 1;
       inputText = selectedChoices.join(", ");
       cy.get(cesc(`#\\/ci1_choice${selectedIndex}_input`)).click();
       checkChoices(selectedChoices, inputText);
 
       cy.log("deselect dog from first input");
-      selectedIndex = choices.indexOf(selectedChoices[1]) + 1;
+      selectedIndex = choices.indexOf("  dog ") + 1;
       selectedChoices = ["caT"];
       inputText = selectedChoices.join(", ");
       cy.get(cesc(`#\\/ci1_choice${selectedIndex}_input`)).click();

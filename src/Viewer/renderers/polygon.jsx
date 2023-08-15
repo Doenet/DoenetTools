@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET, VERTEX_LAYER_OFFSET } from "./graph";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function Polygon(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Polygon.ignoreActionsWithoutCore = () => true;
 
@@ -35,7 +34,7 @@ export default React.memo(function Polygon(props) {
   verticesFixed.current =
     !SVs.verticesDraggable || SVs.fixed || SVs.fixLocation;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

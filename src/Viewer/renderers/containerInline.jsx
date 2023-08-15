@@ -1,9 +1,9 @@
 import React from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { addCommasForCompositeRanges } from "./utils/composites";
 
 export default React.memo(function ContainerInline(props) {
-  let { name, id, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRenderer(props);
 
   if (SVs.hidden) {
     return null;

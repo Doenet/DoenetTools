@@ -158,6 +158,15 @@ export function returnNumericalFunctionFromFormula({
           openMax = !domain0.tree[2][2];
         }
       }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
+      }
     }
 
     return function (x, overrideDomain = false) {
@@ -216,6 +225,15 @@ export function returnNumericalFunctionFromFormula({
         maxx = Infinity;
       } else {
         openMax = !thisDomain.tree[2][2];
+      }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
       }
 
       domainIntervals.push([minx, maxx]);
@@ -310,6 +328,15 @@ export function returnNumericalFunctionFromReevaluatedFormula({
       }
     }
 
+    // If the domain extends to +/- infinity, then consider the domain closed
+    // so that we can evaluate the function at +/- infinity
+    if (minx === -Infinity) {
+      openMin = false;
+    }
+    if (maxx === Infinity) {
+      openMax = false;
+    }
+
     return function (x, overrideDomain = false) {
       if (overrideDomain) {
         if (isNaN(x)) {
@@ -381,6 +408,15 @@ export function returnNumericalFunctionFromReevaluatedFormula({
         maxx = Infinity;
       } else {
         openMax = !thisDomain.tree[2][2];
+      }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
       }
 
       domainIntervals.push([minx, maxx]);
@@ -523,6 +559,15 @@ export function returnSymbolicFunctionFromFormula({
           openMax = !domain0.tree[2][2];
         }
       }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
+      }
     }
 
     return function (x, overrideDomain = false) {
@@ -587,8 +632,24 @@ export function returnSymbolicFunctionFromFormula({
         openMax = !thisDomain.tree[2][2];
       }
 
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
+      }
+
       domainIntervals.push([minx, maxx]);
       domainOpens.push([openMin, openMax]);
+    }
+
+    if (
+      haveDomain &&
+      domainIntervals.every((v) => v[0] === -Infinity && v[1] === Infinity)
+    ) {
+      haveDomain = false;
     }
   }
 
@@ -684,6 +745,15 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
         } else {
           openMax = !domain0.tree[2][2];
         }
+
+        // If the domain extends to +/- infinity, then consider the domain closed
+        // so that we can evaluate the function at +/- infinity
+        if (minx === -Infinity) {
+          openMin = false;
+        }
+        if (maxx === Infinity) {
+          openMax = false;
+        }
       }
     }
 
@@ -759,6 +829,15 @@ export function returnSymbolicFunctionFromReevaluatedFormula({
         maxx = Infinity;
       } else {
         openMax = !thisDomain.tree[2][2];
+      }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
       }
 
       domainIntervals.push([minx, maxx]);
@@ -970,6 +1049,15 @@ export function returnInterpolatedFunction({
       } else {
         openMax = !domain0.tree[2][2];
       }
+
+      // If the domain extends to +/- infinity, then consider the domain closed
+      // so that we can evaluate the function at +/- infinity
+      if (minx === -Infinity) {
+        openMin = false;
+      }
+      if (maxx === Infinity) {
+        openMax = false;
+      }
     }
   }
 
@@ -994,6 +1082,23 @@ export function returnInterpolatedFunction({
       // Extrapolate
       x -= x0;
       let c = coeffs[0];
+
+      if (x === -Infinity) {
+        if (c[3] === 0) {
+          if (c[2] === 0) {
+            if (c[1] === 0) {
+              return c[0];
+            } else {
+              return -Math.sign(c[1]) * Infinity;
+            }
+          } else {
+            return Math.sign(c[2]) * Infinity;
+          }
+        } else {
+          return -Math.sign(c[3]) * Infinity;
+        }
+      }
+
       return ((c[3] * x + c[2]) * x + c[1]) * x + c[0];
     }
 
@@ -1002,6 +1107,26 @@ export function returnInterpolatedFunction({
       // Extrapolate
       x -= xs[i];
       let c = coeffs[i];
+
+      if (x === Infinity) {
+        if (c[3] === 0) {
+          if (c[2] === 0) {
+            if (c[1] === 0) {
+              return c[0];
+            } else {
+              return Math.sign(c[1]) * Infinity;
+            }
+          } else {
+            return Math.sign(c[2]) * Infinity;
+          }
+        } else {
+          return Math.sign(c[3]) * Infinity;
+        }
+      }
+
+      if (x === Infinity && c[1] === 0 && c[2] === 0 && c[3] === 0) {
+        return c[0];
+      }
       return ((c[3] * x + c[2]) * x + c[1]) * x + c[0];
     }
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import React, { useEffect, useState } from "react";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import { useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
+import { useLocation, useNavigate } from "react-router";
 
 import axios from "axios";
 
@@ -11,6 +12,9 @@ export default function Public(props) {
   const [cid, setCid] = useState(null);
 
   const [errMsg, setErrMsg] = useState(null);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -52,10 +56,10 @@ export default function Public(props) {
 
   return (
     <>
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness: true,
           readOnly: false,
@@ -69,7 +73,15 @@ export default function Public(props) {
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
+        idsIncludeActivityId={false}
         paginate={true}
+        location={location}
+        navigate={navigate}
+        linkSettings={{
+          viewURL: "/public?",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     </>
   );

@@ -486,6 +486,54 @@ a />
     });
   });
 
+  it("Abstract component give invalid component type", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<_base />
+<_inline>hello</_inline>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/__base1")).should(
+      "contain.text",
+      "Invalid component type: <_base>",
+    );
+    cy.get(cesc2("#/__base1")).should("contain.text", "line 2");
+    cy.get(cesc2("#/__inline1")).should(
+      "contain.text",
+      "Invalid component type: <_inline>",
+    );
+    cy.get(cesc2("#/__inline1")).should("contain.text", "line 3");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(2);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Invalid component type: <_base>",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(6);
+
+      expect(errorWarnings.errors[1].message).contain(
+        "Invalid component type: <_inline>",
+      );
+      expect(errorWarnings.errors[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.errors[1].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.errors[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.errors[1].doenetMLrange.charEnd).eq(8);
+    });
+  });
+
   it("Prevent auto-named child and attribute clashes on duplicate name", () => {
     cy.window().then(async (win) => {
       win.postMessage(

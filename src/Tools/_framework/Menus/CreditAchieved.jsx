@@ -9,15 +9,11 @@ import { searchParamAtomFamily } from "../NewToolRoot";
 import axios from "axios";
 import {
   creditAchievedAtom,
+  activityStatusAtom,
   currentAttemptNumber,
 } from "../ToolPanels/AssignmentViewer";
 import styled from "styled-components";
-import { itemByDoenetId } from "../../../_reactComponents/Course/CourseActions";
-import {
-  activityAttemptNumberSetUpAtom,
-  currentPageAtom,
-  itemWeightsAtom,
-} from "../../../Viewer/ActivityViewer";
+
 import { useLocation, useNavigate } from "react-router";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
@@ -124,12 +120,7 @@ export default function CreditAchieved() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const recoilUserId = useRecoilValue(searchParamAtomFamily("userId"));
   const recoilTool = useRecoilValue(searchParamAtomFamily("tool"));
-  const itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
-  const itemWeights = useRecoilValue(itemWeightsAtom);
-  const currentPage = useRecoilValue(currentPageAtom);
-  const activityAttemptNumberSetUp = useRecoilValue(
-    activityAttemptNumberSetUpAtom,
-  );
+  const activityStatus = useRecoilValue(activityStatusAtom);
 
   let { search } = useLocation();
   let navigate = useNavigate();
@@ -188,8 +179,8 @@ export default function CreditAchieved() {
 
   // wait for the assignment attempt item tables to be set up
   // so that will have the rows for each item
-  if (activityAttemptNumberSetUp !== recoilAttemptNumber) {
-    lastAttemptNumber.current = activityAttemptNumberSetUp;
+  if (activityStatus.activityAttemptNumberSetUp !== recoilAttemptNumber) {
+    lastAttemptNumber.current = activityStatus.activityAttemptNumberSetUp;
     return null;
   }
 
@@ -210,7 +201,7 @@ export default function CreditAchieved() {
 
   let creditByItemsJSX = creditByItem.map((x, i) => {
     let scoreDisplay;
-    if (itemWeights[i] === 0) {
+    if (activityStatus.itemWeights[i] === 0) {
       scoreDisplay =
         x === 0 ? "Not started" : x === 1 ? "Complete" : "In progress";
     } else {
@@ -219,7 +210,7 @@ export default function CreditAchieved() {
     return (
       <ScoreContainer
         key={`creditByItem${i}`}
-        highlight={currentPage === i + 1}
+        highlight={activityStatus.currentPage === i + 1}
         onClick={() => navigate(search + `#page${i + 1}`)}
         isLink={true}
       >
