@@ -45,6 +45,11 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Progress,
   Tab,
   TabList,
@@ -1227,9 +1232,24 @@ export function GeneralActivityControls({
 
 function PresentationControls({ courseId, doenetId, activityData }) {
   const fetcher = useFetcher();
+  console.log("activityData", activityData);
 
   const [individualize, setIndividualize] = useState(
     activityData.individualize,
+  );
+  const [showSolution, setShowSolution] = useState(activityData.showSolution);
+  let adTimeLimit = activityData.timeLimit;
+  if (adTimeLimit == null) {
+    adTimeLimit = "";
+  }
+  const [timeLimit, setTimeLimit] = useState(adTimeLimit);
+  const [showFeedback, setShowFeedback] = useState(activityData.showFeedback);
+  const [showHints, setShowHints] = useState(activityData.showHints);
+  const [showCorrectness, setShowCorrectness] = useState(
+    activityData.showCorrectness,
+  );
+  const [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(
+    activityData.showCreditAchievedMenu,
   );
 
   if (!activityData.has_assignment_table) {
@@ -1245,8 +1265,8 @@ function PresentationControls({ courseId, doenetId, activityData }) {
       <Box>
         <Checkbox
           size="lg"
-          data-test="Show DoenetML Checkbox"
-          name="showDoenetML"
+          data-test="Individualize"
+          name="individualize"
           value="on"
           isChecked={individualize == "1"}
           onChange={(e) => {
@@ -1267,6 +1287,213 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Individualize{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Solution"
+          name="showSolution"
+          value="on"
+          isChecked={showSolution == "1"}
+          onChange={(e) => {
+            let showSolution = "0";
+            if (e.target.checked) {
+              showSolution = "1";
+            }
+            setShowSolution(showSolution);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showSolution",
+                value: showSolution,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Solution While Taking Activity{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Flex>
+          <Checkbox
+            size="lg"
+            data-test="Time Limit"
+            name="timeLimit"
+            value="on"
+            isChecked={timeLimit > 0}
+            onChange={(e) => {
+              let timeLimit = "";
+              if (e.target.checked) {
+                timeLimit = "60";
+              }
+              setTimeLimit(timeLimit);
+              fetcher.submit(
+                {
+                  _action: "update assignment via keyToUpdate",
+                  keyToUpdate: "timeLimit",
+                  value: timeLimit,
+                  doenetId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Time Limit{" "}
+            <Tooltip label="Description here">
+              <QuestionOutlineIcon />
+            </Tooltip>
+          </Checkbox>
+          <NumberInput
+            ml="10px"
+            step={5}
+            value={timeLimit}
+            width="100px"
+            isDisabled={timeLimit == ""}
+            onChange={(value) => {
+              setTimeLimit(value);
+              fetcher.submit(
+                {
+                  _action: "update assignment via keyToUpdate",
+                  keyToUpdate: "timeLimit",
+                  value,
+                  doenetId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        </Flex>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Feedback"
+          name="showFeedback"
+          value="on"
+          isChecked={showFeedback == "1"}
+          onChange={(e) => {
+            let showFeedback = "0";
+            if (e.target.checked) {
+              showFeedback = "1";
+            }
+            setShowFeedback(showFeedback);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showFeedback",
+                value: showFeedback,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Feedback{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Hints"
+          name="showHints"
+          value="on"
+          isChecked={showHints == "1"}
+          onChange={(e) => {
+            let showHints = "0";
+            if (e.target.checked) {
+              showHints = "1";
+            }
+            setShowHints(showHints);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showHints",
+                value: showHints,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Hints{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Correctness"
+          name="showCorrectness"
+          value="on"
+          isChecked={showCorrectness == "1"}
+          onChange={(e) => {
+            let showCorrectness = "0";
+            if (e.target.checked) {
+              showCorrectness = "1";
+            }
+            setShowCorrectness(showCorrectness);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showCorrectness",
+                value: showCorrectness,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Correctness{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Credit Achieved"
+          name="showCreditAchievedMenu"
+          value="on"
+          isChecked={showCreditAchievedMenu == "1"}
+          onChange={(e) => {
+            let showCreditAchievedMenu = "0";
+            if (e.target.checked) {
+              showCreditAchievedMenu = "1";
+            }
+            setShowCreditAchievedMenu(showCreditAchievedMenu);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showCreditAchievedMenu",
+                value: showCreditAchievedMenu,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Credit Achieved{" "}
           <Tooltip label="Description here">
             <QuestionOutlineIcon />
           </Tooltip>
