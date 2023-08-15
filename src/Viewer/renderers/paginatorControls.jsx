@@ -1,9 +1,9 @@
 import React from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 
 export default React.memo(function PaginatorControls(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props, false);
 
   if (SVs.hidden) {
     return null;

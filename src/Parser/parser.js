@@ -15,7 +15,6 @@ export function parse(inText) {
  */
 export function parseAndCompile(inText) {
   let errors = [];
-  let warnings = [];
 
   function compileElement(cursor) {
     if (cursor.name !== "Element") {
@@ -88,6 +87,12 @@ export function parseAndCompile(inText) {
             adjustedTagName = "_error";
           } else {
             attrs[attrName] = true;
+            attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
+              begin: beginAttributeInd,
+              end: cursor.to,
+            };
           }
         } else {
           cursor.nextSibling();
@@ -104,6 +109,8 @@ export function parseAndCompile(inText) {
           } else {
             attrs[attrName] = attrValue;
             attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
               begin: cursor.from + 2,
               end: cursor.to - 1,
             };
@@ -325,7 +332,12 @@ export function parseAndCompile(inText) {
             //fuddling to ignore the quotes
             let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
             attrs[attrName] = attrValue;
-            attrRanges[attrName] = { begin: cursor.from + 1, end: cursor.to };
+            attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
+              begin: cursor.from + 2,
+              end: cursor.to - 1,
+            };
           }
         }
         //move out of Attribute to maintain loop invariant
@@ -417,12 +429,12 @@ export function parseAndCompile(inText) {
     }
   }
   if (!inText) {
-    return { components: [], errors, warnings };
+    return { components: [], errors };
   }
   let tc = parse(inText);
   let out = [];
   if (!tc.firstChild()) {
-    return { components: out, errors, warnings };
+    return { components: out, errors };
   }
   // console.log("intext",inText)
   // console.log("showCursor",showCursor(tc));
@@ -438,7 +450,7 @@ export function parseAndCompile(inText) {
     }
   }
 
-  return { components: out, errors, warnings };
+  return { components: out, errors };
 }
 
 /**

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPuzzlePiece as puzzle } from "@fortawesome/free-solid-svg-icons";
 import VisibilitySensor from "react-visibility-sensor-v2";
@@ -23,7 +23,8 @@ const SpanStyling = styled.span`
 `;
 
 export default React.memo(function Solution(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

@@ -765,7 +765,7 @@ export default class Document extends BaseComponent {
   }) {
     // console.log("****Variant for document*****")
 
-    let numVariants = serializedComponent.variants.numberOfVariants;
+    let numVariants = serializedComponent.variants.numVariants;
 
     let variantIndex;
     // check if desiredVariant was specified

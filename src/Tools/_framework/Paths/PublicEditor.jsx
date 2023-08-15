@@ -3,11 +3,12 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useLocation,
   useOutletContext,
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 
 import {
   Box,
@@ -32,7 +33,6 @@ import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { cidFromText } from "../../../Core/utils/cid";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -133,6 +133,7 @@ export function PublicEditor() {
 
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -177,28 +178,12 @@ export function PublicEditor() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
-  let variantOptions = [];
-  variants.allPossibleVariants.forEach((variant) => {
-    variantOptions.push({ value: variant, label: variant });
-  });
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
-
   return (
     <>
-      <VirtualKeyboard />
-
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -357,7 +342,7 @@ export function PublicEditor() {
                         </Button>
                       </Tooltip>
                     </Box>
-                    {variants.allPossibleVariants.length > 1 && (
+                    {variants.numVariants > 1 && (
                       <Box bg="doenet.lightBlue" h="32px" width="100%">
                         <VariantSelect
                           size="sm"
@@ -387,7 +372,7 @@ export function PublicEditor() {
                     overflow="scroll"
                     w="100%"
                   >
-                    <PageViewer
+                    <DoenetML
                       doenetML={viewerDoenetML}
                       flags={{
                         showCorrectness: true,
@@ -402,13 +387,19 @@ export function PublicEditor() {
                         allowSaveEvents: false,
                       }}
                       attemptNumber={1}
-                      generatedVariantCallback={variantCallback} //TODO:Replace
+                      generatedVariantCallback={setVariants}
                       requestedVariantIndex={variants.index}
                       setErrorsAndWarningsCallback={
                         setErrorsAndWarningsCallback
                       }
                       // setIsInErrorState={setIsInErrorState}
-                      pageIsActive={true}
+                      idsIncludeActivityId={false}
+                      location={location}
+                      navigate={navigate}
+                      linkSettings={{
+                        viewURL: "/portfolioviewer",
+                        editURL: "/publiceditor",
+                      }}
                     />
                     <Box marginBottom="50vh" />
                   </Box>

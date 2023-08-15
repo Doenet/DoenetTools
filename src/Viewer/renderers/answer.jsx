@@ -1,5 +1,5 @@
 import React from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -29,7 +29,8 @@ const Button = styled.button`
 `;
 
 export default React.memo(function Answer(props) {
-  let { name, id, SVs, actions, children, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, children, callAction } =
+    useDoenetRenderer(props);
 
   if (SVs.hidden) {
     return null;

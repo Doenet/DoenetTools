@@ -6,6 +6,7 @@ export default class CodeViewer extends BlockComponent {
 
     Object.assign(this.actions, {
       updateComponents: this.updateComponents.bind(this),
+      setErrorsAndWarnings: this.setErrorsAndWarnings.bind(this),
       recordVisibilityChange: this.recordVisibilityChange.bind(this),
     });
   }
@@ -38,53 +39,6 @@ export default class CodeViewer extends BlockComponent {
     };
 
     return attributes;
-  }
-
-  static returnSugarInstructions() {
-    let sugarInstructions = super.returnSugarInstructions();
-
-    let addRenderDoenetML = function ({
-      matchedChildren,
-      componentAttributes,
-    }) {
-      if (matchedChildren.length > 0) {
-        return { success: false };
-      }
-
-      let renderDoenetML = {
-        componentType: "renderDoenetML",
-      };
-
-      if (componentAttributes.codeSource) {
-        renderDoenetML.attributes = {
-          codeSource: {
-            targetComponentNames: componentAttributes.codeSource,
-          },
-        };
-      }
-
-      if (componentAttributes.renderedName) {
-        renderDoenetML.props = { name: componentAttributes.renderedName };
-      }
-
-      return {
-        success: true,
-        newChildren: [renderDoenetML],
-      };
-    };
-    sugarInstructions.push({
-      replacementFunction: addRenderDoenetML,
-    });
-    return sugarInstructions;
-  }
-
-  static returnChildGroups() {
-    return [
-      {
-        group: "children",
-        componentTypes: ["_base"],
-      },
-    ];
   }
 
   static returnStateVariableDefinitions() {
@@ -258,26 +212,164 @@ export default class CodeViewer extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.doenetMLFromSource = {
+      stateVariablesDeterminingDependencies: ["codeSource"],
+      returnDependencies: ({ stateValues }) => ({
+        doenetML: {
+          dependencyType: "stateVariable",
+          componentName: stateValues.codeSource,
+          variableName: "text",
+          variablesOptional: true,
+        },
+      }),
+      definition({ dependencyValues }) {
+        let doenetML = "";
+
+        if (dependencyValues.doenetML) {
+          doenetML = dependencyValues.doenetML;
+          if (typeof doenetML !== "string") {
+            doenetML = "";
+          }
+        }
+
+        return { setValue: { doenetMLFromSource: doenetML } };
+      },
+    };
+
+    stateVariableDefinitions.doenetML = {
+      forRenderer: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      provideEssentialValuesInDefinition: true,
+      returnDependencies: () => ({
+        doenetMLFromSource: {
+          dependencyType: "stateVariable",
+          variableName: "doenetMLFromSource",
+        },
+      }),
+      definition({ dependencyValues, essentialValues }) {
+        let result = {
+          useEssentialOrDefaultValue: {
+            doenetML: {
+              defaultValue: dependencyValues.doenetMLFromSource,
+            },
+          },
+        };
+        if (essentialValues.doenetML === undefined) {
+          result.setEssentialValue = {
+            doenetML: dependencyValues.doenetMLFromSource,
+          };
+        }
+        return result;
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "doenetML",
+              value: desiredStateVariableValues.doenetML,
+            },
+          ],
+        };
+      },
+    };
+
+    stateVariableDefinitions.codeChanged = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      hasEssential: true,
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { codeChanged: true } }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "codeChanged",
+              value: Boolean(desiredStateVariableValues.codeChanged),
+            },
+          ],
+        };
+      },
+    };
+
+    stateVariableDefinitions.errorsAndWarnings = {
+      hasEssential: true,
+      defaultValue: { errors: [], warnings: [] },
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: { errorsAndWarnings: true },
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [
+            {
+              setEssentialValue: "errorsAndWarnings",
+              value: desiredStateVariableValues.errorsAndWarnings,
+            },
+          ],
+        };
+      },
+    };
+
     return stateVariableDefinitions;
   }
 
-  async updateComponents() {
-    if (
-      this.definingChildren.length === 1 &&
-      this.definingChildren[0].componentType === "renderDoenetML"
-    ) {
-      await this.coreFunctions.performAction({
-        componentName: this.definingChildren[0].componentName,
-        actionName: "updateComponents",
-        // event: {
-        //   verb: "selected",
-        //   object: {
-        //     componentName: this.componentName,
-        //     componentType: this.componentType,
-        //   },
-        // },
-      });
-    }
+  async updateComponents({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "doenetML",
+        value: await this.stateValues.doenetMLFromSource,
+      },
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "codeChanged",
+        value: false,
+      },
+    ];
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
+  }
+
+  async setErrorsAndWarnings({
+    actionId,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+    errorsAndWarnings,
+  }) {
+    let updateInstructions = [
+      {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "errorsAndWarnings",
+        value: errorsAndWarnings,
+      },
+    ];
+
+    await this.coreFunctions.performUpdate({
+      updateInstructions,
+      actionId,
+      sourceInformation,
+      skipRendererUpdate,
+    });
   }
 
   recordVisibilityChange({ isVisible }) {

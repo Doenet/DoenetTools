@@ -68,7 +68,6 @@ export default function useDoenetRenderer(
       key: props.coreId + childInstructions.componentName,
       componentInstructions: childInstructions,
       rendererClasses: props.rendererClasses,
-      flags: props.flags,
       coreId: props.coreId,
       callAction: props.callAction,
     };
@@ -120,5 +119,9 @@ export default function useDoenetRenderer(
     rendererName,
     initializeChildren: () => {},
     callAction,
+    navigate: props.navigate,
+    location: props.location,
+    linkSettings: props.linkSettings,
+    scrollableContainer: props.scrollableContainer,
   };
 }

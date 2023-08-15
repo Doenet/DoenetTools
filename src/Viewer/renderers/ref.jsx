@@ -1,11 +1,7 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
-import { itemByDoenetId } from "../../_reactComponents/Course/CourseActions";
-import { getURLFromRef, scrollableContainerAtom } from "../PageViewer";
-import useDoenetRender from "../useDoenetRenderer";
+import { PageContext, getURLFromRef } from "../PageViewer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import styled from "styled-components";
 
 // const LinkStyling = styled.a`
@@ -46,14 +42,16 @@ const RefButton = styled.button`
 `;
 
 export default React.memo(function Ref(props) {
-  let { name, id, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRenderer(props);
 
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
-  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
+  let {
+    location = {},
+    navigate,
+    linkSettings,
+    scrollableContainer,
+  } = useContext(PageContext) || {};
 
-  let { search, pathname } = useLocation();
-  let navigate = useNavigate();
+  let search = location.search || "";
 
   if (SVs.hidden) {
     return null;
@@ -66,16 +64,14 @@ export default React.memo(function Ref(props) {
 
   let { targetForATag, url, haveValidTarget, externalUri } = getURLFromRef({
     cid: SVs.cid,
-    doenetId: SVs.doenetId,
+    activityId: SVs.activityId,
     variantIndex: SVs.variantIndex,
     edit: SVs.edit,
     hash: SVs.hash,
     page: SVs.page,
     givenUri: SVs.uri,
     targetName: SVs.targetName,
-    pageToolView,
-    inCourse: Object.keys(itemInCourse).length > 0,
-    pathname,
+    linkSettings,
     search,
     id,
   });

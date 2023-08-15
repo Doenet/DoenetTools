@@ -390,23 +390,22 @@ export default class Shuffle extends CompositeComponent {
       return { success: false };
     }
 
-    let numberOfVariants = result.numberOfVariants * numberOfPermutations;
+    let numVariants = result.numVariants * numberOfPermutations;
 
-    if (!(numberOfVariants > 0)) {
+    if (!(numVariants > 0)) {
       return { success: false };
     }
 
     // adjust variants info added by call to super
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numVariants = numVariants;
     serializedComponent.variants.uniqueVariantData = {
-      numberOfVariantsByDescendant:
-        serializedComponent.variants.uniqueVariantData
-          .numberOfVariantsByDescendant,
+      numVariantsByDescendant:
+        serializedComponent.variants.uniqueVariantData.numVariantsByDescendant,
       numberOfPermutations,
       numComponents,
     };
 
-    return { success: true, numberOfVariants };
+    return { success: true, numVariants };
   }
 
   static getUniqueVariant({
@@ -414,22 +413,21 @@ export default class Shuffle extends CompositeComponent {
     variantIndex,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }
 
-    let numberOfVariantsByDescendant =
-      serializedComponent.variants.uniqueVariantData
-        .numberOfVariantsByDescendant;
+    let numVariantsByDescendant =
+      serializedComponent.variants.uniqueVariantData.numVariantsByDescendant;
     let descendantVariantComponents =
       serializedComponent.variants.descendantVariantComponents;
     let numberOfPermutations =
@@ -438,7 +436,7 @@ export default class Shuffle extends CompositeComponent {
       serializedComponent.variants.uniqueVariantData.numComponents;
 
     // treat permutations as another descendant variant component
-    let numbersOfOptions = [...numberOfVariantsByDescendant];
+    let numbersOfOptions = [...numVariantsByDescendant];
     numbersOfOptions.push(numberOfPermutations);
 
     let indicesForEachOption = enumerateCombinations({
@@ -466,10 +464,10 @@ export default class Shuffle extends CompositeComponent {
 
     for (
       let descendantNum = 0;
-      descendantNum < numberOfVariantsByDescendant.length;
+      descendantNum < numVariantsByDescendant.length;
       descendantNum++
     ) {
-      if (numberOfVariantsByDescendant[descendantNum] > 1) {
+      if (numVariantsByDescendant[descendantNum] > 1) {
         let descendant = descendantVariantComponents[descendantNum];
         let compClass =
           componentInfoObjects.allComponentClasses[descendant.componentType];

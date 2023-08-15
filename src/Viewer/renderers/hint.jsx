@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLightbulb as lightOff } from "@fortawesome/free-solid-svg-icons";
 import { faLightbulb as lightOn } from "@fortawesome/free-regular-svg-icons";
@@ -17,7 +17,8 @@ const SpanStyling = styled.span`
 `;
 
 export default React.memo(function Hint(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

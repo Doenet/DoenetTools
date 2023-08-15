@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import PageViewer, {
-  scrollableContainerAtom,
-} from "../../../Viewer/PageViewer";
+import {
+  DoenetML,
+  // scrollableContainerAtom,
+} from "../../../Viewer/DoenetML";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -22,7 +23,7 @@ import {
   updateTextEditorDoenetMLAtom,
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -44,8 +45,7 @@ export default function EditorViewer() {
 
   const [errMsg, setErrMsg] = useState(null);
 
-  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
-
+  let navigate = useNavigate();
   let location = useLocation();
 
   const previousLocations = useRef({});
@@ -92,15 +92,21 @@ export default function EditorViewer() {
         return;
       }
 
-      let parseResult = parseActivityDefinition(activityDefinition);
-      if (!parseResult.success) {
-        setErrMsg(`Invalid activity definition: ${parseResult.message}`);
+      let parseResult = await parseActivityDefinition(
+        activityDefinition,
+        activityCid,
+      );
+      // TODO: handle diplsay of errors better
+      if (parseResult.errors.length > 0) {
+        setErrMsg(
+          `Invalid activity definition: ${parseResult.errors[0].message}`,
+        );
         return;
       }
 
       let activityJSON = parseResult.activityJSON;
 
-      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.children));
 
       if (errMsg) {
         setErrMsg(null);
@@ -150,11 +156,6 @@ export default function EditorViewer() {
       currentLocationKey.current = location.key;
     }
   }, [location]);
-
-  useEffect(() => {
-    const mainPanel = document.getElementById("mainPanel");
-    setScrollableContainer(mainPanel);
-  }, []);
 
   let initDoenetML = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -219,7 +220,7 @@ export default function EditorViewer() {
   }
 
   return (
-    <PageViewer
+    <DoenetML
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -235,31 +236,38 @@ export default function EditorViewer() {
         allowSaveSubmissions: false,
         allowSaveEvents: false,
       }}
-      doenetId={doenetId}
+      activityId={doenetId}
+      idsIncludeActivityId={false}
       attemptNumber={attemptNumber}
       generatedVariantCallback={variantCallback} //TODO:Replace
       requestedVariantIndex={variantInfo.index}
       setIsInErrorState={setIsInErrorState}
-      pageIsActive={true}
+      location={location}
+      navigate={navigate}
+      linkSettings={{
+        viewURL: "/public?tool=editor", // In guest editor, even view urls go back to guest editor
+        editURL: "/public?tool=editor",
+        useQueryParameters: true,
+      }}
     />
   );
 }
 
-function findFirstPageCidFromCompiledActivity(orderObj) {
-  if (!orderObj?.content) {
+function findFirstPageCidFromCompiledActivity(children) {
+  if (!children) {
     return null;
   }
   //No pages or orders in order so return null
-  if (orderObj.content.length == 0) {
+  if (children.length == 0) {
     return null;
   }
 
-  for (let item of orderObj.content) {
+  for (let item of children) {
     if (item.type === "page") {
       return item.cid;
     } else {
-      //First item of content is another order
-      let nextOrderResponse = findFirstPageOfActivity(item.content);
+      //First item is another order
+      let nextOrderResponse = findFirstPageOfActivity(item.children);
       if (nextOrderResponse) {
         return nextOrderResponse;
       }

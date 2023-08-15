@@ -3647,7 +3647,7 @@ describe("Collect Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
       let group1Replacements = stateVariables[
         "/_document1"
-      ].activeChildren.slice(3, 16);
+      ].activeChildren.slice(2, 15);
       let collect1Replacements = stateVariables["/pcollect1"].activeChildren;
       let collect2Replacements = stateVariables["/pcollect2"].activeChildren;
       let group2Replacements = stateVariables["/pgroup2"].activeChildren;

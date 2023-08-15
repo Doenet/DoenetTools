@@ -1,14 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import { sizeToCSS } from "./utils/css";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import VisibilitySensor from "react-visibility-sensor-v2";
+import { DoenetML } from "../DoenetML";
+import { Box, HStack, Button, Tooltip } from "@chakra-ui/react";
+import VariantSelect from "../../Tools/_framework/ChakraBasedComponents/VariantSelect";
+import { WarningTwoIcon } from "@chakra-ui/icons";
+import { RxUpdate } from "react-icons/rx";
 
 export default React.memo(function CodeViewer(props) {
   let { name, id, SVs, children, actions, callAction } = useDoenetRenderer(
     props,
     false,
   );
+
+  const [variants, setVariants] = useState({
+    index: 1,
+    numVariants: 1,
+    allPossibleVariants: ["a"],
+  });
 
   let onChangeVisibility = (isVisible) => {
     callAction({
@@ -59,12 +69,49 @@ export default React.memo(function CodeViewer(props) {
       }}
     >
       <div style={{ height: "28px" }}>
-        <Button
-          onClick={() => callAction({ action: actions.updateComponents })}
-          value="update"
-          id={id + "_updateButton"}
-          style={{ marginTop: "10px" }}
-        ></Button>
+        <HStack>
+          <Box>
+            <Tooltip hasArrow label="Updates Viewer">
+              <Button
+                size="sm"
+                variant="outline"
+                id={id + "_updateButton"}
+                bg="doenet.canvas"
+                leftIcon={<RxUpdate />}
+                rightIcon={
+                  SVs.codeChanged ? (
+                    <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
+                  ) : (
+                    ""
+                  )
+                }
+                isDisabled={!SVs.codeChanged}
+                onClick={() => {
+                  callAction({ action: actions.updateComponents });
+                }}
+              >
+                Update
+              </Button>
+            </Tooltip>
+          </Box>
+          {variants.numVariants > 1 && (
+            <Box h="32px" width="100%">
+              <VariantSelect
+                size="sm"
+                menuWidth="140px"
+                array={variants.allPossibleVariants}
+                syncIndex={variants.index}
+                onChange={(index) =>
+                  setVariants((prev) => {
+                    let next = { ...prev };
+                    next.index = index + 1;
+                    return next;
+                  })
+                }
+              />
+            </Box>
+          )}
+        </HStack>
       </div>
       <div
         style={{
@@ -78,7 +125,30 @@ export default React.memo(function CodeViewer(props) {
         }}
         id={id + "_content"}
       >
-        {children}
+        <DoenetML
+          doenetML={SVs.doenetML}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveSubmissions: false,
+            allowSaveEvents: false,
+          }}
+          activityId={id}
+          generatedVariantCallback={setVariants}
+          requestedVariantIndex={variants.index}
+          setErrorsAndWarningsCallback={(errorsAndWarnings) => {
+            callAction({
+              action: actions.setErrorsAndWarnings,
+              args: { errorsAndWarnings },
+            });
+          }}
+        />
       </div>
     </div>
   );
