@@ -48,8 +48,7 @@ export default class MathInput extends Input {
   }
   static componentType = "mathInput";
 
-  static variableForPlainMacro = "value";
-  static variableForPlainCopy = "value";
+  static variableForImplicitProp = "value";
 
   static processWhenJustUpdatedForNewComponent = true;
 

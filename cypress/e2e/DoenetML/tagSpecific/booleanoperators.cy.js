@@ -12,7 +12,7 @@ describe("Boolean Operator Tag Tests", function () {
         {
           doenetML: `
     <booleaninput />
-    <not><copy prop="value" target="_booleaninput1" assignNames="bv" /></not>
+    <not>$_booleaninput1.value{assignNames="bv"}</not>
     <not>true</not>
     <not>false</not>
     `,
@@ -57,7 +57,7 @@ describe("Boolean Operator Tag Tests", function () {
         {
           doenetML: `
     <mathinput />
-    <not><when><copy prop="value" target="_mathinput1" assignNames="mv" /> > 1</when></not>
+    <not><when>$_mathinput1.value{assignNames="mv"} > 1</when></not>
     `,
         },
         "*",
@@ -118,26 +118,26 @@ describe("Boolean Operator Tag Tests", function () {
     <booleaninput />
     <booleaninput />
     <and>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
     </and>
     <and>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       true
     </and>
     <and>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       false
     </and>
     <p>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      $_booleaninput1.value{assignNames="bv1"}
+      $_booleaninput2.value{assignNames="bv2"}
+      $_booleaninput3.value{assignNames="bv3"}
     </p>
     `,
         },
@@ -229,26 +229,26 @@ describe("Boolean Operator Tag Tests", function () {
     <booleaninput />
     <booleaninput />
     <or>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
     </or>
     <or>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       true
     </or>
     <or>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       false
     </or>
     <p>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      $_booleaninput1.value{assignNames="bv1"}
+      $_booleaninput2.value{assignNames="bv2"}
+      $_booleaninput3.value{assignNames="bv3"}
     </p>
     `,
         },
@@ -397,26 +397,26 @@ describe("Boolean Operator Tag Tests", function () {
     <booleaninput />
     <booleaninput />
     <xor>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
     </xor>
     <xor>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       true
     </xor>
     <xor>
-      <copy prop="value" target="_booleaninput1" />
-      <copy prop="value" target="_booleaninput2" />
-      <copy prop="value" target="_booleaninput3" />
+      $_booleaninput1.value
+      $_booleaninput2.value
+      $_booleaninput3.value
       false
     </xor>
     <p>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      $_booleaninput1.value{assignNames="bv1"}
+      $_booleaninput2.value{assignNames="bv2"}
+      $_booleaninput3.value{assignNames="bv3"}
     </p>
     `,
         },
@@ -569,7 +569,7 @@ describe("Boolean Operator Tag Tests", function () {
        (1,2)
       </point>
     </graph>
-    <copy prop="value" target="_booleaninput1" assignNames="bv1" />
+    $_booleaninput1.value{assignNames="bv1"}
     `,
         },
         "*",

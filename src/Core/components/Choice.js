@@ -1,3 +1,4 @@
+import { textFromChildren } from "../utils/text";
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
 
@@ -6,8 +7,7 @@ export default class Choice extends InlineComponent {
   static rendererType = "containerInline";
   static renderChildren = true;
 
-  static variableForPlainMacro = "submitted";
-  static variableForPlainCopy = "submitted";
+  static variableForImplicitProp = "submitted";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -65,14 +65,8 @@ export default class Choice extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let text = "";
-        for (let child of dependencyValues.inlineChildren) {
-          if (typeof child !== "object") {
-            text += child.toString();
-          } else if (typeof child.stateValues.text === "string") {
-            text += child.stateValues.text;
-          }
-        }
+        let text = textFromChildren(dependencyValues.inlineChildren);
+
         return { setValue: { text } };
       },
     };

@@ -1,3 +1,4 @@
+import { textFromChildren } from "../utils/text";
 import BlockComponent from "./abstract/BlockComponent";
 
 export default class Caption extends BlockComponent {
@@ -46,16 +47,7 @@ export default class Caption extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let text = "";
-        for (let child of dependencyValues.inlineChildren) {
-          if (typeof child !== "object") {
-            text += child.toString();
-          } else if (typeof child.stateValues.text === "string") {
-            text += child.stateValues.text;
-          } else {
-            text += " ";
-          }
-        }
+        let text = textFromChildren(dependencyValues.inlineChildren);
 
         return { setValue: { text } };
       },

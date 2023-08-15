@@ -487,4 +487,115 @@ describe("Shuffle Tag Tests", function () {
       cy.get(cesc("#\\/pList")).should("have.text", orderedOptions.join(", "));
     });
   });
+
+  it("shuffle sugar type math", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><shuffle name="sh" type="math">
+    a b c x y z
+  </shuffle></p>
+  <p name="pNoList"><shuffle copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let options = ["a", "b", "c", "x", "y", "z"];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let componentOrder = stateVariables["/sh"].stateValues.componentOrder;
+
+      expect([...componentOrder].sort((a, b) => a - b)).eqls(
+        [...Array(6).keys()].map((x) => x + 1),
+      );
+
+      let orderedOptions = componentOrder.map(
+        (x) => options[x - 1] + options[x - 1] + options[x - 1],
+      );
+
+      cy.get(cesc("#\\/pList")).should("have.text", orderedOptions.join(", "));
+      cy.get(cesc("#\\/pNoList")).should("have.text", orderedOptions.join(""));
+    });
+  });
+
+  it("shuffle sugar type number", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><shuffle name="sh" type="number">
+    101 542 817 527 51 234 801
+  </shuffle></p>
+  <p name="pNoList"><shuffle copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let options = [101, 542, 817, 527, 51, 234, 801];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let componentOrder = stateVariables["/sh"].stateValues.componentOrder;
+
+      expect([...componentOrder].sort((a, b) => a - b)).eqls(
+        [...Array(7).keys()].map((x) => x + 1),
+      );
+
+      let orderedOptions = componentOrder.map((x) => options[x - 1]);
+
+      cy.get(cesc("#\\/pList")).should("have.text", orderedOptions.join(", "));
+      cy.get(cesc("#\\/pNoList")).should("have.text", orderedOptions.join(""));
+    });
+  });
+
+  it("shuffle sugar type text", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <p name="pList"><shuffle name="sh" type="text">
+    apple
+    banana
+    orange
+    almost
+    above
+  </shuffle></p>
+  <p name="pNoList"><shuffle copySource="sh" asList="false" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    let options = ["apple", "banana", "orange", "almost", "above"];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let componentOrder = stateVariables["/sh"].stateValues.componentOrder;
+
+      expect([...componentOrder].sort((a, b) => a - b)).eqls(
+        [...Array(5).keys()].map((x) => x + 1),
+      );
+
+      let orderedOptions = componentOrder.map((x) => options[x - 1]);
+
+      cy.get(cesc("#\\/pList")).should("have.text", orderedOptions.join(", "));
+      cy.get(cesc("#\\/pNoList")).should("have.text", orderedOptions.join(""));
+    });
+  });
 });

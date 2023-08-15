@@ -314,13 +314,13 @@ describe("Feedback Tag Tests", function () {
   <text>a</text>
   <p><answer>
     <mathinput />
-    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 1</when></award>
-    <award><when><copy prop="immediateValue" target="_mathinput1" /> > 10</when></award>
-    <award credit="0.2"><when><copy prop="immediateValue" target="_mathinput1" /> > 2</when></award>
-    <award credit="0.1"><when><copy prop="immediateValue" target="_mathinput1" /> > 0.9</when></award>
-    <award credit="0"><when><copy prop="immediateValue" target="_mathinput1" /> < 0</when></award>
+    <award credit="0.1"><when>$_mathinput1.immediateValue > 1</when></award>
+    <award><when>$_mathinput1.immediateValue > 10</when></award>
+    <award credit="0.2"><when>$_mathinput1.immediateValue > 2</when></award>
+    <award credit="0.1"><when>$_mathinput1.immediateValue > 0.9</when></award>
+    <award credit="0"><when>$_mathinput1.immediateValue < 0</when></award>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_award1">
     <p>Larger than 1</p>
@@ -633,7 +633,7 @@ describe("Feedback Tag Tests", function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -753,7 +753,7 @@ describe("Feedback Tag Tests", function () {
     <choice>banana</choice>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved: $_answer1.creditAchieved{assignNames="ca"}</p>
   <section>
   <feedback condition="$_choice1">
     <p>Meow</p>
@@ -872,7 +872,7 @@ describe("Feedback Tag Tests", function () {
       </shuffle>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved 1: <copy assignNames="ca1" prop="creditAchieved" target="_answer1" /></p>
+  <p>Credit achieved 1: $_answer1.creditAchieved{assignNames="ca1"}</p>
   <section>
   <feedback condition="$cat1">
     <p>Meow</p>
@@ -894,7 +894,7 @@ describe("Feedback Tag Tests", function () {
       </shuffle>
     </choiceinput>
   </answer></p>
-  <p>Credit achieved 2: <copy assignNames="ca2" prop="creditAchieved" target="_answer2" /></p>
+  <p>Credit achieved 2: $_answer2.creditAchieved{assignNames="ca2"}</p>
   <section>
   <feedback condition="$dog2">
     <p>Ruff</p>
@@ -992,7 +992,7 @@ describe("Feedback Tag Tests", function () {
   <p><answer type="text">hello there</answer></p>
   <section>
   <feedback condition="$(_answer1.creditAchieved) != 1 and $(_answer1.responseHasBeenSubmitted) ">
-    <p>Your response <em><copy prop="submittedresponse" target="_answer1" /></em> is incorrect.</p>
+    <p>Your response <em>$_answer1.submittedresponse</em> is incorrect.</p>
   </feedback>
   </section>
   `,
@@ -1064,16 +1064,16 @@ describe("Feedback Tag Tests", function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+  <subsection name="feedback1"><title/>$_award1.feedback</subsection>
   
   <p>Award 2 feedback:</p>
-  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+  <subsection name="feedback2"><title/>$_award2.feedback</subsection>
 
   <p>Award 3 feedback:</p>
-  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+  <subsection name="feedback3"><title/>$_award3.feedback</subsection>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  <subsection name="feedback4"><title/>$_answer1.feedbacks</subsection>
   `,
         },
         "*",
@@ -1337,16 +1337,16 @@ describe("Feedback Tag Tests", function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+  <subsection name="feedback1"><title/>$_award1.feedback</subsection>
   
   <p>Award 2 feedback:</p>
-  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+  <subsection name="feedback2"><title/>$_award2.feedback</subsection>
 
   <p>Award 3 feedback:</p>
-  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+  <subsection name="feedback3"><title/>$_award3.feedback</subsection>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  <subsection name="feedback4"><title/>$_answer1.feedbacks</subsection>
   `,
         },
         "*",
@@ -1617,16 +1617,16 @@ describe("Feedback Tag Tests", function () {
     </answer></p>
 
     <p>Award 1 feedback:</p>
-    <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+    <subsection name="feedback1"><title/>$_award1.feedback</subsection>
     
     <p>Award 2 feedback:</p>
-    <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+    <subsection name="feedback2"><title/>$_award2.feedback</subsection>
 
     <p>Award 3 feedback:</p>
-    <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+    <subsection name="feedback3"><title/>$_award3.feedback</subsection>
 
     <p>Answer feedbacks:</p>
-    <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+    <subsection name="feedback4"><title/>$_answer1.feedbacks</subsection>
   </section>
   `,
         },
@@ -1892,16 +1892,16 @@ describe("Feedback Tag Tests", function () {
   </answer></p>
 
   <p>Award 1 feedback:</p>
-  <subsection name="feedback1"><title/><copy prop="feedback" target="_award1" /></subsection>
+  <subsection name="feedback1"><title/>$_award1.feedback</subsection>
   
   <p>Award 2 feedback:</p>
-  <subsection name="feedback2"><title/><copy prop="feedback" target="_award2" /></subsection>
+  <subsection name="feedback2"><title/>$_award2.feedback</subsection>
 
   <p>Award 3 feedback:</p>
-  <subsection name="feedback3"><title/><copy prop="feedback" target="_award3" /></subsection>
+  <subsection name="feedback3"><title/>$_award3.feedback</subsection>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedback4"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  <subsection name="feedback4"><title/>$_answer1.feedbacks</subsection>
   `,
         },
         "*",
@@ -2164,7 +2164,7 @@ describe("Feedback Tag Tests", function () {
   </p>
 
   <p>Answer feedbacks:</p>
-  <subsection name="feedbacks"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+  <subsection name="feedbacks"><title/>$_answer1.feedbacks</subsection>
   `,
         },
         "*",
@@ -2268,7 +2268,7 @@ describe("Feedback Tag Tests", function () {
     </p>
 
     <p>Answer feedbacks:</p>
-    <subsection name="feedbacks"><title/><copy prop="feedbacks" target="_answer1" /></subsection>
+    <subsection name="feedbacks"><title/>$_answer1.feedbacks</subsection>
   </section>
   `,
         },
@@ -2442,7 +2442,7 @@ describe("Feedback Tag Tests", function () {
     <considerAsResponses>$m1 $m2</considerAsResponses>
   </answer>
 
-  <p>Submitted responses: <copy prop="submittedResponses" target="ans" assignNames="r1 r2" /></p>
+  <p>Submitted responses: $ans.submittedResponses{assignNames="r1 r2"}</p>
   
   <subsection>
     <title>Desired feedback behavior</title>

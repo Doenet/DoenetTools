@@ -19,7 +19,7 @@ describe("MathInput Graph Tests", function () {
     <mathinput name="x" prefill="1"/>
     <mathinput name="y" prefill="2"/>
     <graph>
-    <point>(<copy prop="value" target="x" />,<copy prop="value" target="y" />)</point>
+    <point>($x.value,$y.value)</point>
     </graph>
     <copy prop="coords" target="_point1" name="coords" />
     `,
@@ -172,7 +172,7 @@ describe("MathInput Graph Tests", function () {
     <mathinput name="x" prefill="3"/>
     <mathinput name="y" prefill="2"/>
     <graph>
-    <point>(<copy prop="value" target="x" />^2,<copy prop="value" target="y" />)</point>
+    <point>($x.value^2,$y.value)</point>
     </graph>
     <copy prop="coords" target="_point1" name="coords" />
     `,
@@ -286,7 +286,7 @@ describe("MathInput Graph Tests", function () {
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>
-    <point>(<copy prop="value" target="a" /><copy prop="value" target="b" />, -7)</point>
+    <point>($a.value$b.value, -7)</point>
     </graph>
     <copy prop="coords" target="_point1" name="coords" />`,
         },
@@ -432,7 +432,7 @@ describe("MathInput Graph Tests", function () {
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>
-    <point>(<copy prop="value" target="a" /><copy prop="value" modifyIndirectly="false" target="b" />, -7)</point>
+    <point>($a.value<copy prop="value" modifyIndirectly="false" target="b" />, -7)</point>
     </graph>
     <copy prop="coords" target="_point1" name="coords" />`,
         },

@@ -583,13 +583,13 @@ describe("Boolean Tag Tests", function () {
     <text>a</text>
     <boolean name="b">x+x = 2x</boolean>
 
-    <copy target="b" symbolicEquality name="c1" assignNames="b1" />
-    <copy target="b1" symbolicEquality="false" name="c2" assignNames="b2" />
-    <copy target="c1" symbolicEquality="false" name="c3" assignNames="b3" />
+    $b{symbolicEquality name="b1"}
+    $b1{symbolicEquality="false" name="b2"}
+    $b2{symbolicEquality="true" name="b3"}
     
-    <copy target="b1" simplifyOnCompare name="c4" assignNames="b4" />
-    <copy target="b4" simplifyOnCompare="false" name="c5" assignNames="b5" />
-    <copy target="c4" simplifyOnCompare="false" name="c6" assignNames="b6" />
+    $b1{simplifyOnCompare name="b4"}
+    $b4{simplifyOnCompare="false" name="b5"}
+    $b5{simplifyOnCompare="true" name="b6"}
     `,
         },
         "*",
@@ -601,10 +601,10 @@ describe("Boolean Tag Tests", function () {
     cy.get(cesc("#\\/b")).should("have.text", "true");
     cy.get(cesc("#\\/b1")).should("have.text", "false");
     cy.get(cesc("#\\/b2")).should("have.text", "true");
-    cy.get(cesc("#\\/b3")).should("have.text", "true");
+    cy.get(cesc("#\\/b3")).should("have.text", "false");
     cy.get(cesc("#\\/b4")).should("have.text", "true");
     cy.get(cesc("#\\/b5")).should("have.text", "false");
-    cy.get(cesc("#\\/b6")).should("have.text", "false");
+    cy.get(cesc("#\\/b6")).should("have.text", "true");
   });
 
   it("boolean simplifyOnCompare bug", () => {
@@ -617,7 +617,7 @@ describe("Boolean Tag Tests", function () {
       <math>-5e^(-t)</math> = <math simplify>-5e^(-t)</math>
     </boolean>
     <boolean simplifyOnCompare symbolicEquality name="b2">
-      <math name="orig">-5e^(-t)</math> = <copy prop="value" simplify target="orig" />
+      <math name="orig">-5e^(-t)</math> = $orig.value{simplify}
     </boolean>
     `,
         },

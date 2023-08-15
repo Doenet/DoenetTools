@@ -38,6 +38,12 @@ export default class Map extends CompositeComponent {
       leaveRaw: true,
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 
@@ -118,7 +124,7 @@ export default class Map extends CompositeComponent {
         templateChild: {
           dependencyType: "child",
           childGroups: ["templates"],
-          variableNames: ["serializedChildren", "newNamespace"],
+          variableNames: ["serializedChildren", "newNamespace", "asList"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -134,9 +140,13 @@ export default class Map extends CompositeComponent {
           state: { rendered: true },
           children: childrenOfTemplate,
           originalName: templateChild.componentName,
+          attributes: {},
         };
         if (templateChild.stateValues.newNamespace) {
-          template.attributes = { newNamespace: { primitive: true } };
+          template.attributes.newNamespace = { primitive: true };
+        }
+        if (templateChild.stateValues.asList) {
+          template.attributes.asList = { primitive: true };
         }
         return {
           setValue: {
@@ -264,7 +274,6 @@ export default class Map extends CompositeComponent {
     component,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
@@ -304,7 +313,6 @@ export default class Map extends CompositeComponent {
           component,
           iter,
           componentInfoObjects,
-          flags,
         });
         replacements.push(...res.replacements);
         errors.push(...res.errors);
@@ -319,7 +327,6 @@ export default class Map extends CompositeComponent {
         sourcesNumber: 0,
         iterateNumber: -1,
         componentInfoObjects,
-        flags,
       });
       replacements = results.replacements;
       errors.push(...results.errors);
@@ -331,37 +338,32 @@ export default class Map extends CompositeComponent {
     return { replacements, errors, warnings };
   }
 
-  static async parallelReplacement({
-    component,
-    iter,
-    componentInfoObjects,
-    flags,
-  }) {
+  static async parallelReplacement({ component, iter, componentInfoObjects }) {
     let errors = [];
     let warnings = [];
 
     let replacements = [deepClone(await component.stateValues.template)];
     let newNamespace = component.attributes.newNamespace?.primitive;
+    let compositeAttributesObj = this.createAttributesObject();
 
-    if ("isResponse" in component.attributes) {
-      // pass isResponse to replacements
+    // pass isResponse to replacements
+    // (only isResponse will be copied, as it is only attribute with leaveRaw)
 
-      let attributesFromComposite = convertAttributesForComponentType({
-        attributes: { isResponse: component.attributes.isResponse },
-        componentType: replacements[0].componentType,
-        componentInfoObjects,
-        compositeCreatesNewNamespace: newNamespace,
-        flags,
-      });
-      if (!replacements[0].attributes) {
-        replacements[0].attributes = {};
-      }
-
-      Object.assign(replacements[0].attributes, attributesFromComposite);
+    let attributesFromComposite = convertAttributesForComponentType({
+      attributes: component.attributes,
+      componentType: replacements[0].componentType,
+      componentInfoObjects,
+      compositeAttributesObj,
+      compositeCreatesNewNamespace: newNamespace,
+    });
+    if (!replacements[0].attributes) {
+      replacements[0].attributes = {};
     }
 
+    Object.assign(replacements[0].attributes, attributesFromComposite);
+
     if (
-      !replacements[0].attributes?.newNamespace?.primitive &&
+      !replacements[0].attributes.newNamespace?.primitive &&
       replacements[0].children
     ) {
       markToCreateAllUniqueNames(replacements[0].children);
@@ -395,7 +397,6 @@ export default class Map extends CompositeComponent {
     childnumberArray = [],
     iterateNumber,
     componentInfoObjects,
-    flags,
   }) {
     let errors = [];
     let warnings = [];
@@ -417,7 +418,7 @@ export default class Map extends CompositeComponent {
 
         let serializedComponents = [deepClone(template)];
 
-        // pass isResponse to template
+        // pass isResponse to replacements
         // (only isResponse will be copied, as it is only attribute with leaveRaw)
 
         let attributesFromComposite = {};
@@ -428,7 +429,6 @@ export default class Map extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         if (!serializedComponents[0].attributes) {
@@ -470,7 +470,6 @@ export default class Map extends CompositeComponent {
           childnumberArray: newChildnumberArray,
           iterateNumber,
           componentInfoObjects,
-          flags,
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber;
@@ -487,7 +486,6 @@ export default class Map extends CompositeComponent {
     components,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`)
 
@@ -599,7 +597,6 @@ export default class Map extends CompositeComponent {
         component,
         workspace,
         componentInfoObjects,
-        flags,
       });
 
       let newSerializedReplacements = replacementResults.replacements;
@@ -749,7 +746,6 @@ export default class Map extends CompositeComponent {
             component,
             iter,
             componentInfoObjects,
-            flags,
           });
           replacements.push(...res.replacements);
           errors.push(...res.errors);

@@ -38,7 +38,7 @@ describe("Lorem Tag Tests", function () {
   </section>
 
   <p>
-    <copy prop="value" target="words/numWords" assignNames="numWords" />
+    $(words/numWords.value{assignNames="numWords"})
   </p>
   `,
         },

@@ -9,6 +9,7 @@ import {
   returnAnchorAttributes,
   returnAnchorStateVariableDefinition,
 } from "../utils/graphical";
+import { textFromChildren } from "../utils/text";
 
 export default class Label extends InlineComponent {
   constructor(args) {
@@ -28,8 +29,8 @@ export default class Label extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "valueShadow";
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -220,13 +221,9 @@ export default class Label extends InlineComponent {
           return { setValue: { text, latex: text, value } };
         }
 
-        let text = "";
-        let value = "";
-        for (let comp of dependencyValues.inlineChildren) {
+        let textFromComponentConverter = function (comp, getValue = true) {
           if (typeof comp !== "object") {
-            let s = comp.toString();
-            text += s;
-            value += s;
+            return comp.toString();
           } else if (
             typeof comp.stateValues.hasLatex === "boolean" &&
             typeof comp.stateValues.value === "string" &&
@@ -234,9 +231,8 @@ export default class Label extends InlineComponent {
           ) {
             // if component has a boolean hasLatex state variable
             // and value and text are strings
-            // then use value, text, and hasLatex directly
-            text += comp.stateValues.text;
-            value += comp.stateValues.value;
+            // then use value and text directly
+            return getValue ? comp.stateValues.value : comp.stateValues.text;
           } else if (
             typeof comp.stateValues.renderAsMath === "boolean" &&
             typeof comp.stateValues.latex === "string" &&
@@ -245,20 +241,27 @@ export default class Label extends InlineComponent {
             // if have both latex and string,
             // use render as math, if exists, to decide which to use
             if (comp.stateValues.renderAsMath) {
-              text += comp.stateValues.latex;
-              value += "\\(" + comp.stateValues.latex + "\\)";
+              return getValue
+                ? "\\(" + comp.stateValues.latex + "\\)"
+                : comp.stateValues.latex;
             } else {
-              text += comp.stateValues.text;
-              value += comp.stateValues.text;
+              return comp.stateValues.text;
             }
           } else if (typeof comp.stateValues.latex === "string") {
-            text += comp.stateValues.latex;
-            value += "\\(" + comp.stateValues.latex + "\\)";
+            return getValue
+              ? "\\(" + comp.stateValues.latex + "\\)"
+              : comp.stateValues.latex;
           } else if (typeof comp.stateValues.text === "string") {
-            text += comp.stateValues.text;
-            value += comp.stateValues.text;
+            return comp.stateValues.text;
           }
-        }
+        };
+
+        let value = textFromChildren(dependencyValues.inlineChildren, (x) =>
+          textFromComponentConverter(x, true),
+        );
+        let text = textFromChildren(dependencyValues.inlineChildren, (x) =>
+          textFromComponentConverter(x, false),
+        );
 
         return { setValue: { text, latex: text, value } };
       },

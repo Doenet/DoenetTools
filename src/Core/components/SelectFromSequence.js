@@ -225,7 +225,6 @@ export default class SelectFromSequence extends Sequence {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let errors = [];
     let warnings = [];
@@ -272,7 +271,6 @@ export default class SelectFromSequence extends Sequence {
         componentType,
         componentInfoObjects,
         compositeCreatesNewNamespace: newNamespace,
-        flags,
       });
     }
 

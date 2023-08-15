@@ -801,7 +801,7 @@ describe("Sequence Tag Tests", function () {
     <aslist><sequence from="-1" length="10" exclude="$exclude2  0 6" />
     </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
-    <p><copy prop="value" target="exclude2" assignNames="exclude2a" /></p>
+    <p>$exclude2.value{assignNames="exclude2a"}</p>
     `,
         },
         "*",
@@ -977,7 +977,7 @@ describe("Sequence Tag Tests", function () {
     <aslist><sequence type="letters" length="10" exclude="$e  b f" />
     </aslist>
     <p>Also exclude: <textinput name="e" /></p>
-    <p><copy prop="value" target="e" assignNames="ea" /></p>
+    <p>$e.value{assignNames="ea"}</p>
     `,
         },
         "*",
@@ -1108,7 +1108,7 @@ describe("Sequence Tag Tests", function () {
       <sequence type="math" length="10" from="x" step="x" exclude="2x 6x  $e" />
     </aslist>
     <p>Also exclude: <mathinput name="e" /></p>
-    <p><copy prop="value" target="e" assignNames="ea" /></p>
+    <p>$e.value{assignNames="ea"}</p>
     `,
         },
         "*",
@@ -1353,10 +1353,10 @@ describe("Sequence Tag Tests", function () {
       <sequence from="$min" to="$max"/>
     </aslist>
     <number name="min">
-      <min><copy target="n" /><number>11</number></min>
+      <min>$n<number>11</number></min>
     </number>
     <number name="max">
-      <max><math><copy target="m" />+3</math><number>11</number></max>
+      <max><math>$m+3</math><number>11</number></max>
     </number>
     `,
         },
@@ -1396,7 +1396,7 @@ describe("Sequence Tag Tests", function () {
   <text>a</text>
   <mathinput name="n"/>
   <aslist><sequence from="2" to="$n" /></aslist>
-  <p><copy prop="value" target="n" assignNames="n2" /></p>
+  <p>$n.value{assignNames="n2"}</p>
     `,
         },
         "*",
@@ -1495,7 +1495,7 @@ describe("Sequence Tag Tests", function () {
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1234");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3, 4");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}6{enter}", {
@@ -1505,14 +1505,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 123456");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3, 4, 5, 6");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 123456");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3, 4, 5, 6");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}8{enter}", {
       force: true,
@@ -1522,12 +1522,18 @@ describe("Sequence Tag Tests", function () {
     });
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 12345678");
+    cy.get(cesc("#\\/s2")).should(
+      "have.text",
+      "sequence 2: 1, 2, 3, 4, 5, 6, 7, 8",
+    );
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 12345678");
+    cy.get(cesc("#\\/s1")).should(
+      "have.text",
+      "sequence 1: 1, 2, 3, 4, 5, 6, 7, 8",
+    );
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}3{enter}", {
@@ -1537,14 +1543,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
 
-    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 123");
+    cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: 1, 2, 3");
     cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: ");
 
     cy.get(cesc("#\\/h1")).click();
     cy.get(cesc("#\\/h2")).click();
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 123");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3");
 
     cy.get(cesc("#\\/n1") + " textarea").type("{end}{backspace}4{enter}", {
       force: true,
@@ -1554,7 +1560,7 @@ describe("Sequence Tag Tests", function () {
     });
 
     cy.get(cesc("#\\/s1")).should("have.text", "sequence 1: ");
-    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1234");
+    cy.get(cesc("#\\/s2")).should("have.text", "sequence 2: 1, 2, 3, 4");
   });
 
   it("sequence fixed by default", () => {
@@ -1733,8 +1739,8 @@ describe("Sequence Tag Tests", function () {
     <p>Change first: <mathinput name="a2" bindValueTo="$a{link='false'}" /></p>
     <p>Change second: <mathinput name="b2" bindValueTo="$b{link='false'}" /></p>
 
-    <p>Copy of a2: <copy source="a2" assignNames="a3" /></p>
-    <p>Copy of b2: <copy source="b2" assignNames="b3" /></p>
+    <p>Copy of a2: $a2{name="a3"}</p>
+    <p>Copy of b2: $b2{name="b3"}</p>
 
     `,
         },
@@ -1814,13 +1820,13 @@ describe("Sequence Tag Tests", function () {
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "8");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "0");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "0");
 
     cy.get(cesc("#\\/a2") + " textarea")
       .type("{end}{backspace}9{enter}", { force: true })
@@ -1828,16 +1834,16 @@ describe("Sequence Tag Tests", function () {
     cy.get(cesc("#\\/a3") + " .mjx-mrow").should("contain.text", "9");
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "9");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "0");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "9");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "0");
 
     cy.get(cesc("#\\/b2") + " textarea")
-      .type("2{enter}", { force: true })
+      .type("{end}{backspace}2{enter}", { force: true })
       .blur();
     cy.get(cesc("#\\/b3") + " .mjx-mrow").should("contain.text", "2");
     cy.get(cesc("#\\/thelist")).should("have.text", "4");
@@ -1854,11 +1860,11 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "");
-    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "");
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "9");
     cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "\uff3f");
+      .should("have.text", "9");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "2");
@@ -1884,14 +1890,14 @@ describe("Sequence Tag Tests", function () {
       force: true,
     });
     cy.get(cesc("#\\/thelist")).should("have.text", "0, 3, 6");
-    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "0");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0");
+      .should("have.text", "3");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "3");
+      .should("have.text", "2");
 
     cy.get(cesc("#\\/a2") + " textarea")
       .type("{end}{backspace}8{enter}", { force: true })
@@ -1899,13 +1905,13 @@ describe("Sequence Tag Tests", function () {
     cy.get(cesc("#\\/a3") + " .mjx-mrow").should("contain.text", "8");
     cy.get(cesc("#\\/thelist")).should("have.text", "0, 3, 6");
     cy.get(cesc(`#\\/a2`) + ` .mq-editable-field`).should("have.text", "8");
-    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "3");
+    cy.get(cesc(`#\\/b2`) + ` .mq-editable-field`).should("have.text", "2");
     cy.get(cesc("#\\/a3") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "8");
     cy.get(cesc("#\\/b3") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "3");
+      .should("have.text", "2");
 
     cy.get(cesc("#\\/b2") + " textarea")
       .type("{end}{backspace}7{enter}", { force: true })
@@ -2092,6 +2098,114 @@ describe("Sequence Tag Tests", function () {
       expect(errorWarnings.warnings[8].doenetMLrange.charBegin).eq(5);
       expect(errorWarnings.warnings[8].doenetMLrange.lineEnd).eq(10);
       expect(errorWarnings.warnings[8].doenetMLrange.charEnd).eq(38);
+    });
+  });
+
+  it("sequence displays as list by default", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <p name="pdefault"><sequence name="default" /></p>
+    <p name="pnocommas"><sequence asList="false" name="nocommas" /></p>
+    <p name="pwithcommas"><sequence asList name="withcommas" /></p>
+    <p name="pdefault2">$default</p>
+    <p name="pnocommas2">$nocommas</p>
+    <p name="pwithcommas2">$withcommas</p>
+    <p name="pnocommas3">$default{asList="false"}</p>
+    <p name="pnocommas3a">$withcommas{asList="false"}</p>
+    <p name="pwithcommas3">$nocommas{asList="true"}</p>
+    <p name="pdefault4" copysource="pdefault" />
+    <p name="pnocommas4" copysource="pnocommas" />
+    <p name="pwithcommas4" copysource="pwithcommas" />
+    <p name="pdefault5" copysource="pdefault2" />
+    <p name="pnocommas5" copysource="pnocommas2" />
+    <p name="pwithcommas5" copysource="pwithcommas2" />
+    <p name="pnocommas6" copysource="pnocommas3" />
+    <p name="pnocommas6a" copysource="pnocommas3a" />
+    <p name="pwithcommas6" copysource="pwithcommas3" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+    cy.get(cesc2("#/pdefault2")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+    cy.get(cesc2("#/pdefault4")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+    cy.get(cesc2("#/pdefault5")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+
+    cy.get(cesc2("#/nocommas")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas2")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas3")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas3a")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas4")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas5")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas6")).should("have.text", "12345678910");
+    cy.get(cesc2("#/pnocommas6a")).should("have.text", "12345678910");
+
+    cy.get(cesc2("#/withcommas")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+    cy.get(cesc2("#/pwithcommas2")).should(
+      "have.text",
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/pdefault"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pdefault2"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pdefault4"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pdefault5"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pnocommas"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas2"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas3"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas3a"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas4"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas5"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas6"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pnocommas6a"].stateValues.text).eq("12345678910");
+      expect(stateVariables["/pwithcommas"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas2"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas3"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas4"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas5"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
+      expect(stateVariables["/pwithcommas6"].stateValues.text).eq(
+        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      );
     });
   });
 

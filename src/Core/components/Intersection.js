@@ -23,6 +23,12 @@ export default class Intersection extends CompositeComponent {
       leaveRaw: true,
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 
@@ -135,7 +141,6 @@ export default class Intersection extends CompositeComponent {
   static async createSerializedReplacements({
     component,
     componentInfoObjects,
-    flags,
   }) {
     let errors = [];
     let warnings = [];
@@ -214,7 +219,6 @@ export default class Intersection extends CompositeComponent {
           componentType: repl.componentType,
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
 
         if (!repl.attributes) {
@@ -243,7 +247,6 @@ export default class Intersection extends CompositeComponent {
     component,
     components,
     componentInfoObjects,
-    flags,
   }) {
     // TODO: don't yet have a way to return errors and warnings!
     let errors = [];
@@ -255,7 +258,6 @@ export default class Intersection extends CompositeComponent {
       component,
       components,
       componentInfoObjects,
-      flags,
     });
 
     let serializedIntersections = replacementResults.replacements;

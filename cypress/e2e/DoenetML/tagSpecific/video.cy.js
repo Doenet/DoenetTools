@@ -294,9 +294,9 @@ describe("Video Tag Tests", function () {
   <p>An introduction to Doenet.</p>
   <video youtube="tJ4ypc5L6uU" name="v" />
 
-  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
-  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
-  <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
+  <p>State: $v.state{assignNames="state"}</p>
+  <p>Time: $v.time{assignNames="time"}</p>
+  <p>Duration: $v.duration{assignNames="duration"}</p>
   <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
   <p>Fraction watched:  <copy prop="fractionWatched" target="v" assignNames="fractionWatched" displayDecimals="2" /></p>
 
@@ -399,9 +399,9 @@ describe("Video Tag Tests", function () {
   <p>An introduction to Doenet.</p>
   <video youtube="tJ4ypc5L6uU" name="v" />
 
-  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
-  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
-  <p>Duration: <copy prop="duration" target="v" assignNames="duration" /></p>
+  <p>State: $v.state{assignNames="state"}</p>
+  <p>Time: $v.time{assignNames="time"}</p>
+  <p>Duration: $v.duration{assignNames="duration"}</p>
   <p>Seconds watched:  <copy prop="secondsWatched" target="v" assignNames="secondsWatched" displayDecimals="0" /></p>
 
   <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>

@@ -158,7 +158,7 @@ describe("MathList Tag Tests", function () {
     <number name="n1">7</number>
     <number name="n2">11</number></p>
     <p><point xs="$m1 $m2/$n1 $n1 $n1-$n2 $n1 -$n2 $n1 - $n2 $n1$m1$m2 ($n1+$m1)/($n2$m2)" /></p>
-    <p><aslist><copy prop="xs" target="_point1" assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11" /></aslist></p>
+    <p><aslist>$_point1.xs{assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11"}</aslist></p>
     `,
         },
         "*",
@@ -1145,18 +1145,18 @@ describe("MathList Tag Tests", function () {
     <mathlist>
       <math>a</math>
       <mathlist>q r</mathlist>
-      <copy prop="math3" target="_mathlist1" assignNames="m4" createComponentOfType="math" />
+      <math copySource="_mathlist1.math3" name="m4" />
       <mathlist>
         <mathlist name="mid">
-          <math><copy prop="math1" target="_mathlist1" createComponentOfType="math" /></math>
+          <math name="m2"><math copySource="_mathlist1.math1" /></math>
           <mathlist>u v</mathlist>
         </mathlist>
         <mathlist>
-          <copy prop="math2" target="_mathlist1" assignNames="m8" createComponentOfType="math" />
-          <copy prop="math5" target="_mathlist1" assignNames="m9" createComponentOfType="math" />
+          <math copySource="_mathlist1.math2" name="m8" />
+          <math copySource="_mathlist1.math5" name="m9" />
         </mathlist>
       </mathlist>
-      <copy target="mid" assignNames="mid2" />
+      $mid{name="mid2"}
     </mathlist>
 
     <mathinput bindValueTo="$(_mathlist1.math1)" />
@@ -1192,7 +1192,7 @@ describe("MathList Tag Tests", function () {
       let ca2 = cesc2("#" + child2Name);
       let child3Name = "/m4";
       let ca3 = cesc2("#" + child3Name);
-      let child4Name = "/_math2";
+      let child4Name = "/m2";
       let ca4 = cesc2("#" + child4Name);
       let child5Name =
         stateVariables["/_mathlist5"].activeChildren[0].componentName;
@@ -1456,12 +1456,12 @@ describe("MathList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><mathlist name="ml1">a b c d e</mathlist></p>
-      <p><copy target="ml1" maxNumber="3" assignNames="ml2" /></p>
-      <p><copy target="ml2" maxNumber="" assignNames="ml3" /></p>
+      <p>$ml1{maxNumber="3" name="ml2"}</p>
+      <p>$ml2{maxNumber="" name="ml3"}</p>
 
       <p><mathlist name="ml4" maxNumber="3">a b c d e</mathlist></p>
-      <p><copy target="ml4" maxNumber="4" assignNames="ml5" /></p>
-      <p><copy target="ml5" maxNumber="" assignNames="ml6" /></p>
+      <p>$ml4{maxNumber="4" name="ml5"}</p>
+      <p>$ml5{maxNumber="" name="ml6"}</p>
 
       `,
         },
@@ -1702,7 +1702,7 @@ describe("MathList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><mathlist name="ml1" maxNumber="$mn1" >x y z u v</mathlist></p>
-      <p><copy target="ml1" maxNumber="$mn2" assignNames="ml2" /></p>
+      <p>$ml1{maxNumber="$mn2" name="ml2"}</p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 
@@ -2172,8 +2172,8 @@ describe("MathList Tag Tests", function () {
     </mathlist>
     <p>Merge math lists: <booleaninput /></p>
 
-    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
+    <p>Third math: $_mathlist1.math3</p>
+    <p>Fifth math: $_mathlist1.math5</p>
 
     <p>Change values:
       <mathinput name="mi1" bindValueTo="$_mathlist1.math1" />
@@ -2561,8 +2561,8 @@ describe("MathList Tag Tests", function () {
       <math>a,b,c,d,e</math>
     </mathlist>
 
-    <p>Third math: <copy prop="math3" target="_mathlist1" /></p>
-    <p>Fifth math: <copy prop="math5" target="_mathlist1" /></p>
+    <p>Third math: $_mathlist1.math3</p>
+    <p>Fifth math: $_mathlist1.math5</p>
 
     <p>Change values:
     <mathinput name="mi1" bindValueTo="$_mathlist1.math1" />
@@ -3443,16 +3443,16 @@ describe("MathList Tag Tests", function () {
     <text>a</text>
     <p><mathlist hide="true">a b c</mathlist></p>
 
-    <p><copy name="mathlist1a" hide="false" target="_mathlist1" /></p>
+    <p>$_mathlist1{name="mathlist1a" hide="false"}</p>
 
     <p><mathlist>
       <math>x</math>
-      <copy target="_mathlist1" hide="false" />
+      $_mathlist1{hide="false"}
       <math hide>y</math>
-      <copy target="mathlist1a" />
+      $mathlist1a
     </mathlist></p>
 
-    <p><copy name="mathlist3" maxNumber="6" target="_mathlist2" /></p>
+    <p>$_mathlist2{name="mathlist3" maxNumber="6"}</p>
 
     `,
         },
@@ -3580,22 +3580,14 @@ describe("MathList Tag Tests", function () {
     cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathlist1a =
-        stateVariables[
-          stateVariables["/mathlist1a"].replacements[0].componentName
-        ];
-      let mathlist3 =
-        stateVariables[
-          stateVariables["/mathlist3"].replacements[0].componentName
-        ];
       expect(stateVariables["/_mathlist1"].stateValues.maths.length).eq(3);
       expect(stateVariables["/_mathlist1"].stateValues.maths[0]).eq("a");
       expect(stateVariables["/_mathlist1"].stateValues.maths[1]).eq("b");
       expect(stateVariables["/_mathlist1"].stateValues.maths[2]).eq("c");
-      expect((await mathlist1a.stateValues.maths).length).eq(3);
-      expect((await mathlist1a.stateValues.maths)[0]).eq("a");
-      expect((await mathlist1a.stateValues.maths)[1]).eq("b");
-      expect((await mathlist1a.stateValues.maths)[2]).eq("c");
+      expect(stateVariables["/mathlist1a"].stateValues.maths.length).eq(3);
+      expect(stateVariables["/mathlist1a"].stateValues.maths[0]).eq("a");
+      expect(stateVariables["/mathlist1a"].stateValues.maths[1]).eq("b");
+      expect(stateVariables["/mathlist1a"].stateValues.maths[2]).eq("c");
       expect(stateVariables["/_mathlist2"].stateValues.maths.length).eq(8);
       expect(stateVariables["/_mathlist2"].stateValues.maths[0]).eq("x");
       expect(stateVariables["/_mathlist2"].stateValues.maths[1]).eq("a");
@@ -3605,13 +3597,13 @@ describe("MathList Tag Tests", function () {
       expect(stateVariables["/_mathlist2"].stateValues.maths[5]).eq("a");
       expect(stateVariables["/_mathlist2"].stateValues.maths[6]).eq("b");
       expect(stateVariables["/_mathlist2"].stateValues.maths[7]).eq("c");
-      expect((await mathlist3.stateValues.maths).length).eq(6);
-      expect((await mathlist3.stateValues.maths)[0]).eq("x");
-      expect((await mathlist3.stateValues.maths)[1]).eq("a");
-      expect((await mathlist3.stateValues.maths)[2]).eq("b");
-      expect((await mathlist3.stateValues.maths)[3]).eq("c");
-      expect((await mathlist3.stateValues.maths)[4]).eq("y");
-      expect((await mathlist3.stateValues.maths)[5]).eq("a");
+      expect(stateVariables["/mathlist3"].stateValues.maths.length).eq(6);
+      expect(stateVariables["/mathlist3"].stateValues.maths[0]).eq("x");
+      expect(stateVariables["/mathlist3"].stateValues.maths[1]).eq("a");
+      expect(stateVariables["/mathlist3"].stateValues.maths[2]).eq("b");
+      expect(stateVariables["/mathlist3"].stateValues.maths[3]).eq("c");
+      expect(stateVariables["/mathlist3"].stateValues.maths[4]).eq("y");
+      expect(stateVariables["/mathlist3"].stateValues.maths[5]).eq("a");
     });
   });
 
@@ -3846,12 +3838,12 @@ describe("MathList Tag Tests", function () {
     <p><mathlist name="ml5a" copySource="_mathlist5" /></p>
     <p><mathlist name="ml6a" copySource="_mathlist6" /></p>
 
-    <p name="pms1"><copy source="_mathlist1.maths" assignNames="m1_1 m1_2 m1_3 m1_4 m1_5" /></p>
-    <p name="pms2"><copy source="_mathlist2.maths" assignNames="m2_1 m2_2 m2_3 m2_4 m2_5" /></p>
-    <p name="pms3"><copy source="_mathlist3.maths" assignNames="m3_1 m3_2 m3_3 m3_4 m3_5" /></p>
-    <p name="pms4"><copy source="_mathlist4.maths" assignNames="m4_1 m4_2 m4_3 m4_4 m4_5" /></p>
-    <p name="pms5"><copy source="_mathlist5.maths" assignNames="m5_1 m5_2 m5_3 m5_4 m5_5" /></p>
-    <p name="pms6"><copy source="_mathlist6.maths" assignNames="m6_1 m6_2 m6_3 m6_4 m6_5" /></p>
+    <p name="pms1">$_mathlist1.maths{assignNames="m1_1 m1_2 m1_3 m1_4 m1_5"}</p>
+    <p name="pms2">$_mathlist2.maths{assignNames="m2_1 m2_2 m2_3 m2_4 m2_5"}</p>
+    <p name="pms3">$_mathlist3.maths{assignNames="m3_1 m3_2 m3_3 m3_4 m3_5"}</p>
+    <p name="pms4">$_mathlist4.maths{assignNames="m4_1 m4_2 m4_3 m4_4 m4_5"}</p>
+    <p name="pms5">$_mathlist5.maths{assignNames="m5_1 m5_2 m5_3 m5_4 m5_5"}</p>
+    <p name="pms6">$_mathlist6.maths{assignNames="m6_1 m6_2 m6_3 m6_4 m6_5"}</p>
 
     <p><mathlist name="ml1b" copySource="_mathlist1" link="false" /></p>
     <p><mathlist name="ml2b" copySource="_mathlist2" link="false" /></p>
@@ -3860,12 +3852,12 @@ describe("MathList Tag Tests", function () {
     <p><mathlist name="ml5b" copySource="_mathlist5" link="false" /></p>
     <p><mathlist name="ml6b" copySource="_mathlist6" link="false" /></p>
 
-    <p name="pms1a"><copy source="_mathlist1.maths" assignNames="m1_1a m1_2a m1_3a m1_4a m1_5a" link="false" /></p>
-    <p name="pms2a"><copy source="_mathlist2.maths" assignNames="m2_1a m2_2a m2_3a m2_4a m2_5a" link="false" /></p>
-    <p name="pms3a"><copy source="_mathlist3.maths" assignNames="m3_1a m3_2a m3_3a m3_4a m3_5a" link="false" /></p>
-    <p name="pms4a"><copy source="_mathlist4.maths" assignNames="m4_1a m4_2a m4_3a m4_4a m4_5a" link="false" /></p>
-    <p name="pms5a"><copy source="_mathlist5.maths" assignNames="m5_1a m5_2a m5_3a m5_4a m5_5a" link="false" /></p>
-    <p name="pms6a"><copy source="_mathlist6.maths" assignNames="m6_1a m6_2a m6_3a m6_4a m6_5a" link="false" /></p>
+    <p name="pms1a">$_mathlist1.maths{assignNames="m1_1a m1_2a m1_3a m1_4a m1_5a" link="false"}</p>
+    <p name="pms2a">$_mathlist2.maths{assignNames="m2_1a m2_2a m2_3a m2_4a m2_5a" link="false"}</p>
+    <p name="pms3a">$_mathlist3.maths{assignNames="m3_1a m3_2a m3_3a m3_4a m3_5a" link="false"}</p>
+    <p name="pms4a">$_mathlist4.maths{assignNames="m4_1a m4_2a m4_3a m4_4a m4_5a" link="false"}</p>
+    <p name="pms5a">$_mathlist5.maths{assignNames="m5_1a m5_2a m5_3a m5_4a m5_5a" link="false"}</p>
+    <p name="pms6a">$_mathlist6.maths{assignNames="m6_1a m6_2a m6_3a m6_4a m6_5a" link="false"}</p>
 
     `,
         },

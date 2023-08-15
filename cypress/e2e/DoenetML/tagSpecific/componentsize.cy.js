@@ -64,11 +64,11 @@ describe("Component Size Tag Tests", function () {
     <document name="doc">
     <p><text>${ind}</text></p>
     <image name="ae" width="${widthString}" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
-    <p>width: <copy prop="width" target="ae" assignNames="w" /></p>
-    <p>width as adapted number: <number name="wNum"><copy prop="width" target="ae" /></number></p>
-    <p>width as adapted math: <math name="wMath"><copy prop="width" target="ae" /></math></p>
-    <p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" target="ae" /></extract></p>
-    <p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" target="ae" /></extract></p>
+    <p>width: $ae.width{assignNames="w"}</p>
+    <p>width as adapted number: <number name="wNum">$ae.width</number></p>
+    <p>width as adapted math: <math name="wMath">$ae.width</math></p>
+    <p>width as extracted number: <extract prop="number" assignNames="wExtract">$ae.width</extract></p>
+    <p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract">$ae.width</extract></p>
     </document>
     `,
           },
@@ -152,11 +152,11 @@ describe("Component Size Tag Tests", function () {
 <p><mathinput name="wPrescribed" prefill="500" /></p>
 <image name="ae" width="$wPrescribed px" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
 
-<p>width: <copy prop="width" target="ae" assignNames="w" /></p>
-<p>width as adapted number: <number name="wNum"><copy prop="width" target="ae" /></number></p>
-<p>width as adapted math: <math name="wMath"><copy prop="width" target="ae" /></math></p>
-<p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" target="ae" /></extract></p>
-<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" target="ae" /></extract></p>
+<p>width: $ae.width{assignNames="w"}</p>
+<p>width as adapted number: <number name="wNum">$ae.width</number></p>
+<p>width as adapted math: <math name="wMath">$ae.width</math></p>
+<p>width as extracted number: <extract prop="number" assignNames="wExtract">$ae.width</extract></p>
+<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract">$ae.width</extract></p>
 <p>Change width 2: <mathinput name="w2" bindValueTo="$ae.width" /></p>
   `,
         },
@@ -260,11 +260,11 @@ describe("Component Size Tag Tests", function () {
 <p><mathinput name="wPrescribed" prefill="50" /></p>
 <image name="ae" width="$wPrescribed %" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
 
-<p>width: <copy prop="width" target="ae" assignNames="w" /></p>
-<p>width as adapted number: <number name="wNum"><copy prop="width" target="ae" /></number></p>
-<p>width as adapted math: <math name="wMath"><copy prop="width" target="ae" /></math></p>
-<p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" target="ae" /></extract></p>
-<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" target="ae" /></extract></p>
+<p>width: $ae.width{assignNames="w"}</p>
+<p>width as adapted number: <number name="wNum">$ae.width</number></p>
+<p>width as adapted math: <math name="wMath">$ae.width</math></p>
+<p>width as extracted number: <extract prop="number" assignNames="wExtract">$ae.width</extract></p>
+<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract">$ae.width</extract></p>
 <p>Change width 2: <mathinput name="w2" bindValueTo="$(ae.width)" /></p>
 </document>
   `,
@@ -383,8 +383,8 @@ describe("Component Size Tag Tests", function () {
 <p><mathinput name="wPrescribed" prefill="500" /></p>
 <image name="ae" width="$wPrescribed px" height="$(ae.width)/2" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
 
-<p>width: <copy prop="width" target="ae" assignNames="w" /></p>
-<p>height: <copy prop="height" target="ae" assignNames="h" /></p>
+<p>width: $ae.width{assignNames="w"}</p>
+<p>height: $ae.height{assignNames="h"}</p>
 <p>Change width 2: <mathinput name="w2" bindValueTo="$(ae.width)" /></p>
 <p>Change height 2: <mathinput name="h2" bindValueTo="$(ae.height)" /></p>
   `,

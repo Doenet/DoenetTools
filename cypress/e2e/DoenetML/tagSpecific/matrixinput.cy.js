@@ -13,9 +13,9 @@ describe("MatrixInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p>Matrix 1: <matrixInput name="mi1" /></p>
-    <p>Matrix 2: <copy target="mi1" assignNames="mi2" createComponentOfType="matrixInput" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m1" /></p>
-    <p>Matrix 4: <copy prop="immediateValue" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 2: <matrixInput copySource="mi1" name="mi2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m1"}</p>
+    <p>Matrix 4: $mi1.immediateValue{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -789,7 +789,7 @@ describe("MatrixInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <p>Matrix 1: <matrixInput name="mi1" format="latex" prefill="\\begin{matrix}a & b\\\\c & d\\end{matrix}" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -1252,7 +1252,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" format="latex" prefill="\\begin{matrix}a & b\\\\c & d\\end{matrix}" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -1845,7 +1845,7 @@ describe("MatrixInput Tag Tests", function () {
     <text>a</text>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -2324,7 +2324,7 @@ describe("MatrixInput Tag Tests", function () {
     <text>a</text>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="⟨a,b⟩" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -2805,7 +2805,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -3401,7 +3401,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="⟨a,b⟩" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -3995,7 +3995,7 @@ describe("MatrixInput Tag Tests", function () {
     <text>a</text>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)^T" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -4449,7 +4449,7 @@ describe("MatrixInput Tag Tests", function () {
     <text>a</text>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="⟨a,b⟩^T" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -4905,7 +4905,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)^T" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -5501,7 +5501,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="⟨a,b⟩^T" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -6097,7 +6097,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="(a,b)'" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -6693,7 +6693,7 @@ describe("MatrixInput Tag Tests", function () {
     <p>Number of columns: <mathinput name="numColumns" /></p>
 
     <p>Matrix 1: <matrixInput name="mi1" prefill="⟨a,b⟩'" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 2: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 2: $mi1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -7290,7 +7290,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Matrix 1: <math name="m1" format="latex">\\begin{matrix}a & b\\\\c & d\\end{matrix}</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -7756,9 +7756,9 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Matrix 1: <math name="m1" format="latex">\\begin{matrix}a & b\\\\c & d\\end{matrix}</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
 
-    <p><textinput name="ti" /> <copy prop="value" target="ti" assignNames="t" /></p>
+    <p><textinput name="ti" /> $ti.value{assignNames="t"}</p>
     `,
         },
         "*",
@@ -7974,7 +7974,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">(a,b)</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -8850,7 +8850,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">⟨a,b⟩</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -9726,9 +9726,9 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">(a,b,c)</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
 
-    <p><textinput name="ti" /> <copy prop="value" target="ti" assignNames="t" /></p>
+    <p><textinput name="ti" /> $ti.value{assignNames="t"}</p>
     `,
         },
         "*",
@@ -10012,9 +10012,9 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">⟨a,b,c⟩</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
 
-    <p><textinput name="ti" /> <copy prop="value" target="ti" assignNames="t" /></p>
+    <p><textinput name="ti" /> $ti.value{assignNames="t"}</p>
     `,
         },
         "*",
@@ -10298,7 +10298,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">(a,b)^T</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -11172,7 +11172,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">⟨a,b⟩^T</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -12046,7 +12046,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">(a,b)'</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -12920,7 +12920,7 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">⟨a,b⟩'</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -13794,9 +13794,9 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">(a,b,c)^T</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
 
-    <p><textinput name="ti" /> <copy prop="value" target="ti" assignNames="t" /></p>
+    <p><textinput name="ti" /> $ti.value{assignNames="t"}</p>
     `,
         },
         "*",
@@ -14073,9 +14073,9 @@ describe("MatrixInput Tag Tests", function () {
 
     <p>Vector 1: <math name="m1">⟨a,b,c⟩^T</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" numRows="$numRows" numColumns="$numColumns" /></p>
-    <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m2" /></p>
+    <p>Matrix 3: $mi1.value{assignNames="m2"}</p>
 
-    <p><textinput name="ti" /> <copy prop="value" target="ti" assignNames="t" /></p>
+    <p><textinput name="ti" /> $ti.value{assignNames="t"}</p>
     `,
         },
         "*",
@@ -14351,8 +14351,8 @@ describe("MatrixInput Tag Tests", function () {
     <math name="noSplit" splitSymbols="false">xyz</math>
     <matrixinput name="varWithNum2" bindValueTo="$varWithNum" />
     <matrixinput name="noSplit2" splitSymbols="false" bindValueTo="$noSplit" />
-    <copy prop="value" target="varWithNum2" assignNames="varWithNum3"/>
-    <copy prop="value" target="noSplit2" assignNames="noSplit3"/>
+    $varWithNum2.value{assignNames="varWithNum3"}
+    $noSplit2.value{assignNames="noSplit3"}
     `,
         },
         "*",
@@ -15124,9 +15124,9 @@ describe("MatrixInput Tag Tests", function () {
     \\begin{matrix}\\\\ & 3\\end{matrix}
     </math></p>
     <p>Matrix 1: <matrixInput name="mi1" prefill="$sparse" numRows="3" numColumns="3" /></p>
-    <p>Matrix 1A: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 1A: $mi1.value{assignNames="m1"}</p>
     <p>Matrix 2: <matrixInput name="mi2" prefill="$sparse" numRows="3" numColumns="3" defaultEntry="0" /></p>
-    <p>Matrix 2A: <copy prop="value" target="mi2" assignNames="m2" /></p>
+    <p>Matrix 2A: $mi2.value{assignNames="m2"}</p>
     `,
         },
         "*",
@@ -15438,11 +15438,11 @@ describe("MatrixInput Tag Tests", function () {
     <p>Sparse matrix: <math name="sparse1" format="latex">
     \\begin{matrix}\\\\ & 3\\end{matrix}
     </math></p>
-    <p>Sparse matrix 2: <copy target="sparse1" link="false" assignNames="sparse2" /></p>
+    <p>Sparse matrix 2: $sparse1{link="false" name="sparse2"}</p>
     <p>Matrix 1: <matrixInput name="mi1" bindValueTo="$sparse1" numRows="3" numColumns="3" /></p>
-    <p>Matrix 1A: <copy prop="value" target="mi1" assignNames="m1" /></p>
+    <p>Matrix 1A: $mi1.value{assignNames="m1"}</p>
     <p>Matrix 2: <matrixInput name="mi2" bindValueTo="$sparse2" numRows="3" numColumns="3" defaultEntry="0" /></p>
-    <p>Matrix 2A: <copy prop="value" target="mi2" assignNames="m2" /></p>
+    <p>Matrix 2A: $mi2.value{assignNames="m2"}</p>
     `,
         },
         "*",

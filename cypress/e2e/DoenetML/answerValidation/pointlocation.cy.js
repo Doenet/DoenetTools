@@ -16,12 +16,12 @@ describe("Point location validation tests", function () {
     <graph><point>(-3.9,4.5)</point></graph>
     <p><answer>
       <award><when>
-        <copy prop="x" target="_point1" /> > 0 and 
-        <copy prop="y" target="_point1" /> > 0
+        $_point1.x > 0 and 
+        $_point1.y > 0
       </when></award>
       <considerAsResponses>$_point1</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
+    <p>Credit for answer: $_answer1.creditAchieved</p>
     `,
         },
         "*",
@@ -238,12 +238,12 @@ describe("Point location validation tests", function () {
     <graph><point>(-3.9,4.5)</point></graph>
     <p><answer>
       <award><when>
-        <copy prop="x" target="_point1" /> > 0 and 
-        <copy prop="y" target="_point1" /> > 0
+        $_point1.x > 0 and 
+        $_point1.y > 0
       </when></award>
       <considerAsResponses>$_point1</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
+    <p>Credit for answer: $_answer1.creditAchieved</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -507,19 +507,19 @@ describe("Point location validation tests", function () {
           doenetML: `
     <text>a</text>
     <point name="goal">(-4.1, 7.4)</point>
-    <p>Move point to <copy prop="coords" target="goal" /></p>
+    <p>Move point to $goal.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal" /></attractTo>
+          <attractTo>$goal</attractTo>
         </constraints>
       </point>
     </graph>
     <p><answer><award><when>
-    <copy prop="x" target="A" isResponse /> = <copy prop="x" target="goal" /> and 
-    <copy prop="y" target="A" isResponse /> = <copy prop="y" target="goal" />
+    $A.x{isResponse} = $goal.x and 
+    $A.y{isResponse} = $goal.y
     </when></award></answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
+    <p>Credit for answer: $_answer1.creditAchieved</p>
     `,
         },
         "*",
@@ -672,25 +672,25 @@ describe("Point location validation tests", function () {
     <p>Criterion distance: <mathinput name="criterion" prefill="2"/></p>
     <p>Partial credit distance: <mathinput name="partialcriterion" prefill="3"/></p>
 
-    <number hide name="criterion2"><copy prop="value" target="criterion" />^2</number>
-    <number hide name="partialcriterion2"><copy prop="value" target="partialcriterion" />^2</number>
-    <number hide name="distance2">(<copy prop="x" target="A" /> - <copy prop="x" target="goal" />)^2 + 
-    (<copy prop="y" target="A" /> - <copy prop="y" target="goal" />)^2</number>
+    <number hide name="criterion2">$criterion.value^2</number>
+    <number hide name="partialcriterion2">$partialcriterion.value^2</number>
+    <number hide name="distance2">($A.x - $goal.x)^2 + 
+    ($A.y - $goal.y)^2</number>
 
-    <p>Move point to within distance of <copy prop="value" target="criterion" /> to <copy prop="coords" target="goal" /></p>
+    <p>Move point to within distance of $criterion.value to $goal.coords</p>
     <graph>
       <point name="A">(4.9, -1.1)</point>
     </graph>
     <p><answer>
       <award><when>
-        <copy target="distance2" /> < <copy target="criterion2" />
+        $distance2 < $criterion2
       </when></award>
       <award credit="0.6"><when>
-        <copy target="distance2" /> < <copy target="partialcriterion2" />
+        $distance2 < $partialcriterion2
       </when></award>
       <considerAsResponses>$A</considerAsResponses>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" /></p>
+    <p>Credit for answer: $_answer1.creditAchieved</p>
     `,
         },
         "*",
@@ -939,18 +939,18 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
     </graph>
@@ -961,8 +961,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -989,7 +989,7 @@ describe("Point location validation tests", function () {
     cy.get(cesc("#\\/_answer1_submit")).click();
     cy.get(cesc(`#\\/srs`) + ` .mjx-mrow`).should(
       "contain.text",
-      "((4.9,−1.1),(−2.3,−3.4))",
+      "(4.9,−1.1),(−2.3,−3.4)",
     );
     cy.get(cesc("#\\/_answer1_submit")).should("not.exist");
     cy.get(cesc("#\\/_answer1_correct")).should("not.exist");
@@ -1005,9 +1005,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1051,9 +1049,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1096,7 +1092,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1139,7 +1135,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1184,7 +1180,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1228,7 +1224,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -1272,7 +1268,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1316,7 +1312,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1360,7 +1356,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1377,18 +1373,18 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
     </graph>
@@ -1399,8 +1395,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -1449,9 +1445,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1495,9 +1489,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1540,7 +1532,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1583,7 +1575,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1628,7 +1620,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1672,7 +1664,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -1716,7 +1708,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1760,7 +1752,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1804,7 +1796,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -1821,18 +1813,18 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
     </graph>
@@ -1843,8 +1835,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -1883,9 +1875,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1929,9 +1919,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -1974,7 +1962,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2017,7 +2005,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2062,7 +2050,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2106,7 +2094,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -2150,7 +2138,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2194,7 +2182,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2238,7 +2226,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2255,18 +2243,18 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
     </graph>
@@ -2277,8 +2265,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -2317,9 +2305,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2363,9 +2349,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2408,7 +2392,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2451,7 +2435,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2496,7 +2480,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2540,7 +2524,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -2584,7 +2568,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2628,7 +2612,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2672,7 +2656,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -2689,18 +2673,18 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <graph>
       <point name="A" x="4.9" y="-1.1">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
       <point name="B" x="-2.3" y="-3.4">
         <constraints>
-          <attractTo><copy target="goal1" /></attractTo>
-          <attractTo><copy target="goal2" /></attractTo>
+          <attractTo>$goal1</attractTo>
+          <attractTo>$goal2</attractTo>
         </constraints>
       </point>
     </graph>
@@ -2711,8 +2695,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -2751,9 +2735,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((4.9,-1.1),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(4.9,-1.1),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2797,9 +2779,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(-2.3,-3.4))",
-        );
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(-2.3,-3.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2842,7 +2822,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-2.3,-3.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-2.3,-3.4)");
       });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2885,7 +2865,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2930,7 +2910,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.window().then(async (win) => {
@@ -2974,7 +2954,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.window().then(async (win) => {
@@ -3018,7 +2998,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3062,7 +3042,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3106,7 +3086,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.window().then(async (win) => {
@@ -3123,15 +3103,15 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <p>Number of points: <mathinput prefill="0" name="n" /></p>
     <graph>
       <map name="map1" assignNames="(A) (B) (C)">
         <template>
           <point x='$i' y='1'>
             <constraints>
-              <attractTo><copy target="goal1" /></attractTo>
-              <attractTo><copy target="goal2" /></attractTo>
+              <attractTo>$goal1</attractTo>
+              <attractTo>$goal2</attractTo>
             </constraints>
           </point>
         </template>
@@ -3145,8 +3125,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -3300,7 +3280,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(2,1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(2,1)");
       });
 
     cy.log("Move point B close and submit");
@@ -3327,7 +3307,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.log("Move point A close to other goal and submit");
@@ -3356,7 +3336,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.log("Move point B away and submit");
@@ -3383,7 +3363,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.log("Move point B close to second goal and submit");
@@ -3411,7 +3391,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.log("Move point A away and submit");
@@ -3439,7 +3419,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.log("Move point A near first goal and submit");
@@ -3466,7 +3446,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.log("create point C and submit");
@@ -3489,7 +3469,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(3,1))",
+          "(-4.1,7.4),(6.8,9.1),(3,1)",
         );
       });
 
@@ -3518,7 +3498,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(-4.1,7.4))",
+          "(-4.1,7.4),(6.8,9.1),(-4.1,7.4)",
         );
       });
 
@@ -3541,7 +3521,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
   });
 
@@ -3553,7 +3533,7 @@ describe("Point location validation tests", function () {
     <text>a</text>
     <point name="goal1">(-4.1, 7.4)</point>
     <point name="goal2">(6.8, 9.1)</point>
-    <p>Move points to <copy prop="coords" target="goal1" /> <copy prop="coords" target="goal2" /></p>
+    <p>Move points to $goal1.coords $goal2.coords</p>
     <p>Number of points: <mathinput prefill="0" name="n" /></p>
     <p>Number of points 2: <mathinput prefill="0" name="m" /></p>
     <graph>
@@ -3561,16 +3541,16 @@ describe("Point location validation tests", function () {
         <template>
           <point x='$i' y='1'>
             <constraints>
-              <attractTo><copy target="goal1" /></attractTo>
-              <attractTo><copy target="goal2" /></attractTo>
+              <attractTo>$goal1</attractTo>
+              <attractTo>$goal2</attractTo>
             </constraints>
           </point>
           <map>
             <template>
               <point x='$j' y='2'>
                 <constraints>
-                  <attractTo><copy target="goal1" /></attractTo>
-                  <attractTo><copy target="goal2" /></attractTo>
+                  <attractTo>$goal1</attractTo>
+                  <attractTo>$goal2</attractTo>
                 </constraints>
               </point>
             </template>
@@ -3587,8 +3567,8 @@ describe("Point location validation tests", function () {
         </when>
       </award>
     </answer></p>
-    <p>Credit for answer: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
-    <p>Submitted responses: <math name="srs"><copy prop="submittedResponses" target="_answer1" /></math></p>
+    <p>Credit for answer: $_answer1.creditAchieved{assignNames="ca"}</p>
+    <p>Submitted responses: <math name="srs">$_answer1.submittedResponses</math></p>
     `,
         },
         "*",
@@ -3742,7 +3722,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(1,2))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(1,2)");
       });
 
     cy.log("Move point A2 close and submit");
@@ -3769,7 +3749,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-3.7,7),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-3.7,7),(-4.1,7.4)");
       });
 
     cy.log("Move point A1 close to other goal and submit");
@@ -3798,7 +3778,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-4.1,7.4))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-4.1,7.4)");
       });
 
     cy.log("Move point A2 away and submit");
@@ -3825,7 +3805,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(-9.9,-8.8))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(-9.9,-8.8)");
       });
 
     cy.log("Move point A2 close to second goal and submit");
@@ -3853,7 +3833,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((6.8,9.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(6.8,9.1),(6.8,9.1)");
       });
 
     cy.log("Move point A1 away and submit");
@@ -3881,7 +3861,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((0.1,-1.1),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(0.1,-1.1),(6.8,9.1)");
       });
 
     cy.log("Move point A1 near first goal and submit");
@@ -3908,7 +3888,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
 
     cy.log("create point B1 and B2 and submit");
@@ -3931,7 +3911,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(2,1),(1,2))",
+          "(-4.1,7.4),(6.8,9.1),(2,1),(1,2)",
         );
       });
 
@@ -3960,7 +3940,7 @@ describe("Point location validation tests", function () {
       .invoke("text")
       .then((text) => {
         expect(text.trim().replace(/−/g, "-")).equal(
-          "((-4.1,7.4),(6.8,9.1),(6.8,9.1),(1,2))",
+          "(-4.1,7.4),(6.8,9.1),(6.8,9.1),(1,2)",
         );
       });
 
@@ -3983,7 +3963,7 @@ describe("Point location validation tests", function () {
       .eq(0)
       .invoke("text")
       .then((text) => {
-        expect(text.trim().replace(/−/g, "-")).equal("((-4.1,7.4),(6.8,9.1))");
+        expect(text.trim().replace(/−/g, "-")).equal("(-4.1,7.4),(6.8,9.1)");
       });
   });
 });

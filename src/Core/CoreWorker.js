@@ -123,6 +123,9 @@ async function returnAllStateVariables(core) {
         compObj.replacementsToWithhold = component.replacementsToWithhold;
       }
     }
+    if (component.replacementOf) {
+      compObj.replacementOf = component.replacementOf.componentName;
+    }
     compObj.sharedParameters = removeFunctionsMathExpressionClass(
       component.sharedParameters,
     );

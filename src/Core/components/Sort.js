@@ -2,6 +2,7 @@ import CompositeComponent from "./abstract/CompositeComponent";
 import { postProcessCopy } from "../utils/copy";
 import me from "math-expressions";
 import { processAssignNames } from "../utils/serializedStateProcessing";
+import { returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens } from "./commonsugar/lists";
 
 export default class Sort extends CompositeComponent {
   static componentType = "sort";
@@ -38,7 +39,85 @@ export default class Sort extends CompositeComponent {
       createPrimitiveOfType: "string",
     };
 
+    attributes.type = {
+      createPrimitiveOfType: "string",
+    };
+
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
+  }
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    function breakStringsMacrosIntoTypeBySpaces({
+      matchedChildren,
+      componentAttributes,
+      componentInfoObjects,
+    }) {
+      // only if all children are strings or macros
+      if (
+        !matchedChildren.every(
+          (child) =>
+            typeof child === "string" ||
+            child.doenetAttributes?.createdFromMacro,
+        )
+      ) {
+        return { success: false };
+      }
+
+      let type;
+      if (componentAttributes.type) {
+        type = componentAttributes.type;
+      } else {
+        return { success: false };
+      }
+
+      if (!["math", "text", "number", "boolean"].includes(type)) {
+        console.warn(`Invalid type ${type}`);
+        return { success: false };
+      }
+
+      // break any string by white space and wrap pieces with type
+      let groupIntoComponentTypesSeparatedBySpaces =
+        returnGroupIntoComponentTypeSeparatedBySpacesOutsideParens({
+          componentType: type,
+          forceComponentType: true,
+        });
+      let result = groupIntoComponentTypesSeparatedBySpaces({
+        matchedChildren,
+        componentInfoObjects,
+      });
+
+      if (result.success) {
+        let newChildren = result.newChildren;
+
+        let newAttributes = {
+          addLevelToAssignNames: {
+            primitive: true,
+          },
+        };
+
+        return {
+          success: true,
+          newChildren,
+          newAttributes,
+        };
+      } else {
+        return { success: false };
+      }
+    }
+
+    sugarInstructions.push({
+      replacementFunction: breakStringsMacrosIntoTypeBySpaces,
+    });
+
+    return sugarInstructions;
   }
 
   static returnChildGroups() {
@@ -320,7 +399,7 @@ export default class Sort extends CompositeComponent {
 
         replacements.push(
           await replacementSource.serialize({
-            sourceAttributesToIgnore: ["isResponse"],
+            primitiveSourceAttributesToIgnore: ["isResponse"],
           }),
         );
       }

@@ -50,6 +50,12 @@ export default class Select extends CompositeComponent {
       defaultValue: false,
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 

@@ -45,8 +45,8 @@ export default React.memo(function Footnote(props) {
             </a>
           </button>
         </sup>
+        {footnoteMessage}
       </span>
-      {footnoteMessage}
     </>
   );
 });

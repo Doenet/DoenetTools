@@ -13,8 +13,8 @@ describe("Code Editor Tag Tests", function () {
     <text>a</text>
     <codeEditor />
 
-    <p><copy prop="immediateValue" target="_codeeditor1" /></p>
-    <p><copy prop="value" target="_codeeditor1" /></p>
+    <p>$_codeeditor1.immediateValue</p>
+    <p>$_codeeditor1.value</p>
     `,
         },
         "*",
@@ -103,8 +103,8 @@ describe("Code Editor Tag Tests", function () {
     <text>a</text>
     <codeEditor showResults />
 
-    <p><copy prop="immediateValue" target="_codeeditor1" /></p>
-    <p><copy prop="value" target="_codeeditor1" /></p>
+    <p>$_codeeditor1.immediateValue</p>
+    <p>$_codeeditor1.value</p>
     `,
         },
         "*",
@@ -275,10 +275,10 @@ describe("Code Editor Tag Tests", function () {
     <text>a</text>
     <codeEditor showResults renderedName="result" />
 
-    <p><copy prop="immediateValue" target="_codeeditor1" /></p>
-    <p><copy prop="value" target="_codeeditor1" /></p>
+    <p>$_codeeditor1.immediateValue</p>
+    <p>$_codeeditor1.value</p>
 
-    <p>The value of the entered math is <copy prop="value" target="/result/_math1" assignNames="m1" /></p>
+    <p>The value of the entered math is $(/result/_math1.value{assignNames="m1"})</p>
     `,
         },
         "*",
@@ -529,10 +529,10 @@ describe("Code Editor Tag Tests", function () {
     <text>a</text>
     <codeEditor showResults renderedName="result" staticName="static" />
 
-    <p name="px">The value of the dynamic math is <copy prop="value" target="/result/x" assignNames="x" /></p>
-    <p name="psx">The value of the static math is <copy prop="value" target="/static/x" assignNames="sx" /></p>
-    <p name="pP">The coords of the dynamic point are <copy prop="coords" target="/result/P" assignNames="P" /></p>
-    <p name="psP">The coords of the static point are <copy prop="coords" target="/static/P" assignNames="sP" /></p>
+    <p name="px">The value of the dynamic math is $(/result/x.value{assignNames="x"})</p>
+    <p name="psx">The value of the static math is $(/static/x.value{assignNames="sx"})</p>
+    <p name="pP">The coords of the dynamic point are $(/result/P.coords{assignNames="P"})</p>
+    <p name="psP">The coords of the static point are $(/static/P.coords{assignNames="sP"})</p>
     `,
         },
         "*",
@@ -1322,7 +1322,7 @@ describe("Code Editor Tag Tests", function () {
     <text>a</text>
     <codeEditor showResults />
 
-    <p><copy prop="value" target="_codeeditor1" /></p>
+    <p>$_codeeditor1.value</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -1439,7 +1439,7 @@ describe("Code Editor Tag Tests", function () {
         <text>a</text>
         <codeEditor showResults />
     
-        <p><copy prop="value" target="_codeeditor1" /></p>
+        <p>$_codeeditor1.value</p>
         `,
         },
         "*",
@@ -1513,16 +1513,16 @@ describe("Code Editor Tag Tests", function () {
         <text>a</text>
         <codeEditor showResults />
     
-        <p><copy prop="value" target="_codeeditor1" /></p>
+        <p>$_codeeditor1.value</p>
 
 
         <codeEditor showResults />
     
-        <p><copy prop="value" target="_codeeditor2" /></p>
+        <p>$_codeeditor2.value</p>
 
         <codeEditor showResults />
     
-        <p><copy prop="value" target="_codeeditor3" /></p>
+        <p>$_codeeditor3.value</p>
         `,
         },
         "*",

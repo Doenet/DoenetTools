@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
+import { addCommasForCompositeRanges } from "./utils/composites";
 
 export default React.memo(function Pre(props) {
   let { name, id, SVs, children, actions, callAction } =
@@ -23,6 +24,15 @@ export default React.memo(function Pre(props) {
   }, []);
 
   if (SVs.hidden) return null;
+
+  if (SVs._compositeReplacementActiveRange) {
+    children = addCommasForCompositeRanges({
+      children,
+      compositeReplacementActiveRange: SVs._compositeReplacementActiveRange,
+      startInd: 0,
+      endInd: children.length - 1,
+    });
+  }
 
   for (let ind of SVs.displayDoenetMLIndices) {
     let prevChild = children[ind - 1];

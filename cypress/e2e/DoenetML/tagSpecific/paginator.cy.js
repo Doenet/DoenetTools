@@ -34,8 +34,8 @@ describe("Paginator Tag Tests", function () {
     <callAction name="prevPage" disabled="$pageNum = 1" actionName="setPage" target="pgn" number="$pageNum -1"  >
       <label>prev</label>
     </callAction>
-    Page <copy prop="currentPage" target="pgn" assignNames="pageNum" />
-    of <copy prop="numPages" target="pgn" assignNames="numPages" />
+    Page $pgn.currentPage{assignNames="pageNum"}
+    of $pgn.numPages{assignNames="numPages"}
     <callAction name="nextPage" disabled="$pageNum = $numPages" actionName="setPage" target="pgn" number="$pageNum +1"  >
       <label>next</label>
     </callAction>
@@ -43,7 +43,7 @@ describe("Paginator Tag Tests", function () {
     </p>
     <p>What is 2+2? <answer>4</answer></p>
   
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
   
     `;
 
@@ -794,7 +794,7 @@ describe("Paginator Tag Tests", function () {
       </problem>
     </paginator>
   
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
   
     `;
 
@@ -1095,7 +1095,7 @@ describe("Paginator Tag Tests", function () {
         </p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -1426,12 +1426,12 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
   
     <paginator name="pgn">
-      <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
-      <copy assignNames="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
-      <copy assignNames="problem3" target="problema" link="false" />
+      <copy name="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
+      <copy name="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
+      <copy name="problem3" target="problema" link="false" />
   
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -1634,12 +1634,12 @@ describe("Paginator Tag Tests", function () {
     <paginatorControls paginator="pgn" name="pcontrols" />
   
     <paginator name="pgn">
-      <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
-      <copy assignNames="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
-      <copy assignNames="problem3" target="problema" link="false" />
+      <copy name="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
+      <copy name="problem2" uri="doenet:CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
+      <copy name="problem3" target="problema" link="false" />
   
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -1805,7 +1805,7 @@ describe("Paginator Tag Tests", function () {
       </problem>  
      
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -1931,7 +1931,7 @@ describe("Paginator Tag Tests", function () {
         <p>6: <answer><mathinput name="mi6"/><award>6</award></answer></p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -2062,7 +2062,7 @@ describe("Paginator Tag Tests", function () {
         <p>2: <answer type="text"><textinput name="ti2"/><award>2</award></answer></p>
       </problem>
     </paginator>
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     cy.get("#testRunner_toggleControls").click();
@@ -2138,29 +2138,29 @@ describe("Paginator Tag Tests", function () {
       </select>    
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     let doenetMLorder1 = `
     <text>a</text>
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem1" />
-      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem2" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" name="problem1" />
+      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" name="problem2" />
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     let doenetMLorder2 = `
     <text>a</text>
     <paginatorControls paginator="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" assignNames="problem1" />
-      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" assignNames="problem2" />
+      <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" name="problem1" />
+      <copy uri="doenet:cid=bafkreidheiqnahrf33h6etsqwo26s7w3upl44bra6xtssxm5rmc3osjave" name="problem2" />
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
     `;
 
     let allDoenetMLs = [
@@ -2733,7 +2733,7 @@ describe("Paginator Tag Tests", function () {
     </problem>
     </paginator>
     
-    <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
+    <p>Credit achieved: $_document1.creditAchieved{assignNames="ca"}</p>
   
     `;
 

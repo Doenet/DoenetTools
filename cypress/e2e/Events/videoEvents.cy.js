@@ -40,8 +40,8 @@ describe("video events test", function () {
     const doenetML = `
   <video youtube="tJ4ypc5L6uU" name="v" />
 
-  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
-  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
+  <p>State: $v.state{assignNames="state"}</p>
+  <p>Time: $v.time{assignNames="time"}</p>
 
   <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 

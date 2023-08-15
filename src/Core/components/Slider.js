@@ -19,8 +19,7 @@ export default class Slider extends BaseComponent {
   }
   static componentType = "slider";
 
-  static variableForPlainMacro = "value";
-  static variableForPlainCopy = "value";
+  static variableForImplicitProp = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

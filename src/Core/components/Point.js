@@ -27,6 +27,8 @@ export default class Point extends GraphicalComponent {
   }
   static componentType = "point";
 
+  static canBeInList = true;
+
   // Note: for other components with public point state variables,
   // the recommended course of action is not to have
   // a public state variable with component type point, which would use coordsShadow

@@ -24,14 +24,12 @@ describe("Copy Tag Tests", function () {
     <p name="p1" newNamespace fixed isResponse>The text: <text name="hidden" hide fixed isResponse>secret</text></p>
 
     <p>Text stays hidden by default:</p>
-    <copy source="p1" name="c1" assignNames="p2" />
-    <p name="p3">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c1" obtainPropFromComposite /></p>
-    <p name="p4">Check attributes: <copy prop="hidden" source="p2" /> <copy prop="fixed" source="p2" /> <copy prop="isResponse" source="p2" /> <copy prop="hidden" source="p2/hidden" /> <copy prop="fixed" source="p2/hidden" /> <copy prop="isResponse" source="p2/hidden" /></p>
+    $p1{name="p2"}
+    <p name="p4">Check attributes: $p2.hidden $p2.fixed $p2.isResponse $(p2/hidden.hidden) $(p2/hidden.fixed) $(p2/hidden.isResponse)</p>
 
     <p>Now all is revealed:</p>
-    <copy source="p1" name="c2" assignNames="p5" sourceAttributesToIgnore="hide fixed" />
-    <p name="p6">Because source attributes to ignore are: <copy prop="sourceAttributesToIgnore" source="c2" obtainPropFromComposite /></p>
-    <p name="p7">Check attributes: <copy prop="hidden" source="p5" /> <copy prop="fixed" source="p5" /> <copy prop="isResponse" source="p5" /> <copy prop="hidden" source="p5/hidden" /> <copy prop="fixed" source="p5/hidden" /> <copy prop="isResponse" source="p5/hidden" /></p>
+    <copy source="p1" name="p5" sourceAttributesToIgnore="hide fixed" />
+    <p name="p7">Check attributes: $p5.hidden $p5.fixed $p5.isResponse $(p5/hidden.hidden) $(p5/hidden.fixed) $(p5/hidden.isResponse)</p>
 
     `,
         },
@@ -45,20 +43,12 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/p1")).should("have.text", "The text: ");
 
     cy.get(cesc("#\\/p2")).should("have.text", "The text: ");
-    cy.get(cesc("#\\/p3")).should(
-      "have.text",
-      "Because source attributes to ignore are: isResponse",
-    );
     cy.get(cesc("#\\/p4")).should(
       "have.text",
       "Check attributes: false true false true true false",
     );
 
     cy.get(cesc("#\\/p5")).should("have.text", "The text: secret");
-    cy.get(cesc("#\\/p6")).should(
-      "have.text",
-      "Because source attributes to ignore are: hide, fixed",
-    );
     cy.get(cesc("#\\/p7")).should(
       "have.text",
       "Check attributes: false false true false false true",
@@ -369,7 +359,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copySource and copies with assignNewNamespaces", () => {
+  it("copySource and copies with newNamespace", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -378,11 +368,11 @@ describe("Copy Tag Tests", function () {
     <graph name="g1">
       <point name="P">(1,2)</point>
     </graph>
-    <copy source="P.x" assignNames="P1x" />
+    $P.x{name="P1x"}
     <graph name="g2" newNamespace>
       <point name="P">(3,4)</point>
     </graph>
-    <copy source="g2/P.x" assignNames="P2x" />
+    $(g2/P.x{name="P2x"})
     <graph name="g3">
       <point copySource="P" name="Pa" />
     </graph>
@@ -394,10 +384,10 @@ describe("Copy Tag Tests", function () {
     <graph copySource="g3" name="g7" />
     <graph copySource="g4" name="g8" />
 
-    <copy source="g1" assignNames="g9" assignNewNamespaces />
-    <copy source="g2" assignNames="g10" assignNewNamespaces />
-    <copy source="g3" assignNames="g11" assignNewNamespaces />
-    <copy source="g4" assignNames="g12" assignNewNamespaces />
+    $g1{name="g9" newNamespace}
+    $g2{name="g10" newNamespace}
+    $g3{name="g11" newNamespace}
+    $g4{name="g12" newNamespace}
 
     <graph copySource="g5" name="g13" />
     <graph copySource="g6" name="g14" />
@@ -408,14 +398,14 @@ describe("Copy Tag Tests", function () {
     <graph copySource="g11" name="g19" />
     <graph copySource="g12" name="g20" />
   
-    <copy source="g5" assignNames="g21" assignNewNamespaces />
-    <copy source="g6" assignNames="g22" assignNewNamespaces />
-    <copy source="g7" assignNames="g23" assignNewNamespaces />
-    <copy source="g8" assignNames="g24" assignNewNamespaces />
-    <copy source="g9" assignNames="g25" assignNewNamespaces />
-    <copy source="g10" assignNames="g26" assignNewNamespaces />
-    <copy source="g11" assignNames="g27" assignNewNamespaces />
-    <copy source="g12" assignNames="g28" assignNewNamespaces />
+    $g5{name="g21" newNamespace}
+    $g6{name="g22" newNamespace}
+    $g7{name="g23" newNamespace}
+    $g8{name="g24" newNamespace}
+    $g9{name="g25" newNamespace}
+    $g10{name="g26" newNamespace}
+    $g11{name="g27" newNamespace}
+    $g12{name="g28" newNamespace}
 
     `,
         },
@@ -673,7 +663,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("assignNewNamespaces and references to parent", () => {
+  it("copy with newNamespace and references to parent", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -685,21 +675,21 @@ describe("Copy Tag Tests", function () {
 
     <problem name="p1">
       <answer>y</answer>
-      <p>Credit achieved: <copy source="p1.creditAchieved" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy source="mi.value" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy source="p2/_answer1.creditAchieved" assignNames="cao" /></p>
+      <p>Credit achieved: $p1.creditAchieved{assignNames="ca"}</p>
+      <p>Value of mathinput: $mi.value{assignNames="m"}</p>
+      <p>Other answer credit achieved: $(p2/_answer1.creditAchieved{assignNames="cao"})</p>
       </problem>
 
     <problem name="p2" newNamespace>
       <answer>z</answer>
-      <p>Credit achieved: <copy source="../p2.creditAchieved" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy source="../mi.value" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy source="../_answer2.creditAchieved" assignNames="cao" /></p>
+      <p>Credit achieved: $(../p2.creditAchieved{assignNames="ca"})</p>
+      <p>Value of mathinput: $(../mi.value{assignNames="m"})</p>
+      <p>Other answer credit achieved: $(../_answer2.creditAchieved{assignNames="cao"})</p>
     </problem>
 
-    <copy source="p1" assignNames="p3" assignNewNamespaces />
+    $p1{name="p3" newNamespace}
 
-    <copy source="p2" assignNames="p4" assignNewNamespaces />
+    $p2{name="p4" newNamespace}
 
     `,
         },
@@ -1491,7 +1481,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copySource of copy and map", () => {
+  it("copySource of map", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -1500,8 +1490,8 @@ describe("Copy Tag Tests", function () {
 
     <mathinput name="n" prefill="2" />
 
-    <p>Value: <copy source="n" prop="value" name="cp" assignNames="n2" /></p>
-    <p>Value 2: <copy copySource="cp" name="cp2" assignNames="n3" /></p>
+    <p>Value: <copy source="n" prop="value" assignNames="n2" /></p>
+    <p>Value 2: <number copySource="n2" name="n3" /></p>
 
     <map name="map1" assignNames="(p1) (p2) (p3)">
       <template><p newNamespace>Hello <number copySource="v" />!  <mathinput name="x" /> <math copySource="x" /></p></template>
@@ -1823,6 +1813,338 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("macro to copy map", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+
+    <mathinput name="n" prefill="2" />
+
+    <p>Value: $n.value{assignNames="n2"}</p>
+    <p>Value 2: $n2{name="n3"}</p>
+
+    <map name="map1" assignNames="(p1) (p2) (p3)">
+      <template><p newNamespace>Hello $v{name="n1"}!  <mathinput name="x" /> $x{name="m1"}</p></template>
+      <sources alias="v"><sequence from="1" to="$n" /></sources>
+    </map>
+
+    $map1{name="map2" assignNames="(p1a) (p2a) (p3a)"}
+
+    $map2{name="map3" assignNames="(p1b) (p2b) (p3b)"}
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    // to wait for page to load
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+
+    cy.get(cesc2("#/n2")).contains("2");
+    cy.get(cesc2("#/n3")).contains("2");
+
+    cy.get(cesc2("#/p1")).contains("Hello 1!");
+    cy.get(cesc2("#/p1/n1")).contains("1");
+    cy.get(cesc2("#/p1/m1")).contains("＿");
+    cy.get(cesc2("#/p2")).contains("Hello 2!");
+    cy.get(cesc2("#/p2/n1")).contains("2");
+    cy.get(cesc2("#/p2/m1")).contains("＿");
+    cy.get(cesc2("#/p3")).should("not.exist");
+    cy.get(cesc2("#/p3/n1")).should("not.exist");
+    cy.get(cesc2("#/p3/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1a")).contains("Hello 1!");
+    cy.get(cesc2("#/p1a/n1")).contains("1");
+    cy.get(cesc2("#/p1a/m1")).contains("＿");
+    cy.get(cesc2("#/p2a")).contains("Hello 2!");
+    cy.get(cesc2("#/p2a/n1")).contains("2");
+    cy.get(cesc2("#/p2a/m1")).contains("＿");
+    cy.get(cesc2("#/p3a")).should("not.exist");
+    cy.get(cesc2("#/p3a/n1")).should("not.exist");
+    cy.get(cesc2("#/p3a/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1b")).contains("Hello 1!");
+    cy.get(cesc2("#/p1b/n1")).contains("1");
+    cy.get(cesc2("#/p1b/m1")).contains("＿");
+    cy.get(cesc2("#/p2b")).contains("Hello 2!");
+    cy.get(cesc2("#/p2b/n1")).contains("2");
+    cy.get(cesc2("#/p2b/m1")).contains("＿");
+    cy.get(cesc2("#/p3b")).should("not.exist");
+    cy.get(cesc2("#/p3b/n1")).should("not.exist");
+    cy.get(cesc2("#/p3b/m1")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n2"].stateValues.value).eq(2);
+      expect(stateVariables["/n3"].stateValues.value).eq(2);
+
+      expect(stateVariables["/p1/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3/n1"]).eq(undefined);
+      expect(stateVariables["/p1a/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2a/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3a/n1"]).eq(undefined);
+      expect(stateVariables["/p1b/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2b/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3b/n1"]).eq(undefined);
+
+      expect(stateVariables["/p1/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p2/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3/m1"]).eq(undefined);
+      expect(stateVariables["/p1a/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p2a/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3a/m1"]).eq(undefined);
+      expect(stateVariables["/p1b/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p2b/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3b/m1"]).eq(undefined);
+    });
+
+    cy.log("type x in first mathinput");
+    cy.get(cesc2("#/p1/x") + " textarea").type("x{enter}", { force: true });
+
+    cy.get(cesc2("#/p1")).contains("Hello 1!");
+    cy.get(cesc2("#/p1/n1")).contains("1");
+    cy.get(cesc2("#/p1/m1")).contains("x");
+    cy.get(cesc2("#/p2")).contains("Hello 2!");
+    cy.get(cesc2("#/p2/n1")).contains("2");
+    cy.get(cesc2("#/p2/m1")).contains("＿");
+    cy.get(cesc2("#/p3")).should("not.exist");
+    cy.get(cesc2("#/p3/n1")).should("not.exist");
+    cy.get(cesc2("#/p3/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1a")).contains("Hello 1!");
+    cy.get(cesc2("#/p1a/n1")).contains("1");
+    cy.get(cesc2("#/p1a/m1")).contains("x");
+    cy.get(cesc2("#/p2a")).contains("Hello 2!");
+    cy.get(cesc2("#/p2a/n1")).contains("2");
+    cy.get(cesc2("#/p2a/m1")).contains("＿");
+    cy.get(cesc2("#/p3a")).should("not.exist");
+    cy.get(cesc2("#/p3a/n1")).should("not.exist");
+    cy.get(cesc2("#/p3a/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1b")).contains("Hello 1!");
+    cy.get(cesc2("#/p1b/n1")).contains("1");
+    cy.get(cesc2("#/p1b/m1")).contains("x");
+    cy.get(cesc2("#/p2b")).contains("Hello 2!");
+    cy.get(cesc2("#/p2b/n1")).contains("2");
+    cy.get(cesc2("#/p2b/m1")).contains("＿");
+    cy.get(cesc2("#/p3b")).should("not.exist");
+    cy.get(cesc2("#/p3b/n1")).should("not.exist");
+    cy.get(cesc2("#/p3b/m1")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n2"].stateValues.value).eq(2);
+      expect(stateVariables["/n3"].stateValues.value).eq(2);
+
+      expect(stateVariables["/p1/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3/n1"]).eq(undefined);
+      expect(stateVariables["/p1a/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2a/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3a/n1"]).eq(undefined);
+      expect(stateVariables["/p1b/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2b/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3b/n1"]).eq(undefined);
+
+      expect(stateVariables["/p1/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3/m1"]).eq(undefined);
+      expect(stateVariables["/p1a/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2a/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3a/m1"]).eq(undefined);
+      expect(stateVariables["/p1b/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2b/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p3b/m1"]).eq(undefined);
+    });
+
+    cy.log("type y in second mathinput");
+    cy.get(cesc2("#/p2b/x") + " textarea").type("y{enter}", { force: true });
+
+    cy.get(cesc2("#/p1")).contains("Hello 1!");
+    cy.get(cesc2("#/p1/n1")).contains("1");
+    cy.get(cesc2("#/p1/m1")).contains("x");
+    cy.get(cesc2("#/p2")).contains("Hello 2!");
+    cy.get(cesc2("#/p2/n1")).contains("2");
+    cy.get(cesc2("#/p2/m1")).contains("y");
+    cy.get(cesc2("#/p3")).should("not.exist");
+    cy.get(cesc2("#/p3/n1")).should("not.exist");
+    cy.get(cesc2("#/p3/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1a")).contains("Hello 1!");
+    cy.get(cesc2("#/p1a/n1")).contains("1");
+    cy.get(cesc2("#/p1a/m1")).contains("x");
+    cy.get(cesc2("#/p2a")).contains("Hello 2!");
+    cy.get(cesc2("#/p2a/n1")).contains("2");
+    cy.get(cesc2("#/p2a/m1")).contains("y");
+    cy.get(cesc2("#/p3a")).should("not.exist");
+    cy.get(cesc2("#/p3a/n1")).should("not.exist");
+    cy.get(cesc2("#/p3a/m1")).should("not.exist");
+
+    cy.get(cesc2("#/p1b")).contains("Hello 1!");
+    cy.get(cesc2("#/p1b/n1")).contains("1");
+    cy.get(cesc2("#/p1b/m1")).contains("x");
+    cy.get(cesc2("#/p2b")).contains("Hello 2!");
+    cy.get(cesc2("#/p2b/n1")).contains("2");
+    cy.get(cesc2("#/p2b/m1")).contains("y");
+    cy.get(cesc2("#/p3b")).should("not.exist");
+    cy.get(cesc2("#/p3b/n1")).should("not.exist");
+    cy.get(cesc2("#/p3b/m1")).should("not.exist");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n2"].stateValues.value).eq(2);
+      expect(stateVariables["/n3"].stateValues.value).eq(2);
+
+      expect(stateVariables["/p1/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3/n1"]).eq(undefined);
+      expect(stateVariables["/p1a/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2a/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3a/n1"]).eq(undefined);
+      expect(stateVariables["/p1b/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2b/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3b/n1"]).eq(undefined);
+
+      expect(stateVariables["/p1/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3/m1"]).eq(undefined);
+      expect(stateVariables["/p1a/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2a/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3a/m1"]).eq(undefined);
+      expect(stateVariables["/p1b/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2b/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3b/m1"]).eq(undefined);
+    });
+
+    cy.log("increase n");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/n2")).contains("3");
+    cy.get(cesc2("#/n3")).contains("3");
+
+    cy.get(cesc2("#/p1")).contains("Hello 1!");
+    cy.get(cesc2("#/p1/n1")).contains("1");
+    cy.get(cesc2("#/p1/m1")).contains("x");
+    cy.get(cesc2("#/p2")).contains("Hello 2!");
+    cy.get(cesc2("#/p2/n1")).contains("2");
+    cy.get(cesc2("#/p2/m1")).contains("y");
+    cy.get(cesc2("#/p3")).contains("Hello 3!");
+    cy.get(cesc2("#/p3/n1")).contains("3");
+    cy.get(cesc2("#/p3/m1")).contains("＿");
+
+    cy.get(cesc2("#/p1a")).contains("Hello 1!");
+    cy.get(cesc2("#/p1a/n1")).contains("1");
+    cy.get(cesc2("#/p1a/m1")).contains("x");
+    cy.get(cesc2("#/p2a")).contains("Hello 2!");
+    cy.get(cesc2("#/p2a/n1")).contains("2");
+    cy.get(cesc2("#/p2a/m1")).contains("y");
+    cy.get(cesc2("#/p3a")).contains("Hello 3!");
+    cy.get(cesc2("#/p3a/n1")).contains("3");
+    cy.get(cesc2("#/p3a/m1")).contains("＿");
+
+    cy.get(cesc2("#/p1b")).contains("Hello 1!");
+    cy.get(cesc2("#/p1b/n1")).contains("1");
+    cy.get(cesc2("#/p1b/m1")).contains("x");
+    cy.get(cesc2("#/p2b")).contains("Hello 2!");
+    cy.get(cesc2("#/p2b/n1")).contains("2");
+    cy.get(cesc2("#/p2b/m1")).contains("y");
+    cy.get(cesc2("#/p3b")).contains("Hello 3!");
+    cy.get(cesc2("#/p3b/n1")).contains("3");
+    cy.get(cesc2("#/p3b/m1")).contains("＿");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n2"].stateValues.value).eq(3);
+      expect(stateVariables["/n3"].stateValues.value).eq(3);
+
+      expect(stateVariables["/p1/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3/n1"].stateValues.value).eq(3);
+      expect(stateVariables["/p1a/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2a/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3a/n1"].stateValues.value).eq(3);
+      expect(stateVariables["/p1b/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2b/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3b/n1"].stateValues.value).eq(3);
+
+      expect(stateVariables["/p1/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p1a/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2a/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3a/m1"].stateValues.value).eq("＿");
+      expect(stateVariables["/p1b/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2b/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3b/m1"].stateValues.value).eq("＿");
+    });
+
+    cy.log("type z in third mathinput");
+    cy.get(cesc2("#/p3a/x") + " textarea").type("z{enter}", { force: true });
+
+    cy.get(cesc2("#/p1")).contains("Hello 1!");
+    cy.get(cesc2("#/p1/n1")).contains("1");
+    cy.get(cesc2("#/p1/m1")).contains("x");
+    cy.get(cesc2("#/p2")).contains("Hello 2!");
+    cy.get(cesc2("#/p2/n1")).contains("2");
+    cy.get(cesc2("#/p2/m1")).contains("y");
+    cy.get(cesc2("#/p3")).contains("Hello 3!");
+    cy.get(cesc2("#/p3/n1")).contains("3");
+    cy.get(cesc2("#/p3/m1")).contains("z");
+
+    cy.get(cesc2("#/p1a")).contains("Hello 1!");
+    cy.get(cesc2("#/p1a/n1")).contains("1");
+    cy.get(cesc2("#/p1a/m1")).contains("x");
+    cy.get(cesc2("#/p2a")).contains("Hello 2!");
+    cy.get(cesc2("#/p2a/n1")).contains("2");
+    cy.get(cesc2("#/p2a/m1")).contains("y");
+    cy.get(cesc2("#/p3a")).contains("Hello 3!");
+    cy.get(cesc2("#/p3a/n1")).contains("3");
+    cy.get(cesc2("#/p3a/m1")).contains("z");
+
+    cy.get(cesc2("#/p1b")).contains("Hello 1!");
+    cy.get(cesc2("#/p1b/n1")).contains("1");
+    cy.get(cesc2("#/p1b/m1")).contains("x");
+    cy.get(cesc2("#/p2b")).contains("Hello 2!");
+    cy.get(cesc2("#/p2b/n1")).contains("2");
+    cy.get(cesc2("#/p2b/m1")).contains("y");
+    cy.get(cesc2("#/p3b")).contains("Hello 3!");
+    cy.get(cesc2("#/p3b/n1")).contains("3");
+    cy.get(cesc2("#/p3b/m1")).contains("z");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/n2"].stateValues.value).eq(3);
+      expect(stateVariables["/n3"].stateValues.value).eq(3);
+
+      expect(stateVariables["/p1/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3/n1"].stateValues.value).eq(3);
+      expect(stateVariables["/p1a/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2a/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3a/n1"].stateValues.value).eq(3);
+      expect(stateVariables["/p1b/n1"].stateValues.value).eq(1);
+      expect(stateVariables["/p2b/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/p3b/n1"].stateValues.value).eq(3);
+
+      expect(stateVariables["/p1/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3/m1"].stateValues.value).eq("z");
+      expect(stateVariables["/p1a/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2a/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3a/m1"].stateValues.value).eq("z");
+      expect(stateVariables["/p1b/m1"].stateValues.value).eq("x");
+      expect(stateVariables["/p2b/m1"].stateValues.value).eq("y");
+      expect(stateVariables["/p3b/m1"].stateValues.value).eq("z");
+    });
+  });
+
   it("copySource and createComponentOfType wrap to match specified type", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -1833,22 +2155,22 @@ describe("Copy Tag Tests", function () {
     <mathinput name="mi" prefill="2" />
         
     <math name="m1" copySource="mi" />
-    <copy source="mi" assignNames="m2" createComponentOfType="MatH" />
+    $mi{name="m2" createComponentOfType="MatH"}
 
     <number name="n1" copySource="mi" />
-    <copy source="mi" assignNames="n2" createComponentOfType="number" />
+    $mi{name="n2" createComponentOfType="number"}
 
     <point name="P">(x,y)</point>
 
     <coords name="c1" copySource="P" />
-    <copy assignNames="c2" source="P" createComponentOfType="coords" />
-    <coords name="c3" copySource="P" copyprop="coords" />
-    <copy assignNames="c4" source="P" createComponentOfType="coords" prop="coords" />
+    $P{name="c2" createComponentOfType="coords"}
+    <coords name="c3" copySource="P.coords" />
+    $P.coords{assignNames="c4" createComponentOfType="coords"}
 
     <math name="mc1" copySource="P" />
-    <copy assignNames="mc2" source="P" createComponentOfType="math" />
-    <math name="mc3" copySource="P" copyprop="coords" />
-    <copy assignNames="mc4" source="P" createComponentOfType="math" prop="coords" />
+    $P{name="mc2" createComponentOfType="math"}
+    <math name="mc3" copySource="P.coords" />
+    $P.coords{assignNames="mc4" createComponentOfType="math"}
 
     `,
         },
@@ -2738,9 +3060,9 @@ describe("Copy Tag Tests", function () {
           <lineSegment name="l" endpoints="$P $(../v.head)" />
         </graph>
       
-        <copy name="cp1" source="g" assignNames="g4" />
+        $g{name="g4"}
         
-        <graph copySource="cp1" name="g5" newNamespace>
+        <graph copySource="g4" name="g5" newNamespace>
           <circle name="c" />
         </graph>
         
@@ -3536,6 +3858,452 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("assign names with copySource of group and map", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <map name="map1" assignNames="(a) (b)">
+      <template><text>hi $v</text></template>
+      <sources alias="v"><number>1</number><number>2</number></sources>
+    </map>
+    
+    <map copySource="map1" name="map2" assignNames="(c) (d)" />
+    
+    
+    <group name="grp1" assignNames="e f">
+      <text>apple</text>
+      <text>banana</text>
+    </group>
+    
+    <group copySource="grp1" name="grp2" assignNames="g h" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/a")).should("have.text", "hi 1");
+    cy.get(cesc2("#/b")).should("have.text", "hi 2");
+    cy.get(cesc2("#/c")).should("have.text", "hi 1");
+    cy.get(cesc2("#/d")).should("have.text", "hi 2");
+    cy.get(cesc2("#/e")).should("have.text", "apple");
+    cy.get(cesc2("#/f")).should("have.text", "banana");
+    cy.get(cesc2("#/g")).should("have.text", "apple");
+    cy.get(cesc2("#/h")).should("have.text", "banana");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/b"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/c"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/d"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/e"].stateValues.value).eq("apple");
+      expect(stateVariables["/f"].stateValues.value).eq("banana");
+      expect(stateVariables["/g"].stateValues.value).eq("apple");
+      expect(stateVariables["/h"].stateValues.value).eq("banana");
+    });
+  });
+
+  it("assign names with macro copy of group and map", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <map name="map1" assignNames="(a) (b)">
+      <template><text>hi $v</text></template>
+      <sources alias="v"><number>1</number><number>2</number></sources>
+    </map>
+    
+    $map1{name="map2" assignNames="(c) (d)"}
+    
+    
+    <group name="grp1" assignNames="e f">
+      <text>apple</text>
+      <text>banana</text>
+    </group>
+    
+    $grp1{name="grp2" assignNames="g h"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/a")).should("have.text", "hi 1");
+    cy.get(cesc2("#/b")).should("have.text", "hi 2");
+    cy.get(cesc2("#/c")).should("have.text", "hi 1");
+    cy.get(cesc2("#/d")).should("have.text", "hi 2");
+    cy.get(cesc2("#/e")).should("have.text", "apple");
+    cy.get(cesc2("#/f")).should("have.text", "banana");
+    cy.get(cesc2("#/g")).should("have.text", "apple");
+    cy.get(cesc2("#/h")).should("have.text", "banana");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/b"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/c"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/d"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/e"].stateValues.value).eq("apple");
+      expect(stateVariables["/f"].stateValues.value).eq("banana");
+      expect(stateVariables["/g"].stateValues.value).eq("apple");
+      expect(stateVariables["/h"].stateValues.value).eq("banana");
+    });
+  });
+
+  it("assign names with copySource of group and map, newNamespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <map name="map1" newNamespace assignNames="a b">
+      <template newNamespace><text name="t">hi $v</text></template>
+      <sources alias="v"><number>1</number><number>2</number></sources>
+    </map>
+    
+    <map copySource="map1" name="map2" assignNames="c d" />
+    
+    
+    <group name="grp1" newNamespace assignNames="a b">
+      <text>apple</text>
+      <text>banana</text>
+    </group>
+    
+    <group copySource="grp1" name="grp2" assignNames="c d" />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/map1/a/t")).should("have.text", "hi 1");
+    cy.get(cesc2("#/map1/b/t")).should("have.text", "hi 2");
+    cy.get(cesc2("#/map2/c/t")).should("have.text", "hi 1");
+    cy.get(cesc2("#/map2/d/t")).should("have.text", "hi 2");
+    cy.get(cesc2("#/grp1/a")).should("have.text", "apple");
+    cy.get(cesc2("#/grp1/b")).should("have.text", "banana");
+    cy.get(cesc2("#/grp2/c")).should("have.text", "apple");
+    cy.get(cesc2("#/grp2/d")).should("have.text", "banana");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/map1/a/t"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/map1/b/t"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/map2/c/t"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/map2/d/t"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/grp1/a"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp1/b"].stateValues.value).eq("banana");
+      expect(stateVariables["/grp2/c"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp2/d"].stateValues.value).eq("banana");
+    });
+  });
+
+  it("assign names with macro copy of group and map, newNamespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <map name="map1" newNamespace assignNames="a b">
+      <template newNamespace><text name="t">hi $v</text></template>
+      <sources alias="v"><number>1</number><number>2</number></sources>
+    </map>
+    
+    $map1{name="map2" assignNames="c d"}
+    
+    
+    <group name="grp1" newNamespace assignNames="a b">
+      <text>apple</text>
+      <text>banana</text>
+    </group>
+    
+    $grp1{name="grp2" assignNames="c d"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/map1/a/t")).should("have.text", "hi 1");
+    cy.get(cesc2("#/map1/b/t")).should("have.text", "hi 2");
+    cy.get(cesc2("#/map2/c/t")).should("have.text", "hi 1");
+    cy.get(cesc2("#/map2/d/t")).should("have.text", "hi 2");
+    cy.get(cesc2("#/grp1/a")).should("have.text", "apple");
+    cy.get(cesc2("#/grp1/b")).should("have.text", "banana");
+    cy.get(cesc2("#/grp2/c")).should("have.text", "apple");
+    cy.get(cesc2("#/grp2/d")).should("have.text", "banana");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/map1/a/t"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/map1/b/t"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/map2/c/t"].stateValues.value).eq("hi 1");
+      expect(stateVariables["/map2/d/t"].stateValues.value).eq("hi 2");
+      expect(stateVariables["/grp1/a"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp1/b"].stateValues.value).eq("banana");
+      expect(stateVariables["/grp2/c"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp2/d"].stateValues.value).eq("banana");
+    });
+  });
+
+  it("copySource composite replacement implicitly skips assignNames", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text name="t1">hi</text>
+      <text name="t2">bye</text>
+      
+      <group assignNames="a b">
+        <text copySource="t1" />
+        <text copySource="t2" />
+      </group>
+
+      <p>
+        <group copySource="_group1" assignNames="c d" />
+      </p>
+
+      <p copySource="_p1" newNamespace />
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/a")).should("have.text", "hi");
+    cy.get(cesc2("#/b")).should("have.text", "bye");
+    cy.get(cesc2("#/c")).should("have.text", "hi");
+    cy.get(cesc2("#/d")).should("have.text", "bye");
+    cy.get(cesc2("#/_p2/c")).should("have.text", "hi");
+    cy.get(cesc2("#/_p2/d")).should("have.text", "bye");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.value).eq("hi");
+      expect(stateVariables["/b"].stateValues.value).eq("bye");
+      expect(stateVariables["/c"].stateValues.value).eq("hi");
+      expect(stateVariables["/d"].stateValues.value).eq("bye");
+      expect(stateVariables["/_p2/c"].stateValues.value).eq("hi");
+      expect(stateVariables["/_p2/d"].stateValues.value).eq("bye");
+    });
+  });
+
+  it("macro copy composite replacement implicitly skips assignNames", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text name="t1">hi</text>
+      <text name="t2">bye</text>
+      
+      <group assignNames="a b">
+        $t1
+        $t2
+      </group>
+
+      <p>
+        $_group1{assignNames="c d"}
+      </p>
+
+      $_p1{name="p2" newNamespace}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/a")).should("have.text", "hi");
+    cy.get(cesc2("#/b")).should("have.text", "bye");
+    cy.get(cesc2("#/c")).should("have.text", "hi");
+    cy.get(cesc2("#/d")).should("have.text", "bye");
+    cy.get(cesc2("#/p2/c")).should("have.text", "hi");
+    cy.get(cesc2("#/p2/d")).should("have.text", "bye");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.value).eq("hi");
+      expect(stateVariables["/b"].stateValues.value).eq("bye");
+      expect(stateVariables["/c"].stateValues.value).eq("hi");
+      expect(stateVariables["/d"].stateValues.value).eq("bye");
+      expect(stateVariables["/p2/c"].stateValues.value).eq("hi");
+      expect(stateVariables["/p2/d"].stateValues.value).eq("bye");
+    });
+  });
+
+  it("copy and macro's prescribed name is used to assign name to replacement", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text name="t1">hi</text>
+      <copy source="t1" name="t2" />
+      $t1{name="t3"}
+      
+      <group name="grp1" newNamespace>
+        <text>apple</text>
+        <text>banana</text>
+      </group>
+      <copy source="grp1" name="grp2" />
+      $grp1{name="grp3"}
+
+      <point name="p">(3,4)</point>
+      <copy source="p" prop="x" assignNames="x1" />
+      <copy source="p.x" assignNames="x2" />
+      $p.x{assignNames="x3"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t1")).should("have.text", "hi");
+    cy.get(cesc2("#/t2")).should("have.text", "hi");
+    cy.get(cesc2("#/t3")).should("have.text", "hi");
+
+    cy.get(cesc2("#/grp1/_text1")).should("have.text", "apple");
+    cy.get(cesc2("#/grp1/_text2")).should("have.text", "banana");
+    cy.get(cesc2("#/grp2/_text1")).should("have.text", "apple");
+    cy.get(cesc2("#/grp2/_text2")).should("have.text", "banana");
+    cy.get(cesc2("#/grp3/_text1")).should("have.text", "apple");
+    cy.get(cesc2("#/grp3/_text2")).should("have.text", "banana");
+
+    cy.get(cesc2("#/p") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/x1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/x2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/x3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/t1"].stateValues.value).eq("hi");
+      expect(stateVariables["/t2"].stateValues.value).eq("hi");
+      expect(stateVariables["/t3"].stateValues.value).eq("hi");
+
+      expect(stateVariables["/grp1/_text1"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp1/_text2"].stateValues.value).eq("banana");
+      expect(stateVariables["/grp2/_text1"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp2/_text2"].stateValues.value).eq("banana");
+      expect(stateVariables["/grp3/_text1"].stateValues.value).eq("apple");
+      expect(stateVariables["/grp3/_text2"].stateValues.value).eq("banana");
+
+      expect(stateVariables["/p"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/x1"].stateValues.value).eq(3);
+      expect(stateVariables["/x2"].stateValues.value).eq(3);
+      expect(stateVariables["/x3"].stateValues.value).eq(3);
+    });
+  });
+
+  it("copy's automatically generated name not used", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <text name="t1">hi</text> $t1
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t1")).should("have.text", "hi");
+    cy.get(cesc2("#/_document1")).should("contain.text", "hi hi");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/t1"].stateValues.value).eq("hi");
+      expect(stateVariables["/_copy1"]).eq(undefined);
+
+      let secondTextComponentName =
+        stateVariables["/_document1"].activeChildren[3].componentName;
+      expect(stateVariables[secondTextComponentName].stateValues.value).eq(
+        "hi",
+      );
+
+      cy.get(cesc2("#" + secondTextComponentName)).should("have.text", "hi");
+    });
+  });
+
+  it("copy and macro's ssignNames is used to assign name to prop replacement", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <point name="p">(3,4)</point>
+      <copy source="p.x" assignNames="x1" />
+      $p.x{assignNames="x2"}
+
+      <copy source="p.coords" assignNames="c1" />
+      $p.coords{assignNames="c2"}
+
+      <copy source="p.xs" assignNames="x11 x21" />
+      $p.xs{assignNames="x12 x22"}
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/p") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+
+    cy.get(cesc2("#/x1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/x2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+
+    cy.get(cesc2("#/c1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc2("#/c2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+
+    cy.get(cesc2("#/x11") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/x21") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4");
+    cy.get(cesc2("#/x12") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "3");
+    cy.get(cesc2("#/x22") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "4");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/x1"].stateValues.value).eq(3);
+      expect(stateVariables["/x2"].stateValues.value).eq(3);
+      expect(stateVariables["/c1"].stateValues.value).eqls(["vector", 3, 4]);
+      expect(stateVariables["/c2"].stateValues.value).eqls(["vector", 3, 4]);
+      expect(stateVariables["/x11"].stateValues.value).eq(3);
+      expect(stateVariables["/x21"].stateValues.value).eq(4);
+      expect(stateVariables["/x12"].stateValues.value).eq(3);
+      expect(stateVariables["/x22"].stateValues.value).eq(4);
+    });
+  });
+
   it("add children to copySource with prop and propIndex", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -3659,7 +4427,7 @@ describe("Copy Tag Tests", function () {
     <p name="p19">y of P: $(P.xs[2])</p>
 
 
-    <p name="p20">P: <copy source="P" /></p>
+    <p name="p20">P: $P</p>
     <p name="p21">P: <copy source="P[1]" /></p>
     <p name="p22">nothing: <copy source="P[2]" /></p>
     <p name="p23">nothing: <copy source="P." /></p>
@@ -3941,13 +4709,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)",
+      "\\left( \\frac{2}{3}, 3 \\right), \\left( 5, 6 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p31")).should("have.text", "36");
+    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p31")).should("have.text", "3, 6");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p34")).should("have.text", "36");
+    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p34")).should("have.text", "3, 6");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should(
@@ -3993,7 +4761,7 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
 
     cy.get(cesc2("#/p1") + " .mjx-mrow")
@@ -4105,13 +4873,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "79");
-    cy.get(cesc2("#/p31")).should("have.text", "80");
+    cy.get(cesc2("#/p30")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p31")).should("have.text", "8, 0");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "79");
-    cy.get(cesc2("#/p34")).should("have.text", "80");
+    cy.get(cesc2("#/p33")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p34")).should("have.text", "8, 0");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should("have.text", "\\left( 7, 8 \\right)");
@@ -4324,13 +5092,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)",
+      "\\left( \\frac{2}{3}, 3 \\right), \\left( 5, 6 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p31")).should("have.text", "36");
+    cy.get(cesc2("#/p30")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p31")).should("have.text", "3, 6");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}5");
-    cy.get(cesc2("#/p34")).should("have.text", "36");
+    cy.get(cesc2("#/p33")).should("have.text", "\\frac{2}{3}, 5");
+    cy.get(cesc2("#/p34")).should("have.text", "3, 6");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should(
@@ -4376,7 +5144,7 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
 
     cy.get(cesc2("#/p1") + " .mjx-mrow")
@@ -4488,13 +5256,13 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc2("#/p29")).should(
       "have.text",
-      "\\left( 7, 8 \\right)\\left( 9, 0 \\right)",
+      "\\left( 7, 8 \\right), \\left( 9, 0 \\right)",
     );
-    cy.get(cesc2("#/p30")).should("have.text", "79");
-    cy.get(cesc2("#/p31")).should("have.text", "80");
+    cy.get(cesc2("#/p30")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p31")).should("have.text", "8, 0");
     cy.get(cesc2("#/p32")).should("have.text", "");
-    cy.get(cesc2("#/p33")).should("have.text", "79");
-    cy.get(cesc2("#/p34")).should("have.text", "80");
+    cy.get(cesc2("#/p33")).should("have.text", "7, 9");
+    cy.get(cesc2("#/p34")).should("have.text", "8, 0");
     cy.get(cesc2("#/p35")).should("have.text", "");
 
     cy.get(cesc2("#/p36")).should("have.text", "\\left( 7, 8 \\right)");
@@ -5451,24 +6219,28 @@ describe("Copy Tag Tests", function () {
     <text>a</text>
     <group name="grp">
       <math>x</math>
-      skip me
-      <text>hello</text>
-      skip me too
+      copied will be blank
+      <text fixed>hello</text>
+      copied will also be blank
       <point>(4,5)</point>
       <line through="(10,9) (9,8)" />
       <p newNamespace>A <math name="m">y</math> and a <text name="t">word</text>.</p>
     </group>
     
     <p name="p1">the math: $grp[1]</p>
-    <p name="p2">the text: $grp[2]</p>
-    <p name="p3">the point: $grp[3]</p>
-    <p name="p4">the point x: $grp[3].x</p>
-    <p name="p5">the line: $grp[4]</p>
-    <p name="p6">the line, point 1: $grp[4].points[1]</p>
-    <p name="p7">the line, point 2, y: $grp[4].points[2].y</p>
-    <p name="p8">math from p: $(grp[5]/m)</p>
-    <p name="p9">text from p: $(grp[5]/t)</p>
-    <p name="p10">nothing: $grp[6]</p>
+    <p name="p2">a blank: $grp[2]</p>
+    <p name="p3">the text: $grp[3]</p>
+    <p name="p4">another blank: $grp[4]</p>
+    <p name="p5">the point: $grp[5]</p>
+    <p name="p6">the point x: $grp[5].x</p>
+    <p name="p7">the line: $grp[6]</p>
+    <p name="p8">the line, point 1: $grp[6].points[1]</p>
+    <p name="p9">the line, point 2, y: $grp[6].points[2].y</p>
+    <p name="p10">math from p: $(grp[7]/m)</p>
+    <p name="p11">text from p: $(grp[7]/t)</p>
+    <p name="p12">nothing: $grp[8]</p>
+    <p name="p13">Prop fixed from group: $grp.fixed</p>
+    <p name="p14">Prop x from group: $grp.x</p>
     `,
         },
         "*",
@@ -5481,30 +6253,44 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc2("#/p1") + " .mjx-mrow")
       .eq(0)
       .should("have.text", "x");
-    cy.get(cesc2("#/p2")).should("have.text", "the text: hello");
-    cy.get(cesc2("#/p3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "(4,5)");
-    cy.get(cesc2("#/p4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "4");
+    cy.get(cesc2("#/p2")).should("have.text", "a blank: ");
+    cy.get(cesc2("#/p3")).should("have.text", "the text: hello");
+    cy.get(cesc2("#/p4")).should("have.text", "another blank: ");
     cy.get(cesc2("#/p5") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "0=x−y−1");
+      .should("have.text", "(4,5)");
     cy.get(cesc2("#/p6") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(10,9)");
+      .should("have.text", "4");
     cy.get(cesc2("#/p7") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "8");
+      .should("have.text", "0=x−y−1");
     cy.get(cesc2("#/p8") + " .mjx-mrow")
       .eq(0)
+      .should("have.text", "(10,9)");
+    cy.get(cesc2("#/p9") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "8");
+    cy.get(cesc2("#/p10") + " .mjx-mrow")
+      .eq(0)
       .should("have.text", "y");
-    cy.get(cesc2("#/p9")).should("have.text", "text from p: word");
-    cy.get(cesc2("#/p10")).should("have.text", "nothing: ");
+    cy.get(cesc2("#/p11")).should("have.text", "text from p: word");
+    cy.get(cesc2("#/p12")).should("have.text", "nothing: ");
+    cy.get(cesc2("#/p13")).should(
+      "have.text",
+      "Prop fixed from group: false, true, false, false, false",
+    );
+    cy.get(cesc2("#/p14")).should("contain.text", "Prop x from group: x");
+    cy.get(cesc2("#/p14")).should("contain.text", "x, 4");
+    cy.get(cesc2("#/p14") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/p14") + " .mjx-mrow")
+      .eq(1)
+      .should("have.text", "4");
   });
 
-  it("isPlainMacro and isPlainCopy", () => {
+  it("implicitProp from an input", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -5514,7 +6300,7 @@ describe("Copy Tag Tests", function () {
 
     <p name="pmacro1">$mi</p>
     <p name="pmacro2">$mi{simplify}</p>
-    <p name="pcopy1"><copy source="mi" /></p>
+    <p name="pcopy1">$mi</p>
     <p name="pcopy2"><copy source="mi{simplify}" /></p>
     <p name="pcopy3"><copy source="mi" simplify /></p>
     <p name="pcopy4"><copy source="mi" createComponentOfType="mathinput" /></p>
@@ -5590,7 +6376,227 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copies of composites ignore isPlainMacro and isPlainCopy", () => {
+  it("implicitProp with same componentType depend on attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <math name="m" simplify><math name="msub">x</math>+x</math>
+    $m{name="mimplicit1"}
+    $m{name="mimplicit2" createComponentOfType="math"}
+    <math name="mimplicit3" copySource="m" />
+    $m{name="mnotimplicit1" newNamespace}
+    $m{name="mnotimplicit2" newNamespace createComponentOfType="math"}
+    <math name="mnotimplicit3" copySource="m" newNamespace />
+    $m{name="mnotimplicit4" simplify="false"}
+    $m{name="mnotimplicit5" simplify="false" createComponentOfType="math"}
+    <math name="mnotimplicit6" copySource="m" simplify="false" />
+
+    $(mnotimplicit2/msub{name="msubimplicit1"})
+    $(mnotimplicit3/msub{name="msubimplicit2"})
+    <math name="msubimplicit3" copySource="mnotimplicit1/msub" />
+
+
+    <math name="n" newNamespace><math name="nsub">y</math>+z</math>
+    $n{name="nnotimplicit1"}
+    <math name="nnotimplicit2" copySource="n" />
+    $(nnotimplicit2/nsub{name="nsubimplicit1"})
+    <math name="nsubimplicit2" copySource="nnotimplicit1/nsub" />
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/msubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/nnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nsubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/nsubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit3"].activeChildren.length).eq(0);
+      expect(stateVariables["/mnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit3"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit4"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit5"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit6"].activeChildren.length).eq(2);
+      expect(stateVariables["/msubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit3"].activeChildren.length).eq(0);
+
+      expect(stateVariables["/nnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/nnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/nsubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/nsubimplicit2"].activeChildren.length).eq(0);
+    });
+  });
+
+  it("implicitProp with same componentType depend on attributes, subnames", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+
+    <map name="map">
+      <template newNamespace><math name="m" simplify><math name="msub">x</math>+x</math></template>
+      <sources><number>1</number></sources>
+    </map>
+
+    $(map[1]/m{name="mimplicit1"})
+    $(map[1]/m{name="mimplicit2" createComponentOfType="math"})
+    <math name="mimplicit3" copySource="map[1]/m" />
+    $(map[1]/m{name="mnotimplicit1" newNamespace})
+    $(map[1]/m{name="mnotimplicit2" newNamespace createComponentOfType="math"})
+    <math name="mnotimplicit3" copySource="map[1]/m" newNamespace />
+    $(map[1]/m{name="mnotimplicit4" simplify="false"})
+    $(map[1]/m{name="mnotimplicit5" simplify="false" createComponentOfType="math"})
+    <math name="mnotimplicit6" copySource="map[1]/m" simplify="false" />
+
+    $(mnotimplicit2/msub{name="msubimplicit1"})
+    $(mnotimplicit3/msub{name="msubimplicit2"})
+    <math name="msubimplicit3" copySource="mnotimplicit1/msub" />
+
+    <map name="map2">
+      <template newNamespace><math name="n" newNamespace><math name="nsub">y</math>+z</math></template>
+      <sources><number>1</number></sources>
+    </map>
+
+    $(map2[1]/n{name="nnotimplicit1"})
+    <math name="nnotimplicit2" copySource="map2[1]/n" />
+    $(nnotimplicit2/nsub{name="nsubimplicit1"})
+    <math name="nsubimplicit2" copySource="nnotimplicit1/nsub" />
+
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/mimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2x");
+    cy.get(cesc2("#/mnotimplicit4") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit5") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/mnotimplicit6") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/msubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+    cy.get(cesc2("#/msubimplicit3") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "x");
+
+    cy.get(cesc2("#/nnotimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nnotimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y+z");
+    cy.get(cesc2("#/nsubimplicit1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+    cy.get(cesc2("#/nsubimplicit2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "y");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/mimplicit3"].activeChildren.length).eq(0);
+      expect(stateVariables["/mnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit3"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit4"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit5"].activeChildren.length).eq(2);
+      expect(stateVariables["/mnotimplicit6"].activeChildren.length).eq(2);
+      expect(stateVariables["/msubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit2"].activeChildren.length).eq(0);
+      expect(stateVariables["/msubimplicit3"].activeChildren.length).eq(0);
+
+      expect(stateVariables["/nnotimplicit1"].activeChildren.length).eq(2);
+      expect(stateVariables["/nnotimplicit2"].activeChildren.length).eq(2);
+      expect(stateVariables["/nsubimplicit1"].activeChildren.length).eq(0);
+      expect(stateVariables["/nsubimplicit2"].activeChildren.length).eq(0);
+    });
+  });
+
+  it("copies of composites ignore implicitProp", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -5605,11 +6611,11 @@ describe("Copy Tag Tests", function () {
 
     <p name="pmacro">$col</p>
 
-    <p name="pcopy"><copy source="col" /></p>
+    <p name="pcopy">$col</p>
 
     <p name="pmacro2">$g</p>
 
-    <p name="pcopy2"><copy source="g" /></p>
+    <p name="pcopy2">$g</p>
 
     `,
         },
@@ -5686,7 +6692,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("copies of composites with subnames do not ignore isPlainMacro and isPlainCopy", () => {
+  it("copies of composites with subnames do not ignore implicitProp", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -5698,7 +6704,7 @@ describe("Copy Tag Tests", function () {
     </map>
 
     <p name="pmacro">$map</p>
-    <p name="pcopy"><copy source="map" /></p>
+    <p name="pcopy">$map</p>
 
     <p name="pmacroInd">$map[1]$map[2]</p>
     <p name="pcopyInd"><copy source="map[1]" /><copy source="map[2]" /></p>
@@ -5807,55 +6813,7 @@ describe("Copy Tag Tests", function () {
     });
   });
 
-  it("isPlainCopy does not mean isPlainMacro", () => {
-    // a plain copy copies children, unlike a macro
-    cy.window().then(async (win) => {
-      win.postMessage(
-        {
-          doenetML: `
-    <text>a</text>
-    <p name="p1"><math newNamespace name="x">x+<math name="y">y</math></math></p>
-
-    <p name="p2"><copy source="x" assignNames="x2" /></p>
-    
-    <p name="p3">x2/y: $(x2/y)</p>
-
-    <p name="p4">$x</p>
-
-    `,
-        },
-        "*",
-      );
-    });
-
-    // to wait for page to load
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-
-    cy.get(cesc2("#/p1") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-    cy.get(cesc2("#/p2") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-    cy.get(cesc2("#/p3") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "y");
-    cy.get(cesc2("#/p4") + " .mjx-mrow")
-      .eq(0)
-      .should("have.text", "x+y");
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/x2"].activeChildren.length).eq(2);
-
-      expect(stateVariables["/x2/y"].stateValues.value).eq("y");
-
-      let macroName = stateVariables["/p4"].activeChildren[0].componentName;
-      expect(stateVariables[macroName].activeChildren.length).eq(0);
-    });
-  });
-
-  it("plain copies and macros with createComponentOfType", () => {
+  it("implicitProp with createComponentOfType", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -5958,6 +6916,251 @@ describe("Copy Tag Tests", function () {
     });
   });
 
+  it("asList when copy array prop", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    <p name="default">Default: $ci.choiceTexts</p>
+    <p name="nocommas">No commas: $ci.choiceTexts{asList="false"}</p>
+    <p name="withcommas">With commas: $ci.choiceTexts{asList="true"}</p>
+    <p name="default2" copySource="default" />
+    <p name="nocommas2" copySource="nocommas" />
+    <p name="withcommas2" copySource="withcommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should("have.text", "Default: yes, no, maybe");
+    cy.get(cesc2("#/nocommas")).should("have.text", "No commas: yesnomaybe");
+    cy.get(cesc2("#/withcommas")).should(
+      "have.text",
+      "With commas: yes, no, maybe",
+    );
+    cy.get(cesc2("#/default2")).should("have.text", "Default: yes, no, maybe");
+    cy.get(cesc2("#/nocommas2")).should("have.text", "No commas: yesnomaybe");
+    cy.get(cesc2("#/withcommas2")).should(
+      "have.text",
+      "With commas: yes, no, maybe",
+    );
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/default"].stateValues.text).eq(
+        "Default: yes, no, maybe",
+      );
+      expect(stateVariables["/nocommas"].stateValues.text).eq(
+        "No commas: yesnomaybe",
+      );
+      expect(stateVariables["/withcommas"].stateValues.text).eq(
+        "With commas: yes, no, maybe",
+      );
+      expect(stateVariables["/default2"].stateValues.text).eq(
+        "Default: yes, no, maybe",
+      );
+      expect(stateVariables["/nocommas2"].stateValues.text).eq(
+        "No commas: yesnomaybe",
+      );
+      expect(stateVariables["/withcommas2"].stateValues.text).eq(
+        "With commas: yes, no, maybe",
+      );
+    });
+  });
+
+  it("asList when copy array prop, multiple stacked props", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <line name="l" through="(1,2) (3,4)" />
+
+    <p name="default">Default: $l.points.x</p>
+    <p name="nocommas">No commas: $l.points.x{asList="false"}</p>
+    <p name="withcommas">With commas: $l.points.x{asList="true"}</p>
+    <p name="default2" copySource="default" />
+    <p name="nocommas2" copySource="nocommas" />
+    <p name="withcommas2" copySource="withcommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/default")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/nocommas")).should("contain.text", "13");
+    cy.get(cesc2("#/withcommas")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/default2")).should("contain.text", "1, 3");
+    cy.get(cesc2("#/nocommas2")).should("contain.text", "13");
+    cy.get(cesc2("#/withcommas2")).should("contain.text", "1, 3");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/default"].stateValues.text).eq("Default: 1, 3");
+      expect(stateVariables["/nocommas"].stateValues.text).eq("No commas: 13");
+      expect(stateVariables["/withcommas"].stateValues.text).eq(
+        "With commas: 1, 3",
+      );
+      expect(stateVariables["/default2"].stateValues.text).eq("Default: 1, 3");
+      expect(stateVariables["/nocommas2"].stateValues.text).eq("No commas: 13");
+      expect(stateVariables["/withcommas2"].stateValues.text).eq(
+        "With commas: 1, 3",
+      );
+    });
+  });
+
+  it("asList when copy array prop, aslist overrides", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    
+    Override no commas: <aslist name="nocommas">$ci.choiceTexts{asList="false"}</aslist>
+    Copy: <aslist name="nocommas2" copySource="nocommas" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Override no commas: yes, no, maybe",
+    );
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Copy: yes, no, maybe",
+    );
+  });
+
+  it("asList when copy array prop, test renderers", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <choiceinput name="ci">
+      <choice>yes</choice>
+      <choice>no</choice>
+      <choice>maybe</choice>
+    </choiceinput>
+
+    In document: $ci.choiceTexts
+    <alert name="in_alert">$ci.choiceTexts</alert>
+    <blockquote name="in_blockquote">$ci.choiceTexts</blockquote>
+    <c name="in_c">$ci.choiceTexts</c>
+    <caption name="in_caption">$ci.choiceTexts</caption>
+    <cell name="in_cell">$ci.choiceTexts</cell>
+    <choice name="in_choice">$ci.choiceTexts</choice>
+    <span name="in_span">$ci.choiceTexts</span>
+    <em name="in_em">$ci.choiceTexts</em>
+    <feedback name="in_feedback">$ci.choiceTexts</feedback>
+    <footnote name="in_footnote">$ci.choiceTexts</footnote>
+    <hint name="in_hint_w_title"><title>A title</title>$ci.choiceTexts</hint>
+    <hint name="in_hint_wo_title">$ci.choiceTexts</hint>
+    <label name="in_label">$ci.choiceTexts</label>
+    <ol>
+      <li name="in_li">$ci.choiceTexts</li>
+    </ol>
+    <ul>
+      <li name="in_li2">$ci.choiceTexts</li>
+    </ul>
+    <p name="in_p">$ci.choiceTexts</p>
+    <pre name="in_pre">$ci.choiceTexts</pre>
+    <p name="in_q"><q>$ci.choiceTexts</q></p>
+    <section name="in_section_w_title"><title name="sec_title">Title: $ci.choiceTexts</title>Text: $ci.choiceTexts</section>
+    <section name="in_section_wo_title">$ci.choiceTexts</section>
+    <solution name="in_solution">$ci.choiceTexts</solution>
+    <p name="in_sq"><sq>$ci.choiceTexts</sq></p>
+    <text name="in_text">$ci.choiceTexts</text>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "In document: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_alert")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_blockquote")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_c")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_caption")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_cell")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_choice")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_span")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_em")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_feedback")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_footnote")).click();
+    cy.get(cesc2("#/in_footnote")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_hint_w_title")).click();
+    cy.get(cesc2("#/in_hint_w_title")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_hint_wo_title")).click();
+    cy.get(cesc2("#/in_hint_wo_title")).should(
+      "contain.text",
+      "yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_label")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_li")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_li2")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_p")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_pre")).should("have.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_q")).should("have.text", "“yes, no, maybe”");
+    cy.get(cesc2("#/in_section_w_title")).should(
+      "contain.text",
+      "Title: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_section_w_title")).should(
+      "contain.text",
+      "Text: yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_section_wo_title")).should(
+      "contain.text",
+      "yes, no, maybe",
+    );
+    cy.get(cesc2("#/in_solution")).click();
+    cy.get(cesc2("#/in_solution")).should("contain.text", "yes, no, maybe");
+    cy.get(cesc2("#/in_sq")).should("have.text", "‘yes, no, maybe’");
+    cy.get(cesc2("#/in_text")).should("have.text", "yes, no, maybe");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/in_alert"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_c"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_caption"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_cell"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_choice"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_em"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_footnote"].stateValues.text).eq(
+        "yes, no, maybe",
+      );
+      expect(stateVariables["/in_label"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_p"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/in_text"].stateValues.text).eq("yes, no, maybe");
+      expect(stateVariables["/sec_title"].stateValues.text).eq(
+        "Title: yes, no, maybe",
+      );
+    });
+  });
+
   it("copy number from external content multiple ways, change attributes", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -5966,7 +7169,7 @@ describe("Copy Tag Tests", function () {
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n2" displayDigits="10" /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" name="n2" displayDigits="10" /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" /></p>
 
@@ -5974,7 +7177,7 @@ describe("Copy Tag Tests", function () {
 
     <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
-    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" assignNames="n6" displayDigits="10" newNamespace /></p>
+    <p><copy uri="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" name="n6" displayDigits="10" newNamespace /></p>
 
     <p><number copyFromURI="doenet:cid=bafkreiewuu4vpro2d3vxm3wmclbsgzcsdsswhmtfcrqq7m6datze2tiwu4" newNamespace /></p>
 
@@ -5991,7 +7194,7 @@ describe("Copy Tag Tests", function () {
     cy.get(cesc("#\\/_number1")).should("have.text", "8.85");
     cy.get(cesc("#\\/n4")).should("have.text", "8.853729375");
     cy.get(cesc("#\\/_p5")).should("have.text", "8.85");
-    cy.get(cesc("#\\/_copy4\\/n6")).should("have.text", "8.853729375");
+    cy.get(cesc("#\\/n6")).should("have.text", "8.853729375");
     cy.get(cesc("#\\/_number3")).should("have.text", "8.85");
     cy.get(cesc("#\\/n8")).should("have.text", "8.853729375");
   });
@@ -6016,5 +7219,113 @@ describe("Copy Tag Tests", function () {
 
     cy.get(cesc("#\\/ans") + " textarea").type("7{enter}", { force: true });
     cy.get(cesc("#\\/num")).should("have.text", "47");
+  });
+
+  it("copy of copy with new namespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <group name="orig"><text name="t">hello</text></group>
+    
+    <p>copy with new namespace:  <copy source="orig" name="cN" newnamespace /></p>
+    <p>copy of copy: <copy source="cN" name="cNc" /></p>
+
+    <p>copy of copy of copy: <copy source="cNc" name="cNcc" /></p>
+    <p>copy of copy of copy nn: <copy source="cNc" name="cNccN" newNamespace /></p>
+    
+    <p>piece of copy: <text name="cNt" copySource="cN/t" /></p>
+    <p>piece of copy of copy: <text name="cNct" copySource="cNc/t" /></p>
+
+    <p>piece of copy of copy of copy: <text name="cNcct" copySource="cNcc/t" /></p>
+    <p>piece of copy of copy of copy nn: <text name="cNccNt" copySource="cNccN/t" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNc/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcc/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccN/t")).should("have.text", "hello");
+
+    cy.get(cesc2("#/cNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNct")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcct")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccNt")).should("have.text", "hello");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/orig"].componentType).eq("group");
+      expect(stateVariables["/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cN"].componentType).eq("group");
+      expect(stateVariables["/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNc"].componentType).eq("group");
+      expect(stateVariables["/cNc/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcc"].componentType).eq("group");
+      expect(stateVariables["/cNcc/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNccN"].componentType).eq("group");
+      expect(stateVariables["/cNccN/t"].stateValues.value).eq("hello");
+    });
+  });
+
+  it("copy of copy with new namespace, macros", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <group name="orig"><text name="t">hello</text></group>
+    
+    <p>copy with new namespace:  $orig{name="cN" newnamespace}</p>
+    <p>copy of copy: $cN{name="cNc"}</p>
+
+    <p>copy of copy of copy: $cNc{name="cNcc"}</p>
+    <p>copy of copy of copy nn: $cNc{name="cNccN" newNamespace}</p>
+    
+    <p>piece of copy: $(cN/t{name="cNt"})</p>
+    <p>piece of copy of copy: $(cNc/t{name="cNct"})</p>
+
+    <p>piece of copy of copy of copy: $(cNcc/t{name="cNcct"})</p>
+    <p>piece of copy of copy of copy nn: $(cNccN/t{name="cNccNt"})</p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cN/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNc/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcc/t")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccN/t")).should("have.text", "hello");
+
+    cy.get(cesc2("#/cNt")).should("have.text", "hello");
+    cy.get(cesc2("#/cNct")).should("have.text", "hello");
+    cy.get(cesc2("#/cNcct")).should("have.text", "hello");
+    cy.get(cesc2("#/cNccNt")).should("have.text", "hello");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/orig"].componentType).eq("group");
+      expect(stateVariables["/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cN"].componentType).eq("group");
+      expect(stateVariables["/cN/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNc"].componentType).eq("group");
+      expect(stateVariables["/cNc/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNcc"].componentType).eq("group");
+      expect(stateVariables["/cNcc/t"].stateValues.value).eq("hello");
+
+      expect(stateVariables["/cNccN"].componentType).eq("group");
+      expect(stateVariables["/cNccN/t"].stateValues.value).eq("hello");
+    });
   });
 });

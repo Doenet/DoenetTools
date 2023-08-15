@@ -214,8 +214,8 @@ describe("Legend Tag Tests", function () {
       </legend>
     </graph>
 
-    <copy prop="value" target="n" assignNames="n2" />
-    <copy prop="value" target="pos" assignNames="pos2" />
+    $n.value{assignNames="n2"}
+    $pos.value{assignNames="pos2"}
     `,
         },
         "*",

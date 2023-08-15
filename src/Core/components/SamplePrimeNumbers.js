@@ -64,6 +64,12 @@ export default class SamplePrimeNumbers extends CompositeComponent {
       public: true,
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 

@@ -22,14 +22,14 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <textinput prefill='hello' name="ti1" />
-    <copy target="ti1" assignNames="ti1a" createComponentOfType="textinput" />
-    <copy prop='value' target="ti1" assignNames="v1" />
-    <copy prop='immediateValue' target="ti1" assignNames="iv1" />
-    <copy prop='value' target="ti1a" assignNames="v1a" />
-    <copy prop='immediateValue' target="ti1a" assignNames="iv1a" />
+    <textinput copySource="ti1" name="ti1a" />
+    $ti1.value{assignNames="v1"}
+    $ti1.immediateValue{assignNames="iv1"}
+    $ti1a.value{assignNames="v1a"}
+    $ti1a.immediateValue{assignNames="iv1a"}
     <textinput name="ti2" />
-    <copy prop='value' target="ti2" assignNames="v2" />
-    <copy prop='immediateValue' target="ti2" assignNames="iv2" />
+    $ti2.value{assignNames="v2"}
+    $ti2.immediateValue{assignNames="iv2"}
     `,
         },
         "*",
@@ -638,7 +638,7 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <p>Original text: <text>can't <text>update</text> <text>me</text></text></p>
     <p>textinput based on text: <textinput bindValueTo="$_text1" /></p>
-    <p>immediate value: <copy prop="immediateValue" target="_textinput1" assignNames="iv" /></p>
+    <p>immediate value: $_textinput1.immediateValue{assignNames="iv"}</p>
     `,
         },
         "*",
@@ -838,7 +838,7 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <p>Original text: <text>update</text></p>
     <p>textinput based on text: <textinput>can't $_text1 me</textinput></p>
-    <p>immediate value: <copy prop="immediateValue" target="_textinput1" assignNames="iv" /></p>
+    <p>immediate value: $_textinput1.immediateValue{assignNames="iv"}</p>
     `,
         },
         "*",
@@ -916,10 +916,10 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
     <p>textinput based on textinput: <textinput bindValueTo="$_textinput1" /></p>
-    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" target="_textinput1"/></text></p>
-    <p>Value of original: <text name="originalvalue"><copy prop="value" target="_textinput1"/></text></p>
-    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" target="_textinput2"/></text></p>
-    <p>Value of second: <text name="secondvalue"><copy prop="value" target="_textinput2"/></text></p>
+    <p>Immediate value of original: <text name="originalimmediate">$_textinput1.immediateValue</text></p>
+    <p>Value of original: <text name="originalvalue">$_textinput1.value</text></p>
+    <p>Immediate value of second: <text name="secondimmediate">$_textinput2.immediateValue</text></p>
+    <p>Value of second: <text name="secondvalue">$_textinput2.value</text></p>
     `,
         },
         "*",
@@ -1058,10 +1058,10 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
     <p>textinput based on textinput: <textinput bindValueTo="$(_textinput1.immediateValue)" /></p>
-    <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" target="_textinput1"/></text></p>
-    <p>Value of original: <text name="originalvalue"><copy prop="value" target="_textinput1"/></text></p>
-    <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" target="_textinput2"/></text></p>
-    <p>Value of second: <text name="secondvalue"><copy prop="value" target="_textinput2"/></text></p>
+    <p>Immediate value of original: <text name="originalimmediate">$_textinput1.immediateValue</text></p>
+    <p>Value of original: <text name="originalvalue">$_textinput1.value</text></p>
+    <p>Immediate value of second: <text name="secondimmediate">$_textinput2.immediateValue</text></p>
+    <p>Value of second: <text name="secondvalue">$_textinput2.value</text></p>
 
     `,
         },
@@ -1194,7 +1194,7 @@ describe("TextInput Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <textinput name="ti" />
-    <copy prop="immediateValue" target="ti" assignNames="iv" />
+    $ti.immediateValue{assignNames="iv"}
 
     <text name="h">hello</text>
     <updateValue triggerWith="ti" target="h" newValue="$h$ti" type="text" />

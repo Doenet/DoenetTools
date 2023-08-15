@@ -155,10 +155,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -238,10 +238,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(3,5) (-4,$(../_math1)) (5,2) (-3,4)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -326,12 +326,12 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -403,12 +403,12 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -451,12 +451,12 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(1,2) (-1,5) ($(../_mathinput1),7) (3,-5) (-4,-3)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   `,
         },
@@ -497,15 +497,15 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   <textinput name="ti" />
-  <copy target="ti" prop="value" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -627,15 +627,15 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_map1" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
+  $g2{name="g3"}
   <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6) (p7) (p8) (p9) (p10) (p11)" >
     <template><round numDecimals="8">$v</round></template>
-    <sources alias="v"><copy target="g1/pg" prop="vertices" /></sources>
+    <sources alias="v">$(g1/pg.vertices)</sources>
   </map>
   <textinput name="ti" />
-  <copy target="ti" prop="value" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -743,15 +743,15 @@ describe("Polygon Tag Tests", function () {
   <polygon vertices="(-3,-1) (1,2) (3,4) (6,-2)" />
   </graph>
   <graph>
-  <copy assignNames="v1" prop="vertex1" target="_polygon1" />
-  <copy assignNames="v2" prop="vertex2" target="_polygon1" />
-  <copy assignNames="v3" prop="vertex3" target="_polygon1" />
-  <copy assignNames="v4" prop="vertex4" target="_polygon1" />
+  $_polygon1.vertex1{assignNames="v1"}
+  $_polygon1.vertex2{assignNames="v2"}
+  $_polygon1.vertex3{assignNames="v3"}
+  $_polygon1.vertex4{assignNames="v4"}
   </graph>
   <graph>
   <copy assignNames="v1a v2a v3a v4a" prop="vertices" target="_polygon1" />
   </graph>
-  <copy assignNames="v4b" prop="vertex4" target="_polygon1" />
+  $_polygon1.vertex4{assignNames="v4b"}
   `,
         },
         "*",
@@ -860,8 +860,8 @@ describe("Polygon Tag Tests", function () {
   <graph name="g2" newNamespace>
     <polygon vertices="$(../g1/pg.vertices)" name="pg" />
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -961,12 +961,12 @@ describe("Polygon Tag Tests", function () {
         </point>
       </template>
       <sources alias="x">
-        <copy prop="vertices" name="vs" target="_polygon1" />
+        $_polygon1.vertices{name="vs"}
       </sources>
     </map>
     <polygon vertices="$_map1" />
     </graph>
-    <copy target="_polygon2" prop="vertices" assignNames="p1 p2 p3 p4" />
+    $_polygon2.vertices{assignNames="p1 p2 p3 p4"}
 
     `,
         },
@@ -1134,7 +1134,7 @@ describe("Polygon Tag Tests", function () {
       <polygon name="parallelogram" vertices="(1,2) (3,4) (-5,6) ($(parallelogram.vertexX1_1{fixed})+$(parallelogram.vertexX3_1{fixed})-$(parallelogram.vertexX2_1), $(parallelogram.vertexX1_2{fixed})+$(parallelogram.vertexX3_2{fixed})-$(parallelogram.vertexX2_2))" />
     </graph>
 
-    <copy target="parallelogram" prop="vertices" assignNames="p1 p2 p3 p4" />
+    $parallelogram.vertices{assignNames="p1 p2 p3 p4"}
 
     `,
         },
@@ -1313,7 +1313,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
     <polygon vertices="$(_polygon1.vertex1) ($(_polygon1.vertexX2_2), $(_polygon1.vertexX2_1)) $(_polygon1.vertex3) ($(_polygon1.vertexX4_2), $(_polygon1.vertexX4_1))" />
   </graph>
-  <copy target="_polygon2" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polygon2.vertices{assignNames="p1 p2 p3 p4"}
   `,
         },
         "*",
@@ -1466,7 +1466,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon vertices="(1,2) (3,4) (-5,6) ($(_polygon1.vertexX3_1{fixed})+$(_polygon1.vertexX2_1{fixed})-$(_polygon1.vertexX1_1), $(_polygon1.vertexX3_2{fixed})+$(_polygon1.vertexX2_2{fixed})-$(_polygon1.vertexX1_2))" />
   </graph>
-  <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polygon1.vertices{assignNames="p1 p2 p3 p4"}
 
   `,
         },
@@ -1612,7 +1612,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon vertices="(1,2) (3,4) (-5,6) $(_polygon1.vertex1{createComponentOfType='point'})" />
   </graph>
-  <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polygon1.vertices{assignNames="p1 p2 p3 p4"}
   `,
         },
         "*",
@@ -1751,7 +1751,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon vertices="$(_polygon1.vertex4{ createComponentOfType='point' }) (3,4) (-5,6) (1,2)" />
   </graph>
-  <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $_polygon1.vertices{assignNames="p1 p2 p3 p4"}
   
   `,
         },
@@ -1892,7 +1892,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon vertices="$(_polygon1.vertex4{createComponentOfType='point'}) (3,4) (-5,6) (1,2) ($(_polygon1.vertexX1_1)+1,2)" />
   </graph>
-  <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
+  $_polygon1.vertices{assignNames="p1 p2 p3 p4 p5"}
   
   `,
         },
@@ -2068,7 +2068,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon name="P" vertices="$(P.vertex4{createComponentOfType='point'}) (1,2) (3,4) $(P.vertex7{createComponentOfType='point'}) (5,7) (-5,7) $(P.vertex10{createComponentOfType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
-  <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
+  $P.vertices{assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10"}
   
   `,
         },
@@ -2434,7 +2434,7 @@ describe("Polygon Tag Tests", function () {
   <graph>
   <polygon name="P" vertices="($(P.vertexX4_1)+1,$(P.vertexX4_2)+1) (1,2) (3,4) ($(P.vertexX7_1)+1,$(P.vertexX7_2)+1) (5,7) (-5,7) ($(P.vertexX10_1)+1,$(P.vertexX10_2)+1) (3,1) (5,0) (-5,-1)" />
   </graph>
-  <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
+  $P.vertices{assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10"}
   
   `,
         },
@@ -2816,12 +2816,12 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
-        <attractTo><copy target="_polygon1" /></attractTo>
+        <attractTo>$_polygon1</attractTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" displayDigits="8" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
+  $_point1{name="p1" displayDigits="8"}
+  $_polygon1.vertices{assignNames="v1 v2 v3" displayDigits="8"}
   `,
         },
         "*",
@@ -3152,12 +3152,12 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices=" (3,5) (-4,-1) (5,2)" />
     <point x="7" y="8">
       <constraints>
-        <constrainTo><copy target="_polygon1" /></constrainTo>
+        <constrainTo>$_polygon1</constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="_point1" assignNames="p1" displayDigits="8" />
-  <copy target="_polygon1" prop="vertices" assignNames="v1 v2 v3" displayDigits="8" />
+  $_point1{name="p1" displayDigits="8"}
+  $_polygon1.vertices{assignNames="v1 v2 v3" displayDigits="8"}
   `,
         },
         "*",
@@ -3497,11 +3497,11 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
     <point x="0" y="0.01" name="A">
       <constraints>
-        <constrainTo relativeToGraphScales><copy target="p" /></constrainTo>
+        <constrainTo relativeToGraphScales>$p</constrainTo>
       </constraints>
     </point>
   </graph>
-  <copy target="A" assignNames="A2" />
+  $A{name="A2"}
   `,
         },
         "*",
@@ -3619,7 +3619,7 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="(1,3) (5,7) (-2,6)" name="p" fixed />
   </graph>
   <textinput name="ti" />
-  <copy prop="value" target="ti" assignNames="t" />
+  $ti.value{assignNames="t"}
   `,
         },
         "*",
@@ -4630,10 +4630,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -4746,10 +4746,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -4866,10 +4866,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 $_point2 $_point3 $_point4" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3 p4"})
   `,
         },
         "*",
@@ -4976,10 +4976,10 @@ describe("Polygon Tag Tests", function () {
     <polygon vertices="$_point1 3$_point2 $_point3" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <copy target="../g1/pg" assignNames="pg" />
+    $(../g1/pg{name="pg"})
   </graph>
-  <copy target="g2" assignNames="g3" />
-  <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3" />
+  $g2{name="g3"}
+  $(g1/pg.vertices{assignNames="p1 p2 p3"})
 
   <booleaninput name="bi"/> <boolean name="bi2" copySource="bi" />
   `,

@@ -13,7 +13,7 @@ describe("UpdateValue Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <number name="step">20/<copy target="count" /></number>
+    <number name="step">20/$count</number>
     <number name="count">2</number>
     <graph>
     <map assignNames="l1 l2 l3 l4 l5 l6 l7 l8 l9 l10 l11 l12 l13 l14 l15 l16" >
@@ -384,7 +384,7 @@ describe("UpdateValue Tag Tests", function () {
   
     <updateValue target="col" prop="x" newValue="2$(p.x)" componentIndex="2" />
     <updateValue target="col[3].x" newValue="2$(p.x)" />
-    <p><booleaninput name="bi" /><copy prop="value" source="bi" assignNames="b" /></p>
+    <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
         "*",
@@ -537,16 +537,16 @@ describe("UpdateValue Tag Tests", function () {
     <text>a</text>
     <group name="grp">
       <point name="p">(3,2)</point>
-      skip me
+      ignore me
       <point name="p2">(1,5)</point>
-      skip me too
+      ignore me too
       <point name="p3">(7,0)</point>
     </group>
     
   
-    <updateValue target="grp" prop="x" newValue="2$(grp[1].x)" componentIndex="2" />
-    <updateValue target="grp[3].x" newValue="2$(grp[1].x)" />
-    <p><booleaninput name="bi" /><copy prop="value" source="bi" assignNames="b" /></p>
+    <updateValue target="grp" prop="x" newValue="2$(grp[1].x)" componentIndex="3" />
+    <updateValue target="grp[5].x" newValue="2$(grp[1].x)" />
+    <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
         "*",
@@ -751,7 +751,7 @@ describe("UpdateValue Tag Tests", function () {
   
     <updateValue target="p" prop="xs" newValue="2$(p.x)" propIndex="2" />
     <updateValue target="p.xs[3]" newValue="2$(p.x)" />
-    <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
+    <p><booleaninput name="bi" />$bi.value{assignNames="b"}</p>
     `,
         },
         "*",
@@ -1586,7 +1586,7 @@ describe("UpdateValue Tag Tests", function () {
       $P
     </graph>
     <graph>
-      $P{assignNames="P2"}
+      $P{name="P2"}
     </graph>
     <graph>
       <point copySource="P" />

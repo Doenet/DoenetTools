@@ -13,17 +13,17 @@ describe("BooleanList Tag Tests", function () {
           doenetML: `
     <p><booleanlist hide="true">false true false</booleanlist></p>
 
-    <p><copy hide="false" target="_booleanlist1" /></p>
+    <p>$_booleanlist1{hide="false" name="bl1a"}</p>
 
     <p><booleanlist>
       <boolean>true</boolean>
       <boolean hide>false</boolean>
-      <copy target="_booleanlist1" hide="false" />
+      $_booleanlist1{hide="false"}
       <boolean>false</boolean>
-      <copy target="_copy1" />
+      $bl1a
     </booleanlist></p>
 
-    <p><copy maxNumber="6" target="_booleanlist2" /></p>
+    <p><booleanlist maxNumber="6" copySource="_booleanlist2" /></p>
     `,
         },
         "*",
@@ -377,12 +377,12 @@ describe("BooleanList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><booleanlist name="bl1">true true false true false</booleanlist></p>
-      <p><copy target="bl1" maxNumber="3" assignNames="bl2" /></p>
-      <p><copy target="bl2" maxNumber="" assignNames="bl3" /></p>
+      <p>$bl1{maxNumber="3" name="bl2"}</p>
+      <p>$bl2{maxNumber="" name="bl3"}</p>
 
       <p><booleanlist name="bl4" maxNumber="3">true true false true false</booleanlist></p>
-      <p><copy target="bl4" maxNumber="4" assignNames="bl5" /></p>
-      <p><copy target="bl5" maxNumber="" assignNames="bl6" /></p>
+      <p>$bl4{maxNumber="4" name="bl5"}</p>
+      <p>$bl5{maxNumber="" name="bl6"}</p>
 
       `,
         },
@@ -461,7 +461,7 @@ describe("BooleanList Tag Tests", function () {
           doenetML: `
       <text>a</text>
       <p><booleanlist name="bl1" maxNumber="$mn1">true true false true false</booleanlist></p>
-      <p><copy target="bl1" maxNumber="$mn2" assignNames="bl2" /></p>
+      <p><booleanlist copySource="bl1" maxNumber="$mn2" name="bl2" /></p>
       <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
       <p>Maximum number 2: <mathinput name="mn2" /></p>
 

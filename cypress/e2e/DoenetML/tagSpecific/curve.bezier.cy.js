@@ -80,10 +80,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -96,43 +96,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -320,10 +320,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -336,43 +336,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -740,10 +740,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -756,43 +756,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -1230,10 +1230,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -1246,43 +1246,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -1713,7 +1713,7 @@ describe("Curve Tag Bezier Tests", function () {
           doenetML: `
     <text>a</text>
     <controlVectors>(-1,5)</controlVectors>
-    <copy source="_controlvectors1" assignNames="cv1a" />
+    $_controlvectors1{name="cv1a"}
 
     <p><textinput name="dira" bindValueTo="$(_controlvectors1.direction)" />
     </p>
@@ -1764,7 +1764,7 @@ describe("Curve Tag Bezier Tests", function () {
           doenetML: `
     <text>b</text>
     <controlVectors>(-1,5)</controlVectors>
-    <copy source="_controlvectors1" assignNames="cv1a" />
+    $_controlvectors1{name="cv1a"}
 
     <p><textinput name="dira" bindValueTo="$(_controlvectors1.direction)" />
     </p>
@@ -1829,10 +1829,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -1845,43 +1845,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -2324,10 +2324,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -2340,43 +2340,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -2818,10 +2818,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -2834,43 +2834,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -3317,10 +3317,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -3333,43 +3333,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -3813,10 +3813,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -3829,43 +3829,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -4309,10 +4309,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     <p>Temp way to change controls 1:
     <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -4325,43 +4325,43 @@ describe("Curve Tag Bezier Tests", function () {
       </group>
     </choiceInput>
     <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
     <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
     <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-      <copy source="choices" />
+      $choices
     </choiceInput>
     </p>
     `,
@@ -5030,10 +5030,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph name="g2" newNamespace>
-      <copy source="../_curve1" assignNames="curve" />
+      <copy source="../_curve1" name="curve" />
     </graph>
 
-    <copy source="g2" assignNames="g3" />
+    $g2{name="g3"}
 
     `,
         },
@@ -5761,10 +5761,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph>
-      <copy source="_curve1" assignNames="curve1a" />
+      $_curve1{name="curve1a"}
     </graph>
     <graph>
-      <copy source="_curve2" assignNames="curve2a" />
+      $_curve2{name="curve2a"}
     </graph>
 
     `,
@@ -6300,10 +6300,10 @@ describe("Curve Tag Bezier Tests", function () {
     </graph>
 
     <graph>
-      <copy source="_curve1" assignNames="curve1a" />
+      $_curve1{name="curve1a"}
     </graph>
     <graph>
-      <copy source="_curve2" assignNames="curve2a" />
+      $_curve2{name="curve2a"}
     </graph>
 
     `,
@@ -6788,10 +6788,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
 
   <p>Temp way to change controls 1:
   <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -6804,43 +6804,43 @@ describe("Curve Tag Bezier Tests", function () {
     </group>
   </choiceInput>
   <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
   <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
   <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
   `,
@@ -7317,10 +7317,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
 
   <p>Temp way to change controls 1:
   <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -7333,43 +7333,43 @@ describe("Curve Tag Bezier Tests", function () {
     </group>
   </choiceInput>
   <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
   <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
   <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
   `,
@@ -7846,10 +7846,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
 
   <p>Temp way to change controls 1:
   <choiceInput inline name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
@@ -7862,52 +7862,52 @@ describe("Curve Tag Bezier Tests", function () {
     </group>
   </choiceInput>
   <choiceInput inline name="dir2" bindValueTo="$_curve1.vectorcontroldirection2" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir5" bindValueTo="$_curve1.vectorcontroldirection5" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
   <choiceInput inline name="dir1a" bindValueTo="$(g2/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2a" bindValueTo="$(g2/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4a" bindValueTo="$(g2/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir5a" bindValueTo="$(g2/curve.vectorcontroldirection5)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
   <choiceInput inline name="dir1b" bindValueTo="$(g3/curve.vectorcontroldirection1)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir2b" bindValueTo="$(g3/curve.vectorcontroldirection2)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir4b" bindValueTo="$(g3/curve.vectorcontroldirection4)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   <choiceInput inline name="dir5b" bindValueTo="$(g3/curve.vectorcontroldirection5)" >
-    <copy source="choices" />
+    $choices
   </choiceInput>
   </p>
   `,
@@ -8522,10 +8522,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
   `,
         },
         "*",
@@ -9180,10 +9180,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
   `,
         },
         "*",
@@ -9839,10 +9839,10 @@ describe("Curve Tag Bezier Tests", function () {
   </curve>
   </graph>
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
   `,
         },
         "*",
@@ -10204,10 +10204,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
 
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
 
   <p>Temp way to change controls 1:
   <choiceInput inline name="dir3" bindValueTo="$_curve1.vectorcontroldirection3" >
@@ -10223,13 +10223,13 @@ describe("Curve Tag Bezier Tests", function () {
 
   <p>Temp way to change controls 2:
   <choiceInput inline name="dir3a" bindValueTo="$(g2/curve.vectorcontroldirection3)" >
-  <copy source="choices" />
+  $choices
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
   <choiceInput inline name="dir3b" bindValueTo="$(g3/curve.vectorcontroldirection3)" >
-  <copy source="choices" />
+  $choices
   </choiceInput>
   </p>
   `,
@@ -10655,10 +10655,10 @@ describe("Curve Tag Bezier Tests", function () {
   </graph>
   
   <graph name="g2" newNamespace>
-    <copy source="../_curve1" assignNames="curve" />
+    <copy source="../_curve1" name="curve" />
   </graph>
 
-  <copy source="g2" assignNames="g3" />
+  $g2{name="g3"}
 
   `,
         },

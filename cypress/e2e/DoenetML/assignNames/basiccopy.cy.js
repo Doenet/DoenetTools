@@ -7,36 +7,27 @@ describe("Basic copy assignName Tests", function () {
     cy.visit("/src/Tools/cypressTest/");
   });
 
-  it("recursively copying and assigning names to text", () => {
+  // Note: this isn't using assignNames anymore given changes to how copies work
+  it("recursively copying and naming text", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
   <text name="a">hello</text>
-  <copy name="cp1" assignNames="b" target="a" />
-  <copy name="cp2" assignNames="c" target="b" />
-  <copy name="cp3" assignNames="d" target="cp1" />
-  <copy name="cp4" assignNames="e" target="c" />
-  <copy name="cp5" assignNames="f" target="cp2" />
-  <copy name="cp6" assignNames="g" target="d" />
-  <copy name="cp7" assignNames="h" target="cp3" />
-  <copy name="cp8" assignNames="i" target="e" />
-  <copy name="cp9" assignNames="j" target="cp4" />
-  <copy name="cp10" assignNames="k" target="f" />
-  <copy name="cp11" assignNames="l" target="cp5" />
-  <copy name="cp12" assignNames="m" target="g" />
-  <copy name="cp13" assignNames="n" target="cp6" />
-  <copy name="cp14" assignNames="o" target="h" />
-  <copy name="cp15" assignNames="p" target="cp7" />
+  $a{name="b"}
+  $b{name="c"}
+  $c{name="d"}
+  $c{name="e"}
+  $e{name="f"}
+  $f{name="g"}
+  $g{name="h"}
+  $h{name="i"}
 
   `,
         },
         "*",
       );
     });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.get(cesc("#\\/a")).should("have.text", "hello");
     cy.get(cesc("#\\/b")).should("have.text", "hello");
@@ -47,13 +38,6 @@ describe("Basic copy assignName Tests", function () {
     cy.get(cesc("#\\/g")).should("have.text", "hello");
     cy.get(cesc("#\\/h")).should("have.text", "hello");
     cy.get(cesc("#\\/i")).should("have.text", "hello");
-    cy.get(cesc("#\\/j")).should("have.text", "hello");
-    cy.get(cesc("#\\/k")).should("have.text", "hello");
-    cy.get(cesc("#\\/l")).should("have.text", "hello");
-    cy.get(cesc("#\\/m")).should("have.text", "hello");
-    cy.get(cesc("#\\/n")).should("have.text", "hello");
-    cy.get(cesc("#\\/o")).should("have.text", "hello");
-    cy.get(cesc("#\\/p")).should("have.text", "hello");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -67,74 +51,6 @@ describe("Basic copy assignName Tests", function () {
       expect(stateVariables["/g"].stateValues.value).eq("hello");
       expect(stateVariables["/h"].stateValues.value).eq("hello");
       expect(stateVariables["/i"].stateValues.value).eq("hello");
-      expect(stateVariables["/j"].stateValues.value).eq("hello");
-      expect(stateVariables["/k"].stateValues.value).eq("hello");
-      expect(stateVariables["/l"].stateValues.value).eq("hello");
-      expect(stateVariables["/m"].stateValues.value).eq("hello");
-      expect(stateVariables["/n"].stateValues.value).eq("hello");
-      expect(stateVariables["/o"].stateValues.value).eq("hello");
-      expect(stateVariables["/p"].stateValues.value).eq("hello");
-
-      expect(
-        stateVariables[stateVariables["/cp1"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp2"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp3"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp4"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp5"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp6"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp7"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp8"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp9"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp10"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp11"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp12"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp13"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp14"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
-      expect(
-        stateVariables[stateVariables["/cp15"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("hello");
     });
   });
 
@@ -143,25 +59,22 @@ describe("Basic copy assignName Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
   <math>x+x</math>
-  <copy name="cp1" prop="simplify" assignNames="s1" target="_math1" />
-  <copy name="cp2" target="s1" assignNames="s2" />
-  <copy name="cp3" target="cp1" assignNames="s3" />
+  $_math1.simplify{name="cp1" assignNames="s1"}
+  $s1{name="s2"}
+  $cp1{assignNames="s3"}
 
-  <copy name="cp4" assignNames="m1" target="_math1" simplify="full" />
-  <copy name="cp5" prop="simplify" assignNames="s4" target="m1" />
-  <copy name="cp6" prop="simplify" assignNames="s5" target="cp4" />
-  <copy name="cp7" target="s4" assignNames="s6" />
-  <copy name="cp8" target="cp5" assignNames="s7" />
-  <copy name="cp9" target="s5" assignNames="s8" />
-  <copy name="cp10" target="cp6" assignNames="s9" />
+  <math name="m1" copySource="_math1" simplify="full" />
+  $m1.simplify{name="cp5" assignNames="s4" target="m1" }
+  $s4{name="s5"}
+  $cp5{assignNames="s6"}
 
-
-  <extract name="ex1" prop="simplify" assignNames="s10"><copy target="_math1" /></extract>
-  <copy name="cp11" target="s10" assignNames="s11" />
-  <extract name="ex2" prop="simplify" assignNames="s12"><copy target="m1" /></extract>
-  <copy name="cp12" target="s12" assignNames="s13" />
+  <extract name="ex1" prop="simplify" assignNames="s7">$_math1</extract>
+  $s7{name="s8"}
+  $ex1{assignNames="s9"}
+  <extract name="ex2" prop="simplify" assignNames="s10">$m1</extract>
+  $s10{name="s11"}
+  $ex2{assignNames="s12"}
 
   `,
         },
@@ -169,37 +82,26 @@ describe("Basic copy assignName Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
-
-    cy.get(cesc("#\\/_math1"))
-      .find(".mjx-mrow")
+    cy.get(cesc2("#/_math1") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x+x");
-      });
-    cy.get(cesc("#\\/s1")).should("have.text", "none");
-    cy.get(cesc("#\\/s2")).should("have.text", "none");
-    cy.get(cesc("#\\/s3")).should("have.text", "none");
+      .should("have.text", "x+x");
+    cy.get(cesc2("#/s1")).should("have.text", "none");
+    cy.get(cesc2("#/s2")).should("have.text", "none");
+    cy.get(cesc2("#/s3")).should("have.text", "none");
 
-    cy.get(cesc("#\\/m1"))
-      .find(".mjx-mrow")
+    cy.get(cesc2("#/m1") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("2x");
-      });
-    cy.get(cesc("#\\/s4")).should("have.text", "full");
-    cy.get(cesc("#\\/s5")).should("have.text", "full");
-    cy.get(cesc("#\\/s6")).should("have.text", "full");
-    cy.get(cesc("#\\/s7")).should("have.text", "full");
-    cy.get(cesc("#\\/s8")).should("have.text", "full");
-    cy.get(cesc("#\\/s9")).should("have.text", "full");
+      .should("have.text", "2x");
+    cy.get(cesc2("#/s4")).should("have.text", "full");
+    cy.get(cesc2("#/s5")).should("have.text", "full");
+    cy.get(cesc2("#/s6")).should("have.text", "full");
 
-    cy.get(cesc("#\\/s10")).should("have.text", "none");
-    cy.get(cesc("#\\/s11")).should("have.text", "none");
-    cy.get(cesc("#\\/s12")).should("have.text", "full");
-    cy.get(cesc("#\\/s13")).should("have.text", "full");
+    cy.get(cesc2("#/s7")).should("have.text", "none");
+    cy.get(cesc2("#/s8")).should("have.text", "none");
+    cy.get(cesc2("#/s9")).should("have.text", "none");
+    cy.get(cesc2("#/s10")).should("have.text", "full");
+    cy.get(cesc2("#/s11")).should("have.text", "full");
+    cy.get(cesc2("#/s12")).should("have.text", "full");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -210,77 +112,16 @@ describe("Basic copy assignName Tests", function () {
       expect(stateVariables["/s3"].stateValues.value).eq("none");
 
       expect(stateVariables["/m1"].stateValues.value).eqls(["*", 2, "x"]);
-
       expect(stateVariables["/s4"].stateValues.value).eq("full");
       expect(stateVariables["/s5"].stateValues.value).eq("full");
       expect(stateVariables["/s6"].stateValues.value).eq("full");
-      expect(stateVariables["/s7"].stateValues.value).eq("full");
-      expect(stateVariables["/s8"].stateValues.value).eq("full");
-      expect(stateVariables["/s9"].stateValues.value).eq("full");
 
-      expect(stateVariables["/s10"].stateValues.value).eq("none");
-      expect(stateVariables["/s11"].stateValues.value).eq("none");
+      expect(stateVariables["/s7"].stateValues.value).eq("none");
+      expect(stateVariables["/s8"].stateValues.value).eq("none");
+      expect(stateVariables["/s9"].stateValues.value).eq("none");
+      expect(stateVariables["/s10"].stateValues.value).eq("full");
+      expect(stateVariables["/s11"].stateValues.value).eq("full");
       expect(stateVariables["/s12"].stateValues.value).eq("full");
-      expect(stateVariables["/s13"].stateValues.value).eq("full");
-
-      expect(
-        stateVariables[stateVariables["/cp1"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("none");
-      expect(
-        stateVariables[stateVariables["/cp2"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("none");
-      expect(
-        stateVariables[stateVariables["/cp3"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("none");
-      expect(
-        stateVariables[stateVariables["/cp4"].replacements[0].componentName]
-          .stateValues.value,
-      ).eqls(["*", 2, "x"]);
-      expect(
-        stateVariables[stateVariables["/cp5"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-      expect(
-        stateVariables[stateVariables["/cp6"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-      expect(
-        stateVariables[stateVariables["/cp7"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-      expect(
-        stateVariables[stateVariables["/cp8"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-      expect(
-        stateVariables[stateVariables["/cp9"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-      expect(
-        stateVariables[stateVariables["/cp10"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-
-      expect(
-        stateVariables[stateVariables["/cp11"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("none");
-      expect(
-        stateVariables[stateVariables["/cp12"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
-
-      expect(
-        stateVariables[stateVariables["/ex1"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("none");
-      expect(
-        stateVariables[stateVariables["/ex2"].replacements[0].componentName]
-          .stateValues.value,
-      ).eq("full");
     });
   });
 
@@ -289,25 +130,23 @@ describe("Basic copy assignName Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
-
   <graph>
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
+  $_line1.points{name="pts" assignNames="b c"}
 
   <graph>
-    <copy target="b" assignNames="b1" />
-    <copy target="c" assignNames="c1" />
+    $b{name="b1"}
+    $c{name="c1"}
   </graph>
 
   <graph>
-    <copy assignNames="d e" target="cp1" />
+    $pts{assignNames="d e"}
   </graph>
 
-  <copy target="d" assignNames="f" />
-  <copy target="e" assignNames="g" />
+  $d{name="f"}
+  $e{name="g"}
 
   `,
         },
@@ -315,36 +154,18 @@ describe("Basic copy assignName Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
-
-    cy.get(cesc("#\\/b"))
-      .find(".mjx-mrow")
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(0,0)");
-      });
-    cy.get(cesc("#\\/c"))
-      .find(".mjx-mrow")
+      .should("have.text", "(0,0)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(1,1)");
-      });
-    cy.get(cesc("#\\/f"))
-      .find(".mjx-mrow")
+      .should("have.text", "(1,1)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(0,0)");
-      });
-    cy.get(cesc("#\\/g"))
-      .find(".mjx-mrow")
+      .should("have.text", "(0,0)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(1,1)");
-      });
+      .should("have.text", "(1,1)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -372,46 +193,31 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/b",
         args: { x: 5, y: -5 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow").should("contain.text", "(5,−5)");
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,−5)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,1)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,−5)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(1,1)");
+
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b") + " .mjx-mrow").should("contain.text", "(5,−5)");
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([1, 1]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([1, 1]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([1, 1]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([1, 1]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([1, 1]);
     });
 
     cy.log("move point c");
@@ -421,46 +227,30 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/c",
         args: { x: 3, y: 4 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,−5)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow").should("contain.text", "(3,4)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,−5)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
-      cy.get(cesc("#\\/c") + " .mjx-mrow").should("contain.text", "(3,4)");
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(3,4)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(3,4)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([5, -5]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([3, 4]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([3, 4]);
     });
 
     cy.log("move point b1");
@@ -470,45 +260,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/b1",
         args: { x: -9, y: -8 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(3,4)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(3,4)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(3,4)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([3, 4]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([3, 4]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([3, 4]);
     });
 
     cy.log("move point c1");
@@ -518,45 +292,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/c1",
         args: { x: -1, y: -3 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−1,−3)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−9,−8)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−1,−3)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−1,−3)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−1,−3)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([-9, -8]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([-1, -3]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([-1, -3]);
     });
 
     cy.log("move point d");
@@ -566,45 +324,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/d",
         args: { x: 0, y: 2 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,2)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−1,−3)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,2)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(−1,−3)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−1,−3)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−1,−3)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([-1, -3]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([-1, -3]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([-1, -3]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([-1, -3]);
     });
 
     cy.log("move point e");
@@ -614,45 +356,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/e",
         args: { x: 5, y: 4 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,2)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,4)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(0,2)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,4)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,4)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,4)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([0, 2]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([5, 4]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([5, 4]);
     });
 
     cy.log("move point f");
@@ -662,45 +388,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/f",
         args: { x: 6, y: 7 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,4)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(5,4)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,4)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,4)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([5, 4]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([5, 4]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([5, 4]);
     });
 
     cy.log("move point g");
@@ -710,45 +420,29 @@ describe("Basic copy assignName Tests", function () {
         componentName: "/g",
         args: { x: 9, y: 3 },
       });
+    });
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/c") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,3)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(6,7)");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(9,3)");
+    cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
-      cy.get(cesc("#\\/c"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(9,3)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
-        .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(9,3)");
-        })
-        .then(() => {
-          expect(stateVariables["/b"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/c"].stateValues.xs).eqls([9, 3]);
-          expect(stateVariables["/b1"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/c1"].stateValues.xs).eqls([9, 3]);
-          expect(stateVariables["/d"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/e"].stateValues.xs).eqls([9, 3]);
-          expect(stateVariables["/f"].stateValues.xs).eqls([6, 7]);
-          expect(stateVariables["/g"].stateValues.xs).eqls([9, 3]);
-        });
+      expect(stateVariables["/b"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/c"].stateValues.xs).eqls([9, 3]);
+      expect(stateVariables["/b1"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/c1"].stateValues.xs).eqls([9, 3]);
+      expect(stateVariables["/d"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/e"].stateValues.xs).eqls([9, 3]);
+      expect(stateVariables["/f"].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables["/g"].stateValues.xs).eqls([9, 3]);
     });
   });
 
@@ -757,23 +451,21 @@ describe("Basic copy assignName Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
-
   <graph>
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="point1" assignNames="b" target="_line1" />
+  $_line1.point1{name="cp1" assignNames="b"}
 
   <graph>
-    <copy target="b" assignNames="b1" />
+    $b{name="b1"}
   </graph>
 
   <graph>
-    <copy assignNames="d" target="cp1" />
+    $cp1{assignNames="d"}
   </graph>
 
-  <copy target="d" assignNames="f" />
+  $d{name="f"}
 
   `,
         },
@@ -781,22 +473,12 @@ describe("Basic copy assignName Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
-
-    cy.get(cesc("#\\/b"))
-      .find(".mjx-mrow")
+    cy.get(cesc("#\\/b") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(0,0)");
-      });
-    cy.get(cesc("#\\/f"))
-      .find(".mjx-mrow")
+      .should("have.text", "(0,0)");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("(0,0)");
-      });
+      .should("have.text", "(0,0)");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -821,20 +503,12 @@ describe("Basic copy assignName Tests", function () {
         args: { x: 5, y: -5 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/b") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(5,−5)");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(5,−5)");
-        });
+        .should("have.text", "(5,−5)");
       expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
       expect(stateVariables["/b1"].stateValues.xs).eqls([5, -5]);
       expect(stateVariables["/d"].stateValues.xs).eqls([5, -5]);
@@ -849,20 +523,12 @@ describe("Basic copy assignName Tests", function () {
         args: { x: -9, y: -8 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/b") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(−9,−8)");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(−9,−8)");
-        });
+        .should("have.text", "(−9,−8)");
       expect(stateVariables["/b"].stateValues.xs).eqls([-9, -8]);
       expect(stateVariables["/b1"].stateValues.xs).eqls([-9, -8]);
       expect(stateVariables["/d"].stateValues.xs).eqls([-9, -8]);
@@ -877,20 +543,12 @@ describe("Basic copy assignName Tests", function () {
         args: { x: 0, y: 2 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/b") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(0,2)");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,2)");
-        });
+        .should("have.text", "(0,2)");
       expect(stateVariables["/b"].stateValues.xs).eqls([0, 2]);
       expect(stateVariables["/b1"].stateValues.xs).eqls([0, 2]);
       expect(stateVariables["/d"].stateValues.xs).eqls([0, 2]);
@@ -905,20 +563,12 @@ describe("Basic copy assignName Tests", function () {
         args: { x: 6, y: 7 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/b"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/b") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(6,7)");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(6,7)");
-        });
+        .should("have.text", "(6,7)");
       expect(stateVariables["/b"].stateValues.xs).eqls([6, 7]);
       expect(stateVariables["/b1"].stateValues.xs).eqls([6, 7]);
       expect(stateVariables["/d"].stateValues.xs).eqls([6, 7]);
@@ -931,21 +581,20 @@ describe("Basic copy assignName Tests", function () {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
 
   <graph>
     <line through="(0,0) (1,1)" />
   </graph>
 
   <graph>
-     <copy name="cp1" prop="points" assignNames="b c" target="_line1" />
+    $_line1.points{name="pts" assignNames="b c"}
   </graph>
 
-  <p>xs of points: <copy prop="x" target="cp1" assignNames="d e" /></p>
+  <p>xs of points: $pts.x{assignNames="d e"}</p>
 
   <p>
-    xs again: <copy target="d" assignNames="f" />
-    <copy target="e" assignNames="g" />
+    xs again: $d{name="f"}
+    $e{name="g"}
   </p>
 
   `,
@@ -954,36 +603,18 @@ describe("Basic copy assignName Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
-
-    cy.get(cesc("#\\/d"))
-      .find(".mjx-mrow")
+    cy.get(cesc("#\\/d") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("0");
-      });
-    cy.get(cesc("#\\/e"))
-      .find(".mjx-mrow")
+      .should("have.text", "0");
+    cy.get(cesc("#\\/e") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("1");
-      });
-    cy.get(cesc("#\\/f"))
-      .find(".mjx-mrow")
+      .should("have.text", "1");
+    cy.get(cesc("#\\/f") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("0");
-      });
-    cy.get(cesc("#\\/g"))
-      .find(".mjx-mrow")
+      .should("have.text", "0");
+    cy.get(cesc("#\\/g") + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("1");
-      });
+      .should("have.text", "1");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1010,34 +641,18 @@ describe("Basic copy assignName Tests", function () {
         args: { x: 5, y: -5 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/d"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/d") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("5");
-        });
-      cy.get(cesc("#\\/e"))
-        .find(".mjx-mrow")
+        .should("have.text", "5");
+      cy.get(cesc("#\\/e") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("1");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "1");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("5");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
+        .should("have.text", "5");
+      cy.get(cesc("#\\/g") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("1");
-        });
+        .should("have.text", "1");
       expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
       expect(stateVariables["/c"].stateValues.xs).eqls([1, 1]);
       expect(stateVariables["/d"].stateValues.value).eq(5);
@@ -1054,34 +669,18 @@ describe("Basic copy assignName Tests", function () {
         args: { x: 3, y: 4 },
       });
       let stateVariables = await win.returnAllStateVariables1();
-      cy.get(cesc("#\\/d"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/d") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("5");
-        });
-      cy.get(cesc("#\\/e"))
-        .find(".mjx-mrow")
+        .should("have.text", "5");
+      cy.get(cesc("#\\/e") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("3");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "3");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("5");
-        });
-      cy.get(cesc("#\\/g"))
-        .find(".mjx-mrow")
+        .should("have.text", "5");
+      cy.get(cesc("#\\/g") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("3");
-        });
+        .should("have.text", "3");
       expect(stateVariables["/b"].stateValues.xs).eqls([5, -5]);
       expect(stateVariables["/c"].stateValues.xs).eqls([3, 4]);
       expect(stateVariables["/d"].stateValues.value).eq(5);
@@ -1102,33 +701,33 @@ describe("Basic copy assignName Tests", function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
+  $_line1.points{name="pts" assignNames="(a1 a2) (b1 b2)"}
   
-  <p name="n1">nothing 1: <copy target="a1" /></p>
-  <p name="n2">nothing 2: <copy target="a2" /></p>
-  <p name="n3">nothing 3: <copy target="b1" /></p>
-  <p name="n4">nothing 4: <copy target="b2" /></p>
+  <p name="n1">nothing 1: $a1</p>
+  <p name="n2">nothing 2: $a2</p>
+  <p name="n3">nothing 3: $b1</p>
+  <p name="n4">nothing 4: $b2</p>
 
   <graph>
-    <copy name="cp2" assignNames="c d" target="cp1" />
+    $pts{name="ptsa" assignNames="c d"}
   </graph>
 
-  <copy target="c" assignNames="e" />
-  <copy target="d" assignNames="f" />
+  $c{name="e"}
+  $d{name="f"}
 
-  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
-  
-  <p name="n5">nothing 5: <copy target="g1" /></p>
-  <p name="n6">nothing 6: <copy target="g2" /></p>
-  <p name="n7">nothing 7: <copy target="h1" /></p>
-  <p name="n8">nothing 8: <copy target="h2" /></p>
+  $pts{name="ptsb" assignNames="(g1 g2) (h1 h2)"}
 
-  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
-  
-  <p name="n9">nothing 9: <copy target="i1" /></p>
-  <p name="n10">nothing 10: <copy target="i2" /></p>
-  <p name="n11">nothing 11: <copy target="j1" /></p>
-  <p name="n12">nothing 12: <copy target="j2" /></p>
+  <p name="n5">nothing 5: $g1</p>
+  <p name="n6">nothing 6: $g2</p>
+  <p name="n7">nothing 7: $h1</p>
+  <p name="n8">nothing 8: $h2</p>
+
+  $ptsa{name="ptsc" assignNames="(i1 i2) (j1 j2)"}
+
+  <p name="n9">nothing 9: $i1</p>
+  <p name="n10">nothing 10: $i2</p>
+  <p name="n11">nothing 11: $j1</p>
+  <p name="n12">nothing 12: $j2</p>
 
 
   `,
@@ -1142,93 +741,61 @@ describe("Basic copy assignName Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let point1Anchor = cesc2(
-        "#" + stateVariables["/cp1"].replacements[0].componentName,
+        "#" + stateVariables["/pts"].replacements[0].componentName,
       );
       let point2Anchor = cesc2(
-        "#" + stateVariables["/cp1"].replacements[1].componentName,
+        "#" + stateVariables["/pts"].replacements[1].componentName,
       );
       let point1aAnchor = cesc2(
-        "#" + stateVariables["/cp3"].replacements[0].componentName,
+        "#" + stateVariables["/ptsb"].replacements[0].componentName,
       );
       let point2aAnchor = cesc2(
-        "#" + stateVariables["/cp3"].replacements[1].componentName,
+        "#" + stateVariables["/ptsb"].replacements[1].componentName,
       );
       let point1bAnchor = cesc2(
-        "#" + stateVariables["/cp4"].replacements[0].componentName,
+        "#" + stateVariables["/ptsc"].replacements[0].componentName,
       );
       let point2bAnchor = cesc2(
-        "#" + stateVariables["/cp4"].replacements[1].componentName,
+        "#" + stateVariables["/ptsc"].replacements[1].componentName,
       );
 
-      cy.get(point1Anchor)
-        .find(".mjx-mrow")
+      cy.get(point1Anchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2Anchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2Anchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc("#\\/n1")).should("have.text", "nothing 1: ");
       cy.get(cesc("#\\/n2")).should("have.text", "nothing 2: ");
       cy.get(cesc("#\\/n3")).should("have.text", "nothing 3: ");
       cy.get(cesc("#\\/n4")).should("have.text", "nothing 4: ");
 
-      cy.get(cesc("#\\/e"))
-        .find(".mjx-mrow")
+      cy.get(cesc("#\\/e") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(cesc("#\\/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(cesc("#\\/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
-      cy.get(point1aAnchor)
-        .find(".mjx-mrow")
+      cy.get(point1aAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2aAnchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2aAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc("#\\/n5")).should("have.text", "nothing 5: ");
       cy.get(cesc("#\\/n6")).should("have.text", "nothing 6: ");
       cy.get(cesc("#\\/n7")).should("have.text", "nothing 7: ");
       cy.get(cesc("#\\/n8")).should("have.text", "nothing 8: ");
 
-      cy.get(point1bAnchor)
-        .find(".mjx-mrow")
+      cy.get(point1bAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2bAnchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2bAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc("#\\/n9")).should("have.text", "nothing 9: ");
       cy.get(cesc("#\\/n10")).should("have.text", "nothing 10: ");
@@ -1258,62 +825,30 @@ describe("Basic copy assignName Tests", function () {
           args: { x: 5, y: -5 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(cesc("#\\/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(cesc("#\\/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc("#\\/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc("#\\/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
+          .should("have.text", "(1,1)");
         cy.get(cesc("#\\/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc("#\\/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc("#\\/n3")).should("have.text", "nothing 3: ");
@@ -1341,62 +876,30 @@ describe("Basic copy assignName Tests", function () {
           args: { x: 3, y: 4 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc("#\\/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc("#\\/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc("#\\/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc("#\\/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
+          .should("have.text", "(3,4)");
         cy.get(cesc("#\\/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc("#\\/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc("#\\/n3")).should("have.text", "nothing 3: ");
@@ -1424,62 +927,30 @@ describe("Basic copy assignName Tests", function () {
           args: { x: -9, y: -8 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc("#\\/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc("#\\/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc("#\\/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc("#\\/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
+          .should("have.text", "(3,4)");
         cy.get(cesc("#\\/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc("#\\/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc("#\\/n3")).should("have.text", "nothing 3: ");
@@ -1507,62 +978,30 @@ describe("Basic copy assignName Tests", function () {
           args: { x: -1, y: -3 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(cesc("#\\/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(cesc("#\\/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc("#\\/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc("#\\/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
+          .should("have.text", "(−1,−3)");
         cy.get(cesc("#\\/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc("#\\/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc("#\\/n3")).should("have.text", "nothing 3: ");
@@ -1596,43 +1035,43 @@ describe("Basic copy assignName Tests", function () {
     <line through="(0,0) (1,1)" />
   </graph>
 
-  <copy name="cp1" prop="points" assignNames="(a1 a2) (b1 b2)" target="_line1" />
+  $_line1.points{name="pts" assignNames="(a1 a2) (b1 b2)"}
   
-  <p name="n1">nothing 1: <copy target="a1" /></p>
-  <p name="n2">nothing 2: <copy target="a2" /></p>
-  <p name="n3">nothing 3: <copy target="b1" /></p>
-  <p name="n4">nothing 4: <copy target="b2" /></p>
+  <p name="n1">nothing 1: $a1</p>
+  <p name="n2">nothing 2: $a2</p>
+  <p name="n3">nothing 3: $b1</p>
+  <p name="n4">nothing 4: $b2</p>
 
   <graph>
-    <copy name="cp2" assignNames="c d" target="cp1" />
+    $pts{name="ptsa" assignNames="c d"}
   </graph>
 
-  <copy target="c" assignNames="e" />
-  <copy target="d" assignNames="f" />
+  $c{name="e"}
+  $d{name="f"}
 
-  <copy name="cp3" assignNames="(g1 g2) (h1 h2)" target="cp1" />
+  $pts{name="ptsb" assignNames="(g1 g2) (h1 h2)"}
   
-  <p name="n5">nothing 5: <copy target="g1" /></p>
-  <p name="n6">nothing 6: <copy target="g2" /></p>
-  <p name="n7">nothing 7: <copy target="h1" /></p>
-  <p name="n8">nothing 8: <copy target="h2" /></p>
+  <p name="n5">nothing 5: $g1</p>
+  <p name="n6">nothing 6: $g2</p>
+  <p name="n7">nothing 7: $h1</p>
+  <p name="n8">nothing 8: $h2</p>
 
-  <copy name="cp4" assignNames="(i1 i2) (j1 j2)" target="cp2" />
+  $ptsa{name="ptsc" assignNames="(i1 i2) (j1 j2)"}
   
-  <p name="n9">nothing 9: <copy target="i1" /></p>
-  <p name="n10">nothing 10: <copy target="i2" /></p>
-  <p name="n11">nothing 11: <copy target="j1" /></p>
-  <p name="n12">nothing 12: <copy target="j2" /></p>
+  <p name="n9">nothing 9: $i1</p>
+  <p name="n10">nothing 10: $i2</p>
+  <p name="n11">nothing 11: $j1</p>
+  <p name="n12">nothing 12: $j2</p>
   
   </section>
 
-  <copy target="hello/e" assignNames="e" />
-  <copy target="hello/f" assignNames="f" />
+  $(hello/e{name="e"})
+  $(hello/f{name="f"})
 
-  <p name="n13">nothing 13: <copy target="hello/i1" /></p>
-  <p name="n14">nothing 14: <copy target="hello/i2" /></p>
-  <p name="n15">nothing 15: <copy target="hello/j1" /></p>
-  <p name="n16">nothing 16: <copy target="hello/j2" /></p>
+  <p name="n13">nothing 13: $(hello/i1)</p>
+  <p name="n14">nothing 14: $(hello/i2)</p>
+  <p name="n15">nothing 15: $(hello/j1)</p>
+  <p name="n16">nothing 16: $(hello/j2)</p>
   
 
   `,
@@ -1646,113 +1085,73 @@ describe("Basic copy assignName Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let point1Anchor = cesc2(
-        "#" + stateVariables["/hello/cp1"].replacements[0].componentName,
+        "#" + stateVariables["/hello/pts"].replacements[0].componentName,
       );
       let point2Anchor = cesc2(
-        "#" + stateVariables["/hello/cp1"].replacements[1].componentName,
+        "#" + stateVariables["/hello/pts"].replacements[1].componentName,
       );
       let point1aAnchor = cesc2(
-        "#" + stateVariables["/hello/cp3"].replacements[0].componentName,
+        "#" + stateVariables["/hello/ptsb"].replacements[0].componentName,
       );
       let point2aAnchor = cesc2(
-        "#" + stateVariables["/hello/cp3"].replacements[1].componentName,
+        "#" + stateVariables["/hello/ptsb"].replacements[1].componentName,
       );
       let point1bAnchor = cesc2(
-        "#" + stateVariables["/hello/cp4"].replacements[0].componentName,
+        "#" + stateVariables["/hello/ptsc"].replacements[0].componentName,
       );
       let point2bAnchor = cesc2(
-        "#" + stateVariables["/hello/cp4"].replacements[1].componentName,
+        "#" + stateVariables["/hello/ptsc"].replacements[1].componentName,
       );
 
-      cy.get(point1Anchor)
-        .find(".mjx-mrow")
+      cy.get(point1Anchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2Anchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2Anchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc2("#/hello/n1")).should("have.text", "nothing 1: ");
       cy.get(cesc2("#/hello/n2")).should("have.text", "nothing 2: ");
       cy.get(cesc2("#/hello/n3")).should("have.text", "nothing 3: ");
       cy.get(cesc2("#/hello/n4")).should("have.text", "nothing 4: ");
 
-      cy.get(cesc2("#/hello/e"))
-        .find(".mjx-mrow")
+      cy.get(cesc2("#/hello/e") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(cesc2("#/hello/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(cesc2("#/hello/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
-      cy.get(point1aAnchor)
-        .find(".mjx-mrow")
+      cy.get(point1aAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2aAnchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2aAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc2("#/hello/n5")).should("have.text", "nothing 5: ");
       cy.get(cesc2("#/hello/n6")).should("have.text", "nothing 6: ");
       cy.get(cesc2("#/hello/n7")).should("have.text", "nothing 7: ");
       cy.get(cesc2("#/hello/n8")).should("have.text", "nothing 8: ");
 
-      cy.get(point1bAnchor)
-        .find(".mjx-mrow")
+      cy.get(point1bAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(point2bAnchor)
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(point2bAnchor + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc2("#/hello/n9")).should("have.text", "nothing 9: ");
       cy.get(cesc2("#/hello/n10")).should("have.text", "nothing 10: ");
       cy.get(cesc2("#/hello/n11")).should("have.text", "nothing 11: ");
       cy.get(cesc2("#/hello/n12")).should("have.text", "nothing 12: ");
 
-      cy.get(cesc2("#/e"))
-        .find(".mjx-mrow")
+      cy.get(cesc2("#/e") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(0,0)");
-        });
-      cy.get(cesc2("#/f"))
-        .find(".mjx-mrow")
+        .should("have.text", "(0,0)");
+      cy.get(cesc2("#/f") + " .mjx-mrow")
         .eq(0)
-        .invoke("text")
-        .then((text) => {
-          expect(text.trim()).equal("(1,1)");
-        });
+        .should("have.text", "(1,1)");
 
       cy.get(cesc2("#/n13")).should("have.text", "nothing 13: ");
       cy.get(cesc2("#/n14")).should("have.text", "nothing 14: ");
@@ -1784,76 +1183,36 @@ describe("Basic copy assignName Tests", function () {
           args: { x: 5, y: -5 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(cesc2("#/hello/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(cesc2("#/hello/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc2("#/hello/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc2("#/hello/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
-        cy.get(cesc2("#/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(1,1)");
+        cy.get(cesc2("#/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc2("#/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc2("#/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(1,1)");
-          });
+          .should("have.text", "(1,1)");
         cy.get(cesc2("#/hello/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc2("#/hello/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc2("#/hello/n3")).should("have.text", "nothing 3: ");
@@ -1887,76 +1246,36 @@ describe("Basic copy assignName Tests", function () {
           args: { x: 3, y: 4 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc2("#/hello/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc2("#/hello/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc2("#/hello/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc2("#/hello/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc2("#/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc2("#/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(5,−5)");
-          });
-        cy.get(cesc2("#/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(5,−5)");
+        cy.get(cesc2("#/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
+          .should("have.text", "(3,4)");
         cy.get(cesc2("#/hello/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc2("#/hello/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc2("#/hello/n3")).should("have.text", "nothing 3: ");
@@ -1990,76 +1309,36 @@ describe("Basic copy assignName Tests", function () {
           args: { x: -9, y: -8 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc2("#/hello/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc2("#/hello/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc2("#/hello/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc2("#/hello/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
-        cy.get(cesc2("#/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(3,4)");
+        cy.get(cesc2("#/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc2("#/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc2("#/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(3,4)");
-          });
+          .should("have.text", "(3,4)");
         cy.get(cesc2("#/hello/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc2("#/hello/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc2("#/hello/n3")).should("have.text", "nothing 3: ");
@@ -2093,76 +1372,36 @@ describe("Basic copy assignName Tests", function () {
           args: { x: -1, y: -3 },
         });
         let stateVariables = await win.returnAllStateVariables1();
-        cy.get(point1Anchor)
-          .find(".mjx-mrow")
+        cy.get(point1Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2Anchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2Anchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(point1aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(point1aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2aAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2aAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(point1bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(point1bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(point2bAnchor)
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(point2bAnchor + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(cesc2("#/hello/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(cesc2("#/hello/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc2("#/hello/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc2("#/hello/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
-        cy.get(cesc2("#/e"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−1,−3)");
+        cy.get(cesc2("#/e") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−9,−8)");
-          });
-        cy.get(cesc2("#/f"))
-          .find(".mjx-mrow")
+          .should("have.text", "(−9,−8)");
+        cy.get(cesc2("#/f") + " .mjx-mrow")
           .eq(0)
-          .invoke("text")
-          .then((text) => {
-            expect(text.trim()).equal("(−1,−3)");
-          });
+          .should("have.text", "(−1,−3)");
         cy.get(cesc2("#/hello/n1")).should("have.text", "nothing 1: ");
         cy.get(cesc2("#/hello/n2")).should("have.text", "nothing 2: ");
         cy.get(cesc2("#/hello/n3")).should("have.text", "nothing 3: ");
@@ -2190,12 +1429,691 @@ describe("Basic copy assignName Tests", function () {
     });
   });
 
-  it("assign names can access namespace", () => {
+  it("assign names to array prop, further copies", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
+  <graph>
+    <line through="(0,0) (1,1)" />
+  </graph>
+
+  $_line1.points{name="pts" assignNames="p1 p2"}
+  $_line1.points.y{name="ys" assignNames="y1 y2"}
+
+  <section name="sec1">
+  <p>ptsa: $pts{name="ptsa" assignNames="p1a p2a"}, repeat: $p1a{name="p1ac"}, $p2a{name="p2ac"}</p>
+  <p>ptsb: $ptsa{name="ptsb" assignNames="p1b p2b"}, repeat: $p1b{name="p1bc"}, $p2a{name="p2bc"}</p>
+  <p>ptsc: $ptsb{name="ptsc" assignNames="p1c p2c"}, repeat: $p1c{name="p1cc"}, $p2a{name="p2cc"}</p>
+
+  <p>ysa: $ys{name="ysa" assignNames="y1a y2a"}, repeat: $y1a{name="y1ac"}, $y2a{name="y2ac"}</p>
+  <p>ysb: $ysa{name="ysb" assignNames="y1b y2b"}, repeat: $y1b{name="y1bc"}, $y2b{name="y2bc"}</p>
+  <p>ysc: $ysb{name="ysc" assignNames="y1c y2c"}, repeat: $y1c{name="y1cc"}, $y2c{name="y2cc"}</p>
+  </section>
+
+  <section name="sec2" copySource="sec1" newNamespace />
+  <section name="sec3" copySource="sec2" newNamespace />
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let ptsNames = [
+      "/pts",
+      "/ptsa",
+      "/ptsb",
+      "/ptsc",
+      "/sec2/ptsa",
+      "/sec2/ptsb",
+      "/sec2/ptsc",
+      "/sec3/ptsa",
+      "/sec3/ptsb",
+      "/sec3/ptsc",
+    ];
+    let p1Names = [
+      "/p1",
+      "/p1a",
+      "/p1ac",
+      "/p1b",
+      "/p1bc",
+      "/p1c",
+      "/p1cc",
+      "/sec2/p1a",
+      "/sec2/p1ac",
+      "/sec2/p1b",
+      "/sec2/p1bc",
+      "/sec2/p1c",
+      "/sec2/p1cc",
+      "/sec3/p1a",
+      "/sec3/p1ac",
+      "/sec3/p1b",
+      "/sec3/p1bc",
+      "/sec3/p1c",
+      "/sec3/p1cc",
+    ];
+    let p2Names = [
+      "/p2",
+      "/p2a",
+      "/p2ac",
+      "/p2b",
+      "/p2bc",
+      "/p2c",
+      "/p2cc",
+      "/sec2/p2a",
+      "/sec2/p2ac",
+      "/sec2/p2b",
+      "/sec2/p2bc",
+      "/sec2/p2c",
+      "/sec2/p2cc",
+      "/sec3/p2a",
+      "/sec3/p2ac",
+      "/sec3/p2b",
+      "/sec3/p2bc",
+      "/sec3/p2c",
+      "/sec3/p2cc",
+    ];
+
+    let ysNames = [
+      "/ys",
+      "/ysa",
+      "/ysb",
+      "/ysc",
+      "/sec2/ysa",
+      "/sec2/ysb",
+      "/sec2/ysc",
+      "/sec3/ysa",
+      "/sec3/ysb",
+      "/sec3/ysc",
+    ];
+    let y1Names = [
+      "/y1",
+      "/y1a",
+      "/y1ac",
+      "/y1b",
+      "/y1bc",
+      "/y1c",
+      "/y1cc",
+      "/sec2/y1a",
+      "/sec2/y1ac",
+      "/sec2/y1b",
+      "/sec2/y1bc",
+      "/sec2/y1c",
+      "/sec2/y1cc",
+      "/sec3/y1a",
+      "/sec3/y1ac",
+      "/sec3/y1b",
+      "/sec3/y1bc",
+      "/sec3/y1c",
+      "/sec3/y1cc",
+    ];
+    let y2Names = [
+      "/y2",
+      "/y2a",
+      "/y2ac",
+      "/y2b",
+      "/y2bc",
+      "/y2c",
+      "/y2cc",
+      "/sec2/y2a",
+      "/sec2/y2ac",
+      "/sec2/y2b",
+      "/sec2/y2bc",
+      "/sec2/y2c",
+      "/sec2/y2cc",
+      "/sec3/y2a",
+      "/sec3/y2ac",
+      "/sec3/y2b",
+      "/sec3/y2bc",
+      "/sec3/y2c",
+      "/sec3/y2cc",
+    ];
+
+    for (let ptsName of ptsNames) {
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(2)
+        .should("have.text", "(1,1)");
+    }
+
+    for (let p1Name of p1Names) {
+      cy.get(cesc2("#" + p1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(0,0)");
+    }
+    for (let p2Name of p2Names) {
+      cy.get(cesc2("#" + p2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(1,1)");
+    }
+
+    for (let ysName of ysNames) {
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "0");
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "1");
+    }
+
+    for (let y1Name of y1Names) {
+      cy.get(cesc2("#" + y1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "0");
+    }
+    for (let y2Name of y2Names) {
+      cy.get(cesc2("#" + y2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+
+    cy.log("move point p1");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: 5, y: -5 },
+      });
+    });
+    cy.get(cesc("#\\/p1") + " .mjx-mrow").should("contain.text", "(5,−5)");
+
+    for (let ptsName of ptsNames) {
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(5,−5)");
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(2)
+        .should("have.text", "(1,1)");
+    }
+
+    for (let p1Name of p1Names) {
+      cy.get(cesc2("#" + p1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(5,−5)");
+    }
+    for (let p2Name of p2Names) {
+      cy.get(cesc2("#" + p2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(1,1)");
+    }
+
+    for (let ysName of ysNames) {
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "−5");
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "1");
+    }
+
+    for (let y1Name of y1Names) {
+      cy.get(cesc2("#" + y1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "−5");
+    }
+    for (let y2Name of y2Names) {
+      cy.get(cesc2("#" + y2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+
+    cy.log("move point p2");
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: 3, y: 4 },
+      });
+    });
+    cy.get(cesc("#\\/p2") + " .mjx-mrow").should("contain.text", "(3,4)");
+
+    for (let ptsName of ptsNames) {
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(5,−5)");
+      cy.get(cesc2("#" + ptsName) + " .mjx-mrow")
+        .eq(2)
+        .should("have.text", "(3,4)");
+    }
+
+    for (let p1Name of p1Names) {
+      cy.get(cesc2("#" + p1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(5,−5)");
+    }
+    for (let p2Name of p2Names) {
+      cy.get(cesc2("#" + p2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(3,4)");
+    }
+
+    for (let ysName of ysNames) {
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "−5");
+      cy.get(cesc2("#" + ysName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "4");
+    }
+
+    for (let y1Name of y1Names) {
+      cy.get(cesc2("#" + y1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "−5");
+    }
+    for (let y2Name of y2Names) {
+      cy.get(cesc2("#" + y2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "4");
+    }
+  });
+
+  it("assign names to array prop with copy component index, further copies", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <mathinput name="n" prefill="1" />
+  
+  <graph>
+    <line through="(1,2) (3,4)" />
+  </graph>
+
+  <p>xs = $_line1.points[$n].xs{name="xs" assignNames="x1 x2"}</p>
+
+  <section name="sec1">
+  <p>xsa: $xs{name="xsa" assignNames="x1a x2a"}, repeat: $x1a{name="x1ac"}, $x2a{name="x2ac"}</p>
+  <p>xsb: $xsa{name="xsb" assignNames="x1b x2b"}, repeat: $x1b{name="x1bc"}, $x2b{name="x2bc"}</p>
+  <p>xsc: $xsb{name="xsc" assignNames="x1c x2c"}, repeat: $x1c{name="x1cc"}, $x2c{name="x2cc"}</p>
+  </section>
+
+  <section name="sec2" copySource="sec1" newNamespace />
+  <section name="sec3" copySource="sec2" newNamespace />
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let xsNames = [
+      "/xs",
+      "/xsa",
+      "/xsb",
+      "/xsc",
+      "/sec2/xsa",
+      "/sec2/xsb",
+      "/sec2/xsc",
+      "/sec3/xsa",
+      "/sec3/xsb",
+      "/sec3/xsc",
+    ];
+    let x1Names = [
+      "/x1",
+      "/x1a",
+      "/x1ac",
+      "/x1b",
+      "/x1bc",
+      "/x1c",
+      "/x1cc",
+      "/sec2/x1a",
+      "/sec2/x1ac",
+      "/sec2/x1b",
+      "/sec2/x1bc",
+      "/sec2/x1c",
+      "/sec2/x1cc",
+      "/sec3/x1a",
+      "/sec3/x1ac",
+      "/sec3/x1b",
+      "/sec3/x1bc",
+      "/sec3/x1c",
+      "/sec3/x1cc",
+    ];
+    let x2Names = [
+      "/x2",
+      "/x2a",
+      "/x2ac",
+      "/x2b",
+      "/x2bc",
+      "/x2c",
+      "/x2cc",
+      "/sec2/x2a",
+      "/sec2/x2ac",
+      "/sec2/x2b",
+      "/sec2/x2bc",
+      "/sec2/x2c",
+      "/sec2/x2cc",
+      "/sec3/x2a",
+      "/sec3/x2ac",
+      "/sec3/x2b",
+      "/sec3/x2bc",
+      "/sec3/x2c",
+      "/sec3/x2cc",
+    ];
+
+    for (let xsName of xsNames) {
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "2");
+    }
+
+    for (let x1Name of x1Names) {
+      cy.get(cesc2("#" + x1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let x2Name of x2Names) {
+      cy.get(cesc2("#" + x2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "2");
+    }
+
+    cy.log("switch point index");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}2{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/x1") + " .mjx-mrow").should("contain.text", "3");
+
+    for (let xsName of xsNames) {
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "4");
+    }
+
+    for (let x1Name of x1Names) {
+      cy.get(cesc2("#" + x1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+    }
+    for (let x2Name of x2Names) {
+      cy.get(cesc2("#" + x2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "4");
+    }
+
+    cy.log("switch to invalid point index");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+
+    for (let xsName of xsNames) {
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow").should("not.exist");
+    }
+
+    for (let x1Name of x1Names) {
+      cy.get(cesc2("#" + x1Name) + " .mjx-mrow").should("not.exist");
+    }
+    for (let x2Name of x2Names) {
+      cy.get(cesc2("#" + x2Name) + " .mjx-mrow").should("not.exist");
+    }
+
+    cy.log("back to point 1");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    for (let xsName of xsNames) {
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+      cy.get(cesc2("#" + xsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "2");
+    }
+
+    for (let x1Name of x1Names) {
+      cy.get(cesc2("#" + x1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let x2Name of x2Names) {
+      cy.get(cesc2("#" + x2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "2");
+    }
+  });
+
+  it("assign names to array prop, copy with component index", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <mathinput name="n" prefill="1" />
+  
+  <graph>
+    <line through="(1,2) (3,4)" />
+  </graph>
+
+  $_line1.points{name="pts" assignNames="p1 p2"}
+
+  <section name="sec1">
+    <p>$pts[$n]{name="pt"}</p>
+    <p>$pt{name="pta"}</p>
+    <p>$pts[$n].xs{name="ptxs" assignNames="ptx1 ptx2"}</p>
+    <p>$ptxs{name="ptxsa" assignNames="ptx1a ptx2a"}</p>
+    <p>$p1.xs[$n]{name="p1xs" assignNames="p1x"}</p>
+    <p>$p1xs{name="p1xsa"}</p>
+    <p>$p1x{name="p1xa"}</p>
+    <p>$p2.xs[$n]{name="p2xs" assignNames="p2x"}</p>
+    <p>$p2xs{name="p2xsa"}</p>
+    <p>$p2x{name="p2xa"}</p>
+  </section>
+
+  <section name="sec2" copySource="sec1" newNamespace />
+  <section name="sec3" copySource="sec2" newNamespace />
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    let ptNames = [
+      "/pt",
+      "/pta",
+      "/sec2/pt",
+      "/sec2/pta",
+      "/sec3/pt",
+      "/sec3/pta",
+    ];
+    let ptxsNames = [
+      "/ptxs",
+      "/ptxsa",
+      "/sec2/ptxs",
+      "/sec2/ptxsa",
+      "/sec3/ptxs",
+      "/sec3/ptxsa",
+    ];
+    let ptx1Names = [
+      "/ptx1",
+      "/ptx1a",
+      "/sec2/ptx1",
+      "/sec2/ptx1a",
+      "/sec3/ptx1",
+      "/sec3/ptx1a",
+    ];
+    let ptx2Names = [
+      "/ptx2",
+      "/ptx2a",
+      "/sec2/ptx2",
+      "/sec2/ptx2a",
+      "/sec3/ptx2",
+      "/sec3/ptx2a",
+    ];
+    let p1xNames = [
+      "/p1x",
+      "/p1xa",
+      "/sec2/p1x",
+      "/sec2/p1xa",
+      "/sec3/p1x",
+      "/sec3/p1xa",
+    ];
+    let p2xNames = [
+      "/p2x",
+      "/p2xa",
+      "/sec2/p2x",
+      "/sec2/p2xa",
+      "/sec3/p2x",
+      "/sec3/p2xa",
+    ];
+
+    for (let ptName of ptNames) {
+      cy.get(cesc2("#" + ptName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(1,2)");
+    }
+
+    for (let ptxsName of ptxsNames) {
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "2");
+    }
+    for (let ptx1Name of ptx1Names) {
+      cy.get(cesc2("#" + ptx1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let ptx2Name of ptx2Names) {
+      cy.get(cesc2("#" + ptx2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "2");
+    }
+    for (let p1xName of p1xNames) {
+      cy.get(cesc2("#" + p1xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let p2xName of p2xNames) {
+      cy.get(cesc2("#" + p2xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+    }
+
+    cy.log("switch index");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}2{enter}", {
+      force: true,
+    });
+    cy.get(cesc2("#/ptx1") + " .mjx-mrow").should("contain.text", "3");
+
+    for (let ptName of ptNames) {
+      cy.get(cesc2("#" + ptName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(3,4)");
+    }
+
+    for (let ptxsName of ptxsNames) {
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "4");
+    }
+    for (let ptx1Name of ptx1Names) {
+      cy.get(cesc2("#" + ptx1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+    }
+    for (let ptx2Name of ptx2Names) {
+      cy.get(cesc2("#" + ptx2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "4");
+    }
+    for (let p1xName of p1xNames) {
+      cy.get(cesc2("#" + p1xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "2");
+    }
+    for (let p2xName of p2xNames) {
+      cy.get(cesc2("#" + p2xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "4");
+    }
+
+    cy.log("switch to invalid index");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+
+    for (let ptName of ptNames) {
+      cy.get(cesc2("#" + ptName) + " .mjx-mrow").should("not.exist");
+    }
+
+    for (let ptxsName of ptxsNames) {
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow").should("not.exist");
+    }
+    for (let ptx1Name of ptx1Names) {
+      cy.get(cesc2("#" + ptx1Name) + " .mjx-mrow").should("not.exist");
+    }
+    for (let ptx2Name of ptx2Names) {
+      cy.get(cesc2("#" + ptx2Name) + " .mjx-mrow").should("not.exist");
+    }
+    for (let p1xName of p1xNames) {
+      cy.get(cesc2("#" + p1xName) + " .mjx-mrow").should("not.exist");
+    }
+    for (let p2xName of p2xNames) {
+      cy.get(cesc2("#" + p2xName) + " .mjx-mrow").should("not.exist");
+    }
+
+    cy.log("switch back to index 1");
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
+      force: true,
+    });
+
+    for (let ptName of ptNames) {
+      cy.get(cesc2("#" + ptName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "(1,2)");
+    }
+
+    for (let ptxsName of ptxsNames) {
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+      cy.get(cesc2("#" + ptxsName) + " .mjx-mrow")
+        .eq(1)
+        .should("have.text", "2");
+    }
+    for (let ptx1Name of ptx1Names) {
+      cy.get(cesc2("#" + ptx1Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let ptx2Name of ptx2Names) {
+      cy.get(cesc2("#" + ptx2Name) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "2");
+    }
+    for (let p1xName of p1xNames) {
+      cy.get(cesc2("#" + p1xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "1");
+    }
+    for (let p2xName of p2xNames) {
+      cy.get(cesc2("#" + p2xName) + " .mjx-mrow")
+        .eq(0)
+        .should("have.text", "3");
+    }
+  });
+
+  //Note: the next 3 are not using assignNames anymore given changes to how copies work
+  it("names can access namespace", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
   <section newNamespace>
     <subsection>
       <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
@@ -2205,20 +2123,18 @@ describe("Basic copy assignName Tests", function () {
     </subsection>
   </section>
 
-  <copy assignNames="a" target="_section1"/>
+  $_section1{name="a"}
 
-  <copy assignNames="b" target="a" />
+  $a{name="b"}
 
-  <p><copy target="_section1/_p1/person"/> <copy target="_section1/person"/>
-<copy target="a/_p1/person" /> <copy target="a/person" />
-<copy target="b/_p1/person" /> <copy target="b/person" /></p>
+  <p>$(_section1/_p1/person) $(_section1/person)
+$(a/_p1/person) $(a/person)
+$(b/_p1/person) $(b/person)</p>
   `,
         },
         "*",
       );
     });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.get(cesc("#\\/_section1\\/_p1")).should("have.text", "Hello, Jesse!");
     cy.get(cesc("#\\/_section1\\/_p2")).should("have.text", "Hello, Jessica!");
@@ -2248,29 +2164,26 @@ describe("Basic copy assignName Tests", function () {
     });
   });
 
-  it("assign names can access namespace, across namespaces", () => {
+  it("names can access namespace, across namespaces", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
-  <text>a</text>
   <section name="hello" newNamespace><title>Hello</title>
     <p newNamespace>Hello, <text name="person">Jesse</text>!</p>
-    <copy assignNames="a" target="_p1"/>
-    <p><copy target="_p1/person"/> <copy target="a/person" /> <copy target="../bye/a/person" /></p>
+    $_p1{name="a"}
+    <p>$(_p1/person) $(a/person) $(../bye/a/person)</p>
   </section>
 
   <section name="bye" newNamespace><title>Bye</title>
-    <copy assignNames="a" target="../hello/_p1"/>
-    <p><copy target="../hello/_p1/person"/> <copy target="../hello/a/person" /> <copy target="a/person" /></p>
+   $(../hello/_p1{name="a"})
+    <p>$(../hello/_p1/person) $(../hello/a/person) $(a/person)</p>
   </section>
   `,
         },
         "*",
       );
     });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
     cy.get(cesc("#\\/hello\\/_p1")).should("have.text", "Hello, Jesse!");
     cy.get(cesc("#\\/hello\\/a")).should("have.text", "Hello, Jesse!");
@@ -2288,7 +2201,7 @@ describe("Basic copy assignName Tests", function () {
     });
   });
 
-  it("assign names can access namespace even with math", () => {
+  it("names can access namespace even with math", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -2300,14 +2213,14 @@ describe("Basic copy assignName Tests", function () {
     </math>
   </p>
 
-  <copy target="pOriginal" assignNames="pCopy" />
+  $pOriginal{name="pCopy"}
 
-  <p>This grabs expression: <copy target="pOriginal/expression" assignNames="expressionCopy" /></p>
-  <p>This grabs expression: <copy target="pCopy/expression" assignNames="expressionCopy2" /></p>
-  <p>This grabs piece x: <copy target="pOriginal/x" assignNames="xCopy" /></p>
-  <p>This grabs piece y: <copy target="pOriginal/y" assignNames="yCopy" /></p>
-  <p>Should this grab piece x? <copy target="pCopy/x" assignNames="xCopy2" /></p>
-  <p>Should this grab piece y? <copy target="pCopy/y" assignNames="yCopy2" /></p>
+  <p>This grabs expression: $(pOriginal/expression{name="expressionCopy"})</p>
+  <p>This grabs expression: $(pCopy/expression{name="expressionCopy2"})</p>
+  <p>This grabs piece x: $(pOriginal/x{name="xCopy"})</p>
+  <p>This grabs piece y: $(pOriginal/y{name="yCopy"})</p>
+  <p>Should this grab piece x? $(pCopy/x{name="xCopy2"})</p>
+  <p>Should this grab piece y? $(pCopy/y{name="yCopy2"})</p>
 
   `,
         },
@@ -2316,61 +2229,29 @@ describe("Basic copy assignName Tests", function () {
     });
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
-    cy.get(cesc(`#\\/pOriginal\\/expression`))
-      .find(".mjx-mrow")
+    cy.get(cesc(`#\\/pOriginal\\/expression`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x+y");
-      });
-    cy.get(cesc(`#\\/pCopy\\/expression`))
-      .find(".mjx-mrow")
+      .should("have.text", "x+y");
+    cy.get(cesc(`#\\/pCopy\\/expression`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x+y");
-      });
-    cy.get(cesc(`#\\/expressionCopy`))
-      .find(".mjx-mrow")
+      .should("have.text", "x+y");
+    cy.get(cesc(`#\\/expressionCopy`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x+y");
-      });
-    cy.get(cesc(`#\\/expressionCopy2`))
-      .find(".mjx-mrow")
+      .should("have.text", "x+y");
+    cy.get(cesc(`#\\/expressionCopy2`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x+y");
-      });
-    cy.get(cesc(`#\\/xCopy`))
-      .find(".mjx-mrow")
+      .should("have.text", "x+y");
+    cy.get(cesc(`#\\/xCopy`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x");
-      });
-    cy.get(cesc(`#\\/xCopy2`))
-      .find(".mjx-mrow")
+      .should("have.text", "x");
+    cy.get(cesc(`#\\/xCopy2`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("x");
-      });
-    cy.get(cesc(`#\\/yCopy`))
-      .find(".mjx-mrow")
+      .should("have.text", "x");
+    cy.get(cesc(`#\\/yCopy`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("y");
-      });
-    cy.get(cesc(`#\\/yCopy2`))
-      .find(".mjx-mrow")
+      .should("have.text", "y");
+    cy.get(cesc(`#\\/yCopy2`) + " .mjx-mrow")
       .eq(0)
-      .invoke("text")
-      .then((text) => {
-        expect(text.trim()).equal("y");
-      });
+      .should("have.text", "y");
   });
 });

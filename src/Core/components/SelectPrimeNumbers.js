@@ -67,6 +67,12 @@ export default class SelectPrimeNumbers extends CompositeComponent {
       createComponentOfType: "_listOfNumberLists",
     };
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 

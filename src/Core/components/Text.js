@@ -8,6 +8,7 @@ import {
   returnSelectedStyleStateVariableDefinition,
   returnTextStyleDescriptionDefinitions,
 } from "../utils/style";
+import { textFromChildren } from "../utils/text";
 import InlineComponent from "./abstract/InlineComponent";
 import me from "math-expressions";
 
@@ -25,8 +26,8 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static variableForPlainMacro = "value";
-  static plainMacroReturnsSameType = true;
+  static variableForImplicitProp = "value";
+  static implicitPropReturnsSameType = true;
 
   // even if inside a component that turned on descendantCompositesMustHaveAReplacement
   // don't required composite replacements
@@ -123,14 +124,9 @@ export default class Text extends InlineComponent {
             },
           };
         }
-        let value = "";
-        for (let comp of dependencyValues.textLikeChildren) {
-          if (typeof comp === "string") {
-            value += comp;
-          } else {
-            value += comp.stateValues.text;
-          }
-        }
+
+        let value = textFromChildren(dependencyValues.textLikeChildren);
+
         return { setValue: { value } };
       },
       inverseDefinition: function ({

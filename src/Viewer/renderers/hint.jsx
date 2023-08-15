@@ -8,6 +8,7 @@ import { faCaretDown as twirlIsOpen } from "@fortawesome/free-solid-svg-icons";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
 import styled from "styled-components";
+import { addCommasForCompositeRanges } from "./utils/composites";
 
 const SpanStyling = styled.span`
   &: focus {
@@ -41,6 +42,7 @@ export default React.memo(function Hint(props) {
   }
 
   let title;
+  let removedChildInd = null;
   // BADBADBAD: need to redo how getting the title child
   // getting it using the internal guts of componentInstructions
   // is just asking for trouble
@@ -52,6 +54,7 @@ export default React.memo(function Hint(props) {
       ) {
         title = children[ind];
         children.splice(ind, 1); // remove title
+        removedChildInd = ind;
         break;
       }
     }
@@ -81,6 +84,16 @@ export default React.memo(function Hint(props) {
   let openCloseText = "open";
 
   if (SVs.open) {
+    if (SVs._compositeReplacementActiveRange) {
+      children = addCommasForCompositeRanges({
+        children,
+        compositeReplacementActiveRange: SVs._compositeReplacementActiveRange,
+        startInd: 0,
+        endInd: children.length - 1,
+        removedInd: removedChildInd,
+      });
+    }
+
     // twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
     openCloseText = "close";
     icon = <FontAwesomeIcon icon={lightOn} />;

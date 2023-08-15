@@ -12,8 +12,7 @@ describe("Integer Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
-      <copy target="_integer1" />
+      $_integer1{name="int"}
       <integer>1.2+1.1</integer>
     `,
         },
@@ -21,24 +20,15 @@ describe("Integer Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.log("Test value displayed in browser");
+    cy.get(cesc2("#/int")).should("have.text", "2");
+    cy.get(cesc2("#/_integer1")).should("have.text", "2");
 
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let integer0Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let integer0Anchor = cesc2("#" + integer0Name);
-
-      cy.log("Test value displayed in browser");
-      cy.get(integer0Anchor).should("have.text", "2");
-      cy.get(cesc("#\\/_integer1")).should("have.text", "2");
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables[integer0Name].stateValues.value).eq(2);
-        expect(stateVariables["/_integer1"].stateValues.value).eq(2);
-      });
+      expect(stateVariables["/int"].stateValues.value).eq(2);
+      expect(stateVariables["/_integer1"].stateValues.value).eq(2);
     });
   });
 
@@ -47,8 +37,7 @@ describe("Integer Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
-      <copy target="_integer1" />
+      $_integer1{name="int"}
       <integer>x+1</integer>
       `,
         },
@@ -56,24 +45,15 @@ describe("Integer Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.log("Test value displayed in browser");
+    cy.get(cesc2("#/int")).should("have.text", "NaN");
+    cy.get(cesc2("#/_integer1")).should("have.text", "NaN");
 
+    cy.log("Test internal values are set to the correct values");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let integer0Name =
-        stateVariables["/_copy1"].replacements[0].componentName;
-      let integer0Anchor = cesc2("#" + integer0Name);
-
-      cy.log("Test value displayed in browser");
-      cy.get(integer0Anchor).should("have.text", "NaN");
-      cy.get(cesc("#\\/_integer1")).should("have.text", "NaN");
-
-      cy.log("Test internal values are set to the correct values");
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        assert.isNaN(stateVariables[integer0Name].stateValues.value);
-        assert.isNaN(stateVariables["/_integer1"].stateValues.value);
-      });
+      assert.isNaN(stateVariables["/int"].stateValues.value);
+      assert.isNaN(stateVariables["/_integer1"].stateValues.value);
     });
   });
 
@@ -82,7 +62,6 @@ describe("Integer Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
       <integer name="n">$_mathinput1</integer>
       <mathinput />
       `,
@@ -90,8 +69,6 @@ describe("Integer Tag Tests", function () {
         "*",
       );
     });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.get(cesc("#\\/n")).should("have.text", "NaN");
     cy.get(cesc(`#\\/_mathinput1`) + ` .mq-editable-field`)
@@ -137,7 +114,6 @@ describe("Integer Tag Tests", function () {
       win.postMessage(
         {
           doenetML: `
-      <text>a</text>
       <integer name="n">5</integer>
       <mathinput bindValueTo="$n" hideNaN="false" />
       `,
@@ -145,8 +121,6 @@ describe("Integer Tag Tests", function () {
         "*",
       );
     });
-
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
 
     cy.get(cesc("#\\/n")).should("have.text", "5");
 

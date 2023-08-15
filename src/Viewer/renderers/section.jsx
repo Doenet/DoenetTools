@@ -12,6 +12,7 @@ import { faCaretDown as twirlIsOpen } from "@fortawesome/free-solid-svg-icons";
 
 import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
+import { addCommasForCompositeRanges } from "./utils/composites";
 
 export default React.memo(function Section(props) {
   let { name, id, SVs, children, actions, callAction } =
@@ -59,6 +60,7 @@ export default React.memo(function Section(props) {
     });
 
   let title;
+  let removedChildInd = null;
   // BADBADBAD: need to redo how getting the title child
   // getting it using the internal guts of componentInstructions
   // is just asking for trouble
@@ -70,6 +72,7 @@ export default React.memo(function Section(props) {
       ) {
         title = children[ind];
         children.splice(ind, 1); // remove title
+        removedChildInd = ind;
         break;
       }
     }
@@ -261,6 +264,14 @@ export default React.memo(function Section(props) {
         ))}
       </ol>
     );
+  } else if (SVs._compositeReplacementActiveRange) {
+    children = addCommasForCompositeRanges({
+      children,
+      compositeReplacementActiveRange: SVs._compositeReplacementActiveRange,
+      startInd: 0,
+      endInd: children.length - 1,
+      removedInd: removedChildInd,
+    });
   }
 
   //TODO checkwork

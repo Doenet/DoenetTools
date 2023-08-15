@@ -1499,7 +1499,7 @@ describe("Substitute Tag Tests", function () {
 
     <p>Substituted 2: <textinput name="subbed2" bindValueTo="$subbed" size="20" /></p>
 
-    <p><copy prop="value" target="matchCase" assignNames="matchCase2" /></p>
+    <p>$matchCase.value{assignNames="matchCase2"}</p>
     `,
         },
         "*",

@@ -141,10 +141,10 @@ describe("Graph Tag Tests", function () {
     <graph><point>(0,0)</point>
     </graph>
 
-    <p>xmin: <copy prop="xmin" target="_graph1" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="_graph1" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="_graph1" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="_graph1" assignNames="ymax" /></p>
+    <p>xmin: $_graph1.xmin{assignNames="xmin"}</p>
+    <p>xmax: $_graph1.xmax{assignNames="xmax"}</p>
+    <p>ymin: $_graph1.ymin{assignNames="ymin"}</p>
+    <p>ymax: $_graph1.ymax{assignNames="ymax"}</p>
 
     <p>Change xmin: <mathinput name="xminInput" bindValueTo="$_graph1.xmin" /></p>
     <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$_graph1.xmax" /></p>
@@ -437,10 +437,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -532,10 +532,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-5" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -614,10 +614,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmax="5" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -696,10 +696,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymin="-5" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -776,10 +776,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymax="5" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -856,10 +856,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin='-20' xmax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -938,10 +938,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymin='-20' ymax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1020,10 +1020,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymin='-20' ymax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1102,10 +1102,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmax="30" ymin='-20' ymax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1182,10 +1182,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-30" ymin='-20' ymax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1262,10 +1262,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymax="40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1342,10 +1342,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymin="-40" />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
    
     `,
         },
@@ -1420,10 +1420,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g" identicalAxisScales />
 
-    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
-    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
-    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
-    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+    <p>xmin: $g.xmin{assignNames="xmin"}</p>
+    <p>xmax: $g.xmax{assignNames="xmax"}</p>
+    <p>ymin: $g.ymin{assignNames="ymin"}</p>
+    <p>ymax: $g.ymax{assignNames="ymax"}</p>
 
     <p>Change xmin: <mathinput name="xminInput" bindValueTo="$g.xmin" /></p>
     <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$g.xmax" /></p>
@@ -1516,35 +1516,35 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g1">
     </graph>
-    <p>Graph 1 has grid: <copy prop="grid" target="g1" assignNames="sg1" /></p>
+    <p>Graph 1 has grid: $g1.grid{assignNames="sg1"}</p>
 
     <graph name="g2" grid="none">
     </graph>
-    <p>Graph 2 has grid: <copy prop="grid" target="g2" assignNames="sg2" /></p>
+    <p>Graph 2 has grid: $g2.grid{assignNames="sg2"}</p>
 
     <graph name="g3" grid>
     </graph>
-    <p>Graph 3 has grid: <copy prop="grid" target="g3" assignNames="sg3" /></p>
+    <p>Graph 3 has grid: $g3.grid{assignNames="sg3"}</p>
 
     <graph name="g4" grid="medium">
     </graph>
-    <p>Graph 4 has grid: <copy prop="grid" target="g4" assignNames="sg4" /></p>
+    <p>Graph 4 has grid: $g4.grid{assignNames="sg4"}</p>
 
     <graph name="g5" grid="dense">
     </graph>
-    <p>Graph 5 has grid: <copy prop="grid" target="g5" assignNames="sg5" /></p>
+    <p>Graph 5 has grid: $g5.grid{assignNames="sg5"}</p>
 
 
     <p>Show grid: <booleanInput name="bi" /></p>
     <graph name="g6" grid="$bi">
     </graph>
-    <p>Graph 6 has grid: <copy prop="grid" target="g6" assignNames="sg6" /></p>
+    <p>Graph 6 has grid: $g6.grid{assignNames="sg6"}</p>
 
 
     <p>Show grid: <textinput name="ti" /></p>
     <graph name="g7" grid="$ti">
     </graph>
-    <p>Graph 7 has grid: <copy prop="grid" target="g7" assignNames="sg7" /></p>
+    <p>Graph 7 has grid: $g7.grid{assignNames="sg7"}</p>
 
     `,
         },
@@ -1594,31 +1594,31 @@ describe("Graph Tag Tests", function () {
 
     <graph name="g1" grid="1 pi/2" displayDigits="4">
     </graph>
-    <p>Graph 1 has grid: <copy prop="grid" target="g1" assignNames="sg1" /></p>
+    <p>Graph 1 has grid: $g1.grid{assignNames="sg1"}</p>
 
     <p>grid x: <mathinput name="g2x" /></p>
     <p>grid y: <mathinput name="g2y" /></p>
     <graph name="g2" grid="$g2x $g2y">
     </graph>
-    <p>Graph 2 has grid: <copy prop="grid" target="g2" assignNames="sg2" /></p>
+    <p>Graph 2 has grid: $g2.grid{assignNames="sg2"}</p>
 
     <p>grid x: <mathinput name="g3x" /> <number name="g3xa" hide>$g3x</number></p>
     <p>grid y: <mathinput name="g3y" /> <number name="g3ya" hide>$g3y</number></p>
     <graph name="g3" grid="$g3xa $g3ya">
     </graph>
-    <p>Graph 3 has grid: <copy prop="grid" target="g3" assignNames="sg3" /></p>
+    <p>Graph 3 has grid: $g3.grid{assignNames="sg3"}</p>
 
     <p>grid x: <mathinput name="g4x" prefill="1" /></p>
     <p>grid y: <mathinput name="g4y" prefill="1" /></p>
     <graph name="g4" grid="2$g4x 3$g4y" displayDecimals="2">
     </graph>
-    <p>Graph 4 has grid: <copy prop="grid" target="g4" assignNames="sg4" /></p>
+    <p>Graph 4 has grid: $g4.grid{assignNames="sg4"}</p>
 
     <p>grid x: <mathinput name="g5x" prefill="1" /> <number name="g5xa">$g5x</number></p>
     <p>grid y: <mathinput name="g5y" prefill="1" /> <number name="g5ya">$g5y</number></p>
     <graph name="g5" grid="2$g5xa 3$g5ya" displayDecimals="2">
     </graph>
-    <p>Graph 5 has grid: <copy prop="grid" target="g5" assignNames="sg5" /></p>
+    <p>Graph 5 has grid: $g5.grid{assignNames="sg5"}</p>
 
     `,
         },
@@ -1700,7 +1700,7 @@ describe("Graph Tag Tests", function () {
     </graph>
 
     <answer name="x">x</answer>
-    <copy prop="submittedResponse" target="x" assignNames="sr" />
+    $x.submittedResponse{assignNames="sr"}
     
     `,
         },
@@ -1741,9 +1741,9 @@ describe("Graph Tag Tests", function () {
     <graph displayXAxisTickLabels="$b1" displayYAxisTickLabels="$b2">
     </graph>
     <booleaninput name="b1" />
-    <copy prop="displayXAxisTickLabels" target="_graph1" assignNames="b1a" />
+    $_graph1.displayXAxisTickLabels{assignNames="b1a"}
     <booleaninput name="b2" prefill="true" />
-    <copy prop="displayYAxisTickLabels" target="_graph1" assignNames="b2a" />
+    $_graph1.displayYAxisTickLabels{assignNames="b2a"}
 
 
     `,
@@ -2014,10 +2014,10 @@ describe("Graph Tag Tests", function () {
 
     <graph name="ignorebad" xTickScaleFactor="x" yTickScaleFactor="/" displayDigits="5" />
 
-    <copy prop="xmin" target="ignorebad" assignNames="xmin" />
-    <copy prop="xmax" target="ignorebad" assignNames="xmax" />
-    <copy prop="ymin" target="ignorebad" assignNames="ymin" />
-    <copy prop="ymax" target="ignorebad" assignNames="ymax" />
+    $ignorebad.xmin{assignNames="xmin"}
+    $ignorebad.xmax{assignNames="xmax"}
+    $ignorebad.ymin{assignNames="ymin"}
+    $ignorebad.ymax{assignNames="ymax"}
 
 
 
@@ -2201,9 +2201,9 @@ describe("Graph Tag Tests", function () {
     <graph displayXAxis="$b1" displayYAxis="$b2">
     </graph>
     <booleaninput name="b1" />
-    <copy prop="displayXAxis" target="_graph1" assignNames="b1a" />
+    $_graph1.displayXAxis{assignNames="b1a"}
     <booleaninput name="b2" prefill="true" />
-    <copy prop="displayYAxis" target="_graph1" assignNames="b2a" />
+    $_graph1.displayYAxis{assignNames="b2a"}
 
 
     `,
@@ -2274,7 +2274,7 @@ describe("Graph Tag Tests", function () {
     <graph showNavigation="$b">
     </graph>
     <booleaninput name="b" />
-    <copy prop="showNavigation" target="_graph1" assignNames="ba" />
+    $_graph1.showNavigation{assignNames="ba"}
 
     `,
         },

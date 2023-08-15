@@ -13,8 +13,7 @@ export default class CodeEditor extends BlockComponent {
   }
   static componentType = "codeEditor";
 
-  static variableForPlainMacro = "value";
-  static variableForPlainCopy = "value";
+  static variableForImplicitProp = "value";
 
   static renderChildren = true;
 

@@ -36,9 +36,9 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -46,10 +46,10 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type("10{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("10{enter}", { force: true });
 
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "a positive number.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "a positive number.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -57,12 +57,12 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-5/9{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "a negative number.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "a negative number.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -70,23 +70,23 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}5-5{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "zero.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "zero.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal("You typed zero.");
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-x{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "something else.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "something else.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -123,9 +123,9 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -133,9 +133,9 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type("10{enter}", { force: true });
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "a positive number.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get(cesc2("#/n") + " textarea").type("10{enter}", { force: true });
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "a positive number.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -143,12 +143,12 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-5/9{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "a negative number.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "a negative number.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -156,23 +156,23 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}5-5{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "zero.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "zero.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal("You typed zero.");
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-x{enter}",
       { force: true },
     );
-    cy.get("p" + cesc("#\\/_p1")).should("contain.text", "something else.");
-    cy.get("p" + cesc("#\\/_p1"))
+    cy.get("p" + cesc2("#/_p1")).should("contain.text", "something else.");
+    cy.get("p" + cesc2("#/_p1"))
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -215,12 +215,12 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/_section1") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section2") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section3") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section4") + " p")
+    cy.get(cesc2("#/_section1") + " p").should("not.exist");
+    cy.get(cesc2("#/_section2") + " p").should("not.exist");
+    cy.get(cesc2("#/_section3") + " p").should("not.exist");
+    cy.get(cesc2("#/_section4") + " p")
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -228,67 +228,67 @@ describe("Conditional Content Tag Tests", function () {
         );
       });
 
-    cy.get(cesc("#\\/n") + " textarea").type("10{enter}", { force: true });
-    cy.get(cesc("#\\/_section1") + " p").should(
+    cy.get(cesc2("#/n") + " textarea").type("10{enter}", { force: true });
+    cy.get(cesc2("#/_section1") + " p").should(
       "contain.text",
       "a positive number.",
     );
-    cy.get(cesc("#\\/_section1") + " p")
+    cy.get(cesc2("#/_section1") + " p")
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
           "You typed a positive number.",
         );
       });
-    cy.get(cesc("#\\/_section2") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section3") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section4") + " p").should("not.exist");
+    cy.get(cesc2("#/_section2") + " p").should("not.exist");
+    cy.get(cesc2("#/_section3") + " p").should("not.exist");
+    cy.get(cesc2("#/_section4") + " p").should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-5/9{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_section2") + " p").should(
+    cy.get(cesc2("#/_section2") + " p").should(
       "contain.text",
       "a negative number.",
     );
-    cy.get(cesc("#\\/_section1") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section2") + " p")
+    cy.get(cesc2("#/_section1") + " p").should("not.exist");
+    cy.get(cesc2("#/_section2") + " p")
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
           "You typed a negative number.",
         );
       });
-    cy.get(cesc("#\\/_section3") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section4") + " p").should("not.exist");
+    cy.get(cesc2("#/_section3") + " p").should("not.exist");
+    cy.get(cesc2("#/_section4") + " p").should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}5-5{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_section3") + " p").should("contain.text", "zero.");
-    cy.get(cesc("#\\/_section1") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section2") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section3") + " p")
+    cy.get(cesc2("#/_section3") + " p").should("contain.text", "zero.");
+    cy.get(cesc2("#/_section1") + " p").should("not.exist");
+    cy.get(cesc2("#/_section2") + " p").should("not.exist");
+    cy.get(cesc2("#/_section3") + " p")
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal("You typed zero.");
       });
-    cy.get(cesc("#\\/_section4") + " p").should("not.exist");
+    cy.get(cesc2("#/_section4") + " p").should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-x{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_section4") + " p").should(
+    cy.get(cesc2("#/_section4") + " p").should(
       "contain.text",
       "something else.",
     );
-    cy.get(cesc("#\\/_section1") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section2") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section3") + " p").should("not.exist");
-    cy.get(cesc("#\\/_section4") + " p")
+    cy.get(cesc2("#/_section1") + " p").should("not.exist");
+    cy.get(cesc2("#/_section2") + " p").should("not.exist");
+    cy.get(cesc2("#/_section3") + " p").should("not.exist");
+    cy.get(cesc2("#/_section4") + " p")
       .invoke("text")
       .then((text) => {
         expect(text.replace(/\s+/g, " ").trim()).equal(
@@ -309,7 +309,7 @@ describe("Conditional Content Tag Tests", function () {
   <answer>
     <choiceinput inline="true" shuffleOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
     <award><when>
-      <copy prop="selectedvalue" target="_choiceinput1" />
+      <copy prop="selectedvalue" source="_choiceinput1" />
       =
       <text>
         <conditionalcontent condition="abs($m) < 1" >
@@ -328,65 +328,65 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/m") + " textarea").type("3{enter}", { force: true });
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_correct")).should("be.visible");
+    cy.get(cesc2("#/m") + " textarea").type("3{enter}", { force: true });
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_correct")).should("be.visible");
 
-    cy.get(cesc("#\\/m") + " textarea").type("{end}{backspace}-0.8{enter}", {
+    cy.get(cesc2("#/m") + " textarea").type("{end}{backspace}-0.8{enter}", {
       force: true,
     });
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_correct")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_correct")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/m") + " textarea").type(
+    cy.get(cesc2("#/m") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}1/3{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_correct")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_correct")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/m") + " textarea").type(
+    cy.get(cesc2("#/m") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-7/5{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_correct")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_correct")).should("be.visible");
 
-    cy.get(cesc("#\\/m") + " textarea").type(
+    cy.get(cesc2("#/m") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}1{enter}",
       { force: true },
     );
-    cy.get(cesc("#\\/_choiceinput1")).select(`stable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
-    cy.get(cesc("#\\/_choiceinput1")).select(`unstable`);
-    cy.get(cesc("#\\/_choiceinput1_submit")).click();
-    cy.get(cesc("#\\/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`stable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_choiceinput1")).select(`unstable`);
+    cy.get(cesc2("#/_choiceinput1_submit")).click();
+    cy.get(cesc2("#/_choiceinput1_incorrect")).should("be.visible");
   });
 
   it("conditional math used as correct answer", () => {
@@ -401,7 +401,7 @@ describe("Conditional Content Tag Tests", function () {
   <answer>
     <mathinput name="x" />
     <award><when>
-      <copy prop="immediateValue" target="x" />
+      <copy prop="immediateValue" source="x" />
       =
       <math>
         <conditionalcontent condition="$c = positive" >
@@ -420,44 +420,44 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
-    cy.get(cesc("#\\/x_submit")).click();
-    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/x_submit")).click();
+    cy.get(cesc2("#/x_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/x") + " textarea").type("x > 0{enter}", { force: true });
-    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.get(cesc2("#/x") + " textarea").type("x > 0{enter}", { force: true });
+    cy.get(cesc2("#/x_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/x") + " textarea").type(
+    cy.get(cesc2("#/x") + " textarea").type(
       "{end}{backspace}{backspace}{backspace}< 0",
       { force: true },
     );
-    cy.get(cesc("#\\/x_submit")).should("be.visible");
-    cy.get(cesc("#\\/x") + " textarea").type("{enter}", { force: true });
-    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.get(cesc2("#/x_submit")).should("be.visible");
+    cy.get(cesc2("#/x") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/x_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/c")).select(`negative`);
-    cy.get(cesc("#\\/x_submit")).click();
-    cy.get(cesc("#\\/x_correct")).should("be.visible");
+    cy.get(cesc2("#/c")).select(`negative`);
+    cy.get(cesc2("#/x_submit")).click();
+    cy.get(cesc2("#/x_correct")).should("be.visible");
 
-    cy.get(cesc("#\\/x") + " textarea").type(
+    cy.get(cesc2("#/x") + " textarea").type(
       "{end}{backspace}{backspace}{backspace}> 0",
       { force: true },
     );
-    cy.get(cesc("#\\/x_submit")).should("be.visible");
-    cy.get(cesc("#\\/x") + " textarea").type("{enter}", { force: true });
-    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.get(cesc2("#/x_submit")).should("be.visible");
+    cy.get(cesc2("#/x") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/x_incorrect")).should("be.visible");
 
-    cy.get(cesc("#\\/c")).select(`positive`);
-    cy.get(cesc("#\\/x_submit")).click();
-    cy.get(cesc("#\\/x_correct")).should("be.visible");
+    cy.get(cesc2("#/c")).select(`positive`);
+    cy.get(cesc2("#/x_submit")).click();
+    cy.get(cesc2("#/x_correct")).should("be.visible");
 
-    cy.get(cesc("#\\/x") + " textarea").type(
+    cy.get(cesc2("#/x") + " textarea").type(
       "{end}{backspace}{backspace}{backspace}< 0",
       { force: true },
     );
-    cy.get(cesc("#\\/x_submit")).should("be.visible");
-    cy.get(cesc("#\\/x") + " textarea").type("{enter}", { force: true });
-    cy.get(cesc("#\\/x_incorrect")).should("be.visible");
+    cy.get(cesc2("#/x_submit")).should("be.visible");
+    cy.get(cesc2("#/x") + " textarea").type("{enter}", { force: true });
+    cy.get(cesc2("#/x_incorrect")).should("be.visible");
   });
 
   it("include blank string between tags", () => {
@@ -480,23 +480,23 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/p")).should("have.text", "");
+    cy.get(cesc2("#/p")).should("have.text", "");
 
-    cy.get(cesc("#\\/b")).click();
+    cy.get(cesc2("#/b")).click();
 
-    cy.get(cesc("#\\/p")).should("have.text", "The fox jumps.");
+    cy.get(cesc2("#/p")).should("have.text", "The fox jumps.");
   });
 
-  it("assignNames skips strings but strings still displayed", () => {
+  it("assignNames gives blanks for strings but strings still displayed", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
     <text>a</text>
     <mathinput name="n" />
-    <p name="p1"><conditionalContent condition="$n > 0" assignNames="a b">
+    <p name="p1"><conditionalContent condition="$n > 0" assignNames="a b c">
       <text>dog</text> mouse <text>cat</text>
     </conditionalContent></p>
 
@@ -504,12 +504,15 @@ describe("Conditional Content Tag Tests", function () {
     
     <p name="pb">$b</p>
 
-    <p name="p2" ><copy target="_conditionalcontent1" assignNames="c d" /></p>
-
     <p name="pc">$c</p>
-    
+
+    <p name="p2" ><copy source="_conditionalcontent1" assignNames="d e f" /></p>
+
     <p name="pd">$d</p>
 
+    <p name="pe">$e</p>
+
+    <p name="pf">$f</p>
 
     `,
         },
@@ -517,36 +520,42 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/p1")).should("have.text", "");
-    cy.get(cesc("#\\/pa")).should("have.text", "");
-    cy.get(cesc("#\\/pb")).should("have.text", "");
-    cy.get(cesc("#\\/p2")).should("have.text", "");
-    cy.get(cesc("#\\/pc")).should("have.text", "");
-    cy.get(cesc("#\\/pd")).should("have.text", "");
+    cy.get(cesc2("#/p1")).should("have.text", "");
+    cy.get(cesc2("#/pa")).should("have.text", "");
+    cy.get(cesc2("#/pb")).should("have.text", "");
+    cy.get(cesc2("#/pc")).should("have.text", "");
+    cy.get(cesc2("#/p2")).should("have.text", "");
+    cy.get(cesc2("#/pd")).should("have.text", "");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/p1")).should("contain.text", "dog mouse cat");
-    cy.get(cesc("#\\/pa")).should("have.text", "dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "cat");
-    cy.get(cesc("#\\/p2")).should("contain.text", "dog mouse cat");
-    cy.get(cesc("#\\/pc")).should("have.text", "dog");
-    cy.get(cesc("#\\/pd")).should("have.text", "cat");
+    cy.get(cesc2("#/p1")).should("contain.text", "dog mouse cat");
+    cy.get(cesc2("#/pa")).should("have.text", "dog");
+    cy.get(cesc2("#/pb")).should("have.text", "");
+    cy.get(cesc2("#/pc")).should("have.text", "cat");
+    cy.get(cesc2("#/p2")).should("contain.text", "dog mouse cat");
+    cy.get(cesc2("#/pd")).should("have.text", "dog");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "cat");
 
     cy.log("enter 0");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}0{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}0{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/p1")).should("have.text", "");
-    cy.get(cesc("#\\/pa")).should("have.text", "");
-    cy.get(cesc("#\\/pb")).should("have.text", "");
-    cy.get(cesc("#\\/p2")).should("have.text", "");
-    cy.get(cesc("#\\/pc")).should("have.text", "");
-    cy.get(cesc("#\\/pd")).should("have.text", "");
+    cy.get(cesc2("#/p1")).should("have.text", "");
+    cy.get(cesc2("#/pa")).should("have.text", "");
+    cy.get(cesc2("#/pb")).should("have.text", "");
+    cy.get(cesc2("#/pc")).should("have.text", "");
+    cy.get(cesc2("#/p2")).should("have.text", "");
+    cy.get(cesc2("#/pd")).should("have.text", "");
+    cy.get(cesc2("#/pe")).should("have.text", "");
+    cy.get(cesc2("#/pf")).should("have.text", "");
   });
 
   it("correctly withhold replacements when shadowing", () => {
@@ -563,7 +572,7 @@ describe("Conditional Content Tag Tests", function () {
     <p>Show copy:
       <booleanInput name="show_copy" />
     </p>
-    <conditionalContent condition="$show_copy" assignNames="(p2)">
+    <conditionalContent condition="$show_copy" assignNames="p2">
       $p
     </conditionalContent>
     
@@ -573,33 +582,33 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/p")).should(
+    cy.get(cesc2("#/p")).should(
       "have.text",
       "Greeting is hidden: false. Greeting: Hello!",
     );
-    cy.get(cesc("#\\/p2")).should("not.exist");
+    cy.get(cesc2("#/p2")).should("not.exist");
 
-    cy.get(cesc("#\\/hide")).click();
+    cy.get(cesc2("#/hide")).click();
 
-    cy.get(cesc("#\\/p")).should(
+    cy.get(cesc2("#/p")).should(
       "have.text",
       "Greeting is hidden: true. Greeting: ",
     );
-    cy.get(cesc("#\\/p2")).should("not.exist");
+    cy.get(cesc2("#/p2")).should("not.exist");
 
-    cy.get(cesc("#\\/show_copy")).click();
-    cy.get(cesc("#\\/p2")).should(
+    cy.get(cesc2("#/show_copy")).click();
+    cy.get(cesc2("#/p2")).should(
       "have.text",
       "Greeting is hidden: true. Greeting: ",
     );
 
-    cy.get(cesc("#\\/hide")).click();
+    cy.get(cesc2("#/hide")).click();
 
-    cy.get(cesc("#\\/p")).should(
+    cy.get(cesc2("#/p")).should(
       "have.text",
       "Greeting is hidden: false. Greeting: Hello!",
     );
-    cy.get(cesc("#\\/p2")).should(
+    cy.get(cesc2("#/p2")).should(
       "have.text",
       "Greeting is hidden: false. Greeting: Hello!",
     );
@@ -620,11 +629,11 @@ describe("Conditional Content Tag Tests", function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
+    <p name="pa1">a1: $a{assignNames="a1"}</p>
 
-    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="(b)" /></p>
+    <p name="pb" >b: <copy source="_conditionalcontent1" assignNames="(b)" /></p>
 
-    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
+    <p name="pb1">b1: $b{name="b1"}</p>
 
     `,
         },
@@ -632,73 +641,73 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: cat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: cat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
+    cy.get(cesc2("#/pa")).should("have.text", "a: cat");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: cat");
+    cy.get(cesc2("#/pb")).should("have.text", "b: cat");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: cat");
 
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/b")).should("have.text", "cat");
-    cy.get(cesc("#\\/b1")).should("have.text", "cat");
+    cy.get(cesc2("#/a1")).should("have.text", "cat");
+    cy.get(cesc2("#/b")).should("have.text", "cat");
+    cy.get(cesc2("#/b1")).should("have.text", "cat");
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: dog");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: dog");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
+    cy.get(cesc2("#/pa")).should("have.text", "a: dog");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: dog");
+    cy.get(cesc2("#/pb")).should("have.text", "b: dog");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: dog");
 
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/b")).should("have.text", "dog");
-    cy.get(cesc("#\\/b1")).should("have.text", "dog");
+    cy.get(cesc2("#/a1")).should("have.text", "dog");
+    cy.get(cesc2("#/b")).should("have.text", "dog");
+    cy.get(cesc2("#/b1")).should("have.text", "dog");
 
     cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}x{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
   });
 
   it("case/else with single text, initially assign sub", () => {
@@ -714,11 +723,11 @@ describe("Conditional Content Tag Tests", function () {
       <else><text>mouse</text></else>
     </conditionalContent></p>
 
-    <p name="pa1">a1: <copy target="a" assignNames="a1" /></p>
+    <p name="pa1">a1: $a{name="a1"}</p>
 
-    <p name="pb" >b: <copy target="_conditionalcontent1" assignNames="b" /></p>
+    <p name="pb" >b: $_conditionalcontent1{assignNames="b"}</p>
 
-    <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
+    <p name="pb1">b1: $b{assignNames="b1"}</p>
 
     `,
         },
@@ -726,72 +735,72 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: cat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: cat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
+    cy.get(cesc2("#/pa")).should("have.text", "a: cat");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: cat");
+    cy.get(cesc2("#/pb")).should("have.text", "b: cat");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: cat");
 
-    cy.get(cesc("#\\/a")).should("have.text", "cat");
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/b1")).should("have.text", "cat");
+    cy.get(cesc2("#/a")).should("have.text", "cat");
+    cy.get(cesc2("#/a1")).should("have.text", "cat");
+    cy.get(cesc2("#/b1")).should("have.text", "cat");
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}10{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}10{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
 
     cy.log("enter -11");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: dog");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: dog");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
+    cy.get(cesc2("#/pa")).should("have.text", "a: dog");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: dog");
+    cy.get(cesc2("#/pb")).should("have.text", "b: dog");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: dog");
 
-    cy.get(cesc("#\\/a")).should("have.text", "dog");
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/b1")).should("have.text", "dog");
+    cy.get(cesc2("#/a")).should("have.text", "dog");
+    cy.get(cesc2("#/a1")).should("have.text", "dog");
+    cy.get(cesc2("#/b1")).should("have.text", "dog");
 
     cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}x{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: mouse");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: mouse");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/b1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/b1")).should("have.text", "mouse");
   });
 
   it("case/else with text, math, and optional", () => {
@@ -811,75 +820,75 @@ describe("Conditional Content Tag Tests", function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy target="a" assignNames="a1" /></p>
-    <p>b1: <copy target="b" assignNames="b1" /></p>
-    <p>c1: <copy target="c" assignNames="c1" /></p>
-    <p>d1: <copy target="d" assignNames="d1" /></p>
+    <p>a1: $a{name="a1"}</p>
+    <p>b1: $b{name="b1"}</p>
+    <p>c1: $c{name="c1"}</p>
+    <p>d1: $d{name="d1"}</p>
 
-    <p>copy: <copy name="cp1" target="_conditionalcontent1" assignNames="(e f g h i)" /></p>
+    <p>copy: <copy name="cnd2" source="_conditionalcontent1" assignNames="(e f g h i)" /></p>
 
-    <p>e1: <copy target="e" assignNames="e1" /></p>
-    <p>f1: <copy target="f" assignNames="f1" /></p>
-    <p>g1: <copy target="g" assignNames="g1" /></p>
-    <p>h1: <copy target="h" assignNames="h1" /></p>
-    <p>i1: <copy target="i" assignNames="i1" /></p>
+    <p>e1: $e{name="e1"}</p>
+    <p>f1: $f{name="f1"}</p>
+    <p>g1: $g{name="g1"}</p>
+    <p>h1: $h{name="h1"}</p>
+    <p>i1: $i{name="i1"}</p>
 
-    <p>copied copy: <copy target="cp1" assignNames="(j k l)" /></p>
+    <p>copied copy: <copy source="cnd2" assignNames="(j k l)" /></p>
 
-    <p>j1: <copy target="j" assignNames="j1" /></p>
-    <p>k1: <copy target="k" assignNames="k1" /></p>
-    <p>l1: <copy target="l" assignNames="l1" /></p>
+    <p>j1: $j{name="j1"}</p>
+    <p>k1: $k{name="k1"}</p>
+    <p>l1: $l{name="l1"}</p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/b"))
+    cy.get(cesc2("#/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k"))
+    cy.get(cesc2("#/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -887,66 +896,66 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/a")).should("have.text", "cat");
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/e")).should("have.text", "cat");
-    cy.get(cesc("#\\/e1")).should("have.text", "cat");
-    cy.get(cesc("#\\/j")).should("have.text", "cat");
-    cy.get(cesc("#\\/j1")).should("have.text", "cat");
+    cy.get(cesc2("#/a")).should("have.text", "cat");
+    cy.get(cesc2("#/a1")).should("have.text", "cat");
+    cy.get(cesc2("#/e")).should("have.text", "cat");
+    cy.get(cesc2("#/e1")).should("have.text", "cat");
+    cy.get(cesc2("#/j")).should("have.text", "cat");
+    cy.get(cesc2("#/j1")).should("have.text", "cat");
 
-    cy.get(cesc("#\\/b"))
+    cy.get(cesc2("#/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/k"))
+    cy.get(cesc2("#/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -954,68 +963,68 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("y");
       });
 
-    cy.get(cesc("#\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}10{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}10{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/b"))
+    cy.get(cesc2("#/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k"))
+    cy.get(cesc2("#/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1023,69 +1032,69 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter -11");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/a")).should("have.text", "dog");
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/e")).should("have.text", "dog");
-    cy.get(cesc("#\\/e1")).should("have.text", "dog");
-    cy.get(cesc("#\\/j")).should("have.text", "dog");
-    cy.get(cesc("#\\/j1")).should("have.text", "dog");
+    cy.get(cesc2("#/a")).should("have.text", "dog");
+    cy.get(cesc2("#/a1")).should("have.text", "dog");
+    cy.get(cesc2("#/e")).should("have.text", "dog");
+    cy.get(cesc2("#/e1")).should("have.text", "dog");
+    cy.get(cesc2("#/j")).should("have.text", "dog");
+    cy.get(cesc2("#/j1")).should("have.text", "dog");
 
-    cy.get(cesc("#\\/b"))
+    cy.get(cesc2("#/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/k"))
+    cy.get(cesc2("#/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1093,69 +1102,69 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("x");
       });
 
-    cy.get(cesc("#\\/c")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/c1")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/g")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/g1")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/l")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/l1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/c")).should("have.text", "optional text!");
+    cy.get(cesc2("#/c1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/g")).should("have.text", "optional text!");
+    cy.get(cesc2("#/g1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/l")).should("have.text", "optional text!");
+    cy.get(cesc2("#/l1")).should("have.text", "optional text!");
 
-    cy.get(cesc("#\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}x{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/b"))
+    cy.get(cesc2("#/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k"))
+    cy.get(cesc2("#/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1163,19 +1172,19 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
   });
 
   it("case/else with text, math, and optional, new namespace", () => {
@@ -1195,75 +1204,75 @@ describe("Conditional Content Tag Tests", function () {
       </else>
     </conditionalContent></p>
 
-    <p>a1: <copy target="s1/a" assignNames="a1" /></p>
-    <p>b1: <copy target="s1/b" assignNames="b1" /></p>
-    <p>c1: <copy target="s1/c" assignNames="c1" /></p>
-    <p>d1: <copy target="s1/d" assignNames="d1" /></p>
+    <p>a1: $(s1/a{name="a1"})</p>
+    <p>b1: $(s1/b{name="b1"})</p>
+    <p>c1: $(s1/c{name="c1"})</p>
+    <p>d1: $(s1/d{name="d1"})</p>
 
-    <p>copy: <copy name="s2" target="s1" assignNames="(e f g h i)" /></p>
+    <p>copy: <conditionalContent name="s2" copySource="s1" assignNames="(e f g h i)" /></p>
 
-    <p>e1: <copy target="e" assignNames="e1" /></p>
-    <p>f1: <copy target="f" assignNames="f1" /></p>
-    <p>g1: <copy target="g" assignNames="g1" /></p>
-    <p>h1: <copy target="h" assignNames="h1" /></p>
-    <p>i1: <copy target="i" assignNames="i1" /></p>
+    <p>e1: $(s2/e{name="e1"})</p>
+    <p>f1: $(s2/f{name="f1"})</p>
+    <p>g1: $(s2/g{name="g1"})</p>
+    <p>h1: $(s2/h{name="h1"})</p>
+    <p>i1: $(s2/i{name="i1"})</p>
 
-    <p>copied copy: <copy name="s3" target="s2" assignNames="(j k l)" newNamespace /></p>
+    <p>copied copy: <conditionalContent name="s3" copysource="s2" assignNames="(j k l)" newNamespace /></p>
 
-    <p>j1: <copy target="s3/j" assignNames="j1" /></p>
-    <p>k1: <copy target="s3/k" assignNames="k1" /></p>
-    <p>l1: <copy target="s3/l" assignNames="l1" /></p>
+    <p>j1: $(s3/j{name="j1"})</p>
+    <p>k1: $(s3/k{name="k1"})</p>
+    <p>l1: $(s3/l{name="l1"})</p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/s1\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/s3\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s1/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s2/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s3/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/s1\\/b"))
+    cy.get(cesc2("#/s1/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/s2/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/s3\\/k"))
+    cy.get(cesc2("#/s3/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1271,66 +1280,66 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/s1\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/s3\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/s1/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/s2/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/s3/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/s1\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/s1/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/s2/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/s2/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/s1\\/a")).should("have.text", "cat");
-    cy.get(cesc("#\\/a1")).should("have.text", "cat");
-    cy.get(cesc("#\\/e")).should("have.text", "cat");
-    cy.get(cesc("#\\/e1")).should("have.text", "cat");
-    cy.get(cesc("#\\/s3\\/j")).should("have.text", "cat");
-    cy.get(cesc("#\\/j1")).should("have.text", "cat");
+    cy.get(cesc2("#/s1/a")).should("have.text", "cat");
+    cy.get(cesc2("#/a1")).should("have.text", "cat");
+    cy.get(cesc2("#/s2/e")).should("have.text", "cat");
+    cy.get(cesc2("#/e1")).should("have.text", "cat");
+    cy.get(cesc2("#/s3/j")).should("have.text", "cat");
+    cy.get(cesc2("#/j1")).should("have.text", "cat");
 
-    cy.get(cesc("#\\/s1\\/b"))
+    cy.get(cesc2("#/s1/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/s2/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/s3\\/k"))
+    cy.get(cesc2("#/s3/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1338,69 +1347,69 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("y");
       });
 
-    cy.get(cesc("#\\/s1\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/s3\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/s1/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/s2/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/s3/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/s1\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/s1/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/s2/h")).should("not.exist");
+    cy.get(cesc2("#h1")).should("not.exist");
+    cy.get(cesc2("#/s2/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/s1\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/s3\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s1/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s2/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s3/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/s1\\/b"))
+    cy.get(cesc2("#/s1/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/s2/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/s3\\/k"))
+    cy.get(cesc2("#/s3/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1408,69 +1417,69 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/s1\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/s3\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/s1/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/s2/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/s3/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/s1\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/s1/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/s2/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/s2/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/s1\\/a")).should("have.text", "dog");
-    cy.get(cesc("#\\/a1")).should("have.text", "dog");
-    cy.get(cesc("#\\/e")).should("have.text", "dog");
-    cy.get(cesc("#\\/e1")).should("have.text", "dog");
-    cy.get(cesc("#\\/s3\\/j")).should("have.text", "dog");
-    cy.get(cesc("#\\/j1")).should("have.text", "dog");
+    cy.get(cesc2("#/s1/a")).should("have.text", "dog");
+    cy.get(cesc2("#/a1")).should("have.text", "dog");
+    cy.get(cesc2("#/s2/e")).should("have.text", "dog");
+    cy.get(cesc2("#/e1")).should("have.text", "dog");
+    cy.get(cesc2("#/s3/j")).should("have.text", "dog");
+    cy.get(cesc2("#/j1")).should("have.text", "dog");
 
-    cy.get(cesc("#\\/s1\\/b"))
+    cy.get(cesc2("#/s1/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/s2/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/s3\\/k"))
+    cy.get(cesc2("#/s3/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1478,69 +1487,69 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("x");
       });
 
-    cy.get(cesc("#\\/s1\\/c")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/c1")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/g")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/g1")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/s3\\/l")).should("have.text", "optional text!");
-    cy.get(cesc("#\\/l1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/s1/c")).should("have.text", "optional text!");
+    cy.get(cesc2("#/c1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/s2/g")).should("have.text", "optional text!");
+    cy.get(cesc2("#/g1")).should("have.text", "optional text!");
+    cy.get(cesc2("#/s3/l")).should("have.text", "optional text!");
+    cy.get(cesc2("#/l1")).should("have.text", "optional text!");
 
-    cy.get(cesc("#\\/s1\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/s1/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/s2/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/s2/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
 
     cy.log("enter x");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}x{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/s1\\/a")).should("have.text", "mouse");
-    cy.get(cesc("#\\/a1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e")).should("have.text", "mouse");
-    cy.get(cesc("#\\/e1")).should("have.text", "mouse");
-    cy.get(cesc("#\\/s3\\/j")).should("have.text", "mouse");
-    cy.get(cesc("#\\/j1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s1/a")).should("have.text", "mouse");
+    cy.get(cesc2("#/a1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s2/e")).should("have.text", "mouse");
+    cy.get(cesc2("#/e1")).should("have.text", "mouse");
+    cy.get(cesc2("#/s3/j")).should("have.text", "mouse");
+    cy.get(cesc2("#/j1")).should("have.text", "mouse");
 
-    cy.get(cesc("#\\/s1\\/b"))
+    cy.get(cesc2("#/s1/b"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/b1"))
+    cy.get(cesc2("#/b1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f"))
+    cy.get(cesc2("#/s2/f"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/f1"))
+    cy.get(cesc2("#/f1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/s3\\/k"))
+    cy.get(cesc2("#/s3/k"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc("#\\/k1"))
+    cy.get(cesc2("#/k1"))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1548,19 +1557,19 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("z");
       });
 
-    cy.get(cesc("#\\/s1\\/c")).should("not.exist");
-    cy.get(cesc("#\\/c1")).should("not.exist");
-    cy.get(cesc("#\\/g")).should("not.exist");
-    cy.get(cesc("#\\/g1")).should("not.exist");
-    cy.get(cesc("#\\/s3\\/l")).should("not.exist");
-    cy.get(cesc("#\\/l1")).should("not.exist");
+    cy.get(cesc2("#/s1/c")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("not.exist");
+    cy.get(cesc2("#/s2/g")).should("not.exist");
+    cy.get(cesc2("#/g1")).should("not.exist");
+    cy.get(cesc2("#/s3/l")).should("not.exist");
+    cy.get(cesc2("#/l1")).should("not.exist");
 
-    cy.get(cesc("#\\/s1\\/d")).should("not.exist");
-    cy.get(cesc("#\\/d1")).should("not.exist");
-    cy.get(cesc("#\\/h")).should("not.exist");
-    cy.get(cesc("#\\/h1")).should("not.exist");
-    cy.get(cesc("#\\/i")).should("not.exist");
-    cy.get(cesc("#\\/i1")).should("not.exist");
+    cy.get(cesc2("#/s1/d")).should("not.exist");
+    cy.get(cesc2("#/d1")).should("not.exist");
+    cy.get(cesc2("#/s2/h")).should("not.exist");
+    cy.get(cesc2("#/h1")).should("not.exist");
+    cy.get(cesc2("#/s2/i")).should("not.exist");
+    cy.get(cesc2("#/i1")).should("not.exist");
   });
 
   it("references to internal and external components", () => {
@@ -1574,21 +1583,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="((a) (b) c)">
+    <p>original: <conditionalContent assignNames="(a b c)">
       <case condition="$n<0" >
-        <copy target="x1" />
-        <copy target="y1" />
-        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + <copy target="a1" /><copy target="b1" /></math>
+        $x1
+        $y1
+        <math simplify>3<math name="a1">x</math><math name="b1">a</math> + $a1$b1</math>
       </case>
       <case condition="$n <= 1" >
-        <copy target="x2" />
-        <copy target="y2" />
-        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + <copy target="a2" /><copy target="b2" /></math>
+        $x2
+        $y2
+        <math simplify>4<math name="a2">y</math><math name="b2">b</math> + $a2$b2</math>
       </case>
       <else>
-        <copy target="x3" />
-        <copy target="y3" />
-        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + <copy target="a3" /><copy target="b3" /></math>
+        $x3
+        $y3
+        <math simplify>5<math name="a3">z</math><math name="b3">c</math> + $a3$b3</math>
       </else>
     </conditionalContent></p>
 
@@ -1597,17 +1606,17 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="aa" target="a" />
-    <copy assignNames="bb" target="b" />
-    <copy assignNames="cc" target="c" />
+    $a{name="aa"}
+    $b{name="bb"}
+    $c{name="cc"}
 
     <p>Whole thing repeated</p>
-    <copy target="_conditionalcontent1" assignNames="((d) (e) f)" />
+    <conditionalContent copysource="_conditionalcontent1" assignNames="(d e f)" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="dd" target="d" />
-    <copy assignNames="ee" target="e" />
-    <copy assignNames="ff" target="f" />
+    $d{name="dd"}
+    $e{name="ee"}
+    $f{name="ff"}
 
 
     `,
@@ -1616,20 +1625,20 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/a`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/c`))
+    cy.get(cesc2(`#/a`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b`)).should("have.text", "bush");
+    cy.get(cesc2(`#/c`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/aa`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/bb`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/cc`))
+    cy.get(cesc2(`#/aa`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/bb`)).should("have.text", "bush");
+    cy.get(cesc2(`#/cc`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1637,18 +1646,18 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/d`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/e`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/f`))
+    cy.get(cesc2(`#/d`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/e`)).should("have.text", "bush");
+    cy.get(cesc2(`#/f`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/dd`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/ee`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/ff`))
+    cy.get(cesc2(`#/dd`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/ee`)).should("have.text", "bush");
+    cy.get(cesc2(`#/ff`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1657,22 +1666,22 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
       force: true,
     });
 
-    cy.get(cesc(`#\\/a`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/b`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/c`))
+    cy.get(cesc2(`#/a`)).should("have.text", "cat");
+    cy.get(cesc2(`#/b`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/c`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/aa`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/bb`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/cc`))
+    cy.get(cesc2(`#/aa`)).should("have.text", "cat");
+    cy.get(cesc2(`#/bb`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/cc`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1680,18 +1689,18 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/d`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/e`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/f`))
+    cy.get(cesc2(`#/d`)).should("have.text", "cat");
+    cy.get(cesc2(`#/e`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/f`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/dd`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/ee`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/ff`))
+    cy.get(cesc2(`#/dd`)).should("have.text", "cat");
+    cy.get(cesc2(`#/ee`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/ff`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1700,22 +1709,22 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}-1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}-1{enter}", {
       force: true,
     });
 
-    cy.get(cesc(`#\\/a`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/b`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/c`))
+    cy.get(cesc2(`#/a`)).should("have.text", "dog");
+    cy.get(cesc2(`#/b`)).should("have.text", "tree");
+    cy.get(cesc2(`#/c`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/aa`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/bb`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/cc`))
+    cy.get(cesc2(`#/aa`)).should("have.text", "dog");
+    cy.get(cesc2(`#/bb`)).should("have.text", "tree");
+    cy.get(cesc2(`#/cc`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1723,18 +1732,18 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("4ax");
       });
 
-    cy.get(cesc(`#\\/d`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/e`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/f`))
+    cy.get(cesc2(`#/d`)).should("have.text", "dog");
+    cy.get(cesc2(`#/e`)).should("have.text", "tree");
+    cy.get(cesc2(`#/f`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/dd`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/ee`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/ff`))
+    cy.get(cesc2(`#/dd`)).should("have.text", "dog");
+    cy.get(cesc2(`#/ee`)).should("have.text", "tree");
+    cy.get(cesc2(`#/ff`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1743,23 +1752,23 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/c`))
+    cy.get(cesc2(`#/a`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b`)).should("have.text", "bush");
+    cy.get(cesc2(`#/c`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/aa`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/bb`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/cc`))
+    cy.get(cesc2(`#/aa`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/bb`)).should("have.text", "bush");
+    cy.get(cesc2(`#/cc`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1767,18 +1776,18 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/d`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/e`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/f`))
+    cy.get(cesc2(`#/d`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/e`)).should("have.text", "bush");
+    cy.get(cesc2(`#/f`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/dd`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/ee`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/ff`))
+    cy.get(cesc2(`#/dd`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/ee`)).should("have.text", "bush");
+    cy.get(cesc2(`#/ff`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1800,19 +1809,19 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" newNamespace >
-        <copy target="../x1" assignNames="animal" />
-        <copy target="../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy target="x" /><copy target="a" /></math>
+        $(../x1{name="animal"})
+        $(../y1{name="plant"})
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + $x$a</math>
       </case>
       <case condition="$n <= 1" newNamespace >
-        <copy target="../x2" assignNames="animal" />
-        <copy target="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
+        $(../x2{name="animal"})
+        $(../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy target="../x3" assignNames="animal" />
-        <copy target="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
+        $(../x3{name="animal"})
+        $(../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -1821,21 +1830,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" target="a/animal" />
-    <copy assignNames="plant" target="a/plant" />
-    <copy assignNames="p" target="a/p" />
-    <copy assignNames="xx" target="a/x" />
-    <copy assignNames="aa" target="a/a" />
+    $(a/animal{name="animal"})
+    $(a/plant{name="plant"})
+    $(a/p{name="p"})
+    $(a/x{name="xx"})
+    $(a/a{name="aa"})
 
     <p>Whole thing repeated</p>
-    <copy target="_conditionalcontent1" assignNames="b" />
+    <conditionalContent copysource="_conditionalcontent1" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" target="b/animal" />
-    <copy assignNames="plantcopy" target="b/plant" />
-    <copy assignNames="pcopy" target="b/p" />
-    <copy assignNames="xxcopy" target="b/x" />
-    <copy assignNames="aacopy" target="b/a" />
+    $(b/animal{name="animalcopy"})
+    $(b/plant{name="plantcopy"})
+    $(b/p{name="pcopy"})
+    $(b/x{name="xxcopy"})
+    $(b/a{name="aacopy"})
 
     `,
         },
@@ -1843,11 +1852,11 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1855,23 +1864,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1879,9 +1888,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1889,23 +1898,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1914,14 +1923,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1929,23 +1938,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1953,9 +1962,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("b");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1963,23 +1972,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -1988,14 +1997,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2003,23 +2012,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("4ax");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2027,9 +2036,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("a");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2037,23 +2046,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("4ax");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "dog");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "tree");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2062,14 +2071,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2077,23 +2086,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2101,9 +2110,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2111,23 +2120,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2149,19 +2158,19 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent name="s" assignNames="a" newNamespace>
       <case newNamespace condition="$(../n) < 0" >
-        <copy target="../../x1" assignNames="animal" />
-        <copy target="../../y1" assignNames="plant" />
-        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + <copy target="x" /><copy target="a" /></math>
+        $(../../x1{name="animal"})
+        $(../../y1{name="plant"})
+        <math simplify name="p">3<math name="x">x</math><math name="a">a</math> + $x$a</math>
       </case>
       <case newNamespace condition="$(../n) <= 1" >
-        <copy target="../../x2" assignNames="animal" />
-        <copy target="../../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
+        $(../../x2{name="animal"})
+        $(../../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy target="../../x3" assignNames="animal" />
-        <copy target="../../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
+        $(../../x3{name="animal"})
+        $(../../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -2170,21 +2179,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" target="s/a/animal" />
-    <copy assignNames="plant" target="s/a/plant" />
-    <copy assignNames="p" target="s/a/p" />
-    <copy assignNames="xx" target="s/a/x" />
-    <copy assignNames="aa" target="s/a/a" />
+    $(s/a/animal{name="animal"})
+    $(s/a/plant{name="plant"})
+    $(s/a/p{name="p"})
+    $(s/a/x{name="xx"})
+    $(s/a/a{name="aa"})
 
     <p>Whole thing repeated</p>
-    <copy target="s" assignNames="b" />
+    <conditionalContent copysource="s" name="s2" assignNames="b" />
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" target="b/animal" />
-    <copy assignNames="plantcopy" target="b/plant" />
-    <copy assignNames="pcopy" target="b/p" />
-    <copy assignNames="xxcopy" target="b/x" />
-    <copy assignNames="aacopy" target="b/a" />
+    $(s2/b/animal{name="animalcopy"})
+    $(s2/b/plant{name="plantcopy"})
+    $(s2/b/p{name="pcopy"})
+    $(s2/b/x{name="xxcopy"})
+    $(s2/b/a{name="aacopy"})
 
     `,
         },
@@ -2192,11 +2201,11 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/s\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/s\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/s\\/a\\/p`))
+    cy.get(cesc2(`#/s/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/s/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/s/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2204,23 +2213,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2228,9 +2237,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/s2/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/s2/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/s2/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2238,23 +2247,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2263,14 +2272,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/s\\/a\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/s\\/a\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/s\\/a\\/p`))
+    cy.get(cesc2(`#/s/a/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/s/a/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/s/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2278,23 +2287,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2302,9 +2311,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("b");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/s2/b/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/s2/b/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/s2/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2312,23 +2321,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2337,14 +2346,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/s\\/a\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/s\\/a\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/s\\/a\\/p`))
+    cy.get(cesc2(`#/s/a/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/s/a/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/s/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2352,23 +2361,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("4ax");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2376,9 +2385,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("a");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/s2/b/animal`)).should("have.text", "dog");
+    cy.get(cesc2(`#/s2/b/plant`)).should("have.text", "tree");
+    cy.get(cesc2(`#/s2/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2386,23 +2395,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("4ax");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "dog");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "tree");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "dog");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "tree");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("4ax");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("x");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2411,14 +2420,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/s\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/s\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/s\\/a\\/p`))
+    cy.get(cesc2(`#/s/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/s/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/s/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2426,23 +2435,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2450,9 +2459,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/s2/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/s2/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/s2/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2460,23 +2469,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2501,19 +2510,19 @@ describe("Conditional Content Tag Tests", function () {
     <mathinput name="n" />
     <p>original: <conditionalContent assignNames="a">
       <case condition="$n<0" >
-        <copy target="x1" assignNames="theanimal" />
-        <copy target="y1" assignNames="theplant" />
-        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + <copy target="thex" /><copy target="thea" /></math>
+        $x1{name="theanimal"}
+        $y1{name="theplant"}
+        <math simplify name="thep">3<math name="thex">x</math><math name="thea">a</math> + $thex$thea</math>
       </case>
       <case newNamespace condition="$n <= 1" >
-        <copy target="../x2" assignNames="animal" />
-        <copy target="../y2" assignNames="plant" />
-        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + <copy target="x" /><copy target="a" /></math>
+        $(../x2{name="animal"})
+        $(../y2{name="plant"})
+        <math simplify name="p">4<math name="x">y</math><math name="a">b</math> + $x$a</math>
       </case>
       <else newNamespace>
-        <copy target="../x3" assignNames="animal" />
-        <copy target="../y3" assignNames="plant" />
-        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + <copy target="x" /><copy target="a" /></math>
+        $(../x3{name="animal"})
+        $(../y3{name="plant"})
+        <math simplify name="p">5<math name="x">z</math><math name="a">c</math> + $x$a</math>
       </else>
     </conditionalContent></p>
 
@@ -2522,21 +2531,21 @@ describe("Conditional Content Tag Tests", function () {
     <text name="y3">bush</text>
 
     <p>Selected options repeated</p>
-    <copy assignNames="animal" target="a/animal" />
-    <copy assignNames="plant" target="a/plant" />
-    <copy assignNames="p" target="a/p" />
-    <copy assignNames="xx" target="a/x" />
-    <copy assignNames="aa" target="a/a" />
+    $(a/animal{name="animal"})
+    $(a/plant{name="plant"})
+    $(a/p{name="p"})
+    $(a/x{name="xx"})
+    $(a/a{name="aa"})
 
     <p>Whole thing repeated</p>
-    <p name="repeat"><copy target="_conditionalcontent1" assignNames="b" /></p>
+    <p name="repeat"><conditionalContent name="s2" copysource="_conditionalcontent1" assignNames="b" /></p>
 
     <p>Selected options repeated from copy</p>
-    <copy assignNames="animalcopy" target="b/animal" />
-    <copy assignNames="plantcopy" target="b/plant" />
-    <copy assignNames="pcopy" target="b/p" />
-    <copy assignNames="xxcopy" target="b/x" />
-    <copy assignNames="aacopy" target="b/a" />
+    $(b/animal{name="animalcopy"})
+    $(b/plant{name="plantcopy"})
+    $(b/p{name="pcopy"})
+    $(b/x{name="xxcopy"})
+    $(b/a{name="aacopy"})
 
     `,
         },
@@ -2544,11 +2553,11 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2556,23 +2565,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2580,9 +2589,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2590,23 +2599,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2615,14 +2624,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2630,23 +2639,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2654,9 +2663,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("b");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "cat");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2664,23 +2673,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("5by");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "cat");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "shrub");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "cat");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "shrub");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("5by");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("y");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2689,14 +2698,14 @@ describe("Conditional Content Tag Tests", function () {
       });
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("not.exist");
-    cy.get(cesc(`#\\/a\\/plant`)).should("not.exist");
-    cy.get(cesc(`#\\/a\\/p`)).should("not.exist");
+    cy.get(cesc2(`#/a/animal`)).should("not.exist");
+    cy.get(cesc2(`#/a/plant`)).should("not.exist");
+    cy.get(cesc2(`#/a/p`)).should("not.exist");
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2710,14 +2719,14 @@ describe("Conditional Content Tag Tests", function () {
       let thePlantCopyAnchor = cesc2("#" + repeatChildren[4].componentName);
       let thePCopyAnchor = cesc2("#" + repeatChildren[6].componentName);
 
-      cy.get(cesc(`#\\/_p1`))
+      cy.get(cesc2(`#/_p1`))
         .invoke("text")
         .then((text) => {
           let words = text.split(/\s+/).slice(1);
           expect(words[0]).eq("dog");
           expect(words[1]).eq("tree");
         });
-      cy.get(cesc(`#\\/_p1`))
+      cy.get(cesc2(`#/_p1`))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2735,24 +2744,24 @@ describe("Conditional Content Tag Tests", function () {
           expect(text.trim()).equal("4ax");
         });
 
-      cy.get(cesc(`#\\/animal`)).should("not.exist");
-      cy.get(cesc(`#\\/plant`)).should("not.exist");
-      cy.get(cesc(`#\\/p`)).should("not.exist");
-      cy.get(cesc(`#\\/xx`)).should("not.exist");
-      cy.get(cesc(`#\\/aa`)).should("not.exist");
+      cy.get(cesc2(`#/animal`)).should("not.exist");
+      cy.get(cesc2(`#/plant`)).should("not.exist");
+      cy.get(cesc2(`#/p`)).should("not.exist");
+      cy.get(cesc2(`#/xx`)).should("not.exist");
+      cy.get(cesc2(`#/aa`)).should("not.exist");
 
-      cy.get(cesc(`#\\/b\\/animal`)).should("not.exist");
-      cy.get(cesc(`#\\/b\\/plant`)).should("not.exist");
-      cy.get(cesc(`#\\/b\\/p`)).should("not.exist");
+      cy.get(cesc2(`#/b/animal`)).should("not.exist");
+      cy.get(cesc2(`#/b/plant`)).should("not.exist");
+      cy.get(cesc2(`#/b/p`)).should("not.exist");
 
-      cy.get(cesc(`#\\/repeat`))
+      cy.get(cesc2(`#/repeat`))
         .invoke("text")
         .then((text) => {
           let words = text.split(/\s+/).slice(1);
           expect(words[0]).eq("dog");
           expect(words[1]).eq("tree");
         });
-      cy.get(cesc(`#\\/repeat`))
+      cy.get(cesc2(`#/repeat`))
         .find(".mjx-mrow")
         .eq(0)
         .invoke("text")
@@ -2770,22 +2779,22 @@ describe("Conditional Content Tag Tests", function () {
           expect(text.trim()).equal("4ax");
         });
 
-      cy.get(cesc(`#\\/animalcopy`)).should("not.exist");
-      cy.get(cesc(`#\\/plantcopy`)).should("not.exist");
-      cy.get(cesc(`#\\/pcopy`)).should("not.exist");
-      cy.get(cesc(`#\\/xxcopy`)).should("not.exist");
-      cy.get(cesc(`#\\/aacopy`)).should("not.exist");
+      cy.get(cesc2(`#/animalcopy`)).should("not.exist");
+      cy.get(cesc2(`#/plantcopy`)).should("not.exist");
+      cy.get(cesc2(`#/pcopy`)).should("not.exist");
+      cy.get(cesc2(`#/xxcopy`)).should("not.exist");
+      cy.get(cesc2(`#/aacopy`)).should("not.exist");
     });
 
     cy.log("enter 10");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}10{enter}",
       { force: true },
     );
 
-    cy.get(cesc(`#\\/a\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/a\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/a\\/p`))
+    cy.get(cesc2(`#/a/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/a/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/a/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2793,23 +2802,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/p`))
+    cy.get(cesc2(`#/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xx`))
+    cy.get(cesc2(`#/xx`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aa`))
+    cy.get(cesc2(`#/aa`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2817,9 +2826,9 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("c");
       });
 
-    cy.get(cesc(`#\\/b\\/animal`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/b\\/plant`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/b\\/p`))
+    cy.get(cesc2(`#/b/animal`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/b/plant`)).should("have.text", "bush");
+    cy.get(cesc2(`#/b/p`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2827,23 +2836,23 @@ describe("Conditional Content Tag Tests", function () {
         expect(text.trim()).equal("6cz");
       });
 
-    cy.get(cesc(`#\\/animalcopy`)).should("have.text", "mouse");
-    cy.get(cesc(`#\\/plantcopy`)).should("have.text", "bush");
-    cy.get(cesc(`#\\/pcopy`))
+    cy.get(cesc2(`#/animalcopy`)).should("have.text", "mouse");
+    cy.get(cesc2(`#/plantcopy`)).should("have.text", "bush");
+    cy.get(cesc2(`#/pcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("6cz");
       });
-    cy.get(cesc(`#\\/xxcopy`))
+    cy.get(cesc2(`#/xxcopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
       .then((text) => {
         expect(text.trim()).equal("z");
       });
-    cy.get(cesc(`#\\/aacopy`))
+    cy.get(cesc2(`#/aacopy`))
       .find(".mjx-mrow")
       .eq(0)
       .invoke("text")
@@ -2862,88 +2871,88 @@ describe("Conditional Content Tag Tests", function () {
     <conditionalContent assignNames="a">
       <case condition="$n<0" newNamespace>
         <p>What is your favorite animal? <textinput name="response" /></p>
-        <p>I like <copy prop="value" target="response" />, too.</p>
+        <p>I like <copy prop="value" source="response" />, too.</p>
       </case>
       <case condition="$n <= 1" newNamespace >
         <p>What is your name? <textinput name="response" /></p>
-        <p>Hello, <copy prop="value" target="response" />!</p>
+        <p>Hello, <copy prop="value" source="response" />!</p>
       </case>
       <else newNamespace>
         <p>Anything else? <textinput name="response" /></p>
-        <p>To repeat: <copy prop="value" target="response" />.</p>
+        <p>To repeat: <copy prop="value" source="response" />.</p>
       </else>
     </conditionalContent>
     
-    <p>The response: <copy target="a/response" prop="value" /></p>
+    <p>The response: <copy source="a/response" prop="value" /></p>
     
-    <copy name="sc2" target="_conditionalcontent1" assignNames="b" />
+    <conditionalContent name="sc2" copysource="_conditionalcontent1" assignNames="b" />
     
-    <p>The response one more time: <copy target="b/response" prop="value" /></p>
+    <p>The response one more time: <copy source="b/response" prop="value" /></p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/a\\/_p1`)).should("have.text", "What is your name? ");
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "Hello, !");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/b\\/_p1`)).should("have.text", "What is your name? ");
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "Hello, !");
-    cy.get(cesc(`#\\/_p2`)).should("have.text", "The response one more time: ");
+    cy.get(cesc2(`#/a/_p1`)).should("have.text", "What is your name? ");
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "Hello, !");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/b/_p1`)).should("have.text", "What is your name? ");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "Hello, !");
+    cy.get(cesc2(`#/_p2`)).should("have.text", "The response one more time: ");
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("Fred{enter}");
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "Hello, Fred!");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: Fred");
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "Hello, Fred!");
-    cy.get(cesc(`#\\/_p2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("Fred{enter}");
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "Hello, Fred!");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: Fred");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "Hello, Fred!");
+    cy.get(cesc2(`#/_p2`)).should(
       "have.text",
       "The response one more time: Fred",
     );
 
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}-1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}-1{enter}", {
       force: true,
     });
-    cy.get(cesc(`#\\/a\\/_p1`)).should(
+    cy.get(cesc2(`#/a/_p1`)).should(
       "have.text",
       "What is your favorite animal? ",
     );
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "I like , too.");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/b\\/_p1`)).should(
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "I like , too.");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/b/_p1`)).should(
       "have.text",
       "What is your favorite animal? ",
     );
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "I like , too.");
-    cy.get(cesc(`#\\/_p2`)).should("have.text", "The response one more time: ");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "I like , too.");
+    cy.get(cesc2(`#/_p2`)).should("have.text", "The response one more time: ");
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("dogs{enter}");
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "I like dogs, too.");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: dogs");
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "I like dogs, too.");
-    cy.get(cesc(`#\\/_p2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("dogs{enter}");
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "I like dogs, too.");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: dogs");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "I like dogs, too.");
+    cy.get(cesc2(`#/_p2`)).should(
       "have.text",
       "The response one more time: dogs",
     );
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}3{enter}",
       { force: true },
     );
-    cy.get(cesc(`#\\/a\\/_p1`)).should("have.text", "Anything else? ");
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "To repeat: .");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/b\\/_p1`)).should("have.text", "Anything else? ");
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "To repeat: .");
-    cy.get(cesc(`#\\/_p2`)).should("have.text", "The response one more time: ");
+    cy.get(cesc2(`#/a/_p1`)).should("have.text", "Anything else? ");
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "To repeat: .");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/b/_p1`)).should("have.text", "Anything else? ");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "To repeat: .");
+    cy.get(cesc2(`#/_p2`)).should("have.text", "The response one more time: ");
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("Goodbye{enter}");
-    cy.get(cesc(`#\\/a\\/_p2`)).should("have.text", "To repeat: Goodbye.");
-    cy.get(cesc(`#\\/_p1`)).should("have.text", "The response: Goodbye");
-    cy.get(cesc(`#\\/b\\/_p2`)).should("have.text", "To repeat: Goodbye.");
-    cy.get(cesc(`#\\/_p2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("Goodbye{enter}");
+    cy.get(cesc2(`#/a/_p2`)).should("have.text", "To repeat: Goodbye.");
+    cy.get(cesc2(`#/_p1`)).should("have.text", "The response: Goodbye");
+    cy.get(cesc2(`#/b/_p2`)).should("have.text", "To repeat: Goodbye.");
+    cy.get(cesc2(`#/_p2`)).should(
       "have.text",
       "The response one more time: Goodbye",
     );
@@ -2959,91 +2968,91 @@ describe("Conditional Content Tag Tests", function () {
     <conditionalContent assignNames="(a b)">
       <case condition="$n<0" >
         <p newNamespace name="panimal">What is your favorite animal? <textinput name="response" /></p>
-        <p newNamespace>I like <copy prop="value" target="../panimal/response" />, too.</p>
+        <p newNamespace>I like <copy prop="value" source="../panimal/response" />, too.</p>
       </case>
       <case condition="$n <= 1" >
         <p newNamespace name="pname">What is your name? <textinput name="response" /></p>
-        <p newNamespace>Hello, <copy prop="value" target="../pname/response" />!</p>
+        <p newNamespace>Hello, <copy prop="value" source="../pname/response" />!</p>
       </case>
       <else>
         <p newNamespace name="pelse">Anything else? <textinput name="response" /></p>
-        <p newNamespace>To repeat: <copy prop="value" target="../pelse/response" />.</p>
+        <p newNamespace>To repeat: <copy prop="value" source="../pelse/response" />.</p>
       </else>
     </conditionalContent>
     
-    <p name="pResponse">The response: <copy target="a/response" prop="value" /></p>
+    <p name="pResponse">The response: <copy source="a/response" prop="value" /></p>
     
-    <copy name="sc2" target="_conditionalcontent1" assignNames="(c d)" />
+    <conditionalContent name="sc2" copysource="_conditionalcontent1" assignNames="(c d)" />
     
-    <p name="pResponse2">The response one more time: <copy target="c/response" prop="value" /></p>
+    <p name="pResponse2">The response one more time: <copy source="c/response" prop="value" /></p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc(`#\\/a`)).should("have.text", "What is your name? ");
-    cy.get(cesc(`#\\/b`)).should("have.text", "Hello, !");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/c`)).should("have.text", "What is your name? ");
-    cy.get(cesc(`#\\/d`)).should("have.text", "Hello, !");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a`)).should("have.text", "What is your name? ");
+    cy.get(cesc2(`#/b`)).should("have.text", "Hello, !");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/c`)).should("have.text", "What is your name? ");
+    cy.get(cesc2(`#/d`)).should("have.text", "Hello, !");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: ",
     );
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("Fred{enter}");
-    cy.get(cesc(`#\\/b`)).should("have.text", "Hello, Fred!");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: Fred");
-    cy.get(cesc(`#\\/d`)).should("have.text", "Hello, Fred!");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("Fred{enter}");
+    cy.get(cesc2(`#/b`)).should("have.text", "Hello, Fred!");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: Fred");
+    cy.get(cesc2(`#/d`)).should("have.text", "Hello, Fred!");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: Fred",
     );
 
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}-1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}-1{enter}", {
       force: true,
     });
-    cy.get(cesc(`#\\/a`)).should("have.text", "What is your favorite animal? ");
-    cy.get(cesc(`#\\/b`)).should("have.text", "I like , too.");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/c`)).should("have.text", "What is your favorite animal? ");
-    cy.get(cesc(`#\\/d`)).should("have.text", "I like , too.");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a`)).should("have.text", "What is your favorite animal? ");
+    cy.get(cesc2(`#/b`)).should("have.text", "I like , too.");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/c`)).should("have.text", "What is your favorite animal? ");
+    cy.get(cesc2(`#/d`)).should("have.text", "I like , too.");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: ",
     );
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("dogs{enter}");
-    cy.get(cesc(`#\\/b`)).should("have.text", "I like dogs, too.");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: dogs");
-    cy.get(cesc(`#\\/d`)).should("have.text", "I like dogs, too.");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("dogs{enter}");
+    cy.get(cesc2(`#/b`)).should("have.text", "I like dogs, too.");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: dogs");
+    cy.get(cesc2(`#/d`)).should("have.text", "I like dogs, too.");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: dogs",
     );
 
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}3{enter}",
       { force: true },
     );
-    cy.get(cesc(`#\\/a`)).should("have.text", "Anything else? ");
-    cy.get(cesc(`#\\/b`)).should("have.text", "To repeat: .");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: ");
-    cy.get(cesc(`#\\/c`)).should("have.text", "Anything else? ");
-    cy.get(cesc(`#\\/d`)).should("have.text", "To repeat: .");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a`)).should("have.text", "Anything else? ");
+    cy.get(cesc2(`#/b`)).should("have.text", "To repeat: .");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: ");
+    cy.get(cesc2(`#/c`)).should("have.text", "Anything else? ");
+    cy.get(cesc2(`#/d`)).should("have.text", "To repeat: .");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: ",
     );
 
-    cy.get(cesc(`#\\/a\\/response_input`)).clear().type("Goodbye{enter}");
-    cy.get(cesc(`#\\/b`)).should("have.text", "To repeat: Goodbye.");
-    cy.get(cesc(`#\\/pResponse`)).should("have.text", "The response: Goodbye");
-    cy.get(cesc(`#\\/d`)).should("have.text", "To repeat: Goodbye.");
-    cy.get(cesc(`#\\/pResponse2`)).should(
+    cy.get(cesc2(`#/a/response_input`)).clear().type("Goodbye{enter}");
+    cy.get(cesc2(`#/b`)).should("have.text", "To repeat: Goodbye.");
+    cy.get(cesc2(`#/pResponse`)).should("have.text", "The response: Goodbye");
+    cy.get(cesc2(`#/d`)).should("have.text", "To repeat: Goodbye.");
+    cy.get(cesc2(`#/pResponse2`)).should(
       "have.text",
       "The response one more time: Goodbye",
     );
@@ -3063,15 +3072,15 @@ describe("Conditional Content Tag Tests", function () {
     </conditionalContent></p>
     
     <p><conditionalContent>
-      <copy target="positiveCase" createComponentOfType="case" />
+      <copy source="positiveCase" createComponentOfType="case" />
       <case condition="$n<0" ><text>negative</text></case>
       <else><text>neither</text></else>
     </conditionalContent></p>
     
     
-    <p><copy target="_conditionalcontent1" /></p>
+    <p>$_conditionalcontent1</p>
 
-    <p><copy target="_conditionalcontent2" /></p>
+    <p>$_conditionalcontent2</p>
 
     `,
         },
@@ -3079,44 +3088,44 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p3")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p2")).should("have.text", "neither");
-    cy.get(cesc("#\\/_p4")).should("have.text", "neither");
+    cy.get(cesc2("#/_p1")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p3")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p2")).should("have.text", "neither");
+    cy.get(cesc2("#/_p4")).should("have.text", "neither");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "positive");
-    cy.get(cesc("#\\/_p3")).should("have.text", "positive");
-    cy.get(cesc("#\\/_p2")).should("have.text", "positive");
-    cy.get(cesc("#\\/_p4")).should("have.text", "positive");
+    cy.get(cesc2("#/_p1")).should("have.text", "positive");
+    cy.get(cesc2("#/_p3")).should("have.text", "positive");
+    cy.get(cesc2("#/_p2")).should("have.text", "positive");
+    cy.get(cesc2("#/_p4")).should("have.text", "positive");
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p3")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p2")).should("have.text", "negative");
-    cy.get(cesc("#\\/_p4")).should("have.text", "negative");
+    cy.get(cesc2("#/_p1")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p3")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p2")).should("have.text", "negative");
+    cy.get(cesc2("#/_p4")).should("have.text", "negative");
 
     cy.log("enter 0");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}0{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p3")).should("have.text", "non-positive");
-    cy.get(cesc("#\\/_p2")).should("have.text", "neither");
-    cy.get(cesc("#\\/_p4")).should("have.text", "neither");
+    cy.get(cesc2("#/_p1")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p3")).should("have.text", "non-positive");
+    cy.get(cesc2("#/_p2")).should("have.text", "neither");
+    cy.get(cesc2("#/_p4")).should("have.text", "neither");
   });
 
   it("copy else", () => {
@@ -3135,12 +3144,12 @@ describe("Conditional Content Tag Tests", function () {
     <p><conditionalContent>
       <case condition="$n<0" ><text>hello</text></case>
       <case condition="$n>0" ><text>oops</text></case>
-      <copy target="bye" createComponentOfType="else" />
+      <copy source="bye" createComponentOfType="else" />
     </conditionalContent></p>
     
-    <p><copy target="_conditionalcontent1" /></p>
+    <p>$_conditionalcontent1</p>
 
-    <p><copy target="_conditionalcontent2" /></p>
+    <p>$_conditionalcontent2</p>
 
     `,
         },
@@ -3148,44 +3157,44 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait until loaded
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p3")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p2")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p4")).should("have.text", "bye");
+    cy.get(cesc2("#/_p1")).should("have.text", "bye");
+    cy.get(cesc2("#/_p3")).should("have.text", "bye");
+    cy.get(cesc2("#/_p2")).should("have.text", "bye");
+    cy.get(cesc2("#/_p4")).should("have.text", "bye");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}1{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}1{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "hello");
-    cy.get(cesc("#\\/_p3")).should("have.text", "hello");
-    cy.get(cesc("#\\/_p2")).should("have.text", "oops");
-    cy.get(cesc("#\\/_p4")).should("have.text", "oops");
+    cy.get(cesc2("#/_p1")).should("have.text", "hello");
+    cy.get(cesc2("#/_p3")).should("have.text", "hello");
+    cy.get(cesc2("#/_p2")).should("have.text", "oops");
+    cy.get(cesc2("#/_p4")).should("have.text", "oops");
 
     cy.log("enter -1");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{end}{backspace}{backspace}-1{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p3")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p2")).should("have.text", "hello");
-    cy.get(cesc("#\\/_p4")).should("have.text", "hello");
+    cy.get(cesc2("#/_p1")).should("have.text", "bye");
+    cy.get(cesc2("#/_p3")).should("have.text", "bye");
+    cy.get(cesc2("#/_p2")).should("have.text", "hello");
+    cy.get(cesc2("#/_p4")).should("have.text", "hello");
 
     cy.log("enter 0");
-    cy.get(cesc("#\\/n") + " textarea").type(
+    cy.get(cesc2("#/n") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}0{enter}",
       { force: true },
     );
 
-    cy.get(cesc("#\\/_p1")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p3")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p2")).should("have.text", "bye");
-    cy.get(cesc("#\\/_p4")).should("have.text", "bye");
+    cy.get(cesc2("#/_p1")).should("have.text", "bye");
+    cy.get(cesc2("#/_p3")).should("have.text", "bye");
+    cy.get(cesc2("#/_p2")).should("have.text", "bye");
+    cy.get(cesc2("#/_p4")).should("have.text", "bye");
   });
 
   it("conditionalcontents hide dynamically", () => {
@@ -3212,54 +3221,54 @@ describe("Conditional Content Tag Tests", function () {
       <case condition="$n<=1"><text>cat</text></case>
       <else><text>mouse</text></else>
     </conditionalContent></p>
-    <p name="pa1">a1: <copy target="a" assignNames="(a1)" /></p>
-    <p name="pb1">b1: <copy target="b" assignNames="(b1)" /></p>
+    <p name="pa1">a1: <copy source="a" assignNames="(a1)" /></p>
+    <p name="pb1">b1: <copy source="b" assignNames="(b1)" /></p>
     `,
         },
         "*",
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: mouse");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: mouse");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: ");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: mouse");
+    cy.get(cesc2("#/pa")).should("have.text", "a: mouse");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: mouse");
+    cy.get(cesc2("#/pb")).should("have.text", "b: ");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: mouse");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: cat");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: ");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
+    cy.get(cesc2("#/pa")).should("have.text", "a: cat");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: cat");
+    cy.get(cesc2("#/pb")).should("have.text", "b: ");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: cat");
 
-    cy.get(cesc("#\\/h1")).click();
-    cy.get(cesc("#\\/h2")).click();
+    cy.get(cesc2("#/h1")).click();
+    cy.get(cesc2("#/h2")).click();
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: ");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: cat");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: cat");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: cat");
+    cy.get(cesc2("#/pa")).should("have.text", "a: ");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: cat");
+    cy.get(cesc2("#/pb")).should("have.text", "b: cat");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: cat");
 
     cy.log("enter -3");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}-3{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}-3{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: ");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: dog");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
+    cy.get(cesc2("#/pa")).should("have.text", "a: ");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: dog");
+    cy.get(cesc2("#/pb")).should("have.text", "b: dog");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: dog");
 
-    cy.get(cesc("#\\/h1")).click();
-    cy.get(cesc("#\\/h2")).click();
+    cy.get(cesc2("#/h1")).click();
+    cy.get(cesc2("#/h2")).click();
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: dog");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: dog");
-    cy.get(cesc("#\\/pb")).should("have.text", "b: ");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: dog");
+    cy.get(cesc2("#/pa")).should("have.text", "a: dog");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: dog");
+    cy.get(cesc2("#/pb")).should("have.text", "b: ");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: dog");
   });
 
   it("string and blank strings in case and else", () => {
@@ -3279,12 +3288,14 @@ describe("Conditional Content Tag Tests", function () {
     <else>The $animal2 $verb2.</else>
   </conditionalContent></p>
 
-  <p name="pa1">a1: <copy target="a" assignNames="((a11) (a12))" /></p>
+  <p name="pa1">a1: $a{assignNames="a11 a12 a13 a14"}</p>
 
-  <p name="ppieces" >pieces: <copy target="_conditionalcontent1" assignNames="(b c)" /></p>
+  <p name="ppieces" >pieces: <conditionalContent copysource="_conditionalcontent1" assignNames="(b c d e)" /></p>
 
-  <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
-  <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
+  <p name="pb1">b1: $b{name="b1"}</p>
+  <p name="pc1">c1: $c{name="c1"}</p>
+  <p name="pd1">d1: $d{name="d1"}</p>
+  <p name="pe1">e1: $e{name="e1"}</p>
 
   `,
         },
@@ -3292,57 +3303,75 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: The elephant trumpets.");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: The elephant trumpets.");
-    cy.get(cesc("#\\/ppieces")).should(
+    cy.get(cesc2("#/pa")).should("have.text", "a: The elephant trumpets.");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: The elephant trumpets.");
+    cy.get(cesc2("#/ppieces")).should(
       "have.text",
       "pieces: The elephant trumpets.",
     );
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: elephant");
-    cy.get(cesc("#\\/pc1")).should("have.text", "c1: trumpets");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: elephant");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: trumpets");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc("#\\/a11")).should("have.text", "elephant");
-    cy.get(cesc("#\\/a12")).should("have.text", "trumpets");
-    cy.get(cesc("#\\/b1")).should("have.text", "elephant");
-    cy.get(cesc("#\\/c1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "elephant");
+    cy.get(cesc2("#/a13")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "elephant");
+    cy.get(cesc2("#/d1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/e1")).should("not.exist");
 
     cy.log("enter 1");
-    cy.get(cesc("#\\/n") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc2("#/n") + " textarea").type("1{enter}", { force: true });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: The fox jumps.");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: The fox jumps.");
-    cy.get(cesc("#\\/ppieces")).should("have.text", "pieces: The fox jumps.");
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: fox");
-    cy.get(cesc("#\\/pc1")).should("have.text", "c1: jumps");
+    cy.get(cesc2("#/pa")).should("have.text", "a: The fox jumps.");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: The fox jumps.");
+    cy.get(cesc2("#/ppieces")).should("have.text", "pieces: The fox jumps.");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: fox");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: jumps");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc("#\\/a11")).should("have.text", "fox");
-    cy.get(cesc("#\\/a12")).should("have.text", "jumps");
-    cy.get(cesc("#\\/b1")).should("have.text", "fox");
-    cy.get(cesc("#\\/c1")).should("have.text", "jumps");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "fox");
+    cy.get(cesc2("#/a13")).should("have.text", "jumps");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "fox");
+    cy.get(cesc2("#/d1")).should("have.text", "jumps");
+    cy.get(cesc2("#/e1")).should("not.exist");
 
     cy.log("enter 0");
-    cy.get(cesc("#\\/n") + " textarea").type("{end}{backspace}0{enter}", {
+    cy.get(cesc2("#/n") + " textarea").type("{end}{backspace}0{enter}", {
       force: true,
     });
 
-    cy.get(cesc("#\\/pa")).should("have.text", "a: The elephant trumpets.");
-    cy.get(cesc("#\\/pa1")).should("have.text", "a1: The elephant trumpets.");
-    cy.get(cesc("#\\/ppieces")).should(
+    cy.get(cesc2("#/pa")).should("have.text", "a: The elephant trumpets.");
+    cy.get(cesc2("#/pa1")).should("have.text", "a1: The elephant trumpets.");
+    cy.get(cesc2("#/ppieces")).should(
       "have.text",
       "pieces: The elephant trumpets.",
     );
-    cy.get(cesc("#\\/pb1")).should("have.text", "b1: elephant");
-    cy.get(cesc("#\\/pc1")).should("have.text", "c1: trumpets");
+    cy.get(cesc2("#/pb1")).should("have.text", "b1: ");
+    cy.get(cesc2("#/pc1")).should("have.text", "c1: elephant");
+    cy.get(cesc2("#/pd1")).should("have.text", "d1: trumpets");
+    cy.get(cesc2("#/pe1")).should("have.text", "e1: ");
 
-    cy.get(cesc("#\\/a11")).should("have.text", "elephant");
-    cy.get(cesc("#\\/a12")).should("have.text", "trumpets");
-    cy.get(cesc("#\\/b1")).should("have.text", "elephant");
-    cy.get(cesc("#\\/c1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a11")).should("not.exist");
+    cy.get(cesc2("#/a12")).should("have.text", "elephant");
+    cy.get(cesc2("#/a13")).should("have.text", "trumpets");
+    cy.get(cesc2("#/a14")).should("not.exist");
+    cy.get(cesc2("#/b1")).should("not.exist");
+    cy.get(cesc2("#/c1")).should("have.text", "elephant");
+    cy.get(cesc2("#/d1")).should("have.text", "trumpets");
+    cy.get(cesc2("#/e1")).should("not.exist");
   });
 
-  it("copy with invalid target gets expanded", () => {
+  it("copy with invalid source gets expanded", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
@@ -3351,7 +3380,7 @@ describe("Conditional Content Tag Tests", function () {
   <mathinput name="n" />
   before
   <conditionalContent assignNames='a'>
-    <case condition="$n=1" newNamespace>nothing: <copy target="nada" name="nothing" /></case>
+    <case condition="$n=1" newNamespace>nothing: <copy source="nada" name="nothing" /></case>
   </conditionalContent>
   after
   `,
@@ -3360,13 +3389,13 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/n") + " textarea")
+    cy.get(cesc2("#/n") + " textarea")
       .type("1", { force: true })
       .blur();
 
-    cy.get(cesc("#\\/_document1")).should(
+    cy.get(cesc2("#/_document1")).should(
       "contain.text",
       "a\n  1\n  before\n  nothing: \n  after\n  ",
     );
@@ -3416,80 +3445,80 @@ describe("Conditional Content Tag Tests", function () {
       );
     });
 
-    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+    cy.get(cesc2("#/_text1")).should("have.text", "a");
 
-    cy.get(cesc("#\\/winner1")).should("not.exist");
-    cy.get(cesc("#\\/_p1")).should("not.exist");
-    cy.get(cesc("#\\/winner1b")).should("not.exist");
-    cy.get(cesc("#\\/_p2")).should("not.exist");
-    cy.get(cesc("#\\/winner2")).should("not.exist");
-    cy.get(cesc("#\\/_p3")).should("not.exist");
-    cy.get(cesc("#\\/winner3")).should("not.exist");
-    cy.get(cesc("#\\/_p4")).should("not.exist");
-    cy.get(cesc("#\\/winner0")).should("have.text", "no winner");
-    cy.get(cesc("#\\/_p5")).should("have.text", "We have no winner.");
+    cy.get(cesc2("#/winner1")).should("not.exist");
+    cy.get(cesc2("#/_p1")).should("not.exist");
+    cy.get(cesc2("#/winner1b")).should("not.exist");
+    cy.get(cesc2("#/_p2")).should("not.exist");
+    cy.get(cesc2("#/winner2")).should("not.exist");
+    cy.get(cesc2("#/_p3")).should("not.exist");
+    cy.get(cesc2("#/winner3")).should("not.exist");
+    cy.get(cesc2("#/_p4")).should("not.exist");
+    cy.get(cesc2("#/winner0")).should("have.text", "no winner");
+    cy.get(cesc2("#/_p5")).should("have.text", "We have no winner.");
 
-    cy.get(cesc("#\\/n") + " textarea")
+    cy.get(cesc2("#/n") + " textarea")
       .type("1", { force: true })
       .blur();
 
-    cy.get(cesc("#\\/winner1")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p1")).should("have.text", "We have a first winner!");
-    cy.get(cesc("#\\/winner1b")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p2")).should(
+    cy.get(cesc2("#/winner1")).should("have.text", "first winner");
+    cy.get(cesc2("#/_p1")).should("have.text", "We have a first winner!");
+    cy.get(cesc2("#/winner1b")).should("have.text", "first winner");
+    cy.get(cesc2("#/_p2")).should(
       "have.text",
       "Just emphasizing that we have that first winner!",
     );
-    cy.get(cesc("#\\/winner2")).should("not.exist");
-    cy.get(cesc("#\\/_p3")).should("not.exist");
-    cy.get(cesc("#\\/winner3")).should("not.exist");
-    cy.get(cesc("#\\/_p4")).should("not.exist");
-    cy.get(cesc("#\\/winner0")).should("not.exist");
-    cy.get(cesc("#\\/_p5")).should("not.exist");
+    cy.get(cesc2("#/winner2")).should("not.exist");
+    cy.get(cesc2("#/_p3")).should("not.exist");
+    cy.get(cesc2("#/winner3")).should("not.exist");
+    cy.get(cesc2("#/_p4")).should("not.exist");
+    cy.get(cesc2("#/winner0")).should("not.exist");
+    cy.get(cesc2("#/_p5")).should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea")
+    cy.get(cesc2("#/n") + " textarea")
       .type("{end}{backspace}2", { force: true })
       .blur();
 
-    cy.get(cesc("#\\/winner1")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p1")).should("have.text", "We have a first winner!");
-    cy.get(cesc("#\\/winner1b")).should("not.exist");
-    cy.get(cesc("#\\/_p2")).should("not.exist");
-    cy.get(cesc("#\\/winner2")).should("have.text", "second winner");
-    cy.get(cesc("#\\/_p3")).should("have.text", "We have a second winner!");
-    cy.get(cesc("#\\/winner3")).should("not.exist");
-    cy.get(cesc("#\\/_p4")).should("not.exist");
-    cy.get(cesc("#\\/winner0")).should("not.exist");
-    cy.get(cesc("#\\/_p5")).should("not.exist");
+    cy.get(cesc2("#/winner1")).should("have.text", "first winner");
+    cy.get(cesc2("#/_p1")).should("have.text", "We have a first winner!");
+    cy.get(cesc2("#/winner1b")).should("not.exist");
+    cy.get(cesc2("#/_p2")).should("not.exist");
+    cy.get(cesc2("#/winner2")).should("have.text", "second winner");
+    cy.get(cesc2("#/_p3")).should("have.text", "We have a second winner!");
+    cy.get(cesc2("#/winner3")).should("not.exist");
+    cy.get(cesc2("#/_p4")).should("not.exist");
+    cy.get(cesc2("#/winner0")).should("not.exist");
+    cy.get(cesc2("#/_p5")).should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea")
+    cy.get(cesc2("#/n") + " textarea")
       .type("{end}{backspace}3", { force: true })
       .blur();
 
-    cy.get(cesc("#\\/winner1")).should("have.text", "first winner");
-    cy.get(cesc("#\\/_p1")).should("have.text", "We have a first winner!");
-    cy.get(cesc("#\\/winner1b")).should("not.exist");
-    cy.get(cesc("#\\/_p2")).should("not.exist");
-    cy.get(cesc("#\\/winner2")).should("not.exist");
-    cy.get(cesc("#\\/_p3")).should("not.exist");
-    cy.get(cesc("#\\/winner3")).should("have.text", "third winner");
-    cy.get(cesc("#\\/_p4")).should("have.text", "We have a third winner!");
-    cy.get(cesc("#\\/winner0")).should("not.exist");
-    cy.get(cesc("#\\/_p5")).should("not.exist");
+    cy.get(cesc2("#/winner1")).should("have.text", "first winner");
+    cy.get(cesc2("#/_p1")).should("have.text", "We have a first winner!");
+    cy.get(cesc2("#/winner1b")).should("not.exist");
+    cy.get(cesc2("#/_p2")).should("not.exist");
+    cy.get(cesc2("#/winner2")).should("not.exist");
+    cy.get(cesc2("#/_p3")).should("not.exist");
+    cy.get(cesc2("#/winner3")).should("have.text", "third winner");
+    cy.get(cesc2("#/_p4")).should("have.text", "We have a third winner!");
+    cy.get(cesc2("#/winner0")).should("not.exist");
+    cy.get(cesc2("#/_p5")).should("not.exist");
 
-    cy.get(cesc("#\\/n") + " textarea")
+    cy.get(cesc2("#/n") + " textarea")
       .type("{end}{backspace}x", { force: true })
       .blur();
 
-    cy.get(cesc("#\\/winner1")).should("not.exist");
-    cy.get(cesc("#\\/_p1")).should("not.exist");
-    cy.get(cesc("#\\/winner1b")).should("not.exist");
-    cy.get(cesc("#\\/_p2")).should("not.exist");
-    cy.get(cesc("#\\/winner2")).should("not.exist");
-    cy.get(cesc("#\\/_p3")).should("not.exist");
-    cy.get(cesc("#\\/winner3")).should("not.exist");
-    cy.get(cesc("#\\/_p4")).should("not.exist");
-    cy.get(cesc("#\\/winner0")).should("have.text", "no winner");
-    cy.get(cesc("#\\/_p5")).should("have.text", "We have no winner.");
+    cy.get(cesc2("#/winner1")).should("not.exist");
+    cy.get(cesc2("#/_p1")).should("not.exist");
+    cy.get(cesc2("#/winner1b")).should("not.exist");
+    cy.get(cesc2("#/_p2")).should("not.exist");
+    cy.get(cesc2("#/winner2")).should("not.exist");
+    cy.get(cesc2("#/_p3")).should("not.exist");
+    cy.get(cesc2("#/winner3")).should("not.exist");
+    cy.get(cesc2("#/_p4")).should("not.exist");
+    cy.get(cesc2("#/winner0")).should("have.text", "no winner");
+    cy.get(cesc2("#/_p5")).should("have.text", "We have no winner.");
   });
 });

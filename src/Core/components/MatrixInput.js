@@ -49,8 +49,7 @@ export class MatrixInput extends Input {
 
   static componentType = "matrixInput";
 
-  static variableForPlainMacro = "value";
-  static variableForPlainCopy = "value";
+  static variableForImplicitProp = "value";
 
   static processWhenJustUpdatedForNewComponent = true;
 
@@ -2838,8 +2837,7 @@ export default class MatrixComponentInput extends BaseComponent {
   static componentType = "_matrixComponentInput";
   static rendererType = "mathInput";
 
-  static variableForPlainMacro = "value";
-  static variableForPlainCopy = "value";
+  static variableForImplicitProp = "value";
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();

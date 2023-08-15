@@ -24,20 +24,20 @@ describe("Equilibriumcurve Tag Tests", function () {
     <booleaninput name="b2" />
 
     <p><aslist>
-    <copy prop="stable" target="g/A" assignNames="gAs" />
-    <copy prop="stable" target="g/B" assignNames="gBs" />
-    <copy prop="stable" target="g/C" assignNames="gCs" />
-    <copy prop="stable" target="g/D" assignNames="gDs" />
+    $(g/A.stable{assignNames="gAs"})
+    $(g/B.stable{assignNames="gBs"})
+    $(g/C.stable{assignNames="gCs"})
+    $(g/D.stable{assignNames="gDs"})
     </aslist>
     </p>
 
-    <copy target="g" assignNames="g2" />
+    $g{name="g2"}
 
     <p><aslist>
-    <copy prop="stable" target="g2/A" assignNames="g2As" />
-    <copy prop="stable" target="g2/B" assignNames="g2Bs" />
-    <copy prop="stable" target="g2/C" assignNames="g2Cs" />
-    <copy prop="stable" target="g2/D" assignNames="g2Ds" />
+    $(g2/A.stable{assignNames="g2As"})
+    $(g2/B.stable{assignNames="g2Bs"})
+    $(g2/C.stable{assignNames="g2Cs"})
+    $(g2/D.stable{assignNames="g2Ds"})
     </aslist>
     </p>
     `,

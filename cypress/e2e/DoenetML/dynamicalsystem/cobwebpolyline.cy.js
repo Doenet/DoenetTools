@@ -25,7 +25,7 @@ describe("CobwebPolyline Tag Tests", function () {
   <p>Initial condition is <m>x_0 = 1</m>:
   <answer name="check_initial">
     <award><when>
-    <copy prop="coords" target="P1"/> = <math>(1,0)</math>
+    $P1.coords = <math>(1,0)</math>
     </when></award>
   </answer>
   </p>
@@ -55,7 +55,7 @@ describe("CobwebPolyline Tag Tests", function () {
         </mrow>
       </template>
       <sources alias="x" indexAlias="i">
-        <copy prop="iterateValues" target="graph1/cobweb" />
+        $(graph1/cobweb.iterateValues)
       </sources>
     </map>
     </md>
@@ -66,7 +66,7 @@ describe("CobwebPolyline Tag Tests", function () {
   <p><answer name="check_cobweb">
   <award credit="$(graph1/cobweb.fractionCorrectVerticesAdjusted)"><when>true</when></award>
     <considerAsResponses>
-      <copy prop="vertices" target="graph1/cobweb" />
+      $(graph1/cobweb.vertices)
     </considerAsResponses>
   </answer>
   </p>
@@ -1798,7 +1798,7 @@ describe("CobwebPolyline Tag Tests", function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreictwhjxdmqxxvpfoqybgdfp75tcvwda56kewdxhjhe2ixcia5bqu4" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" numIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreic2ntu5jyvhrm5wnfxngtao35dupv6so547rw32y5hnb4dn2gt4um" name="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" numIterationsRequired="3" initialValueDx="0.2" x0="1" />
   
   `,
         },
@@ -2321,7 +2321,7 @@ describe("CobwebPolyline Tag Tests", function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreief4dcu4mfiqfib2xii5ftoevhbymn34dyi4inqsxdfvfskj234qi" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" numIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreief4dcu4mfiqfib2xii5ftoevhbymn34dyi4inqsxdfvfskj234qi" name="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" numIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   <p>Credit achieved: <copy source="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `,

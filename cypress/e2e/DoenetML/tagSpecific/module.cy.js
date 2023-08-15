@@ -22,11 +22,11 @@ describe("Module Tag Tests", function () {
 
     <p name="p2">Hello $item!</p>
 
-    <p name="p3"><copy target="m" item="plant" /></p>
+    <p name="p3">$m{item="plant"}</p>
 
     <p><textinput name="item2" prefill="animal" /></p>
-    <p name="p4"><copy target="m" item="$item2" /></p>
-    <p name="p5"><copy target="m" /></p>
+    <p name="p4">$m{item="$item2"}</p>
+    <p name="p5">$m</p>
 
     `,
         },
@@ -64,10 +64,10 @@ describe("Module Tag Tests", function () {
 
     <p name="p2">Hello $(m/item)!</p>
 
-    <copy target="m" item="plant" assignNames="m2" />
+    $m{item="plant" name="m2"}
     <p><textinput name="item" prefill="animal" /></p>
-    <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{item="$item" name="m3"}
+    $m{name="m4"}
     `,
         },
         "*",
@@ -104,10 +104,10 @@ describe("Module Tag Tests", function () {
 
     <p name="p2">Hello $(m/mads/item)!</p>
 
-    <copy target="m" item="plant" assignNames="m2" />
+    $m{item="plant" name="m2"}
     <p><textinput name="item" prefill="animal" /></p>
-    <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{item="$item" name="m3"}
+    $m{name="m4"}
     `,
         },
         "*",
@@ -144,10 +144,10 @@ describe("Module Tag Tests", function () {
 
     <p name="p2">Hello $(m/mads/ma/item)!</p>
 
-    <copy target="m" item="plant" assignNames="m2" />
+    $m{item="plant" name="m2"}
     <p><textinput name="item" prefill="animal" /></p>
-    <copy target="m" item="$item" assignNames="m3" />
-    <copy target="m" assignNames="m4" />
+    $m{item="$item" name="m3"}
+    $m{name="m4"}
     `,
         },
         "*",
@@ -189,15 +189,15 @@ describe("Module Tag Tests", function () {
         <mathinput name="x2" bindValueTo="$(p.x)" />
         <mathinput name="y2" bindValueTo="$(p.y)" />
       </p>
-      <p><copy prop="value" target="y2" assignNames="y2a" /></p>
+      <p>$y2.value{assignNames="y2a"}</p>
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
     <p>Graph size: <textinput name="s" prefill="small" /> <mathinput name="ar" prefill="1/2" /></p>
     
-    <copy target="m" x="$x" y="$y" size="$s" aspectRatio="$ar" assignNames="m2" />
+    $m{x="$x" y="$y" size="$s" aspectRatio="$ar" name="m2"}
 
-    <p><copy prop="value" target="ar" assignNames="ar2" /></p>
+    <p>$ar.value{assignNames="ar2"}</p>
     `,
         },
         "*",
@@ -352,14 +352,14 @@ describe("Module Tag Tests", function () {
         <point name="p" x="$u" y="$v" />
       </graph>
       <math name="vfixed" modifyIndirectly="false" hide>$v</math>
-      <copy target="../m" x="$u+$vfixed" y="9" assignNames="m" />
+      $(../m{x="$u+$vfixed" y="9" name="m"})
       
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
-    <copy target="n" u="$x" v="$y" assignNames="n2" />
+    $n{u="$x" v="$y" name="n2"}
 
-    <p><copy prop="value" target="y" assignNames="y2" /></p>
+    <p>$y.value{assignNames="y2"}</p>
 
     `,
         },
@@ -475,10 +475,10 @@ describe("Module Tag Tests", function () {
     <text>a</text>
 
     <section><title>First one</title>
-    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' assignNames="m1" />
+    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' name="m1" />
 
-    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
-    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
+    <p>Submitted response for problem 1: <math name="sr1">$(m1/ans.submittedResponse)</math></p>
+    <p>Credit for problem 1: $(m1/prob.creditAchieved{assignNames="ca1"})</p>
     </section>
 
     <section><title>Second one</title>
@@ -486,9 +486,9 @@ describe("Module Tag Tests", function () {
     <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
 
     
-    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" assignNames="m2" />
-    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
-    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
+    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" name="m2" />
+    <p>Submitted response for problem 2: <math name="sr2">$(m2/ans.submittedResponse)</math></p>
+    <p>Credit for problem 2: $(m2/prob.creditAchieved{assignNames="ca2"})</p>
     </section>
 
     `,
@@ -655,15 +655,15 @@ describe("Module Tag Tests", function () {
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" name="extMod" />
     
-      <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" target="extMod/ans" /></math></p>
-      <p>Credit for problem: <copy prop="creditAchieved" target="extMod/prob" assignNames="ca" /></p>
+      <p>Submitted response for problem: <math name="sr">$(extMod/ans.submittedResponse)</math></p>
+      <p>Credit for problem: $(extMod/prob.creditAchieved{assignNames="ca"})</p>
 
     </module>
     
-    <copy target="g" b="-5" c="9" size="small" aspectRatio="4/5" assignNames="g2" />
-    <copy target="g" a="7" c="-3" size="large" aspectRatio="1.2" assignNames="g3" />
+    $g{b="-5" c="9" size="small" aspectRatio="4/5" name="g2"}
+    $g{a="7" c="-3" size="large" aspectRatio="1.2" name="g3"}
 
     `,
         },
@@ -988,12 +988,12 @@ describe("Module Tag Tests", function () {
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" name="extMod" />
 
     </module>
     
-    <copy target="g" b="-5" c="9" size="small" aspectRatio="4/5" assignNames="g2" />
-    <copy target="g" a="7" c="-3" size="large" aspectRatio="1.2" assignNames="g3" />
+    $g{b="-5" c="9" size="small" aspectRatio="4/5" name="g2"}
+    $g{a="7" c="-3" size="large" aspectRatio="1.2" name="g3"}
 
     `,
         },
@@ -1308,12 +1308,12 @@ describe("Module Tag Tests", function () {
       <p>Point: $P</p>
     </module>
     
-    <copy target="m" P="(3,4)" assignNames="m2" />
+    $m{P="(3,4)" name="m2"}
 
     <graph>
       <point name="Q">(5,6)</point>
     </graph>
-    <copy target="m" P="$Q" assignNames="m3" />
+    $m{P="$Q" name="m3"}
     
 
     `,
@@ -1375,9 +1375,9 @@ describe("Module Tag Tests", function () {
       <p>Disabled? $disabled</p>
     </module>
     
-    <copy target="m" assignNames="m1" />
-    <copy target="m" disabled="true" assignNames="m2" />
-    <copy target="m" disabled="false" assignNames="m3" />
+    $m{name="m1"}
+    $m{disabled="true" name="m2"}
+    $m{disabled="false" name="m3"}
     `,
         },
         "*",
@@ -1398,10 +1398,11 @@ describe("Module Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <module name='m'>
-      <customAttribute componentType="boolean" attribute="a1" defaultValue="true" assignNames="duplicate" />
-      
-      <customAttribute componentType="text" attribute="a2" defaultValue="yes" assignNames="duplicate" />
+      <setup>
+        <customAttribute componentType="boolean" attribute="a1" defaultValue="true" assignNames="duplicate" />
         
+        <customAttribute componentType="text" attribute="a2" defaultValue="yes" assignNames="duplicate" />
+      </setup>
     </module>
     `,
         },
@@ -1410,34 +1411,25 @@ describe("Module Tag Tests", function () {
     });
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
 
-    cy.get(cesc2("#/_customattribute2")).should(
+    cy.get(cesc2("#/_document1")).should(
       "contain.text",
       "Duplicate component name: duplicate",
     );
-    cy.get(cesc2("#/_customattribute2")).should("contain.text", "line 6");
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 7");
 
     cy.window().then(async (win) => {
       let errorWarnings = await win.returnErrorWarnings1();
 
       expect(errorWarnings.errors.length).eq(1);
-      expect(errorWarnings.warnings.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
 
       expect(errorWarnings.errors[0].message).contain(
         "Duplicate component name: duplicate",
       );
-      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(6);
-      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(7);
-      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(6);
-      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(104);
-
-      expect(errorWarnings.warnings[0].message).contain(
-        "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component",
-      );
-      expect(errorWarnings.warnings[0].level).eq(1);
-      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
-      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
-      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
-      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(108);
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(106);
     });
   });
 
@@ -1577,14 +1569,14 @@ describe("Module Tag Tests", function () {
       <p>Next value? <mathinput name="q" />  OK $q it is.</p>
     </module>
     
-    <copy target="md" assignNames="md1" />
-    <copy target="md1" n="10" assignNames="md2" />
-    <copy target="md2" m="100" assignNames="md3" />
-    <copy target="md3" n="0" assignNames="md4" />
+    $md{name="md1"}
+    $md1{n="10" name="md2"}
+    $md2{m="100" name="md3"}
+    $md3{n="0" name="md4"}
 
-    <copy target="md" m="13" n="17" assignNames="md5" />
-    <copy target="md5" m="" n="a" assignNames="md6" />
-    <copy target="md6" m="3" n="4" assignNames="md7" />
+    $md{m="13" n="17" name="md5"}
+    $md5{m="" n="a" name="md6"}
+    $md6{m="3" n="4" name="md7"}
 
     `,
         },
@@ -1778,10 +1770,10 @@ describe("Module Tag Tests", function () {
 
 
     <section><title>First one</title>
-    <copy target="mod" assignNames="m1" />
+    $mod{name="m1"}
 
-    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
-    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
+    <p>Submitted response for problem 1: <math name="sr1">$(m1/ans.submittedResponse)</math></p>
+    <p>Credit for problem 1: $(m1/prob.creditAchieved{assignNames="ca1"})</p>
     </section>
 
     <section><title>Second one</title>
@@ -1789,9 +1781,9 @@ describe("Module Tag Tests", function () {
     <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
 
     
-    <copy target="mod" title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" aspectRatio="1" assignNames="m2" />
-    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
-    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
+    $mod{title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" aspectRatio="1" name="m2"}
+    <p>Submitted response for problem 2: <math name="sr2">$(m2/ans.submittedResponse)</math></p>
+    <p>Credit for problem 2: $(m2/prob.creditAchieved{assignNames="ca2"})</p>
     </section>
 
     `,

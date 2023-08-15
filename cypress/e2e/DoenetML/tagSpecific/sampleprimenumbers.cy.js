@@ -12,18 +12,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers/></template>
       <sources><sequence length="50" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      $_map1
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -35,13 +35,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(50);
@@ -55,18 +52,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         ).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -80,18 +74,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="5" maxValue="20" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      $_map1
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -103,16 +97,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -120,21 +108,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect([2, 3, 5, 7, 11, 13, 17, 19].includes(sample)).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -148,18 +130,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="5" minValue="50" /></template>
       <sources><sequence length="10" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      $_map1
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -171,16 +153,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -190,21 +166,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         );
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -218,18 +188,18 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers numSamples="10" minValue="10000" maxValue="100000" /></template>
       <sources><sequence length="5" /></sources>
     </map>
     </aslist></p>
 
-    <p><aslist>
-      <copy target="_map1" />
+    <p name="p2"><aslist>
+      $_map1
     </aslist></p>
 
-    <copy target="_p1" assignNames = "p" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -241,16 +211,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = stateVariables["/_map1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(samples.length).eq(50);
 
@@ -271,21 +235,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(isprime).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.reduce(
-        (a, c) => [
-          ...a,
-          ...stateVariables[
-            stateVariables[c.componentName].replacements[0].componentName
-          ].replacements.map(
-            (y) => stateVariables[y.componentName].stateValues.value,
-          ),
-        ],
-        [],
+      let copiedSamples = stateVariables[
+        stateVariables["/p2"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -299,15 +257,15 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         {
           doenetML: `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
       <samplePrimeNumbers name="samples" numSamples="50" minValue="1900" maxValue="2000" exclude="1931 1979 1997" />
     </aslist></p>
 
-    <p><aslist>
-      <copy source="samples" />
+    <p name="p2"><aslist>
+      $samples{name="samples2"}
     </aslist></p>
 
-    <copy source="_p1" assignNames = "p" />
+    $p2{name="p3"}
     `,
         },
         "*",
@@ -332,13 +290,13 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         ).eq(true);
       }
 
-      let copiedSamples = stateVariables["/_copy1"].replacements.map(
+      let copiedSamples = stateVariables["/samples2"].replacements.map(
         (y) => stateVariables[y.componentName].stateValues.value,
       );
       expect(copiedSamples).eqls(samples);
 
       let copiedCopiedSamples = stateVariables[
-        stateVariables["/p"].activeChildren[0].componentName
+        stateVariables["/p3"].activeChildren[0].componentName
       ].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
@@ -365,7 +323,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <samplePrimeNumbers  name="sample2" exclude="$ml_exclude" maxValue="50" numSamples="$numSamples2" />
     </aslist></p>
     <p>
-      <copy prop="value" target="numSamples2" assignNames="numSamples2a" />
+      $numSamples2.value{assignNames="numSamples2a"}
     </p>
     `,
         },
@@ -502,17 +460,17 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
-    <p name="p3"><copy target="_aslist1" /></p>
+    <p name="p2"><aslist>$_map1</aslist></p>
+    <p name="p3">$_aslist1</p>
 
-    <copy name="p4" target="p1" />
-    <copy name="p5" target="p2" />
-    <copy name="p6" target="p3" />
+    $p1{name="p4"}
+    $p2{name="p5"}
+    $p3{name="p6"}
 
-    <copy name="p7" target="p4" />
-    <copy name="p8" target="p5" />
-    <copy name="p9" target="p6" />
-    <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
+    $p6{name="p7"}
+    $p7{name="p8"}
+    $p8{name="p9"}
+    <p>$_mathinput1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -539,40 +497,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -599,40 +545,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       for (let ind = 0; ind < 1; ind++) {
         expect(
@@ -659,54 +593,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -734,40 +656,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -794,40 +704,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
@@ -855,54 +753,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -936,40 +822,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       for (let ind = 0; ind < 3; ind++) {
         expect(
@@ -996,54 +870,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -1071,40 +933,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -1133,40 +983,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
@@ -1194,54 +1032,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -1281,40 +1107,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(
@@ -1341,54 +1155,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -1416,40 +1218,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -1486,40 +1276,28 @@ describe("SamplePrimeNumbers Tag Tests", function () {
           .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(
@@ -1546,54 +1324,42 @@ describe("SamplePrimeNumbers Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(samplednumbers[ind]);
@@ -1610,9 +1376,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="u"/></p>
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="v"/></p>
     <p><samplePrimeNumbers minValue="80" maxValue="90" assignnames="w"/></p>
-    <p><copy assignNames="u2" target="u" /></p>
-    <p><copy assignNames="v2" target="v" /></p>
-    <p><copy assignNames="w2" target="w" /></p>
+    <p>$u{name="u2"}</p>
+    <p>$v{name="v2"}</p>
+    <p>$w{name="w2"}</p>
     `,
         },
         "*",
@@ -1653,9 +1419,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><aslist>
       <samplePrimeNumbers name="s" minvalue="175" maxValue="205" assignnames="u v w" numSamples="6"  />
     </aslist></p>
-    <p><copy assignNames="u2" target="u" /></p>
-    <p><copy assignNames="v2" target="v" /></p>
-    <p><copy assignNames="w2" target="w" /></p>
+    <p>$u{name="u2"}</p>
+    <p>$v{name="v2"}</p>
+    <p>$w{name="w2"}</p>
     `,
         },
         "*",
@@ -1720,9 +1486,9 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     <p><aslist>
       <samplePrimeNumbers name="s" newnamespace minValue="175" maxValue="205" assignnames="u v w" numSamples="6"  />
     </aslist></p>
-    <p><copy assignNames="u2" target="s/u" /></p>
-    <p><copy assignNames="v2" target="s/v" /></p>
-    <p><copy assignNames="w2" target="s/w" /></p>
+    <p>$(s/u{name="u2"})</p>
+    <p>$(s/v{name="v2"})</p>
+    <p>$(s/w{name="w2"})</p>
     `,
         },
         "*",
@@ -1778,10 +1544,46 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     });
   });
 
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><samplePrimeNumbers name="s" minvalue="175" maxValue="205" assignnames="u v w x y" numSamples="5" /></p>
+    <p><samplePrimeNumbers copySource="s" name="s2" asList="false" /></p>
+
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect([179, 181, 191, 193, 197, 199].includes(num));
+      }
+      cy.get(cesc2("#/_p1")).should("have.text", results.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", results.join(""));
+    });
+  });
+
   it(`different numbers when reload page if don't save state`, () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers /></template>
       <sources><sequence length="100" /></sources>
@@ -1806,13 +1608,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -1843,13 +1642,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2.length).eq(100);
@@ -1869,7 +1665,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
   it("same numbers when reload if save state", () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers  /></template>
       <sources><sequence length="100" /></sources>
@@ -1901,13 +1697,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -1948,13 +1741,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2).eqls(samples);
@@ -1964,7 +1754,7 @@ describe("SamplePrimeNumbers Tag Tests", function () {
   it("same numbers for given variant if variantDeterminesSeed", () => {
     let doenetML = `
     <text>a</text>
-    <p><aslist>
+    <p name="p1"><aslist>
     <map>
       <template><samplePrimeNumbers variantDeterminesSeed /></template>
       <sources><sequence length="100" /></sources>
@@ -1990,13 +1780,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      samples = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      samples = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples.length).eq(100);
@@ -2028,13 +1815,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2).eqls(samples);
@@ -2057,13 +1841,10 @@ describe("SamplePrimeNumbers Tag Tests", function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let samples2 = stateVariables["/_map1"].replacements.map(
-        (x) =>
-          stateVariables[
-            stateVariables[
-              stateVariables[x.componentName].replacements[0].componentName
-            ].replacements[0].componentName
-          ].stateValues.value,
+      let samples2 = stateVariables[
+        stateVariables["/p1"].activeChildren[0].componentName
+      ].activeChildren.map(
+        (x) => stateVariables[x.componentName].stateValues.value,
       );
 
       expect(samples2.length).eq(100);

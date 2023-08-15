@@ -34,6 +34,12 @@ export default class Sequence extends CompositeComponent {
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
 
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
+
     return attributes;
   }
 
@@ -85,7 +91,6 @@ export default class Sequence extends CompositeComponent {
     component,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
 
@@ -158,7 +163,6 @@ export default class Sequence extends CompositeComponent {
           componentType,
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
-          flags,
         });
       }
 
@@ -194,7 +198,6 @@ export default class Sequence extends CompositeComponent {
     component,
     workspace,
     componentInfoObjects,
-    flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
@@ -247,7 +250,6 @@ export default class Sequence extends CompositeComponent {
         component,
         workspace,
         componentInfoObjects,
-        flags,
       });
 
       let newSerializedReplacements = replacementResults.replacements;
@@ -397,7 +399,6 @@ export default class Sequence extends CompositeComponent {
               componentType,
               componentInfoObjects,
               compositeCreatesNewNamespace: newNamespace,
-              flags,
             });
           }
 

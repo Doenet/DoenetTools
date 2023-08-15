@@ -21,41 +21,41 @@ describe("Collection assignName Tests", function () {
 
   <collect name="cl1" componentTypes="point" target="_graph1" assignNames="a b" />
 
-  <p>a: <copy target="a" prop="coords" assignNames="ashadow" /></p>
-  <p>b: <copy target="b" prop="coords" assignNames="bshadow" /></p>
+  <p>a: $a.coords{assignNames="ashadow"}</p>
+  <p>b: $b.coords{assignNames="bshadow"}</p>
 
   <collect name="cl2" componentTypes="point" prop="x" target="_graph1" assignNames="u v" />
 
-  <p>u: <copy target="u" assignNames="ushadow" /></p>
-  <p>v: <copy target="v" assignNames="vshadow" /></p>
+  <p>u: $u{name="ushadow"}</p>
+  <p>v: $v{name="vshadow"}</p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="a1 b1" />
+    $cl1{name="cp1" assignNames="a1 b1"}
   </graph>
 
-  <p>a1: <copy target="a1" prop="coords" assignNames="a1shadow" /></p>
-  <p>b1: <copy target="b1" prop="coords" assignNames="b1shadow" /></p>
+  <p>a1: $a1.coords{assignNames="a1shadow"}</p>
+  <p>b1: $b1.coords{assignNames="b1shadow"}</p>
 
-  <copy name="cp2" prop="x" target="cl1" assignNames="u1 v1" />
+  $cl1.x{name="cp2" assignNames="u1 v1"}
 
-  <p>u1: <copy target="u1" assignNames="u1shadow" /></p>
-  <p>v1: <copy target="v1" assignNames="v1shadow" /></p>
+  <p>u1: $u1{name="u1shadow"}</p>
+  <p>v1: $v1{name="v1shadow"}</p>
 
-  <copy name="cp3" prop="x" target="cp1" assignNames="u2 v2" />
+  $cp1.x{name="cp3" assignNames="u2 v2"}
 
-  <p>u2: <copy target="u2" assignNames="u2shadow" /></p>
-  <p>v2: <copy target="v2" assignNames="v2shadow" /></p>
+  <p>u2: $u2{name="u2shadow"}</p>
+  <p>v2: $v2{name="v2shadow"}</p>
 
-  <extract prop="x" assignNames="u3 v3"><copy target="cl1"/></extract>
+  <extract prop="x" assignNames="u3 v3">$cl1</extract>
 
-  <p>u3: <copy target="u3" assignNames="u3shadow" /></p>
-  <p>v3: <copy target="v3" assignNames="v3shadow" /></p>
+  <p>u3: $u3{name="u3shadow"}</p>
+  <p>v3: $v3{name="v3shadow"}</p>
 
-  <extract prop="x" assignNames="u4"><copy target="a1"/></extract>
-  <extract prop="x" assignNames="v4"><copy target="b1"/></extract>
+  <extract prop="x" assignNames="u4">$a1</extract>
+  <extract prop="x" assignNames="v4">$b1</extract>
 
-  <p>u4: <copy target="u4" assignNames="u4shadow" /></p>
-  <p>v4: <copy target="v4" assignNames="v4shadow" /></p>
+  <p>u4: $u4{name="u4shadow"}</p>
+  <p>v4: $v4{name="v4shadow"}</p>
 
   `,
         },
@@ -1036,50 +1036,50 @@ describe("Collection assignName Tests", function () {
 
   <collect name="cl1" componentTypes="point" target="_graph1" assignNames="a b c" />
 
-  <p>a: <copy target="a" prop="coords" assignNames="ashadow" /></p>
-  <p>b: <copy target="b" prop="coords" assignNames="bshadow" /></p>
-  <p name="pc">c: <copy target="c" prop="coords" assignNames="cshadow" /></p>
+  <p>a: $a.coords{assignNames="ashadow"}</p>
+  <p>b: $b.coords{assignNames="bshadow"}</p>
+  <p name="pc">c: $c.coords{assignNames="cshadow"}</p>
 
   <collect name="cl2" componentTypes="point" prop="x" target="_graph1" assignNames="u v w" />
 
-  <p>u: <copy target="u" assignNames="ushadow" /></p>
-  <p>v: <copy target="v" assignNames="vshadow" /></p>
-  <p name="pw">w: <copy target="w" assignNames="wshadow" /></p>
+  <p>u: $u{name="ushadow"}</p>
+  <p>v: $v{name="vshadow"}</p>
+  <p name="pw">w: $w{name="wshadow"}</p>
 
   <graph>
-    <copy name="cp1" target="cl1" assignNames="a1 b1 c1" />
+    $cl1{name="cp1" assignNames="a1 b1 c1"}
   </graph>
 
-  <p>a1: <copy target="a1" prop="coords" assignNames="a1shadow" /></p>
-  <p>b1: <copy target="b1" prop="coords" assignNames="b1shadow" /></p>
-  <p name="pc1">c1: <copy target="c1" prop="coords" assignNames="c1shadow" /></p>
+  <p>a1: $a1.coords{assignNames="a1shadow"}</p>
+  <p>b1: $b1.coords{assignNames="b1shadow"}</p>
+  <p name="pc1">c1: $c1.coords{assignNames="c1shadow"}</p>
 
-  <copy name="cp2" prop="x" target="cl1" assignNames="u1 v1 w1 x1" />
+  $cl1.x{name="cp2" assignNames="u1 v1 w1 x1"}
 
-  <p>u1: <copy target="u1" assignNames="u1shadow" /></p>
-  <p>v1: <copy target="v1" assignNames="v1shadow" /></p>
-  <p name="pv1">v1: <copy target="w1" assignNames="w1shadow" /></p>
-  <p name="px1">x1: <copy target="x1" assignNames="x1shadow" /></p>
+  <p>u1: $u1{name="u1shadow"}</p>
+  <p>v1: $v1{name="v1shadow"}</p>
+  <p name="pv1">v1: $w1{name="w1shadow"}</p>
+  <p name="px1">x1: $x1{name="x1shadow"}</p>
 
-  <copy name="cp3" prop="x" target="cp1" assignNames="u2 v2" />
+  $cp1.x{name="cp3" assignNames="u2 v2"}
 
-  <p>u2: <copy target="u2" assignNames="u2shadow" /></p>
-  <p>v2: <copy target="v2" assignNames="v2shadow" /></p>
+  <p>u2: $u2{name="u2shadow"}</p>
+  <p>v2: $v2{name="v2shadow"}</p>
 
-  <extract prop="x" assignNames="u3 v3 w3 x3"><copy target="cl1"/></extract>
+  <extract prop="x" assignNames="u3 v3 w3 x3">$cl1</extract>
 
-  <p>u3: <copy target="u3" assignNames="u3shadow" /></p>
-  <p>v3: <copy target="v3" assignNames="v3shadow" /></p>
-  <p name="pv3">v3: <copy target="w3" assignNames="w3shadow" /></p>
-  <p name="px3">x3: <copy target="x3" assignNames="x3shadow" /></p>
+  <p>u3: $u3{name="u3shadow"}</p>
+  <p>v3: $v3{name="v3shadow"}</p>
+  <p name="pv3">v3: $w3{name="w3shadow"}</p>
+  <p name="px3">x3: $x3{name="x3shadow"}</p>
 
-  <extract prop="x" assignNames="u4 w4"><copy target="a1"/></extract>
-  <extract prop="x" assignNames="v4 x4"><copy target="b1"/></extract>
+  <extract prop="x" assignNames="u4 w4">$a1</extract>
+  <extract prop="x" assignNames="v4 x4">$b1</extract>
 
-  <p>u4: <copy target="u4" assignNames="u4shadow" /></p>
-  <p>v4: <copy target="v4" assignNames="v4shadow" /></p>
-  <p name="pv4">v4: <copy target="w4" assignNames="w4shadow" /></p>
-  <p name="px4">x4: <copy target="x4" assignNames="x4shadow" /></p>
+  <p>u4: $u4{name="u4shadow"}</p>
+  <p>v4: $v4{name="v4shadow"}</p>
+  <p name="pv4">v4: $w4{name="w4shadow"}</p>
+  <p name="px4">x4: $x4{name="x4shadow"}</p>
 
   `,
         },
@@ -2107,46 +2107,46 @@ describe("Collection assignName Tests", function () {
     <collect name="cl1" componentTypes="line" prop="points" target="_graph1" assignNames="a b c d" />
   </graph>
   
-  <p>a: <copy target="a" prop="coords" assignNames="ashadow" /></p>
-  <p>b: <copy target="b" prop="coords" assignNames="bshadow" /></p>
-  <p>c: <copy target="c" prop="coords" assignNames="cshadow" /></p>
-  <p>d: <copy target="d" prop="coords" assignNames="dshadow" /></p>
+  <p>a: $a.coords{assignNames="ashadow"}</p>
+  <p>b: $b.coords{assignNames="bshadow"}</p>
+  <p>c: $c.coords{assignNames="cshadow"}</p>
+  <p>d: $d.coords{assignNames="dshadow"}</p>
 
-  <copy prop="x" target="cl1" assignNames="p q r s" />
+  $cl1.x{assignNames="p q r s"}
 
-  <p>p: <copy target="p" assignNames="pshadow" /></p>
-  <p>q: <copy target="q" assignNames="qshadow" /></p>
-  <p>r: <copy target="r" assignNames="rshadow" /></p>
-  <p>s: <copy target="s" assignNames="sshadow" /></p>
+  <p>p: $p{name="pshadow"}</p>
+  <p>q: $q{name="qshadow"}</p>
+  <p>r: $r{name="rshadow"}</p>
+  <p>s: $s{name="sshadow"}</p>
 
-  <extract prop="x" assignNames="p1 q1 r1 s1" ><copy target="cl1" /></extract>
+  <extract prop="x" assignNames="p1 q1 r1 s1" >$cl1</extract>
 
-  <p>p1: <copy target="p1" assignNames="p1shadow" /></p>
-  <p>q1: <copy target="q1" assignNames="q1shadow" /></p>
-  <p>r1: <copy target="r1" assignNames="r1shadow" /></p>
-  <p>s1: <copy target="s1" assignNames="s1shadow" /></p>
+  <p>p1: $p1{name="p1shadow"}</p>
+  <p>q1: $q1{name="q1shadow"}</p>
+  <p>r1: $r1{name="r1shadow"}</p>
+  <p>s1: $s1{name="s1shadow"}</p>
 
-  <copy prop="xs" target="cl1" assignNames="x11 x12 x21 x22 x31 x32 x41 x42" />
+  $cl1.xs{assignNames="x11 x12 x21 x22 x31 x32 x41 x42"}
 
-  <p>x11: <copy target="x11" assignNames="x11shadow" /></p>
-  <p>x12: <copy target="x12" assignNames="x12shadow" /></p>
-  <p>x21: <copy target="x21" assignNames="x21shadow" /></p>
-  <p>x22: <copy target="x22" assignNames="x22shadow" /></p>
-  <p>x31: <copy target="x31" assignNames="x31shadow" /></p>
-  <p>x32: <copy target="x32" assignNames="x32shadow" /></p>
-  <p>x41: <copy target="x41" assignNames="x41shadow" /></p>
-  <p>x42: <copy target="x42" assignNames="x42shadow" /></p>
+  <p>x11: $x11{name="x11shadow"}</p>
+  <p>x12: $x12{name="x12shadow"}</p>
+  <p>x21: $x21{name="x21shadow"}</p>
+  <p>x22: $x22{name="x22shadow"}</p>
+  <p>x31: $x31{name="x31shadow"}</p>
+  <p>x32: $x32{name="x32shadow"}</p>
+  <p>x41: $x41{name="x41shadow"}</p>
+  <p>x42: $x42{name="x42shadow"}</p>
 
-  <extract prop="xs" assignNames="y11 y12 y21 y22 y31 y32 y41 y42" ><copy target="cl1" /></extract>
+  <extract prop="xs" assignNames="y11 y12 y21 y22 y31 y32 y41 y42" >$cl1</extract>
 
-  <p>y11: <copy target="y11" assignNames="y11shadow" /></p>
-  <p>y12: <copy target="y12" assignNames="y12shadow" /></p>
-  <p>y21: <copy target="y21" assignNames="y21shadow" /></p>
-  <p>y22: <copy target="y22" assignNames="y22shadow" /></p>
-  <p>y31: <copy target="y31" assignNames="y31shadow" /></p>
-  <p>y32: <copy target="y32" assignNames="y32shadow" /></p>
-  <p>y41: <copy target="y41" assignNames="y41shadow" /></p>
-  <p>y42: <copy target="y42" assignNames="y42shadow" /></p>
+  <p>y11: $y11{name="y11shadow"}</p>
+  <p>y12: $y12{name="y12shadow"}</p>
+  <p>y21: $y21{name="y21shadow"}</p>
+  <p>y22: $y22{name="y22shadow"}</p>
+  <p>y31: $y31{name="y31shadow"}</p>
+  <p>y32: $y32{name="y32shadow"}</p>
+  <p>y41: $y41{name="y41shadow"}</p>
+  <p>y42: $y42{name="y42shadow"}</p>
 
   `,
         },
@@ -4063,58 +4063,58 @@ describe("Collection assignName Tests", function () {
 
   <collect name="allpoints" componentTypes="point" target="_graph1" assignNames="p1 p2 p3 p4"/>
 
-  <p>p1: <copy target="p1" prop="coords" assignNames="p1shadow" /></p>
-  <p>p2: <copy target="p2" prop="coords" assignNames="p2shadow" /></p>
-  <p>p3: <copy target="p3" prop="coords" assignNames="p3shadow" /></p>
-  <p>p4: <copy target="p4" prop="coords" assignNames="p4shadow" /></p>
+  <p>p1: $p1.coords{assignNames="p1shadow"}</p>
+  <p>p2: $p2.coords{assignNames="p2shadow"}</p>
+  <p>p3: $p3.coords{assignNames="p3shadow"}</p>
+  <p>p4: $p4.coords{assignNames="p4shadow"}</p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
+  $allpoints{name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"}
 
-  <p>q1: <copy target="q1" prop="coords" assignNames="q1shadow" /></p>
-  <p>q2: <copy target="q2" prop="coords" assignNames="q2shadow" /></p>
-  <p>q3: <copy target="q3" prop="coords" assignNames="q3shadow" /></p>
-  <p>q4: <copy target="q4" prop="coords" assignNames="q4shadow" /></p>
-  <p>q5: <copy target="q5" prop="coords" assignNames="q5shadow" /></p>
-  <p>q6: <copy target="q6" prop="coords" assignNames="q6shadow" /></p>
+  <p>q1: $q1.coords{assignNames="q1shadow"}</p>
+  <p>q2: $q2.coords{assignNames="q2shadow"}</p>
+  <p>q3: $q3.coords{assignNames="q3shadow"}</p>
+  <p>q4: $q4.coords{assignNames="q4shadow"}</p>
+  <p>q5: $q5.coords{assignNames="q5shadow"}</p>
+  <p>q6: $q6.coords{assignNames="q6shadow"}</p>
 
   <collect name="allxs1" componentTypes="point" prop="x" target="_graph1" assignNames="x11 x12 x13 x14 x15 x16" />
 
-  <p>x11: <copy target="x11" assignNames="x11shadow" /></p>
-  <p>x12: <copy target="x12" assignNames="x12shadow" /></p>
-  <p>x13: <copy target="x13" assignNames="x13shadow" /></p>
-  <p>x14: <copy target="x14" assignNames="x14shadow" /></p>
-  <p>x15: <copy target="x15" assignNames="x15shadow" /></p>
-  <p>x16: <copy target="x16" assignNames="x16shadow" /></p>
+  <p>x11: $x11{name="x11shadow"}</p>
+  <p>x12: $x12{name="x12shadow"}</p>
+  <p>x13: $x13{name="x13shadow"}</p>
+  <p>x14: $x14{name="x14shadow"}</p>
+  <p>x15: $x15{name="x15shadow"}</p>
+  <p>x16: $x16{name="x16shadow"}</p>
 
-  <copy name="allxs2" target="allxs1" assignNames="x21 x22 x23 x24"/>
+  $allxs1{name="allxs2" assignNames="x21 x22 x23 x24"}
 
-  <p>x21: <copy target="x21" assignNames="x21shadow" /></p>
-  <p>x22: <copy target="x22" assignNames="x22shadow" /></p>
-  <p>x23: <copy target="x23" assignNames="x23shadow" /></p>
-  <p>x24: <copy target="x24" assignNames="x24shadow" /></p>
+  <p>x21: $x21{name="x21shadow"}</p>
+  <p>x22: $x22{name="x22shadow"}</p>
+  <p>x23: $x23{name="x23shadow"}</p>
+  <p>x24: $x24{name="x24shadow"}</p>
 
-  <copy name="allxs3" prop="x" target="allpoints" assignNames="x31 x32 x33 x34" />
+  $allpoints.x{name="allxs3" assignNames="x31 x32 x33 x34"}
 
-  <p>x31: <copy target="x31" assignNames="x31shadow" /></p>
-  <p>x32: <copy target="x32" assignNames="x32shadow" /></p>
-  <p>x33: <copy target="x33" assignNames="x33shadow" /></p>
-  <p>x34: <copy target="x34" assignNames="x34shadow" /></p>
+  <p>x31: $x31{name="x31shadow"}</p>
+  <p>x32: $x32{name="x32shadow"}</p>
+  <p>x33: $x33{name="x33shadow"}</p>
+  <p>x34: $x34{name="x34shadow"}</p>
 
-  <copy name="allxs4" prop="x" target="allpoints2" assignNames="x41 x42 x43 x44" />
+  $allpoints2.x{name="allxs4" assignNames="x41 x42 x43 x44"}
 
-  <p>x41: <copy target="x41" assignNames="x41shadow" /></p>
-  <p>x42: <copy target="x42" assignNames="x42shadow" /></p>
-  <p>x43: <copy target="x43" assignNames="x43shadow" /></p>
-  <p>x44: <copy target="x44" assignNames="x44shadow" /></p>
+  <p>x41: $x41{name="x41shadow"}</p>
+  <p>x42: $x42{name="x42shadow"}</p>
+  <p>x43: $x43{name="x43shadow"}</p>
+  <p>x44: $x44{name="x44shadow"}</p>
 
-  <extract name="allxs5" prop="x" assignNames="x51 x52 x53 x54 x55 x56"><copy target="allpoints" /></extract>
+  <extract name="allxs5" prop="x" assignNames="x51 x52 x53 x54 x55 x56">$allpoints</extract>
 
-  <p>x51: <copy target="x51" assignNames="x51shadow" /></p>
-  <p>x52: <copy target="x52" assignNames="x52shadow" /></p>
-  <p>x53: <copy target="x53" assignNames="x53shadow" /></p>
-  <p>x54: <copy target="x54" assignNames="x54shadow" /></p>
-  <p>x55: <copy target="x55" assignNames="x55shadow" /></p>
-  <p>x56: <copy target="x56" assignNames="x56shadow" /></p>
+  <p>x51: $x51{name="x51shadow"}</p>
+  <p>x52: $x52{name="x52shadow"}</p>
+  <p>x53: $x53{name="x53shadow"}</p>
+  <p>x54: $x54{name="x54shadow"}</p>
+  <p>x55: $x55{name="x55shadow"}</p>
+  <p>x56: $x56{name="x56shadow"}</p>
 
 
   `,
@@ -8795,68 +8795,68 @@ describe("Collection assignName Tests", function () {
 
   <collect name="allpoints" componentTypes="point" target="originals" assignNames="p1 p2 p3 p4"/>
 
-  <p>p1: <copy target="p1" prop="coords" assignNames="p1shadow" /></p>
-  <p>p2: <copy target="p2" prop="coords" assignNames="p2shadow" /></p>
-  <p>p3: <copy target="p3" prop="coords" assignNames="p3shadow" /></p>
-  <p>p4: <copy target="p4" prop="coords" assignNames="p4shadow" /></p>
+  <p>p1: $p1.coords{assignNames="p1shadow"}</p>
+  <p>p2: $p2.coords{assignNames="p2shadow"}</p>
+  <p>p3: $p3.coords{assignNames="p3shadow"}</p>
+  <p>p4: $p4.coords{assignNames="p4shadow"}</p>
 
-  <copy name="allpoints2" target="allpoints" assignNames="q1 q2 q3 q4 q5 q6"/>
+  $allpoints{name="allpoints2" assignNames="q1 q2 q3 q4 q5 q6"}
 
-  <p>q1: <copy target="q1" prop="coords" assignNames="q1shadow" /></p>
-  <p>q2: <copy target="q2" prop="coords" assignNames="q2shadow" /></p>
-  <p>q3: <copy target="q3" prop="coords" assignNames="q3shadow" /></p>
-  <p>q4: <copy target="q4" prop="coords" assignNames="q4shadow" /></p>
-  <p>q5: <copy target="q5" prop="coords" assignNames="q5shadow" /></p>
-  <p>q6: <copy target="q6" prop="coords" assignNames="q6shadow" /></p>
+  <p>q1: $q1.coords{assignNames="q1shadow"}</p>
+  <p>q2: $q2.coords{assignNames="q2shadow"}</p>
+  <p>q3: $q3.coords{assignNames="q3shadow"}</p>
+  <p>q4: $q4.coords{assignNames="q4shadow"}</p>
+  <p>q5: $q5.coords{assignNames="q5shadow"}</p>
+  <p>q6: $q6.coords{assignNames="q6shadow"}</p>
 
   <collect name="allxs1" componentTypes="point" prop="xs" target="originals" assignNames="xs11 xs12 xs13 xs14 xs15 xs16 xs17 xs18" />
 
-  <p>xs11: <copy target="xs11" assignNames="xs11shadow" /></p>
-  <p>xs12: <copy target="xs12" assignNames="xs12shadow" /></p>
-  <p>xs13: <copy target="xs13" assignNames="xs13shadow" /></p>
-  <p>xs14: <copy target="xs14" assignNames="xs14shadow" /></p>
-  <p>xs15: <copy target="xs15" assignNames="xs15shadow" /></p>
-  <p>xs16: <copy target="xs16" assignNames="xs16shadow" /></p>
-  <p>xs17: <copy target="xs17" assignNames="xs17shadow" /></p>
-  <p>xs18: <copy target="xs18" assignNames="xs18shadow" /></p>
+  <p>xs11: $xs11{name="xs11shadow"}</p>
+  <p>xs12: $xs12{name="xs12shadow"}</p>
+  <p>xs13: $xs13{name="xs13shadow"}</p>
+  <p>xs14: $xs14{name="xs14shadow"}</p>
+  <p>xs15: $xs15{name="xs15shadow"}</p>
+  <p>xs16: $xs16{name="xs16shadow"}</p>
+  <p>xs17: $xs17{name="xs17shadow"}</p>
+  <p>xs18: $xs18{name="xs18shadow"}</p>
 
-  <copy name="allxs2" target="allxs1" assignNames="xs21 xs22 xs23 xs24 xs25 xs26"/>
+  $allxs1{name="allxs2" assignNames="xs21 xs22 xs23 xs24 xs25 xs26"}
 
-  <p>xs21: <copy target="xs21" assignNames="xs21shadow" /></p>
-  <p>xs22: <copy target="xs22" assignNames="xs22shadow" /></p>
-  <p>xs23: <copy target="xs23" assignNames="xs23shadow" /></p>
-  <p>xs24: <copy target="xs24" assignNames="xs24shadow" /></p>
-  <p>xs25: <copy target="xs25" assignNames="xs25shadow" /></p>
-  <p>xs26: <copy target="xs26" assignNames="xs26shadow" /></p>
+  <p>xs21: $xs21{name="xs21shadow"}</p>
+  <p>xs22: $xs22{name="xs22shadow"}</p>
+  <p>xs23: $xs23{name="xs23shadow"}</p>
+  <p>xs24: $xs24{name="xs24shadow"}</p>
+  <p>xs25: $xs25{name="xs25shadow"}</p>
+  <p>xs26: $xs26{name="xs26shadow"}</p>
 
-  <copy name="allxs3" prop="xs" target="allpoints" assignNames="xs31 xs32 xs33 xs34 xs35 xs36" />
+  $allpoints.xs{name="allxs3" assignNames="xs31 xs32 xs33 xs34 xs35 xs36"}
 
-  <p>xs31: <copy target="xs31" assignNames="xs31shadow" /></p>
-  <p>xs32: <copy target="xs32" assignNames="xs32shadow" /></p>
-  <p>xs33: <copy target="xs33" assignNames="xs33shadow" /></p>
-  <p>xs34: <copy target="xs34" assignNames="xs34shadow" /></p>
-  <p>xs35: <copy target="xs35" assignNames="xs35shadow" /></p>
-  <p>xs36: <copy target="xs36" assignNames="xs36shadow" /></p>
+  <p>xs31: $xs31{name="xs31shadow"}</p>
+  <p>xs32: $xs32{name="xs32shadow"}</p>
+  <p>xs33: $xs33{name="xs33shadow"}</p>
+  <p>xs34: $xs34{name="xs34shadow"}</p>
+  <p>xs35: $xs35{name="xs35shadow"}</p>
+  <p>xs36: $xs36{name="xs36shadow"}</p>
 
-  <copy name="allxs4" prop="xs" target="allpoints2" assignNames="xs41 xs42 xs43 xs44 xs45 xs46" />
+  $allpoints2.xs{name="allxs4" assignNames="xs41 xs42 xs43 xs44 xs45 xs46"}
 
-  <p>xs41: <copy target="xs41" assignNames="xs41shadow" /></p>
-  <p>xs42: <copy target="xs42" assignNames="xs42shadow" /></p>
-  <p>xs43: <copy target="xs43" assignNames="xs43shadow" /></p>
-  <p>xs44: <copy target="xs44" assignNames="xs44shadow" /></p>
-  <p>xs45: <copy target="xs45" assignNames="xs45shadow" /></p>
-  <p>xs46: <copy target="xs46" assignNames="xs46shadow" /></p>
+  <p>xs41: $xs41{name="xs41shadow"}</p>
+  <p>xs42: $xs42{name="xs42shadow"}</p>
+  <p>xs43: $xs43{name="xs43shadow"}</p>
+  <p>xs44: $xs44{name="xs44shadow"}</p>
+  <p>xs45: $xs45{name="xs45shadow"}</p>
+  <p>xs46: $xs46{name="xs46shadow"}</p>
 
-  <extract name="allxs5" prop="xs" assignNames="xs51 xs52 xs53 xs54 xs55 xs56 xs57 xs58"><copy target="allpoints" /></extract>
+  <extract name="allxs5" prop="xs" assignNames="xs51 xs52 xs53 xs54 xs55 xs56 xs57 xs58">$allpoints</extract>
 
-  <p>xs51: <copy target="xs51" assignNames="xs51shadow" /></p>
-  <p>xs52: <copy target="xs52" assignNames="xs52shadow" /></p>
-  <p>xs53: <copy target="xs53" assignNames="xs53shadow" /></p>
-  <p>xs54: <copy target="xs54" assignNames="xs54shadow" /></p>
-  <p>xs55: <copy target="xs55" assignNames="xs55shadow" /></p>
-  <p>xs56: <copy target="xs56" assignNames="xs56shadow" /></p>
-  <p>xs57: <copy target="xs57" assignNames="xs57shadow" /></p>
-  <p>xs58: <copy target="xs58" assignNames="xs58shadow" /></p>
+  <p>xs51: $xs51{name="xs51shadow"}</p>
+  <p>xs52: $xs52{name="xs52shadow"}</p>
+  <p>xs53: $xs53{name="xs53shadow"}</p>
+  <p>xs54: $xs54{name="xs54shadow"}</p>
+  <p>xs55: $xs55{name="xs55shadow"}</p>
+  <p>xs56: $xs56{name="xs56shadow"}</p>
+  <p>xs57: $xs57{name="xs57shadow"}</p>
+  <p>xs58: $xs58{name="xs58shadow"}</p>
 
   `,
         },

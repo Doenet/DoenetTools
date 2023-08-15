@@ -1,0 +1,55 @@
+<section><title>Outer</title>
+  <p>Intended target: <text name="hi">Hello</text></p>
+
+  <p>Five copies:
+    $(hi{name="c1"})
+    $(/hi{name="c2"})
+    $(../hi{name="c3"})
+    $(../../hi{name="c4"})
+    $(../../../hi{name="c5"})
+  </p>
+
+  <section name="s" newNamespace><title>New namespace</title>
+    <p>Local target: <text name="hi">Hola</text></p>
+    <p>Five copies of local: 
+      $(hi{name="l1"})
+      $(/s/hi{name="l2"})
+      $(../s/hi{name="l3"})
+      $(../../s/hi{name="l4"})
+      $(../../../s/hi{name="l5"})
+    </p>
+    <p>Five copies of base:
+      $(/hi{name="c1"})
+      $(../hi{name="c2"})
+      $(../../hi{name="c3"})
+      $(../../../hi{name="c4"})
+      $(../../../../hi{name="c5"})
+    </p>
+
+    <subsection name="s" newNamespace><title>Another new namespace</title>
+      <p>Local target: <text name="hi">Marhaban</text></p>
+      <p>Five copies of local:
+        $(hi{name="l1"})
+        $(/s/s/hi{name="l2"})
+        $(../s/hi{name="l3"})
+        $(../../s/s/hi{name="l4"})
+        $(../../../s/s/hi{name="l5"})
+      </p>
+      <p>Five copies of middle: 
+        $(/s/hi{name="m1"})
+        $(../hi{name="m2"})
+        $(../../s/hi{name="m3"})
+        $(../../../s/hi{name="m4"})
+        $(../../../../s/hi{name="m5"})
+      </p>
+      <p>Five copies of base:
+        $(/hi{name="c1"})
+        $(../../hi{name="c2"})
+        $(../../../hi{name="c3"})
+        $(../../../../hi{name="c4"})
+        $(../../../../../hi{name="c5"})
+      </p>
+    </subsection>
+
+  </section>
+</section>

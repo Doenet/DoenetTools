@@ -52,6 +52,12 @@ export default class Extract extends CompositeComponent {
       public: true,
       excludeFromSchema: true,
     };
+
+    attributes.asList = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "asList",
+      defaultValue: true,
+    };
     return attributes;
   }
 
@@ -362,8 +368,10 @@ export default class Extract extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
+    let assignNames = component.doenetAttributes.assignNames;
+
     let processResult = processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
+      assignNames,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,

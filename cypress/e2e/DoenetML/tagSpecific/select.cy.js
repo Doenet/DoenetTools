@@ -255,11 +255,11 @@ describe("Select Tag Tests", function () {
     </select>
     </aslist>
 
-    <copy name="n2" target="n3" />
-    <copy name="n" target="num1" />
-    <math name="num1" simplify><copy target="n2" />+<copy target="num2" /></math>
-    <math name="num2" simplify><copy target="n3" />+<copy target="num3" /></math>
-    <copy name="n3" target="num3" />
+    $n3{name="n2"}
+    $num1{name="n"}
+    <math name="num1" simplify>$n2+$num2</math>
+    <math name="num2" simplify>$n3+$num3</math>
+    $num3{name="n3"}
     <number name="num3">1</number>
     `,
         },
@@ -434,6 +434,65 @@ describe("Select Tag Tests", function () {
     });
   });
 
+  it("asList", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <p><select name="s" assignnames="u v w x y" numToSelect="5" type="number">175 176 177 178 179 180 181</select></p>
+    <p><select copySource="s" name="s2" asList="false" /></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    let results = [];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      results.push(stateVariables["/u"].stateValues.value);
+      results.push(stateVariables["/v"].stateValues.value);
+      results.push(stateVariables["/w"].stateValues.value);
+      results.push(stateVariables["/x"].stateValues.value);
+      results.push(stateVariables["/y"].stateValues.value);
+
+      for (let num of results) {
+        expect(num).gte(175).lte(181);
+      }
+
+      let roundedResults = results.map((x) => Math.round(x * 100) / 100);
+      cy.get(cesc2("#/_p1")).should("have.text", roundedResults.join(", "));
+      cy.get(cesc2("#/_p2")).should("have.text", roundedResults.join(""));
+    });
+  });
+
+  it("not list if have ps", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <section>
+      <select numToSelect="4" withReplacement>
+        <option><p>hello</p></option>
+        <option><p>bye</p></option>
+      </select>
+    </section>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); //wait for page to load
+    cy.get(cesc2("#/_section1")).should("not.contain.text", ",");
+  });
+
   it("copies don't resample", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -463,23 +522,23 @@ describe("Select Tag Tests", function () {
 
     <p>
     <aslist>
-    <copy name="noresample1" target="s1" />
-    <copy name="noresample2" target="s2" />
-    <copy name="noreresample1" target="noresample1" />
-    <copy name="noreresample2" target="noresample2" />
+    $s1{name="noresample1"}
+    $s2{name="noresample2"}
+    $noresample1{name="noreresample1"}
+    $noresample2{name="noreresample2"}
     </aslist>
     </p>
 
     <p>
-    <copy name="noresamplelist" target="_aslist1" />
+    $_aslist1{name="noresamplelist"}
     </p>
 
     <p>
-    <copy name="noreresamplelist" target="noresamplelist" />
+    $noresamplelist{name="noreresamplelist"}
     </p>
 
-    <copy name="noresamplep" target="_p1" />
-    <copy name="noreresamplep" target="noresamplep" />
+    $_p1{name="noresamplep"}
+    $noresamplep{name="noreresamplep"}
     
     `,
         },
@@ -535,66 +594,50 @@ describe("Select Tag Tests", function () {
 
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables["/noresamplelist"].replacements[0].componentName
-          ].activeChildren[0].componentName
+          stateVariables["/noresamplelist"].activeChildren[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables["/noresamplelist"].replacements[0].componentName
-          ].activeChildren[1].componentName
+          stateVariables["/noresamplelist"].activeChildren[1].componentName
         ].stateValues.value,
       ).eq(x2);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables["/noreresamplelist"].replacements[0].componentName
-          ].activeChildren[0].componentName
+          stateVariables["/noreresamplelist"].activeChildren[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
-          stateVariables[
-            stateVariables["/noreresamplelist"].replacements[0].componentName
-          ].activeChildren[1].componentName
+          stateVariables["/noreresamplelist"].activeChildren[1].componentName
         ].stateValues.value,
       ).eq(x2);
 
       expect(
         stateVariables[
           stateVariables[
-            stateVariables[
-              stateVariables["/noresamplep"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/noresamplep"].activeChildren[1].componentName
           ].activeChildren[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables[
-              stateVariables["/noresamplep"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/noresamplep"].activeChildren[1].componentName
           ].activeChildren[1].componentName
         ].stateValues.value,
       ).eq(x2);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables[
-              stateVariables["/noreresamplep"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/noreresamplep"].activeChildren[1].componentName
           ].activeChildren[0].componentName
         ].stateValues.value,
       ).eq(x1);
       expect(
         stateVariables[
           stateVariables[
-            stateVariables[
-              stateVariables["/noreresamplep"].replacements[0].componentName
-            ].activeChildren[1].componentName
+            stateVariables["/noreresamplep"].activeChildren[1].componentName
           ].activeChildren[1].componentName
         ].stateValues.value,
       ).eq(x2);
@@ -614,18 +657,18 @@ describe("Select Tag Tests", function () {
     <p name="pchoices">
     Selected choices: <aslist>
     <select name="sample1" withReplacement numToSelect="$numToSelect" assignNames="((v1)) ((v2)) ((v3)) ((v4)) ((v5)) ((v6)) ((v7))">
-      <option><copy prop="value" target="x" /></option>
-      <option><copy prop="value" target="y" /></option>
-      <option><copy prop="value" target="z" /></option>
+      <option>$x.value</option>
+      <option>$y.value</option>
+      <option>$z.value</option>
     </select>
     </aslist>
     </p>
 
-    <p name="pchoices2">Selected choices: <aslist><copy name="noresample" target="sample1" assignNames="((w1)) ((w2)) ((w3)) ((w4)) ((w5)) ((w6)) ((w7))" /></aslist></p>
+    <p name="pchoices2">Selected choices: <aslist><select name="noresample" copysource="sample1" assignNames="((w1)) ((w2)) ((w3)) ((w4)) ((w5)) ((w6)) ((w7))" /></aslist></p>
 
-    <copy name="pchoices3" target="pchoices" />
+    $pchoices{name="pchoices3"}
 
-    <p><copy prop="value" target="z" assignNames="z2" /></p>
+    <p>$z.value{assignNames="z2"}</p>
 
     `,
         },
@@ -806,17 +849,17 @@ describe("Select Tag Tests", function () {
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><copy target="_map1" /></aslist></p>
-    <p name="p3"><copy target="_aslist1" /></p>
+    <p name="p2"><aslist>$_map1</aslist></p>
+    <p name="p3">$_aslist1</p>
 
-    <copy name="p4" target="p1" />
-    <copy name="p5" target="p2" />
-    <copy name="p6" target="p3" />
+    $p1{name="p4"}
+    $p2{name="p5"}
+    $p3{name="p6"}
 
-    <copy name="p7" target="p4" />
-    <copy name="p8" target="p5" />
-    <copy name="p9" target="p6" />
-    <p><copy prop="value" target="_mathinput1" assignNames="m1" /></p>
+    $p4{name="p7"}
+    $p5{name="p8"}
+    $p6{name="p9"}
+    <p>$_mathinput1.value{assignNames="m1"}</p>
     `,
         },
         "*",
@@ -843,40 +886,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -903,40 +934,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       for (let ind = 0; ind < 1; ind++) {
         expect(
@@ -963,54 +982,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1038,40 +1045,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -1098,40 +1093,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
@@ -1159,54 +1142,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1240,40 +1211,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(3);
       for (let ind = 0; ind < 3; ind++) {
         expect(
@@ -1300,54 +1259,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1375,40 +1322,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -1437,40 +1372,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
@@ -1498,54 +1421,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1585,40 +1496,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(
@@ -1645,54 +1544,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1720,40 +1607,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(0);
     });
 
@@ -1790,40 +1665,28 @@ describe("Select Tag Tests", function () {
           .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p4"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p4"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p5"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p5"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p6"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p6"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p7"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p7"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p8"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p8"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       expect(
-        stateVariables[
-          stateVariables[stateVariables["/p9"].replacements[0].componentName]
-            .activeChildren[0].componentName
-        ].activeChildren.length,
+        stateVariables[stateVariables["/p9"].activeChildren[0].componentName]
+          .activeChildren.length,
       ).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         expect(
@@ -1850,54 +1713,42 @@ describe("Select Tag Tests", function () {
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p4"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p4"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p5"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p5"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p6"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p6"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p7"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p7"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p8"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p8"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
         expect(
           stateVariables[
             stateVariables[
-              stateVariables[
-                stateVariables["/p9"].replacements[0].componentName
-              ].activeChildren[0].componentName
+              stateVariables["/p9"].activeChildren[0].componentName
             ].activeChildren[ind].componentName
           ].stateValues.value,
         ).eq(sampledvariables[ind]);
@@ -1929,9 +1780,9 @@ describe("Select Tag Tests", function () {
       <option><math>a</math><math>b</math><math>c</math></option>
       <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="q1"><aslist><copy target="x1" /><copy target="y1" /><copy target="z1" /></aslist></p>
-    <p name="q2"><aslist><copy target="x2" /><copy target="y2" /><copy target="z2" /></aslist></p>
-    <p name="q3"><aslist><copy target="x3" /><copy target="y3" /><copy target="z3" /></aslist></p>
+    <p name="q1"><aslist>$x1$y1$z1</aslist></p>
+    <p name="q2"><aslist>$x2$y2$z2</aslist></p>
+    <p name="q3"><aslist>$x3$y3$z3</aslist></p>
     `,
         },
         "*",
@@ -2027,9 +1878,9 @@ describe("Select Tag Tests", function () {
     <option><math>a</math><math>b</math><math>c</math></option>
     <option><math>q</math><math>r</math><math>s</math></option>
     </select></aslist></p>
-    <p name="q1"><aslist><copy target="s1/x" /><copy target="s1/y" /><copy target="s1/z" /></aslist></p>
-    <p name="q2"><aslist><copy target="s2/x" /><copy target="s2/y" /><copy target="s2/z" /></aslist></p>
-    <p name="q3"><aslist><copy target="s3/x" /><copy target="s3/y" /><copy target="s3/z" /></aslist></p>
+    <p name="q1"><aslist>$(s1/x)$(s1/y)$(s1/z)</aslist></p>
+    <p name="q2"><aslist>$(s2/x)$(s2/y)$(s2/z)</aslist></p>
+    <p name="q3"><aslist>$(s3/x)$(s3/y)$(s3/z)</aslist></p>
 
     `,
         },
@@ -2117,9 +1968,9 @@ describe("Select Tag Tests", function () {
       </select>
     </aslist></p>
     <p name="q1"><aslist>
-      <copy target="x1" /><copy target="y1" /><copy target="z1" />
-      <copy target="x2" /><copy target="y2" /><copy target="z2" />
-      <copy target="x3" /><copy target="y3" /><copy target="z3" />
+      $x1$y1$z1
+      $x2$y2$z2
+      $x3$y3$z3
     </aslist></p>
     `,
         },
@@ -2197,9 +2048,9 @@ describe("Select Tag Tests", function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q r s t u" numToSelect="5" withreplacement>
-      <option newNamespace><p>Option 1: <math>3<copy target="../x1" /><copy target="../y1" /></math></p></option>
-      <option><p name="h" newnamespace>Option 2: <math>4<copy target="../x2" /><copy target="../y2" /></math></p></option>
-      <option newNamespace><p name="l">Option 3: <math>5<copy target="../x3" /><copy target="../y3" /></math></p></option>
+      <option newNamespace><p>Option 1: <math>3$(../x1)$(../y1)</math></p></option>
+      <option><p name="h" newnamespace>Option 2: <math>4$(../x2)$(../y2)</math></p></option>
+      <option newNamespace><p name="l">Option 3: <math>5$(../x3)$(../y3)</math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -2207,11 +2058,11 @@ describe("Select Tag Tests", function () {
     <math hide name="y3">c</math>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
 
     `,
         },
@@ -2237,10 +2088,8 @@ describe("Select Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let q2 =
-        stateVariables[
-          stateVariables[stateVariables["/q2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/q2"].replacements[0].componentName]
+          .activeChildren;
       let q2string = q2[0];
       let q2math = me.fromAst(
         stateVariables[q2[1].componentName].stateValues.value,
@@ -2248,10 +2097,8 @@ describe("Select Tag Tests", function () {
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 =
-        stateVariables[
-          stateVariables[stateVariables["/r2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/r2"].replacements[0].componentName]
+          .activeChildren;
       let r2string = r2[0];
       let r2math = me.fromAst(
         stateVariables[r2[1].componentName].stateValues.value,
@@ -2259,10 +2106,8 @@ describe("Select Tag Tests", function () {
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 =
-        stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/s2"].replacements[0].componentName]
+          .activeChildren;
       let s2string = s2[0];
       let s2math = me.fromAst(
         stateVariables[s2[1].componentName].stateValues.value,
@@ -2270,10 +2115,8 @@ describe("Select Tag Tests", function () {
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 =
-        stateVariables[
-          stateVariables[stateVariables["/t2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/t2"].replacements[0].componentName]
+          .activeChildren;
       let t2string = t2[0];
       let t2math = me.fromAst(
         stateVariables[t2[1].componentName].stateValues.value,
@@ -2281,10 +2124,8 @@ describe("Select Tag Tests", function () {
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 =
-        stateVariables[
-          stateVariables[stateVariables["/u2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/u2"].replacements[0].componentName]
+          .activeChildren;
       let u2string = u2[0];
       let u2math = me.fromAst(
         stateVariables[u2[1].componentName].stateValues.value,
@@ -2304,9 +2145,9 @@ describe("Select Tag Tests", function () {
     <math hide name="x3">z</math>
 
     <select assignnames="q r s t u" numToSelect="5" withreplacement>
-      <option><p>Option 1: <math>3<copy target="x1" /><copy target="y1" /></math></p></option>
-      <option><p name="h">Option 2: <math>4<copy target="x2" /><copy target="y2" /></math></p></option>
-      <option><p name="l">Option 3: <math>5<copy target="x3" /><copy target="y3" /></math></p></option>
+      <option><p>Option 1: <math>3$x1$y1</math></p></option>
+      <option><p name="h">Option 2: <math>4$x2$y2</math></p></option>
+      <option><p name="l">Option 3: <math>5$x3$y3</math></p></option>
     </select>
 
     <math hide name="y1">a</math>
@@ -2314,11 +2155,11 @@ describe("Select Tag Tests", function () {
     <math hide name="y3">c</math>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
 
     `,
         },
@@ -2344,10 +2185,8 @@ describe("Select Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let q2 =
-        stateVariables[
-          stateVariables[stateVariables["/q2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/q2"].replacements[0].componentName]
+          .activeChildren;
       let q2string = q2[0];
       let q2math = me.fromAst(
         stateVariables[q2[1].componentName].stateValues.value,
@@ -2355,10 +2194,8 @@ describe("Select Tag Tests", function () {
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 =
-        stateVariables[
-          stateVariables[stateVariables["/r2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/r2"].replacements[0].componentName]
+          .activeChildren;
       let r2string = r2[0];
       let r2math = me.fromAst(
         stateVariables[r2[1].componentName].stateValues.value,
@@ -2366,10 +2203,8 @@ describe("Select Tag Tests", function () {
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 =
-        stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/s2"].replacements[0].componentName]
+          .activeChildren;
       let s2string = s2[0];
       let s2math = me.fromAst(
         stateVariables[s2[1].componentName].stateValues.value,
@@ -2377,10 +2212,8 @@ describe("Select Tag Tests", function () {
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 =
-        stateVariables[
-          stateVariables[stateVariables["/t2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/t2"].replacements[0].componentName]
+          .activeChildren;
       let t2string = t2[0];
       let t2math = me.fromAst(
         stateVariables[t2[1].componentName].stateValues.value,
@@ -2388,10 +2221,8 @@ describe("Select Tag Tests", function () {
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 =
-        stateVariables[
-          stateVariables[stateVariables["/u2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/u2"].replacements[0].componentName]
+          .activeChildren;
       let u2string = u2[0];
       let u2math = me.fromAst(
         stateVariables[u2[1].componentName].stateValues.value,
@@ -2408,27 +2239,27 @@ describe("Select Tag Tests", function () {
     <text>a</text>
 
     <select assignnames="q r s t u" numToSelect="5" withreplacement>
-      <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy target="x" />^2<copy target="z1" />^3</math></p></option>
-      <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + <copy target="x" />^2<copy target="z2" />^3</math></p></option>
-      <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + <copy target="x" />^2<copy target="z3" />^3</math></p></option>
+      <option newNamespace><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + $x^2$z1^3</math></p></option>
+      <option newNamespace><p>Option 2: <math>4<math name="x">y</math> + <math name="z2">b</math> + $x^2$z2^3</math></p></option>
+      <option newNamespace><p>Option 3: <math>5<math name="x">z</math> + <math name="z3">c</math> + $x^2$z3^3</math></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
 
     <p>Copy x from within selection options</p>
-    <p><copy name="qx" target="q/x" /></p>
-    <p><copy name="rx" target="r/x" /></p>
-    <p><copy name="sx" target="s/x" /></p>
-    <p><copy name="tx" target="t/x" /></p>
-    <p><copy name="ux" target="u/x" /></p>
+    <p>$(q/x{name="qx"})</p>
+    <p>$(r/x{name="rx"})</p>
+    <p>$(s/x{name="sx"})</p>
+    <p>$(t/x{name="tx"})</p>
+    <p>$(u/x{name="ux"})</p>
 
     <p>Copy select itself</p>
-    <section name="repeat"><copy target="_select1" /></section>
+    <section name="repeat">$_select1</section>
 
     `,
         },
@@ -2455,18 +2286,14 @@ describe("Select Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let q2 =
-        stateVariables[
-          stateVariables[stateVariables["/q2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/q2"].replacements[0].componentName]
+          .activeChildren;
       let q2string = q2[0];
       let q2math = me.fromAst(
         stateVariables[q2[1].componentName].stateValues.value,
       );
       expect(q2math.equals(option[q2string])).eq(true);
-      let qx =
-        stateVariables[stateVariables["/qx"].replacements[0].componentName]
-          .stateValues.value;
+      let qx = stateVariables["/qx"].stateValues.value;
       expect(qx).eq(xoption[q2string]);
       let repeatqmath = me.fromAst(
         stateVariables[
@@ -2478,18 +2305,14 @@ describe("Select Tag Tests", function () {
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 =
-        stateVariables[
-          stateVariables[stateVariables["/r2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/r2"].replacements[0].componentName]
+          .activeChildren;
       let r2string = r2[0];
       let r2math = me.fromAst(
         stateVariables[r2[1].componentName].stateValues.value,
       );
       expect(r2math.equals(option[r2string])).eq(true);
-      let rx =
-        stateVariables[stateVariables["/rx"].replacements[0].componentName]
-          .stateValues.value;
+      let rx = stateVariables["/rx"].stateValues.value;
       expect(rx).eq(xoption[r2string]);
       let repeatrmath = me.fromAst(
         stateVariables[
@@ -2501,18 +2324,14 @@ describe("Select Tag Tests", function () {
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 =
-        stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/s2"].replacements[0].componentName]
+          .activeChildren;
       let s2string = s2[0];
       let s2math = me.fromAst(
         stateVariables[s2[1].componentName].stateValues.value,
       );
       expect(s2math.equals(option[s2string])).eq(true);
-      let sx =
-        stateVariables[stateVariables["/sx"].replacements[0].componentName]
-          .stateValues.value;
+      let sx = stateVariables["/sx"].stateValues.value;
       expect(sx).eq(xoption[s2string]);
       let repeatsmath = me.fromAst(
         stateVariables[
@@ -2524,18 +2343,14 @@ describe("Select Tag Tests", function () {
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 =
-        stateVariables[
-          stateVariables[stateVariables["/t2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/t2"].replacements[0].componentName]
+          .activeChildren;
       let t2string = t2[0];
       let t2math = me.fromAst(
         stateVariables[t2[1].componentName].stateValues.value,
       );
       expect(t2math.equals(option[t2string])).eq(true);
-      let tx =
-        stateVariables[stateVariables["/tx"].replacements[0].componentName]
-          .stateValues.value;
+      let tx = stateVariables["/tx"].stateValues.value;
       expect(tx).eq(xoption[t2string]);
       let repeattmath = me.fromAst(
         stateVariables[
@@ -2547,18 +2362,14 @@ describe("Select Tag Tests", function () {
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 =
-        stateVariables[
-          stateVariables[stateVariables["/u2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/u2"].replacements[0].componentName]
+          .activeChildren;
       let u2string = u2[0];
       let u2math = me.fromAst(
         stateVariables[u2[1].componentName].stateValues.value,
       );
       expect(u2math.equals(option[u2string])).eq(true);
-      let ux =
-        stateVariables[stateVariables["/ux"].replacements[0].componentName]
-          .stateValues.value;
+      let ux = stateVariables["/ux"].stateValues.value;
       expect(ux).eq(xoption[u2string]);
       let repeatumath = me.fromAst(
         stateVariables[
@@ -2579,20 +2390,20 @@ describe("Select Tag Tests", function () {
     <text>a</text>
 
     <select assignnames="q r s t u" numToSelect="5" withreplacement>
-      <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + <copy target="x" />^2<copy target="z1" />^3</math></p></option>
-      <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + <copy target="y" />^2<copy target="z2" />^3</math></p></option>
-      <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + <copy target="z" />^2<copy target="z3" />^3</math></p></option>
+      <option><p>Option 1: <math>3<math name="x">x</math> + <math name="z1">a</math> + $x^2$z1^3</math></p></option>
+      <option><p>Option 2: <math>4<math name="y">y</math> + <math name="z2">b</math> + $y^2$z2^3</math></p></option>
+      <option><p>Option 3: <math>5<math name="z">z</math> + <math name="z3">c</math> + $z^2$z3^3</math></p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
 
     <p>Copy select itself</p>
-    <section name="repeat"><copy target="_select1" /></section>
+    <section name="repeat">$_select1</section>
 
     `,
         },
@@ -2619,10 +2430,8 @@ describe("Select Tag Tests", function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let q2 =
-        stateVariables[
-          stateVariables[stateVariables["/q2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/q2"].replacements[0].componentName]
+          .activeChildren;
       let q2string = q2[0];
       let q2math = me.fromAst(
         stateVariables[q2[1].componentName].stateValues.value,
@@ -2638,10 +2447,8 @@ describe("Select Tag Tests", function () {
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 =
-        stateVariables[
-          stateVariables[stateVariables["/r2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/r2"].replacements[0].componentName]
+          .activeChildren;
       let r2string = r2[0];
       let r2math = me.fromAst(
         stateVariables[r2[1].componentName].stateValues.value,
@@ -2657,10 +2464,8 @@ describe("Select Tag Tests", function () {
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 =
-        stateVariables[
-          stateVariables[stateVariables["/s2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/s2"].replacements[0].componentName]
+          .activeChildren;
       let s2string = s2[0];
       let s2math = me.fromAst(
         stateVariables[s2[1].componentName].stateValues.value,
@@ -2676,10 +2481,8 @@ describe("Select Tag Tests", function () {
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 =
-        stateVariables[
-          stateVariables[stateVariables["/t2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/t2"].replacements[0].componentName]
+          .activeChildren;
       let t2string = t2[0];
       let t2math = me.fromAst(
         stateVariables[t2[1].componentName].stateValues.value,
@@ -2695,10 +2498,8 @@ describe("Select Tag Tests", function () {
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 =
-        stateVariables[
-          stateVariables[stateVariables["/u2"].replacements[0].componentName]
-            .replacements[0].componentName
-        ].activeChildren;
+        stateVariables[stateVariables["/u2"].replacements[0].componentName]
+          .activeChildren;
       let u2string = u2[0];
       let u2math = me.fromAst(
         stateVariables[u2[1].componentName].stateValues.value,
@@ -2733,8 +2534,8 @@ describe("Select Tag Tests", function () {
     </select>
     </p>
 
-    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
+    <p>Selected variable repeated: $x{name="x2"}</p>
+    <p>Selected variable repeated again: $_select1{name="x3"}</p>
     `,
           requestedVariantIndex: 2,
         },
@@ -2764,9 +2565,7 @@ describe("Select Tag Tests", function () {
         ].stateValues.value;
       expect(xorig).eq(expectedx);
 
-      let x2 =
-        stateVariables[stateVariables["/x2"].replacements[0].componentName]
-          .stateValues.value;
+      let x2 = stateVariables["/x2"].stateValues.value;
       expect(x2).eq(expectedx);
 
       let x3 =
@@ -2798,10 +2597,10 @@ describe("Select Tag Tests", function () {
     </aslist>
     </p>
 
-    <p>Selected first variable: <copy name="x2" target="x" /></p>
-    <p>Selected second variable: <copy name="y2" target="y" /></p>
-    <p>Selected third variable: <copy name="z2" target="z" /></p>
-    <p>Selected variables repeated: <aslist><copy name="s2" target="_select1" /></aslist></p>
+    <p>Selected first variable: $x{name="x2"}</p>
+    <p>Selected second variable: $y{name="y2"}</p>
+    <p>Selected third variable: $z{name="z2"}</p>
+    <p>Selected variables repeated: <aslist>$_select1{name="s2"}</aslist></p>
 
     `,
           requestedVariantIndex: 3,
@@ -2862,17 +2661,11 @@ describe("Select Tag Tests", function () {
         ].stateValues.value;
       expect(zorig).eq(z);
 
-      let x2 =
-        stateVariables[stateVariables["/x2"].replacements[0].componentName]
-          .stateValues.value;
+      let x2 = stateVariables["/x2"].stateValues.value;
       expect(x2).eq(x);
-      let y2 =
-        stateVariables[stateVariables["/y2"].replacements[0].componentName]
-          .stateValues.value;
+      let y2 = stateVariables["/y2"].stateValues.value;
       expect(y2).eq(y);
-      let z2 =
-        stateVariables[stateVariables["/z2"].replacements[0].componentName]
-          .stateValues.value;
+      let z2 = stateVariables["/z2"].stateValues.value;
       expect(z2).eq(z);
 
       let x3 =
@@ -3543,29 +3336,29 @@ describe("Select Tag Tests", function () {
     <text>a</text>
 
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numToSelect="7" withreplacement>
-      <option><p newNamespace><select assignnames="q r" numToSelect="2">a e i o u</select><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numToSelect="2" from="a" to="z" /><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
-      <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numToSelect="1" from="u" to="z" /><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
-      <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" target="q" /><copy name="r2" target="r" /></p></option>
+      <option><p newNamespace><select assignnames="q r" numToSelect="2">a e i o u</select>$q{name="q2"}$r{name="r2"}</p></option>
+      <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numToSelect="2" from="a" to="z" />$q{name="q2"}$r{name="r2"}</p></option>
+      <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numToSelect="1" from="u" to="z" />$q{name="q2"}$r{name="r2"}</p></option>
+      <option><p newNamespace><text name="q">q</text><text name="r">r</text>$q{name="q2"}$r{name="r2"}</p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
-    <copy name="v2" target="v" />
-    <copy name="w2" target="w" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
+    $v{name="v2"}
+    $w{name="w2"}
 
     <p>Copy q and r and their copies from within selected options</p>
-    <p><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /><copy name="qq2" target="q/q2" /><copy name="qr2" target="q/r2" /></p>
-    <p><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /><copy name="rq2" target="r/q2" /><copy name="rr2" target="r/r2" /></p>
-    <p><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /><copy name="sq2" target="s/q2" /><copy name="sr2" target="s/r2" /></p>
-    <p><copy name="tq" target="t/q" /><copy name="tr" target="t/r" /><copy name="tq2" target="t/q2" /><copy name="tr2" target="t/r2" /></p>
-    <p><copy name="uq" target="u/q" /><copy name="ur" target="u/r" /><copy name="uq2" target="u/q2" /><copy name="ur2" target="u/r2" /></p>
-    <p><copy name="vq" target="v/q" /><copy name="vr" target="v/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
-    <p><copy name="wq" target="w/q" /><copy name="wr" target="w/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
+    <p>$(q/q{name="qq"})$(q/r{name="qr"})$(q/q2{name="qq2"})$(q/r2{name="qr2"})</p>
+    <p>$(r/q{name="rq"})$(r/r{name="rr"})$(r/q2{name="rq2"})$(r/r2{name="rr2"})</p>
+    <p>$(s/q{name="sq"})$(s/r{name="sr"})$(s/q2{name="sq2"})$(s/r2{name="sr2"})</p>
+    <p>$(t/q{name="tq"})$(t/r{name="tr"})$(t/q2{name="tq2"})$(t/r2{name="tr2"})</p>
+    <p>$(u/q{name="uq"})$(u/r{name="ur"})$(u/q2{name="uq2"})$(u/r2{name="ur2"})</p>
+    <p>$(v/q{name="vq"})$(v/r{name="vr"})$(v/q2{name="vq2"})$(v/r2{name="vr2"})</p>
+    <p>$(w/q{name="wq"})$(w/r{name="wr"})$(w/q2{name="wq2"})$(w/r2{name="wr2"})</p>
 
     `,
         },
@@ -3600,39 +3393,25 @@ describe("Select Tag Tests", function () {
         (x) => stateVariables[x.componentName].stateValues.value,
       );
 
-      let q2s = stateVariables[
-        stateVariables["/q2"].replacements[0].componentName
-      ].activeChildren.map(
+      let q2s = stateVariables["/q2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let r2s = stateVariables[
-        stateVariables["/r2"].replacements[0].componentName
-      ].activeChildren.map(
+      let r2s = stateVariables["/r2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let s2s = stateVariables[
-        stateVariables["/s2"].replacements[0].componentName
-      ].activeChildren.map(
+      let s2s = stateVariables["/s2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let t2s = stateVariables[
-        stateVariables["/t2"].replacements[0].componentName
-      ].activeChildren.map(
+      let t2s = stateVariables["/t2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let u2s = stateVariables[
-        stateVariables["/u2"].replacements[0].componentName
-      ].activeChildren.map(
+      let u2s = stateVariables["/u2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let v2s = stateVariables[
-        stateVariables["/v2"].replacements[0].componentName
-      ].activeChildren.map(
+      let v2s = stateVariables["/v2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let w2s = stateVariables[
-        stateVariables["/w2"].replacements[0].componentName
-      ].activeChildren.map(
+      let w2s = stateVariables["/w2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
 
@@ -3645,74 +3424,46 @@ describe("Select Tag Tests", function () {
       expect(w2s).eqls(ws);
 
       let q3s = [
-        stateVariables[stateVariables["/qq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/qq"].stateValues.value,
+        stateVariables["/qr"].stateValues.value,
+        stateVariables["/qq2"].stateValues.value,
+        stateVariables["/qr2"].stateValues.value,
       ];
       let r3s = [
-        stateVariables[stateVariables["/rq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/rq"].stateValues.value,
+        stateVariables["/rr"].stateValues.value,
+        stateVariables["/rq2"].stateValues.value,
+        stateVariables["/rr2"].stateValues.value,
       ];
       let s3s = [
-        stateVariables[stateVariables["/sq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/sq"].stateValues.value,
+        stateVariables["/sr"].stateValues.value,
+        stateVariables["/sq2"].stateValues.value,
+        stateVariables["/sr2"].stateValues.value,
       ];
       let t3s = [
-        stateVariables[stateVariables["/tq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/tq"].stateValues.value,
+        stateVariables["/tr"].stateValues.value,
+        stateVariables["/tq2"].stateValues.value,
+        stateVariables["/tr2"].stateValues.value,
       ];
       let u3s = [
-        stateVariables[stateVariables["/uq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/uq"].stateValues.value,
+        stateVariables["/ur"].stateValues.value,
+        stateVariables["/uq2"].stateValues.value,
+        stateVariables["/ur2"].stateValues.value,
       ];
       let v3s = [
-        stateVariables[stateVariables["/vq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/vq"].stateValues.value,
+        stateVariables["/vr"].stateValues.value,
+        stateVariables["/vq2"].stateValues.value,
+        stateVariables["/vr2"].stateValues.value,
       ];
       let w3s = [
-        stateVariables[stateVariables["/wq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/wq"].stateValues.value,
+        stateVariables["/wr"].stateValues.value,
+        stateVariables["/wq2"].stateValues.value,
+        stateVariables["/wr2"].stateValues.value,
       ];
 
       expect(q3s).eqls(qs);
@@ -3732,37 +3483,37 @@ describe("Select Tag Tests", function () {
           doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numToSelect="7" withreplacement>
-      <option><p newNamespace><select name="s" newnamespace assignnames="q r" numToSelect="2">a e i o u</select><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numToSelect="2" from="a" to="z" /><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
-      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numToSelect="2" withreplacement from="u" to="z" /><copy name="q2" target="s/q" /><copy name="r2" target="s/r" /></p></option>
+      <option><p newNamespace><select name="s" newnamespace assignnames="q r" numToSelect="2">a e i o u</select>$(s/q{name="q2"})$(s/r{name="r2"})</p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numToSelect="2" from="a" to="z" />$(s/q{name="q2"})$(s/r{name="r2"})</p></option>
+      <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numToSelect="2" withreplacement from="u" to="z" />$(s/q{name="q2"})$(s/r{name="r2"})</p></option>
     </select>
 
     <p>Selected options repeated</p>
-    <copy name="q2" target="q" />
-    <copy name="r2" target="r" />
-    <copy name="s2" target="s" />
-    <copy name="t2" target="t" />
-    <copy name="u2" target="u" />
-    <copy name="v2" target="v" />
-    <copy name="w2" target="w" />
+    $q{name="q2"}
+    $r{name="r2"}
+    $s{name="s2"}
+    $t{name="t2"}
+    $u{name="u2"}
+    $v{name="v2"}
+    $w{name="w2"}
 
     <p>Selected options repeated, no p</p>
-    <p><copy name="q3" target="q/s" /></p>
-    <p><copy name="r3" target="r/s" /></p>
-    <p><copy name="s3" target="s/s" /></p>
-    <p><copy name="t3" target="t/s" /></p>
-    <p><copy name="u3" target="u/s" /></p>
-    <p><copy name="v3" target="v/s" /></p>
-    <p><copy name="w3" target="w/s" /></p>
+    <p>$(q/s{name="q3"})</p>
+    <p>$(r/s{name="r3"})</p>
+    <p>$(s/s{name="s3"})</p>
+    <p>$(t/s{name="t3"})</p>
+    <p>$(u/s{name="u3"})</p>
+    <p>$(v/s{name="v3"})</p>
+    <p>$(w/s{name="w3"})</p>
 
     <p>Copy q and r from within selected options</p>
-    <p><copy name="qq" target="q/s/q" /><copy name="qr" target="q/s/r" /><copy name="qq2" target="q/q2" /><copy name="qr2" target="q/r2" /></p>
-    <p><copy name="rq" target="r/s/q" /><copy name="rr" target="r/s/r" /><copy name="rq2" target="r/q2" /><copy name="rr2" target="r/r2" /></p>
-    <p><copy name="sq" target="s/s/q" /><copy name="sr" target="s/s/r" /><copy name="sq2" target="s/q2" /><copy name="sr2" target="s/r2" /></p>
-    <p><copy name="tq" target="t/s/q" /><copy name="tr" target="t/s/r" /><copy name="tq2" target="t/q2" /><copy name="tr2" target="t/r2" /></p>
-    <p><copy name="uq" target="u/s/q" /><copy name="ur" target="u/s/r" /><copy name="uq2" target="u/q2" /><copy name="ur2" target="u/r2" /></p>
-    <p><copy name="vq" target="v/s/q" /><copy name="vr" target="v/s/r" /><copy name="vq2" target="v/q2" /><copy name="vr2" target="v/r2" /></p>
-    <p><copy name="wq" target="w/s/q" /><copy name="wr" target="w/s/r" /><copy name="wq2" target="w/q2" /><copy name="wr2" target="w/r2" /></p>
+    <p>$(q/s/q{name="qq"})$(q/s/r{name="qr"})$(q/q2{name="qq2"})$(q/r2{name="qr2"})</p>
+    <p>$(r/s/q{name="rq"})$(r/s/r{name="rr"})$(r/q2{name="rq2"})$(r/r2{name="rr2"})</p>
+    <p>$(s/s/q{name="sq"})$(s/s/r{name="sr"})$(s/q2{name="sq2"})$(s/r2{name="sr2"})</p>
+    <p>$(t/s/q{name="tq"})$(t/s/r{name="tr"})$(t/q2{name="tq2"})$(t/r2{name="tr2"})</p>
+    <p>$(u/s/q{name="uq"})$(u/s/r{name="ur"})$(u/q2{name="uq2"})$(u/r2{name="ur2"})</p>
+    <p>$(v/s/q{name="vq"})$(v/s/r{name="vr"})$(v/q2{name="vq2"})$(v/r2{name="vr2"})</p>
+    <p>$(w/s/q{name="wq"})$(w/s/r{name="wr"})$(w/q2{name="wq2"})$(w/r2{name="wr2"})</p>
 
     `,
         },
@@ -3797,39 +3548,25 @@ describe("Select Tag Tests", function () {
         (x) => stateVariables[x.componentName].stateValues.value,
       );
 
-      let q2s = stateVariables[
-        stateVariables["/q2"].replacements[0].componentName
-      ].activeChildren.map(
+      let q2s = stateVariables["/q2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let r2s = stateVariables[
-        stateVariables["/r2"].replacements[0].componentName
-      ].activeChildren.map(
+      let r2s = stateVariables["/r2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let s2s = stateVariables[
-        stateVariables["/s2"].replacements[0].componentName
-      ].activeChildren.map(
+      let s2s = stateVariables["/s2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let t2s = stateVariables[
-        stateVariables["/t2"].replacements[0].componentName
-      ].activeChildren.map(
+      let t2s = stateVariables["/t2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let u2s = stateVariables[
-        stateVariables["/u2"].replacements[0].componentName
-      ].activeChildren.map(
+      let u2s = stateVariables["/u2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let v2s = stateVariables[
-        stateVariables["/v2"].replacements[0].componentName
-      ].activeChildren.map(
+      let v2s = stateVariables["/v2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
-      let w2s = stateVariables[
-        stateVariables["/w2"].replacements[0].componentName
-      ].activeChildren.map(
+      let w2s = stateVariables["/w2"].activeChildren.map(
         (x) => stateVariables[x.componentName].stateValues.value,
       );
 
@@ -3900,74 +3637,46 @@ describe("Select Tag Tests", function () {
       expect(w3s).eqls(ws.slice(0, 2));
 
       let q4s = [
-        stateVariables[stateVariables["/qq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/qq"].stateValues.value,
+        stateVariables["/qr"].stateValues.value,
+        stateVariables["/qq2"].stateValues.value,
+        stateVariables["/qr2"].stateValues.value,
       ];
       let r4s = [
-        stateVariables[stateVariables["/rq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/rq"].stateValues.value,
+        stateVariables["/rr"].stateValues.value,
+        stateVariables["/rq2"].stateValues.value,
+        stateVariables["/rr2"].stateValues.value,
       ];
       let s4s = [
-        stateVariables[stateVariables["/sq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/sq"].stateValues.value,
+        stateVariables["/sr"].stateValues.value,
+        stateVariables["/sq2"].stateValues.value,
+        stateVariables["/sr2"].stateValues.value,
       ];
       let t4s = [
-        stateVariables[stateVariables["/tq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/tq"].stateValues.value,
+        stateVariables["/tr"].stateValues.value,
+        stateVariables["/tq2"].stateValues.value,
+        stateVariables["/tr2"].stateValues.value,
       ];
       let u4s = [
-        stateVariables[stateVariables["/uq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/uq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/uq"].stateValues.value,
+        stateVariables["/ur"].stateValues.value,
+        stateVariables["/uq2"].stateValues.value,
+        stateVariables["/ur2"].stateValues.value,
       ];
       let v4s = [
-        stateVariables[stateVariables["/vq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/vr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/vq"].stateValues.value,
+        stateVariables["/vr"].stateValues.value,
+        stateVariables["/vq2"].stateValues.value,
+        stateVariables["/vr2"].stateValues.value,
       ];
       let w4s = [
-        stateVariables[stateVariables["/wq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wq2"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/wr2"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/wq"].stateValues.value,
+        stateVariables["/wr"].stateValues.value,
+        stateVariables["/wq2"].stateValues.value,
+        stateVariables["/wr2"].stateValues.value,
       ];
 
       expect(q4s).eqls(qs);
@@ -3988,23 +3697,23 @@ describe("Select Tag Tests", function () {
           doenetML: `
     <math>1</math>
     <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numToSelect="5" withreplacement>
-      <p><select assignnames="q r" numToSelect="2">a e i o u</select><copy name="q2" target="q" /><copy name="r2" target="r" /></p>
-      <p><selectfromsequence type="letters" assignnames="q r" numToSelect="2">a z</selectfromsequence><copy name="q2" target="q" /><copy name="r2" target="r" /></p>
+      <p><select assignnames="q r" numToSelect="2">a e i o u</select>$q{name="q2"}$r{name="r2"}</p>
+      <p><selectfromsequence type="letters" assignnames="q r" numToSelect="2">a z</selectfromsequence>$q{name="q2"}$r{name="r2"}</p>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" target="q" /></p>
-    <p><copy name="r2" target="r" /></p>
-    <p><copy name="s2" target="s" /></p>
-    <p><copy name="t2" target="t" /></p>
-    <p><copy name="u2" target="u" /></p>
+    <p>$q{name="q2"}</p>
+    <p>$r{name="r2"}</p>
+    <p>$s{name="s2"}</p>
+    <p>$t{name="t2"}</p>
+    <p>$u{name="u2"}</p>
 
     <p>Copy x/q and x/r and their copies from within selected options</p>
-    <p><copy name="qq2" target="q/q" /><copy name="qr2" target="q/r" /><copy name="qq3" target="qq" /><copy name="qr3" target="qr" /></p>
-    <p><copy name="rq2" target="r/q" /><copy name="rr2" target="r/r" /><copy name="rq3" target="rq" /><copy name="rr3" target="rr" /></p>
-    <p><copy name="sq2" target="s/q" /><copy name="sr2" target="s/r" /><copy name="sq3" target="sq" /><copy name="sr3" target="sr" /></p>
-    <p><copy name="tq2" target="t/q" /><copy name="tr2" target="t/r" /><copy name="tq3" target="tq" /><copy name="tr3" target="tr" /></p>
-    <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
+    <p>$(q/q{name="qq2"})$(q/r{name="qr2"})$qq{name="qq3"}$qr{name="qr3"}</p>
+    <p>$(r/q{name="rq2"})$(r/r{name="rr2"})$rq{name="rq3"}$rr{name="rr3"}</p>
+    <p>$(s/q{name="sq2"})$(s/r{name="sr2"})$sq{name="sq3"}$sr{name="sr3"}</p>
+    <p>$(t/q{name="tq2"})$(t/r{name="tr2"})$tq{name="tq3"}$tr{name="tr3"}</p>
+    <p>$(u/q{name="uq2"})$(u/r{name="ur2"})$uq{name="uq3"}$ur{name="ur3"}</p>
 
     `,
         },
@@ -4148,23 +3857,23 @@ describe("Select Tag Tests", function () {
           doenetML: `
     <math>1</math>
         <select name="original" assignnames="(q qq  qr) (r  rq rr) (s  sq  sr) (t  tq  tr) (u uq ur)" numToSelect="5" withreplacement>
-      <p><select name="a" assignnames="q r" numToSelect="2" newnamespace>a e i o u</select><copy name="q2" target="a/q" /><copy name="r2" target="a/r" /></p>
-      <p><selectfromsequence type="letters" name="b" assignnames="q r" numToSelect="2" newnamespace>a z</selectfromsequence><copy name="q2" target="b/q" /><copy name="r2" target="b/r" /></p>
+      <p><select name="a" assignnames="q r" numToSelect="2" newnamespace>a e i o u</select>$(a/q{name="q2"})$(a/r{name="r2"})</p>
+      <p><selectfromsequence type="letters" name="b" assignnames="q r" numToSelect="2" newnamespace>a z</selectfromsequence>$(b/q{name="q2"})$(b/r{name="r2"})</p>
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" target="q" /></p>
-    <p><copy name="r2" target="r" /></p>
-    <p><copy name="s2" target="s" /></p>
-    <p><copy name="t2" target="t" /></p>
-    <p><copy name="u2" target="u" /></p>
+    <p>$q{name="q2"}</p>
+    <p>$r{name="r2"}</p>
+    <p>$s{name="s2"}</p>
+    <p>$t{name="t2"}</p>
+    <p>$u{name="u2"}</p>
 
     <p>Copy x/q and x/r and their copies from within selected options</p>
-    <p><copy name="qq2" target="q/q" /><copy name="qr2" target="q/r" /><copy name="qq3" target="qq" /><copy name="qr3" target="qr" /></p>
-    <p><copy name="rq2" target="r/q" /><copy name="rr2" target="r/r" /><copy name="rq3" target="rq" /><copy name="rr3" target="rr" /></p>
-    <p><copy name="sq2" target="s/q" /><copy name="sr2" target="s/r" /><copy name="sq3" target="sq" /><copy name="sr3" target="sr" /></p>
-    <p><copy name="tq2" target="t/q" /><copy name="tr2" target="t/r" /><copy name="tq3" target="tq" /><copy name="tr3" target="tr" /></p>
-    <p><copy name="uq2" target="u/q" /><copy name="ur2" target="u/r" /><copy name="uq3" target="uq" /><copy name="ur3" target="ur" /></p>
+    <p>$(q/q{name="qq2"})$(q/r{name="qr2"})$qq{name="qq3"}$qr{name="qr3"}</p>
+    <p>$(r/q{name="rq2"})$(r/r{name="rr2"})$rq{name="rq3"}$rr{name="rr3"}</p>
+    <p>$(s/q{name="sq2"})$(s/r{name="sr2"})$sq{name="sq3"}$sr{name="sr3"}</p>
+    <p>$(t/q{name="tq2"})$(t/r{name="tr2"})$tq{name="tq3"}$tr{name="tr3"}</p>
+    <p>$(u/q{name="uq2"})$(u/r{name="ur2"})$uq{name="uq3"}$ur{name="ur3"}</p>
 
 
     `,
@@ -4313,18 +4022,18 @@ describe("Select Tag Tests", function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p><copy name="q2" target="q" /></p>
-    <p><copy name="r2" target="r" /></p>
-    <p><copy name="s2" target="s" /></p>
-    <p><copy name="t2" target="t" /></p>
-    <p><copy name="u2" target="u" /></p>
+    <p>$q{name="q2"}</p>
+    <p>$r{name="r2"}</p>
+    <p>$s{name="s2"}</p>
+    <p>$t{name="t2"}</p>
+    <p>$u{name="u2"}</p>
 
     <p>Copy x/q and x/r</p>
-    <p><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /></p>
-    <p><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /></p>
-    <p><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /></p>
-    <p><copy name="tq" target="t/q" /><copy name="tr" target="t/r" /></p>
-    <p><copy name="uq" target="u/q" /><copy name="ur" target="u/r" /></p>
+    <p>$(q/q{name="qq"})$(q/r{name="qr"})</p>
+    <p>$(r/q{name="rq"})$(r/r{name="rr"})</p>
+    <p>$(s/q{name="sq"})$(s/r{name="sr"})</p>
+    <p>$(t/q{name="tq"})$(t/r{name="tr"})</p>
+    <p>$(u/q{name="uq"})$(u/r{name="ur"})</p>
 
     `,
         },
@@ -4416,34 +4125,24 @@ describe("Select Tag Tests", function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        stateVariables[stateVariables["/qq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/qr"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/qq"].stateValues.value,
+        stateVariables["/qr"].stateValues.value,
       ];
       let r3s = [
-        stateVariables[stateVariables["/rq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/rr"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/rq"].stateValues.value,
+        stateVariables["/rr"].stateValues.value,
       ];
       let s3s = [
-        stateVariables[stateVariables["/sq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/sr"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/sq"].stateValues.value,
+        stateVariables["/sr"].stateValues.value,
       ];
       let t3s = [
-        stateVariables[stateVariables["/tq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/tr"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/tq"].stateValues.value,
+        stateVariables["/tr"].stateValues.value,
       ];
       let u3s = [
-        stateVariables[stateVariables["/uq"].replacements[0].componentName]
-          .stateValues.value,
-        stateVariables[stateVariables["/ur"].replacements[0].componentName]
-          .stateValues.value,
+        stateVariables["/uq"].stateValues.value,
+        stateVariables["/ur"].stateValues.value,
       ];
 
       expect(q3s).eqls(qs);
@@ -4475,19 +4174,19 @@ describe("Select Tag Tests", function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p name="pq2"><copy name="q2" target="q" /></p>
-    <p name="pr2"><copy name="r2" target="r" /></p>
-    <p name="ps2"><copy name="s2" target="s" /></p>
+    <p name="pq2">$q{name="q2"}</p>
+    <p name="pr2">$r{name="r2"}</p>
+    <p name="ps2">$s{name="s2"}</p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p name="pq3"><copy name="qq" target="q/q" /><copy name="qr" target="q/r" /><copy name="qs" target="q/s" /></p>
-    <p name="pr3"><copy name="rq" target="r/q" /><copy name="rr" target="r/r" /><copy name="rs" target="r/s" /></p>
-    <p name="ps3"><copy name="sq" target="s/q" /><copy name="sr" target="s/r" /><copy name="ss" target="s/s" /></p>
+    <p name="pq3">$(q/q{name="qq"})$(q/r{name="qr"})$(q/s{name="qs"})</p>
+    <p name="pr3">$(r/q{name="rq"})$(r/r{name="rr"})$(r/s{name="rs"})</p>
+    <p name="ps3">$(s/q{name="sq"})$(s/r{name="sr"})$(s/s{name="ss"})</p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p name="pq4"><copy name="qqq" target="q/q/q" /><copy name="qqr" target="q/q/r" /><copy name="qrq" target="q/r/q" /><copy name="qrr" target="q/r/r" /><copy name="qsq" target="q/s/q" /><copy name="qsr" target="q/s/r" /></p>
-    <p name="pr4"><copy name="rqq" target="r/q/q" /><copy name="rqr" target="r/q/r" /><copy name="rrq" target="r/r/q" /><copy name="rrr" target="r/r/r" /><copy name="rsq" target="r/s/q" /><copy name="rsr" target="r/s/r" /></p>
-    <p name="ps4"><copy name="sqq" target="s/q/q" /><copy name="sqr" target="s/q/r" /><copy name="srq" target="s/r/q" /><copy name="srr" target="s/r/r" /><copy name="ssq" target="s/s/q" /><copy name="ssr" target="s/s/r" /></p>
+    <p name="pq4">$(q/q/q{name="qqq"})$(q/q/r{name="qqr"})$(q/r/q{name="qrq"})$(q/r/r{name="qrr"})$(q/s/q{name="qsq"})$(q/s/r{name="qsr"})</p>
+    <p name="pr4">$(r/q/q{name="rqq"})$(r/q/r{name="rqr"})$(r/r/q{name="rrq"})$(r/r/r{name="rrr"})$(r/s/q{name="rsq"})$(r/s/r{name="rsr"})</p>
+    <p name="ps4">$(s/q/q{name="sqq"})$(s/q/r{name="sqr"})$(s/r/q{name="srq"})$(s/r/r{name="srr"})$(s/s/q{name="ssq"})$(s/s/r{name="ssr"})</p>
 
     `,
         },
@@ -4522,17 +4221,53 @@ describe("Select Tag Tests", function () {
             : stateVariables[x].stateValues.value,
       );
 
-      cy.get(cesc("#\\/pq2")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr2")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps2")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
 
-      cy.get(cesc("#\\/pq3")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr3")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps3")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
 
-      cy.get(cesc("#\\/pq4")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr4")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps4")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
     });
   });
 
@@ -4557,19 +4292,19 @@ describe("Select Tag Tests", function () {
     </select>
 
     <p>Selected options repeated</p>
-    <p name="pq2"><copy name="q2" target="a/q" /></p>
-    <p name="pr2"><copy name="r2" target="a/r" /></p>
-    <p name="ps2"><copy name="s2" target="a/s" /></p>
+    <p name="pq2">$(a/q{name="q2"})</p>
+    <p name="pr2">$(a/r{name="r2"})</p>
+    <p name="ps2">$(a/s{name="s2"})</p>
 
     <p>Copy x/q, x/r, x/s</p>
-    <p name="pq3"><copy name="qq" target="a/q/q" /><copy name="qr" target="a/q/r" /><copy name="qs" target="a/q/s" /></p>
-    <p name="pr3"><copy name="rq" target="a/r/q" /><copy name="rr" target="a/r/r" /><copy name="rs" target="a/r/s" /></p>
-    <p name="ps3"><copy name="sq" target="a/s/q" /><copy name="sr" target="a/s/r" /><copy name="ss" target="a/s/s" /></p>
+    <p name="pq3">$(a/q/q{name="qq"})$(a/q/r{name="qr"})$(a/q/s{name="qs"})</p>
+    <p name="pr3">$(a/r/q{name="rq"})$(a/r/r{name="rr"})$(a/r/s{name="rs"})</p>
+    <p name="ps3">$(a/s/q{name="sq"})$(a/s/r{name="sr"})$(a/s/s{name="ss"})</p>
 
     <p>Copy x/x/q, x/x/r</p>
-    <p name="pq4"><copy name="qqq" target="a/q/q/q" /><copy name="qqr" target="a/q/q/r" /><copy name="qrq" target="a/q/r/q" /><copy name="qrr" target="a/q/r/r" /><copy name="qsq" target="a/q/s/q" /><copy name="qsr" target="a/q/s/r" /></p>
-    <p name="pr4"><copy name="rqq" target="a/r/q/q" /><copy name="rqr" target="a/r/q/r" /><copy name="rrq" target="a/r/r/q" /><copy name="rrr" target="a/r/r/r" /><copy name="rsq" target="a/r/s/q" /><copy name="rsr" target="a/r/s/r" /></p>
-    <p name="ps4"><copy name="sqq" target="a/s/q/q" /><copy name="sqr" target="a/s/q/r" /><copy name="srq" target="a/s/r/q" /><copy name="srr" target="a/s/r/r" /><copy name="ssq" target="a/s/s/q" /><copy name="ssr" target="a/s/s/r" /></p>
+    <p name="pq4">$(a/q/q/q{name="qqq"})$(a/q/q/r{name="qqr"})$(a/q/r/q{name="qrq"})$(a/q/r/r{name="qrr"})$(a/q/s/q{name="qsq"})$(a/q/s/r{name="qsr"})</p>
+    <p name="pr4">$(a/r/q/q{name="rqq"})$(a/r/q/r{name="rqr"})$(a/r/r/q{name="rrq"})$(a/r/r/r{name="rrr"})$(a/r/s/q{name="rsq"})$(a/r/s/r{name="rsr"})</p>
+    <p name="ps4">$(a/s/q/q{name="sqq"})$(a/s/q/r{name="sqr"})$(a/s/r/q{name="srq"})$(a/s/r/r{name="srr"})$(a/s/s/q{name="ssq"})$(a/s/s/r{name="ssr"})</p>
 
     `,
         },
@@ -4622,17 +4357,53 @@ describe("Select Tag Tests", function () {
           : stateVariables[x].stateValues.value,
       );
 
-      cy.get(cesc("#\\/pq2")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr2")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps2")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps2"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
 
-      cy.get(cesc("#\\/pq3")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr3")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps3")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps3"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
 
-      cy.get(cesc("#\\/pq4")).should("have.text", qs.join(""));
-      cy.get(cesc("#\\/pr4")).should("have.text", rs.join(""));
-      cy.get(cesc("#\\/ps4")).should("have.text", ss.join(""));
+      cy.get(cesc("#\\/pq4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(qs.join(""));
+        });
+      cy.get(cesc("#\\/pr4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(rs.join(""));
+        });
+      cy.get(cesc("#\\/ps4"))
+        .invoke("text")
+        .then((text) => {
+          expect(text.replace(/, /g, "")).eq(ss.join(""));
+        });
     });
   });
 
@@ -4645,27 +4416,27 @@ describe("Select Tag Tests", function () {
     <select assignnames="(a b c d)">
     <option>
       <math name="h1" newNamespace><math name="w">x</math><math>y</math></math>
-      <math simplify newNamespace><math name="q">z</math> + 2<copy name="v" target="q" /></math>
-      <copy target="a/w" />
-      <copy target="b/q" />
+      <math simplify newNamespace><math name="q">z</math> + 2$q{name="v"}</math>
+      $(a/w)
+      $(b/q)
     </option>
     <option>
       <math name="h2" newNamespace><math name="w">u</math><math>v</math></math>
-      <math simplify newNamespace><math name="q">t</math> + 2<copy name="v" target="q" /></math>
-      <copy target="a/w" />
-      <copy target="b/q" />
+      <math simplify newNamespace><math name="q">t</math> + 2$q{name="v"}</math>
+      $(a/w)
+      $(b/q)
     </option>
     </select>
     
     <p>Copy grandchidren</p>
-    <p><copy name="a2" target="a" /></p>
-    <p><copy name="b2" target="b" /></p>
-    <p><copy name="c2" target="c" /></p>
-    <p><copy name="d2" target="d" /></p>
+    <p>$a{name="a2"}</p>
+    <p>$b{name="b2"}</p>
+    <p>$c{name="c2"}</p>
+    <p>$d{name="d2"}</p>
     
     <p>Copy named children of grandchild</p>
-    <p><copy name="w2" target="a/w" /></p>
-    <p><copy name="v2" target="b/v" /></p>
+    <p>$(a/w{name="w2"})</p>
+    <p>$(b/v{name="v2"})</p>
     
     `,
         },
@@ -4721,42 +4492,12 @@ describe("Select Tag Tests", function () {
         option.d,
       );
 
-      let a2 = me
-        .fromAst(
-          stateVariables[stateVariables["/a2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
-      let b2 = me
-        .fromAst(
-          stateVariables[stateVariables["/b2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
-      let c2 = me
-        .fromAst(
-          stateVariables[stateVariables["/c2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
-      let d2 = me
-        .fromAst(
-          stateVariables[stateVariables["/d2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
-      let v2 = me
-        .fromAst(
-          stateVariables[stateVariables["/v2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
-      let w2 = me
-        .fromAst(
-          stateVariables[stateVariables["/w2"].replacements[0].componentName]
-            .stateValues.value,
-        )
-        .toString();
+      let a2 = me.fromAst(stateVariables["/a2"].stateValues.value).toString();
+      let b2 = me.fromAst(stateVariables["/b2"].stateValues.value).toString();
+      let c2 = me.fromAst(stateVariables["/c2"].stateValues.value).toString();
+      let d2 = me.fromAst(stateVariables["/d2"].stateValues.value).toString();
+      let v2 = me.fromAst(stateVariables["/v2"].stateValues.value).toString();
+      let w2 = me.fromAst(stateVariables["/w2"].stateValues.value).toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
@@ -4805,20 +4546,20 @@ describe("Select Tag Tests", function () {
     </aslist></p>
 
     <p>Copy whole select again</p>
-    <p><aslist name="list2"><copy name="s2" target="_select1" /></aslist></p>
+    <p><aslist name="list2">$_select1{name="s2"}</aslist></p>
 
     <p>Copy individual selections</p>
     <p><aslist name="list3">
-    <copy name="j2" target="j" />
-    <copy name="k2" target="k" />
-    <copy name="l2" target="l" />
+    $j{name="j2"}
+    $k{name="k2"}
+    $l{name="l2"}
     </aslist></p>
 
     <p>Copy individual pieces</p>
     <p><aslist name="list4">
-    <copy name="p1" target="j/a/p" /><copy name="p2" target="j/a/q" /><copy name="p3" target="j/a/r" /><copy name="p4" target="j/a/s" /><copy name="p5" target="j/b/p" /><copy name="p6" target="j/b/q" /><copy name="p7" target="j/b/r" /><copy name="p8" target="j/b/s" />
-    <copy name="p9" target="k/a/p" /><copy name="p10" target="k/a/q" /><copy name="p11" target="k/a/r" /><copy name="p12" target="k/a/s" /><copy name="p13" target="k/b/p" /><copy name="p14" target="k/b/q" /><copy name="p15" target="k/b/r" /><copy name="p16" target="k/b/s" />
-    <copy name="p17" target="l/a/p" /><copy name="p18" target="l/a/q" /><copy name="p19" target="l/a/r" /><copy name="p20" target="l/a/s" /><copy name="p21" target="l/b/p" /><copy name="p22" target="l/b/q" /><copy name="p23" target="l/b/r" /><copy name="p24" target="l/b/s" />
+    $(j/a/p{name="p1"})$(j/a/q{name="p2"})$(j/a/r{name="p3"})$(j/a/s{name="p4"})$(j/b/p{name="p5"})$(j/b/q{name="p6"})$(j/b/r{name="p7"})$(j/b/s{name="p8"})
+    $(k/a/p{name="p9"})$(k/a/q{name="p10"})$(k/a/r{name="p11"})$(k/a/s{name="p12"})$(k/b/p{name="p13"})$(k/b/q{name="p14"})$(k/b/r{name="p15"})$(k/b/s{name="p16"})
+    $(l/a/p{name="p17"})$(l/a/q{name="p18"})$(l/a/r{name="p19"})$(l/a/s{name="p20"})$(l/b/p{name="p21"})$(l/b/q{name="p22"})$(l/b/r{name="p23"})$(l/b/s{name="p24"})
     </aslist></p>
     `,
         },
@@ -4851,13 +4592,7 @@ describe("Select Tag Tests", function () {
       expect(theList3).eqls(theList1);
 
       let theList4 = [...Array(24).keys()].map((i) =>
-        me
-          .fromAst(
-            stateVariables[
-              stateVariables["/p" + (i + 1)].replacements[0].componentName
-            ].stateValues.value,
-          )
-          .toString(),
+        me.fromAst(stateVariables["/p" + (i + 1)].stateValues.value).toString(),
       );
 
       expect(theList4).eqls(theList1);
@@ -4902,20 +4637,20 @@ describe("Select Tag Tests", function () {
     </aslist></p>
 
     <p>Copy whole select again</p>
-    <p><aslist name="list2"><copy name="s2" target="s" /></aslist></p>
+    <p><aslist name="list2">$s{name="s2"}</aslist></p>
 
     <p>Copy individual selections</p>
     <p><aslist name="list3">
-    <copy name="j2" target="s/j" />
-    <copy name="k2" target="s/k" />
-    <copy name="l2" target="s/l" />
+    $(s/j{name="j2"})
+    $(s/k{name="k2"})
+    $(s/l{name="l2"})
     </aslist></p>
 
     <p>Copy individual pieces</p>
     <p><aslist name="list4">
-    <copy name="p1" target="s/j/a/v/p" /><copy name="p2" target="s/j/a/v/q" /><copy name="p3" target="s/j/a/v/r" /><copy name="p4" target="s/j/a/v/s" /><copy name="p5" target="s/j/b/v/p" /><copy name="p6" target="s/j/b/v/q" /><copy name="p7" target="s/j/b/v/r" /><copy name="p8" target="s/j/b/v/s" />
-    <copy name="p9" target="s/k/a/v/p" /><copy name="p10" target="s/k/a/v/q" /><copy name="p11" target="s/k/a/v/r" /><copy name="p12" target="s/k/a/v/s" /><copy name="p13" target="s/k/b/v/p" /><copy name="p14" target="s/k/b/v/q" /><copy name="p15" target="s/k/b/v/r" /><copy name="p16" target="s/k/b/v/s" />
-    <copy name="p17" target="s/l/a/v/p" /><copy name="p18" target="s/l/a/v/q" /><copy name="p19" target="s/l/a/v/r" /><copy name="p20" target="s/l/a/v/s" /><copy name="p21" target="s/l/b/v/p" /><copy name="p22" target="s/l/b/v/q" /><copy name="p23" target="s/l/b/v/r" /><copy name="p24" target="s/l/b/v/s" />
+    $(s/j/a/v/p{name="p1"})$(s/j/a/v/q{name="p2"})$(s/j/a/v/r{name="p3"})$(s/j/a/v/s{name="p4"})$(s/j/b/v/p{name="p5"})$(s/j/b/v/q{name="p6"})$(s/j/b/v/r{name="p7"})$(s/j/b/v/s{name="p8"})
+    $(s/k/a/v/p{name="p9"})$(s/k/a/v/q{name="p10"})$(s/k/a/v/r{name="p11"})$(s/k/a/v/s{name="p12"})$(s/k/b/v/p{name="p13"})$(s/k/b/v/q{name="p14"})$(s/k/b/v/r{name="p15"})$(s/k/b/v/s{name="p16"})
+    $(s/l/a/v/p{name="p17"})$(s/l/a/v/q{name="p18"})$(s/l/a/v/r{name="p19"})$(s/l/a/v/s{name="p20"})$(s/l/b/v/p{name="p21"})$(s/l/b/v/q{name="p22"})$(s/l/b/v/r{name="p23"})$(s/l/b/v/s{name="p24"})
     </aslist></p>
     `,
         },
@@ -4948,13 +4683,7 @@ describe("Select Tag Tests", function () {
       expect(theList3).eqls(theList1);
 
       let theList4 = [...Array(24).keys()].map((i) =>
-        me
-          .fromAst(
-            stateVariables[
-              stateVariables["/p" + (i + 1)].replacements[0].componentName
-            ].stateValues.value,
-          )
-          .toString(),
+        me.fromAst(stateVariables["/p" + (i + 1)].stateValues.value).toString(),
       );
 
       expect(theList4).eqls(theList1);
@@ -4980,7 +4709,7 @@ describe("Select Tag Tests", function () {
         <option><text>d</text></option>
         <option><text>e</text></option>
       </select></p>
-      <p><copy target="c" />, <copy target="d" /></p>
+      <p>$c, $d</p>
     `,
         },
         "*",
@@ -5033,7 +4762,7 @@ describe("Select Tag Tests", function () {
           <text>f</text>
         </option>
       </select></aslist></p>
-      <p><copy target="a" />, <copy hide="true" target="b" />, <copy target="c" />, <copy hide="false" target="d" />, <copy target="e" /></p>
+      <p>$a, <copy hide="true" target="b" />, $c, <copy hide="false" target="d" />, $e</p>
     `,
         },
         "*",
@@ -5087,7 +4816,7 @@ describe("Select Tag Tests", function () {
       <option><text>d</text></option>
       <option><text>e</text></option>
     </select></p>
-    <p><copy target="c" />, <copy target="d" /></p>
+    <p>$c, $d</p>
     `,
         },
         "*",
@@ -5137,12 +4866,14 @@ describe("Select Tag Tests", function () {
       <option>The $animal2 $verb2.</option>
     </select></p>
 
-    <p name="pa1">a1: <copy target="a" assignNames="((a11) (a12))" /></p>
+    <p name="pa1">a1: $a{assignNames="a11 a12 a13 a14"}</p>
 
-    <p name="ppieces" >pieces: <copy target="_select1" assignNames="(b c)" /></p>
+    <p name="ppieces" >pieces: <select copySource="_select1" assignNames="(b c d e)" /></p>
   
-    <p name="pb1">b1: <copy target="b" assignNames="b1" /></p>
-    <p name="pc1">c1: <copy target="c" assignNames="c1" /></p>
+    <p name="pb1">b1: $b{name="b1"}</p>
+    <p name="pc1">c1: $c{name="c1"}</p>
+    <p name="pd1">d1: $d{name="d1"}</p>
+    <p name="pe1">e1: $e{name="e1"}</p>
   
     
     `,
@@ -5182,13 +4913,19 @@ describe("Select Tag Tests", function () {
         "have.text",
         `pieces: The ${option.animal} ${option.verb}.`,
       );
-      cy.get(cesc("#\\/pb1")).should("have.text", `b1: ${option.animal}`);
-      cy.get(cesc("#\\/pc1")).should("have.text", `c1: ${option.verb}`);
+      cy.get(cesc("#\\/pb1")).should("have.text", `b1: `);
+      cy.get(cesc("#\\/pc1")).should("have.text", `c1: ${option.animal}`);
+      cy.get(cesc("#\\/pd1")).should("have.text", `d1: ${option.verb}`);
+      cy.get(cesc("#\\/pe1")).should("have.text", `e1: `);
 
-      cy.get(cesc("#\\/a11")).should("have.text", `${option.animal}`);
-      cy.get(cesc("#\\/a12")).should("have.text", `${option.verb}`);
-      cy.get(cesc("#\\/b1")).should("have.text", `${option.animal}`);
-      cy.get(cesc("#\\/c1")).should("have.text", `${option.verb}`);
+      cy.get(cesc("#\\/a11")).should("not.exist");
+      cy.get(cesc("#\\/a12")).should("have.text", `${option.animal}`);
+      cy.get(cesc("#\\/a13")).should("have.text", `${option.verb}`);
+      cy.get(cesc("#\\/a14")).should("not.exist");
+      cy.get(cesc("#\\/b1")).should("not.exist");
+      cy.get(cesc("#\\/c1")).should("have.text", `${option.animal}`);
+      cy.get(cesc("#\\/d1")).should("have.text", `${option.verb}`);
+      cy.get(cesc("#\\/e1")).should("not.exist");
     });
   });
 
