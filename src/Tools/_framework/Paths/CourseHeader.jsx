@@ -6,7 +6,6 @@ import {
   GridItem,
   Text,
   useColorMode,
-  HStack,
   Menu,
   MenuButton,
   MenuList,
@@ -19,7 +18,6 @@ import {
   Tab,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
-import { NavLink } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
@@ -46,50 +44,13 @@ export async function loader({ params }) {
     //TODO: In the future, when we don't have a doenetId,
     //we need to be able to find the courseId from something else
     const { data } = await axios.post("/api/getCourseHeader.php", { doenetId });
-    console.log(data);
+
     courseId = data.courseId;
     firstName = data.firstName;
     lastName = data.lastName;
     email = data.email;
   }
   return { signedIn, courseId, firstName, lastName, email };
-}
-
-function NavLinkTab({ to, children, dataTest }) {
-  // TODO: use end only when path is "/"
-  return (
-    <NavLink to={to} end data-test={dataTest}>
-      {({ isActive, isPending }) => {
-        // let spinner = null;
-        // if (isPending) {
-        //   spinner = <Spinner size="sm" />;
-        // }
-        let color = "doenet.canvastext";
-        let borderBottomStyle = "none";
-        let borderBottomWidth = "0px";
-        if (isActive) {
-          color = "doenet.mainBlue";
-          borderBottomWidth = "2px";
-          borderBottomStyle = "solid";
-        }
-
-        return (
-          <Center
-            h="40px"
-            borderBottomStyle={borderBottomStyle}
-            borderBottomWidth={borderBottomWidth}
-            borderBottomColor={color}
-            p="4px"
-          >
-            <Text fontSize="md" color={color}>
-              {children}
-            </Text>
-            {/* {spinner} */}
-          </Center>
-        );
-      }}
-    </NavLink>
-  );
 }
 
 export function CourseHeader(props) {
@@ -106,8 +67,6 @@ export function CourseHeader(props) {
     useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
-  console.log("recoilPageToolView", recoilPageToolView);
-  console.log("navigateTo", navigateTo);
 
   if (navigateTo.current != "") {
     const newHref = navigateTo.current;
