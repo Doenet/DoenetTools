@@ -46,7 +46,8 @@ if ($permissions["canModifyActivitySettings"] != '1'){
 $settingKeys = array(
   "individualize","showSolution","timeLimit","showFeedback","showHints","showCorrectness",
   "showCreditAchievedMenu","paginate","showFinishButton","autoSubmit","canViewAfterCompleted",
-  "assignedDate","dueDate","pinnedUntilDate","pinnedAfterDate","proctorMakesAvailable"
+  "assignedDate","dueDate","pinnedUntilDate","pinnedAfterDate","proctorMakesAvailable",
+  "totalPointsOrPercent","showSolutionInGradebook","gradeCategory"
 );
 
 $providedValues = [];
@@ -64,14 +65,15 @@ if (array_key_exists("pinnedUntilDate", $providedValues) && $providedValues["pin
 if (array_key_exists("timeLimit", $providedValues) && $providedValues["timeLimit"] == ''){$providedValues["timeLimit"] = 'NULL';}
 if (array_key_exists("dueDate", $providedValues) && $providedValues["dueDate"] == ''){$providedValues["dueDate"] = 'NULL';}
 if (array_key_exists("assignedDate", $providedValues) && $providedValues["assignedDate"] == ''){$providedValues["assignedDate"] = 'NULL';}
+if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues["totalPointsOrPercent"] == '') { $providedValues["totalPointsOrPercent"] = 'NULL';}
+if (array_key_exists("gradeCategory", $providedValues) && $providedValues["gradeCategory"] == '') { $providedValues["gradeCategory"] = 'NULL';}
 // if (array_key_exists("numberOfAttemptsAllowed", $providedValues) && $providedValues["numberOfAttemptsAllowed"] == ''){$providedValues["numberOfAttemptsAllowed"] = 'NULL';}
-// if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues["totalPointsOrPercent"] == '') { $providedValues["totalPointsOrPercent"] = 'NULL';}
 
 //protect against invalid boolean values
 $boolKeys = array(
   "individualize","showSolution","showFeedback","showHints","showCorrectness",
   "showCreditAchievedMenu","paginate","showFinishButton","autoSubmit","canViewAfterCompleted",
-  "proctorMakesAvailable"
+  "proctorMakesAvailable","showSolutionInGradebook"
 );
 
 foreach ($boolKeys as $key) {

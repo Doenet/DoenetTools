@@ -51,6 +51,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Progress,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -1159,7 +1160,6 @@ export function GeneralActivityControls({
               size="lg"
               data-test="Public Checkbox"
               name="public"
-              value="on"
               isChecked={checkboxIsPublic == "1"}
               onChange={(e) => {
                 let nextIsPublic = "0";
@@ -1202,7 +1202,6 @@ export function GeneralActivityControls({
               size="lg"
               data-test="Show DoenetML Checkbox"
               name="showDoenetML"
-              value="on"
               isChecked={checkboxShowDoenetMLSource == "1"}
               onChange={(e) => {
                 let showDoenetMLSource = "0";
@@ -1280,7 +1279,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Individualize"
           name="individualize"
-          value="on"
           isChecked={individualize == "1"}
           onChange={(e) => {
             let individualize = "0";
@@ -1310,7 +1308,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Solution"
           name="showSolution"
-          value="on"
           isChecked={showSolution == "1"}
           onChange={(e) => {
             let showSolution = "0";
@@ -1341,7 +1338,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
             size="lg"
             data-test="Time Limit"
             name="timeLimit"
-            value="on"
             isChecked={timeLimit > 0}
             onChange={(e) => {
               let timeLimit = "";
@@ -1397,7 +1393,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Feedback"
           name="showFeedback"
-          value="on"
           isChecked={showFeedback == "1"}
           onChange={(e) => {
             let showFeedback = "0";
@@ -1427,7 +1422,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Hints"
           name="showHints"
-          value="on"
           isChecked={showHints == "1"}
           onChange={(e) => {
             let showHints = "0";
@@ -1457,7 +1451,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Correctness"
           name="showCorrectness"
-          value="on"
           isChecked={showCorrectness == "1"}
           onChange={(e) => {
             let showCorrectness = "0";
@@ -1487,7 +1480,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Credit Achieved"
           name="showCreditAchievedMenu"
-          value="on"
           isChecked={showCreditAchievedMenu == "1"}
           onChange={(e) => {
             let showCreditAchievedMenu = "0";
@@ -1517,7 +1509,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Paginate"
           name="paginate"
-          value="on"
           isChecked={paginate == "1"}
           onChange={(e) => {
             let paginate = "0";
@@ -1548,7 +1539,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Show Finish Button"
           name="showFinishButton"
-          value="on"
           isChecked={showFinishButton == "1"}
           onChange={(e) => {
             let showFinishButton = "0";
@@ -1579,7 +1569,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="AutoSubmit"
           name="autoSubmit"
-          value="on"
           isChecked={autoSubmit == "1"}
           onChange={(e) => {
             let autoSubmit = "0";
@@ -1610,7 +1599,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Can View After Completed"
           name="canViewAfterCompleted"
-          value="on"
           isChecked={canViewAfterCompleted == "1"}
           onChange={(e) => {
             let canViewAfterCompleted = "0";
@@ -1747,7 +1735,6 @@ function AssignControls({ courseId, doenetId, activityData }) {
             size="lg"
             data-test="Pin Assignment"
             name="pin"
-            value="on"
             isChecked={pinnedAfterDate != ""}
             onChange={(e) => {
               let nextpinnedAfterDate = "";
@@ -1861,7 +1848,6 @@ function AssignControls({ courseId, doenetId, activityData }) {
           size="lg"
           data-test="Proctor Makes Available"
           name="proctorMakesAvailable"
-          value="on"
           isChecked={proctorMakesAvailable == "1"}
           onChange={(e) => {
             let proctorMakesAvailable = "0";
@@ -1881,6 +1867,135 @@ function AssignControls({ courseId, doenetId, activityData }) {
           }}
         >
           Proctor Makes Available{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+    </VStack>
+  );
+}
+
+function GradeControls({ courseId, doenetId, activityData }) {
+  const fetcher = useFetcher();
+
+  const [totalPointsOrPercent, setTotalPointsOrPercent] = useState(
+    activityData.totalPointsOrPercent,
+  );
+  const [showSolutionInGradebook, setShowSolutionInGradebook] = useState(
+    activityData.showSolutionInGradebook,
+  );
+  const [gradeCategory, setGradeCategory] = useState(
+    activityData.gradeCategory,
+  );
+
+  if (!activityData.has_assignment_table) {
+    return (
+      <Text>Assign controls are available after activity is assigned.</Text>
+    );
+  }
+  let gradeCategoryOptions = [
+    ["gateway", "Gateway"],
+    ["exams", "Exams"],
+    ["quizzes", "Quizzes"],
+    ["problem sets", "Problem Sets"],
+    ["projects", "Projects"],
+    ["participation", "Participation"],
+    ["NULL", "No Category"],
+  ];
+
+  return (
+    <VStack alignItems="flex-start" spacing={5}>
+      <Flex>
+        <Text mr="10px">Total Points or Percent</Text>
+        <Tooltip label="Description here">
+          <QuestionOutlineIcon />
+        </Tooltip>
+        <NumberInput
+          ml="10px"
+          step={5}
+          value={totalPointsOrPercent}
+          width="100px"
+          onChange={(value) => {
+            setTotalPointsOrPercent(value);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "totalPointsOrPercent",
+                value,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </Flex>
+
+      <Flex>
+        <Text whiteSpace="nowrap" mr="10px">
+          Grade Category
+        </Text>
+        <Tooltip label="Description here">
+          <QuestionOutlineIcon />
+        </Tooltip>
+        <Select
+          ml="10px"
+          data-test="Grade Category"
+          onChange={(e) => {
+            let nextGradeCategory = e.target.value;
+            setGradeCategory(nextGradeCategory);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "gradeCategory",
+                value: nextGradeCategory,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+          value={gradeCategory}
+        >
+          {gradeCategoryOptions.map((option, i) => {
+            return (
+              <option key={`option${i}`} value={option[0]}>
+                {option[1]}
+              </option>
+            );
+          })}
+        </Select>
+      </Flex>
+
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Solution In Gradebook"
+          name="showSolutionInGradebook"
+          isChecked={showSolutionInGradebook == "1"}
+          onChange={(e) => {
+            let showSolutionInGradebook = "0";
+            if (e.target.checked) {
+              showSolutionInGradebook = "1";
+            }
+            setShowSolutionInGradebook(showSolutionInGradebook);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showSolutionInGradebook",
+                value: showSolutionInGradebook,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Solution In Gradebook{" "}
           <Tooltip label="Description here">
             <QuestionOutlineIcon />
           </Tooltip>
@@ -2213,7 +2328,6 @@ export function GeneralCollectionControls({
             size="lg"
             data-test="Public Checkbox"
             name="public"
-            value="on"
             isChecked={checkboxIsPublic == "1"}
             onChange={(e) => {
               let nextIsPublic = "0";
@@ -2405,7 +2519,13 @@ function CourseActivitySettingsDrawer({
                     courseId={courseId}
                   />
                 </TabPanel>
-                <TabPanel>Grade</TabPanel>
+                <TabPanel>
+                  <GradeControls
+                    doenetId={doenetId}
+                    activityData={activityData}
+                    courseId={courseId}
+                  />
+                </TabPanel>
               </TabPanels>
             </Box>
           </Tabs>
