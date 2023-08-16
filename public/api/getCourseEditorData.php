@@ -96,6 +96,7 @@ $sql = "SELECT
   a.showFinishButton AS showFinishButton,
   a.proctorMakesAvailable AS proctorMakesAvailable,
   a.autoSubmit AS autoSubmit,
+  a.canViewAfterCompleted AS canViewAfterCompleted,
   a.doenetId AS doenetId
   FROM assignment AS a
   WHERE a.doenetId = '$doenetId' 
@@ -127,6 +128,7 @@ $sql = "SELECT
           "showFinishButton" => $row['showFinishButton'],
           "proctorMakesAvailable" => $row['proctorMakesAvailable'],
           "autoSubmit" => $row['autoSubmit'],
+          "canViewAfterCompleted" => $row['canViewAfterCompleted'],
           "doenetId" => $row['doenetId']
     );
   }else{

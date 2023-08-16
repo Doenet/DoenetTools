@@ -84,6 +84,11 @@ import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
+import {
+  DateToDateStringNoSeconds,
+  DateToUTCDateString,
+  UTCDateStringToLocalTimeChakraString,
+} from "../../../_utils/dateUtilityFunction";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1251,6 +1256,14 @@ function PresentationControls({ courseId, doenetId, activityData }) {
   const [showCreditAchievedMenu, setShowCreditAchievedMenu] = useState(
     activityData.showCreditAchievedMenu,
   );
+  const [paginate, setPaginate] = useState(activityData.paginate);
+  const [showFinishButton, setShowFinishButton] = useState(
+    activityData.showFinishButton,
+  );
+  const [autoSubmit, setAutoSubmit] = useState(activityData.autoSubmit);
+  const [canViewAfterCompleted, setCanViewAfterCompleted] = useState(
+    activityData.canViewAfterCompleted,
+  );
 
   if (!activityData.has_assignment_table) {
     return (
@@ -1494,6 +1507,380 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Credit Achieved{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Paginate"
+          name="paginate"
+          value="on"
+          isChecked={paginate == "1"}
+          onChange={(e) => {
+            let paginate = "0";
+            if (e.target.checked) {
+              paginate = "1";
+            }
+            setPaginate(paginate);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "paginate",
+                value: paginate,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Paginate{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Show Finish Button"
+          name="showFinishButton"
+          value="on"
+          isChecked={showFinishButton == "1"}
+          onChange={(e) => {
+            let showFinishButton = "0";
+            if (e.target.checked) {
+              showFinishButton = "1";
+            }
+            setShowFinishButton(showFinishButton);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "showFinishButton",
+                value: showFinishButton,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Show Finish Button{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="AutoSubmit"
+          name="autoSubmit"
+          value="on"
+          isChecked={autoSubmit == "1"}
+          onChange={(e) => {
+            let autoSubmit = "0";
+            if (e.target.checked) {
+              autoSubmit = "1";
+            }
+            setAutoSubmit(autoSubmit);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "autoSubmit",
+                value: autoSubmit,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Auto Submit{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Can View After Completed"
+          name="canViewAfterCompleted"
+          value="on"
+          isChecked={canViewAfterCompleted == "1"}
+          onChange={(e) => {
+            let canViewAfterCompleted = "0";
+            if (e.target.checked) {
+              canViewAfterCompleted = "1";
+            }
+            setCanViewAfterCompleted(canViewAfterCompleted);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "canViewAfterCompleted",
+                value: canViewAfterCompleted,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Can View After Completed{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Checkbox>
+      </Box>
+    </VStack>
+  );
+}
+
+function AssignControls({ courseId, doenetId, activityData }) {
+  const fetcher = useFetcher();
+
+  const [assignedDate, setAssignedDate] = useState(
+    UTCDateStringToLocalTimeChakraString(activityData.assignedDate),
+  );
+  const [dueDate, setDueDate] = useState(
+    UTCDateStringToLocalTimeChakraString(activityData.dueDate),
+  );
+  let statePinnedAfterDate = activityData.pinnedAfterDate;
+  if (statePinnedAfterDate == null) {
+    statePinnedAfterDate = "";
+  } else {
+    statePinnedAfterDate =
+      UTCDateStringToLocalTimeChakraString(statePinnedAfterDate);
+  }
+
+  const [pinnedAfterDate, setPinnedAfterDate] = useState(statePinnedAfterDate);
+  let statePinnedUntilDate = activityData.pinnedUntilDate;
+  if (statePinnedUntilDate == null) {
+    statePinnedUntilDate = "";
+  } else {
+    statePinnedUntilDate =
+      UTCDateStringToLocalTimeChakraString(statePinnedUntilDate);
+  }
+  const [pinnedUntilDate, setPinnedUntilDate] = useState(statePinnedUntilDate);
+  const [proctorMakesAvailable, setProctorMakesAvailable] = useState(
+    activityData.proctorMakesAvailable,
+  );
+
+  if (!activityData.has_assignment_table) {
+    return (
+      <Text>Assign controls are available after activity is assigned.</Text>
+    );
+  }
+
+  return (
+    <VStack alignItems="flex-start" spacing={5}>
+      <Flex>
+        <Text w="160px">
+          Assign Date{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Text>
+        <Input
+          w="300px"
+          ml="10px"
+          placeholder="Select Date and Time"
+          size="md"
+          type="datetime-local"
+          value={assignedDate}
+          onChange={(e) => {
+            setAssignedDate(e.target.value);
+          }}
+          onBlur={(e) => {
+            //Only save on blur
+            let dbAssignedDate = DateToUTCDateString(new Date(e.target.value));
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "assignedDate",
+                value: dbAssignedDate,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        />
+      </Flex>
+      <Flex>
+        <Text w="160px">
+          Due Date{" "}
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Text>
+        <Input
+          w="300px"
+          ml="10px"
+          placeholder="Select Date and Time"
+          size="md"
+          type="datetime-local"
+          value={dueDate}
+          onChange={(e) => {
+            setDueDate(e.target.value);
+          }}
+          onBlur={(e) => {
+            //Only save on blur
+            let dbdueDate = DateToUTCDateString(new Date(e.target.value));
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "dueDate",
+                value: dbdueDate,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        />
+      </Flex>
+      <Flex>
+        <HStack w="160px" alignItems="flex-start">
+          <Checkbox
+            size="lg"
+            data-test="Pin Assignment"
+            name="pin"
+            value="on"
+            isChecked={pinnedAfterDate != ""}
+            onChange={(e) => {
+              let nextpinnedAfterDate = "";
+              let dbPinnedAfterDate = "";
+              let nextpinnedUntilDate = "";
+              let dbPinnedUntilDate = "";
+              if (e.target.checked) {
+                nextpinnedAfterDate = DateToDateStringNoSeconds(new Date());
+                let InOneYear = new Date();
+                InOneYear.setFullYear(InOneYear.getFullYear() + 1);
+                nextpinnedUntilDate = DateToDateStringNoSeconds(InOneYear);
+                dbPinnedAfterDate = DateToUTCDateString(
+                  new Date(nextpinnedAfterDate),
+                );
+                dbPinnedUntilDate = DateToUTCDateString(
+                  new Date(nextpinnedUntilDate),
+                );
+              }
+              setPinnedAfterDate(nextpinnedAfterDate);
+              setPinnedUntilDate(nextpinnedUntilDate);
+
+              fetcher.submit(
+                {
+                  _action: "update assignment via keyToUpdate",
+                  keyToUpdate: "pinnedAfterDate",
+                  value: dbPinnedAfterDate,
+                  doenetId,
+                },
+                { method: "post" },
+              );
+              fetcher.submit(
+                {
+                  _action: "update assignment via keyToUpdate",
+                  keyToUpdate: "pinnedUntilDate",
+                  value: dbPinnedUntilDate,
+                  doenetId,
+                },
+                { method: "post" },
+              );
+            }}
+          />
+          <Text>Pin Assignment </Text>
+          <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </HStack>
+
+        <VStack alignItems="flex-start">
+          <Box>
+            <Input
+              w="300px"
+              ml="10px"
+              placeholder="Select Date and Time"
+              size="md"
+              type="datetime-local"
+              value={pinnedAfterDate}
+              isDisabled={pinnedAfterDate == ""}
+              onChange={(e) => {
+                setPinnedAfterDate(e.target.value);
+              }}
+              onBlur={(e) => {
+                //Only save on blur
+                let dbPinnedAfterDate = DateToUTCDateString(
+                  new Date(e.target.value),
+                );
+                fetcher.submit(
+                  {
+                    _action: "update assignment via keyToUpdate",
+                    keyToUpdate: "pinnedAfterDate",
+                    value: dbPinnedAfterDate,
+                    doenetId,
+                  },
+                  { method: "post" },
+                );
+              }}
+            />
+          </Box>
+          <Box>
+            <Input
+              w="300px"
+              ml="10px"
+              placeholder="Select Date and Time"
+              size="md"
+              type="datetime-local"
+              isDisabled={pinnedUntilDate == ""}
+              value={pinnedUntilDate}
+              onChange={(e) => {
+                setPinnedUntilDate(e.target.value);
+              }}
+              onBlur={(e) => {
+                //Only save on blur
+                let dbPinnedUntilDate = DateToUTCDateString(
+                  new Date(e.target.value),
+                );
+                fetcher.submit(
+                  {
+                    _action: "update assignment via keyToUpdate",
+                    keyToUpdate: "pinnedUntilDate",
+                    value: dbPinnedUntilDate,
+                    doenetId,
+                  },
+                  { method: "post" },
+                );
+              }}
+            />
+          </Box>
+        </VStack>
+      </Flex>
+      <Box>
+        <Checkbox
+          size="lg"
+          data-test="Proctor Makes Available"
+          name="proctorMakesAvailable"
+          value="on"
+          isChecked={proctorMakesAvailable == "1"}
+          onChange={(e) => {
+            let proctorMakesAvailable = "0";
+            if (e.target.checked) {
+              proctorMakesAvailable = "1";
+            }
+            setProctorMakesAvailable(proctorMakesAvailable);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "proctorMakesAvailable",
+                value: proctorMakesAvailable,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Proctor Makes Available{" "}
           <Tooltip label="Description here">
             <QuestionOutlineIcon />
           </Tooltip>
@@ -2011,7 +2398,13 @@ function CourseActivitySettingsDrawer({
                     courseId={courseId}
                   />
                 </TabPanel>
-                <TabPanel>Assign</TabPanel>
+                <TabPanel>
+                  <AssignControls
+                    doenetId={doenetId}
+                    activityData={activityData}
+                    courseId={courseId}
+                  />
+                </TabPanel>
                 <TabPanel>Grade</TabPanel>
               </TabPanels>
             </Box>
