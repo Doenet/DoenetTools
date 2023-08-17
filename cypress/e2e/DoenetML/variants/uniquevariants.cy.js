@@ -3529,7 +3529,7 @@ describe("Specifying unique variant tests", function () {
 
   it("no variant control, problem with 3 selects", () => {
     // Catch bug in enumerateCombinations
-    // where was indirectly overwriting numberOfVariantsByDescendant
+    // where was indirectly overwriting numVariantsByDescendant
     let values = [135, 246, 145, 236, 136, 245, 146, 235];
 
     cy.log("get each value exactly one");

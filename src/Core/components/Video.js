@@ -33,14 +33,13 @@ export default class Video extends BlockComponent {
     };
     attributes.size = {
       createComponentOfType: "text",
+      createStateVariable: "specifiedSize",
+      defaultValue: "full",
+      toLowerCase: true,
+      validValues: sizePossibilities,
     };
     attributes.aspectRatio = {
       createComponentOfType: "number",
-    };
-
-    // Note: height attribute is deprecated and will be removed in the future
-    attributes.height = {
-      createComponentOfType: "_componentSize",
     };
 
     attributes.displayMode = {
@@ -90,10 +89,9 @@ export default class Video extends BlockComponent {
         createComponentOfType: "text",
       },
       returnDependencies: () => ({
-        sizeAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "size",
-          variableNames: ["value"],
+        specifiedSize: {
+          dependencyType: "stateVariable",
+          variableName: "specifiedSize",
         },
         widthAttr: {
           dependencyType: "attributeComponent",
@@ -101,17 +99,12 @@ export default class Video extends BlockComponent {
           variableNames: ["componentSize"],
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, usedDefault }) {
         const defaultSize = "full";
 
-        if (dependencyValues.sizeAttr) {
-          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
-
-          if (!sizePossibilities.includes(size)) {
-            size = defaultSize;
-          }
+        if (!usedDefault.specifiedSize) {
           return {
-            setValue: { size },
+            setValue: { size: dependencyValues.specifiedSize },
           };
         } else if (dependencyValues.widthAttr) {
           let componentSize =

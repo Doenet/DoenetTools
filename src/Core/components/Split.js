@@ -4,6 +4,8 @@ import { processAssignNames } from "../utils/serializedStateProcessing";
 export default class Split extends CompositeComponent {
   static componentType = "split";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
@@ -176,6 +178,9 @@ export default class Split extends CompositeComponent {
     component,
     componentInfoObjects,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let serializedReplacement = {
@@ -199,7 +204,13 @@ export default class Split extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 }

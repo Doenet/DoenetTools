@@ -100,8 +100,11 @@ export default class EigenDecomposition extends BaseComponent {
         try {
           result = me.math.eigs(matrixArray);
         } catch (e) {
-          console.warn("Could not calculate eigenvalues of matrix");
-          return { setValue: { decomposition: null } };
+          let warning = {
+            message: "Could not calculate eigenvalues of matrix",
+            level: 1,
+          };
+          return { setValue: { decomposition: null }, sendWarnings: [warning] };
         }
 
         return { setValue: { decomposition: result } };

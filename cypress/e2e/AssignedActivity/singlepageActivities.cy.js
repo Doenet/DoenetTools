@@ -117,6 +117,94 @@ describe("Single page activity tests", function () {
     });
   });
 
+  it("Internal link to content in aside opens it", () => {
+    const doenetML = `
+<section>
+  <p><ref name="toInsideAside" target="insideAside">Link inside aside</ref></p>
+  
+  <lorem generateParagraphs="8" />
+
+  <aside name="aside">
+    <title name="asideTitle">The aside</title>
+    <p name="insideAside">Content in aside</p>
+  </aside>
+
+  <lorem generateParagraphs="8" />
+
+</section>`;
+
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.url().should("match", /[^#]/);
+
+    cy.get('[data-test="Main Panel"]').then((el) => {
+      expect(el.scrollTop()).eq(0);
+    });
+
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
+
+    cy.get(cesc("#\\/toInsideAside")).click();
+    cy.url().should("match", /#\\\/insideAside$/);
+
+    cy.wait(200);
+
+    cy.get(cesc("#\\/insideAside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+
+    cy.wait(100);
+    cy.get(cesc("#\\/asideTitle")).click();
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
+
+    cy.get(cesc("#\\/toInsideAside")).scrollIntoView();
+
+    cy.get(cesc("#\\/toInsideAside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+
+    cy.url().should("match", /#\\\/insideAside$/);
+
+    cy.get(cesc("#\\/toInsideAside")).click();
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+
+    cy.url().should("match", /#\\\/insideAside$/);
+
+    cy.wait(200);
+
+    cy.get(cesc("#\\/insideAside")).then((el) => {
+      let rect = el[0].getBoundingClientRect();
+      expect(rect.top)
+        .gt(headerPixels - 1)
+        .lt(headerPixels + 1);
+    });
+  });
+
   it.skip("Navigating back remembers position where clicked internal link", () => {
     const doenetML = `
 <section>
@@ -348,6 +436,145 @@ describe("Single page activity tests", function () {
     });
   });
 
+  it("Links to activity, inside aside", () => {
+    const doenetML = `
+  <section>
+    <p><ref name="toAside" target="aside">Link to aside</ref></p>
+    
+    <lorem generateParagraphs="8" />
+  
+    <aside name="aside">
+      <title name="asideTitle">The aside</title>
+      <p name="insideAside">Content in aside</p>
+    </aside>
+  
+    <lorem generateParagraphs="8" />
+  
+  </section>`;
+
+    const doenetMLother = `
+<p><ref name="toTop" uri="doenet:doenetId=${doenetId}">Link to top</ref></p>
+<p><ref name="toInsideAside" uri="doenet:doenetId=${doenetId}" target="insideAside">Link to inside aside</ref></p>
+<p><ref name="toInsideAsideb" uri="doenet:doenetId=${doenetId}#\\/insideAside">Link to inside aside</ref></p>
+`;
+
+    cy.createActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId,
+      doenetML,
+    });
+    cy.createActivity({
+      courseId,
+      doenetId: doenetId2,
+      parentDoenetId: courseId,
+      pageDoenetId: pageDoenetId3,
+      doenetML: doenetMLother,
+    });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+
+    cy.get(".navigationRow").should("have.length", 2); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.get(".navigationRow").eq(1).find(".navigationColumn1").click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.wait(200);
+    // TODO: should not have to wait here.  It seems like this a bug
+    // Without the wait get into an inconsistent situation where the activity does appear for the student,
+    // but when click "View Activity" it says the assignment is not assigned
+
+    cy.signin({ userId: studentUserId });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+
+    cy.get(".navigationRow").should("have.length", 2); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(1).find(".navigationColumn1").click();
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+
+    cy.log("click link to top, remove target so uses same tab");
+    cy.get(cesc("#\\/toTop")).invoke("removeAttr", "target").click();
+
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
+
+    cy.url().should("contain", doenetId);
+
+    cy.go("back");
+
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
+
+    cy.log("click link to inside aside, remove target so uses same tab");
+    cy.get(cesc("#\\/toInsideAside")).invoke("removeAttr", "target").click();
+
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+
+    cy.url().should("match", /#\\\/insideAside$/);
+    cy.url().should("contain", doenetId);
+
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/insideAside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
+
+    cy.wait(1500); // wait for debounce
+
+    cy.go("back");
+
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
+
+    cy.log("click link to top, remove target so uses same tab");
+    cy.get(cesc("#\\/toTop")).invoke("removeAttr", "target").click();
+
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+
+    cy.get(cesc("#\\/asideTitle")).click();
+    cy.get(cesc("#\\/insideAside")).should("not.exist");
+
+    cy.wait(1500); // wait for debounce
+
+    cy.go("back");
+
+    cy.get(cesc("#\\/_p1")).should("have.text", "Link to top");
+    cy.url().should("contain", doenetId2);
+
+    cy.log("click link b to inside aside, remove target so uses same tab");
+    cy.get(cesc("#\\/toInsideAsideb")).invoke("removeAttr", "target").click();
+
+    cy.get(cesc("#\\/insideAside")).should("have.text", "Content in aside");
+    cy.get(cesc("#\\/_section1_title")).should("have.text", "Section 1");
+    cy.get(cesc("#\\/asideTitle")).should("have.text", "The aside");
+
+    cy.url().should("match", /#\\\/insideAside$/);
+    cy.url().should("contain", doenetId);
+
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/insideAside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
+  });
+
   it("Go directly to URLs of activity", () => {
     const doenetML = `
   <section>
@@ -403,12 +630,12 @@ describe("Single page activity tests", function () {
     cy.url().should("match", /#\\\/aside$/);
     cy.url().should("contain", doenetId);
 
-    cy.get(cesc("#\\/aside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
-      expect(rect.top)
-        .gt(headerPixels - 1)
-        .lt(headerPixels + 1);
-    });
+    cy.waitUntil(() =>
+      cy.get(cesc("#\\/aside")).then((el) => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > headerPixels - 1 && rect.top < headerPixels + 1;
+      }),
+    );
   });
 
   it("Update to new version, infinite attempts allowed, separate student signin", () => {
@@ -455,9 +682,11 @@ describe("Single page activity tests", function () {
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="View Activity"]').click();
 
-    cy.get(cesc("#\\/ans") + " textarea").type("{end}{backspace}1{enter}", {
-      force: true,
-    });
+    cy.get(cesc("#\\/ans") + " textarea")
+      .type("{end}{backspace}1{enter}", {
+        force: true,
+      })
+      .then((x) => console.log("we typed in the 1"));
 
     cy.log(
       "At least for now, hitting enter before core is intialized does not submit response",
@@ -470,6 +699,10 @@ describe("Single page activity tests", function () {
     cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
 
     cy.go("back");
+
+    // Have to wait to make sure Core has saved the changes to continue
+    // TODO: ideally wouldn't have to wait here
+    cy.wait(1000);
 
     cy.signin({ userId });
 
@@ -1659,6 +1892,7 @@ describe("Single page activity tests", function () {
       <award><when>$ti=hello</when></award>
     </answer>
     </p>
+    $ti.value, $ti.immediateValue
 `;
 
     cy.createActivity({

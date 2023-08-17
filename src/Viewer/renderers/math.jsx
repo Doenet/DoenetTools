@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { BoardContext, TEXT_LAYER_OFFSET } from "./graph";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { MathJax } from "better-react-mathjax";
 import me from "math-expressions";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import { textRendererStyle } from "../../Core/utils/style";
 import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 import { cesc } from "../../_utils/url";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function MathComponent(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   MathComponent.ignoreActionsWithoutCore = () => true;
 
@@ -39,7 +38,7 @@ export default React.memo(function MathComponent(props) {
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

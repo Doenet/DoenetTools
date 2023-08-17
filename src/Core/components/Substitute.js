@@ -9,6 +9,8 @@ import {
 export default class Substitute extends CompositeComponent {
   static componentType = "substitute";
 
+  static allowInSchemaAsComponent = ["math", "text"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
@@ -406,6 +408,9 @@ export default class Substitute extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let type = await component.stateValues.type;
@@ -465,8 +470,14 @@ export default class Substitute extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 }
 

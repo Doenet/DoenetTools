@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { BoardContext, IMAGE_LAYER_OFFSET } from "./graph";
 import { retrieveMediaForCid } from "../../Core/utils/retrieveMedia";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { sizeToCSS } from "./utils/css";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import me from "math-expressions";
 
 export default React.memo(function Image(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props, false);
   let [url, setUrl] = useState(null);
 
   Image.ignoreActionsWithoutCore = () => true;

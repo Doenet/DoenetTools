@@ -16,6 +16,8 @@ export default class Sequence extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static allowInSchemaAsComponent = ["number", "math", "text"];
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
@@ -87,6 +89,9 @@ export default class Sequence extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
 
+    let errors = [];
+    let warnings = [];
+
     if (!(await component.stateValues.validSequence)) {
       workspace.lastReplacementParameters = {
         from: null,
@@ -95,7 +100,7 @@ export default class Sequence extends CompositeComponent {
         type: null,
         exclude: null,
       };
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     }
 
     let from = await component.stateValues.from;
@@ -175,8 +180,14 @@ export default class Sequence extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -186,6 +197,10 @@ export default class Sequence extends CompositeComponent {
     flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
+
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
 
     let lrp = workspace.lastReplacementParameters;
 
@@ -228,14 +243,16 @@ export default class Sequence extends CompositeComponent {
     // TODO: don't completely recreate if have excluded elements
     if (lrp.type !== type || lrp.exclude.length > 0 || exclude.length > 0) {
       // calculate new serialized replacements
-      let newSerializedReplacements = (
-        await this.createSerializedReplacements({
-          component,
-          workspace,
-          componentInfoObjects,
-          flags,
-        })
-      ).replacements;
+      let replacementResults = await this.createSerializedReplacements({
+        component,
+        workspace,
+        componentInfoObjects,
+        flags,
+      });
+
+      let newSerializedReplacements = replacementResults.replacements;
+      errors.push(...replacementResults.errors);
+      warnings.push(...replacementResults.warnings);
 
       let replacementInstruction = {
         changeType: "add",
@@ -401,6 +418,8 @@ export default class Sequence extends CompositeComponent {
           componentInfoObjects,
           indOffset: prevlength,
         });
+        errors.push(...processResult.errors);
+        warnings.push(...processResult.warnings);
 
         let replacementInstruction = {
           changeType: "add",
@@ -428,7 +447,10 @@ export default class Sequence extends CompositeComponent {
 
     let type = "number";
     if (this.attributes.type && this.attributes.type.primitive) {
-      type = this.attributes.type.primitive;
+      type = this.attributes.type.primitive.toLowerCase();
+    }
+    if (!["number", "math", "letters"].includes(type)) {
+      type = "number";
     }
 
     let rendererType =

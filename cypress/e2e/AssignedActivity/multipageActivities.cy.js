@@ -97,6 +97,8 @@ describe("Multipage activity tests", function () {
     cy.get('[data-test="Assign Activity"]').click();
     cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
+    cy.wait(100); //TODO: is there a reason we need to wait before clicking paginate?
+
     cy.get('[data-test="Paginate"').click();
     cy.wait(100); //TODO: need the UI to let us know this was successful
 

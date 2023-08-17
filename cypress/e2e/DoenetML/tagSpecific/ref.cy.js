@@ -181,7 +181,7 @@ describe("ref Tag Tests", function () {
     cy.get(cesc("#\\/_ref1"))
       .should("have.text", "a Doenet doc")
       .invoke("attr", "href")
-      .then((href) => expect(href).eq("/public?doenetId=abcdefg"));
+      .then((href) => expect(href).eq("/portfolioviewer/abcdefg"));
   });
 
   it("url with no link text", () => {
@@ -471,8 +471,10 @@ describe("ref Tag Tests", function () {
     );
 
     cy.get(cesc("#\\/inside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(-1).lt(1);
+      cy.waitUntil(() => {
+        let rect = el[0].getBoundingClientRect();
+        return rect.top > -1 && rect.top < 1;
+      });
     });
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

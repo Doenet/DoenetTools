@@ -1391,6 +1391,177 @@ describe("Module Tag Tests", function () {
     cy.get(cesc2("#/m3/_p1")).should("have.text", "Disabled? ");
   });
 
+  it("handle error in custom attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <text>a</text>
+    <module name='m'>
+      <customAttribute componentType="boolean" attribute="a1" defaultValue="true" assignNames="duplicate" />
+      
+      <customAttribute componentType="text" attribute="a2" defaultValue="yes" assignNames="duplicate" />
+        
+    </module>
+    `,
+        },
+        "*",
+      );
+    });
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); //wait for page to load
+
+    cy.get(cesc2("#/_customattribute2")).should(
+      "contain.text",
+      "Duplicate component name: duplicate",
+    );
+    cy.get(cesc2("#/_customattribute2")).should("contain.text", "line 6");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(1);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Duplicate component name: duplicate",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(104);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(108);
+    });
+  });
+
+  it("warnings in custom attributes", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <module name='m' newNamespace>
+      <setup>
+        <customAttribute componentType="boolean" defaultValue="true" attribute="disabled" assignNames="disabled" />
+        
+        <customAttribute componentType="bad" defaultValue="yes" attribute="a" assignNames="a" />
+
+        <customAttribute componentType="text" attribute="b" assignNames="b" />
+
+        <customAttribute />
+
+      </setup>
+
+      <customAttribute componentType="boolean" defaultValue="true" attribute="outside" assignNames="outside" />
+    
+      <p>b: $b</p>
+    </module>
+
+    <module copySource="m" b="hello" name="m1" />
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/m/_p1")).should("have.text", "b: ");
+    cy.get(cesc2("#/m1/_p1")).should("have.text", "b: hello");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(9);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(14);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(14);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(111);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "Could not create <customAttribute>. It must be inside a <setup> component that is inside a <module> or similar component",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(14);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(7);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(14);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(111);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        `Cannot add attribute "disabled" to a <module> because the <module> component type already has a "disabled" attribute defined`,
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(115);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        "<customAttribute> contains an invalid component type: <bad>",
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(96);
+
+      expect(errorWarnings.warnings[4].message).contain(
+        `Since a default value was not supplied for <customAttribute> with attribute="b", it will not be created unless a value is specified`,
+      );
+      expect(errorWarnings.warnings[4].level).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineBegin).eq(8);
+      expect(errorWarnings.warnings[4].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[4].doenetMLrange.charEnd).eq(78);
+
+      expect(errorWarnings.warnings[5].message).contain(
+        `<customAttribute> must contain a componentType attribute`,
+      );
+      expect(errorWarnings.warnings[5].level).eq(1);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineBegin).eq(10);
+      expect(errorWarnings.warnings[5].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineEnd).eq(10);
+      expect(errorWarnings.warnings[5].doenetMLrange.charEnd).eq(27);
+
+      expect(errorWarnings.warnings[6].message).contain(
+        `Cannot add attribute "disabled" to a <module> because the <module> component type already has a "disabled" attribute defined`,
+      );
+      expect(errorWarnings.warnings[6].level).eq(1);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[6].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[6].doenetMLrange.charEnd).eq(115);
+
+      expect(errorWarnings.warnings[7].message).contain(
+        "<customAttribute> contains an invalid component type: <bad>",
+      );
+      expect(errorWarnings.warnings[7].level).eq(1);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[7].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[7].doenetMLrange.charEnd).eq(96);
+
+      expect(errorWarnings.warnings[8].message).contain(
+        `<customAttribute> must contain a componentType attribute`,
+      );
+      expect(errorWarnings.warnings[8].level).eq(1);
+      expect(errorWarnings.warnings[8].doenetMLrange.lineBegin).eq(10);
+      expect(errorWarnings.warnings[8].doenetMLrange.charBegin).eq(9);
+      expect(errorWarnings.warnings[8].doenetMLrange.lineEnd).eq(10);
+      expect(errorWarnings.warnings[8].doenetMLrange.charEnd).eq(27);
+    });
+  });
+
   it("copy module and overwrite attribute values", () => {
     cy.window().then(async (win) => {
       win.postMessage(

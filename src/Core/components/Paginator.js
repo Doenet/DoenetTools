@@ -12,6 +12,7 @@ export class Paginator extends BlockComponent {
   static componentType = "paginator";
   static rendererType = "containerBlock";
   static renderChildren = true;
+  static canDisplayChildErrors = true;
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

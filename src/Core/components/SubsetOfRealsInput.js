@@ -1456,14 +1456,12 @@ function parseValueIntoSubset({ inputString, format, variable }) {
     try {
       expression = me.fromLatex(inputString);
     } catch (e) {
-      console.warn(`Invalid latex for subsetOfRealsInput: ${inputString}`);
       return new subsets.EmptySet();
     }
   } else if (format === "text") {
     try {
       expression = me.fromText(inputString);
     } catch (e) {
-      console.warn(`Invalid text for subsetOfRealsInput: ${inputString}`);
       return new subsets.EmptySet();
     }
   }

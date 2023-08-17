@@ -13,6 +13,8 @@ import {
 export default class Map extends CompositeComponent {
   static componentType = "map";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
@@ -157,6 +159,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         let validBehavior = true;
+        let warnings = [];
 
         if (dependencyValues.behavior === "parallel") {
           // display warning if some sources activeChildren have differ numbers of iterates
@@ -165,17 +168,22 @@ export default class Map extends CompositeComponent {
               .slice(1)
               .some((x) => x != dependencyValues.numIterates[0])
           ) {
-            console.warn(
-              "Warning: map with parallel behavior and different numbers of iterates in sources activeChildren." +
+            warnings.push({
+              message:
+                "<map> has parallel behavior but different numbers of iterates in sources." +
                 " Extra iterates will be ignored.",
-            );
+              level: 1,
+            });
           }
         } else if (dependencyValues.behavior !== "combination") {
-          console.warn("Invalid map behavior: " + dependencyValues.behavior);
+          warnings.push({
+            message: `Invalid map behavior: "${dependencyValues.behavior}".`,
+            level: 1,
+          });
           validBehavior = false;
         }
 
-        return { setValue: { validBehavior } };
+        return { setValue: { validBehavior }, sendWarnings: warnings };
       },
     };
 
@@ -260,6 +268,9 @@ export default class Map extends CompositeComponent {
   }) {
     // console.log(`create serialized replacements for ${component.componentName}`);
 
+    let errors = [];
+    let warnings = [];
+
     if (!(await component.stateValues.validBehavior)) {
       workspace.lastReplacementParameters = {
         sourcesNames: [],
@@ -268,7 +279,7 @@ export default class Map extends CompositeComponent {
         numIterates: undefined,
         minNIterates: undefined,
       };
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     }
 
     workspace.lastReplacementParameters = {
@@ -289,14 +300,15 @@ export default class Map extends CompositeComponent {
         iter < (await component.stateValues.minNIterates);
         iter++
       ) {
-        replacements.push(
-          ...(await this.parallelReplacement({
-            component,
-            iter,
-            componentInfoObjects,
-            flags,
-          })),
-        );
+        let res = await this.parallelReplacement({
+          component,
+          iter,
+          componentInfoObjects,
+          flags,
+        });
+        replacements.push(...res.replacements);
+        errors.push(...res.errors);
+        warnings.push(...res.warnings);
       }
     } else {
       //behavior is combination
@@ -310,11 +322,13 @@ export default class Map extends CompositeComponent {
         flags,
       });
       replacements = results.replacements;
+      errors.push(...results.errors);
+      warnings.push(...results.warnings);
     }
 
     // console.log(`replacements of map`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
-    return { replacements };
+    return { replacements, errors, warnings };
   }
 
   static async parallelReplacement({
@@ -323,6 +337,9 @@ export default class Map extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [deepClone(await component.stateValues.template)];
     let newNamespace = component.attributes.newNamespace?.primitive;
 
@@ -358,6 +375,8 @@ export default class Map extends CompositeComponent {
       componentInfoObjects,
       indOffset: iter,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     replacements = processResult.serializedComponents;
 
@@ -367,7 +386,7 @@ export default class Map extends CompositeComponent {
       Array(await component.stateValues.numSources).fill(iter),
     );
 
-    return replacements;
+    return { replacements, errors, warnings };
   }
 
   static async recurseThroughCombinations({
@@ -378,6 +397,9 @@ export default class Map extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
     let newNamespace = component.attributes.newNamespace?.primitive;
@@ -433,6 +455,8 @@ export default class Map extends CompositeComponent {
           componentInfoObjects,
           indOffset: iterateNumber,
         });
+        errors.push(...processResult.errors);
+        warnings.push(...processResult.warnings);
 
         let thisRepl = processResult.serializedComponents[0];
 
@@ -450,10 +474,12 @@ export default class Map extends CompositeComponent {
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber;
+        errors.push(...results.errors);
+        warnings.push(...results.warnings);
       }
     }
 
-    return { replacements, iterateNumber };
+    return { replacements, iterateNumber, errors, warnings };
   }
 
   static async calculateReplacementChanges({
@@ -464,6 +490,10 @@ export default class Map extends CompositeComponent {
     flags,
   }) {
     // console.log(`calculate replacement changes for ${component.componentName}`)
+
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
 
     let replacementChanges = [];
 
@@ -565,12 +595,16 @@ export default class Map extends CompositeComponent {
     }
 
     if (recreateReplacements) {
-      let newSerializedReplacements = await this.createSerializedReplacements({
+      let replacementResults = await this.createSerializedReplacements({
         component,
         workspace,
         componentInfoObjects,
         flags,
-      }).replacements;
+      });
+
+      let newSerializedReplacements = replacementResults.replacements;
+      errors.push(...replacementResults.errors);
+      warnings.push(...replacementResults.warnings);
 
       let replacementInstruction = {
         changeType: "add",
@@ -711,19 +745,15 @@ export default class Map extends CompositeComponent {
         let replacements = [];
 
         for (let iter = prevMinNIterates; iter < currentMinNIterates; iter++) {
-          replacements.push(
-            ...(await this.parallelReplacement({
-              component,
-              iter,
-              componentInfoObjects,
-              flags,
-            })),
-          );
-        }
-
-        let nAssignNames = 0;
-        if (component.doenetAttributes.assignNames) {
-          nAssignNames = component.doenetAttributes.assignNames.length;
+          let res = await this.parallelReplacement({
+            component,
+            iter,
+            componentInfoObjects,
+            flags,
+          });
+          replacements.push(...res.replacements);
+          errors.push(...res.errors);
+          warnings.push(...res.warnings);
         }
 
         let replacementInstruction = {
@@ -770,10 +800,10 @@ export default class Map extends CompositeComponent {
     serializedComponent,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    let numVariants = serializedComponent.variants?.numVariants;
 
-    if (numberOfVariants !== undefined) {
-      return { success: true, numberOfVariants };
+    if (numVariants !== undefined) {
+      return { success: true, numVariants };
     }
 
     let descendantVariantComponents = gatherVariantComponents({
@@ -781,7 +811,7 @@ export default class Map extends CompositeComponent {
       componentInfoObjects,
     });
 
-    let numberOfVariantsByDescendant = [];
+    let numVariantsByDescendant = [];
     for (let descendant of descendantVariantComponents) {
       let descendantClass =
         componentInfoObjects.allComponentClasses[descendant.componentType];
@@ -792,20 +822,20 @@ export default class Map extends CompositeComponent {
       if (!result.success) {
         return { success: false };
       }
-      numberOfVariantsByDescendant.push(result.numberOfVariants);
+      numVariantsByDescendant.push(result.numVariants);
     }
 
     if (
-      numberOfVariantsByDescendant.length === 1 &&
-      numberOfVariantsByDescendant[0] === 1
+      numVariantsByDescendant.length === 1 &&
+      numVariantsByDescendant[0] === 1
     ) {
       // just have a template with one variant
       // so will have a single variant even if don't know how many times the template is repeated
-      serializedComponent.variants.numberOfVariants = 1;
+      serializedComponent.variants.numVariants = 1;
 
       return {
         success: true,
-        numberOfVariants: 1,
+        numVariants: 1,
       };
     }
 
@@ -817,15 +847,15 @@ export default class Map extends CompositeComponent {
     variantIndex,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }

@@ -16,7 +16,6 @@ import axios from "axios";
 import MainPanel from "./Panels/NewMainPanel";
 import SupportPanel from "./Panels/NewSupportPanel";
 import MenuPanel from "./Panels/NewMenuPanel";
-import FooterPanel from "./Panels/FooterPanel";
 import { animated } from "@react-spring/web";
 
 import { useNavigate, useLocation } from "react-router";
@@ -93,7 +92,6 @@ export default function ToolRoot() {
     hasNoHeaderPanel: false,
     headerControls: [],
     displaySettings: true,
-    footer: null,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true}>null</SupportPanel>;
@@ -174,10 +172,6 @@ export default function ToolRoot() {
     ActivityNavigationButtons: lazy(() =>
       import("./HeaderControls/ActivityNavigationButtons"),
     ),
-  }).current;
-
-  const LazyFooterObj = useRef({
-    MathInputKeyboard: lazy(() => import("./Footers/MathInputKeyboard")),
   }).current;
 
   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
@@ -334,35 +328,6 @@ export default function ToolRoot() {
     openMenuButton = false;
   }
 
-  let footer = null;
-
-  if (toolRootMenusAndPanels.footer) {
-    let footerKey = `footer`;
-    footer = (
-      <FooterPanel
-        id="keyboard"
-        isInitOpen={toolRootMenusAndPanels.footer.open}
-        height={toolRootMenusAndPanels.footer.height}
-        aria-label="keyboard"
-      >
-        <Suspense
-          key={footerKey}
-          // TODO: loading animation for footer
-          fallback={<LoadingFallback>loading...</LoadingFallback>}
-        >
-          {React.createElement(
-            LazyFooterObj[toolRootMenusAndPanels.footer.component],
-            {
-              key: { footerKey },
-            },
-          )}
-        </Suspense>
-      </FooterPanel>
-    );
-  }
-
-  // <p>insert keyboard here</p></FooterPanel>
-
   return (
     <>
       <ToolContainer>
@@ -382,7 +347,6 @@ export default function ToolRoot() {
           hasNoHeaderPanel={toolRootMenusAndPanels.hasNoHeaderPanel}
           support={supportPanel}
         />
-        {footer}
       </ToolContainer>
       <Toast />
 
@@ -406,7 +370,6 @@ export default function ToolRoot() {
 // hasNoMenuPanel: true,
 // headerControls:["BackButton"],
 // waitForMenuSuppression:true,
-// footer: {height,open,component}
 // initialProportion: 1,
 
 // /umn/1271qual
@@ -438,7 +401,6 @@ let navigationObj = {
       hasNoMenuPanel: true,
       hasNoHeaderPanel: true,
       waitForMenuSuppression: true,
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
     },
     endExam: {
       pageName: "endExam",
@@ -482,7 +444,6 @@ let navigationObj = {
       supportPanelIndex: 0,
       headerControls: ["PortfolioBreadCrumb", "ViewerUpdateButton"],
       // onLeave: 'EditorLeave',
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
       waitForMenuSuppression: true,
     },
   },
@@ -505,7 +466,6 @@ let navigationObj = {
       headerControls: [],
       displaySettings: false,
       waitForMenuSuppression: true,
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
     },
     endExam: {
       pageName: "endExam",
@@ -531,7 +491,6 @@ let navigationObj = {
         "ActivityNavigationButtons",
       ],
       waitForMenuSuppression: true,
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
     },
     courseChooser: {
       //allCourses
@@ -563,7 +522,6 @@ let navigationObj = {
       menusTitles: ["Activity Variant"],
       menusInitOpen: [],
       headerControls: ["AssignmentBreadCrumb"],
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
     },
     endExam: {
       pageName: "endExam",
@@ -668,7 +626,6 @@ let navigationObj = {
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
       // onLeave: 'EditorLeave',
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
       waitForMenuSuppression: true,
     },
     people: {
@@ -742,7 +699,6 @@ let navigationObj = {
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["PublicNavigation", "ViewerUpdateButton"],
-      footer: { height: 250, open: false, component: "MathInputKeyboard" },
     },
   },
   settings: {

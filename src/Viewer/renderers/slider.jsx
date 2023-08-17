@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import me from "math-expressions";
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from "recoil";
@@ -342,7 +342,7 @@ function nearestValue(refval, points, SVs) {
 
 export default React.memo(function Slider(props) {
   let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
   // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
 

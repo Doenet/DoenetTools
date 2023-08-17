@@ -14,6 +14,8 @@ export function parse(inText) {
  * @param {string} inText
  */
 export function parseAndCompile(inText) {
+  let errors = [];
+
   function compileElement(cursor) {
     if (cursor.name !== "Element") {
       throw Error("compileElement() called on a non-Element");
@@ -24,52 +26,95 @@ export function parseAndCompile(inText) {
       cursor.firstChild();
       cursor.nextSibling();
       let tagName = inText.substring(cursor.from, cursor.to);
+      let adjustedTagName = tagName;
+      let adjustedRange = null;
 
       let tagOpenBegin = cursor.from;
 
+      let message;
+
+      if (tagName[0] === "_") {
+        message = `Invalid component type: <${tagName}>.`;
+        errors.push({
+          message,
+          doenetMLrange: { begin: tagOpenBegin, end: cursor.to },
+        });
+        adjustedTagName = "_error";
+      }
+
       let attrs = {};
+      let attrRanges = {};
       while (cursor.nextSibling()) {
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          let errorBegin = cursor.from;
+          // let errorBegin = cursor.from;
           let errorEnd = cursor.to;
           // console.error(cursor);
           // console.error(showCursor(cursor));
           // console.error(cursor.name);
           // eslint-disable-next-line no-empty
-          while (cursor.parent()) {}
+          // while (cursor.parent()) {}
 
-          throw Error(
-            `Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(
-              tagOpenBegin - 1,
-              errorEnd,
-            )}`,
-          );
+          let textOfError = inText.slice(tagOpenBegin - 1, errorEnd).trimEnd();
+
+          errorEnd = tagOpenBegin + textOfError.length - 1;
+
+          message = `Invalid DoenetML. Error in opening <${tagName}> tag.  Found ${textOfError}`;
+
+          errors.push({
+            message,
+            doenetMLrange: { begin: tagOpenBegin, end: errorEnd },
+          });
+          adjustedTagName = "_error";
+          adjustedRange = { begin: tagOpenBegin, end: errorEnd };
+
+          break;
         }
 
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
         //We scrape the content of both from the in string and add them to the attribute array here
         cursor.firstChild();
         let attrName = inText.substring(cursor.from, cursor.to);
+        let beginAttributeInd = cursor.from + 1;
         //skip the name and equals sign
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.`;
+            errors.push({
+              message,
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
+            });
+            adjustedTagName = "_error";
+          } else {
+            attrs[attrName] = true;
+            attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
+              begin: beginAttributeInd,
+              end: cursor.to,
+            };
           }
-          attrs[attrName] = true;
         } else {
           cursor.nextSibling();
           //boundry fuddling to ignore the quotes
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
 
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.`;
+            errors.push({
+              message,
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
+            });
+            adjustedTagName = "_error";
+          } else {
+            attrs[attrName] = attrValue;
+            attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
+              begin: cursor.from + 2,
+              end: cursor.to - 1,
+            };
           }
-          attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
         cursor.parent();
@@ -81,10 +126,24 @@ export function parseAndCompile(inText) {
       let tagOpenEnd = cursor.to;
 
       let element = {
-        componentType: tagName,
-        props: { ...attrs },
+        componentType: adjustedTagName,
+        props: {},
         children: [],
       };
+
+      if (adjustedTagName === "_error") {
+        element.state = { message };
+        element.doenetAttributes = {
+          createNameFromComponentType: tagName,
+        };
+        if (attrs.name) {
+          element.props = { name: attrs.name };
+        }
+      } else {
+        element.props = { ...attrs };
+        element.attributeRanges = { ...attrRanges };
+      }
+
       // now we go through all of the other non-terminals in this row until we get to the closing tag,
       // adding the compiled version of each non-terminal to the children section of the object we're going to return
       // for the time being we're just going to handle 2 cases:
@@ -104,95 +163,225 @@ export function parseAndCompile(inText) {
           // Will always be the matching tag (and the last tag in the list)
           break;
         } else if (cursor.name === "Comment") {
+          // return a comment that will be ignored,
+          // but need it to calculate doenetMLrange
+          // from any strings that follow it (needed in particular for macros)
+          element.children.push({
+            componentType: "_comment",
+            state: { text: inText.substring(cursor.from, cursor.to) },
+            doenetMLrange: {
+              begin: cursor.from,
+              end: cursor.to,
+            },
+          });
           //ignore comments
           continue;
         } else if (cursor.name === "MismatchedCloseTag") {
-          throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
-          );
+          let message = `Invalid DoenetML. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(
+            cursor.from,
+            cursor.to,
+          )}.`;
+          errors.push({
+            message,
+            doenetMLrange: { begin: cursor.from + 1, end: cursor.to },
+          });
+
+          if (adjustedRange) {
+            element.doenetMLrange = { ...adjustedRange };
+          } else {
+            element.doenetMLrange = {
+              openBegin: tagOpenBegin,
+              openEnd: tagOpenEnd,
+              closeBegin: cursor.from + 1,
+              closeEnd: cursor.to,
+            };
+          }
+          element = {
+            componentType: "_error",
+            props: {},
+            children: [element],
+            state: { message },
+          };
+          break;
+        } else if (cursor.name === "MissingCloseTag") {
+          let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
+          errors.push({
+            message,
+            doenetMLrange: { begin: cursor.from, end: cursor.to },
+          });
+
+          if (adjustedRange) {
+            element.doenetMLrange = { ...adjustedRange };
+          } else {
+            element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
+          }
+          element = {
+            componentType: "_error",
+            props: {},
+            children: [element],
+            state: { message },
+          };
+          break;
         } else {
           // console.log(`error is at position ${cursor.from}, ${cursor.to}`)
           // console.log(`error part: ${inText.slice(cursor.from, cursor.to)}`)
           // console.log(`Here is cursor: ${showCursor(cursor)}`)
           // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
-          throw Error(
-            `Invalid DoenetML at position ${
-              cursor.from
-            }. Expected a closing </${tagName}> tag.  Instead found ${inText.slice(
-              cursor.from,
-              cursor.to,
-            )}.`,
-          );
+          if (adjustedTagName !== "_error") {
+            let message = `Invalid DoenetML.  Missing closing tag.  Expected </${tagName}>.`;
+            errors.push({
+              message,
+              doenetMLrange: { begin: cursor.from, end: cursor.to },
+            });
+
+            if (adjustedRange) {
+              element.doenetMLrange = { ...adjustedRange };
+            } else {
+              element.doenetMLrange = { begin: tagOpenBegin, end: cursor.to };
+            }
+            element = {
+              componentType: "_error",
+              props: {},
+              children: [element],
+              state: { message },
+            };
+            break;
+          }
         }
       }
-      element.range = {
-        openBegin: tagOpenBegin,
-        openEnd: tagOpenEnd,
-        closeBegin: cursor.from,
-        closeEnd: cursor.to,
-      };
+      if (adjustedRange) {
+        element.doenetMLrange = adjustedRange;
+      } else {
+        element.doenetMLrange = {
+          openBegin: tagOpenBegin,
+          openEnd: tagOpenEnd,
+          closeBegin: cursor.from + 1,
+          closeEnd: cursor.to,
+        };
+      }
       return element;
     } else if (cursor.name === "SelfClosingTag") {
       cursor.firstChild();
       cursor.nextSibling();
 
       let tagName = inText.substring(cursor.from, cursor.to);
+      let adjustedTagName = tagName;
 
       let tagBegin = cursor.from;
 
+      let message;
+
+      if (tagName[0] === "_") {
+        message = `Invalid component type: <${tagName}>.`;
+        errors.push({
+          message,
+          doenetMLrange: { begin: tagBegin, end: cursor.to },
+        });
+        adjustedTagName = "_error";
+      }
+
       let attrs = {};
+      let attrRanges = {};
       while (cursor.nextSibling()) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          throw Error(
-            `Invalid DoenetML at positions ${cursor.from} to ${cursor.to}. Error in self-closing <${tagName}/> tag.`,
-          );
+          // Note: not sure if can get to this condition.  Errors in self-closing tag
+          // seem to prevent parser from recognizing that it is self-closing.
+          let errorEnd = cursor.to;
+
+          message = `Invalid DoenetML. Error in self-closing <${tagName}> tag.  Found ${inText.slice(
+            tagBegin - 1,
+            errorEnd,
+          )}`;
+
+          errors.push({
+            message,
+            doenetMLrange: { begin: tagBegin - 1, end: errorEnd },
+          });
+          adjustedTagName = "_error";
+
+          break;
         }
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
         //We scrape the content of both from the in string and add them to the attribute array here
         cursor.firstChild();
         let attrName = inText.substring(cursor.from, cursor.to);
+        let beginAttributeInd = cursor.from + 1;
 
         if (cursor.nextSibling() === false) {
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.`;
+            errors.push({
+              message,
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
+            });
+            adjustedTagName = "_error";
+          } else {
+            attrs[attrName] = true;
           }
-          attrs[attrName] = true;
         } else {
           cursor.nextSibling();
           if (attrName in attrs) {
-            throw Error(
-              `Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`,
-            );
+            message = `Duplicate attribute ${attrName}.`;
+            errors.push({
+              message,
+              doenetMLrange: { begin: beginAttributeInd, end: cursor.to },
+            });
+            adjustedTagName = "_error";
+          } else {
+            //fuddling to ignore the quotes
+            let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
+            attrs[attrName] = attrValue;
+            attrRanges[attrName] = {
+              attrBegin: beginAttributeInd,
+              attrEnd: cursor.to,
+              begin: cursor.from + 2,
+              end: cursor.to - 1,
+            };
           }
-
-          //fuddling to ignore the quotes
-          let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
-          attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
         cursor.parent();
       }
 
-      let range = { selfCloseBegin: tagBegin, selfCloseEnd: cursor.to + 3 };
+      // Note: for some reason if the "/>" of a closing tag occurs at the beginning of a line,
+      // (with only whitespace before it)
+      // then cursor.to is shifted differently compared to other cases.
+      // To compensate, we search for the location of the "/>"
+      let selfCloseEnd = cursor.to;
+      let match = inText.substring(cursor.to).match("/>");
+      if (match) {
+        selfCloseEnd += match.index + 2;
+      }
+
+      let doenetMLrange = {
+        selfCloseBegin: tagBegin,
+        selfCloseEnd,
+      };
 
       // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
 
       //I have no idea why attrs needs to be destructured
       // but if it isn't, it doesn't work ~50% of the time
-      return {
-        componentType: tagName,
-        props: { ...attrs },
+      let element = {
+        componentType: adjustedTagName,
+        props: {},
         children: [],
-        range,
+        doenetMLrange,
       };
+      if (adjustedTagName === "_error") {
+        element.state = { message };
+        element.doenetAttributes = {
+          createNameFromComponentType: tagName,
+        };
+        if (attrs.name) {
+          element.props = { name: attrs.name };
+        }
+      } else {
+        element.props = { ...attrs };
+        element.attributeRanges = { ...attrRanges };
+      }
+      return element;
     } else {
       //Unreachable case, see the grammar for why
       throw Error(
@@ -204,8 +393,17 @@ export function parseAndCompile(inText) {
     if (tc.node.name === "Element") {
       return compileElement(tc.node.cursor);
     } else if (tc.node.name === "Comment") {
-      //I miss result types
-      return null;
+      // return a comment that will be ignored,
+      // but need it to calculate doenetMLrange
+      // from any strings that follow it (needed in particular for macros)
+      return {
+        componentType: "_comment",
+        state: { text: inText.substring(tc.from, tc.to) },
+        doenetMLrange: {
+          begin: tc.from,
+          end: tc.to,
+        },
+      };
     } else if (tc.node.name === "Text") {
       //TODO probably don't need to trim anymore?
       let txt = inText.substring(tc.node.from, tc.node.to);
@@ -213,20 +411,30 @@ export function parseAndCompile(inText) {
         return txt;
       }
     } else {
-      throw Error(
-        `Invalid DoenetML at positions ${tc.node.from} to ${
-          tc.node.to
-        }.  Found ${inText.substring(tc.node.from, tc.node.to)}`,
-      );
+      let message = `Invalid DoenetML.  Found ${inText.substring(
+        tc.node.from,
+        tc.node.to,
+      )}`;
+      errors.push({
+        message,
+        doenetMLrange: { begin: tc.node.from + 1, end: tc.node.to },
+      });
+      return {
+        componentType: "_error",
+        props: {},
+        children: [],
+        state: { message },
+        doenetMLrange: { begin: tc.node.from + 1, end: tc.node.to },
+      };
     }
   }
   if (!inText) {
-    return [];
+    return { components: [], errors };
   }
   let tc = parse(inText);
   let out = [];
   if (!tc.firstChild()) {
-    return out;
+    return { components: out, errors };
   }
   // console.log("intext",inText)
   // console.log("showCursor",showCursor(tc));
@@ -241,7 +449,8 @@ export function parseAndCompile(inText) {
       out.push(next);
     }
   }
-  return out;
+
+  return { components: out, errors };
 }
 
 /**

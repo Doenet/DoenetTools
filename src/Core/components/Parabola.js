@@ -754,9 +754,10 @@ export default class Parabola extends Curve {
 
           return { setValue: { a, b, c, realValued } };
         } else {
-          console.warn(
-            "Haven't implemented parabola through more than 3 points",
-          );
+          let warning = {
+            message: "Haven't implemented parabola through more than 3 points.",
+            level: 1,
+          };
           return {
             setValue: {
               a: NaN,
@@ -764,6 +765,7 @@ export default class Parabola extends Curve {
               c: NaN,
               realValued: false,
             },
+            sendWarnings: [warning],
           };
         }
       },

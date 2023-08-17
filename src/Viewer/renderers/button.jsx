@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import { BoardContext } from "./graph";
 import me from "math-expressions";
 import { getPositionFromAnchorByCoordinate } from "../../Core/utils/graphical";
 
 export default React.memo(function ButtonComponent(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props, false);
 
   ButtonComponent.ignoreActionsWithoutCore = (actionName) =>
     actionName === "moveButton";

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import PageViewer, {
-  scrollableContainerAtom,
-} from "../../../Viewer/PageViewer";
+import {
+  DoenetML,
+  // scrollableContainerAtom,
+} from "../../../Viewer/DoenetML";
 import useEventListener from "../../../_utils/hooks/useEventListener";
 import {
   useRecoilValue,
@@ -30,7 +31,7 @@ import {
   viewerDoenetMLAtom,
 } from "../../../_sharedRecoil/EditorViewerRecoil";
 import axios from "axios";
-import { useLoaderData, useLocation } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -88,8 +89,9 @@ export default function EditorViewer() {
   const { canUpload } = useRecoilValue(profileAtom);
   const updateViewer = useUpdateViewer();
 
-  const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
+  // const setScrollableContainer = useSetRecoilState(scrollableContainerAtom);
 
+  let navigate = useNavigate();
   let location = useLocation();
 
   const previousLocations = useRef({});
@@ -230,11 +232,6 @@ export default function EditorViewer() {
     }
   }, [location]);
 
-  useEffect(() => {
-    const mainPanel = document.getElementById("mainPanel");
-    setScrollableContainer(mainPanel);
-  }, []);
-
   if (courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
   } else if (effectivePageId !== initializedPageId) {
@@ -245,18 +242,9 @@ export default function EditorViewer() {
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
+  function variantCallback(activityVariants) {
+    setVariantPanel(activityVariants);
+    setVariantInfo(activityVariants);
   }
 
   // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
@@ -266,7 +254,7 @@ export default function EditorViewer() {
   // console.log('>>>>variantInfo.index',variantInfo.index)
 
   return (
-    <PageViewer
+    <DoenetML
       key={`pageViewer${refreshNumber}`}
       doenetML={viewerDoenetML}
       flags={{
@@ -281,12 +269,19 @@ export default function EditorViewer() {
         allowSaveSubmissions: false,
         allowSaveEvents: false,
       }}
-      doenetId={doenetId}
+      activityId={doenetId}
+      idsIncludeActivityId={false}
       attemptNumber={attemptNumber}
-      generatedVariantCallback={variantCallback} //TODO:Replace
+      generatedVariantCallback={variantCallback}
       requestedVariantIndex={variantInfo.index}
       setIsInErrorState={setIsInErrorState}
-      pageIsActive={true}
+      location={location}
+      navigate={navigate}
+      linkSettings={{
+        viewURL: "/course?tool=assignment",
+        editURL: "/course?tool=editor",
+        useQueryParameters: true,
+      }}
     />
   );
 }

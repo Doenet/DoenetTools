@@ -13,6 +13,24 @@ export default class Column extends BaseComponent {
       defaultValue: null,
       public: true,
     };
+
+    // Workaround for <column> in matrix, which is sugared into <matrixColumn>.
+    // Since we are currently validating attributes before the sugar changes it,
+    // we need to put these mathList attributes on <column> for now.
+    // TODO: find a better solution (e.g., validating attributes after sugar is applied),
+    // especially necessary when we have an editor that can autocomplete attributes.
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+    };
+    attributes.sourcesAreFunctionSymbols = {
+      createComponentOfType: "textList",
+    };
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+    };
+    attributes.parseScientificNotation = {
+      createComponentOfType: "boolean",
+    };
     return attributes;
   }
 

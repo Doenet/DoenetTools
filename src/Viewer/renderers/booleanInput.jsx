@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -42,7 +42,7 @@ const Button = styled.button`
 
 export default React.memo(function BooleanInput(props) {
   let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   BooleanInput.baseStateVariable = "value";
   BooleanInput.ignoreActionsWithoutCore = (actionName) =>
