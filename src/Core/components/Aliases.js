@@ -34,6 +34,11 @@ export class Ylabel extends Label {
   static rendererType = "label";
 }
 
+export class Zlabel extends Label {
+  static componentType = "zlabel";
+  static rendererType = "label";
+}
+
 export class MatrixRow extends MathList {
   static componentType = "matrixRow";
   static rendererType = "mathList";

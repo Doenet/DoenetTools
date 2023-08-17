@@ -48,6 +48,9 @@
     "@lezer/lr": "^0.15.5",
     "@lezer/xml": "^0.15.1",
     "@react-spring/web": "^9.4.5",
+    "@react-three/drei": "^9.80.3",
+    "@react-three/fiber": "^8.13.7",
+    "@types/three": "^0.155.0",
     "@use-gesture/react": "^10.2.22",
     "axios": "^0.27.2",
     "better-react-mathjax": "^1.0.3",
@@ -93,7 +96,8 @@
     "socket.io": "^4.5.0",
     "socket.io-client": "^4.5.0",
     "styled-components": "5.3.3",
-    "swiper": "^9.0.5"
+    "swiper": "^9.0.5",
+    "three": "^0.155.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",

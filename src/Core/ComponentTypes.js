@@ -73,6 +73,8 @@ import Choice from "./components/Choice";
 import NumberComponent from "./components/Number";
 import Integer from "./components/Integer";
 import Graph from "./components/Graph";
+import Graph3D from "./components/Graph3D";
+import Sphere from "./components/Sphere";
 import Function from "./components/Function";
 import PiecewiseFunction from "./components/PiecewiseFunction";
 import Interval from "./components/Interval";
@@ -263,6 +265,8 @@ const componentTypeArray = [
   NumberComponent,
   Integer,
   Graph,
+  Graph3D,
+  Sphere,
   Function,
   PiecewiseFunction,
   Interval,
