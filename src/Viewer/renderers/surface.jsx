@@ -8,10 +8,9 @@ extend({ ParametricGeometry });
 
 export default React.memo(function Surface(props) {
     let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
-    // surfaceType(function | paraterization)
 
     Surface.ignoreActionsWithoutCore = () => true;
-    console.log(SVs);
+
     if (SVs.surfaceType === "" || !SVs.fDefinitions) {
         return null;
     }
@@ -42,7 +41,15 @@ export default React.memo(function Surface(props) {
             <parametricGeometry
                 args={[paraFunc, ...SVs.numDiscretizationPoints]}
             />
-            <meshNormalMaterial args={[{ side: 2 }]} />
+            <meshStandardMaterial
+                args={[
+                    {
+                        side: 2,
+                        metalness: 0,
+                        roughness: 1,
+                    },
+                ]}
+            />
         </mesh>
     );
 });
