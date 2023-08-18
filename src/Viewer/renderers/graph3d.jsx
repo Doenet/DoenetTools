@@ -61,12 +61,31 @@ export default React.memo(function Graph(props) {
   return (
     <div style={{ width: "400px", height: "400px", border: "2px solid black" }}>
       <Canvas
-        camera={{ position: [10, 10, 10] }}
+        camera={{ position: [10, 10, 10], up: new THREE.Vector3(0,0,1) }}
         onWheel={handleZoom}
         ref={canvas}
       >
-        <ambientLight intensity={0.1} />
-        <directionalLight color="red" position={[0, 4, 5]} />
+        <ambientLight color="#222222" />
+        <directionalLight
+            color="#ff0000"
+            position={[10, 10, 10]}
+            intensity={3}
+        />
+        <directionalLight
+            color="#00ff00"
+            position={[10, -10, 10]}
+            intensity={3}
+        />
+        <directionalLight
+            color="#0000ff"
+            position={[-10, -10, 10]}
+            intensity={3}
+        />
+        <directionalLight
+            color="#555555"
+            position={[0, 0, -10]}
+            intensity={3}
+        />
         <graph3dOnZoomContext.Provider value={pointMeshes}>
           {children}
         </graph3dOnZoomContext.Provider>
