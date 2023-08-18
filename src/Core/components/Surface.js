@@ -176,6 +176,71 @@ export default class Surface extends GraphicalComponent {
       }),
     };
 
+    stateVariableDefinitions.numDiscretizationPoints = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        numDiscretizationPointsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "numDiscretizationPoints",
+          variableNames: ["numbers"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        let numDiscretizationPoints = [];
+        let warnings = [];
+
+        if (!dependencyValues.numDiscretizationPointsAttr) {
+          numDiscretizationPoints = [10, 10];
+        } else {
+          let numbers =
+            dependencyValues.numDiscretizationPointsAttr.stateValues.numbers;
+
+          let foundNonNumerical = false;
+
+          for (let num of numbers) {
+            let rnd = Math.round(num);
+            if (!Number.isFinite(rnd)) {
+              if (!foundNonNumerical) {
+                warnings.push({
+                  message: `Non-numerical value for numDiscrizationPoints, setting to 10.`,
+                  level: 1,
+                });
+              }
+              foundNonNumerical = true;
+              rnd = 10;
+            } else if (rnd < 2) {
+              warnings.push({
+                message: `Invalid value ${num} for numDiscrizationPoints; must be at least 2.`,
+                level: 1,
+              });
+              rnd = 2;
+            }
+
+            numDiscretizationPoints.push(rnd);
+          }
+
+          if (numDiscretizationPoints.length > 2) {
+            warnings.push({
+              message: `numDiscrizationPoints can be up to 2 values; ignoring extra values.`,
+              level: 1,
+            });
+            numDiscretizationPoints = numDiscretizationPoints.slice(0, 2);
+          }
+          if (numDiscretizationPoints.length === 1) {
+            // if given one number, use it for both values
+            numDiscretizationPoints.push(numDiscretizationPoints[0]);
+          } else if (numDiscretizationPoints.length === 0) {
+            numDiscretizationPoints = [10, 10];
+          }
+        }
+
+        return {
+          setValue: { numDiscretizationPoints },
+          sendWarnings: warnings,
+        };
+      },
+    };
+
     stateVariableDefinitions.fromVectorValuedFunctionOfDim = {
       returnDependencies: () => ({
         functionChildren: {
