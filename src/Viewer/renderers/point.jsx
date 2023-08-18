@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, POINT_LAYER_OFFSET } from "./graph";
 import { MathJax } from "better-react-mathjax";
@@ -11,6 +17,9 @@ import {
   normalizePointStyle,
 } from "./utils/graph";
 import { PageContext } from "../PageViewer";
+import { useThree } from "@react-three/fiber";
+import { Vector3 } from "three";
+import { graph3dOnZoomContext } from "./graph3d";
 
 export default React.memo(function Point(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
@@ -18,7 +27,7 @@ export default React.memo(function Point(props) {
 
   Point.ignoreActionsWithoutCore = () => true;
 
-  // console.log(`for point ${name}, SVs: `, SVs)
+  // console.log(`for point ${name}, SVs: `, SVs);
 
   const board = useContext(BoardContext);
 
@@ -628,6 +637,8 @@ export default React.memo(function Point(props) {
     }
 
     return <a name={id} />;
+  } else if (SVs.inGraph3d) {
+    return <Point3D name={name} id={id} SVs={SVs} />;
   }
 
   // not in board
@@ -651,3 +662,47 @@ export default React.memo(function Point(props) {
     </>
   );
 });
+
+function Point3D({ name, id, SVs }) {
+  const camera = useThree((state) => state.camera);
+  const pointMesh = useRef();
+
+  const graph3dOnZoom = useContext(graph3dOnZoomContext);
+
+  const setScale = useCallback(() => {
+    if (pointMesh.current) {
+      let scale =
+        camera.position.distanceTo(
+          pointMesh.current?.position ?? new Vector3(0, 0, 0),
+        ) / 150;
+      pointMesh.current.scale.x = scale;
+      pointMesh.current.scale.y = scale;
+      pointMesh.current.scale.z = scale;
+    }
+  }, [camera]);
+
+  useEffect(() => {
+    graph3dOnZoom.current.push(setScale);
+    setScale();
+    return () => {
+      let ind = graph3dOnZoom.current.indexOf(setScale);
+      if (ind !== -1) {
+        graph3dOnZoom.current.splice(ind, 1);
+      }
+    };
+  }, [setScale]);
+
+  const { darkMode } = useContext(PageContext) || {};
+
+  let markerColor =
+    darkMode === "dark"
+      ? SVs.selectedStyle.markerColorDarkMode
+      : SVs.selectedStyle.markerColor;
+
+  return (
+    <mesh position={SVs.numericalXs} ref={pointMesh}>
+      <sphereGeometry args={[SVs.selectedStyle.markerSize]} />
+      <meshBasicMaterial color={markerColor} />
+    </mesh>
+  );
+}

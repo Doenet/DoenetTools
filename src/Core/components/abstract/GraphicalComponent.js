@@ -51,6 +51,19 @@ export default class GraphicalComponent extends BaseComponent {
 
     Object.assign(stateVariableDefinitions, labelDefinitions);
 
+    stateVariableDefinitions.inGraph3d = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        graph3dAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph3d",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { inGraph3d: dependencyValues.graph3dAncestor } };
+      },
+    };
+
     return stateVariableDefinitions;
   }
 }

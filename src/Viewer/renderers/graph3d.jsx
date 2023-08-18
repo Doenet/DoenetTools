@@ -8,6 +8,8 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
+export const graph3dOnZoomContext = createContext();
+
 export default React.memo(function Graph(props) {
   let { name, id, SVs, children, actions, callAction } =
     useDoenetRenderer(props);
@@ -19,6 +21,16 @@ export default React.memo(function Graph(props) {
       args: { isVisible },
     });
   };
+
+  const canvas = useRef();
+
+  function handleZoom(e) {
+    for (let setScale of pointMeshes.current) {
+      setScale();
+    }
+  }
+
+  const pointMeshes = useRef([]);
 
   if (SVs.haveGraphParent) {
     // have have graph parent, then don't render graph
@@ -48,11 +60,16 @@ export default React.memo(function Graph(props) {
 
   return (
     <div style={{ width: "400px", height: "400px", border: "2px solid black" }}>
-      <Canvas camera={{ position: [10, 10, 10] }}>
+      <Canvas
+        camera={{ position: [10, 10, 10] }}
+        onWheel={handleZoom}
+        ref={canvas}
+      >
         <ambientLight intensity={0.1} />
         <directionalLight color="red" position={[0, 4, 5]} />
-        {children}
-
+        <graph3dOnZoomContext.Provider value={pointMeshes}>
+          {children}
+        </graph3dOnZoomContext.Provider>
         <primitive object={axes} />
         <OrbitControls />
       </Canvas>
@@ -218,7 +235,6 @@ var Axes = function (params) {
   let geometry = { vertices: [] };
 
   if (params.showBoxAxes === true) {
-    console.log(geometry);
     geometry.vertices.push(
       //Axes Box--lines grouped by dimension spanned--"top"
       new THREE.Vector3(params.size.x, params.size.y, params.size.z),
@@ -503,7 +519,6 @@ var Axes = function (params) {
   let t = 0;
   const segments = 200;
   for (const vertex of geometry.vertices) {
-    console.log(vertex);
     positions.push(vertex.x, vertex.y, vertex.z);
 
     // colors
