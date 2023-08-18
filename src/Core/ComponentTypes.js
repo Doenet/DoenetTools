@@ -75,6 +75,7 @@ import Integer from "./components/Integer";
 import Graph from "./components/Graph";
 import Graph3D from "./components/Graph3D";
 import Sphere from "./components/Sphere";
+import Surface from "./components/Surface";
 import Function from "./components/Function";
 import PiecewiseFunction from "./components/PiecewiseFunction";
 import Interval from "./components/Interval";
@@ -267,6 +268,7 @@ const componentTypeArray = [
   Graph,
   Graph3D,
   Sphere,
+  Surface,
   Function,
   PiecewiseFunction,
   Interval,
