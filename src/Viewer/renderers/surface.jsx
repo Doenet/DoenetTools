@@ -39,7 +39,9 @@ export default React.memo(function Surface(props) {
     }
     return (
         <mesh position={SVs.numericalCenter}>
-            <parametricGeometry args={[paraFunc]} />
+            <parametricGeometry
+                args={[paraFunc, ...SVs.numDiscretizationPoints]}
+            />
             <meshNormalMaterial args={[{ side: 2 }]} />
         </mesh>
     );
