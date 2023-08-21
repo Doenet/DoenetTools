@@ -1298,9 +1298,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Individualize{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
       <Box>
@@ -1327,67 +1327,65 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Solution While Taking Activity{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
-      <Box>
-        <Flex>
-          <Checkbox
-            size="lg"
-            data-test="Time Limit"
-            name="timeLimit"
-            isChecked={timeLimit > 0}
-            onChange={(e) => {
-              let timeLimit = "";
-              if (e.target.checked) {
-                timeLimit = "60";
-              }
-              setTimeLimit(timeLimit);
-              fetcher.submit(
-                {
-                  _action: "update assignment via keyToUpdate",
-                  keyToUpdate: "timeLimit",
-                  value: timeLimit,
-                  doenetId,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            Time Limit{" "}
-            <Tooltip label="Description here">
-              <QuestionOutlineIcon />
-            </Tooltip>
-          </Checkbox>
-          <NumberInput
-            ml="10px"
-            step={5}
-            value={timeLimit}
-            width="100px"
-            isDisabled={timeLimit == ""}
-            onChange={(value) => {
-              setTimeLimit(value);
-              fetcher.submit(
-                {
-                  _action: "update assignment via keyToUpdate",
-                  keyToUpdate: "timeLimit",
-                  value,
-                  doenetId,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </Flex>
-      </Box>
+      <Flex>
+        <Checkbox
+          size="lg"
+          data-test="Time Limit"
+          name="timeLimit"
+          isChecked={timeLimit > 0}
+          onChange={(e) => {
+            let nextTimeLimit = "";
+            if (e.target.checked) {
+              nextTimeLimit = "60";
+            }
+            setTimeLimit(nextTimeLimit);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "timeLimit",
+                value: nextTimeLimit,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Time Limit{" "}
+          {/* <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip> */}
+        </Checkbox>
+        <NumberInput
+          ml="10px"
+          step={5}
+          value={timeLimit}
+          width="100px"
+          isDisabled={timeLimit == ""}
+          onChange={(value) => {
+            setTimeLimit(value);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "timeLimit",
+                value,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </Flex>
       <Box>
         <Checkbox
           size="lg"
@@ -1412,9 +1410,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Feedback{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
       <Box>
@@ -1441,9 +1439,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Hints{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
       <Box>
@@ -1470,9 +1468,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Correctness{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
       <Box>
@@ -1499,9 +1497,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Credit Achieved{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
       <Box>
@@ -1528,9 +1526,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Paginate{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
 
@@ -1558,9 +1556,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Finish Button{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
 
@@ -1588,9 +1586,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Auto Submit{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
 
@@ -1618,9 +1616,9 @@ function PresentationControls({ courseId, doenetId, activityData }) {
           }}
         >
           Can View After Completed{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
     </VStack>
@@ -1668,9 +1666,9 @@ function AssignControls({ courseId, doenetId, activityData }) {
       <Flex>
         <Text w="160px">
           Assign Date{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Text>
         <Input
           w="300px"
@@ -1700,9 +1698,9 @@ function AssignControls({ courseId, doenetId, activityData }) {
       <Flex>
         <Text w="160px">
           Due Date{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Text>
         <Input
           w="300px"
@@ -1777,9 +1775,9 @@ function AssignControls({ courseId, doenetId, activityData }) {
             }}
           />
           <Text>Pin Assignment </Text>
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </HStack>
 
         <VStack alignItems="flex-start">
@@ -1867,9 +1865,9 @@ function AssignControls({ courseId, doenetId, activityData }) {
           }}
         >
           Proctor Makes Available{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
     </VStack>
@@ -1887,6 +1885,16 @@ function GradeControls({ courseId, doenetId, activityData }) {
   );
   const [gradeCategory, setGradeCategory] = useState(
     activityData.gradeCategory,
+  );
+  const [attemptAggregation, setAttemptAggregation] = useState(
+    activityData.attemptAggregation,
+  );
+  let adNumberOfAttemptsAllowed = activityData.numberOfAttemptsAllowed;
+  if (adNumberOfAttemptsAllowed == null) {
+    adNumberOfAttemptsAllowed = "";
+  }
+  const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(
+    adNumberOfAttemptsAllowed,
   );
 
   if (!activityData.has_assignment_table) {
@@ -1971,6 +1979,121 @@ function GradeControls({ courseId, doenetId, activityData }) {
           })}
         </Select>
       </Flex>
+      <Flex>
+        <Checkbox
+          size="lg"
+          data-test="Time Limit"
+          name="numberOfAttemptsAllowed"
+          isChecked={numberOfAttemptsAllowed > 0}
+          onChange={(e) => {
+            let nextNumberOfAttemptsAllowed = "";
+            if (e.target.checked) {
+              nextNumberOfAttemptsAllowed = "1";
+            }
+            setNumberOfAttemptsAllowed(nextNumberOfAttemptsAllowed);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "numberOfAttemptsAllowed",
+                value: nextNumberOfAttemptsAllowed,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Number of Attempts Allowed{" "}
+          {/*  <Tooltip label="Description here">
+            <QuestionOutlineIcon />
+          </Tooltip> */}
+        </Checkbox>
+        <NumberInput
+          ml="10px"
+          step={1}
+          value={numberOfAttemptsAllowed}
+          width="100px"
+          isDisabled={numberOfAttemptsAllowed == ""}
+          onChange={(value) => {
+            setNumberOfAttemptsAllowed(value);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "numberOfAttemptsAllowed",
+                value,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </Flex>
+
+      {/* <Flex>
+        <Text mr="10px">Number of Attempts Allowed</Text>
+        <Tooltip label="Description here">
+          <QuestionOutlineIcon />
+        </Tooltip>
+        <NumberInput
+          ml="10px"
+          step={1}
+          value={numberOfAttemptsAllowed}
+          width="100px"
+          onChange={(value) => {
+            setNumberOfAttemptsAllowed(value);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "numberOfAttemptsAllowed",
+                value,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </Flex> */}
+
+      <Flex>
+        <Text whiteSpace="nowrap" mr="10px">
+          Attempt Aggregation
+        </Text>
+        <Tooltip label="Description here">
+          <QuestionOutlineIcon />
+        </Tooltip>
+        <Select
+          ml="10px"
+          data-test="Attempt Aggregation"
+          onChange={(e) => {
+            let nextAttemptAggregation = e.target.value;
+            setAttemptAggregation(nextAttemptAggregation);
+            fetcher.submit(
+              {
+                _action: "update assignment via keyToUpdate",
+                keyToUpdate: "attemptAggregation",
+                value: nextAttemptAggregation,
+                doenetId,
+              },
+              { method: "post" },
+            );
+          }}
+          value={attemptAggregation}
+        >
+          <option value={"m"}>Maximum</option>
+          <option value={"l"}>Last Attempt</option>
+        </Select>
+      </Flex>
 
       <Box>
         <Checkbox
@@ -1996,9 +2119,9 @@ function GradeControls({ courseId, doenetId, activityData }) {
           }}
         >
           Show Solution In Gradebook{" "}
-          <Tooltip label="Description here">
+          {/* <Tooltip label="Description here">
             <QuestionOutlineIcon />
-          </Tooltip>
+          </Tooltip> */}
         </Checkbox>
       </Box>
     </VStack>

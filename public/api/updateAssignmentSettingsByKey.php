@@ -47,7 +47,8 @@ $settingKeys = array(
   "individualize","showSolution","timeLimit","showFeedback","showHints","showCorrectness",
   "showCreditAchievedMenu","paginate","showFinishButton","autoSubmit","canViewAfterCompleted",
   "assignedDate","dueDate","pinnedUntilDate","pinnedAfterDate","proctorMakesAvailable",
-  "totalPointsOrPercent","showSolutionInGradebook","gradeCategory"
+  "totalPointsOrPercent","showSolutionInGradebook","gradeCategory","attemptAggregation",
+  "numberOfAttemptsAllowed"
 );
 
 $providedValues = [];
@@ -67,7 +68,7 @@ if (array_key_exists("dueDate", $providedValues) && $providedValues["dueDate"] =
 if (array_key_exists("assignedDate", $providedValues) && $providedValues["assignedDate"] == ''){$providedValues["assignedDate"] = 'NULL';}
 if (array_key_exists("totalPointsOrPercent", $providedValues) && $providedValues["totalPointsOrPercent"] == '') { $providedValues["totalPointsOrPercent"] = 'NULL';}
 if (array_key_exists("gradeCategory", $providedValues) && $providedValues["gradeCategory"] == '') { $providedValues["gradeCategory"] = 'NULL';}
-// if (array_key_exists("numberOfAttemptsAllowed", $providedValues) && $providedValues["numberOfAttemptsAllowed"] == ''){$providedValues["numberOfAttemptsAllowed"] = 'NULL';}
+if (array_key_exists("numberOfAttemptsAllowed", $providedValues) && $providedValues["numberOfAttemptsAllowed"] == ''){$providedValues["numberOfAttemptsAllowed"] = 'NULL';}
 
 //protect against invalid boolean values
 $boolKeys = array(
@@ -113,7 +114,6 @@ $updates = implode(
         AND courseId='$courseId'
     ";
     $result = $conn->query($sql);
-
 
     if ($result == false) {
       throw new Exception("Database error.");
