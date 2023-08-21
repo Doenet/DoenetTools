@@ -90,6 +90,7 @@ import {
   DateToUTCDateString,
   UTCDateStringToLocalTimeChakraString,
 } from "../../../_utils/dateUtilityFunction";
+import { GrDocument } from "react-icons/gr";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -104,10 +105,15 @@ export async function action({ params, request }) {
 
   // console.log("formObj", formObj, params.doenetId);
   if (formObj._action == "update label") {
-    let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
-    );
-    let respObj = await response.json();
+    let { data } = axios.get("/api/updatePortfolioActivityLabel.php", {
+      params: { doenetId: params.doenetId, label },
+    });
+  }
+
+  if (formObj._action == "update page label") {
+    let { data } = axios.get("/api/updatePageLabel.php", {
+      params: { doenetId: params.doenetId, pageId: params.pageId, label },
+    });
   }
 
   if (formObj._action == "update general") {
@@ -215,8 +221,9 @@ function findFirstPageIdInContent(content) {
 
 export async function loader({ params }) {
   try {
+    console.log(params);
     const response = await axios.get("/api/getCourseEditorData.php", {
-      params: { doenetId: params.doenetId },
+      params: { doenetId: params.doenetId, pageId: params.pageId },
     });
     let data = response.data;
     const activityData = { ...data.activity };
@@ -2666,40 +2673,77 @@ function CourseActivitySettingsDrawer({
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableLabel({ dataTest }) {
   const { activityData } = useLoaderData();
-  const [label, setLabel] = useState(activityData.label);
   const fetcher = useFetcher();
+  console.log("EditableLabel activityData", activityData);
+  const [activityLabel, setActivityLabel] = useState(activityData.label);
+  const [pageLabel, setPageLabel] = useState(activityData.pageLabel);
 
-  let lastActivityDataLabel = useRef(activityData.label);
+  console.log("activityLabel", activityLabel);
+  console.log("pageLabel", pageLabel);
+  let lastActivityLabelRef = useRef(activityData.label);
+  let lastPageLabelRef = useRef(activityData.pageLabel);
 
-  //Update when something else updates the label
-  if (activityData.label != lastActivityDataLabel.current) {
-    if (label != activityData.label) {
-      setLabel(activityData.label);
+  //Update when something else updates the activity label
+  if (activityData.label != lastActivityLabelRef.current) {
+    if (activityLabel != activityData.label) {
+      setActivityLabel(activityData.label);
     }
   }
-  lastActivityDataLabel.current = activityData.label;
+  //Update when something else updates the page label
+  if (activityData.pageLabel != lastPageLabelRef.current) {
+    if (pageLabel != activityData.pageLabel) {
+      setPageLabel(activityData.pageLabel);
+    }
+  }
+  lastActivityLabelRef.current = activityData.label;
+  lastPageLabelRef.current = activityData.pageLabel;
 
   return (
-    <Editable
-      data-test={dataTest}
-      mt="4px"
-      value={label}
-      textAlign="center"
-      onChange={(value) => {
-        setLabel(value);
-      }}
-      onSubmit={(value) => {
-        let submitValue = value;
+    <Flex>
+      <Editable
+        data-test={dataTest}
+        mt="4px"
+        value={activityLabel}
+        textAlign="center"
+        onChange={(value) => {
+          setActivityLabel(value);
+        }}
+        onSubmit={(value) => {
+          let submitValue = value;
 
-        fetcher.submit(
-          { _action: "update label", label: submitValue },
-          { method: "post" },
-        );
-      }}
-    >
-      <EditablePreview data-test="Editable Preview" />
-      <EditableInput width="400px" data-test="Editable Input" />
-    </Editable>
+          fetcher.submit(
+            { _action: "update label", label: submitValue },
+            { method: "post" },
+          );
+        }}
+      >
+        <EditablePreview data-test="Editable Preview" />
+        <EditableInput width="400px" data-test="Editable Input" />
+      </Editable>
+      <Box ml="18px" mr="2px" mt="10px">
+        <GrDocument />
+      </Box>
+      <Editable
+        data-test={`${dataTest} page`}
+        mt="4px"
+        value={pageLabel}
+        textAlign="center"
+        onChange={(value) => {
+          setPageLabel(value);
+        }}
+        onSubmit={(value) => {
+          let submitValue = value;
+
+          fetcher.submit(
+            { _action: "update page label", label: submitValue },
+            { method: "post" },
+          );
+        }}
+      >
+        <EditablePreview data-test="Editable Page Label Preview" />
+        <EditableInput width="400px" data-test="Editable Page Label Input" />
+      </Editable>
+    </Flex>
   );
 }
 
