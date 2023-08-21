@@ -1628,12 +1628,18 @@ function PresentationControls({ courseId, doenetId, activityData }) {
 function AssignControls({ courseId, doenetId, activityData }) {
   const fetcher = useFetcher();
 
-  const [assignedDate, setAssignedDate] = useState(
-    UTCDateStringToLocalTimeChakraString(activityData.assignedDate),
-  );
-  const [dueDate, setDueDate] = useState(
-    UTCDateStringToLocalTimeChakraString(activityData.dueDate),
-  );
+  let adAssignedDate = activityData?.assignedDate;
+  if (adAssignedDate != undefined) {
+    adAssignedDate = UTCDateStringToLocalTimeChakraString(adAssignedDate);
+  }
+  const [assignedDate, setAssignedDate] = useState(adAssignedDate);
+
+  let adDueDate = activityData?.dueDate;
+
+  if (adDueDate != undefined) {
+    adDueDate = UTCDateStringToLocalTimeChakraString(adDueDate);
+  }
+  const [dueDate, setDueDate] = useState(adDueDate);
   let statePinnedAfterDate = activityData.pinnedAfterDate;
   if (statePinnedAfterDate == null) {
     statePinnedAfterDate = "";
