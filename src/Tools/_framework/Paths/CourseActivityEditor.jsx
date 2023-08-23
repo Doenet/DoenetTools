@@ -90,7 +90,6 @@ import {
   DateToUTCDateString,
   UTCDateStringToLocalTimeChakraString,
 } from "../../../_utils/dateUtilityFunction";
-import { GrDocument } from "react-icons/gr";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -2253,10 +2252,10 @@ export function GeneralCollectionControls({
     learningOutcomesInit = [""];
   }
 
-  let [labelValue, setLabel] = useState(label);
-  let lastAcceptedLabelValue = useRef(label);
+  let [labelState, setLabel] = useState(label);
+  // let lastAcceptedLabelValue = useRef(label);
   let [pageLabelState, setPageLabel] = useState(pageLabel);
-  let lastAcceptedPageLabelValue = useRef(pageLabel);
+  // let lastAcceptedPageLabelValue = useRef(pageLabel);
 
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
   let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
@@ -2267,100 +2266,37 @@ export function GeneralCollectionControls({
     }
   }, []); //Only on opening the drawer
 
-  //Optimistic UI
-  let effectivePageLabel = pageLabelState;
-  if (fetcher.state != "idle" && fetcher.data?._action == "update page label") {
-    effectivePageLabel = fetcher.data.pageLabel;
-    //Prevent infinite loop
-    if (fetcher.data.pageLabel != pageLabelState) {
-      setPageLabel(fetcher.data.pageLabel);
+  function saveActivityLabel() {
+    // Turn on/off label error messages and
+    // only set the value if it's not blank
+    if (labelState == "") {
+      setLabelIsInvalid(true);
+    } else {
+      if (labelIsInvalid) {
+        setLabelIsInvalid(false);
+      }
+      fetcher.submit(
+        { _action: "update label", label: labelState },
+        { method: "post" },
+      );
     }
   }
 
-  function saveActivityLabel() {
-    console.log("saveActivityLabel!!!");
-    // let learningOutcomesToSubmit = learningOutcomes;
-    // if (nextLearningOutcomes) {
-    //   learningOutcomesToSubmit = nextLearningOutcomes;
-    // }
-
-    // let isPublicToSubmit = checkboxIsPublic;
-    // if (nextIsPublic) {
-    //   isPublicToSubmit = nextIsPublic;
-    // }
-
-    // // Turn on/off label error messages and
-    // // use the latest valid label
-    // let labelToSubmit = labelValue;
-    // if (labelValue == "") {
-    //   labelToSubmit = lastAcceptedLabelValue.current;
-    //   setLabelIsInvalid(true);
-    // } else {
-    //   if (labelIsInvalid) {
-    //     setLabelIsInvalid(false);
-    //   }
-    // }
-    // lastAcceptedLabelValue.current = labelToSubmit;
-    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    // fetcher.submit(
-    //   {
-    //     _action: "update general",
-    //     label: labelToSubmit,
-    //     imagePath,
-    //     public: isPublicToSubmit,
-    //     learningOutcomes: serializedLearningOutcomes,
-    //     doenetId,
-    //   },
-    //   { method: "post" },
-    // );
-  }
-
   function savePageLabel() {
-    console.log("pageLabelState!!!", pageLabelState);
-
-    // let isPublicToSubmit = checkboxIsPublic;
-    // if (nextIsPublic) {
-    //   isPublicToSubmit = nextIsPublic;
-    // }
-
-    // // Turn on/off label error messages and
-    // // use the latest valid label
-    // let labelToSubmit = labelValue;
-    // if (labelValue == "") {
-    //   labelToSubmit = lastAcceptedLabelValue.current;
-    //   setLabelIsInvalid(true);
-    // } else {
-    //   if (labelIsInvalid) {
-    //     setLabelIsInvalid(false);
-    //   }
-    // }
-    // lastAcceptedLabelValue.current = labelToSubmit;
-    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    // fetcher.submit(
-    //   {
-    //     _action: "update general",
-    //     label: labelToSubmit,
-    //     imagePath,
-    //     public: isPublicToSubmit,
-    //     learningOutcomes: serializedLearningOutcomes,
-    //     doenetId,
-    //   },
-    //   { method: "post" },
-    // );
-    fetcher.submit(
-      { _action: "update page label", label: pageLabelState },
-      { method: "post" },
-    );
+    // Turn on/off label error messages and
+    // only set the value if it's not blank
+    if (pageLabelState == "") {
+      setPageLabelIsInvalid(true);
+    } else {
+      if (pageLabelIsInvalid) {
+        setPageLabelIsInvalid(false);
+      }
+      fetcher.submit(
+        { _action: "update page label", label: pageLabelState },
+        { method: "post" },
+      );
+    }
   }
-
-  // const { compileActivity, updateAssignItem } = useCourse(courseId);
-
-  //TODO: Cypress is opening the drawer so fast
-  //the activitieData is out of date
-  //We need something like this. But this code sets learningOutcomes too often
-  // useEffect(() => {
-  //   setLearningOutcomes(learningOutcomesInit);
-  // }, [learningOutcomesInit]);
 
   return (
     <>
@@ -2418,7 +2354,7 @@ export function GeneralCollectionControls({
             width="100%"
             placeholder="Activity 1"
             data-test="Activity Label"
-            value={labelValue}
+            value={labelState}
             onChange={(e) => {
               setLabel(e.target.value);
             }}
@@ -2441,9 +2377,9 @@ export function GeneralCollectionControls({
             name="pageLabel"
             size="sm"
             width="100%"
-            placeholder="Page 1"
+            placeholder="Page"
             data-test="Page Label"
-            value={effectivePageLabel}
+            value={pageLabelState}
             onChange={(e) => {
               setPageLabel(e.target.value);
             }}
@@ -2634,7 +2570,6 @@ function CourseActivitySettingsDrawer({
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableLabel({ dataTest, fetcher }) {
   const { activityData } = useLoaderData();
-  console.log("EditableLabel activityData", activityData.pageLabel);
   const [activityLabel, setActivityLabel] = useState(activityData.label);
 
   let lastActivityLabelRef = useRef(activityData.label);
@@ -2709,52 +2644,6 @@ function EditablePageLabel({ fetcher, dataTest }) {
     </Editable>
   );
 }
-
-// <Flex>
-//         <Editable
-//           data-test={dataTest}
-//           mt="4px"
-//           value={activityLabel}
-//           textAlign="center"
-//           onChange={(value) => {
-//             setActivityLabel(value);
-//           }}
-//           onSubmit={(value) => {
-//             let submitValue = value;
-
-//             fetcher.submit(
-//               { _action: "update label", label: submitValue },
-//               { method: "post" },
-//             );
-//           }}
-//         >
-//           <EditablePreview data-test="Editable Preview" />
-//           <EditableInput width="400px" data-test="Editable Input" />
-//         </Editable>
-//         <Box ml="18px" mr="2px" mt="10px">
-//           <GrDocument />
-//         </Box>
-//         <Editable
-//           data-test={`${dataTest} page`}
-//           mt="4px"
-//           value={pageLabel}
-//           textAlign="center"
-//           onChange={(value) => {
-//             setPageLabel(value);
-//           }}
-//           onSubmit={(value) => {
-//             let submitValue = value;
-
-//             fetcher.submit(
-//               { _action: "update page label", label: submitValue },
-//               { method: "post" },
-//             );
-//           }}
-//         >
-//           <EditablePreview data-test="Editable Page Label Preview" />
-//           <EditableInput width="400px" data-test="Editable Page Label Input" />
-//         </Editable>
-//       </Flex>
 
 export function CourseActivityEditor() {
   const {
