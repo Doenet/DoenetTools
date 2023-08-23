@@ -2147,7 +2147,7 @@ export function GeneralCollectionControls({
   doenetId,
   activityData,
 }) {
-  let { isPublic, label, imagePath: dataImagePath } = activityData;
+  let { isPublic, label, imagePath: dataImagePath, pageLabel } = activityData;
   if (!isPublic && activityData?.public) {
     isPublic = activityData.public;
   }
@@ -2156,41 +2156,80 @@ export function GeneralCollectionControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-    let learningOutcomesToSubmit = learningOutcomes;
-    if (nextLearningOutcomes) {
-      learningOutcomesToSubmit = nextLearningOutcomes;
-    }
+  function saveActivityLabel() {
+    console.log("saveActivityLabel!!!");
+    // let learningOutcomesToSubmit = learningOutcomes;
+    // if (nextLearningOutcomes) {
+    //   learningOutcomesToSubmit = nextLearningOutcomes;
+    // }
 
-    let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
-      isPublicToSubmit = nextIsPublic;
-    }
+    // let isPublicToSubmit = checkboxIsPublic;
+    // if (nextIsPublic) {
+    //   isPublicToSubmit = nextIsPublic;
+    // }
 
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelValue;
-    if (labelValue == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
-    } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
-      }
-    }
-    lastAcceptedLabelValue.current = labelToSubmit;
-    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    fetcher.submit(
-      {
-        _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
-        doenetId,
-      },
-      { method: "post" },
-    );
+    // // Turn on/off label error messages and
+    // // use the latest valid label
+    // let labelToSubmit = labelValue;
+    // if (labelValue == "") {
+    //   labelToSubmit = lastAcceptedLabelValue.current;
+    //   setLabelIsInvalid(true);
+    // } else {
+    //   if (labelIsInvalid) {
+    //     setLabelIsInvalid(false);
+    //   }
+    // }
+    // lastAcceptedLabelValue.current = labelToSubmit;
+    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    // fetcher.submit(
+    //   {
+    //     _action: "update general",
+    //     label: labelToSubmit,
+    //     imagePath,
+    //     public: isPublicToSubmit,
+    //     learningOutcomes: serializedLearningOutcomes,
+    //     doenetId,
+    //   },
+    //   { method: "post" },
+    // );
+  }
+
+  function savePageLabel() {
+    console.log("savePageLabel!!!");
+    // let learningOutcomesToSubmit = learningOutcomes;
+    // if (nextLearningOutcomes) {
+    //   learningOutcomesToSubmit = nextLearningOutcomes;
+    // }
+
+    // let isPublicToSubmit = checkboxIsPublic;
+    // if (nextIsPublic) {
+    //   isPublicToSubmit = nextIsPublic;
+    // }
+
+    // // Turn on/off label error messages and
+    // // use the latest valid label
+    // let labelToSubmit = labelValue;
+    // if (labelValue == "") {
+    //   labelToSubmit = lastAcceptedLabelValue.current;
+    //   setLabelIsInvalid(true);
+    // } else {
+    //   if (labelIsInvalid) {
+    //     setLabelIsInvalid(false);
+    //   }
+    // }
+    // lastAcceptedLabelValue.current = labelToSubmit;
+    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    // fetcher.submit(
+    //   {
+    //     _action: "update general",
+    //     label: labelToSubmit,
+    //     imagePath,
+    //     public: isPublicToSubmit,
+    //     learningOutcomes: serializedLearningOutcomes,
+    //     doenetId,
+    //   },
+    //   { method: "post" },
+    // );
   }
 
   const onDrop = useCallback(
@@ -2292,12 +2331,16 @@ export function GeneralCollectionControls({
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
+  let [pageLabelValue, setPageLabel] = useState(pageLabel);
+  let lastAcceptedPageLabelValue = useRef(pageLabel);
+
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+  let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
 
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
 
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  // const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   //TODO: Cypress is opening the drawer so fast
   //the activitieData is out of date
@@ -2354,12 +2397,11 @@ export function GeneralCollectionControls({
         </FormControl>
 
         <FormControl isRequired isInvalid={labelIsInvalid}>
-          <FormLabel mt="16px">Label</FormLabel>
+          <FormLabel mt="16px">Collection Label</FormLabel>
 
           <Input
             name="label"
             size="sm"
-            // width="392px"
             width="100%"
             placeholder="Activity 1"
             data-test="Activity Label"
@@ -2367,10 +2409,10 @@ export function GeneralCollectionControls({
             onChange={(e) => {
               setLabel(e.target.value);
             }}
-            onBlur={saveDataToServer}
+            onBlur={saveActivityLabel}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                saveDataToServer();
+                saveActivityLabel();
               }
             }}
           />
@@ -2378,126 +2420,32 @@ export function GeneralCollectionControls({
             Error - A label for the activity is required.
           </FormErrorMessage>
         </FormControl>
-        <FormControl>
-          <Flex flexDirection="column" width="100%" rowGap={6}>
-            <FormLabel mt="16px">Learning Outcomes</FormLabel>
 
-            {learningOutcomes.map((outcome, i) => {
-              return (
-                <Flex key={`learningOutcome${i}`} columnGap={4}>
-                  <Input
-                    size="sm"
-                    value={outcome}
-                    data-test={`learning outcome ${i}`}
-                    // width="300px"
-                    onChange={(e) => {
-                      setLearningOutcomes((prev) => {
-                        let next = [...prev];
-                        next[i] = e.target.value;
-                        return next;
-                      });
-                    }}
-                    onBlur={() =>
-                      saveDataToServer({
-                        nextLearningOutcomes: learningOutcomes,
-                      })
-                    }
-                    onKeyDown={(e) => {
-                      if (e.key == "Enter") {
-                        saveDataToServer({
-                          nextLearningOutcomes: learningOutcomes,
-                        });
-                      }
-                    }}
-                    placeholder={`Learning Outcome #${i + 1}`}
-                    data-text={`Learning Outcome #${i}`}
-                  />
-                  <IconButton
-                    variant="outline"
-                    data-test={`delete learning outcome ${i} button`}
-                    size="sm"
-                    color="doenet.mainRed"
-                    borderColor="doenet.mainRed"
-                    // background="doenet.mainRed"
-                    icon={<HiOutlineX />}
-                    onClick={() => {
-                      let nextLearningOutcomes = [...learningOutcomes];
-                      if (learningOutcomes.length < 2) {
-                        nextLearningOutcomes = [""];
-                      } else {
-                        nextLearningOutcomes.splice(i, 1);
-                      }
+        <FormControl isRequired isInvalid={pageLabelIsInvalid}>
+          <FormLabel mt="16px">Page Label</FormLabel>
 
-                      setLearningOutcomes(nextLearningOutcomes);
-                      saveDataToServer({ nextLearningOutcomes });
-                    }}
-                  />
-                </Flex>
-              );
-            })}
-
-            <Center>
-              <IconButton
-                isDisabled={learningOutcomes.length > 9}
-                data-test={`add a learning outcome button`}
-                variant="outline"
-                width="80%"
-                size="xs"
-                icon={<HiPlus />}
-                onClick={() => {
-                  let nextLearningOutcomes = [...learningOutcomes];
-                  if (learningOutcomes.length < 9) {
-                    nextLearningOutcomes.push("");
-                  }
-
-                  setLearningOutcomes(nextLearningOutcomes);
-                  saveDataToServer({ nextLearningOutcomes });
-                }}
-              />
-            </Center>
-          </Flex>
-        </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            isChecked={checkboxIsPublic == "1"}
+          <Input
+            name="pageLabel"
+            size="sm"
+            width="100%"
+            placeholder="Page 1"
+            data-test="Page Label"
+            value={pageLabelValue}
             onChange={(e) => {
-              let nextIsPublic = "0";
-              if (e.target.checked) {
-                nextIsPublic = "1";
-                //Process making activity public here
-                compileActivity({
-                  activityDoenetId: doenetId,
-                  isAssigned: true,
-                  courseId,
-                  activity: {
-                    version: activityData.version,
-                    isSinglePage: true,
-                    content: activityData.content,
-                  },
-                  // successCallback: () => {
-                  //   addToast('Activity Assigned.', toastType.INFO);
-                  // },
-                });
-                updateAssignItem({
-                  doenetId,
-                  isAssigned: true,
-                  successCallback: () => {
-                    //addToast(assignActivityToast, toastType.INFO);
-                  },
-                });
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer({ nextIsPublic });
+              setPageLabel(e.target.value);
             }}
-          >
-            Public
-          </Checkbox>
+            onBlur={savePageLabel}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                savePageLabel();
+              }
+            }}
+          />
+          <FormErrorMessage>
+            Error - A label for the page is required.
+          </FormErrorMessage>
         </FormControl>
+
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
       </Form>
@@ -2516,7 +2464,6 @@ function CollectionPageSettingsDrawer({
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
   const fetcher = useFetcher();
-
   return (
     <Drawer
       isOpen={isOpen}
@@ -2531,7 +2478,7 @@ function CollectionPageSettingsDrawer({
         <DrawerHeader>
           <Center>
             {/* <Icon as={FaCog} mr="14px" /> */}
-            <Text>Activity Controls</Text>
+            <Text>Collection Controls</Text>
           </Center>
         </DrawerHeader>
 
@@ -2674,12 +2621,9 @@ function CourseActivitySettingsDrawer({
 function EditableLabel({ dataTest }) {
   const { activityData } = useLoaderData();
   const fetcher = useFetcher();
-  console.log("EditableLabel activityData", activityData);
   const [activityLabel, setActivityLabel] = useState(activityData.label);
   const [pageLabel, setPageLabel] = useState(activityData.pageLabel);
 
-  console.log("activityLabel", activityLabel);
-  console.log("pageLabel", pageLabel);
   let lastActivityLabelRef = useRef(activityData.label);
   let lastPageLabelRef = useRef(activityData.pageLabel);
 
@@ -2698,8 +2642,8 @@ function EditableLabel({ dataTest }) {
   lastActivityLabelRef.current = activityData.label;
   lastPageLabelRef.current = activityData.pageLabel;
 
-  return (
-    <Flex>
+  if (activityData.isSinglePage) {
+    return (
       <Editable
         data-test={dataTest}
         mt="4px"
@@ -2720,9 +2664,9 @@ function EditableLabel({ dataTest }) {
         <EditablePreview data-test="Editable Preview" />
         <EditableInput width="400px" data-test="Editable Input" />
       </Editable>
-      <Box ml="18px" mr="2px" mt="10px">
-        <GrDocument />
-      </Box>
+    );
+  } else {
+    return (
       <Editable
         data-test={`${dataTest} page`}
         mt="4px"
@@ -2743,9 +2687,55 @@ function EditableLabel({ dataTest }) {
         <EditablePreview data-test="Editable Page Label Preview" />
         <EditableInput width="400px" data-test="Editable Page Label Input" />
       </Editable>
-    </Flex>
-  );
+    );
+  }
 }
+
+// <Flex>
+//         <Editable
+//           data-test={dataTest}
+//           mt="4px"
+//           value={activityLabel}
+//           textAlign="center"
+//           onChange={(value) => {
+//             setActivityLabel(value);
+//           }}
+//           onSubmit={(value) => {
+//             let submitValue = value;
+
+//             fetcher.submit(
+//               { _action: "update label", label: submitValue },
+//               { method: "post" },
+//             );
+//           }}
+//         >
+//           <EditablePreview data-test="Editable Preview" />
+//           <EditableInput width="400px" data-test="Editable Input" />
+//         </Editable>
+//         <Box ml="18px" mr="2px" mt="10px">
+//           <GrDocument />
+//         </Box>
+//         <Editable
+//           data-test={`${dataTest} page`}
+//           mt="4px"
+//           value={pageLabel}
+//           textAlign="center"
+//           onChange={(value) => {
+//             setPageLabel(value);
+//           }}
+//           onSubmit={(value) => {
+//             let submitValue = value;
+
+//             fetcher.submit(
+//               { _action: "update page label", label: submitValue },
+//               { method: "post" },
+//             );
+//           }}
+//         >
+//           <EditablePreview data-test="Editable Page Label Preview" />
+//           <EditableInput width="400px" data-test="Editable Page Label Input" />
+//         </Editable>
+//       </Flex>
 
 export function CourseActivityEditor() {
   const {
@@ -2899,6 +2889,8 @@ export function CourseActivityEditor() {
       allPossibleVariants,
     });
   }
+
+  console.log("activityData.type", activityData.type);
 
   return (
     <>
