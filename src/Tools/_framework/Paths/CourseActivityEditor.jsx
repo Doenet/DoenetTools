@@ -108,12 +108,14 @@ export async function action({ params, request }) {
     let { data } = axios.get("/api/updatePortfolioActivityLabel.php", {
       params: { doenetId: params.doenetId, label },
     });
+    return { _action: formObj._action, label };
   }
 
   if (formObj._action == "update page label") {
     let { data } = axios.get("/api/updatePageLabel.php", {
       params: { doenetId: params.doenetId, pageId: params.pageId, label },
     });
+    return { _action: formObj._action, pageLabel: label };
   }
 
   if (formObj._action == "update general") {
@@ -121,6 +123,7 @@ export async function action({ params, request }) {
     let response = await axios.post(
       "/api/updatePortfolioActivitySettings.php",
       {
+        _action: formObj._action,
         label,
         imagePath: formObj.imagePath,
         public: formObj.public,
@@ -129,6 +132,7 @@ export async function action({ params, request }) {
       },
     );
     return {
+      _action: formObj._action,
       label,
       imagePath: formObj.imagePath,
       public: formObj.public,
@@ -161,8 +165,6 @@ export async function action({ params, request }) {
       doenetId: formObj.doenetId,
       [formObj.keyToUpdate]: formObj.value,
     });
-    console.log("formObj", formObj);
-    console.log("resp", resp);
 
     return {
       _action: formObj._action,
@@ -174,8 +176,6 @@ export async function action({ params, request }) {
       doenetId: formObj.doenetId,
       [formObj.keyToUpdate]: formObj.value,
     });
-    console.log("formObj", formObj);
-    console.log("resp", resp);
 
     return {
       _action: formObj._action,
@@ -187,7 +187,7 @@ export async function action({ params, request }) {
     // console.log("noop");
   }
 
-  return { nothingToReturn: true };
+  return { _action: formObj._action, nothingToReturn: true };
   // let response = await fetch(
   //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
   // );
@@ -2156,82 +2156,6 @@ export function GeneralCollectionControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
-  function saveActivityLabel() {
-    console.log("saveActivityLabel!!!");
-    // let learningOutcomesToSubmit = learningOutcomes;
-    // if (nextLearningOutcomes) {
-    //   learningOutcomesToSubmit = nextLearningOutcomes;
-    // }
-
-    // let isPublicToSubmit = checkboxIsPublic;
-    // if (nextIsPublic) {
-    //   isPublicToSubmit = nextIsPublic;
-    // }
-
-    // // Turn on/off label error messages and
-    // // use the latest valid label
-    // let labelToSubmit = labelValue;
-    // if (labelValue == "") {
-    //   labelToSubmit = lastAcceptedLabelValue.current;
-    //   setLabelIsInvalid(true);
-    // } else {
-    //   if (labelIsInvalid) {
-    //     setLabelIsInvalid(false);
-    //   }
-    // }
-    // lastAcceptedLabelValue.current = labelToSubmit;
-    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    // fetcher.submit(
-    //   {
-    //     _action: "update general",
-    //     label: labelToSubmit,
-    //     imagePath,
-    //     public: isPublicToSubmit,
-    //     learningOutcomes: serializedLearningOutcomes,
-    //     doenetId,
-    //   },
-    //   { method: "post" },
-    // );
-  }
-
-  function savePageLabel() {
-    console.log("savePageLabel!!!");
-    // let learningOutcomesToSubmit = learningOutcomes;
-    // if (nextLearningOutcomes) {
-    //   learningOutcomesToSubmit = nextLearningOutcomes;
-    // }
-
-    // let isPublicToSubmit = checkboxIsPublic;
-    // if (nextIsPublic) {
-    //   isPublicToSubmit = nextIsPublic;
-    // }
-
-    // // Turn on/off label error messages and
-    // // use the latest valid label
-    // let labelToSubmit = labelValue;
-    // if (labelValue == "") {
-    //   labelToSubmit = lastAcceptedLabelValue.current;
-    //   setLabelIsInvalid(true);
-    // } else {
-    //   if (labelIsInvalid) {
-    //     setLabelIsInvalid(false);
-    //   }
-    // }
-    // lastAcceptedLabelValue.current = labelToSubmit;
-    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    // fetcher.submit(
-    //   {
-    //     _action: "update general",
-    //     label: labelToSubmit,
-    //     imagePath,
-    //     public: isPublicToSubmit,
-    //     learningOutcomes: serializedLearningOutcomes,
-    //     doenetId,
-    //   },
-    //   { method: "post" },
-    // );
-  }
-
   const onDrop = useCallback(
     async (files) => {
       let success = true;
@@ -2331,14 +2255,103 @@ export function GeneralCollectionControls({
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
-  let [pageLabelValue, setPageLabel] = useState(pageLabel);
+  let [pageLabelState, setPageLabel] = useState(pageLabel);
   let lastAcceptedPageLabelValue = useRef(pageLabel);
 
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
   let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
 
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+  useEffect(() => {
+    if (fetcher.data?.pageLabel) {
+      setPageLabel(fetcher.data?.pageLabel);
+    }
+  }, []); //Only on opening the drawer
+
+  //Optimistic UI
+  let effectivePageLabel = pageLabelState;
+  if (fetcher.state != "idle" && fetcher.data?._action == "update page label") {
+    effectivePageLabel = fetcher.data.pageLabel;
+    //Prevent infinite loop
+    if (fetcher.data.pageLabel != pageLabelState) {
+      setPageLabel(fetcher.data.pageLabel);
+    }
+  }
+
+  function saveActivityLabel() {
+    console.log("saveActivityLabel!!!");
+    // let learningOutcomesToSubmit = learningOutcomes;
+    // if (nextLearningOutcomes) {
+    //   learningOutcomesToSubmit = nextLearningOutcomes;
+    // }
+
+    // let isPublicToSubmit = checkboxIsPublic;
+    // if (nextIsPublic) {
+    //   isPublicToSubmit = nextIsPublic;
+    // }
+
+    // // Turn on/off label error messages and
+    // // use the latest valid label
+    // let labelToSubmit = labelValue;
+    // if (labelValue == "") {
+    //   labelToSubmit = lastAcceptedLabelValue.current;
+    //   setLabelIsInvalid(true);
+    // } else {
+    //   if (labelIsInvalid) {
+    //     setLabelIsInvalid(false);
+    //   }
+    // }
+    // lastAcceptedLabelValue.current = labelToSubmit;
+    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    // fetcher.submit(
+    //   {
+    //     _action: "update general",
+    //     label: labelToSubmit,
+    //     imagePath,
+    //     public: isPublicToSubmit,
+    //     learningOutcomes: serializedLearningOutcomes,
+    //     doenetId,
+    //   },
+    //   { method: "post" },
+    // );
+  }
+
+  function savePageLabel() {
+    console.log("pageLabelState!!!", pageLabelState);
+
+    // let isPublicToSubmit = checkboxIsPublic;
+    // if (nextIsPublic) {
+    //   isPublicToSubmit = nextIsPublic;
+    // }
+
+    // // Turn on/off label error messages and
+    // // use the latest valid label
+    // let labelToSubmit = labelValue;
+    // if (labelValue == "") {
+    //   labelToSubmit = lastAcceptedLabelValue.current;
+    //   setLabelIsInvalid(true);
+    // } else {
+    //   if (labelIsInvalid) {
+    //     setLabelIsInvalid(false);
+    //   }
+    // }
+    // lastAcceptedLabelValue.current = labelToSubmit;
+    // let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    // fetcher.submit(
+    //   {
+    //     _action: "update general",
+    //     label: labelToSubmit,
+    //     imagePath,
+    //     public: isPublicToSubmit,
+    //     learningOutcomes: serializedLearningOutcomes,
+    //     doenetId,
+    //   },
+    //   { method: "post" },
+    // );
+    fetcher.submit(
+      { _action: "update page label", label: pageLabelState },
+      { method: "post" },
+    );
+  }
 
   // const { compileActivity, updateAssignItem } = useCourse(courseId);
 
@@ -2387,7 +2400,7 @@ export function GeneralCollectionControls({
                   height="120px"
                   maxWidth="180px"
                   src={imagePath}
-                  alt="Activity Card Image"
+                  alt="Collection Card Image"
                   borderTopRadius="md"
                   objectFit="cover"
                 />
@@ -2430,7 +2443,7 @@ export function GeneralCollectionControls({
             width="100%"
             placeholder="Page 1"
             data-test="Page Label"
-            value={pageLabelValue}
+            value={effectivePageLabel}
             onChange={(e) => {
               setPageLabel(e.target.value);
             }}
@@ -2458,12 +2471,13 @@ function CollectionPageSettingsDrawer({
   onClose,
   finalFocusRef,
   controlsTabsLastIndex,
+  fetcher,
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
   // console.log("activityData", activityData);
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
-  const fetcher = useFetcher();
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -2618,14 +2632,12 @@ function CourseActivitySettingsDrawer({
   );
 }
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableLabel({ dataTest }) {
+function EditableLabel({ dataTest, fetcher }) {
   const { activityData } = useLoaderData();
-  const fetcher = useFetcher();
+  console.log("EditableLabel activityData", activityData.pageLabel);
   const [activityLabel, setActivityLabel] = useState(activityData.label);
-  const [pageLabel, setPageLabel] = useState(activityData.pageLabel);
 
   let lastActivityLabelRef = useRef(activityData.label);
-  let lastPageLabelRef = useRef(activityData.pageLabel);
 
   //Update when something else updates the activity label
   if (activityData.label != lastActivityLabelRef.current) {
@@ -2633,62 +2645,69 @@ function EditableLabel({ dataTest }) {
       setActivityLabel(activityData.label);
     }
   }
-  //Update when something else updates the page label
-  if (activityData.pageLabel != lastPageLabelRef.current) {
-    if (pageLabel != activityData.pageLabel) {
-      setPageLabel(activityData.pageLabel);
+
+  lastActivityLabelRef.current = activityData.label;
+
+  return (
+    <Editable
+      data-test={dataTest}
+      mt="4px"
+      value={activityLabel}
+      textAlign="center"
+      onChange={(value) => {
+        setActivityLabel(value);
+      }}
+      onSubmit={(value) => {
+        let submitValue = value;
+
+        fetcher.submit(
+          { _action: "update label", label: submitValue },
+          { method: "post" },
+        );
+      }}
+    >
+      <EditablePreview data-test="Editable Preview" />
+      <EditableInput width="400px" data-test="Editable Input" />
+    </Editable>
+  );
+}
+
+function EditablePageLabel({ fetcher, dataTest }) {
+  const { activityData } = useLoaderData();
+  const [pageLabel, setPageLabel] = useState(activityData.pageLabel);
+
+  //Optimistic UI
+  let effectivePageLabel = pageLabel;
+  if (fetcher.state != "idle" && fetcher.data?._action == "update page label") {
+    effectivePageLabel = fetcher.data.pageLabel;
+    //Prevent infinite loop
+    if (fetcher.data.pageLabel != pageLabel) {
+      setPageLabel(fetcher.data.pageLabel);
     }
   }
-  lastActivityLabelRef.current = activityData.label;
-  lastPageLabelRef.current = activityData.pageLabel;
 
-  if (activityData.isSinglePage) {
-    return (
-      <Editable
-        data-test={dataTest}
-        mt="4px"
-        value={activityLabel}
-        textAlign="center"
-        onChange={(value) => {
-          setActivityLabel(value);
-        }}
-        onSubmit={(value) => {
-          let submitValue = value;
+  return (
+    <Editable
+      data-test={`${dataTest} page`}
+      mt="4px"
+      value={effectivePageLabel}
+      textAlign="center"
+      onChange={(value) => {
+        setPageLabel(value);
+      }}
+      onSubmit={(value) => {
+        let submitValue = value;
 
-          fetcher.submit(
-            { _action: "update label", label: submitValue },
-            { method: "post" },
-          );
-        }}
-      >
-        <EditablePreview data-test="Editable Preview" />
-        <EditableInput width="400px" data-test="Editable Input" />
-      </Editable>
-    );
-  } else {
-    return (
-      <Editable
-        data-test={`${dataTest} page`}
-        mt="4px"
-        value={pageLabel}
-        textAlign="center"
-        onChange={(value) => {
-          setPageLabel(value);
-        }}
-        onSubmit={(value) => {
-          let submitValue = value;
-
-          fetcher.submit(
-            { _action: "update page label", label: submitValue },
-            { method: "post" },
-          );
-        }}
-      >
-        <EditablePreview data-test="Editable Page Label Preview" />
-        <EditableInput width="400px" data-test="Editable Page Label Input" />
-      </Editable>
-    );
-  }
+        fetcher.submit(
+          { _action: "update page label", label: submitValue },
+          { method: "post" },
+        );
+      }}
+    >
+      <EditablePreview data-test="Editable Page Label Preview" />
+      <EditableInput width="400px" data-test="Editable Page Label Input" />
+    </Editable>
+  );
 }
 
 // <Flex>
@@ -2747,6 +2766,19 @@ export function CourseActivityEditor() {
     activityData,
     lastKnownCid,
   } = useLoaderData();
+  const fetcher = useFetcher();
+
+  //Optimistic UI
+  let effectiveLabel = activityData.pageLabel;
+  if (activityData.isSinglePage) {
+    if (fetcher.data?._action == "update label") {
+      effectiveLabel = fetcher.data.label;
+    }
+  } else {
+    if (fetcher.data?._action == "update page label") {
+      effectiveLabel = fetcher.data.pageLabel;
+    }
+  }
 
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
@@ -2863,8 +2895,8 @@ export function CourseActivityEditor() {
   }, [handleSaveDraft]);
 
   useEffect(() => {
-    document.title = `${activityData.label} - Doenet`;
-  }, [activityData.label]);
+    document.title = `${effectiveLabel} - Doenet`;
+  }, [effectiveLabel]);
 
   const controlsBtnRef = useRef(null);
 
@@ -2890,8 +2922,6 @@ export function CourseActivityEditor() {
     });
   }
 
-  console.log("activityData.type", activityData.type);
-
   return (
     <>
       {activityData.type == "bank" ? (
@@ -2901,6 +2931,7 @@ export function CourseActivityEditor() {
           finalFocusRef={controlsBtnRef}
           activityData={activityData}
           controlsTabsLastIndex={controlsTabsLastIndex}
+          fetcher={fetcher}
         />
       ) : (
         <CourseActivitySettingsDrawer
@@ -2973,7 +3004,17 @@ export function CourseActivityEditor() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <EditableLabel dataTest="Activity Label Editable" />
+              {activityData.isSinglePage ? (
+                <EditableLabel
+                  dataTest="Activity Label Editable"
+                  fetcher={fetcher}
+                />
+              ) : (
+                <EditablePageLabel
+                  dataTest="Activity Label Editable"
+                  fetcher={fetcher}
+                />
+              )}
             </GridItem>
             <GridItem
               area="rightControls"
