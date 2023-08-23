@@ -220,7 +220,7 @@ function findFirstPageIdInContent(content) {
 
 export async function loader({ params }) {
   try {
-    console.log(params);
+    // console.log(params);
     const response = await axios.get("/api/getCourseEditorData.php", {
       params: { doenetId: params.doenetId, pageId: params.pageId },
     });
@@ -839,7 +839,6 @@ function SupportFilesControls() {
 
 function PresentationControls({ courseId, doenetId, activityData }) {
   const fetcher = useFetcher();
-  console.log("activityData", activityData);
 
   const [individualize, setIndividualize] = useState(
     activityData.individualize,
@@ -1748,6 +1747,7 @@ export function GeneralActivityControls({
     label,
     imagePath: dataImagePath,
     userCanViewSource,
+    pageLabel,
   } = activityData;
   if (!isPublic && activityData?.public) {
     isPublic = activityData.public;
@@ -1758,8 +1758,11 @@ export function GeneralActivityControls({
   let [alerts, setAlerts] = useState([]);
 
   let [labelState, setLabel] = useState(label);
+  let [pageLabelState, setPageLabel] = useState(pageLabel);
+
   let lastAcceptedLabelValue = useRef(label);
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+  let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
 
   let learningOutcomesInit = activityData.learningOutcomes;
   if (learningOutcomesInit == null) {
@@ -1885,6 +1888,22 @@ export function GeneralActivityControls({
     }
   }
 
+  function savePageLabel() {
+    // Turn on/off label error messages and
+    // only set the value if it's not blank
+    if (pageLabelState == "") {
+      setPageLabelIsInvalid(true);
+    } else {
+      if (pageLabelIsInvalid) {
+        setPageLabelIsInvalid(false);
+      }
+      fetcher.submit(
+        { _action: "update page label", label: pageLabelState },
+        { method: "post" },
+      );
+    }
+  }
+
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
     if (nextLearningOutcomes) {
@@ -1970,7 +1989,11 @@ export function GeneralActivityControls({
         </FormControl>
 
         <FormControl isRequired isInvalid={labelIsInvalid}>
-          <FormLabel mt="16px">Label</FormLabel>
+          {activityData.isSinglePage ? (
+            <FormLabel mt="16px">Label</FormLabel>
+          ) : (
+            <FormLabel mt="16px"> Activity Label</FormLabel>
+          )}
 
           <Input
             name="label"
@@ -1994,6 +2017,34 @@ export function GeneralActivityControls({
             Error - A label for the activity is required.
           </FormErrorMessage>
         </FormControl>
+
+        {!activityData.isSinglePage && (
+          <FormControl isRequired isInvalid={pageLabelIsInvalid}>
+            <FormLabel mt="16px">Page Label</FormLabel>
+
+            <Input
+              name="pageLabel"
+              size="sm"
+              width="100%"
+              placeholder="Page"
+              data-test="Page Label"
+              value={pageLabelState}
+              onChange={(e) => {
+                setPageLabel(e.target.value);
+              }}
+              onBlur={savePageLabel}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  savePageLabel();
+                }
+              }}
+            />
+            <FormErrorMessage>
+              Error - A label for the page is required.
+            </FormErrorMessage>
+          </FormControl>
+        )}
+
         <FormControl>
           <Flex flexDirection="column" width="100%" rowGap={6}>
             <FormLabel mt="16px">Learning Outcomes</FormLabel>
@@ -2267,9 +2318,7 @@ export function GeneralCollectionControls({
   }
 
   let [labelState, setLabel] = useState(label);
-  // let lastAcceptedLabelValue = useRef(label);
   let [pageLabelState, setPageLabel] = useState(pageLabel);
-  // let lastAcceptedPageLabelValue = useRef(pageLabel);
 
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
   let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
