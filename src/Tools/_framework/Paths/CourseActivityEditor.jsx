@@ -62,10 +62,12 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tag,
   Text,
   Tooltip,
   VStack,
   useDisclosure,
+  useEditableControls,
 } from "@chakra-ui/react";
 import {
   CloseIcon,
@@ -2637,6 +2639,27 @@ function CourseActivitySettingsDrawer({
     </Drawer>
   );
 }
+
+function LabelWhenNotEditting({ label, dataTest }) {
+  const { isEditing } = useEditableControls();
+
+  return (
+    <>
+      {!isEditing && (
+        <Tag
+          mr="4px"
+          size="sm"
+          variant="subtle"
+          colorScheme="gray"
+          data-test={dataTest}
+        >
+          {label}
+        </Tag>
+      )}
+    </>
+  );
+}
+
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableLabel({ fetcher, dataTest }) {
   const { activityData } = useLoaderData();
@@ -2669,9 +2692,23 @@ function EditableLabel({ fetcher, dataTest }) {
           { method: "post" },
         );
       }}
+      w="400px"
     >
-      <EditablePreview data-test="Editable Page Label Preview" />
-      <EditableInput width="400px" data-test="Editable Page Label Input" />
+      <Center>
+        <LabelWhenNotEditting
+          label="Activity Label"
+          dataTest="Label for Editable Activity Label"
+        />
+        <EditablePreview
+          data-test="Editable Page Label Preview"
+          maxW="300px"
+          sx={{
+            whiteSpace: "nowrap",
+            overflowX: "scroll",
+          }}
+        />
+        <EditableInput width="400px" data-test="Editable Page Label Input" />
+      </Center>
     </Editable>
   );
 }
@@ -2708,8 +2745,21 @@ function EditablePageLabel({ fetcher, dataTest }) {
         );
       }}
     >
-      <EditablePreview data-test="Editable Page Label Preview" />
-      <EditableInput width="400px" data-test="Editable Page Label Input" />
+      <Center>
+        <LabelWhenNotEditting
+          label="Page Label"
+          dataTest="Label for Editable Page Label"
+        />
+        <EditablePreview
+          data-test="Editable Page Label Preview"
+          maxW="300px"
+          sx={{
+            whiteSpace: "nowrap",
+            overflowX: "scroll",
+          }}
+        />
+        <EditableInput width="400px" data-test="Editable Page Label Input" />
+      </Center>
     </Editable>
   );
 }
