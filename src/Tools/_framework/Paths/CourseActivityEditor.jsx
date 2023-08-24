@@ -101,9 +101,10 @@ import {
 } from "../../../_utils/dateUtilityFunction";
 import { pageToolViewAtom } from "../NewToolRoot";
 
-export async function loader({ params }) {
+export async function loader({ request, params }) {
   try {
-    // console.log(params);
+    const url = new URL(request.url);
+    const from = url.searchParams.get("from");
     const response = await axios.get("/api/getCourseEditorData.php", {
       params: { doenetId: params.doenetId, pageId: params.pageId },
     });
@@ -168,6 +169,7 @@ export async function loader({ params }) {
       doenetML,
       doenetId: params.doenetId,
       supportingFileData,
+      from,
     };
   } catch (e) {
     if (e.response.data.message == "Redirect to public activity.") {
@@ -2899,6 +2901,7 @@ export function CourseActivityEditor() {
     courseId,
     activityData,
     lastKnownCid,
+    from,
   } = useLoaderData();
   const fetcher = useFetcher();
 
@@ -3130,13 +3133,23 @@ export function CourseActivityEditor() {
                 mr="10px"
                 size="sm"
                 onClick={() => {
-                  navigateTo.current = `/course?tool=navigation&courseId=${courseId}`;
-                  setRecoilPageToolView({
-                    page: "course",
-                    tool: "navigation",
-                    view: "",
-                    params: { courseId },
-                  });
+                  if (from == "dashboard") {
+                    navigateTo.current = `/course?tool=dashboard&courseId=${courseId}`;
+                    setRecoilPageToolView({
+                      page: "course",
+                      tool: "dashboard",
+                      view: "",
+                      params: { courseId },
+                    });
+                  } else {
+                    navigateTo.current = `/course?tool=navigation&courseId=${courseId}`;
+                    setRecoilPageToolView({
+                      page: "course",
+                      tool: "navigation",
+                      view: "",
+                      params: { courseId },
+                    });
+                  }
                 }}
                 data-test="Close"
                 rightIcon={<CloseIcon />}

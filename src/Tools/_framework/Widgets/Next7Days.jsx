@@ -534,7 +534,9 @@ export default function Next7Days({ courseId }) {
           let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
           let pageId = findFirstPageOfActivity(itemObj.content);
           //TODO: VariantIndex params
-          navigate(`/courseactivityeditor/${doenetId}/${pageId}`);
+          navigate(
+            `/courseactivityeditor/${doenetId}/${pageId}/?from=dashboard`,
+          );
         } else {
           //no edit permissions
           setPageToolView({
