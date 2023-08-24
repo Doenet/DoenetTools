@@ -4,6 +4,7 @@ import {
   useLoaderData,
   useLocation,
   useNavigate,
+  useRevalidator,
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
@@ -338,6 +339,37 @@ function AlertQueue({ alerts = [] }) {
         })}
       </VStack>
     </>
+  );
+}
+
+function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  const [disabled, setDisabled] = useState(false);
+
+  return (
+    <Button
+      isDisabled={disabled}
+      {...props}
+      onClick={async () => {
+        setDisabled(true);
+        compileActivity({
+          activityDoenetId: doenetId,
+          isAssigned: true,
+          courseId,
+        });
+        updateAssignItem({
+          doenetId,
+          isAssigned: true,
+          successCallback: () => {
+            setTimeout(function () {
+              revalidator.revalidate();
+            }, 200);
+          },
+        });
+      }}
+    >
+      Assign
+    </Button>
   );
 }
 
@@ -846,7 +878,47 @@ function SupportFilesControls() {
   );
 }
 
-function PresentationControls({ courseId, doenetId, activityData }) {
+function PresentationControls({
+  courseId,
+  doenetId,
+  pageId,
+  activityData,
+  revalidator,
+}) {
+  if (!activityData.has_assignment_table) {
+    return (
+      <>
+        <Text>
+          Presentation controls are available after activity is assigned.
+        </Text>
+        <AssignButton
+          mt="8px"
+          colorScheme="blue"
+          courseId={courseId}
+          doenetId={doenetId}
+          pageId={pageId}
+          revalidator={revalidator}
+        />
+      </>
+    );
+  } else {
+    return (
+      <PresentationControlsAssigned
+        courseId={courseId}
+        doenetId={doenetId}
+        pageId={pageId}
+        activityData={activityData}
+      />
+    );
+  }
+}
+
+function PresentationControlsAssigned({
+  courseId,
+  doenetId,
+  pageId,
+  activityData,
+}) {
   const fetcher = useFetcher();
 
   const [individualize, setIndividualize] = useState(
@@ -874,14 +946,6 @@ function PresentationControls({ courseId, doenetId, activityData }) {
   const [canViewAfterCompleted, setCanViewAfterCompleted] = useState(
     activityData.canViewAfterCompleted,
   );
-
-  if (!activityData.has_assignment_table) {
-    return (
-      <Text>
-        Presentation controls are available after activity is assigned.
-      </Text>
-    );
-  }
 
   return (
     <VStack alignItems="flex-start">
@@ -1236,9 +1300,40 @@ function PresentationControls({ courseId, doenetId, activityData }) {
   );
 }
 
-function AssignControls({ courseId, doenetId, activityData }) {
-  const fetcher = useFetcher();
+function AssignControls({
+  courseId,
+  doenetId,
+  activityData,
+  pageId,
+  revalidator,
+}) {
+  if (!activityData.has_assignment_table) {
+    return (
+      <>
+        <Text>Assign controls are available after activity is assigned.</Text>
+        <AssignButton
+          mt="8px"
+          colorScheme="blue"
+          courseId={courseId}
+          doenetId={doenetId}
+          pageId={pageId}
+          revalidator={revalidator}
+        />
+      </>
+    );
+  } else {
+    return (
+      <AssignControlsAssigned
+        courseId={courseId}
+        doenetId={doenetId}
+        activityData={activityData}
+      />
+    );
+  }
+}
 
+function AssignControlsAssigned({ courseId, doenetId, activityData }) {
+  const fetcher = useFetcher();
   let adAssignedDate = activityData?.assignedDate;
   if (adAssignedDate != undefined) {
     adAssignedDate = UTCDateStringToLocalTimeChakraString(adAssignedDate);
@@ -1271,12 +1366,6 @@ function AssignControls({ courseId, doenetId, activityData }) {
   const [proctorMakesAvailable, setProctorMakesAvailable] = useState(
     activityData.proctorMakesAvailable,
   );
-
-  if (!activityData.has_assignment_table) {
-    return (
-      <Text>Assign controls are available after activity is assigned.</Text>
-    );
-  }
 
   return (
     <VStack alignItems="flex-start" spacing={5}>
@@ -1491,7 +1580,39 @@ function AssignControls({ courseId, doenetId, activityData }) {
   );
 }
 
-function GradeControls({ courseId, doenetId, activityData }) {
+function GradeControls({
+  courseId,
+  doenetId,
+  activityData,
+  pageId,
+  revalidator,
+}) {
+  if (!activityData.has_assignment_table) {
+    return (
+      <>
+        <Text>Grade controls are available after activity is assigned.</Text>
+        <AssignButton
+          mt="8px"
+          colorScheme="blue"
+          courseId={courseId}
+          doenetId={doenetId}
+          pageId={pageId}
+          revalidator={revalidator}
+        />
+      </>
+    );
+  } else {
+    return (
+      <GradeControlsAssigned
+        courseId={courseId}
+        doenetId={doenetId}
+        activityData={activityData}
+      />
+    );
+  }
+}
+
+function GradeControlsAssigned({ courseId, doenetId, activityData }) {
   const fetcher = useFetcher();
 
   const [totalPointsOrPercent, setTotalPointsOrPercent] = useState(
@@ -1514,11 +1635,6 @@ function GradeControls({ courseId, doenetId, activityData }) {
     adNumberOfAttemptsAllowed,
   );
 
-  if (!activityData.has_assignment_table) {
-    return (
-      <Text>Assign controls are available after activity is assigned.</Text>
-    );
-  }
   let gradeCategoryOptions = [
     ["gateway", "Gateway"],
     ["exams", "Exams"],
@@ -2549,7 +2665,10 @@ function CourseActivitySettingsDrawer({
   controlsTabsLastIndex,
   fetcher,
 }) {
-  const { courseId, doenetId, activityData } = useLoaderData();
+  const { courseId, doenetId, pageId, activityData } = useLoaderData();
+
+  let revalidator = useRevalidator();
+
   // console.log("activityData", activityData);
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
@@ -2605,6 +2724,7 @@ function CourseActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    pageId={pageId}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2615,6 +2735,8 @@ function CourseActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    pageId={pageId}
+                    revalidator={revalidator}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2622,6 +2744,8 @@ function CourseActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    pageId={pageId}
+                    revalidator={revalidator}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2629,6 +2753,8 @@ function CourseActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    pageId={pageId}
+                    revalidator={revalidator}
                   />
                 </TabPanel>
               </TabPanels>
