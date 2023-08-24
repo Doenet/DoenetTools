@@ -69,10 +69,6 @@ import {
   action as courseActivityEditorAction,
 } from "./Tools/_framework/Paths/CourseActivityEditor";
 import {
-  CourseHeader,
-  loader as courseHeaderLoader,
-} from "./Tools/_framework/Paths/CourseHeader";
-import {
   CourseLinkPageViewer,
   loader as courseLinkPageViewerLoader,
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
@@ -331,93 +327,63 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/courseactivityeditor/",
-    loader: courseHeaderLoader,
+    path: "/courselinkpageviewer/:doenetId",
+    loader: courseLinkPageViewerLoader,
     element: (
-      <>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
         <ChakraProvider theme={theme}>
-          <CourseHeader />
+          <CourseLinkPageViewer />
         </ChakraProvider>
-      </>
+      </MathJaxContext>
     ),
-    children: [
-      {
-        path: "/courseactivityeditor/:doenetId",
-        loader: async ({ params }) => {
-          //This leaves a location in history
-          //this is because redirect creates a standard Response object and
-          //Response objects has no way to set replace: true
-          console.log("HERE! params", params);
-
-          //Redirect as an activity can have no pageids
-          return redirect(`/courseactivityeditor/${params.doenetId}/_`);
-        },
-        element: <div>Loading...</div>,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-      },
-
-      {
-        path: "/courseactivityeditor/:doenetId/:pageId",
-        loader: courseActivityEditorLoader,
-        action: courseActivityEditorAction,
-        // errorElement: <div>Error!</div>,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ChakraProvider theme={theme}>
-              <CourseActivityEditor />
-            </ChakraProvider>
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-      },
-    ],
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
   },
-
   {
-    path: "/courselinkpageviewer/",
-    loader: courseHeaderLoader,
-    element: (
-      <>
-        <ChakraProvider theme={theme}>
-          <CourseHeader />
-        </ChakraProvider>
-      </>
+    path: "/courseactivityeditor/:doenetId",
+    loader: async ({ params }) => {
+      //This leaves a location in history
+      //this is because redirect creates a standard Response object and
+      //Response objects has no way to set replace: true
+
+      //Redirect as an activity can have no pageids
+      return redirect(`/courseactivityeditor/${params.doenetId}/_`);
+    },
+    element: <div>Loading...</div>,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
     ),
-    children: [
-      {
-        path: "/courselinkpageviewer/:doenetId",
-        loader: courseLinkPageViewerLoader,
-        // errorElement: <div>Error!</div>,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ChakraProvider theme={theme}>
-              <CourseLinkPageViewer />
-            </ChakraProvider>
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-      },
-    ],
+  },
+  {
+    path: "/courseactivityeditor/:doenetId/:pageId",
+    loader: courseActivityEditorLoader,
+    action: courseActivityEditorAction,
+    // errorElement: <div>Error!</div>,
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ChakraProvider theme={theme}>
+          <CourseActivityEditor />
+        </ChakraProvider>
+      </MathJaxContext>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
   },
 
   {

@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import CodeMirror from "../CodeMirror";
 
 import PageViewer from "../../../Viewer/PageViewer";
 
 import {
   Box,
+  Button,
   Center,
   Flex,
   Grid,
   GridItem,
   HStack,
   Icon,
+  Tag,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -22,6 +24,9 @@ import { cidFromText } from "../../../Core/utils/cid";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
+import { CloseIcon } from "@chakra-ui/icons";
+import { pageToolViewAtom } from "../NewToolRoot";
+import { useRecoilState } from "recoil";
 
 export async function loader({ params }) {
   const doenetId = params.doenetId;
@@ -56,7 +61,23 @@ export async function loader({ params }) {
 }
 
 export function CourseLinkPageViewer() {
-  const { label, courseId, lastKnownCid, doenetML, doenetId } = useLoaderData();
+  const { label, courseId, doenetML } = useLoaderData();
+
+  let location = useLocation();
+
+  const navigate = useNavigate();
+
+  const [recoilPageToolView, setRecoilPageToolView] =
+    useRecoilState(pageToolViewAtom);
+
+  let navigateTo = useRef("");
+
+  if (navigateTo.current != "") {
+    const newHref = navigateTo.current;
+    navigateTo.current = "";
+    location.href = newHref;
+    navigate(newHref);
+  }
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [],
@@ -100,169 +121,240 @@ export function CourseLinkPageViewer() {
     <>
       <VirtualKeyboard />
       <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header"
-      "leftGutter centerContent rightGutter"
-      `}
-        templateRows="40px auto"
-        templateColumns=".06fr 1fr .06fr"
-        position="relative"
+        templateAreas={`"siteHeader" 
+        "main"`}
+        gridTemplateRows="40px auto"
+        width="100vw"
+        height="100vh"
       >
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem
-          area="header"
-          position="fixed"
+          area="siteHeader"
+          as="header"
+          width="100vw"
+          m="0"
+          backgroundColor="#fff"
+          color="#000"
           height="40px"
-          background="doenet.canvas"
-          width="100%"
-          zIndex="500"
         >
           <Grid
-            templateAreas={`"leftControls label rightControls"`}
-            templateColumns="1fr 400px 1fr"
+            height="40px"
+            position="fixed"
+            top="0"
+            zIndex="1200"
+            borderBottom="1px solid var(--mainGray)"
+            // paddingBottom="2px"
             width="100%"
+            margin="0"
+            display="flex"
+            justifyContent="space-between"
+            templateAreas={`"leftHeader menus rightHeader" 
+        "main"`}
+            gridTemplateColumns="1f auto 1f"
           >
-            <GridItem area="leftControls"></GridItem>
-            <GridItem area="label">
-              <Center mt="6px">
-                <Text>READ ONLY! Page Link: {label}</Text>
-              </Center>
+            <GridItem area="leftHeader">
+              <Text mt="10px" ml="10px">
+                READ ONLY Link Page Viewer
+              </Text>
             </GridItem>
-            <GridItem
-              area="rightControls"
-              display="flex"
-              justifyContent="flex-end"
-            >
-              <HStack mr="10px"></HStack>
+            <GridItem area="menus"> </GridItem>
+            <GridItem area="rightHeader">
+              <Button
+                mt="4px"
+                mr="10px"
+                size="sm"
+                onClick={() => {
+                  navigateTo.current = `/course?tool=navigation&courseId=${courseId}`;
+                  setRecoilPageToolView({
+                    page: "course",
+                    tool: "navigation",
+                    view: "",
+                    params: { courseId },
+                  });
+                }}
+                data-test="Close"
+                rightIcon={<CloseIcon />}
+              >
+                Close
+              </Button>
             </GridItem>
           </Grid>
         </GridItem>
+        <GridItem area="main" as="main" margin="0" overflowY="scroll">
+          <Grid
+            background="doenet.lightBlue"
+            minHeight="calc(100vh - 40px)" //40px header height
+            templateAreas={`"header header header"
+      "leftGutter centerContent rightGutter"
+      `}
+            templateRows="40px auto"
+            templateColumns=".06fr 1fr .06fr"
+            position="relative"
+          >
+            <GridItem
+              area="leftGutter"
+              background="doenet.lightBlue"
+            ></GridItem>
+            <GridItem
+              area="rightGutter"
+              background="doenet.lightBlue"
+            ></GridItem>
+            <GridItem
+              area="header"
+              position="fixed"
+              height="40px"
+              background="doenet.canvas"
+              width="100%"
+              zIndex="500"
+            >
+              <Grid
+                templateAreas={`"leftControls label rightControls"`}
+                templateColumns="1fr 400px 1fr"
+                width="100%"
+              >
+                <GridItem area="leftControls"></GridItem>
+                <GridItem area="label">
+                  <Center mt="6px">
+                    <Flex>
+                      <Tag mr="4px">Page Link Label</Tag>
+                      <Text>{label}</Text>
+                    </Flex>
+                  </Center>
+                </GridItem>
+                <GridItem
+                  area="rightControls"
+                  display="flex"
+                  justifyContent="flex-end"
+                >
+                  <HStack mr="10px"></HStack>
+                </GridItem>
+              </Grid>
+            </GridItem>
 
-        <GridItem area="centerContent">
-          <ResizeableSideBySide
-            left={
-              <>
-                <VStack spacing={0}>
-                  <HStack
-                    w="100%"
-                    h="32px"
-                    bg="doenet.lightBlue"
-                    margin="10px 0px 0px 0px" //Only need when there is an outline
-                  >
-                    {variants.allPossibleVariants.length > 1 && (
-                      <Box bg="doenet.lightBlue" h="32px" width="100%">
-                        <VariantSelect
-                          size="sm"
-                          menuWidth="140px"
-                          array={variants.allPossibleVariants}
-                          syncIndex={variants.index}
-                          onChange={(index) =>
-                            setVariants((prev) => {
-                              let next = { ...prev };
-                              next.index = index + 1;
-                              return next;
-                            })
-                          }
+            <GridItem area="centerContent">
+              <ResizeableSideBySide
+                left={
+                  <>
+                    <VStack spacing={0}>
+                      <HStack
+                        w="100%"
+                        h="32px"
+                        bg="doenet.lightBlue"
+                        margin="10px 0px 0px 0px" //Only need when there is an outline
+                      >
+                        {variants.allPossibleVariants.length > 1 && (
+                          <Box bg="doenet.lightBlue" h="32px" width="100%">
+                            <VariantSelect
+                              size="sm"
+                              menuWidth="140px"
+                              array={variants.allPossibleVariants}
+                              syncIndex={variants.index}
+                              onChange={(index) =>
+                                setVariants((prev) => {
+                                  let next = { ...prev };
+                                  next.index = index + 1;
+                                  return next;
+                                })
+                              }
+                            />
+                          </Box>
+                        )}
+                      </HStack>
+
+                      <Box
+                        height={`calc(100vh - 132px)`}
+                        background="var(--canvas)"
+                        borderWidth="1px"
+                        borderStyle="solid"
+                        borderColor="doenet.mediumGray"
+                        padding="20px 5px 20px 5px"
+                        flexGrow={1}
+                        overflow="scroll"
+                        w="100%"
+                      >
+                        <>
+                          <PageViewer
+                            doenetML={doenetML}
+                            flags={{
+                              showCorrectness: true,
+                              solutionDisplayMode: "button",
+                              showFeedback: true,
+                              showHints: true,
+                              autoSubmit: false,
+                              allowLoadState: false,
+                              allowSaveState: false,
+                              allowLocalState: false,
+                              allowSaveSubmissions: false,
+                              allowSaveEvents: false,
+                            }}
+                            attemptNumber={1}
+                            generatedVariantCallback={variantCallback} //TODO:Replace
+                            requestedVariantIndex={variants.index}
+                            // setIsInErrorState={setIsInErrorState}
+                            setErrorsAndWarningsCallback={
+                              setErrorsAndWarningsCallback
+                            }
+                            pageIsActive={true}
+                          />
+                          <Box marginBottom="50vh" />
+                        </>
+                      </Box>
+                    </VStack>
+                  </>
+                }
+                right={
+                  <VStack spacing={0}>
+                    <Box
+                      w="100%"
+                      h="32px"
+                      bg="doenet.lightBlue"
+                      margin={0} //Only need when there is an outline
+                      justifyContent="flex-end"
+                    ></Box>
+
+                    <Box
+                      top="50px"
+                      boxSizing="border-box"
+                      background="doenet.canvas"
+                      height={`calc(100vh - 132px)`}
+                      overflowY="scroll"
+                      borderRight="solid 1px"
+                      borderTop="solid 1px"
+                      borderBottom="solid 1px"
+                      borderColor="doenet.mediumGray"
+                      w="100%"
+                    >
+                      <Box
+                        height={`calc(100vh - 166px)`}
+                        w="100%"
+                        overflow="scroll"
+                      >
+                        <CodeMirror
+                          editorRef={editorRef}
+                          setInternalValueTo={doenetML}
+                          readOnly={true}
                         />
                       </Box>
-                    )}
-                  </HStack>
 
-                  <Box
-                    height={`calc(100vh - 132px)`}
-                    background="var(--canvas)"
-                    borderWidth="1px"
-                    borderStyle="solid"
-                    borderColor="doenet.mediumGray"
-                    padding="20px 5px 20px 5px"
-                    flexGrow={1}
-                    overflow="scroll"
-                    w="100%"
-                  >
-                    <>
-                      <PageViewer
-                        doenetML={doenetML}
-                        flags={{
-                          showCorrectness: true,
-                          solutionDisplayMode: "button",
-                          showFeedback: true,
-                          showHints: true,
-                          autoSubmit: false,
-                          allowLoadState: false,
-                          allowSaveState: false,
-                          allowLocalState: false,
-                          allowSaveSubmissions: false,
-                          allowSaveEvents: false,
-                        }}
-                        attemptNumber={1}
-                        generatedVariantCallback={variantCallback} //TODO:Replace
-                        requestedVariantIndex={variants.index}
-                        // setIsInErrorState={setIsInErrorState}
-                        setErrorsAndWarningsCallback={
-                          setErrorsAndWarningsCallback
-                        }
-                        pageIsActive={true}
-                      />
-                      <Box marginBottom="50vh" />
-                    </>
-                  </Box>
-                </VStack>
-              </>
-            }
-            right={
-              <VStack spacing={0}>
-                <Box
-                  w="100%"
-                  h="32px"
-                  bg="doenet.lightBlue"
-                  margin={0} //Only need when there is an outline
-                  justifyContent="flex-end"
-                ></Box>
-
-                <Box
-                  top="50px"
-                  boxSizing="border-box"
-                  background="doenet.canvas"
-                  height={`calc(100vh - 132px)`}
-                  overflowY="scroll"
-                  borderRight="solid 1px"
-                  borderTop="solid 1px"
-                  borderBottom="solid 1px"
-                  borderColor="doenet.mediumGray"
-                  w="100%"
-                >
-                  <Box
-                    height={`calc(100vh - 166px)`}
-                    w="100%"
-                    overflow="scroll"
-                  >
-                    <CodeMirror
-                      editorRef={editorRef}
-                      setInternalValueTo={doenetML}
-                      readOnly={true}
-                    />
-                  </Box>
-
-                  <Box bg="doenet.mainGray" h="32px" w="100%">
-                    <Flex
-                      ml="0px"
-                      h="32px"
-                      bg="doenet.mainGray"
-                      pl="10px"
-                      pt="1px"
-                    >
-                      <ErrorWarningPopovers
-                        warningsObjs={warningsObjs}
-                        errorsObjs={errorsObjs}
-                      />
-                    </Flex>
-                  </Box>
-                </Box>
-              </VStack>
-            }
-          />
+                      <Box bg="doenet.mainGray" h="32px" w="100%">
+                        <Flex
+                          ml="0px"
+                          h="32px"
+                          bg="doenet.mainGray"
+                          pl="10px"
+                          pt="1px"
+                        >
+                          <ErrorWarningPopovers
+                            warningsObjs={warningsObjs}
+                            errorsObjs={errorsObjs}
+                          />
+                        </Flex>
+                      </Box>
+                    </Box>
+                  </VStack>
+                }
+              />
+            </GridItem>
+          </Grid>
         </GridItem>
       </Grid>
     </>
