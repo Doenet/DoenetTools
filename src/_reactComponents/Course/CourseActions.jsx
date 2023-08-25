@@ -1139,6 +1139,8 @@ export const useCourse = (courseId) => {
               ) {
                 previousContainingDoenetId =
                   lastItemInSectionObj.containingDoenetId;
+              } else if (lastItemInSectionObj.type == "activity") {
+                previousContainingDoenetId = singleSelectedDoenetId;
               } else if (
                 lastItemInSectionObj.type == "bank" ||
                 lastItemInSectionObj.type == "section"
