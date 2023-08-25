@@ -90,11 +90,15 @@ import { cidFromText } from "../../../Core/utils/cid";
 import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
-import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import {
+  itemByDoenetId,
+  useCourse,
+} from "../../../_reactComponents/Course/CourseActions";
 import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import {
+  DateToDateString,
   DateToDateStringNoSeconds,
   DateToUTCDateString,
   UTCDateStringToLocalTimeChakraString,
@@ -886,6 +890,7 @@ function PresentationControls({
   pageId,
   activityData,
   revalidator,
+  setActivityByDoenetId,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -910,6 +915,7 @@ function PresentationControls({
         doenetId={doenetId}
         pageId={pageId}
         activityData={activityData}
+        setActivityByDoenetId={setActivityByDoenetId}
       />
     );
   }
@@ -920,6 +926,7 @@ function PresentationControlsAssigned({
   doenetId,
   pageId,
   activityData,
+  setActivityByDoenetId,
 }) {
   const fetcher = useFetcher();
 
@@ -959,10 +966,17 @@ function PresentationControlsAssigned({
           isChecked={individualize == "1"}
           onChange={(e) => {
             let individualize = "0";
+            let individualizeBool = false;
             if (e.target.checked) {
               individualize = "1";
+              individualizeBool = true;
             }
             setIndividualize(individualize);
+            setActivityByDoenetId((item) => ({
+              ...item,
+              individualize: individualizeBool,
+            }));
+
             fetcher.submit(
               {
                 _action: "update assignment via keyToUpdate",
@@ -988,10 +1002,19 @@ function PresentationControlsAssigned({
           isChecked={showSolution == "1"}
           onChange={(e) => {
             let showSolution = "0";
+            let showSolutionBool = false;
+
             if (e.target.checked) {
               showSolution = "1";
+              showSolutionBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showSolution: showSolutionBool,
+            }));
+
             setShowSolution(showSolution);
+
             fetcher.submit(
               {
                 _action: "update assignment via keyToUpdate",
@@ -1020,6 +1043,10 @@ function PresentationControlsAssigned({
             if (e.target.checked) {
               nextTimeLimit = "60";
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              timeLimit: nextTimeLimit,
+            }));
             setTimeLimit(nextTimeLimit);
             fetcher.submit(
               {
@@ -1071,9 +1098,15 @@ function PresentationControlsAssigned({
           isChecked={showFeedback == "1"}
           onChange={(e) => {
             let showFeedback = "0";
+            let showFeedbackBool = false;
             if (e.target.checked) {
               showFeedback = "1";
+              showFeedbackBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showFeedback: showFeedbackBool,
+            }));
             setShowFeedback(showFeedback);
             fetcher.submit(
               {
@@ -1100,9 +1133,15 @@ function PresentationControlsAssigned({
           isChecked={showHints == "1"}
           onChange={(e) => {
             let showHints = "0";
+            let showHintsBool = false;
             if (e.target.checked) {
               showHints = "1";
+              showHintsBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showHints: showHintsBool,
+            }));
             setShowHints(showHints);
             fetcher.submit(
               {
@@ -1129,9 +1168,15 @@ function PresentationControlsAssigned({
           isChecked={showCorrectness == "1"}
           onChange={(e) => {
             let showCorrectness = "0";
+            let showCorrectnessBool = false;
             if (e.target.checked) {
               showCorrectness = "1";
+              showCorrectnessBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showCorrectness: showCorrectnessBool,
+            }));
             setShowCorrectness(showCorrectness);
             fetcher.submit(
               {
@@ -1158,9 +1203,15 @@ function PresentationControlsAssigned({
           isChecked={showCreditAchievedMenu == "1"}
           onChange={(e) => {
             let showCreditAchievedMenu = "0";
+            let showCreditAchievedMenuBool = false;
             if (e.target.checked) {
               showCreditAchievedMenu = "1";
+              showCreditAchievedMenuBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showCreditAchievedMenu: showCreditAchievedMenuBool,
+            }));
             setShowCreditAchievedMenu(showCreditAchievedMenu);
             fetcher.submit(
               {
@@ -1187,9 +1238,15 @@ function PresentationControlsAssigned({
           isChecked={paginate == "1"}
           onChange={(e) => {
             let paginate = "0";
+            let paginateBool = false;
             if (e.target.checked) {
               paginate = "1";
+              paginateBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              paginate: paginateBool,
+            }));
             setPaginate(paginate);
             fetcher.submit(
               {
@@ -1208,7 +1265,6 @@ function PresentationControlsAssigned({
           </Tooltip> */}
         </Checkbox>
       </Box>
-
       <Box>
         <Checkbox
           size="lg"
@@ -1217,9 +1273,15 @@ function PresentationControlsAssigned({
           isChecked={showFinishButton == "1"}
           onChange={(e) => {
             let showFinishButton = "0";
+            let showFinishButtonBool = false;
             if (e.target.checked) {
               showFinishButton = "1";
+              showFinishButtonBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showFinishButton: showFinishButtonBool,
+            }));
             setShowFinishButton(showFinishButton);
             fetcher.submit(
               {
@@ -1238,7 +1300,6 @@ function PresentationControlsAssigned({
           </Tooltip> */}
         </Checkbox>
       </Box>
-
       <Box>
         <Checkbox
           size="lg"
@@ -1247,9 +1308,15 @@ function PresentationControlsAssigned({
           isChecked={autoSubmit == "1"}
           onChange={(e) => {
             let autoSubmit = "0";
+            let autoSubmitBool = false;
             if (e.target.checked) {
               autoSubmit = "1";
+              autoSubmitBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              autoSubmit: autoSubmitBool,
+            }));
             setAutoSubmit(autoSubmit);
             fetcher.submit(
               {
@@ -1268,7 +1335,6 @@ function PresentationControlsAssigned({
           </Tooltip> */}
         </Checkbox>
       </Box>
-
       <Box>
         <Checkbox
           size="lg"
@@ -1277,9 +1343,15 @@ function PresentationControlsAssigned({
           isChecked={canViewAfterCompleted == "1"}
           onChange={(e) => {
             let canViewAfterCompleted = "0";
+            let canViewAfterCompletedBool = false;
             if (e.target.checked) {
               canViewAfterCompleted = "1";
+              canViewAfterCompletedBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              canViewAfterCompleted: canViewAfterCompletedBool,
+            }));
             setCanViewAfterCompleted(canViewAfterCompleted);
             fetcher.submit(
               {
@@ -1308,6 +1380,7 @@ function AssignControls({
   activityData,
   pageId,
   revalidator,
+  setActivityByDoenetId,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -1329,12 +1402,18 @@ function AssignControls({
         courseId={courseId}
         doenetId={doenetId}
         activityData={activityData}
+        setActivityByDoenetId={setActivityByDoenetId}
       />
     );
   }
 }
 
-function AssignControlsAssigned({ courseId, doenetId, activityData }) {
+function AssignControlsAssigned({
+  courseId,
+  doenetId,
+  activityData,
+  setActivityByDoenetId,
+}) {
   const fetcher = useFetcher();
   let adAssignedDate = activityData?.assignedDate;
   if (adAssignedDate != undefined) {
@@ -1391,6 +1470,12 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
           onBlur={(e) => {
             //Only save on blur
             let dbAssignedDate = DateToUTCDateString(new Date(e.target.value));
+            let localAssignedDate = DateToDateString(new Date(e.target.value));
+
+            setActivityByDoenetId((item) => ({
+              ...item,
+              assignedDate: localAssignedDate,
+            }));
             fetcher.submit(
               {
                 _action: "update assignment via keyToUpdate",
@@ -1423,6 +1508,12 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
           onBlur={(e) => {
             //Only save on blur
             let dbdueDate = DateToUTCDateString(new Date(e.target.value));
+            let localDueDate = DateToDateString(new Date(e.target.value));
+
+            setActivityByDoenetId((item) => ({
+              ...item,
+              dueDate: localDueDate,
+            }));
             fetcher.submit(
               {
                 _action: "update assignment via keyToUpdate",
@@ -1461,6 +1552,15 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
               }
               setPinnedAfterDate(nextpinnedAfterDate);
               setPinnedUntilDate(nextpinnedUntilDate);
+
+              let localPinnedAfterDate = DateToDateString(nextpinnedAfterDate);
+              let localPinnedUntilDate = DateToDateString(nextpinnedUntilDate);
+
+              setActivityByDoenetId((item) => ({
+                ...item,
+                pinnedAfterDate: localPinnedAfterDate,
+                pinnedUntilDate: localPinnedUntilDate,
+              }));
 
               fetcher.submit(
                 {
@@ -1506,6 +1606,14 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
                 let dbPinnedAfterDate = DateToUTCDateString(
                   new Date(e.target.value),
                 );
+                let localPinnedAfterDate = DateToDateString(
+                  new Date(e.target.value),
+                );
+
+                setActivityByDoenetId((item) => ({
+                  ...item,
+                  pinnedAfterDate: localPinnedAfterDate,
+                }));
                 fetcher.submit(
                   {
                     _action: "update assignment via keyToUpdate",
@@ -1535,6 +1643,14 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
                 let dbPinnedUntilDate = DateToUTCDateString(
                   new Date(e.target.value),
                 );
+                let localPinnedUntilDate = DateToDateString(
+                  new Date(e.target.value),
+                );
+
+                setActivityByDoenetId((item) => ({
+                  ...item,
+                  pinnedUntilDate: localPinnedUntilDate,
+                }));
                 fetcher.submit(
                   {
                     _action: "update assignment via keyToUpdate",
@@ -1557,9 +1673,15 @@ function AssignControlsAssigned({ courseId, doenetId, activityData }) {
           isChecked={proctorMakesAvailable == "1"}
           onChange={(e) => {
             let proctorMakesAvailable = "0";
+            let proctorMakesAvailableBool = false;
             if (e.target.checked) {
               proctorMakesAvailable = "1";
+              proctorMakesAvailableBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              proctorMakesAvailable: proctorMakesAvailableBool,
+            }));
             setProctorMakesAvailable(proctorMakesAvailable);
             fetcher.submit(
               {
@@ -1588,6 +1710,7 @@ function GradeControls({
   activityData,
   pageId,
   revalidator,
+  setActivityByDoenetId,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -1609,12 +1732,18 @@ function GradeControls({
         courseId={courseId}
         doenetId={doenetId}
         activityData={activityData}
+        setActivityByDoenetId={setActivityByDoenetId}
       />
     );
   }
 }
 
-function GradeControlsAssigned({ courseId, doenetId, activityData }) {
+function GradeControlsAssigned({
+  courseId,
+  doenetId,
+  activityData,
+  setActivityByDoenetId,
+}) {
   const fetcher = useFetcher();
 
   const [totalPointsOrPercent, setTotalPointsOrPercent] = useState(
@@ -1660,6 +1789,10 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           value={totalPointsOrPercent}
           width="100px"
           onChange={(value) => {
+            setActivityByDoenetId((item) => ({
+              ...item,
+              totalPointsOrPercent: value,
+            }));
             setTotalPointsOrPercent(value);
             fetcher.submit(
               {
@@ -1692,6 +1825,10 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           data-test="Grade Category"
           onChange={(e) => {
             let nextGradeCategory = e.target.value;
+            setActivityByDoenetId((item) => ({
+              ...item,
+              gradeCategory: nextGradeCategory,
+            }));
             setGradeCategory(nextGradeCategory);
             fetcher.submit(
               {
@@ -1722,9 +1859,15 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           isChecked={numberOfAttemptsAllowed > 0}
           onChange={(e) => {
             let nextNumberOfAttemptsAllowed = "";
+            let recoilNumberOfAttemptsAllowed = null;
             if (e.target.checked) {
               nextNumberOfAttemptsAllowed = "1";
+              recoilNumberOfAttemptsAllowed = "1";
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              numberOfAttemptsAllowed: recoilNumberOfAttemptsAllowed,
+            }));
             setNumberOfAttemptsAllowed(nextNumberOfAttemptsAllowed);
             fetcher.submit(
               {
@@ -1749,6 +1892,10 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           width="100px"
           isDisabled={numberOfAttemptsAllowed == ""}
           onChange={(value) => {
+            setActivityByDoenetId((item) => ({
+              ...item,
+              numberOfAttemptsAllowed: value,
+            }));
             setNumberOfAttemptsAllowed(value);
             fetcher.submit(
               {
@@ -1769,37 +1916,6 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
         </NumberInput>
       </Flex>
 
-      {/* <Flex>
-        <Text mr="10px">Number of Attempts Allowed</Text>
-        <Tooltip label="Description here">
-          <QuestionOutlineIcon />
-        </Tooltip>
-        <NumberInput
-          ml="10px"
-          step={1}
-          value={numberOfAttemptsAllowed}
-          width="100px"
-          onChange={(value) => {
-            setNumberOfAttemptsAllowed(value);
-            fetcher.submit(
-              {
-                _action: "update assignment via keyToUpdate",
-                keyToUpdate: "numberOfAttemptsAllowed",
-                value,
-                doenetId,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-      </Flex> */}
-
       <Flex>
         <Text whiteSpace="nowrap" mr="10px">
           Attempt Aggregation
@@ -1812,6 +1928,10 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           data-test="Attempt Aggregation"
           onChange={(e) => {
             let nextAttemptAggregation = e.target.value;
+            setActivityByDoenetId((item) => ({
+              ...item,
+              attemptAggregation: nextAttemptAggregation,
+            }));
             setAttemptAggregation(nextAttemptAggregation);
             fetcher.submit(
               {
@@ -1838,9 +1958,15 @@ function GradeControlsAssigned({ courseId, doenetId, activityData }) {
           isChecked={showSolutionInGradebook == "1"}
           onChange={(e) => {
             let showSolutionInGradebook = "0";
+            let showSolutionInGradebookBool = false;
             if (e.target.checked) {
               showSolutionInGradebook = "1";
+              showSolutionInGradebookBool = true;
             }
+            setActivityByDoenetId((item) => ({
+              ...item,
+              showSolutionInGradebook: showSolutionInGradebookBool,
+            }));
             setShowSolutionInGradebook(showSolutionInGradebook);
             fetcher.submit(
               {
@@ -1868,6 +1994,8 @@ export function GeneralActivityControls({
   courseId,
   doenetId,
   activityData,
+  setActivityByDoenetId,
+  setPageByDoenetId,
 }) {
   let {
     isPublic,
@@ -2008,6 +2136,7 @@ export function GeneralActivityControls({
       if (labelIsInvalid) {
         setLabelIsInvalid(false);
       }
+      setActivityByDoenetId((item) => ({ ...item, label: labelState }));
       fetcher.submit(
         { _action: "update label", label: labelState },
         { method: "post" },
@@ -2024,6 +2153,7 @@ export function GeneralActivityControls({
       if (pageLabelIsInvalid) {
         setPageLabelIsInvalid(false);
       }
+      setPageByDoenetId((item) => ({ ...item, label: pageLabelState }));
       fetcher.submit(
         { _action: "update page label", label: pageLabelState },
         { method: "post" },
@@ -2285,6 +2415,12 @@ export function GeneralActivityControls({
                     },
                   });
                 }
+                let isPublic = true;
+                if (nextIsPublic == "0") {
+                  isPublic = false;
+                }
+                setActivityByDoenetId((item) => ({ ...item, isPublic }));
+
                 setCheckboxIsPublic(nextIsPublic);
                 saveDataToServer({ nextIsPublic });
               }}
@@ -2303,10 +2439,17 @@ export function GeneralActivityControls({
               isChecked={checkboxShowDoenetMLSource == "1"}
               onChange={(e) => {
                 let showDoenetMLSource = "0";
+                let userCanViewSource = false;
                 if (e.target.checked) {
                   showDoenetMLSource = "1";
+                  userCanViewSource = true;
                 }
                 setCheckboxShowDoenetMLSource(showDoenetMLSource);
+                setActivityByDoenetId((item) => ({
+                  ...item,
+                  userCanViewSource,
+                }));
+
                 fetcher.submit(
                   {
                     _action: "update content via keyToUpdate",
@@ -2598,6 +2741,8 @@ function CollectionPageSettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
   fetcher,
+  setActivityByDoenetId,
+  setPageByDoenetId,
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
   // console.log("activityData", activityData);
@@ -2646,6 +2791,8 @@ function CollectionPageSettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    setActivityByDoenetId={setActivityByDoenetId}
+                    setPageByDoenetId={setPageByDoenetId}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2666,6 +2813,8 @@ function CourseActivitySettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
   fetcher,
+  setActivityByDoenetId,
+  setPageByDoenetId,
 }) {
   const { courseId, doenetId, pageId, activityData } = useLoaderData();
 
@@ -2727,6 +2876,8 @@ function CourseActivitySettingsDrawer({
                     activityData={activityData}
                     courseId={courseId}
                     pageId={pageId}
+                    setActivityByDoenetId={setActivityByDoenetId}
+                    setPageByDoenetId={setPageByDoenetId}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2739,6 +2890,7 @@ function CourseActivitySettingsDrawer({
                     courseId={courseId}
                     pageId={pageId}
                     revalidator={revalidator}
+                    setActivityByDoenetId={setActivityByDoenetId}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2748,6 +2900,7 @@ function CourseActivitySettingsDrawer({
                     courseId={courseId}
                     pageId={pageId}
                     revalidator={revalidator}
+                    setActivityByDoenetId={setActivityByDoenetId}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2757,6 +2910,7 @@ function CourseActivitySettingsDrawer({
                     courseId={courseId}
                     pageId={pageId}
                     revalidator={revalidator}
+                    setActivityByDoenetId={setActivityByDoenetId}
                   />
                 </TabPanel>
               </TabPanels>
@@ -2789,7 +2943,7 @@ function LabelWhenNotEditting({ label, dataTest }) {
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableLabel({ fetcher, dataTest }) {
+function EditableLabel({ fetcher, dataTest, setActivityByDoenetId }) {
   const { activityData } = useLoaderData();
   const [label, setLabel] = useState(activityData.label);
 
@@ -2814,6 +2968,7 @@ function EditableLabel({ fetcher, dataTest }) {
       }}
       onSubmit={(value) => {
         let submitValue = value;
+        setActivityByDoenetId((item) => ({ ...item, label: submitValue }));
 
         fetcher.submit(
           { _action: "update label", label: submitValue },
@@ -2841,7 +2996,7 @@ function EditableLabel({ fetcher, dataTest }) {
   );
 }
 
-function EditablePageLabel({ fetcher, dataTest }) {
+function EditablePageLabel({ fetcher, dataTest, setPageByDoenetId }) {
   const { activityData } = useLoaderData();
   const [pageLabel, setPageLabel] = useState(activityData.pageLabel);
 
@@ -2866,6 +3021,7 @@ function EditablePageLabel({ fetcher, dataTest }) {
       }}
       onSubmit={(value) => {
         let submitValue = value;
+        setPageByDoenetId((item) => ({ ...item, label: submitValue }));
 
         fetcher.submit(
           { _action: "update page label", label: submitValue },
@@ -2904,6 +3060,8 @@ export function CourseActivityEditor() {
     from,
   } = useLoaderData();
   const fetcher = useFetcher();
+  const setActivityByDoenetId = useSetRecoilState(itemByDoenetId(doenetId)); //TODO: remove after recoil is gone
+  const setPageByDoenetId = useSetRecoilState(itemByDoenetId(pageId)); //TODO: remove after recoil is gone
 
   let location = useLocation();
 
@@ -3084,7 +3242,11 @@ export function CourseActivityEditor() {
   } else if (!activityData.isSinglePage) {
     editorType = "Course Activity Page Editor";
     middleHeading = (
-      <EditableLabel dataTest="Activity Label Editable" fetcher={fetcher} />
+      <EditableLabel
+        dataTest="Activity Label Editable"
+        fetcher={fetcher}
+        setActivityByDoenetId={setActivityByDoenetId}
+      />
     );
   }
 
@@ -3168,6 +3330,8 @@ export function CourseActivityEditor() {
               activityData={activityData}
               controlsTabsLastIndex={controlsTabsLastIndex}
               fetcher={fetcher}
+              setActivityByDoenetId={setActivityByDoenetId}
+              setPageByDoenetId={setPageByDoenetId}
             />
           ) : (
             <CourseActivitySettingsDrawer
@@ -3177,6 +3341,8 @@ export function CourseActivityEditor() {
               activityData={activityData}
               controlsTabsLastIndex={controlsTabsLastIndex}
               fetcher={fetcher}
+              setActivityByDoenetId={setActivityByDoenetId}
+              setPageByDoenetId={setPageByDoenetId}
             />
           )}
 
@@ -3251,11 +3417,13 @@ export function CourseActivityEditor() {
                     <EditableLabel
                       dataTest="Activity Label Editable"
                       fetcher={fetcher}
+                      setActivityByDoenetId={setActivityByDoenetId}
                     />
                   ) : (
                     <EditablePageLabel
                       dataTest="Page Label Editable"
                       fetcher={fetcher}
+                      setPageByDoenetId={setPageByDoenetId}
                     />
                   )}
                 </GridItem>
@@ -3269,6 +3437,7 @@ export function CourseActivityEditor() {
                       <Button
                         data-test="Update Public Activity Button"
                         size="sm"
+                        colorScheme="orange"
                         onClick={() => {
                           //Process making activity public here
                           compileActivity({
