@@ -1958,6 +1958,7 @@ function AssignControlsAssigned({
                 title,
               },
             ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               proctorMakesAvailable: proctorMakesAvailableBool,
@@ -1991,6 +1992,10 @@ function GradeControls({
   pageId,
   revalidator,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -2013,6 +2018,10 @@ function GradeControls({
         doenetId={doenetId}
         activityData={activityData}
         setActivityByDoenetId={setActivityByDoenetId}
+        setAlerts={setAlerts}
+        setSuccessMessage={setSuccessMessage}
+        setKeyToUpdateState={setKeyToUpdateState}
+        fetcher={fetcher}
       />
     );
   }
@@ -2023,9 +2032,11 @@ function GradeControlsAssigned({
   doenetId,
   activityData,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
-  const fetcher = useFetcher();
-
   const [totalPointsOrPercent, setTotalPointsOrPercent] = useState(
     activityData.totalPointsOrPercent,
   );
@@ -2060,15 +2071,29 @@ function GradeControlsAssigned({
     <VStack alignItems="flex-start" spacing={5}>
       <Flex>
         <Text mr="10px">Total Points or Percent</Text>
-        <Tooltip label="Description here">
+        {/* <Tooltip label="Description here">
           <QuestionOutlineIcon />
-        </Tooltip>
+        </Tooltip> */}
         <NumberInput
           ml="10px"
           step={5}
           value={totalPointsOrPercent}
           width="100px"
           onChange={(value) => {
+            let title = `Attempting to set total points or percent to ${value}.`;
+            let nextSuccessMessage = `Total points or percent set to ${value}.`;
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("totalPointsOrPercent");
+            setAlerts([
+              {
+                type: "info",
+                id: "totalPointsOrPercent",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               totalPointsOrPercent: value,
@@ -2097,14 +2122,29 @@ function GradeControlsAssigned({
         <Text whiteSpace="nowrap" mr="10px">
           Grade Category
         </Text>
-        <Tooltip label="Description here">
+        {/* <Tooltip label="Description here">
           <QuestionOutlineIcon />
-        </Tooltip>
+        </Tooltip> */}
         <Select
           ml="10px"
           data-test="Grade Category"
           onChange={(e) => {
             let nextGradeCategory = e.target.value;
+
+            let title = `Attempting to set grade category to ${nextGradeCategory}.`;
+            let nextSuccessMessage = `Grade category set to ${nextGradeCategory}.`;
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("gradeCategory");
+            setAlerts([
+              {
+                type: "info",
+                id: "gradeCategory",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               gradeCategory: nextGradeCategory,
@@ -2140,10 +2180,30 @@ function GradeControlsAssigned({
           onChange={(e) => {
             let nextNumberOfAttemptsAllowed = "";
             let recoilNumberOfAttemptsAllowed = null;
+            let title = "Attempting to set to unlimited attempts.";
+            let nextSuccessMessage = "Set to unlimited attempts";
             if (e.target.checked) {
               nextNumberOfAttemptsAllowed = "1";
               recoilNumberOfAttemptsAllowed = "1";
+              title = `Attempting to set to ${nextNumberOfAttemptsAllowed} attempts allowed.`;
+              nextSuccessMessage = `${nextNumberOfAttemptsAllowed} attempts allowed.`;
+              if (nextNumberOfAttemptsAllowed == 1) {
+                title = `Attempting to set to 1 attempt allowed.`;
+                nextSuccessMessage = `1 attempt allowed.`;
+              }
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("numberOfAttemptsAllowed");
+            setAlerts([
+              {
+                type: "info",
+                id: "numberOfAttemptsAllowed",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               numberOfAttemptsAllowed: recoilNumberOfAttemptsAllowed,
@@ -2172,6 +2232,23 @@ function GradeControlsAssigned({
           width="100px"
           isDisabled={numberOfAttemptsAllowed == ""}
           onChange={(value) => {
+            let title = `Attempting to set to ${value} attempts allowed.`;
+            let nextSuccessMessage = `${value} attempts allowed.`;
+            if (value == 1) {
+              title = `Attempting to set to 1 attempt allowed.`;
+              nextSuccessMessage = `1 attempt allowed.`;
+            }
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("numberOfAttemptsAllowed");
+            setAlerts([
+              {
+                type: "info",
+                id: "numberOfAttemptsAllowed",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               numberOfAttemptsAllowed: value,
@@ -2200,9 +2277,9 @@ function GradeControlsAssigned({
         <Text whiteSpace="nowrap" mr="10px">
           Attempt Aggregation
         </Text>
-        <Tooltip label="Description here">
+        {/* <Tooltip label="Description here">
           <QuestionOutlineIcon />
-        </Tooltip>
+        </Tooltip> */}
         <Select
           ml="10px"
           data-test="Attempt Aggregation"
@@ -2212,6 +2289,29 @@ function GradeControlsAssigned({
               ...item,
               attemptAggregation: nextAttemptAggregation,
             }));
+
+            let title =
+              "Attempting to aggregate attempts based on maximum score.";
+            let nextSuccessMessage =
+              "Aggregate attempts is based on maximum score.";
+            if (nextAttemptAggregation == "l") {
+              title =
+                "Attempting to aggregate attempts based on score of last attempt.";
+              nextSuccessMessage =
+                "Aggregate attempts is based on score of last attempt.";
+            }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("attemptAggregation");
+            setAlerts([
+              {
+                type: "info",
+                id: "attemptAggregation",
+                title,
+              },
+            ]);
+
             setAttemptAggregation(nextAttemptAggregation);
             fetcher.submit(
               {
@@ -2239,10 +2339,27 @@ function GradeControlsAssigned({
           onChange={(e) => {
             let showSolutionInGradebook = "0";
             let showSolutionInGradebookBool = false;
+            let title = "Attempting to not show solution in gradebook.";
+            let nextSuccessMessage =
+              "User will not be shown solution in gradebook.";
             if (e.target.checked) {
               showSolutionInGradebook = "1";
               showSolutionInGradebookBool = true;
+              title = "Attempting to show solution in gradebook.";
+              nextSuccessMessage = "User will be shown solution in gradebook.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showSolutionInGradebook");
+            setAlerts([
+              {
+                type: "info",
+                id: "showSolutionInGradebook",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showSolutionInGradebook: showSolutionInGradebookBool,
