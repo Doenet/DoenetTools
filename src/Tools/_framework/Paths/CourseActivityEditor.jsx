@@ -1966,6 +1966,7 @@ export function GeneralActivityControls({
   activityData,
   setActivityByDoenetId,
   setPageByDoenetId,
+  setAlerts = () => {},
 }) {
   let {
     isPublic,
@@ -1980,12 +1981,10 @@ export function GeneralActivityControls({
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
-  let [alerts, setAlerts] = useState([]);
 
   let [labelState, setLabel] = useState(label);
   let [pageLabelState, setPageLabel] = useState(pageLabel);
 
-  let lastAcceptedLabelValue = useRef(label);
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
   let [pageLabelIsInvalid, setPageLabelIsInvalid] = useState(false);
 
@@ -2169,7 +2168,6 @@ export function GeneralActivityControls({
 
   return (
     <>
-      <AlertQueue alerts={alerts} setAlerts={setAlerts} />
       <Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
@@ -2881,6 +2879,8 @@ function CourseActivitySettingsDrawer({
 }) {
   const { courseId, doenetId, pageId, activityData } = useLoaderData();
 
+  let [alerts, setAlerts] = useState([]);
+
   let revalidator = useRevalidator();
 
   // console.log("activityData", activityData);
@@ -2903,6 +2903,7 @@ function CourseActivitySettingsDrawer({
             {/* <Icon as={FaCog} mr="14px" /> */}
             <Text>Activity Controls</Text>
           </Center>
+          <AlertQueue alerts={alerts} setAlerts={setAlerts} />
         </DrawerHeader>
 
         <DrawerBody>
@@ -2941,6 +2942,7 @@ function CourseActivitySettingsDrawer({
                     pageId={pageId}
                     setActivityByDoenetId={setActivityByDoenetId}
                     setPageByDoenetId={setPageByDoenetId}
+                    setAlerts={setAlerts}
                   />
                 </TabPanel>
                 <TabPanel>
