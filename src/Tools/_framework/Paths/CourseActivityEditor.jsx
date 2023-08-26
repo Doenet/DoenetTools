@@ -349,14 +349,12 @@ function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
   );
 }
 
-function SupportFilesControls() {
+function SupportFilesControls({ setAlerts }) {
   const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
 
   const fetcher = useFetcher();
-
-  let [alerts, setAlerts] = useState([]);
 
   //Update messages after action completes
   if (fetcher.data) {
@@ -475,7 +473,6 @@ function SupportFilesControls() {
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
       <Tooltip
         hasArrow
         label={`${formatBytes(userQuotaBytesAvailable)}/${formatBytes(
@@ -861,6 +858,10 @@ function PresentationControls({
   activityData,
   revalidator,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -886,6 +887,10 @@ function PresentationControls({
         pageId={pageId}
         activityData={activityData}
         setActivityByDoenetId={setActivityByDoenetId}
+        setAlerts={setAlerts}
+        setSuccessMessage={setSuccessMessage}
+        setKeyToUpdateState={setKeyToUpdateState}
+        fetcher={fetcher}
       />
     );
   }
@@ -897,9 +902,11 @@ function PresentationControlsAssigned({
   pageId,
   activityData,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
-  const fetcher = useFetcher();
-
   const [individualize, setIndividualize] = useState(
     activityData.individualize,
   );
@@ -937,10 +944,27 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let individualize = "0";
             let individualizeBool = false;
+            let title = "Attempting to stop individualizing activity.";
+            let nextSuccessMessage = "Activity Not individualized.";
             if (e.target.checked) {
               individualize = "1";
               individualizeBool = true;
+              title = "Attempting to individualize activity.";
+              nextSuccessMessage = "Activity individualized.";
             }
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("individualize");
+            console.log("setSuccessMessage", nextSuccessMessage);
+            console.log("setKeyToUpdateState", "individualize");
+            setAlerts([
+              {
+                type: "info",
+                id: "individualize",
+                title,
+              },
+            ]);
+
             setIndividualize(individualize);
             setActivityByDoenetId((item) => ({
               ...item,
@@ -1967,6 +1991,8 @@ export function GeneralActivityControls({
   setActivityByDoenetId,
   setPageByDoenetId,
   setAlerts = () => {},
+  setSuccessMessage,
+  setKeyToUpdateState,
 }) {
   let {
     isPublic,
@@ -1998,29 +2024,11 @@ export function GeneralActivityControls({
   let [checkboxShowDoenetMLSource, setCheckboxShowDoenetMLSource] =
     useState(userCanViewSource);
 
-  let [successMessage, setSuccessMessage] = useState("");
-  let [keyToUpdateState, setKeyToUpdateState] = useState("");
-
   useEffect(() => {
     if (fetcher.data?.label) {
       setLabel(fetcher.data?.label);
     }
   }, []); //Only on opening the drawer
-
-  useEffect(() => {
-    if (fetcher.state == "loading") {
-      const { success, keyToUpdate } = fetcher.data;
-      if (success && keyToUpdate == keyToUpdateState) {
-        setAlerts([
-          {
-            type: "success",
-            id: keyToUpdateState,
-            title: successMessage,
-          },
-        ]);
-      }
-    }
-  }, [fetcher.state, fetcher.data, keyToUpdateState, successMessage]);
 
   const onDrop = useCallback(
     async (files) => {
@@ -2887,6 +2895,32 @@ function CourseActivitySettingsDrawer({
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
 
+  let [successMessage, setSuccessMessage] = useState("");
+  let [keyToUpdateState, setKeyToUpdateState] = useState("");
+
+  console.log("CourseActivitySettingsDrawer fetcher", fetcher);
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, keyToUpdate } = fetcher.data;
+      console.log({ success, keyToUpdate });
+      if (success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "success",
+            id: keyToUpdateState,
+            title: successMessage,
+          },
+        ]);
+      }
+    }
+  }, [
+    fetcher.state,
+    fetcher.data,
+    keyToUpdateState,
+    successMessage,
+    setAlerts,
+  ]);
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -2943,10 +2977,17 @@ function CourseActivitySettingsDrawer({
                     setActivityByDoenetId={setActivityByDoenetId}
                     setPageByDoenetId={setPageByDoenetId}
                     setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
                   />
                 </TabPanel>
                 <TabPanel>
-                  <SupportFilesControls onClose={onClose} />
+                  <SupportFilesControls
+                    onClose={onClose}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
+                  />
                 </TabPanel>
                 <TabPanel>
                   <PresentationControls
@@ -2956,6 +2997,10 @@ function CourseActivitySettingsDrawer({
                     pageId={pageId}
                     revalidator={revalidator}
                     setActivityByDoenetId={setActivityByDoenetId}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2966,6 +3011,9 @@ function CourseActivitySettingsDrawer({
                     pageId={pageId}
                     revalidator={revalidator}
                     setActivityByDoenetId={setActivityByDoenetId}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -2976,6 +3024,9 @@ function CourseActivitySettingsDrawer({
                     pageId={pageId}
                     revalidator={revalidator}
                     setActivityByDoenetId={setActivityByDoenetId}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
                   />
                 </TabPanel>
               </TabPanels>

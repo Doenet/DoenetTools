@@ -17,7 +17,7 @@ export function AlertQueue({ alerts = [], setAlerts = () => {} }) {
             <Alert key={`alert${id}`} status={type}>
               <AlertIcon />
               <AlertTitle fontSize="md">{title}</AlertTitle>
-              <AlertDescription>{description}</AlertDescription>
+              <AlertDescription fontSize="md">{description}</AlertDescription>
               <CloseButton
                 position="absolute"
                 right="8px"
