@@ -955,8 +955,6 @@ function PresentationControlsAssigned({
             //Alert Messages
             setSuccessMessage(nextSuccessMessage);
             setKeyToUpdateState("individualize");
-            console.log("setSuccessMessage", nextSuccessMessage);
-            console.log("setKeyToUpdateState", "individualize");
             setAlerts([
               {
                 type: "info",
@@ -997,11 +995,28 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showSolution = "0";
             let showSolutionBool = false;
-
+            let title =
+              "Attempting to hide solution for users taking activity.";
+            let nextSuccessMessage =
+              "Solution will be hidden for users taking activity.";
             if (e.target.checked) {
               showSolution = "1";
               showSolutionBool = true;
+              nextSuccessMessage =
+                "Solution will show for users taking activity.";
+              title = "Attempting to show solution for users taking activity.";
             }
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showSolution");
+            setAlerts([
+              {
+                type: "info",
+                id: "showSolution",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showSolution: showSolutionBool,
@@ -1034,9 +1049,24 @@ function PresentationControlsAssigned({
           isChecked={timeLimit > 0}
           onChange={(e) => {
             let nextTimeLimit = "";
+            let title = "Attempting to not limit time for activity.";
+            let nextSuccessMessage = "No time limit for activity.";
             if (e.target.checked) {
               nextTimeLimit = "60";
+              title = `Attempting to limit time to ${nextTimeLimit} minutes for activity.`;
+              nextSuccessMessage = `Time limit of ${nextTimeLimit} minutes for activity.`;
             }
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("timeLimit");
+            setAlerts([
+              {
+                type: "info",
+                id: "timeLimit",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               timeLimit: nextTimeLimit,
@@ -1065,7 +1095,22 @@ function PresentationControlsAssigned({
           width="100px"
           isDisabled={timeLimit == ""}
           onChange={(value) => {
+            value = Math.floor(value); //Limit to integers
             setTimeLimit(value);
+            let title = `Attempting to set limit time to ${value} minutes for activity.`;
+            let nextSuccessMessage = `Time limited to ${value} minutes for activity.`;
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("timeLimit");
+            setAlerts([
+              {
+                type: "info",
+                id: "timeLimit",
+                title,
+              },
+            ]);
+
             fetcher.submit(
               {
                 _action: "update assignment via keyToUpdate",
@@ -1093,10 +1138,27 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showFeedback = "0";
             let showFeedbackBool = false;
+            let title = "Attempting to not show feedback for activity.";
+            let nextSuccessMessage =
+              "User will not be shown feedback for activity.";
             if (e.target.checked) {
               showFeedback = "1";
               showFeedbackBool = true;
+              title = "Attempting to show feedback for activity.";
+              nextSuccessMessage = "User will be shown feedback for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showFeedback");
+            setAlerts([
+              {
+                type: "info",
+                id: "showFeedback",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showFeedback: showFeedbackBool,
@@ -1128,10 +1190,27 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showHints = "0";
             let showHintsBool = false;
+            let title = "Attempting to not show hints for activity.";
+            let nextSuccessMessage =
+              "User will not be shown hints for activity.";
             if (e.target.checked) {
               showHints = "1";
               showHintsBool = true;
+              title = "Attempting to show hints for activity.";
+              nextSuccessMessage = "User will be shown hints for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showHints");
+            setAlerts([
+              {
+                type: "info",
+                id: "showHints",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showHints: showHintsBool,
@@ -1163,10 +1242,28 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showCorrectness = "0";
             let showCorrectnessBool = false;
+            let title = "Attempting to not show correctness for activity.";
+            let nextSuccessMessage =
+              "User will not be shown correctness for activity.";
             if (e.target.checked) {
               showCorrectness = "1";
               showCorrectnessBool = true;
+              title = "Attempting to show correctness for activity.";
+              nextSuccessMessage =
+                "User will be shown correctness for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showCorrectness");
+            setAlerts([
+              {
+                type: "info",
+                id: "showCorrectness",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showCorrectness: showCorrectnessBool,
@@ -1198,10 +1295,28 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showCreditAchievedMenu = "0";
             let showCreditAchievedMenuBool = false;
+            let title = "Attempting to not show credit achieved for activity.";
+            let nextSuccessMessage =
+              "User will not be shown credit achieved for activity.";
             if (e.target.checked) {
               showCreditAchievedMenu = "1";
               showCreditAchievedMenuBool = true;
+              title = "Attempting to show credit achieved for activity.";
+              nextSuccessMessage =
+                "User will be shown credit achieved for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showCreditAchievedMenu");
+            setAlerts([
+              {
+                type: "info",
+                id: "showCreditAchievedMenu",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showCreditAchievedMenu: showCreditAchievedMenuBool,
@@ -1233,10 +1348,28 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let paginate = "0";
             let paginateBool = false;
+            let title = "Attempting to not show pagination for activity.";
+            let nextSuccessMessage =
+              "User will not be shown pagination for activity.";
             if (e.target.checked) {
               paginate = "1";
               paginateBool = true;
+              title = "Attempting to show pagination for activity.";
+              nextSuccessMessage =
+                "User will be shown pagination for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("paginate");
+            setAlerts([
+              {
+                type: "info",
+                id: "paginate",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               paginate: paginateBool,
@@ -1268,10 +1401,28 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let showFinishButton = "0";
             let showFinishButtonBool = false;
+            let title = "Attempting to not show finish button for activity.";
+            let nextSuccessMessage =
+              "User will not be shown finish button for activity.";
             if (e.target.checked) {
               showFinishButton = "1";
               showFinishButtonBool = true;
+              title = "Attempting to show finish button for activity.";
+              nextSuccessMessage =
+                "User will be shown finish button for activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("showFinishButton");
+            setAlerts([
+              {
+                type: "info",
+                id: "showFinishButton",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               showFinishButton: showFinishButtonBool,
@@ -1303,10 +1454,27 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let autoSubmit = "0";
             let autoSubmitBool = false;
+            let title = "Attempting to not automatically submit activity.";
+            let nextSuccessMessage =
+              "User will not automatically submit activity.";
             if (e.target.checked) {
               autoSubmit = "1";
               autoSubmitBool = true;
+              title = "Attempting to automatically submit activity.";
+              nextSuccessMessage = "User will automatically submit activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("autoSubmit");
+            setAlerts([
+              {
+                type: "info",
+                id: "autoSubmit",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               autoSubmit: autoSubmitBool,
@@ -1338,10 +1506,29 @@ function PresentationControlsAssigned({
           onChange={(e) => {
             let canViewAfterCompleted = "0";
             let canViewAfterCompletedBool = false;
+            let title =
+              "Attempting to not allow viewing after taking activity.";
+            let nextSuccessMessage =
+              "User will not be allowed viewing after taking activity.";
             if (e.target.checked) {
               canViewAfterCompleted = "1";
               canViewAfterCompletedBool = true;
+              title = "Attempting to allow viewing after taking activity.";
+              nextSuccessMessage =
+                "User will be allowed viewing after taking activity.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("canViewAfterCompleted");
+            setAlerts([
+              {
+                type: "info",
+                id: "canViewAfterCompleted",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               canViewAfterCompleted: canViewAfterCompletedBool,
@@ -1375,6 +1562,10 @@ function AssignControls({
   pageId,
   revalidator,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
   if (!activityData.has_assignment_table) {
     return (
@@ -1397,6 +1588,10 @@ function AssignControls({
         doenetId={doenetId}
         activityData={activityData}
         setActivityByDoenetId={setActivityByDoenetId}
+        setAlerts={setAlerts}
+        setSuccessMessage={setSuccessMessage}
+        setKeyToUpdateState={setKeyToUpdateState}
+        fetcher={fetcher}
       />
     );
   }
@@ -1407,8 +1602,11 @@ function AssignControlsAssigned({
   doenetId,
   activityData,
   setActivityByDoenetId,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
 }) {
-  const fetcher = useFetcher();
   let adAssignedDate = activityData?.assignedDate;
   if (adAssignedDate != undefined) {
     adAssignedDate = UTCDateStringToLocalTimeChakraString(adAssignedDate);
@@ -1466,6 +1664,19 @@ function AssignControlsAssigned({
             let dbAssignedDate = DateToUTCDateString(new Date(e.target.value));
             let localAssignedDate = DateToDateString(new Date(e.target.value));
 
+            //Alert Messages
+            let title = `Attempting to set assigned date.`;
+            let nextSuccessMessage = `Assigned date set.`;
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("assignedDate");
+            setAlerts([
+              {
+                type: "info",
+                id: "assignedDate",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               assignedDate: localAssignedDate,
@@ -1504,6 +1715,19 @@ function AssignControlsAssigned({
             let dbdueDate = DateToUTCDateString(new Date(e.target.value));
             let localDueDate = DateToDateString(new Date(e.target.value));
 
+            //Alert Messages
+            let title = `Attempting to set due date.`;
+            let nextSuccessMessage = `Due date set.`;
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("dueDate");
+            setAlerts([
+              {
+                type: "info",
+                id: "dueDate",
+                title,
+              },
+            ]);
+
             setActivityByDoenetId((item) => ({
               ...item,
               dueDate: localDueDate,
@@ -1532,7 +1756,13 @@ function AssignControlsAssigned({
               let dbPinnedAfterDate = "";
               let nextpinnedUntilDate = "";
               let dbPinnedUntilDate = "";
+              let title = `Attempting to unpin activity`;
+              let nextSuccessMessage = `Activity unpinned.`;
+              let localPinnedAfterDate = null;
+              let localPinnedUntilDate = null;
               if (e.target.checked) {
+                title = `Attempting to pin activity.`;
+                nextSuccessMessage = `Activity pinned.`;
                 nextpinnedAfterDate = DateToDateStringNoSeconds(new Date());
                 let InOneYear = new Date();
                 InOneYear.setFullYear(InOneYear.getFullYear() + 1);
@@ -1543,12 +1773,27 @@ function AssignControlsAssigned({
                 dbPinnedUntilDate = DateToUTCDateString(
                   new Date(nextpinnedUntilDate),
                 );
+                localPinnedAfterDate = DateToDateString(
+                  new Date(nextpinnedAfterDate),
+                );
+                localPinnedUntilDate = DateToDateString(
+                  new Date(nextpinnedUntilDate),
+                );
               }
+
+              //Alert Messages
+              setSuccessMessage(nextSuccessMessage);
+              setKeyToUpdateState("pinnedUntilDate");
+              setAlerts([
+                {
+                  type: "info",
+                  id: "pinnedUntilDate",
+                  title,
+                },
+              ]);
+
               setPinnedAfterDate(nextpinnedAfterDate);
               setPinnedUntilDate(nextpinnedUntilDate);
-
-              let localPinnedAfterDate = DateToDateString(nextpinnedAfterDate);
-              let localPinnedUntilDate = DateToDateString(nextpinnedUntilDate);
 
               setActivityByDoenetId((item) => ({
                 ...item,
@@ -1603,6 +1848,18 @@ function AssignControlsAssigned({
                 let localPinnedAfterDate = DateToDateString(
                   new Date(e.target.value),
                 );
+                //Alert Messages
+                let title = `Attempting to update pin after date`;
+                let nextSuccessMessage = `Pin after date updated.`;
+                setSuccessMessage(nextSuccessMessage);
+                setKeyToUpdateState("pinnedAfterDate");
+                setAlerts([
+                  {
+                    type: "info",
+                    id: "pinnedAfterDate",
+                    title,
+                  },
+                ]);
 
                 setActivityByDoenetId((item) => ({
                   ...item,
@@ -1641,6 +1898,19 @@ function AssignControlsAssigned({
                   new Date(e.target.value),
                 );
 
+                //Alert Messages
+                let title = `Attempting to update pin until date`;
+                let nextSuccessMessage = `Pin until date updated.`;
+                setSuccessMessage(nextSuccessMessage);
+                setKeyToUpdateState("pinnedUntilDate");
+                setAlerts([
+                  {
+                    type: "info",
+                    id: "pinnedUntilDate",
+                    title,
+                  },
+                ]);
+
                 setActivityByDoenetId((item) => ({
                   ...item,
                   pinnedUntilDate: localPinnedUntilDate,
@@ -1668,10 +1938,26 @@ function AssignControlsAssigned({
           onChange={(e) => {
             let proctorMakesAvailable = "0";
             let proctorMakesAvailableBool = false;
+            let title = "Attempting to allow outside of proctored exam.";
+            let nextSuccessMessage =
+              "User will be allowed to use activity outside of proctored exam.";
             if (e.target.checked) {
               proctorMakesAvailable = "1";
               proctorMakesAvailableBool = true;
+              title = "Attempting to only allow in a proctored exam.";
+              nextSuccessMessage = "Activity only allowed in a proctored exam.";
             }
+
+            //Alert Messages
+            setSuccessMessage(nextSuccessMessage);
+            setKeyToUpdateState("proctorMakesAvailable");
+            setAlerts([
+              {
+                type: "info",
+                id: "proctorMakesAvailable",
+                title,
+              },
+            ]);
             setActivityByDoenetId((item) => ({
               ...item,
               proctorMakesAvailable: proctorMakesAvailableBool,
@@ -2898,11 +3184,9 @@ function CourseActivitySettingsDrawer({
   let [successMessage, setSuccessMessage] = useState("");
   let [keyToUpdateState, setKeyToUpdateState] = useState("");
 
-  console.log("CourseActivitySettingsDrawer fetcher", fetcher);
   useEffect(() => {
     if (fetcher.state == "loading") {
       const { success, keyToUpdate } = fetcher.data;
-      console.log({ success, keyToUpdate });
       if (success && keyToUpdate == keyToUpdateState) {
         setAlerts([
           {
@@ -3014,6 +3298,7 @@ function CourseActivitySettingsDrawer({
                     setAlerts={setAlerts}
                     setSuccessMessage={setSuccessMessage}
                     setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -3027,6 +3312,7 @@ function CourseActivitySettingsDrawer({
                     setAlerts={setAlerts}
                     setSuccessMessage={setSuccessMessage}
                     setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
               </TabPanels>
