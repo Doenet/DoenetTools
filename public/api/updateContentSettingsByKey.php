@@ -44,7 +44,7 @@ if ($permissions["canModifyActivitySettings"] != '1'){
 }
 
 $settingKeys = array(
-  "userCanViewSource"
+  "userCanViewSource","isPublic"
 );
 
 $providedValues = [];
@@ -67,7 +67,7 @@ unset($key, $value);
 
 //protect against invalid boolean values
 $boolKeys = array(
-  "userCanViewSource"
+  "userCanViewSource","isPublic"
 );
 
 foreach ($boolKeys as $key) {
@@ -84,53 +84,53 @@ function array_map_assoc( $callback , $array ){
 }
 ;
 
-$updates = implode(
-  ",", 
-  array_map_assoc(
-    function($key, $value) {
-      if ($value == 'NULL') {
-        return "$key = $value";}
-      else {
-        return "$key = '$value'";
+if(array_key_exists("learningOutcomes", $_POST)) {
+ 
+  $learningOutcomes = array_map(function($item) use($conn) {
+    return mysqli_real_escape_string($conn, $item);
+  }, $_POST['learningOutcomes']);
+  $textLearningOutcomes = "[" . implode(",", array_map(function($value) { return '"' . $value . '"'; }, $learningOutcomes)) . "]";
+  $sql = "
+  UPDATE course_content
+  SET learningOutcomes=JSON_MERGE('[]','$textLearningOutcomes')
+  WHERE doenetId = '$doenetId'
+  ";
+  $conn->query($sql);
+
+}else{
+
+  $updates = implode(
+    ",", 
+    array_map_assoc(
+      function($key, $value) {
+        if ($value == 'NULL') {
+          return "$key = $value";}
+        else {
+          return "$key = '$value'";
+        }
+      },
+      $providedValues
+    )
+  );
+  
+  
+    if(count($providedValues) > 0) {
+  
+      $sql = "UPDATE course_content SET
+          $updates
+          WHERE doenetId='$doenetId'
+          AND courseId='$courseId'
+      ";
+      $result = $conn->query($sql);
+  
+  
+      if ($result == false) {
+        throw new Exception("Database error.");
       }
-    },
-    $providedValues
-  )
-);
-
-
-  if(count($providedValues) > 0) {
-
-    $sql = "UPDATE course_content SET
-        $updates
-        WHERE doenetId='$doenetId'
-        AND courseId='$courseId'
-    ";
-    $result = $conn->query($sql);
-
-
-    if ($result == false) {
-      throw new Exception("Database error.");
-    }
-  }
-
-  if(array_key_exists("itemWeights", $_POST)) {
-
-    $itemWeights = implode(",",$_POST['itemWeights']);
-
-    $sql = "
-    UPDATE course_content
-    SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.itemWeights',JSON_ARRAY($itemWeights))
-    WHERE doenetId='$doenetId'
-    AND courseId='$courseId'
-    ";
-    $result = $conn->query($sql);
-
-    if ($result == false) {
-      throw new Exception("Database error.");
     }
 
-  }
+}
+
 
     // set response code - 200 OK
     http_response_code(200);

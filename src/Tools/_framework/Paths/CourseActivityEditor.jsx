@@ -104,6 +104,7 @@ import {
   UTCDateStringToLocalTimeChakraString,
 } from "../../../_utils/dateUtilityFunction";
 import { pageToolViewAtom } from "../NewToolRoot";
+import { AlertQueue } from "../ChakraBasedComponents/AlertQueue";
 
 export async function loader({ request, params }) {
   try {
@@ -211,28 +212,6 @@ export async function action({ params, request }) {
     return { _action: formObj._action, pageLabel: label };
   }
 
-  if (formObj._action == "update general") {
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
-        _action: formObj._action,
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: params.doenetId,
-        learningOutcomes,
-      },
-    );
-    return {
-      _action: formObj._action,
-      label,
-      imagePath: formObj.imagePath,
-      public: formObj.public,
-      doenetId: params.doenetId,
-      learningOutcomes,
-    };
-  }
   if (formObj._action == "update description") {
     let { data } = await axios.get("/api/updateFileDescription.php", {
       params: {
@@ -254,13 +233,20 @@ export async function action({ params, request }) {
     };
   }
   if (formObj._action == "update content via keyToUpdate") {
+    let value = formObj.value;
+    if (formObj.keyToUpdate == "learningOutcomes") {
+      value = JSON.parse(formObj.value);
+    }
+
     let resp = await axios.post("/api/updateContentSettingsByKey.php", {
       doenetId: formObj.doenetId,
-      [formObj.keyToUpdate]: formObj.value,
+      [formObj.keyToUpdate]: value,
     });
 
     return {
       _action: formObj._action,
+      keyToUpdate: formObj.keyToUpdate,
+      value: formObj.value,
       success: resp.data.success,
     };
   }
@@ -272,6 +258,8 @@ export async function action({ params, request }) {
 
     return {
       _action: formObj._action,
+      keyToUpdate: formObj.keyToUpdate,
+      value: formObj.value,
       success: resp.data.success,
     };
   }
@@ -328,24 +316,6 @@ function formatBytes(bytes) {
   else if (bytes < teraBytes)
     return (bytes / gigaBytes).toFixed(decimal) + " GB";
   else return (bytes / teraBytes).toFixed(decimal) + " TB";
-}
-
-function AlertQueue({ alerts = [] }) {
-  return (
-    <>
-      <VStack spacing={2} width="100%">
-        {alerts.map(({ type, title, description, id }) => {
-          return (
-            <Alert key={`alert${id}`} status={type}>
-              <AlertIcon />
-              <AlertTitle>{title}</AlertTitle>
-              <AlertDescription>{description}</AlertDescription>
-            </Alert>
-          );
-        })}
-      </VStack>
-    </>
-  );
 }
 
 function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
@@ -2029,11 +1999,29 @@ export function GeneralActivityControls({
   let [checkboxShowDoenetMLSource, setCheckboxShowDoenetMLSource] =
     useState(userCanViewSource);
 
+  let [successMessage, setSuccessMessage] = useState("");
+  let [keyToUpdateState, setKeyToUpdateState] = useState("");
+
   useEffect(() => {
     if (fetcher.data?.label) {
       setLabel(fetcher.data?.label);
     }
   }, []); //Only on opening the drawer
+
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, keyToUpdate } = fetcher.data;
+      if (success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "success",
+            id: keyToUpdateState,
+            title: successMessage,
+          },
+        ]);
+      }
+    }
+  }, [fetcher.state, fetcher.data, keyToUpdateState, successMessage]);
 
   const onDrop = useCallback(
     async (files) => {
@@ -2161,37 +2149,18 @@ export function GeneralActivityControls({
     }
   }
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
+  function saveLearningOutcomes({ nextLearningOutcomes } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
     if (nextLearningOutcomes) {
       learningOutcomesToSubmit = nextLearningOutcomes;
     }
 
-    let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
-      isPublicToSubmit = nextIsPublic;
-    }
-
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelState;
-    if (labelState == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
-    } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
-      }
-    }
-    lastAcceptedLabelValue.current = labelToSubmit;
     let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
     fetcher.submit(
       {
-        _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
+        _action: "update content via keyToUpdate",
+        keyToUpdate: "learningOutcomes",
+        value: serializedLearningOutcomes,
         doenetId,
       },
       { method: "post" },
@@ -2200,7 +2169,7 @@ export function GeneralActivityControls({
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
+      <AlertQueue alerts={alerts} setAlerts={setAlerts} />
       <Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
@@ -2321,14 +2290,45 @@ export function GeneralActivityControls({
                         return next;
                       });
                     }}
-                    onBlur={() =>
-                      saveDataToServer({
-                        nextLearningOutcomes: learningOutcomes,
-                      })
-                    }
+                    onBlur={(e) => {
+                      //Only update when changed
+                      if (e.target.value != activityData.learningOutcomes[i]) {
+                        //Alert Messages
+                        setSuccessMessage(
+                          `Updated learning outcome #${i + 1}.`,
+                        );
+                        setKeyToUpdateState("learningOutcomes");
+                        setAlerts([
+                          {
+                            type: "info",
+                            id: "learningOutcomes",
+                            title: `Attempting to update learning outcome #${
+                              i + 1
+                            }.`,
+                          },
+                        ]);
+                        saveLearningOutcomes({
+                          nextLearningOutcomes: learningOutcomes,
+                        });
+                      }
+                    }}
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer({
+                        //Alert Messages
+                        setSuccessMessage(
+                          `Updated learning outcome #${i + 1}.`,
+                        );
+                        setKeyToUpdateState("learningOutcomes");
+                        setAlerts([
+                          {
+                            type: "info",
+                            id: "learningOutcomes",
+                            title: `Attempting to update learning outcome #${
+                              i + 1
+                            }.`,
+                          },
+                        ]);
+                        saveLearningOutcomes({
                           nextLearningOutcomes: learningOutcomes,
                         });
                       }
@@ -2351,9 +2351,21 @@ export function GeneralActivityControls({
                       } else {
                         nextLearningOutcomes.splice(i, 1);
                       }
+                      //Alert Messages
+                      setSuccessMessage(`Deleted learning outcome #${i + 1}.`);
+                      setKeyToUpdateState("learningOutcomes");
+                      setAlerts([
+                        {
+                          type: "info",
+                          id: "learningOutcomes",
+                          title: `Attempting to delete learning outcome #${
+                            i + 1
+                          }.`,
+                        },
+                      ]);
 
                       setLearningOutcomes(nextLearningOutcomes);
-                      saveDataToServer({ nextLearningOutcomes });
+                      saveLearningOutcomes({ nextLearningOutcomes });
                     }}
                   />
                 </Flex>
@@ -2374,8 +2386,19 @@ export function GeneralActivityControls({
                     nextLearningOutcomes.push("");
                   }
 
+                  //Alert Messages
+                  setSuccessMessage("Blank learning outcome added.");
+                  setKeyToUpdateState("learningOutcomes");
+                  setAlerts([
+                    {
+                      type: "info",
+                      id: "learningOutcomes",
+                      title: "Attempting to add a learning outcome.",
+                    },
+                  ]);
+
                   setLearningOutcomes(nextLearningOutcomes);
-                  saveDataToServer({ nextLearningOutcomes });
+                  saveLearningOutcomes({ nextLearningOutcomes });
                 }}
               />
             </Center>
@@ -2416,13 +2439,36 @@ export function GeneralActivityControls({
                   });
                 }
                 let isPublic = true;
+                let title = "Setting Activity as public.";
+                let nextSuccessMessage = "Activity is public.";
                 if (nextIsPublic == "0") {
                   isPublic = false;
+                  title = "Setting Activity as private.";
+                  nextSuccessMessage = "Activity is private.";
                 }
-                setActivityByDoenetId((item) => ({ ...item, isPublic }));
 
+                //Alert Messages
+                setSuccessMessage(nextSuccessMessage);
+                setKeyToUpdateState("isPublic");
+                setAlerts([
+                  {
+                    type: "info",
+                    id: "isPublic",
+                    title,
+                  },
+                ]);
+
+                setActivityByDoenetId((item) => ({ ...item, isPublic }));
                 setCheckboxIsPublic(nextIsPublic);
-                saveDataToServer({ nextIsPublic });
+                fetcher.submit(
+                  {
+                    _action: "update content via keyToUpdate",
+                    keyToUpdate: "isPublic",
+                    value: nextIsPublic,
+                    doenetId,
+                  },
+                  { method: "post" },
+                );
               }}
             >
               Public{" "}
@@ -2440,15 +2486,33 @@ export function GeneralActivityControls({
               onChange={(e) => {
                 let showDoenetMLSource = "0";
                 let userCanViewSource = false;
+                let title = "Setting Activity so users can't see the source.";
+                let nextSuccessMessage =
+                  "Users can't see the source of the activity.";
                 if (e.target.checked) {
                   showDoenetMLSource = "1";
                   userCanViewSource = true;
+                  title = "Setting Activity so users can see the source.";
+                  nextSuccessMessage =
+                    "Users can see the source of the activity.";
                 }
+
                 setCheckboxShowDoenetMLSource(showDoenetMLSource);
                 setActivityByDoenetId((item) => ({
                   ...item,
                   userCanViewSource,
                 }));
+
+                //Alert Messages
+                setSuccessMessage(nextSuccessMessage);
+                setKeyToUpdateState("userCanViewSource");
+                setAlerts([
+                  {
+                    type: "info",
+                    id: "userCanViewSource",
+                    title,
+                  },
+                ]);
 
                 fetcher.submit(
                   {
@@ -2469,7 +2533,6 @@ export function GeneralActivityControls({
           </Box>
         </FormControl>
         <input type="hidden" name="imagePath" value={imagePath} />
-        <input type="hidden" name="_action" value="update general" />
       </Form>
     </>
   );
