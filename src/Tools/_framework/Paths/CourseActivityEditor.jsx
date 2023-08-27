@@ -202,14 +202,28 @@ export async function action({ params, request }) {
     let { data } = axios.get("/api/updatePortfolioActivityLabel.php", {
       params: { doenetId: params.doenetId, label },
     });
-    return { _action: formObj._action, label };
+    return {
+      _action: formObj._action,
+      label,
+      keyToUpdate: "activityLabel",
+      success: true,
+    };
   }
 
   if (formObj._action == "update page label") {
     let { data } = axios.get("/api/updatePageLabel.php", {
-      params: { doenetId: params.doenetId, pageId: params.pageId, label },
+      params: {
+        doenetId: params.doenetId,
+        pageId: params.pageId,
+        label,
+      },
     });
-    return { _action: formObj._action, pageLabel: label };
+    return {
+      _action: formObj._action,
+      pageLabel: label,
+      keyToUpdate: "pageLabel",
+      success: true,
+    };
   }
 
   if (formObj._action == "update description") {
@@ -349,32 +363,42 @@ function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
   );
 }
 
-function SupportFilesControls({ setAlerts }) {
+function SupportFilesControls({
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
+  fetcher,
+}) {
   const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
 
-  const fetcher = useFetcher();
-
   //Update messages after action completes
-  if (fetcher.data) {
-    if (fetcher.data._action == "remove file") {
-      let newAlerts = [...alerts];
-      const index = newAlerts.findIndex(
-        (obj) => obj.id == fetcher.data.fileRemovedCid && obj.stage == 1,
-      );
-      if (index !== -1) {
-        newAlerts.splice(index, 1, {
-          id: newAlerts[index].id,
-          type: "info",
-          title: `Removed`,
-          description: newAlerts[index].description,
-          stage: 2,
-        });
-        setAlerts(newAlerts);
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success } = fetcher.data;
+      if (success) {
+        if (fetcher.data._action == "remove file") {
+          setAlerts((prevAlerts) => {
+            let newAlerts = [...prevAlerts];
+            const index = newAlerts.findIndex(
+              (obj) => obj.id == fetcher.data.fileRemovedCid && obj.stage == 1,
+            );
+            if (index !== -1) {
+              newAlerts.splice(index, 1, {
+                id: newAlerts[index].id,
+                type: "success",
+                title: `Removed`,
+                description: newAlerts[index].description,
+                stage: 2,
+              });
+            }
+            return newAlerts;
+          });
+        }
       }
     }
-  }
+  }, [fetcher.state, fetcher.data, setAlerts]);
 
   const onDrop = useCallback(async (acceptedFiles) => {
     acceptedFiles.forEach((file) => {
@@ -2534,6 +2558,18 @@ export function GeneralActivityControls({
       if (labelIsInvalid) {
         setLabelIsInvalid(false);
       }
+
+      //Alert Messages
+      setSuccessMessage("Activity Label Updated");
+      setKeyToUpdateState("activityLabel");
+      setAlerts([
+        {
+          type: "info",
+          id: "activityLabel",
+          title: "Attempting to update activity label.",
+        },
+      ]);
+
       setActivityByDoenetId((item) => ({ ...item, label: labelState }));
       fetcher.submit(
         { _action: "update label", label: labelState },
@@ -2551,6 +2587,18 @@ export function GeneralActivityControls({
       if (pageLabelIsInvalid) {
         setPageLabelIsInvalid(false);
       }
+
+      //Alert Messages
+      setSuccessMessage("Activity Page Label Updated");
+      setKeyToUpdateState("pageLabel");
+      setAlerts([
+        {
+          type: "info",
+          id: "pageLabel",
+          title: "Attempting to update activity page label.",
+        },
+      ]);
+
       setPageByDoenetId((item) => ({ ...item, label: pageLabelState }));
       fetcher.submit(
         { _action: "update page label", label: pageLabelState },
@@ -2952,6 +3000,9 @@ export function GeneralCollectionControls({
   courseId,
   doenetId,
   activityData,
+  setAlerts,
+  setSuccessMessage,
+  setKeyToUpdateState,
 }) {
   let { isPublic, label, imagePath: dataImagePath, pageLabel } = activityData;
   if (!isPublic && activityData?.public) {
@@ -2960,7 +3011,6 @@ export function GeneralCollectionControls({
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
-  let [alerts, setAlerts] = useState([]);
 
   const onDrop = useCallback(
     async (files) => {
@@ -3077,6 +3127,17 @@ export function GeneralCollectionControls({
     if (labelState == "") {
       setLabelIsInvalid(true);
     } else {
+      //Alert Messages
+      setSuccessMessage("Collection Label Updated");
+      setKeyToUpdateState("activityLabel");
+      setAlerts([
+        {
+          type: "info",
+          id: "activityLabel",
+          title: "Attempting to update collection label.",
+        },
+      ]);
+
       if (labelIsInvalid) {
         setLabelIsInvalid(false);
       }
@@ -3093,6 +3154,17 @@ export function GeneralCollectionControls({
     if (pageLabelState == "") {
       setPageLabelIsInvalid(true);
     } else {
+      //Alert Messages
+      setSuccessMessage("Collection Page Label Updated");
+      setKeyToUpdateState("pageLabel");
+      setAlerts([
+        {
+          type: "info",
+          id: "pageLabel",
+          title: "Attempting to update collection page label.",
+        },
+      ]);
+
       if (pageLabelIsInvalid) {
         setPageLabelIsInvalid(false);
       }
@@ -3105,7 +3177,6 @@ export function GeneralCollectionControls({
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
       <Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
@@ -3217,9 +3288,31 @@ function CollectionPageSettingsDrawer({
   setPageByDoenetId,
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
-  // console.log("activityData", activityData);
-  //Need fetcher at this level to get label refresh
-  //when close drawer after changing label
+
+  let [alerts, setAlerts] = useState([]);
+  let [successMessage, setSuccessMessage] = useState("");
+  let [keyToUpdateState, setKeyToUpdateState] = useState("");
+
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, keyToUpdate } = fetcher.data;
+      if (success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "success",
+            id: keyToUpdateState,
+            title: successMessage,
+          },
+        ]);
+      }
+    }
+  }, [
+    fetcher.state,
+    fetcher.data,
+    keyToUpdateState,
+    successMessage,
+    setAlerts,
+  ]);
 
   return (
     <Drawer
@@ -3237,6 +3330,7 @@ function CollectionPageSettingsDrawer({
             {/* <Icon as={FaCog} mr="14px" /> */}
             <Text>Collection Controls</Text>
           </Center>
+          <AlertQueue alerts={alerts} setAlerts={setAlerts} />
         </DrawerHeader>
 
         <DrawerBody>
@@ -3259,16 +3353,25 @@ function CollectionPageSettingsDrawer({
               <TabPanels>
                 <TabPanel>
                   <GeneralCollectionControls
-                    fetcher={fetcher}
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
                     setActivityByDoenetId={setActivityByDoenetId}
                     setPageByDoenetId={setPageByDoenetId}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
                 <TabPanel>
-                  <SupportFilesControls onClose={onClose} />
+                  <SupportFilesControls
+                    onClose={onClose}
+                    setAlerts={setAlerts}
+                    setSuccessMessage={setSuccessMessage}
+                    setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
+                  />
                 </TabPanel>
               </TabPanels>
             </Box>
@@ -3293,10 +3396,6 @@ function CourseActivitySettingsDrawer({
   let [alerts, setAlerts] = useState([]);
 
   let revalidator = useRevalidator();
-
-  // console.log("activityData", activityData);
-  //Need fetcher at this level to get label refresh
-  //when close drawer after changing label
 
   let [successMessage, setSuccessMessage] = useState("");
   let [keyToUpdateState, setKeyToUpdateState] = useState("");
@@ -3370,7 +3469,6 @@ function CourseActivitySettingsDrawer({
               <TabPanels>
                 <TabPanel>
                   <GeneralActivityControls
-                    fetcher={fetcher}
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
@@ -3380,6 +3478,7 @@ function CourseActivitySettingsDrawer({
                     setAlerts={setAlerts}
                     setSuccessMessage={setSuccessMessage}
                     setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
                 <TabPanel>
