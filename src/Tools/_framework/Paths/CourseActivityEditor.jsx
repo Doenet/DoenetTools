@@ -887,7 +887,7 @@ function PresentationControls({
   setKeyToUpdateState,
   fetcher,
 }) {
-  if (!activityData.has_assignment_table) {
+  if (!activityData.has_assignment_table || activityData.isAssigned == "0") {
     return (
       <>
         <Text>
@@ -1591,7 +1591,7 @@ function AssignControls({
   setKeyToUpdateState,
   fetcher,
 }) {
-  if (!activityData.has_assignment_table) {
+  if (!activityData.has_assignment_table || activityData.isAssigned == "0") {
     return (
       <>
         <Text>Assign controls are available after activity is assigned.</Text>
@@ -2021,7 +2021,7 @@ function GradeControls({
   setKeyToUpdateState,
   fetcher,
 }) {
-  if (!activityData.has_assignment_table) {
+  if (!activityData.has_assignment_table || activityData.isAssigned == "0") {
     return (
       <>
         <Text>Grade controls are available after activity is assigned.</Text>
@@ -3487,6 +3487,7 @@ function CourseActivitySettingsDrawer({
                     setAlerts={setAlerts}
                     setSuccessMessage={setSuccessMessage}
                     setKeyToUpdateState={setKeyToUpdateState}
+                    fetcher={fetcher}
                   />
                 </TabPanel>
                 <TabPanel>
