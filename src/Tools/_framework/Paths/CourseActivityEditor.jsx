@@ -197,101 +197,110 @@ export async function action({ params, request }) {
     label = "Untitled";
   }
 
-  // console.log("formObj", formObj, params.doenetId);
-  if (formObj._action == "update label") {
-    let { data } = axios.get("/api/updatePortfolioActivityLabel.php", {
-      params: { doenetId: params.doenetId, label },
-    });
-    return {
-      _action: formObj._action,
-      label,
-      keyToUpdate: "activityLabel",
-      success: true,
-    };
-  }
-
-  if (formObj._action == "update page label") {
-    let { data } = axios.get("/api/updatePageLabel.php", {
-      params: {
-        doenetId: params.doenetId,
-        pageId: params.pageId,
+  try {
+    if (formObj._action == "update label") {
+      let { data } = axios.get("/api/updatePortfolioActivityLabel.php", {
+        params: { doenetId: params.doenetId, label },
+      });
+      return {
+        _action: formObj._action,
         label,
-      },
-    });
-    return {
-      _action: formObj._action,
-      pageLabel: label,
-      keyToUpdate: "pageLabel",
-      success: true,
-    };
-  }
-
-  if (formObj._action == "update description") {
-    let { data } = await axios.get("/api/updateFileDescription.php", {
-      params: {
-        doenetId: formObj.doenetId,
-        cid: formObj.cid,
-        description: formObj.description,
-      },
-    });
-  }
-  if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile.php", {
-      params: { doenetId: formObj.doenetId, cid: formObj.cid },
-    });
-
-    return {
-      _action: formObj._action,
-      fileRemovedCid: formObj.cid,
-      success: resp.data.success,
-    };
-  }
-  if (formObj._action == "update content via keyToUpdate") {
-    let value = formObj.value;
-    if (formObj.keyToUpdate == "learningOutcomes") {
-      value = JSON.parse(formObj.value);
+        keyToUpdate: "activityLabel",
+        success: true,
+      };
     }
 
-    let resp = await axios.post("/api/updateContentSettingsByKey.php", {
-      doenetId: formObj.doenetId,
-      [formObj.keyToUpdate]: value,
-    });
+    if (formObj._action == "update page label") {
+      let { data } = axios.get("/api/updatePageLabel.php", {
+        params: {
+          doenetId: params.doenetId,
+          pageId: params.pageId,
+          label,
+        },
+      });
+      return {
+        _action: formObj._action,
+        pageLabel: label,
+        keyToUpdate: "pageLabel",
+        success: true,
+      };
+    }
 
-    return {
-      _action: formObj._action,
-      keyToUpdate: formObj.keyToUpdate,
-      value: formObj.value,
-      success: resp.data.success,
-    };
+    if (formObj._action == "update description") {
+      let { data } = await axios.get("/api/updateFileDescription.php", {
+        params: {
+          doenetId: formObj.doenetId,
+          cid: formObj.cid,
+          description: formObj.description,
+        },
+      });
+    }
+    if (formObj._action == "remove file") {
+      let resp = await axios.get("/api/deleteFile.php", {
+        params: { doenetId: formObj.doenetId, cid: formObj.cid },
+      });
+
+      return {
+        _action: formObj._action,
+        fileRemovedCid: formObj.cid,
+        success: resp.data.success,
+      };
+    }
+    if (formObj._action == "update content via keyToUpdate") {
+      let value = formObj.value;
+      if (formObj.keyToUpdate == "learningOutcomes") {
+        value = JSON.parse(formObj.value);
+      }
+
+      let resp = await axios.post("/api/updateContentSettingsByKey.php", {
+        doenetId: formObj.doenetId,
+        [formObj.keyToUpdate]: value,
+      });
+
+      return {
+        _action: formObj._action,
+        keyToUpdate: formObj.keyToUpdate,
+        value: formObj.value,
+        success: resp.data.success,
+      };
+    }
+    if (formObj._action == "update assignment via keyToUpdate") {
+      let resp = await axios.post("/api/updateAssignmentSettingsByKey.php", {
+        doenetId: formObj.doenetId,
+        [formObj.keyToUpdate]: formObj.value,
+      });
+
+      return {
+        _action: formObj._action,
+        keyToUpdate: formObj.keyToUpdate,
+        value: formObj.value,
+        success: resp.data.success,
+      };
+    }
+
+    if (formObj._action == "noop") {
+      // console.log("noop");
+    }
+
+    return { _action: formObj._action, nothingToReturn: true };
+  } catch (e) {
+    if (formObj.keyToUpdate != undefined) {
+      //Use this to show errors in the form
+      //TODO: need the code to better decide the type of error message
+      console.log("from action function", {
+        success: false,
+        message: e.response.data.message,
+        keyToUpdate: formObj.keyToUpdate,
+      });
+      return {
+        success: false,
+        message: e.response.data.message,
+        keyToUpdate: formObj.keyToUpdate,
+      };
+    } else {
+      throw new Error(e);
+    }
   }
-  if (formObj._action == "update assignment via keyToUpdate") {
-    let resp = await axios.post("/api/updateAssignmentSettingsByKey.php", {
-      doenetId: formObj.doenetId,
-      [formObj.keyToUpdate]: formObj.value,
-    });
-
-    return {
-      _action: formObj._action,
-      keyToUpdate: formObj.keyToUpdate,
-      value: formObj.value,
-      success: resp.data.success,
-    };
-  }
-
-  if (formObj._action == "noop") {
-    // console.log("noop");
-  }
-
-  return { _action: formObj._action, nothingToReturn: true };
-  // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  // );
-  // let respObj = await response.json();
-
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(
-  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  // );
 }
 
 function findFirstPageIdInContent(content) {
@@ -1782,8 +1791,8 @@ function AssignControlsAssigned({
               let dbPinnedUntilDate = "";
               let title = `Attempting to unpin activity`;
               let nextSuccessMessage = `Activity unpinned.`;
-              let localPinnedAfterDate = null;
-              let localPinnedUntilDate = null;
+              let localPinnedAfterDate = "";
+              let localPinnedUntilDate = "";
               if (e.target.checked) {
                 title = `Attempting to pin activity.`;
                 nextSuccessMessage = `Activity pinned.`;
@@ -3295,7 +3304,7 @@ function CollectionPageSettingsDrawer({
 
   useEffect(() => {
     if (fetcher.state == "loading") {
-      const { success, keyToUpdate } = fetcher.data;
+      const { success, keyToUpdate, message } = fetcher.data;
       if (success && keyToUpdate == keyToUpdateState) {
         setAlerts([
           {
@@ -3304,6 +3313,16 @@ function CollectionPageSettingsDrawer({
             title: successMessage,
           },
         ]);
+      } else if (!success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "error",
+            id: keyToUpdateState,
+            title: message,
+          },
+        ]);
+      } else {
+        throw Error(message);
       }
     }
   }, [
@@ -3402,7 +3421,7 @@ function CourseActivitySettingsDrawer({
 
   useEffect(() => {
     if (fetcher.state == "loading") {
-      const { success, keyToUpdate } = fetcher.data;
+      const { success, keyToUpdate, message } = fetcher.data;
       if (success && keyToUpdate == keyToUpdateState) {
         setAlerts([
           {
@@ -3411,6 +3430,16 @@ function CourseActivitySettingsDrawer({
             title: successMessage,
           },
         ]);
+      } else if (!success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "error",
+            id: keyToUpdateState,
+            title: message,
+          },
+        ]);
+      } else {
+        throw Error(message);
       }
     }
   }, [
