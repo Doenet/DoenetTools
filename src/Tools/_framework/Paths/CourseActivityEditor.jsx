@@ -287,11 +287,6 @@ export async function action({ params, request }) {
     if (formObj.keyToUpdate != undefined) {
       //Use this to show errors in the form
       //TODO: need the code to better decide the type of error message
-      console.log("from action function", {
-        success: false,
-        message: e.response.data.message,
-        keyToUpdate: formObj.keyToUpdate,
-      });
       return {
         success: false,
         message: e.response.data.message,
@@ -341,7 +336,14 @@ function formatBytes(bytes) {
   else return (bytes / teraBytes).toFixed(decimal) + " TB";
 }
 
-function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
+function AssignButton({
+  courseId,
+  doenetId,
+  pageId,
+  revalidator,
+  setAlerts,
+  ...props
+}) {
   const { compileActivity, updateAssignItem } = useCourse(courseId);
   const [disabled, setDisabled] = useState(false);
 
@@ -351,6 +353,13 @@ function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
       {...props}
       onClick={async () => {
         setDisabled(true);
+        setAlerts([
+          {
+            type: "info",
+            id: "assign",
+            title: "Attempting to assign activity.",
+          },
+        ]);
         compileActivity({
           activityDoenetId: doenetId,
           isAssigned: true,
@@ -362,6 +371,13 @@ function AssignButton({ courseId, doenetId, pageId, revalidator, ...props }) {
           successCallback: () => {
             setTimeout(function () {
               revalidator.revalidate();
+              setAlerts([
+                {
+                  type: "success",
+                  id: "assign",
+                  title: "Activity is assigned.",
+                },
+              ]);
             }, 200);
           },
         });
@@ -909,6 +925,7 @@ function PresentationControls({
           doenetId={doenetId}
           pageId={pageId}
           revalidator={revalidator}
+          setAlerts={setAlerts}
         />
       </>
     );
@@ -1611,6 +1628,7 @@ function AssignControls({
           doenetId={doenetId}
           pageId={pageId}
           revalidator={revalidator}
+          setAlerts={setAlerts}
         />
       </>
     );
@@ -1625,6 +1643,7 @@ function AssignControls({
         setSuccessMessage={setSuccessMessage}
         setKeyToUpdateState={setKeyToUpdateState}
         fetcher={fetcher}
+        revalidator={revalidator}
       />
     );
   }
@@ -1639,7 +1658,11 @@ function AssignControlsAssigned({
   setSuccessMessage,
   setKeyToUpdateState,
   fetcher,
+  revalidator,
 }) {
+  const { updateAssignItem } = useCourse(courseId);
+  const [unassignDisabled, setUnassignDisabled] = useState(false);
+
   let adAssignedDate = activityData?.assignedDate;
   if (adAssignedDate != undefined) {
     adAssignedDate = UTCDateStringToLocalTimeChakraString(adAssignedDate);
@@ -1777,6 +1800,41 @@ function AssignControlsAssigned({
           }}
         />
       </Flex>
+      <Box>
+        <Button
+          colorScheme="blue"
+          size="md"
+          isDisabled={unassignDisabled}
+          onClick={() => {
+            setUnassignDisabled(true);
+            setAlerts([
+              {
+                type: "info",
+                id: "unassign",
+                title: "Attempting to unassign activity.",
+              },
+            ]);
+            updateAssignItem({
+              doenetId,
+              isAssigned: false,
+              successCallback: () => {
+                setTimeout(function () {
+                  setAlerts([
+                    {
+                      type: "success",
+                      id: "unassign",
+                      title: "Activity is unassigned.",
+                    },
+                  ]);
+                  revalidator.revalidate();
+                }, 200);
+              },
+            });
+          }}
+        >
+          Unassign
+        </Button>
+      </Box>
       <Flex>
         <HStack w="160px" alignItems="flex-start">
           <Checkbox
@@ -2041,6 +2099,7 @@ function GradeControls({
           doenetId={doenetId}
           pageId={pageId}
           revalidator={revalidator}
+          setAlerts={setAlerts}
         />
       </>
     );
