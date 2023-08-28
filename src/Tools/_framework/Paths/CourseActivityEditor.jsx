@@ -3381,7 +3381,8 @@ function CollectionPageSettingsDrawer({
           },
         ]);
       } else {
-        throw Error(message);
+        console.log("else fetcher.data", fetcher.data);
+        // throw Error(message);
       }
     }
   }, [
@@ -3498,7 +3499,9 @@ function CourseActivitySettingsDrawer({
           },
         ]);
       } else {
-        throw Error(message);
+        console.log("else fetcher.data", fetcher.data);
+
+        // throw Error(message);
       }
     }
   }, [
