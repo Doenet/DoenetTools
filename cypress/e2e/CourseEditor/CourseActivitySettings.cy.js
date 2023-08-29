@@ -48,7 +48,7 @@ describe("Course Editor Tests", function () {
     cy.get(".navigationRow").last().contains(activity1Labelb);
   });
 
-  it.only("Rename Pages and Activity", () => {
+  it("Rename Pages and Activity", () => {
     const activity1Label = "Renamed Mulitpage Activity 1";
     const activity1Labelb = "Renamed Mulitpage Activity 1 2nd time";
     const page1Label = "Renamed Mulitpage page 1";
@@ -101,7 +101,7 @@ describe("Course Editor Tests", function () {
     cy.wait(500); //Needed as we don't yet have alerts in the editor tool yet
     cy.get('[data-test="Controls Button"]').click();
     cy.get('[data-test="Activity Label"]').should("have.value", activity1Labelb);
-    cy.get('[data-test="Page Label"]').should("have.value", page1Label); //Bug!
+    cy.get('[data-test="Page Label"]').should("have.value", page1Label);
     cy.get('[data-test="Page Label"]').clear().type(page1Labelb).blur();
     cy.get('[data-test="Close Settings Button"]').click();
     cy.get('[data-test="Editable Activity Label Preview"]').contains(activity1Labelb);
@@ -110,6 +110,88 @@ describe("Course Editor Tests", function () {
     cy.get(".navigationRow").eq(-1).contains(page2Labelb);
     cy.get(".navigationRow").eq(-2).contains(page1Labelb);
     cy.get(".navigationRow").eq(-3).contains(activity1Labelb);
+  });
+
+  it("Learning Outcomes", () => {
+    const userId = "cyuserId";
+    const studentUserId = "cyStudentUserId";
+    const courseId = "courseid3";
+    const learningOutcome1 = "learning outcome 1";
+    const learningOutcome2 = "learning outcome 2";
+    const learningOutcome3 = "learning outcome 3";
+    const learningOutcome4 = "learning outcome 4";
+    const learningOutcome5 = "learning outcome 5";
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+    cy.signin({ userId });
+    cy.visit(`course?tool=navigation&courseId=${courseId}`);
+
+    cy.log('Add single page activity')
+    cy.get('[data-test="Add Activity Button"]').click();
+    cy.get(".navigationRow").last().dblclick();
+    cy.get('[data-test="Controls Button"]').click();
+    cy.log('Add five learning outcomes and blur or hit enter');
+    // cy.get('[data-test="learning outcome 0"]').clear().type(learningOutcome1).blur(); //Blur doesn't trigger event
+    cy.get('[data-test="learning outcome 0"]').clear().type(`${learningOutcome1}{enter}`);
+    cy.get('[data-test="Alert Title"]').contains("Updated learning outcome #1.");
+
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Blank learning outcome added.");
+    cy.get('[data-test="learning outcome 1"]').clear().type(`${learningOutcome2}{enter}`);
+    cy.get('[data-test="Alert Title"]').contains("Updated learning outcome #2.");
+
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Blank learning outcome added.");
+    cy.get('[data-test="learning outcome 2"]').clear().type(`${learningOutcome3}{enter}`);
+    cy.get('[data-test="Alert Title"]').contains("Updated learning outcome #3.");
+
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Blank learning outcome added.");
+    cy.get('[data-test="learning outcome 3"]').clear().type(`${learningOutcome4}{enter}`);
+    cy.get('[data-test="Alert Title"]').contains("Updated learning outcome #4.");
+
+
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Blank learning outcome added.");
+    cy.get('[data-test="learning outcome 4"]').clear().type(`${learningOutcome5}{enter}`);
+    cy.get('[data-test="Alert Title"]').contains("Updated learning outcome #5.");
+
+    cy.get('[data-test="Close Settings Button"]').click();
+    cy.get('[data-test="Close"]').click();
+    cy.get(".navigationRow").last().dblclick();
+    cy.get('[data-test="Controls Button"]').click();
+    cy.get('[data-test="learning outcome 0"]').should("have.value", learningOutcome1);
+    cy.get('[data-test="learning outcome 1"]').should("have.value", learningOutcome2);
+    cy.get('[data-test="learning outcome 2"]').should("have.value", learningOutcome3);
+    cy.get('[data-test="learning outcome 3"]').should("have.value", learningOutcome4);
+    cy.get('[data-test="learning outcome 4"]').should("have.value", learningOutcome5);
+
+    cy.get('[data-test="delete learning outcome 0 button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Deleted learning outcome #1.");
+    cy.get('[data-test="learning outcome 0"]').should("have.value", learningOutcome2);
+    cy.get('[data-test="learning outcome 1"]').should("have.value", learningOutcome3);
+    cy.get('[data-test="learning outcome 2"]').should("have.value", learningOutcome4);
+    cy.get('[data-test="learning outcome 3"]').should("have.value", learningOutcome5);
+
+    cy.get('[data-test="delete learning outcome 2 button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Deleted learning outcome #3.");
+    cy.get('[data-test="learning outcome 0"]').should("have.value", learningOutcome2);
+    cy.get('[data-test="learning outcome 1"]').should("have.value", learningOutcome3);
+    cy.get('[data-test="learning outcome 2"]').should("have.value", learningOutcome5);
+
+    cy.get('[data-test="delete learning outcome 2 button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Deleted learning outcome #3.");
+    cy.get('[data-test="learning outcome 0"]').should("have.value", learningOutcome2);
+    cy.get('[data-test="learning outcome 1"]').should("have.value", learningOutcome3);
+
+    cy.get('[data-test="delete learning outcome 1 button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Deleted learning outcome #2.");
+    cy.get('[data-test="learning outcome 0"]').should("have.value", learningOutcome2);
+
+    cy.get('[data-test="delete learning outcome 0 button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Deleted learning outcome #1.");
+    cy.get('[data-test="learning outcome 0"]').should("have.value", "");
   });
 
 
