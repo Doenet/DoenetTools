@@ -2523,6 +2523,9 @@ export function GeneralActivityControls({
     if (fetcher.data?.label) {
       setLabel(fetcher.data?.label);
     }
+    if (fetcher.data?.pageLabel) {
+      setPageLabel(fetcher.data?.pageLabel);
+    }
   }, []); //Only on opening the drawer
 
   const onDrop = useCallback(
@@ -3693,14 +3696,17 @@ function EditableLabel({ fetcher, dataTest, setActivityByDoenetId }) {
           dataTest="Label for Editable Activity Label"
         />
         <EditablePreview
-          data-test="Editable Page Label Preview"
+          data-test="Editable Activity Label Preview"
           maxW="300px"
           sx={{
             whiteSpace: "nowrap",
             overflowX: "scroll",
           }}
         />
-        <EditableInput width="400px" data-test="Editable Page Label Input" />
+        <EditableInput
+          width="400px"
+          data-test="Editable Activity Label Input"
+        />
       </Center>
     </Editable>
   );
