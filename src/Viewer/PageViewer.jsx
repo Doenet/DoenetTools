@@ -213,11 +213,17 @@ export function PageViewer({
             e.data.init &&
             coreInfo.current &&
             !errorInitializingRenderers.current &&
-            !errorInsideRenderers.current
+            !errorInsideRenderers.current &&
+            !(hideWhenNotCurrent && !pageIsCurrent)
           ) {
             // we don't initialize renderer state values if already have a coreInfo
             // and no errors were encountered
-            // as we must have already gotten the renderer information before core was created
+            // as we must have already gotten the renderer information before core was created.
+            // Exception if page is not current and we hide the page when it is not current,
+            // then we still update the renderers.
+            // This exception is important because, in this case,
+            // the renderers have not yet been rendered, so any errors would not yet have revealed
+            // (and for the same reason, there cannot have been any user actions queued)
           } else {
             updateRenderers(e.data.args);
             if (errorInsideRenderers.current) {
