@@ -8,7 +8,7 @@ import {
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import Papa from "papaparse";
 
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -3948,6 +3948,7 @@ export function CourseActivityEditor() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
@@ -3956,17 +3957,6 @@ export function CourseActivityEditor() {
     variantOptions.push({ value: variant, label: variant });
   });
   // console.log("variants", variants);
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
 
   let editorType = "Course Activity Editor";
   let middleHeading = null;
@@ -4309,32 +4299,39 @@ export function CourseActivityEditor() {
                             overflow="scroll"
                             w="100%"
                           >
-                            <>
-                              <PageViewer
-                                doenetML={viewerDoenetML}
-                                flags={{
-                                  showCorrectness: true,
-                                  solutionDisplayMode: "button",
-                                  showFeedback: true,
-                                  showHints: true,
-                                  autoSubmit: false,
-                                  allowLoadState: false,
-                                  allowSaveState: false,
-                                  allowLocalState: false,
-                                  allowSaveSubmissions: false,
-                                  allowSaveEvents: false,
-                                }}
-                                attemptNumber={1}
-                                generatedVariantCallback={variantCallback} //TODO:Replace
-                                requestedVariantIndex={variants.index}
-                                // setIsInErrorState={setIsInErrorState}
-                                setErrorsAndWarningsCallback={
-                                  setErrorsAndWarningsCallback
-                                }
-                                pageIsActive={true}
-                              />
-                              <Box marginBottom="50vh" />
-                            </>
+                            <DoenetML
+                              doenetML={viewerDoenetML}
+                              flags={{
+                                showCorrectness: true,
+                                solutionDisplayMode: "button",
+                                showFeedback: true,
+                                showHints: true,
+                                autoSubmit: false,
+                                allowLoadState: false,
+                                allowSaveState: false,
+                                allowLocalState: false,
+                                allowSaveSubmissions: false,
+                                allowSaveEvents: false,
+                              }}
+                              attemptNumber={1}
+                              generatedVariantCallback={setVariants}
+                              requestedVariantIndex={variants.index}
+                              setErrorsAndWarningsCallback={
+                                setErrorsAndWarningsCallback
+                              }
+                              idsIncludeActivityId={false}
+                              paginate={true}
+                              location={location}
+                              navigate={navigate}
+                              linkSettings={{
+                                viewURL: "/portfolioviewer",
+                                editURL: "/publiceditor",
+                              }}
+                              scrollableContainer={
+                                document.getElementById("viewer-container") ||
+                                undefined
+                              }
+                            />
                           </Box>
                         </VStack>
                       </>
@@ -4488,29 +4485,36 @@ export function CourseActivityEditor() {
                           overflow="scroll"
                           w="100%"
                         >
-                          <>
-                            <PageViewer
-                              doenetML={viewerDoenetML}
-                              flags={{
-                                showCorrectness: true,
-                                solutionDisplayMode: "button",
-                                showFeedback: true,
-                                showHints: true,
-                                autoSubmit: false,
-                                allowLoadState: false,
-                                allowSaveState: false,
-                                allowLocalState: false,
-                                allowSaveSubmissions: false,
-                                allowSaveEvents: false,
-                              }}
-                              attemptNumber={1}
-                              generatedVariantCallback={variantCallback} //TODO:Replace
-                              requestedVariantIndex={variants.index}
-                              // setIsInErrorState={setIsInErrorState}
-                              pageIsActive={true}
-                            />
-                            <Box marginBottom="50vh" />
-                          </>
+                          <DoenetML
+                            doenetML={viewerDoenetML}
+                            flags={{
+                              showCorrectness: true,
+                              solutionDisplayMode: "button",
+                              showFeedback: true,
+                              showHints: true,
+                              autoSubmit: false,
+                              allowLoadState: false,
+                              allowSaveState: false,
+                              allowLocalState: false,
+                              allowSaveSubmissions: false,
+                              allowSaveEvents: false,
+                            }}
+                            attemptNumber={1}
+                            generatedVariantCallback={setVariants}
+                            requestedVariantIndex={variants.index}
+                            idsIncludeActivityId={false}
+                            paginate={true}
+                            location={location}
+                            navigate={navigate}
+                            linkSettings={{
+                              viewURL: "/portfolioviewer",
+                              editURL: "/publiceditor",
+                            }}
+                            scrollableContainer={
+                              document.getElementById("viewer-container") ||
+                              undefined
+                            }
+                          />
                         </Box>
                       </VStack>
                     </GridItem>

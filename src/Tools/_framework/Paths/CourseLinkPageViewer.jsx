@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 
 import {
   Box,
@@ -98,6 +98,7 @@ export function CourseLinkPageViewer() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
@@ -105,17 +106,6 @@ export function CourseLinkPageViewer() {
   variants.allPossibleVariants.forEach((variant) => {
     variantOptions.push({ value: variant, label: variant });
   });
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
 
   return (
     <>
@@ -273,32 +263,39 @@ export function CourseLinkPageViewer() {
                         overflow="scroll"
                         w="100%"
                       >
-                        <>
-                          <PageViewer
-                            doenetML={doenetML}
-                            flags={{
-                              showCorrectness: true,
-                              solutionDisplayMode: "button",
-                              showFeedback: true,
-                              showHints: true,
-                              autoSubmit: false,
-                              allowLoadState: false,
-                              allowSaveState: false,
-                              allowLocalState: false,
-                              allowSaveSubmissions: false,
-                              allowSaveEvents: false,
-                            }}
-                            attemptNumber={1}
-                            generatedVariantCallback={variantCallback} //TODO:Replace
-                            requestedVariantIndex={variants.index}
-                            // setIsInErrorState={setIsInErrorState}
-                            setErrorsAndWarningsCallback={
-                              setErrorsAndWarningsCallback
-                            }
-                            pageIsActive={true}
-                          />
-                          <Box marginBottom="50vh" />
-                        </>
+                        <DoenetML
+                          doenetML={doenetML}
+                          flags={{
+                            showCorrectness: true,
+                            solutionDisplayMode: "button",
+                            showFeedback: true,
+                            showHints: true,
+                            autoSubmit: false,
+                            allowLoadState: false,
+                            allowSaveState: false,
+                            allowLocalState: false,
+                            allowSaveSubmissions: false,
+                            allowSaveEvents: false,
+                          }}
+                          attemptNumber={1}
+                          setErrorsAndWarningsCallback={
+                            setErrorsAndWarningsCallback
+                          }
+                          generatedVariantCallback={setVariants}
+                          requestedVariantIndex={variants.index}
+                          idsIncludeActivityId={false}
+                          paginate={true}
+                          location={location}
+                          navigate={navigate}
+                          linkSettings={{
+                            viewURL: "/portfolioviewer",
+                            editURL: "/publiceditor",
+                          }}
+                          scrollableContainer={
+                            document.getElementById("viewer-container") ||
+                            undefined
+                          }
+                        />
                       </Box>
                     </VStack>
                   </>
