@@ -215,7 +215,9 @@ export function CourseLinkPageViewer() {
                 <GridItem area="label">
                   <Center mt="6px">
                     <Flex>
-                      <Tag mr="4px">Page Link Label</Tag>
+                      <Text mr="6px" fontSize="sm" color="blue.500">
+                        Page Link Label
+                      </Text>
                       <Text>{label}</Text>
                     </Flex>
                   </Center>

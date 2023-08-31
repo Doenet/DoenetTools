@@ -3665,15 +3665,9 @@ function LabelWhenNotEditting({ label, dataTest }) {
   return (
     <>
       {!isEditing && (
-        <Tag
-          mr="4px"
-          size="sm"
-          variant="subtle"
-          colorScheme="gray"
-          data-test={dataTest}
-        >
+        <Text mr="6px" fontSize="sm" color="blue.500" data-test={dataTest}>
           {label}
-        </Tag>
+        </Text>
       )}
     </>
   );
