@@ -10,11 +10,12 @@ import {
 import { faCaretRight as twirlIsClosed } from "@fortawesome/free-solid-svg-icons";
 import { faCaretDown as twirlIsOpen } from "@fortawesome/free-solid-svg-icons";
 
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
 export default React.memo(function Section(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
   // console.log("name: ", name, " SVs: ", SVs," Children",children);
 
   let onChangeVisibility = (isVisible) => {

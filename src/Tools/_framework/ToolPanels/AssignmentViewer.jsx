@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ActivityViewer, {
-  saveStateToDBTimerIdAtom,
-} from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import {
   useRecoilValue,
   atom,
@@ -51,6 +49,15 @@ export const creditAchievedAtom = atom({
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
+  },
+});
+
+export const activityStatusAtom = atom({
+  key: "activityStatusAtom",
+  default: {
+    currentPage: 0,
+    activityAttemptNumberSetUp: 0,
+    itemWeights: [],
   },
 });
 
@@ -161,17 +168,11 @@ export default function AssignmentViewer() {
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
+  const pageToolView = useRecoilValue(pageToolViewAtom);
+
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
-
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        return await snapshot.getPromise(saveStateToDBTimerIdAtom);
-      },
-    [saveStateToDBTimerIdAtom],
-  );
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -183,7 +184,8 @@ export default function AssignmentViewer() {
   let [itemObj, setItemObj] = useRecoilState(itemByDoenetId(recoilDoenetId));
   let label = itemObj.label;
 
-  let { search, hash } = useLocation();
+  let location = useLocation();
+  let { search, hash } = location;
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -400,9 +402,9 @@ export default function AssignmentViewer() {
           return;
         }
 
-        allPossibleVariants.current = [
-          ...Array(result.numberOfVariants).keys(),
-        ].map((x) => x + 1);
+        allPossibleVariants.current = [...Array(result.numVariants).keys()].map(
+          (x) => x + 1,
+        );
 
         if (needNewVariant) {
           // determine if should individualize
@@ -446,8 +448,6 @@ export default function AssignmentViewer() {
         let requestedVariantIndex =
           usersVariantAttempts[usersVariantAttempts.length - 1];
 
-        console.log(`requestedVariantIndex: ${requestedVariantIndex}`);
-
         setLoad({
           requestedVariantIndex,
           attemptNumber,
@@ -487,13 +487,6 @@ export default function AssignmentViewer() {
   ) {
     if (hash && hash !== "#page1") {
       navigate(search, { replace: true });
-    }
-
-    // don't attempt to save data from old attempt number
-    // (which would triggered a reset and error message);
-    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
-    if (oldTimeoutId !== null) {
-      clearTimeout(oldTimeoutId);
     }
 
     //Check if cid has changed
@@ -601,8 +594,19 @@ export default function AssignmentViewer() {
       },
   );
 
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ itemWeights, currentPage, activityAttemptNumberSetUp }) => {
+        set(activityStatusAtom, {
+          itemWeights,
+          currentPage,
+          activityAttemptNumberSetUp,
+        });
+      },
+  );
+
   function pageChanged(pageNumber) {
-    console.log(`page changed to ${pageNumber}`);
+    // console.log(`page changed to ${pageNumber}`);
   }
 
   async function incrementAttemptNumberAndAttemptsAllowed() {
@@ -627,8 +631,6 @@ export default function AssignmentViewer() {
   if (recoilDoenetId === "") {
     return null;
   }
-
-  console.log("stage", stage);
 
   // console.log(`>>>>stage -${stage}-`)
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
@@ -771,13 +773,27 @@ export default function AssignmentViewer() {
   const allowLoadAndSave =
     effectivePermissions.canViewUnassignedContent === "0";
 
+  const apiURLs = {
+    loadActivityState: "/api/loadActivityState.php",
+    saveActivityState: "/api/saveActivityState.php",
+    initAssignmentAttempt: "/api/initAssignmentAttempt.php",
+    recordEvent: "/api/recordEvent.php",
+    saveCompleted: "/api/saveCompleted.php",
+    loadPageState: "/api/loadPageState.php",
+    savePageState: "/api/savePageState.php",
+    saveCreditForItem: "/api/saveCreditForItem.php",
+    reportSolutionViewed: "/api/reportSolutionViewed.php",
+  };
+
+  const scrollableContainer = document.getElementById("mainPanel");
+
   return (
     <>
       {cidChangedAlert}
-      <ActivityViewer
+      <DoenetML
         key={`activityViewer${doenetId}`}
         cid={cid}
-        doenetId={doenetId}
+        activityId={doenetId}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -794,13 +810,27 @@ export default function AssignmentViewer() {
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
+        updateActivityStatusCallback={updateActivityStatus}
         updateAttemptNumber={setRecoilAttemptNumber}
         pageChangedCallback={pageChanged}
         paginate={paginate}
+        location={location}
+        navigate={navigate}
         showFinishButton={showFinishButton}
         cidChangedCallback={() => setCidChanged(true)}
         setActivityAsCompleted={setActivityAsCompleted}
+        idsIncludeActivityId={false}
         // generatedVariantCallback={variantCallback}
+        linkSettings={{
+          viewURL:
+            pageToolView.page === "placementexam"
+              ? "/course?tool=exam"
+              : "/course?tool=assignment",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
+        apiURLs={apiURLs}
+        scrollableContainer={scrollableContainer}
       />
     </>
   );
@@ -815,10 +845,11 @@ async function returnNumberOfActivityVariants(cid) {
     return { success: false, message: "Could not retrieve file" };
   }
 
-  let result = parseActivityDefinition(activityDefinitionDoenetML);
+  let result = await parseActivityDefinition(activityDefinitionDoenetML, cid);
 
-  if (!result.success) {
-    return result;
+  // TODO: handle communication of errors better
+  if (result.errors.length > 0) {
+    return { success: false, message: result.errors[0].message };
   }
 
   try {
@@ -827,5 +858,5 @@ async function returnNumberOfActivityVariants(cid) {
     return { success: false, message: e.message };
   }
 
-  return { success: true, numberOfVariants: result.numberOfVariants };
+  return { success: true, numVariants: result.numVariants };
 }

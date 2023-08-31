@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
-import PageViewer from "../../../Viewer/PageViewer";
+import { useLoaderData, useOutletContext } from "react-router";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -247,26 +247,29 @@ export function Home() {
       </Flex>
 
       <Center w="100%" bg={grayColor}>
-      <HStack maxWidth="750px" w="100%" spacing={4}>
-        <Text
-          fontSize={["12px", "20px", "30px", "40px", "60px"]}
-          // fontSize="60px"
-          fontWeight="700"
-          color={blackColor}
-        >
-          Explore
-        </Text>
-        <Text
-          pt="24px"
-          fontSize={["8px", "10px", "12px", "18px", "24px"]}
-          // fontSize="20px"
-          fontWeight="700"
-          color={blackColor}
-        >
-          Interact with <Link href="/community" textDecoration="underline" >our existing content</Link>
-        </Text>
-      </HStack>
-    </Center>
+        <HStack maxWidth="750px" w="100%" spacing={4}>
+          <Text
+            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Explore
+          </Text>
+          <Text
+            pt="24px"
+            fontSize={["8px", "10px", "12px", "18px", "24px"]}
+            // fontSize="20px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Interact with{" "}
+            <Link href="/community" textDecoration="underline">
+              our existing content
+            </Link>
+          </Text>
+        </HStack>
+      </Center>
       <Flex
         justifyContent="center"
         alignItems="center"
@@ -277,26 +280,26 @@ export function Home() {
       </Flex>
 
       <Center w="100%" bg={blueColor}>
-      <HStack maxWidth="750px" w="100%" spacing={4}>
-        <Text
-          fontSize={["12px", "20px", "30px", "40px", "60px"]}
-          // fontSize="60px"
-          fontWeight="700"
-          color={blackColor}
-        >
-          Learn
-        </Text>
-        <Text
-          pt="24px"
-          fontSize={["8px", "10px", "12px", "18px", "24px"]}
-          // fontSize="20px"
-          fontWeight="700"
-          color={blackColor}
-        >
-          Designed for the In-Person Classroom
-        </Text>
-      </HStack>
-    </Center>
+        <HStack maxWidth="750px" w="100%" spacing={4}>
+          <Text
+            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Learn
+          </Text>
+          <Text
+            pt="24px"
+            fontSize={["8px", "10px", "12px", "18px", "24px"]}
+            // fontSize="20px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Designed for the In-Person Classroom
+          </Text>
+        </HStack>
+      </Center>
       <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
@@ -339,7 +342,7 @@ export function Home() {
             justifyContent="center"
             alignItems="center"
           >
-            <PageViewer
+            <DoenetML
               key={`HPpageViewer`}
               doenetML={doenetML}
               flags={{
@@ -354,12 +357,16 @@ export function Home() {
                 allowSaveSubmissions: false,
                 allowSaveEvents: false,
               }}
-              // doenetId={doenetId}
+              // activityId={doenetId}
               attemptNumber={1}
               generatedVariantCallback={variantCallback} //TODO:Replace
               requestedVariantIndex={variantInfo.index}
               // setIsInErrorState={setIsInErrorState}
-              pageIsActive={true}
+              addBottomPadding={false}
+              linkSettings={{
+                viewURL: "/portfolioviewer",
+                editURL: "/publiceditor",
+              }}
             />
           </Flex>
         </Flex>

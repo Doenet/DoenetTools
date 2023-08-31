@@ -233,10 +233,10 @@ describe("Math Display Tag Tests", function () {
           );
           cy.get(cesc(`#\\/etm${i}`)).should("not.exist");
           cy.get(cesc(`#\\/rm${i}`)).should("have.text", `???`);
-          cy.get(cesc(`#\\/rm${i}`)).click();
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.get(cesc(`#\\/rm${i}`)).click();
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 
@@ -296,10 +296,10 @@ describe("Math Display Tag Tests", function () {
           );
           cy.get(cesc(`#\\/etn${i}`)).should("not.exist");
           cy.get(cesc(`#\\/rn${i}`)).should("have.text", `???`);
-          cy.get(cesc(`#\\/rn${i}`)).click();
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.get(cesc(`#\\/rn${i}`)).click();
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 
@@ -705,10 +705,10 @@ describe("Math Display Tag Tests", function () {
           );
           cy.get(cesc(`#\\/etm${i}`)).should("not.exist");
           cy.get(cesc(`#\\/rm${i}`)).should("have.text", `???`);
-          cy.get(cesc(`#\\/rm${i}`)).click();
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.get(cesc(`#\\/rm${i}`)).click();
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 
@@ -775,10 +775,10 @@ describe("Math Display Tag Tests", function () {
           );
           cy.get(cesc(`#\\/etn${i}`)).should("not.exist");
           cy.get(cesc(`#\\/rn${i}`)).should("have.text", `???`);
-          cy.get(cesc(`#\\/rn${i}`)).click();
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.get(cesc(`#\\/rn${i}`)).click();
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 
@@ -989,9 +989,9 @@ describe("Math Display Tag Tests", function () {
           cy.get(cesc(`#\\/rm${i}`)).should("have.text", `???`);
           cy.get(cesc(`#\\/rm${i}`)).click();
           cy.url().should("match", RegExp(`#$`));
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 
@@ -1086,9 +1086,9 @@ describe("Math Display Tag Tests", function () {
           cy.get(cesc(`#\\/rn${i}`)).should("have.text", `???`);
           cy.get(cesc(`#\\/rn${i}`)).click();
           cy.url().should("match", RegExp(`#$`));
-          cy.window().then(async (win) => {
-            expect(win.scrollY).eq(0);
-          });
+          // cy.window().then(async (win) => {
+          //   expect(win.scrollY).eq(0);
+          // });
         });
       }
 

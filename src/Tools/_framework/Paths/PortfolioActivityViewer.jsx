@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useNavigate } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useLocation,
+} from "react-router";
 import styled from "styled-components";
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
@@ -17,7 +22,6 @@ import {
 } from "@chakra-ui/react";
 import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
@@ -95,6 +99,7 @@ export function PortfolioActivityViewer() {
   }
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [recoilPageToolView, setRecoilPageToolView] =
     useRecoilState(pageToolViewAtom);
@@ -113,28 +118,12 @@ export function PortfolioActivityViewer() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
-  let variantOptions = [];
-  variants.allPossibleVariants.forEach((variant) => {
-    variantOptions.push({ value: variant, label: variant });
-  });
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
-
   return (
     <>
-      <VirtualKeyboard />
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -271,7 +260,7 @@ export function PortfolioActivityViewer() {
                 spacing={0}
                 width="100%"
               >
-                {variants.allPossibleVariants.length > 1 && (
+                {variants.numVariants > 1 && (
                   <Box bg="doenet.lightBlue" h="32px" width="100%">
                     <VariantSelect
                       size="sm"
@@ -289,7 +278,7 @@ export function PortfolioActivityViewer() {
                 )}
                 <Box
                   h={
-                    variants.allPossibleVariants.length > 1
+                    variants.numVariants > 1
                       ? "calc(100vh - 192px)"
                       : "calc(100vh - 160px)"
                   }
@@ -300,7 +289,7 @@ export function PortfolioActivityViewer() {
                   width="100%"
                   overflow="scroll"
                 >
-                  <PageViewer
+                  <DoenetML
                     key={`HPpageViewer`}
                     doenetML={doenetML}
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
@@ -318,10 +307,16 @@ export function PortfolioActivityViewer() {
                     }}
                     // doenetId={doenetId}
                     attemptNumber={1}
-                    generatedVariantCallback={variantCallback} //TODO:Replace
+                    idsIncludeActivityId={false}
+                    generatedVariantCallback={setVariants}
                     requestedVariantIndex={variants.index}
                     // setIsInErrorState={setIsInErrorState}
-                    pageIsActive={true}
+                    location={location}
+                    navigate={navigate}
+                    linkSettings={{
+                      viewURL: "/portfolioviewer",
+                      editURL: "/publiceditor",
+                    }}
                   />
                 </Box>
                 <Box marginBottom="50vh" />

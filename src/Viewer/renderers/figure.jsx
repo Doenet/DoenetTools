@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import Measure from "react-measure";
 
 export default React.memo(function Figure(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

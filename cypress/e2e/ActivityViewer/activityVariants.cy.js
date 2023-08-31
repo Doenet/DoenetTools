@@ -13,27 +13,25 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition;
+    let doenetML;
 
     let attemptNumber = 0;
 
     for (let ind = 1; ind <= 200; ind += 97) {
       cy.window().then(async (win) => {
         attemptNumber++;
-        activityDefinition = `
+        doenetML = `
         <document type="activity">
-          <order>
-            <page>
-              <text>${attemptNumber}</text>
-              Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
-              <answer>$n</answer>
-            </page>
-          </order>
+          <page>
+            <text>${attemptNumber}</text>
+            Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
+            <answer>$n</answer>
+          </page>
         </document>
         `;
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
             attemptNumber,
           },
@@ -46,7 +44,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 100) + 1);
         expect(activityData.variantsByPage).eqls([((ind - 1) % 100) + 1]);
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -82,7 +80,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: ind,
               attemptNumber,
             },
@@ -121,38 +119,36 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <variantControl numVariants="3" variantNames="red blue green" />
-          <text>a</text>
-          Enter 
-          <select assignNames="color" >
-            <option selectForVariants="red">red</option>
-            <option selectForVariants="blue">blue</option>
-            <option selectForVariants="green">green</option>
-          </select>
-          :
-          <answer type="text">$color</answer>
-        </page>
-      </order>
+      <page>
+        <variantControl numVariants="3" variantNames="red blue green" />
+        <text>a</text>
+        Enter 
+        <select assignNames="color" >
+          <option selectForVariants="red">red</option>
+          <option selectForVariants="blue">blue</option>
+          <option selectForVariants="green">green</option>
+        </select>
+        :
+        <answer type="text">$color</answer>
+      </page>
     </document>
     `;
 
     for (let ind = 1; ind <= 4; ind++) {
       if (ind > 1) {
+        cy.reload();
         cy.get("#testRunner_toggleControls").click();
         cy.get("#testRunner_newAttempt").click();
         cy.wait(100);
         cy.get("#testRunner_toggleControls").click();
-        cy.reload();
       }
 
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -167,7 +163,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 100) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 3) + 1);
         expect(activityData.variantsByPage).eqls([((ind - 1) % 3) + 1]);
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -198,7 +194,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: 1,
             },
             "*",
@@ -237,40 +233,38 @@ describe("Activity variants tests", function () {
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <problem>
-          <variantControl uniqueVariants />
-          <text>a</text>
-          Enter 
-          <select assignNames="color" >
-            <option>red</option>
-            <option>blue</option>
-            <option>green</option>
-          </select>
-          :
-          <answer type="text">$color</answer>
-          </problem>
-        </page>
-      </order>
+      <page>
+        <problem>
+        <variantControl uniqueVariants />
+        <text>a</text>
+        Enter 
+        <select assignNames="color" >
+          <option>red</option>
+          <option>blue</option>
+          <option>green</option>
+        </select>
+        :
+        <answer type="text">$color</answer>
+        </problem>
+      </page>
     </document>
     `;
 
     for (let ind = 1; ind <= 4; ind++) {
       if (ind > 1) {
+        cy.reload();
         cy.get("#testRunner_toggleControls").click();
         cy.get("#testRunner_newAttempt").click();
         cy.wait(100);
         cy.get("#testRunner_toggleControls").click();
-        cy.reload();
       }
 
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -285,7 +279,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 3) + 1);
         expect(activityData.variantsByPage).eqls([((ind - 1) % 3) + 1]);
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -316,7 +310,7 @@ describe("Activity variants tests", function () {
         cy.window().then(async (win) => {
           win.postMessage(
             {
-              activityDefinition,
+              doenetML,
               requestedVariantIndex: 1,
             },
             "*",
@@ -350,20 +344,18 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages few variants, page variants enumerated", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <text>a</text>
-          <variantControl uniqueVariants />
-          <selectFromSequence from="1" to="2" assignNames="n" />
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl uniqueVariants />
-          <selectFromSequence type="letters" from="a" to="c" assignNames="l" />
-        </page>
-      </order>
+      <page>
+        <text>a</text>
+        <variantControl uniqueVariants />
+        <selectFromSequence from="1" to="2" assignNames="n" />
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl uniqueVariants />
+        <selectFromSequence type="letters" from="a" to="c" assignNames="l" />
+      </page>
     </document>
     `;
 
@@ -375,7 +367,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -392,7 +384,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -422,43 +414,41 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Two pages, numberOfVariants not specified, defaults to 1000", () => {
+  it("Two pages, numVariants not specified, defaults to 1000", () => {
     cy.get("#testRunner_toggleControls").click();
     cy.get("#testRunner_allowLocalState").click();
     cy.wait(100);
     cy.get("#testRunner_toggleControls").click();
 
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <text>a</text>
-          Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
-          <answer>$n</answer>
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl uniqueVariants />
-          Enter <selectFromSequence type="letters" from="a" to="z" assignNames="l" />:
-          <answer type="text">$l</answer>
-        </page>
-      </order>
+      <page>
+        <text>a</text>
+        Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
+        <answer>$n</answer>
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl uniqueVariants />
+        Enter <selectFromSequence type="letters" from="a" to="z" assignNames="l" />:
+        <answer type="text">$l</answer>
+      </page>
     </document>
     `;
 
     for (let ind = 1; ind <= 2000; ind += 970) {
       if (ind > 1) {
+        cy.reload();
         cy.get("#testRunner_toggleControls").click();
         cy.get("#testRunner_newAttempt").click();
         cy.wait(100);
         cy.get("#testRunner_toggleControls").click();
-        cy.reload();
       }
 
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -551,7 +541,7 @@ describe("Activity variants tests", function () {
           cy.window().then(async (win) => {
             win.postMessage(
               {
-                activityDefinition,
+                doenetML,
                 requestedVariantIndex: 1,
               },
               "*",
@@ -643,22 +633,20 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Two pages, specify numberOfVariants is 2", () => {
-    let activityDefinition = `
-    <document type="activity" numberOfVariants="2">
-      <order>
-        <page>
-          <text>a</text>
-          Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
-          <answer>$n</answer>
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl uniqueVariants />
-          Enter <selectFromSequence type="letters" from="a" to="z" assignNames="l" />:
-          <answer type="text">$l</answer>
-        </page>
-      </order>
+  it("Two pages, specify numVariants is 2", () => {
+    let doenetML = `
+    <document type="activity" numVariants="2">
+      <page>
+        <text>a</text>
+        Enter <selectFromSequence from="1" to="1000" assignNames="n" />:
+        <answer>$n</answer>
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl uniqueVariants />
+        Enter <selectFromSequence type="letters" from="a" to="z" assignNames="l" />:
+        <answer type="text">$l</answer>
+      </page>
     </document>
     `;
 
@@ -673,7 +661,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -776,8 +764,8 @@ describe("Activity variants tests", function () {
     }
   });
 
-  it("Shuffle and select orders, numberOfVariants not specified", () => {
-    let activityDefinition = `
+  it("Shuffle and select orders, numVariants not specified", () => {
+    let doenetML = `
     <document type="activity">
       <order behavior="shuffle">
         <page>
@@ -811,7 +799,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -893,20 +881,18 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, unique variants, variants to exclude", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <text>a</text>
-          <variantControl uniqueVariants variantsToExclude="a c d" />
-          <selectFromSequence from="1" to="5" assignNames="n" />
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl uniqueVariants variantsToExclude="b c d f" />
-          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-        </page>
-      </order>
+      <page>
+        <text>a</text>
+        <variantControl uniqueVariants variantsToExclude="a c d" />
+        <selectFromSequence from="1" to="5" assignNames="n" />
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl uniqueVariants variantsToExclude="b c d f" />
+        <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+      </page>
     </document>
     `;
 
@@ -918,7 +904,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -937,10 +923,8 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         let activityData = win.returnActivityData();
 
-        console.log("activityData", activityData);
-
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -971,20 +955,18 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, unique variants, variants to include", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <text>a</text>
-          <variantControl uniqueVariants variantsToInclude="b e" />
-          <selectFromSequence from="1" to="5" assignNames="n" />
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl uniqueVariants variantsToInclude="a e g" />
-          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-        </page>
-      </order>
+      <page>
+        <text>a</text>
+        <variantControl uniqueVariants variantsToInclude="b e" />
+        <selectFromSequence from="1" to="5" assignNames="n" />
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl uniqueVariants variantsToInclude="a e g" />
+        <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+      </page>
     </document>
     `;
 
@@ -996,7 +978,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1015,10 +997,8 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         let activityData = win.returnActivityData();
 
-        console.log("activityData", activityData);
-
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1049,34 +1029,32 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, named variants, variants to exclude", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <text>a</text>
-          <variantControl numVariants="5" variantsToExclude="a c d" />
-          <select assignNames="(n)">
-            <option selectForVariants="a"><number>1</number></option>
-            <option selectForVariants="b"><number>2</number></option>
-            <option selectForVariants="c"><number>3</number></option>
-            <option selectForVariants="d"><number>4</number></option>
-            <option selectForVariants="e"><number>5</number></option>
-          </select>
-        </page>
-        <page>
-          <text>b</text>
-          <variantControl numVariants="7" variantsToExclude="b c d f" />
-          <select assignNames="(l)">
-            <option selectForVariants="a"><text>a</text></option>
-            <option selectForVariants="b"><text>b</text></option>
-            <option selectForVariants="c"><text>c</text></option>
-            <option selectForVariants="d"><text>d</text></option>
-            <option selectForVariants="e"><text>e</text></option>
-            <option selectForVariants="f"><text>f</text></option>
-            <option selectForVariants="g"><text>g</text></option>
-          </select>
-        </page>
-      </order>
+      <page>
+        <text>a</text>
+        <variantControl numVariants="5" variantsToExclude="a c d" />
+        <select assignNames="(n)">
+          <option selectForVariants="a"><number>1</number></option>
+          <option selectForVariants="b"><number>2</number></option>
+          <option selectForVariants="c"><number>3</number></option>
+          <option selectForVariants="d"><number>4</number></option>
+          <option selectForVariants="e"><number>5</number></option>
+        </select>
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl numVariants="7" variantsToExclude="b c d f" />
+        <select assignNames="(l)">
+          <option selectForVariants="a"><text>a</text></option>
+          <option selectForVariants="b"><text>b</text></option>
+          <option selectForVariants="c"><text>c</text></option>
+          <option selectForVariants="d"><text>d</text></option>
+          <option selectForVariants="e"><text>e</text></option>
+          <option selectForVariants="f"><text>f</text></option>
+          <option selectForVariants="g"><text>g</text></option>
+        </select>
+      </page>
     </document>
     `;
 
@@ -1088,7 +1066,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1108,7 +1086,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1139,10 +1117,182 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, named variants, variants to include", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
+      <page>
+        <text>a</text>
+        <variantControl numVariants="5" variantsToInclude="b e" />
+        <select assignNames="(n)">
+          <option selectForVariants="a"><number>1</number></option>
+          <option selectForVariants="b"><number>2</number></option>
+          <option selectForVariants="c"><number>3</number></option>
+          <option selectForVariants="d"><number>4</number></option>
+          <option selectForVariants="e"><number>5</number></option>
+        </select>
+      </page>
+      <page>
+        <text>b</text>
+        <variantControl numVariants="7" variantsToInclude="a e g" />
+        <select assignNames="(l)">
+          <option selectForVariants="a"><text>a</text></option>
+          <option selectForVariants="b"><text>b</text></option>
+          <option selectForVariants="c"><text>c</text></option>
+          <option selectForVariants="d"><text>d</text></option>
+          <option selectForVariants="e"><text>e</text></option>
+          <option selectForVariants="f"><text>f</text></option>
+          <option selectForVariants="g"><text>g</text></option>
+        </select>
+      </page>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage(
+          {
+            doenetML,
+            requestedVariantIndex: ind,
+          },
+          "*",
+        );
+      });
+
+      if (ind > 1) {
+        cy.get("[data-test=previous]").click();
+      }
+
+      let nFromVariant = [2, 5];
+      let lFromVariant = ["a", "e", "g"];
+
+      cy.get(cesc("#page1\\/_text1")).should("have.text", "a");
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(
+          ((activityData.variantIndex - 1) % 2) + 1,
+        );
+        expect(activityData.variantsByPage[1]).eq(
+          ((activityData.variantIndex - 1) % 3) + 1,
+        );
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(
+          nFromVariant[activityData.variantsByPage[0] - 1],
+        );
+
+        cy.get("[data-test=next]").click();
+
+        cy.get(cesc("#page2\\/_text1")).should("have.text", "b");
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(
+            lFromVariant[activityData.variantsByPage[1] - 1],
+          );
+        });
+      });
+    }
+  });
+
+  it("Two pages, variants from problem, variants to exclude", () => {
+    let doenetML = `
+    <document type="activity">
+      <page>
+        <problem>
+          <text>a</text>
+          <variantControl numVariants="5" variantsToExclude="a c d" />
+          <select assignNames="(n)">
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
+          </select>
+        </problem>
+      </page>
+      <page>
+        <problem>
+          <text>b</text>
+          <variantControl uniqueVariants variantsToExclude="b c d f" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage(
+          {
+            doenetML,
+            requestedVariantIndex: ind,
+          },
+          "*",
+        );
+      });
+
+      if (ind > 1) {
+        cy.get("[data-test=previous]").click();
+      }
+
+      let nFromVariant = [2, 5];
+      let lFromVariant = ["a", "e", "g"];
+
+      cy.get(cesc("#page1\\/_text1")).should("have.text", "a");
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(
+          ((activityData.variantIndex - 1) % 2) + 1,
+        );
+        expect(activityData.variantsByPage[1]).eq(
+          ((activityData.variantIndex - 1) % 3) + 1,
+        );
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(
+          nFromVariant[activityData.variantsByPage[0] - 1],
+        );
+
+        cy.get("[data-test=next]").click();
+
+        cy.get(cesc("#page2\\/_text1")).should("have.text", "b");
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(
+            lFromVariant[activityData.variantsByPage[1] - 1],
+          );
+        });
+      });
+    }
+  });
+
+  it("Two pages, variants from problem, variants to include", () => {
+    let doenetML = `
+    <document type="activity">
+      <page>
+        <problem>
           <text>a</text>
           <variantControl numVariants="5" variantsToInclude="b e" />
           <select assignNames="(n)">
@@ -1152,21 +1302,15 @@ describe("Activity variants tests", function () {
             <option selectForVariants="d"><number>4</number></option>
             <option selectForVariants="e"><number>5</number></option>
           </select>
-        </page>
-        <page>
+        </problem>
+      </page>
+      <page>
+        <problem>
           <text>b</text>
-          <variantControl numVariants="7" variantsToInclude="a e g" />
-          <select assignNames="(l)">
-            <option selectForVariants="a"><text>a</text></option>
-            <option selectForVariants="b"><text>b</text></option>
-            <option selectForVariants="c"><text>c</text></option>
-            <option selectForVariants="d"><text>d</text></option>
-            <option selectForVariants="e"><text>e</text></option>
-            <option selectForVariants="f"><text>f</text></option>
-            <option selectForVariants="g"><text>g</text></option>
-          </select>
-        </page>
-      </order>
+          <variantControl uniqueVariants variantsToInclude="a e g" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
     </document>
     `;
 
@@ -1178,7 +1322,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1198,179 +1342,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
-        expect(activityData.variantsByPage.length).eq(2);
-        expect(activityData.variantsByPage[0]).eq(
-          ((activityData.variantIndex - 1) % 2) + 1,
-        );
-        expect(activityData.variantsByPage[1]).eq(
-          ((activityData.variantIndex - 1) % 3) + 1,
-        );
-
-        let stateVariables1 = await win.returnAllStateVariables1();
-
-        expect(stateVariables1["/n"].stateValues.value).eq(
-          nFromVariant[activityData.variantsByPage[0] - 1],
-        );
-
-        cy.get("[data-test=next]").click();
-
-        cy.get(cesc("#page2\\/_text1")).should("have.text", "b");
-
-        cy.window().then(async (win) => {
-          let stateVariables2 = await win.returnAllStateVariables2();
-
-          expect(stateVariables2["/l"].stateValues.value).eq(
-            lFromVariant[activityData.variantsByPage[1] - 1],
-          );
-        });
-      });
-    }
-  });
-
-  it("Two pages, variants from problem, variant to exclude", () => {
-    let activityDefinition = `
-    <document type="activity">
-      <order>
-        <page>
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToExclude="a c d" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToExclude="b c d f" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
-    </document>
-    `;
-
-    for (let ind = 1; ind <= 20; ind += 5) {
-      if (ind > 1) {
-        cy.reload();
-      }
-
-      cy.window().then(async (win) => {
-        win.postMessage(
-          {
-            activityDefinition,
-            requestedVariantIndex: ind,
-          },
-          "*",
-        );
-      });
-
-      if (ind > 1) {
-        cy.get("[data-test=previous]").click();
-      }
-
-      let nFromVariant = [2, 5];
-      let lFromVariant = ["a", "e", "g"];
-
-      cy.get(cesc("#page1\\/_text1")).should("have.text", "a");
-
-      cy.window().then(async (win) => {
-        let activityData = win.returnActivityData();
-
-        expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
-        expect(activityData.variantsByPage.length).eq(2);
-        expect(activityData.variantsByPage[0]).eq(
-          ((activityData.variantIndex - 1) % 2) + 1,
-        );
-        expect(activityData.variantsByPage[1]).eq(
-          ((activityData.variantIndex - 1) % 3) + 1,
-        );
-
-        let stateVariables1 = await win.returnAllStateVariables1();
-
-        expect(stateVariables1["/n"].stateValues.value).eq(
-          nFromVariant[activityData.variantsByPage[0] - 1],
-        );
-
-        cy.get("[data-test=next]").click();
-
-        cy.get(cesc("#page2\\/_text1")).should("have.text", "b");
-
-        cy.window().then(async (win) => {
-          let stateVariables2 = await win.returnAllStateVariables2();
-
-          expect(stateVariables2["/l"].stateValues.value).eq(
-            lFromVariant[activityData.variantsByPage[1] - 1],
-          );
-        });
-      });
-    }
-  });
-
-  it("Two pages, variants from problem, variant to include", () => {
-    let activityDefinition = `
-    <document type="activity">
-      <order>
-        <page>
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToInclude="b e" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToInclude="a e g" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
-    </document>
-    `;
-
-    for (let ind = 1; ind <= 20; ind += 5) {
-      if (ind > 1) {
-        cy.reload();
-      }
-
-      cy.window().then(async (win) => {
-        win.postMessage(
-          {
-            activityDefinition,
-            requestedVariantIndex: ind,
-          },
-          "*",
-        );
-      });
-
-      if (ind > 1) {
-        cy.get("[data-test=previous]").click();
-      }
-
-      let nFromVariant = [2, 5];
-      let lFromVariant = ["a", "e", "g"];
-
-      cy.get(cesc("#page1\\/_text1")).should("have.text", "a");
-
-      cy.window().then(async (win) => {
-        let activityData = win.returnActivityData();
-
-        expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1401,32 +1373,30 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variants to exclude in problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <variantControl uniqueVariants />
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToExclude="a c d" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <variantControl uniqueVariants />
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToExclude="b c d f" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
+      <page>
+        <variantControl uniqueVariants />
+        <problem>
+          <text>a</text>
+          <variantControl numVariants="5" variantsToExclude="a c d" />
+          <select assignNames="(n)">
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
+          </select>
+        </problem>
+      </page>
+      <page>
+        <variantControl uniqueVariants />
+        <problem>
+          <text>b</text>
+          <variantControl uniqueVariants variantsToExclude="b c d f" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
     </document>
     `;
 
@@ -1438,7 +1408,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1458,7 +1428,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1489,32 +1459,30 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variants to include in problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <variantControl uniqueVariants />
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToInclude="b e" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <variantControl uniqueVariants />
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToInclude="a e g" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
+      <page>
+        <variantControl uniqueVariants />
+        <problem>
+          <text>a</text>
+          <variantControl numVariants="5" variantsToInclude="b e" />
+          <select assignNames="(n)">
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
+          </select>
+        </problem>
+      </page>
+      <page>
+        <variantControl uniqueVariants />
+        <problem>
+          <text>b</text>
+          <variantControl uniqueVariants variantsToInclude="a e g" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
     </document>
     `;
 
@@ -1526,7 +1494,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1546,7 +1514,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1577,32 +1545,30 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variant to exclude in document and problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <variantControl uniqueVariants variantsToExclude="b" />
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToExclude="a d" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <variantControl uniqueVariants variantsToExclude="c" />
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToExclude="b c d" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
+      <page>
+        <variantControl uniqueVariants variantsToExclude="b" />
+        <problem>
+          <text>a</text>
+          <variantControl numVariants="5" variantsToExclude="a d" />
+          <select assignNames="(n)">
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
+          </select>
+        </problem>
+      </page>
+      <page>
+        <variantControl uniqueVariants variantsToExclude="c" />
+        <problem>
+          <text>b</text>
+          <variantControl uniqueVariants variantsToExclude="b c d" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
     </document>
     `;
 
@@ -1614,7 +1580,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1636,7 +1602,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,
@@ -1673,32 +1639,30 @@ describe("Activity variants tests", function () {
   });
 
   it("Two pages, variants from document and problem, variant to include in document and problem", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <variantControl uniqueVariants variantsToInclude="a c" />
-          <problem>
-            <text>a</text>
-            <variantControl numVariants="5" variantsToInclude="b c e" />
-            <select assignNames="(n)">
-              <option selectForVariants="a"><number>1</number></option>
-              <option selectForVariants="b"><number>2</number></option>
-              <option selectForVariants="c"><number>3</number></option>
-              <option selectForVariants="d"><number>4</number></option>
-              <option selectForVariants="e"><number>5</number></option>
-            </select>
-          </problem>
-        </page>
-        <page>
-          <variantControl uniqueVariants variantsToInclude="a b d" />
-          <problem>
-            <text>b</text>
-            <variantControl uniqueVariants variantsToInclude="a e f g" />
-            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
-          </problem>
-        </page>
-      </order>
+      <page>
+        <variantControl uniqueVariants variantsToInclude="a c" />
+        <problem>
+          <text>a</text>
+          <variantControl numVariants="5" variantsToInclude="b c e" />
+          <select assignNames="(n)">
+            <option selectForVariants="a"><number>1</number></option>
+            <option selectForVariants="b"><number>2</number></option>
+            <option selectForVariants="c"><number>3</number></option>
+            <option selectForVariants="d"><number>4</number></option>
+            <option selectForVariants="e"><number>5</number></option>
+          </select>
+        </problem>
+      </page>
+      <page>
+        <variantControl uniqueVariants variantsToInclude="a b d" />
+        <problem>
+          <text>b</text>
+          <variantControl uniqueVariants variantsToInclude="a e f g" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </problem>
+      </page>
     </document>
     `;
 
@@ -1710,7 +1674,7 @@ describe("Activity variants tests", function () {
       cy.window().then(async (win) => {
         win.postMessage(
           {
-            activityDefinition,
+            doenetML,
             requestedVariantIndex: ind,
           },
           "*",
@@ -1732,7 +1696,7 @@ describe("Activity variants tests", function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq(((ind - 1) % 1000) + 1);
+        expect(activityData.variantIndex).eq(((ind - 1) % 6) + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).eq(
           ((activityData.variantIndex - 1) % 2) + 1,

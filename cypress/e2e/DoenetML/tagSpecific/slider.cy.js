@@ -36,7 +36,7 @@ describe("Slider Tag Tests", function () {
     cy.log("move handle less than half way, stays at 1");
     cy.get(cesc("#\\/s-handle"))
       .trigger("mousedown")
-      .trigger("mousemove", { clientX: 145, clientY: 0 })
+      .trigger("mousemove", { clientX: 140, clientY: 0 })
       .trigger("mouseup");
 
     cy.get(cesc("#\\/sv")).should("have.text", "1");
@@ -92,7 +92,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
     let numberToPx2 = (x) => 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
@@ -314,7 +314,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
@@ -413,7 +413,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + (30 * (x - 100)) / 10;
+    let numberToPx = (x) => 20 + (30 * (x - 100)) / 10;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
@@ -556,7 +556,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
@@ -632,7 +632,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
 
@@ -828,7 +828,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
     let numberToPx2 = (x) => 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load
@@ -878,7 +878,7 @@ describe("Slider Tag Tests", function () {
       );
     });
 
-    let numberToPx = (x) => 27 + 30 * x;
+    let numberToPx = (x) => 20 + 30 * x;
     let numberToPx2 = (x) => 30 * x;
 
     cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait for page to load

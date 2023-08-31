@@ -161,14 +161,14 @@ export default class FunctionIterates extends InlineComponent {
             }
           } else {
             let symbolicfs = functionComp.stateValues.symbolicfs;
-            let value = initialValue.tree.slice(1);
+            let value = initialValue.tree.slice(1).map((v) => me.fromAst(v));
             for (let ind = 0; ind < numIterates; ind++) {
               let iterComps = [];
               for (let i = 0; i < dependencyValues.numDimensions; i++) {
                 iterComps.push(symbolicfs[i](...value).tree);
               }
               allIterates.push(me.fromAst(["vector", ...iterComps]));
-              value = iterComps;
+              value = iterComps.map((v) => me.fromAst(v));
             }
           }
         } else {

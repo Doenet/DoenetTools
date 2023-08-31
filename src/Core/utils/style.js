@@ -519,6 +519,9 @@ export function returnTextStyleDescriptionDefinitions() {
 }
 
 export function textRendererStyle(darkMode, selectedStyle) {
+  if (!selectedStyle) {
+    return {};
+  }
   let textColor =
     darkMode === "dark"
       ? selectedStyle.textColorDarkMode

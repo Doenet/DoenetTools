@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("Triangle Tag Tests", function () {
   beforeEach(() => {
@@ -1931,6 +1931,49 @@ describe("Triangle Tag Tests", function () {
           0, 6,
         ]);
       });
+    });
+  });
+
+  it("area and perimeter", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <graph>
+    <triangle name="t"/>
+  </graph>
+  <p>Area: <number copySource="t.area" name="area" /></p>
+  <p>Perimeter: <number copySource="t.perimeter" name="perimeter" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    let area = 0.5;
+    let perimeter = 2 + Math.sqrt(2);
+
+    cy.get(cesc2("#/area")).should("have.text", `${area}`);
+    cy.get(cesc2("#/perimeter")).should(
+      "have.text",
+      `${Math.round(perimeter * 100) / 100}`,
+    );
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/t",
+        args: { pointCoords: { 2: [10, 0] } },
+      });
+
+      area = 10 / 2 - 1 / 2;
+      perimeter = 9 + Math.sqrt(100 + 1) + Math.sqrt(2);
+
+      cy.get(cesc2("#/area")).should("have.text", `${area}`);
+      cy.get(cesc2("#/perimeter")).should(
+        "have.text",
+        `${Math.round(perimeter * 100) / 100}`,
+      );
     });
   });
 });

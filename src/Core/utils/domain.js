@@ -1,7 +1,5 @@
 import me from "math-expressions";
-import subsets, {
-  buildSubsetFromMathExpression,
-} from "./subset-of-reals";
+import subsets, { buildSubsetFromMathExpression } from "./subset-of-reals";
 
 export function find_effective_domain({
   domain,
@@ -55,6 +53,15 @@ export function find_effective_domain({
       }
     } else if (maxx === Infinity) {
       maxx = minx + 200 * xscale;
+    }
+  } else {
+    // If the domain extends to +/- infinity, then consider the domain closed
+    // so that we can evaluate the function at +/- infinity
+    if (minx === -Infinity) {
+      openMin = false;
+    }
+    if (maxx === Infinity) {
+      openMax = false;
     }
   }
 

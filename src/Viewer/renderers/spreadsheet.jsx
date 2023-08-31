@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { HotTable } from "@handsontable/react";
 import { HyperFormula } from "hyperformula";
 import "handsontable/dist/handsontable.full.css";
@@ -10,7 +10,7 @@ import VisibilitySensor from "react-visibility-sensor-v2";
 registerAllModules();
 
 export default React.memo(function SpreadsheetRenderer(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
 
   let onChangeVisibility = (isVisible) => {
     callAction({

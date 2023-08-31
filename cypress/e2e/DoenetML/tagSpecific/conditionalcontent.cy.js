@@ -3368,7 +3368,7 @@ describe("Conditional Content Tag Tests", function () {
 
     cy.get(cesc("#\\/_document1")).should(
       "contain.text",
-      "\n  a\n  1\n  before\n  nothing: \n  after\n  ",
+      "a\n  1\n  before\n  nothing: \n  after\n  ",
     );
 
     cy.window().then(async (win) => {

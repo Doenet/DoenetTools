@@ -3,7 +3,7 @@
 // https://github.com/XimeraProject/server/blob/master/public/javascripts/youtube.js
 
 import React, { useRef, useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { sizeToCSS } from "./utils/css";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import styled from "styled-components";
@@ -15,7 +15,7 @@ const VideoStyling = styled.div`
 `;
 
 export default React.memo(function Video(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
 
   let player = useRef(null);
   let postSkipTime = useRef(null);

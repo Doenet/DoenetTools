@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 
 export default React.memo(function Footnote(props) {
-  let { name, id, SVs } = useDoenetRender(props, false);
+  let { name, id, SVs } = useDoenetRenderer(props, false);
   let [isVisible, setIsVisible] = useState(false);
 
   if (SVs.hidden) {

@@ -46,8 +46,8 @@ function parse_activity_definition_rename_pages($activity_xml) {
     $activity_definition["shuffleItemWeights"] = true;
   }
 
-  if ($activity_object["numberOfVariants"]) {
-    $activity_definition["numberOfVariants"] = (string)$activity_object["itemWeights"];
+  if ($activity_object["numVariants"]) {
+    $activity_definition["numVariants"] = (string)$activity_object["itemWeights"];
   }
 
 

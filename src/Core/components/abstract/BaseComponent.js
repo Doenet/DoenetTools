@@ -1414,10 +1414,10 @@ export default class BaseComponent {
     serializedComponent,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    let numVariants = serializedComponent.variants?.numVariants;
 
-    if (numberOfVariants !== undefined) {
-      return { success: true, numberOfVariants };
+    if (numVariants !== undefined) {
+      return { success: true, numVariants };
     }
 
     let descendantVariantComponents = [];
@@ -1438,9 +1438,9 @@ export default class BaseComponent {
 
     // number of variants is the product of
     // number of variants for each descendantVariantComponent
-    numberOfVariants = 1;
+    numVariants = 1;
 
-    let numberOfVariantsByDescendant = [];
+    let numVariantsByDescendant = [];
     for (let descendant of descendantVariantComponents) {
       let descendantClass =
         componentInfoObjects.allComponentClasses[descendant.componentType];
@@ -1451,20 +1451,20 @@ export default class BaseComponent {
       if (!result.success) {
         return { success: false };
       }
-      numberOfVariantsByDescendant.push(result.numberOfVariants);
-      numberOfVariants *= result.numberOfVariants;
+      numVariantsByDescendant.push(result.numVariants);
+      numVariants *= result.numVariants;
     }
 
-    if (!(numberOfVariants > 0)) {
+    if (!(numVariants > 0)) {
       return { success: false };
     }
 
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numVariants = numVariants;
     serializedComponent.variants.uniqueVariantData = {
-      numberOfVariantsByDescendant,
+      numVariantsByDescendant,
     };
 
-    return { success: true, numberOfVariants };
+    return { success: true, numVariants };
   }
 
   static getUniqueVariant({
@@ -1472,24 +1472,23 @@ export default class BaseComponent {
     variantIndex,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }
 
     let haveNontrivialSubvariants = false;
 
-    let numberOfVariantsByDescendant =
-      serializedComponent.variants.uniqueVariantData
-        .numberOfVariantsByDescendant;
+    let numVariantsByDescendant =
+      serializedComponent.variants.uniqueVariantData.numVariantsByDescendant;
     let descendantVariantComponents =
       serializedComponent.variants.descendantVariantComponents;
 
@@ -1497,7 +1496,7 @@ export default class BaseComponent {
 
     if (descendantVariantComponents.length > 0) {
       let indicesForEachDescendant = enumerateCombinations({
-        numberOfOptionsByIndex: numberOfVariantsByDescendant,
+        numberOfOptionsByIndex: numVariantsByDescendant,
         maxNumber: variantIndex,
       })[variantIndex - 1].map((x) => x + 1);
 
@@ -1506,10 +1505,10 @@ export default class BaseComponent {
 
       for (
         let descendantNum = 0;
-        descendantNum < numberOfVariantsByDescendant.length;
+        descendantNum < numVariantsByDescendant.length;
         descendantNum++
       ) {
-        if (numberOfVariantsByDescendant[descendantNum] > 1) {
+        if (numVariantsByDescendant[descendantNum] > 1) {
           let descendant = descendantVariantComponents[descendantNum];
           let compClass =
             componentInfoObjects.allComponentClasses[descendant.componentType];

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import Papa from "papaparse";
 
 import { useSetRecoilState } from "recoil";
@@ -72,9 +72,9 @@ import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoi
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
-import VirtualKeyboard from "../Footers/VirtualKeyboard";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
+import { useLocation, useNavigate } from "react-router";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -1317,6 +1317,9 @@ export function PortfolioActivityEditor() {
   let inTheMiddleOfSaving = useRef(false);
   let postponedSaving = useRef(false);
 
+  let navigate = useNavigate();
+  let location = useLocation();
+
   const { saveDraft } = useSaveDraft();
 
   const handleSaveDraft = useCallback(async () => {
@@ -1354,7 +1357,7 @@ export function PortfolioActivityEditor() {
   }, [pageId, courseId, saveDraft]);
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleEditorKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
         (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
@@ -1366,6 +1369,9 @@ export function PortfolioActivityEditor() {
         clearTimeout(timeout.current);
         handleSaveDraft();
       }
+    };
+
+    const handleDocumentKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
         (platform != "Mac" && event.ctrlKey && event.code === "KeyU")
@@ -1375,11 +1381,14 @@ export function PortfolioActivityEditor() {
         controlsOnOpen();
       }
     };
+    let codeEditorContainer = document.getElementById("codeEditorContainer");
 
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    codeEditorContainer.addEventListener("keydown", handleEditorKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+      codeEditorContainer.removeEventListener("keydown", handleEditorKeyDown);
     };
   }, [textEditorDoenetML, controlsOnOpen, platform, handleSaveDraft]);
 
@@ -1399,25 +1408,11 @@ export function PortfolioActivityEditor() {
 
   const [variants, setVariants] = useState({
     index: 1,
+    numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
-  let variantOptions = [];
-  variants.allPossibleVariants.forEach((variant) => {
-    variantOptions.push({ value: variant, label: variant });
-  });
   // console.log("variants", variants);
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariants({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-  }
 
   return (
     <>
@@ -1428,7 +1423,6 @@ export function PortfolioActivityEditor() {
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
       />
-      <VirtualKeyboard />
 
       <Grid
         background="doenet.lightBlue"
@@ -1607,7 +1601,7 @@ export function PortfolioActivityEditor() {
                             </Button>
                           </Tooltip>
                         </Box>
-                        {variants.allPossibleVariants.length > 1 && (
+                        {variants.numVariants > 1 && (
                           <Box bg="doenet.lightBlue" h="32px" width="100%">
                             <VariantSelect
                               size="sm"
@@ -1636,9 +1630,10 @@ export function PortfolioActivityEditor() {
                         flexGrow={1}
                         overflow="scroll"
                         w="100%"
+                        id="viewer-container"
                       >
                         <>
-                          <PageViewer
+                          <DoenetML
                             doenetML={viewerDoenetML}
                             flags={{
                               showCorrectness: true,
@@ -1653,15 +1648,25 @@ export function PortfolioActivityEditor() {
                               allowSaveEvents: false,
                             }}
                             attemptNumber={1}
-                            generatedVariantCallback={variantCallback} //TODO:Replace
+                            generatedVariantCallback={setVariants}
                             requestedVariantIndex={variants.index}
                             // setIsInErrorState={setIsInErrorState}
                             setErrorsAndWarningsCallback={
                               setErrorsAndWarningsCallback
                             }
-                            pageIsActive={true}
+                            idsIncludeActivityId={false}
+                            paginate={true}
+                            location={location}
+                            navigate={navigate}
+                            linkSettings={{
+                              viewURL: "/portfolioviewer",
+                              editURL: "/publiceditor",
+                            }}
+                            scrollableContainer={
+                              document.getElementById("viewer-container") ||
+                              undefined
+                            }
                           />
-                          <Box marginBottom="50vh" />
                         </>
                       </Box>
                     </VStack>
@@ -1700,6 +1705,7 @@ export function PortfolioActivityEditor() {
                       borderBottom="solid 1px"
                       borderColor="doenet.mediumGray"
                       w="100%"
+                      id="codeEditorContainer"
                     >
                       <Box
                         height={`calc(100vh - 166px)`}
@@ -1782,7 +1788,7 @@ export function PortfolioActivityEditor() {
                     spacing={0}
                     margin="10px 0px 10px 0px" //Only need when there is an outline
                   >
-                    {variants.allPossibleVariants.length > 1 && (
+                    {variants.numVariants > 1 && (
                       <Box bg="doenet.lightBlue" h="32px" width="100%">
                         <VariantSelect
                           size="sm"
@@ -1801,7 +1807,7 @@ export function PortfolioActivityEditor() {
                     )}
                     <Box
                       h={
-                        variants.allPossibleVariants.length > 1
+                        variants.numVariants > 1
                           ? "calc(100vh - 132px)"
                           : "calc(100vh - 100px)"
                       }
@@ -1813,9 +1819,10 @@ export function PortfolioActivityEditor() {
                       flexGrow={1}
                       overflow="scroll"
                       w="100%"
+                      id="viewer-container"
                     >
                       <>
-                        <PageViewer
+                        <DoenetML
                           doenetML={viewerDoenetML}
                           flags={{
                             showCorrectness: true,
@@ -1830,12 +1837,22 @@ export function PortfolioActivityEditor() {
                             allowSaveEvents: false,
                           }}
                           attemptNumber={1}
-                          generatedVariantCallback={variantCallback} //TODO:Replace
+                          generatedVariantCallback={setVariants} //TODO:Replace
                           requestedVariantIndex={variants.index}
                           // setIsInErrorState={setIsInErrorState}
-                          pageIsActive={true}
+                          idsIncludeActivityId={false}
+                          paginate={true}
+                          location={location}
+                          navigate={navigate}
+                          linkSettings={{
+                            viewURL: "/portfolioviewer",
+                            editURL: "/publiceditor",
+                          }}
+                          scrollableContainer={
+                            document.getElementById("viewer-container") ||
+                            undefined
+                          }
                         />
-                        <Box marginBottom="50vh" />
                       </>
                     </Box>
                   </VStack>

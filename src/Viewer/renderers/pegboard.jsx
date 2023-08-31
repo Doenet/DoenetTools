@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BASE_LAYER_OFFSET, BoardContext } from "./graph";
 import me from "math-expressions";
 
 export default React.memo(function Pegboard(props) {
   let { name, id, SVs, actions, sourceOfUpdate, callAction } =
-    useDoenetRender(props);
+    useDoenetRenderer(props);
 
   Pegboard.ignoreActionsWithoutCore = () => true;
 

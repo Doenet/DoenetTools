@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET, POINT_LAYER_OFFSET } from "./graph";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
 import {
   characterizeOffGraphCircleArc,
   characterizeOffGraphPoint,
@@ -15,9 +13,10 @@ import {
   normalizePointSize,
   normalizePointStyle,
 } from "./utils/graph";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function Circle(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
 
   Circle.ignoreActionsWithoutCore = () => true;
 
@@ -53,7 +52,7 @@ export default React.memo(function Circle(props) {
   fixed.current = SVs.fixed;
   fixLocation.current = !SVs.draggable || SVs.fixLocation || SVs.fixed;
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount
