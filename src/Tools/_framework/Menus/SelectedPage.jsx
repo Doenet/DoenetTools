@@ -1,7 +1,7 @@
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   itemByDoenetId,
   selectedCourseItems,
@@ -15,6 +15,8 @@ import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonG
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import ActionButton from "../../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
+import { useNavigate } from "react-router";
+import { selectedMenuPanelAtom } from "../Panels/NewMenuPanel";
 
 export default function SelectedPage() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -42,6 +44,20 @@ export default function SelectedPage() {
       setItemTextFieldLabel(pageObj.label);
     }
   }, [pageId]); //Only check when the pageId changes
+
+  const navigate = useNavigate();
+  let clearSelections = useRecoilCallback(({ snapshot, set }) => async () => {
+    const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom, null);
+    set(selectedCourseItems, []);
+    for (let deselectId of selectedItems) {
+      set(itemByDoenetId(deselectId), (was) => {
+        let newObj = { ...was };
+        newObj.isSelected = false;
+        return newObj;
+      });
+    }
+  });
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
@@ -75,15 +91,9 @@ export default function SelectedPage() {
           value="Edit Page"
           dataTest="Edit Page"
           onClick={() => {
-            setPageToolView({
-              page: "course",
-              tool: "editor",
-              view: "",
-              params: {
-                pageId,
-                doenetId,
-              },
-            });
+            //Deselect and navigate to editor
+            clearSelections();
+            navigate(`/courseactivityeditor/${doenetId}/${pageId}`);
           }}
         />
       </ActionButtonGroup>

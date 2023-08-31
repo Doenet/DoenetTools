@@ -2,7 +2,12 @@ import { faFileCode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toastType, useToast } from "@Toast";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState, atom } from "recoil";
+import {
+  useRecoilValue,
+  useSetRecoilState,
+  atom,
+  useRecoilCallback,
+} from "recoil";
 import { useActivity } from "../../../_reactComponents/Activity/ActivityActions";
 import {
   AssignedDate,
@@ -44,10 +49,13 @@ import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
 import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
 import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
+import { useNavigate } from "react-router";
+import { selectedMenuPanelAtom } from "../Panels/NewMenuPanel";
 
 export default function SelectedActivity() {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const doenetId = useRecoilValue(selectedCourseItems)[0];
+
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { canEditContent } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
@@ -64,6 +72,20 @@ export default function SelectedActivity() {
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
+
+  const navigate = useNavigate();
+  let clearSelections = useRecoilCallback(({ snapshot, set }) => async () => {
+    const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom, null);
+    set(selectedCourseItems, []);
+    for (let deselectId of selectedItems) {
+      set(itemByDoenetId(deselectId), (was) => {
+        let newObj = { ...was };
+        newObj.isSelected = false;
+        return newObj;
+      });
+    }
+  });
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
@@ -109,17 +131,11 @@ export default function SelectedActivity() {
               if (firstPageDoenetId == null) {
                 addToast(`ERROR: No page found in activity`, toastType.INFO);
               } else {
-                setPageToolView((prev) => {
-                  return {
-                    page: "course",
-                    tool: "editor",
-                    view: prev.view,
-                    params: {
-                      doenetId,
-                      pageId: firstPageDoenetId,
-                    },
-                  };
-                });
+                //Deselect and navigate to editor
+                clearSelections();
+                navigate(
+                  `/courseactivityeditor/${doenetId}/${firstPageDoenetId}`,
+                );
               }
             }}
           />

@@ -17,7 +17,9 @@ import {
   itemByDoenetId,
   findFirstPageOfActivity,
   coursePermissionsAndSettingsByCourseId,
+  selectedCourseItems,
 } from "../../../_reactComponents/Course/CourseActions";
+import { useNavigate } from "react-router";
 
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
@@ -114,6 +116,20 @@ export default function NavigationPanel() {
       },
   );
 
+  const navigate = useNavigate();
+  let clearSelections = useRecoilCallback(({ snapshot, set }) => async () => {
+    const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom, null);
+    set(selectedCourseItems, []);
+    for (let deselectId of selectedItems) {
+      set(itemByDoenetId(deselectId), (was) => {
+        let newObj = { ...was };
+        newObj.isSelected = false;
+        return newObj;
+      });
+    }
+  });
+
   const doubleClickItem = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ doenetId, courseId }) => {
@@ -123,28 +139,13 @@ export default function NavigationPanel() {
           effectivePermissionsByCourseId(courseId),
         );
         if (clickedItem.type == "page") {
-          set(pageToolViewAtom, (prev) => {
-            return {
-              page: "course",
-              tool: "editor",
-              view: prev.view,
-              params: {
-                pageId: doenetId,
-                doenetId: clickedItem.containingDoenetId,
-              },
-            };
-          });
+          clearSelections();
+          navigate(
+            `/courseactivityeditor/${clickedItem.containingDoenetId}/${doenetId}`,
+          );
         } else if (clickedItem.type == "pageLink") {
-          set(pageToolViewAtom, (prev) => {
-            return {
-              page: "course",
-              tool: "editor",
-              view: prev.view,
-              params: {
-                linkPageId: doenetId,
-              },
-            };
-          });
+          clearSelections();
+          navigate(`/courselinkpageviewer/${doenetId}/`);
         } else if (clickedItem.type == "activity") {
           if (canEditContent == "1") {
             //Find first page
@@ -152,14 +153,8 @@ export default function NavigationPanel() {
             if (pageDoenetId == null) {
               //addToast(`ERROR: No page found in activity`, toastType.INFO);
             } else {
-              set(pageToolViewAtom, (prev) => {
-                return {
-                  page: "course",
-                  tool: "editor",
-                  view: prev.view,
-                  params: { doenetId, pageId: pageDoenetId },
-                };
-              });
+              clearSelections();
+              navigate(`/courseactivityeditor/${doenetId}/${pageDoenetId}`);
             }
           } else {
             set(pageToolViewAtom, {

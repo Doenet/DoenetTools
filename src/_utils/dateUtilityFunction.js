@@ -39,6 +39,15 @@ export function formatAMPM(date) {
   return strTime;
 }
 
+export function UTCDateStringToLocalTimeChakraString(utcTimeString) {
+  const utcDate = new Date(utcTimeString + "Z");
+  const localDate = new Date(
+    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000,
+  );
+  return localDate.toISOString().slice(0, 16); //Chops seconds off
+  // return localDate.toISOString().slice(0, 19);
+}
+
 export function DateToUTCDateString(date) {
   var pad = function (num) {
     return ("00" + num).slice(-2);
@@ -91,6 +100,23 @@ export function DateToDateString(date) {
     pad(date.getMinutes()) +
     ":" +
     pad(date.getSeconds())
+  );
+}
+
+export function DateToDateStringNoSeconds(date) {
+  var pad = function (num) {
+    return ("00" + num).slice(-2);
+  };
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    " " +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes())
   );
 }
 

@@ -151,9 +151,10 @@ if ($success){
         label,
         creationDate,
         sortOrder,
-        jsonDefinition)
+        jsonDefinition,
+        imagePath)
         VALUES
-        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$sortOrder','$jsonDefinition','/activity_default.jpg');
         ";
         $conn->query($sql);
 
@@ -248,9 +249,10 @@ if ($success){
     creationDate,
     isAssigned,
     sortOrder,
-    jsonDefinition)
+    jsonDefinition,
+    imagePath)
     VALUES
-    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isAssigned','$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isAssigned','$sortOrder','$jsonDefinition','/activity_default.jpg')
     ";
     
     $result = $conn->query($sql); 
