@@ -194,137 +194,215 @@ describe("Course Editor Tests", function () {
     cy.get('[data-test="learning outcome 0"]').should("have.value", "");
   });
 
+  it("Assignment Assigned and Settings stay", () => {
+    const userId = "cyuserId";
+    const studentUserId = "cyStudentUserId";
+    const courseId = "courseid4";
 
-  // it("Portfolio Editor Varient Control Shows Up", () => {
-  //   const label = "Portfolio Variant Control";
-  //   const text1 = "Hello World";
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+    cy.signin({ userId });
+    cy.visit(`course?tool=navigation&courseId=${courseId}`);
 
-  //   cy.log("Make an activity in the portfolio");
-  //   cy.get('[data-test="Portfolio"]').click();
-  //   cy.get('[data-test="Add Activity"]').click();
+    cy.log('Add single page activity')
+    cy.get('[data-test="Add Activity Button"]').click();
+    cy.get(".navigationRow").last().dblclick();
+    cy.get('[data-test="Controls Button"]').click();
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("not.exist");
+    cy.log('Assign the activity')
+    cy.get('[data-test="Presentation Tab"]').click({ force: true });
+    cy.get('[data-test="Assign Button"]').eq(0).click();
+    cy.get('[data-test="Alert Title"]').contains("Activity is assigned.");
 
-  //   cy.get('[data-test="Controls Button"]').click();
-  //   cy.get('[data-test="Activity Label"]').clear().type(label).blur();
-  //   cy.get('[data-test="Close Settings Button"]').click();
+    cy.log('Presentation Controls')
+    cy.get('[data-test="Individualize"] input').should('not.be.checked');
+    cy.get('[data-test="Individualize"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Activity individualized.");
+    cy.get('[data-test="Individualize"] input').should('be.checked');
 
-  //   cy.log("Enter content without need of a variant");
+    cy.get('[data-test="Show Solution"] input').should('be.checked');
+    cy.get('[data-test="Show Solution"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Solution will be hidden for users taking activity.");
+    cy.get('[data-test="Show Solution"] input').should('not.be.checked');
 
-  //   cy.get(".cm-content").type(`<p>${text1}</p> {enter}`);
+    cy.get('[data-test="Time Limit"] input').eq(0).should('not.be.checked');
+    cy.get('[data-test="Time Limit"]').eq(0).click();
+    cy.get('[data-test="Alert Title"]').contains("Time limit of 60 minutes for activity.");
+    cy.get('[data-test="Time Limit"] input').eq(0).should('be.checked');
+    cy.get('[data-test="Time Limit Increment button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Time limited to 65 minutes for activity.");
 
-  //   cy.get('[data-test="Viewer Update Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", text1);
+    cy.get('[data-test="Show Feedback"] input').should('be.checked');
+    cy.get('[data-test="Show Feedback"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown feedback for activity.");
+    cy.get('[data-test="Show Feedback"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("not.exist");
+    cy.get('[data-test="Show Hints"] input').should('be.checked');
+    cy.get('[data-test="Show Hints"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown hints for activity.");
+    cy.get('[data-test="Show Hints"] input').should('not.be.checked');
 
-  //   cy.log("Enter content that does need of a variant");
+    cy.get('[data-test="Show Correctness"] input').should('be.checked');
+    cy.get('[data-test="Show Correctness"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown correctness for activity.");
+    cy.get('[data-test="Show Correctness"] input').should('not.be.checked');
 
-  //   cy.get(".cm-content").type(`{ctrl+end}<selectFromSequence /> {enter}`);
+    cy.get('[data-test="Show Credit Achieved"] input').should('be.checked');
+    cy.get('[data-test="Show Credit Achieved"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown credit achieved for activity.");
+    cy.get('[data-test="Show Credit Achieved"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("not.exist");
+    cy.get('[data-test="Paginate"] input').should('be.checked');
+    cy.get('[data-test="Paginate"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown pagination for activity.");
+    cy.get('[data-test="Paginate"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Viewer Update Button"]').click();
+    cy.get('[data-test="Show Finish Button"] input').should('not.be.checked');
+    cy.get('[data-test="Show Finish Button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will be shown finish button for activity.");
+    cy.get('[data-test="Show Finish Button"] input').should('be.checked');
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("exist");
-  //   cy.get(cesc2("#/_document1")).should("contain", "1");
+    cy.get('[data-test="AutoSubmit"] input').should('not.be.checked');
+    cy.get('[data-test="AutoSubmit"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will automatically submit activity.");
+    cy.get('[data-test="AutoSubmit"] input').should('be.checked');
 
-  //   cy.log("Change the variants with the control");
+    cy.get('[data-test="Can View After Completed"] input').should('be.checked');
+    cy.get('[data-test="Can View After Completed"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be allowed viewing after taking activity.");
+    cy.get('[data-test="Can View After Completed"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Variant Select Down Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "2");
 
-  //   cy.get('[data-test="Variant Select Up Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "1");
+    cy.log('Assign Controls')
+    cy.get('[data-test="Assign Tab"]').click();
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').click();
-  //   cy.get('[data-test="Variant Select Menu Item 2"]').click();
+    cy.get('[data-test="assign date"]').type('2023-08-29T01:23').blur();
+    cy.get('[data-test="Alert Title"]').contains("Assigned date set.");
 
-  //   cy.get(cesc2("#/_document1")).should("contain", "3");
+    cy.get('[data-test="due date"]').type('2023-09-01T04:56').blur();
+    cy.get('[data-test="Alert Title"]').contains("Due date set.");
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').click();
-  //   cy.get('[data-test="Variant Select Filter Input"]')
-  //     .clear()
-  //     .type("d")
-  //     .blur();
-  //   cy.get('[data-test="Variant Select Menu Item 0"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "4");
+    cy.get('[data-test="Pin Assignment"] input').should('not.be.checked');
+    cy.get('[data-test="Pin Assignment"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Activity pinned.");
+    cy.get('[data-test="Pin Assignment"] input').should('be.checked');
 
-  //   cy.log("View Variant Select keeps sync with Edit");
-  //   cy.get('[data-test="View Mode Button"]').click();
+    cy.get('[data-test="Proctor Makes Available"] input').should('not.be.checked');
+    cy.get('[data-test="Proctor Makes Available"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Activity only allowed in a proctored exam.");
+    cy.get('[data-test="Proctor Makes Available"] input').should('be.checked');
 
-  //   cy.get(cesc2("#/_document1")).should("contain", "4");
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("contain", "d");
+    cy.log('Grade Controls')
+    cy.get('[data-test="Grade Tab"]').click();
 
-  //   cy.get('[data-test="Variant Select Down Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "5");
+    cy.get('[data-test="Total Points NumberInputField"]').should("have.value", "10");
+    cy.get('[data-test="Total Points Increment button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Total points or percent set to 15.");
+    cy.get('[data-test="Total Points NumberInputField"]').should("have.value", "15");
 
-  //   cy.get('[data-test="Variant Select Up Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "4");
+    cy.get('[data-test="Grade Category"]').select('exams');
+    cy.get('[data-test="Alert Title"]').contains("Grade category set to exams.");
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').click();
-  //   cy.get('[data-test="Variant Select Menu Item 5"]').click();
+    cy.get('[data-test="Number of Attempts Allowed Checkbox"] input').should('not.be.checked');
+    cy.get('[data-test="Number of Attempts Allowed Checkbox"]').click();
+    cy.get('[data-test="Alert Title"]').contains("1 attempt allowed.");
+    cy.get('[data-test="Number of Attempts Allowed Checkbox"] input').should('be.checked');
+    cy.get('[data-test="Number of Attempts Increment button"]').click();
+    cy.get('[data-test="Alert Title"]').contains("2 attempts allowed.");
 
-  //   cy.get(cesc2("#/_document1")).should("contain", "6");
+    cy.get('[data-test="Attempt Aggregation"]').select('Last Attempt');
+    cy.get('[data-test="Alert Title"]').contains("Aggregate attempts is based on score of last attempt.");
 
-  //   cy.get('[data-test="Edit Mode Button"]').click();
+    cy.get('[data-test="Show Solution In Gradebook"] input').should('be.checked');
+    cy.get('[data-test="Show Solution In Gradebook"]').click();
+    cy.get('[data-test="Alert Title"]').contains("User will not be shown solution in gradebook.");
+    cy.get('[data-test="Show Solution In Gradebook"] input').should('not.be.checked');
 
-  //   cy.get(cesc2("#/_document1")).should("contain", "6");
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("contain", "f");
+    cy.log('General Controls')
+    cy.get('[data-test="General Tab"]').click({ force: true })
+    cy.get('[data-test="Public Checkbox"] input').should('not.be.checked');
+    cy.get('[data-test="Public Checkbox"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Activity is public.");
+    cy.get('[data-test="Public Checkbox"] input').should('be.checked');
 
-  //   cy.get('[data-test="Controls Button"]').click();
-  //   cy.get(".chakra-checkbox__control").click();
-  //   cy.get('[data-test="Close Settings Button"]').click();
+    cy.get('[data-test="Show DoenetML Checkbox"] input').should('not.be.checked');
+    cy.get('[data-test="Show DoenetML Checkbox"]').click();
+    cy.get('[data-test="Alert Title"]').contains("Users can see the source of the activity.");
+    cy.get('[data-test="Show DoenetML Checkbox"] input').should('be.checked');
 
-  //   cy.log("sign in as someone else and open the public activity");
-  //   cy.signin({ userId2 });
+    cy.log('Go back to the old code and return to make sure the settings saved and load back')
+    cy.get('[data-test="Close Settings Button"]').click();
+    cy.get('[data-test="Close"]').click();
+    cy.get(".navigationRow").last().dblclick();
+    cy.get('[data-test="Controls Button"]').click();
 
-  //   cy.get('[data-test="Community"]').click();
+    cy.log("Check General Controls")
+    cy.get('[data-test="Public Checkbox"] input').should('be.checked');
+    cy.get('[data-test="Show DoenetML Checkbox"] input').should('be.checked');
 
-  //   cy.get('[data-test="Search"]').clear().type(`${label}{enter}`);
+    cy.log("Check Presentation Controls")
+    cy.get('[data-test="Presentation Tab"]').click({ force: true });
+    cy.get('[data-test="Individualize"] input').should('be.checked');
+    cy.get('[data-test="Show Solution"] input').should('not.be.checked');
+    cy.get('[data-test="Time Limit"] input').eq(0).should('be.checked');
+    cy.get('[data-test="Time Limit NumberInputField"]').should("have.value", "65");
+    cy.get('[data-test="Show Feedback"] input').should('not.be.checked');
+    cy.get('[data-test="Show Hints"] input').should('not.be.checked');
+    cy.get('[data-test="Show Correctness"] input').should('not.be.checked');
+    cy.get('[data-test="Show Credit Achieved"] input').should('not.be.checked');
+    cy.get('[data-test="Paginate"] input').should('not.be.checked');
+    cy.get('[data-test="Show Finish Button"] input').should('be.checked');
+    cy.get('[data-test="AutoSubmit"] input').should('be.checked');
+    cy.get('[data-test="Can View After Completed"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"]')
-  //     .eq(0)
-  //     .click();
+    cy.log("Check Assign Controls")
+    cy.get('[data-test="Assign Tab"]').click({ force: true });
+    cy.get('[data-test="Pin Assignment"] input').should('be.checked');
+    cy.get('[data-test="Proctor Makes Available"] input').should('be.checked');
 
-  //   cy.log("Change the variants using the selector");
+    cy.log("Check Grade Controls")
+    cy.get('[data-test="Grade Tab"]').click({ force: true });
+    cy.get('[data-test="Total Points NumberInputField"]').should("have.value", "15");
+    cy.get('[data-test="Number of Attempts Allowed Checkbox"] input').should('be.checked');
+    cy.get('[data-test="Number of Attempts Allowed NumberInputfield"]').should("have.value", "2");
+    cy.get('[data-test="Show Solution In Gradebook"] input').should('not.be.checked');
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("exist");
-  //   cy.get('[data-test="Variant Select Down Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "2");
+  });
 
-  //   cy.get('[data-test="Variant Select Up Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "1");
 
-  //   cy.get('[data-test="Variant Select Menu Button"]').click();
-  //   cy.get('[data-test="Variant Select Menu Item 2"]').click();
+  it("Collection page", () => {
+    const collection1Label = "Renamed Collection 1";
+    const page1Label = "Renamed Collection Page 1";
+    const page1Labelb = "Renamed Collection Page 1 2nd time";
+    const userId = "cyuserId";
+    const studentUserId = "cyStudentUserId";
+    const courseId = "courseid4";
 
-  //   cy.get(cesc2("#/_document1")).should("contain", "3");
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+    cy.signin({ userId });
+    cy.visit(`course?tool=navigation&courseId=${courseId}`);
 
-  //   cy.log("Try the public editor");
+    cy.log("Open Editor to a page in the collection");
+    cy.get('[data-test="Add Collection Button"]').click();
+    cy.get(".navigationRow").last().click();
+    cy.get('[data-test="Add Page"]').click();
+    cy.wait(500);
+    cy.get('.navigationRow').eq(0).find('[data-test="folderToggleOpenIcon"]').click({ force: true });
+    cy.get(".navigationRow").eq(1).dblclick();
+    cy.get('[data-test="Editable Page Label Preview"]').click();
+    cy.get('[data-test="Editable Page Label Input"]').clear().type(page1Label).blur();
+    cy.wait(500); //Needed as we don't yet have alerts in the editor tool yet
+    cy.get('[data-test="Controls Button"]').click();
+    cy.get('[data-test="Page Label"]').should("have.value", page1Label);
+    cy.get('[data-test="Page Label"]').clear().type(page1Labelb).blur();
+    cy.get('[data-test="Collection Label"]').clear().type(collection1Label).blur();
+    cy.get('[data-test="Alert Title"]').contains("Collection Label Updated");
+    cy.get('[data-test="Close Settings Button"]').click();
+    cy.get('[data-test="Close"]').click();
+    cy.get(".navigationRow").last().contains(page1Labelb);
+    cy.get(".navigationRow").eq(0).contains(collection1Label);
+  });
 
-  //   cy.get('[data-test="See Inside"]').click();
 
-  //   cy.wait(500); //Need this to wait for the public editor to spin up
-
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("exist");
-
-  //   cy.get('[data-test="Variant Select Down Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "2");
-
-  //   cy.get('[data-test="Variant Select Up Button"]').click();
-  //   cy.get(cesc2("#/_document1")).should("contain", "1");
-
-  //   cy.get('[data-test="Variant Select Menu Button"]').click();
-  //   cy.get('[data-test="Variant Select Menu Item 2"]').click();
-
-  //   cy.get(cesc2("#/_document1")).should("contain", "3");
-
-  //   cy.log("Delete the variant DoenetML code");
-
-  //   cy.get(".cm-content").clear().type("<p>Hello World</p>");
-  //   cy.get('[data-test="Viewer Update Button"]').click();
-  //   cy.get('[data-test="Variant Select Menu Button"]').should("not.exist");
-  //   cy.get(cesc2("#/_document1")).should("contain", "Hello World");
-  // });
 });

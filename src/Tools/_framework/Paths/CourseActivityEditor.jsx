@@ -926,6 +926,7 @@ function PresentationControls({
           pageId={pageId}
           revalidator={revalidator}
           setAlerts={setAlerts}
+          data-test="Assign Button"
         />
       </>
     );
@@ -1143,6 +1144,7 @@ function PresentationControlsAssigned({
           step={5}
           value={timeLimit}
           width="100px"
+          data-test="Time Limit NumberInput"
           isDisabled={timeLimit == ""}
           onChange={(value) => {
             value = Math.floor(value); //Limit to integers
@@ -1172,10 +1174,10 @@ function PresentationControlsAssigned({
             );
           }}
         >
-          <NumberInputField />
+          <NumberInputField data-test="Time Limit NumberInputField" />
           <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
+            <NumberIncrementStepper data-test="Time Limit Increment button" />
+            <NumberDecrementStepper data-test="Time Limit Decrement button" />
           </NumberInputStepper>
         </NumberInput>
       </Flex>
@@ -1629,6 +1631,7 @@ function AssignControls({
           pageId={pageId}
           revalidator={revalidator}
           setAlerts={setAlerts}
+          data-test="Assign Button"
         />
       </>
     );
@@ -1712,6 +1715,7 @@ function AssignControlsAssigned({
           size="md"
           type="datetime-local"
           value={assignedDate}
+          data-test="assign date"
           onChange={(e) => {
             setAssignedDate(e.target.value);
           }}
@@ -1763,6 +1767,7 @@ function AssignControlsAssigned({
           size="md"
           type="datetime-local"
           value={dueDate}
+          data-test="due date"
           onChange={(e) => {
             setDueDate(e.target.value);
           }}
@@ -1926,6 +1931,7 @@ function AssignControlsAssigned({
               placeholder="Select Date and Time"
               size="md"
               type="datetime-local"
+              data-test="pinned after date"
               value={pinnedAfterDate}
               isDisabled={pinnedAfterDate == ""}
               onChange={(e) => {
@@ -1975,6 +1981,7 @@ function AssignControlsAssigned({
               placeholder="Select Date and Time"
               size="md"
               type="datetime-local"
+              data-test="pinned until date"
               isDisabled={pinnedUntilDate == ""}
               value={pinnedUntilDate}
               onChange={(e) => {
@@ -2100,6 +2107,7 @@ function GradeControls({
           pageId={pageId}
           revalidator={revalidator}
           setAlerts={setAlerts}
+          data-test="Assign Button"
         />
       </>
     );
@@ -2171,6 +2179,7 @@ function GradeControlsAssigned({
           step={5}
           value={totalPointsOrPercent}
           width="100px"
+          data-test="Total Points"
           onChange={(value) => {
             let title = `Attempting to set total points or percent to ${value}.`;
             let nextSuccessMessage = `Total points or percent set to ${value}.`;
@@ -2202,10 +2211,10 @@ function GradeControlsAssigned({
             );
           }}
         >
-          <NumberInputField />
+          <NumberInputField data-test="Total Points NumberInputField" />
           <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
+            <NumberIncrementStepper data-test="Total Points Increment button" />
+            <NumberDecrementStepper data-test="Total Points Decrement button" />
           </NumberInputStepper>
         </NumberInput>
       </Flex>
@@ -2266,7 +2275,7 @@ function GradeControlsAssigned({
       <Flex>
         <Checkbox
           size="lg"
-          data-test="Time Limit"
+          data-test="Number of Attempts Allowed Checkbox"
           name="numberOfAttemptsAllowed"
           isChecked={numberOfAttemptsAllowed > 0}
           onChange={(e) => {
@@ -2357,10 +2366,10 @@ function GradeControlsAssigned({
             );
           }}
         >
-          <NumberInputField />
+          <NumberInputField data-test="Number of Attempts Allowed NumberInputfield" />
           <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
+            <NumberIncrementStepper data-test="Number of Attempts Increment button" />
+            <NumberDecrementStepper data-test="Number of Attempts Decrement button" />
           </NumberInputStepper>
         </NumberInput>
       </Flex>
@@ -3074,6 +3083,8 @@ export function GeneralCollectionControls({
   setAlerts,
   setSuccessMessage,
   setKeyToUpdateState,
+  setActivityByDoenetId,
+  setPageByDoenetId,
 }) {
   let { isPublic, label, imagePath: dataImagePath, pageLabel } = activityData;
   if (!isPublic && activityData?.public) {
@@ -3192,7 +3203,7 @@ export function GeneralCollectionControls({
     }
   }, []); //Only on opening the drawer
 
-  function saveActivityLabel() {
+  function saveCollectionLabel() {
     // Turn on/off label error messages and
     // only set the value if it's not blank
     if (labelState == "") {
@@ -3200,6 +3211,7 @@ export function GeneralCollectionControls({
     } else {
       //Alert Messages
       setSuccessMessage("Collection Label Updated");
+      //Note: using activityLabel and not collectionLabel due to code reuse
       setKeyToUpdateState("activityLabel");
       setAlerts([
         {
@@ -3208,6 +3220,8 @@ export function GeneralCollectionControls({
           title: "Attempting to update collection label.",
         },
       ]);
+
+      setActivityByDoenetId((item) => ({ ...item, label: labelState }));
 
       if (labelIsInvalid) {
         setLabelIsInvalid(false);
@@ -3236,6 +3250,7 @@ export function GeneralCollectionControls({
         },
       ]);
 
+      setPageByDoenetId((item) => ({ ...item, label: pageLabelState }));
       if (pageLabelIsInvalid) {
         setPageLabelIsInvalid(false);
       }
@@ -3300,15 +3315,15 @@ export function GeneralCollectionControls({
             size="sm"
             width="100%"
             placeholder="Activity 1"
-            data-test="Activity Label"
+            data-test="Collection Label"
             value={labelState}
             onChange={(e) => {
               setLabel(e.target.value);
             }}
-            onBlur={saveActivityLabel}
+            onBlur={saveCollectionLabel}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                saveActivityLabel();
+                saveCollectionLabel();
               }
             }}
           />
@@ -3549,13 +3564,22 @@ function CourseActivitySettingsDrawer({
               >
                 Support Files
               </Tab>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
+              <Tab
+                onClick={() => (controlsTabsLastIndex.current = 2)}
+                data-test="Presentation Tab"
+              >
                 Presentation
               </Tab>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 3)}>
+              <Tab
+                onClick={() => (controlsTabsLastIndex.current = 3)}
+                data-test="Assign Tab"
+              >
                 Assign
               </Tab>
-              <Tab onClick={() => (controlsTabsLastIndex.current = 4)}>
+              <Tab
+                onClick={() => (controlsTabsLastIndex.current = 4)}
+                data-test="Grade Tab"
+              >
                 Grade
               </Tab>
             </TabList>
