@@ -81,10 +81,10 @@ export default function DraftAssignmentViewer() {
   // const loadProfile = useRecoilValueLoadable(profileAtom);
   // userId.current = loadProfile.contents.userId;
 
-  function variantCallback(variantIndex, numVariants) {
+  function variantCallback({ index, numVariants }) {
     // console.log(">>>variantCallback",variantIndex,numVariants)
     setVariantPanel({
-      index: variantIndex,
+      index,
       numVariants,
     });
   }
@@ -184,6 +184,11 @@ export default function DraftAssignmentViewer() {
 
   const scrollableContainer = document.getElementById("mainPanel");
 
+  const apiURLs = {
+    loadActivityState: "/api/loadActivityState.php",
+    loadPageState: "/api/loadPageState.php",
+  };
+
   return (
     <>
       <DoenetML
@@ -215,6 +220,7 @@ export default function DraftAssignmentViewer() {
           useQueryParameters: true,
         }}
         scrollableContainer={scrollableContainer}
+        apiURLs={apiURLs}
       />
     </>
   );
