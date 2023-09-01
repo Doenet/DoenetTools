@@ -99,7 +99,6 @@ if ($success){
   for ($i = 0; $i < count($newSourcePageDoenetIds); $i++){
     $sourcePage = $newSourcePageDoenetIds[$i];
     $label = $labels[$i];
-    $escapedLabel = mysqli_real_escape_string($conn, $label);
     $doenetId = include "randomId.php";
     $doenetId = "_" . $doenetId;
 
@@ -109,7 +108,7 @@ if ($success){
   INSERT INTO link_pages 
   (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
   VALUES
-  ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$sourceCollectionDoenetId','$sourcePage','$escapedLabel',NOW())
+  ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$sourceCollectionDoenetId','$sourcePage','$label',NOW())
   ";
   $conn->query($sql);
 
@@ -121,9 +120,6 @@ if ($success){
   }
 
   //update all page link files to source content
-  $sourcePageDoenetIds = [];
-  $linkPagesDoenetIds = [];
-
   $sql = "
   SELECT 
   sourcePageDoenetId,
@@ -136,8 +132,6 @@ if ($success){
     while($row = $result->fetch_assoc()){  
       $sourcePage = $row['sourcePageDoenetId'];
       $doenetId = $row['doenetId'];
-      array_push($sourcePageDoenetIds,$sourcePage);
-      array_push($linkPagesDoenetIds,$doenetId);
       //Copy the original file to the doenetId
       $sourceFile = "../media/byPageId/$sourcePage.doenet";
       $destinationFile = "../media/byPageId/$doenetId.doenet";
@@ -152,36 +146,6 @@ if ($success){
     
     }
   }
-  $nextLabels = [];
-
-  for($i = 0; $i < count($sourcePageDoenetIds);$i++){
-    $sourcePage = $sourcePageDoenetIds[$i];
-    $doenetId = $linkPagesDoenetIds[$i];
-
-    $sql = "
-    SELECT label
-    FROM pages
-    WHERE courseId = '$courseId'
-    AND doenetId = '$sourcePage'
-    ";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $label = $row['label'];
-    array_push($nextLabels,$label);
-    $escapedLabel = mysqli_real_escape_string($conn, $label);
-
-    $sql = "
-    UPDATE link_pages
-    SET label = '$escapedLabel'
-    WHERE courseId = '$courseId'
-      AND doenetId = '$doenetId'
-    ";
-    $conn->query($sql);
-  }
-
-
-
-  //Update the timeOfLastUpdate of the whole source collection 
   $sql = "
   UPDATE link_pages
   set timeOfLastUpdate=NOW()
@@ -196,8 +160,6 @@ $response_arr = array(
   "success"=>$success,
   "message"=>$message,
   "linkPageObjs"=>$linkPageObjs,
-  "linkPagesDoenetIds"=>$linkPagesDoenetIds,
-  "nextLabels"=>$nextLabels,
   );
 
 

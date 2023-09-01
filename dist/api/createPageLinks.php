@@ -110,14 +110,13 @@ if ($success){
       $result = $conn->query($sql);
       $row = $result->fetch_assoc();
       $nextLabel = $row['label'];
-      $escapedNextLabel = mysqli_real_escape_string($conn, $nextLabel);
       // $nextLabel = $row['label'] . " Link";
 
       $sql = "
       INSERT INTO link_pages 
       (courseId,containingDoenetId,parentDoenetId,doenetId,sourceCollectionDoenetId,sourcePageDoenetId,label,timeOfLastUpdate)
       VALUES
-      ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$collectionDoenetId','$sourcePage','$escapedNextLabel',NOW())
+      ('$courseId','$containingDoenetId','$parentDoenetId','$doenetId','$collectionDoenetId','$sourcePage','$nextLabel',NOW())
       ";
       $conn->query($sql);
 

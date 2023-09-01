@@ -21,17 +21,17 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 //Assume success and it already exists
-
-
-$success = 1;
-$existed = 1;
-$hasFullName = 0;
-$reason = "";
+$response_arr = array(
+"success" => 1,
+"existed" => 1,
+);
 
 //Check if it took longer than 10 minutes to enter the code
 if ($row['minutes'] > 10){
-    $success = 0;
-    $reason = "Code expired";
+    $response_arr = array(
+    "success" => 0,
+    "reason" => "Code expired",
+    );
 }else{
 
     $sql = "SELECT signInCode AS nineCode 
@@ -41,9 +41,10 @@ if ($row['minutes'] > 10){
     $row = $result->fetch_assoc();
 
     if ($row["nineCode"] != $nineCode){
-        $success = 0;
-        $reason = "Invalid Code";
-       
+        $response_arr = array(
+        "success" => 0,
+        "reason" => "Invalid Code",
+        );
     }else{
         //Valid code and not expired
 
@@ -55,21 +56,17 @@ if ($row['minutes'] > 10){
 
         //Test if it's a new account
 
-        $sql = "SELECT firstName,lastName, screenName 
-        FROM user 
-        WHERE email='$emailaddress'
-        ";
+        $sql = "SELECT screenName FROM user WHERE email='$emailaddress'";
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
-
-        if ($row["firstName"] != "" && $row["lastName"] != ""){
-            $hasFullName = 1;
-        }
         
         //Only new accounts won't have a screen name
         if ($row["screenName"] === null){
         // New Account!
-        $existed = 0;
+        $response_arr = array(
+        "success" => 1,
+        "existed" => 0,
+        );
 
         // Make a new profile
         // Random screen name
@@ -94,12 +91,7 @@ if ($row['minutes'] > 10){
 }
 
 
-$response_arr = array(
-    "success" => $success,
-    "existed" => $existed,
-    "hasFullName" => $hasFullName,
-    "reason" => $reason,
-    );
+
 
 http_response_code(200);
 

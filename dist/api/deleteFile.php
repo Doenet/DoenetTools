@@ -28,6 +28,22 @@ if ($doenetId == ""){
 }
 //TODO: Do we need canEdit permission to delete?
 
+//Test if user has permission to delete files
+$canUpload = FALSE;
+$sql = "
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
+";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+if ($row['canUpload'] == '1'){$canUpload = TRUE;}
+
+if (!$canUpload){
+  $success = false;
+  $message = "You don't have permission to delete files.";
+}
+
 if ($success){
 
   //Is anyone using this cid file?
@@ -64,9 +80,14 @@ if ($success){
   ";
   $result = $conn->query($sql);
 
+
   list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
+
+
 }
+
+
 
 
 $response_arr = array(

@@ -38,7 +38,6 @@ $peopleArray = [];
 
 if ($success) {
     $sql = "SELECT
-        u.userId,
 		u.firstName,
 		u.lastName,
         u.screenName,
@@ -51,13 +50,12 @@ if ($success) {
 		FROM course_user AS cu, user AS u
 		WHERE cu.userId = u.userId 
         AND cu.courseId = '$courseId'
-		ORDER BY u.lastName
+		ORDER BY firstName
 		";
     $result = $conn->query($sql);
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $learner = [
-                'userId' => $row['userId'],
                 'firstName' => $row['firstName'],
                 'lastName' => $row['lastName'],
                 'screenName' => $row['screenName'],
@@ -74,7 +72,7 @@ if ($success) {
 }
 
 $response_arr = [
-    'success' => $success,
+    'success' => $allowed,
     'message' => $message,
     'peopleArray' => $peopleArray,
 ];

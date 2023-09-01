@@ -11,7 +11,6 @@ function getpermissionsAndSettings($conn, $userId)
       c.image,
       c.color,
       c.defaultRoleId,
-      c.canAutoEnroll,
       cr.roleId,
       cr.label as roleLabel,
       cr.isIncludedInGradebook,
@@ -37,14 +36,40 @@ function getpermissionsAndSettings($conn, $userId)
       ON c.courseId = cu.courseId
       WHERE cu.userId = '$userId'
       AND c.isDeleted = '0'
-      AND c.portfolioCourseForUserId IS NULL
       ORDER BY c.id DESC
       ";
 
     //TODO: Kevin, Emilio – discus True / Flase vs '1' / '0' returns
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
-        while ($oneCourse = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
+            $oneCourse = [
+                'courseId' => $row['courseId'],
+                'label' => $row['label'],
+                'isPublic' => $row['isPublic'],
+                'image' => $row['image'],
+                'color' => $row['color'],
+                'defaultRoleId' => $row['defaultRoleId'],
+                'roleId' => $row['roleId'],
+                'roleLabel' => $row['roleLabel'],
+                'isIncludedInGradebook' => $row['isIncludedInGradebook'],
+                'canViewContentSource' => $row['canViewContentSource'],
+                'canEditContent' => $row['canEditContent'],
+                'canPublishContent' => $row['canPublishContent'],
+                'canViewUnassignedContent' => $row['canViewUnassignedContent'],
+                'canProctor' => $row['canProctor'],
+                'canViewAndModifyGrades' => $row['canViewAndModifyGrades'],
+                'canViewActivitySettings' => $row['canViewActivitySettings'],
+                'canModifyActivitySettings' =>
+                    $row['canModifyActivitySettings'],
+                'canModifyCourseSettings' => $row['canModifyCourseSettings'],
+                'canViewUsers' => $row['canViewUsers'],
+                'canManageUsers' => $row['canManageUsers'],
+                'canViewCourse' => $row['canViewCourse'],
+                'isAdmin' => $row['isAdmin'],
+                'dataAccessPermission' => $row['dataAccessPermission'],
+                'isOwner' => $row['isOwner'],
+            ];
             array_push($permissionsAndSettings, $oneCourse);
         }
     }

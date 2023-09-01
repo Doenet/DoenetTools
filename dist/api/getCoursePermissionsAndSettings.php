@@ -7,33 +7,32 @@ header('Content-Type: application/json');
 
 require 'defineDBAndUserAndCourseInfo.php';
 
-$response_arr;
-try {
+$success = TRUE;
+$message = "";
 
-    if ($userId == '' && $examUserId == ''){
-      throw new Exception("You need to be signed in to view courses.");
-    }
 
-    $response_arr = array(
-      "success"=>$success,
-      "message"=>$message,
-      "permissionsAndSettings"=>$permissionsAndSettings,
-      );
-
-      // set response code - 200 OK
-      http_response_code(200);
-
-} catch (Exception $e) {
-    $response_arr = [
-        'success' => false,
-        'message' => $e->getMessage(),
-    ];
-    http_response_code(400);
-
-} finally {
-    // make it json format
-    echo json_encode($response_arr);
-    $conn->close();
+if ($userId == '' && $examUserId == ''){
+  $success = FALSE;
+  $message = "You need to be signed in to view courses.";
 }
+
+//Don't let them see the settings as they aren't public info
+if (!$success){
+  $permissionsAndSettings = [];
+}
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message,
+  "permissionsAndSettings"=>$permissionsAndSettings,
+  );
+
+
+// set response code - 200 OK
+http_response_code(200);
+
+// make it json format
+echo json_encode($response_arr);
+$conn->close();
 
 ?>

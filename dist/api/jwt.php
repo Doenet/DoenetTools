@@ -92,7 +92,7 @@ if ($row['minutes'] > 10) {
             $isSecure,
             false
         );
-        header('Location: /signin'); //needs to store profile into localstorage
+        header('Location: /#/signin'); //needs to store profile into localstorage
 
         // setcookie("JWT", $value, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
         // setcookie("JWT_JS", 1, array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));

@@ -10,7 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$doenetId = mysqli_real_escape_string($conn,$_REQUEST["activityId"]);
+$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $isCompleted = mysqli_real_escape_string($conn,$_REQUEST["isCompleted"]);
 
 $success = TRUE;

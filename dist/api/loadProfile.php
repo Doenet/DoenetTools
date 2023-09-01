@@ -9,9 +9,6 @@ include 'db_connection.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
-if ($userId == ""){
-    $userId = $jwtArray['examineeUserId'];
-}
 
 $result = $conn->query(
     "SELECT 

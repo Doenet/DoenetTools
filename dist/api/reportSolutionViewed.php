@@ -12,7 +12,7 @@ $examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examinee
 $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$doenetId = mysqli_real_escape_string($conn,$_POST["activityId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
 

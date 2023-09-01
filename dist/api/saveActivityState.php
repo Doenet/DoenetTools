@@ -15,7 +15,7 @@ $examDoenetId = $jwtArray["doenetId"];
 $device = $jwtArray["deviceName"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST["activityId"]);
+$doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
 $cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
