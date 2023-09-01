@@ -1947,11 +1947,10 @@ describe("Multipage activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2021,11 +2020,10 @@ describe("Multipage activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2099,11 +2097,10 @@ describe("Multipage activity tests", function () {
       "{moveToEnd}{enter}<p>What is 2+3? <answer name='ans2'>5</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2183,11 +2180,10 @@ describe("Multipage activity tests", function () {
       "{moveToEnd}{enter}<p>What is 2+4? <answer name='ans3'>6</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2320,11 +2316,10 @@ describe("Multipage activity tests", function () {
       "{moveToEnd}{enter}<p name='extra3'>Extra content 3</p>{enter}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2406,11 +2401,10 @@ describe("Multipage activity tests", function () {
       '<title>Page 1</title>{enter}<p>x: <answer name="ans">x</answer></p>{enter}',
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
+    cy.get('[data-test="Assign Activity"]').click();
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2510,11 +2504,12 @@ describe("Multipage activity tests", function () {
       '<problem name="prob">{enter}<p>2: <answer name="ans">2</answer></p>{enter}</problem>{enter}',
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500); // wait for update
 
-    cy.go("back");
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2598,11 +2593,12 @@ describe("Multipage activity tests", function () {
       '<problem name="prob">{enter}<p>2: <answer name="ans">2</answer></p>{enter}</problem>{enter}',
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.go("back");
+
+    cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500); // wait for update
 
-    cy.go("back");
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()

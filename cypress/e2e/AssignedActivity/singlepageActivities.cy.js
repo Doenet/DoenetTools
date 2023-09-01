@@ -1,31 +1,19 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 import { cesc } from "../../../src/_utils/url";
 
 describe("Single page activity tests", function () {
   const userId = "cyuserId";
   const studentUserId = "cyStudentUserId";
-  // const userId = "devuserId";
-  const courseId = "courseid1";
-  const doenetId = "activity1id";
-  const doenetId2 = "activity2id";
-  const pageDoenetId = "_page1id";
-  const pageDoenetId2 = "_page2id";
-  const pageDoenetId3 = "_page3id";
 
   const headerPixels = 40;
 
   before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
-    cy.createCourse({ userId, courseId, studentUserId });
   });
+
   beforeEach(() => {
     cy.signin({ userId });
     cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.clearAllOfAUsersActivities({ userId: studentUserId });
+    cy.clearAllOfAUsersActivities({ userId }); //Needed to be removed for parallel
+    cy.clearAllOfAUsersActivities({ userId: studentUserId }); //Needed to be removed for parallel
   });
 
   Cypress.on("uncaught:exception", (err, runnable) => {
@@ -50,6 +38,14 @@ describe("Single page activity tests", function () {
 
 </section>`;
 
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid1";
+    const doenetId = "spa_activity1id";
+    const pageDoenetId = "spa_page1id";
+
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
     cy.createActivity({
       courseId,
       doenetId,
@@ -133,6 +129,14 @@ describe("Single page activity tests", function () {
 
 </section>`;
 
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid2";
+    const doenetId = "spa_activity2id";
+    const pageDoenetId = "spa_page2id";
+
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
     cy.createActivity({
       courseId,
       doenetId,
@@ -298,6 +302,13 @@ describe("Single page activity tests", function () {
   });
 
   it("Links to activity", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid3";
+    const doenetId = "spa_activity3id";
+    const pageDoenetId = "spa_page3id";
+    const doenetId2 = "spa_activity3idb";
+    const pageDoenetId2 = "spa_page3idb";
+
     const doenetML = `
   <section>
     <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -319,6 +330,9 @@ describe("Single page activity tests", function () {
 <p><ref name="toAsideb" uri="doenet:doenetId=${doenetId}#\\/aside">Link to aside</ref></p>
 `;
 
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+
     cy.createActivity({
       courseId,
       doenetId,
@@ -330,7 +344,7 @@ describe("Single page activity tests", function () {
       courseId,
       doenetId: doenetId2,
       parentDoenetId: courseId,
-      pageDoenetId: pageDoenetId3,
+      pageDoenetId: pageDoenetId2,
       doenetML: doenetMLother,
     });
 
@@ -437,6 +451,12 @@ describe("Single page activity tests", function () {
   });
 
   it("Links to activity, inside aside", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid4";
+    const doenetId = "spa_activity4id";
+    const pageDoenetId = "spa_page4id";
+    const doenetId2 = "spa_activity4idb";
+    const pageDoenetId2 = "spa_page4idb";
     const doenetML = `
   <section>
     <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -458,6 +478,9 @@ describe("Single page activity tests", function () {
 <p><ref name="toInsideAsideb" uri="doenet:doenetId=${doenetId}#\\/insideAside">Link to inside aside</ref></p>
 `;
 
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+
     cy.createActivity({
       courseId,
       doenetId,
@@ -469,7 +492,7 @@ describe("Single page activity tests", function () {
       courseId,
       doenetId: doenetId2,
       parentDoenetId: courseId,
-      pageDoenetId: pageDoenetId3,
+      pageDoenetId: pageDoenetId2,
       doenetML: doenetMLother,
     });
 
@@ -576,6 +599,10 @@ describe("Single page activity tests", function () {
   });
 
   it("Go directly to URLs of activity", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid5";
+    const doenetId = "spa_activity5id";
+    const pageDoenetId = "spa_page5id";
     const doenetML = `
   <section>
     <p><ref name="toAside" target="aside">Link to aside</ref></p>
@@ -590,6 +617,9 @@ describe("Single page activity tests", function () {
     <lorem generateParagraphs="8" />
   
   </section>`;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -639,12 +669,19 @@ describe("Single page activity tests", function () {
   });
 
   it("Update to new version, infinite attempts allowed, separate student signin", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid15";
+    const doenetId = "spa_activity15id";
+    const pageDoenetId = "spa_page15id";
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -672,7 +709,9 @@ describe("Single page activity tests", function () {
     cy.get('[data-test="View Activity"]').click();
     cy.wait(2000);
 
-    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
+    cy.get(cesc("#\\/ans") + " textarea")
+      .type("2{enter}", { force: true });
+
     cy.get(cesc("#\\/credit")).should("have.text", "1");
     cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
     cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
@@ -705,7 +744,6 @@ describe("Single page activity tests", function () {
     cy.wait(1000);
 
     cy.signin({ userId });
-
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
     cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
@@ -715,10 +753,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+2? <answer><mathinput name='ans2' />3</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.go("back");
+    cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1000);
-    cy.go("back");
 
     cy.signin({ userId: studentUserId });
 
@@ -781,10 +819,11 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+
+    cy.go("back");
+    cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500);
-    cy.go("back");
 
     cy.signin({ userId: studentUserId });
 
@@ -805,12 +844,19 @@ describe("Single page activity tests", function () {
   });
 
   it("Update to new version, infinite attempts allowed, change roles", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid6";
+    const doenetId = "spa_activity6id";
+    const pageDoenetId = "spa_page6id";
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -871,11 +917,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500)
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -938,12 +983,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-    cy.wait(1000);
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500)
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -963,13 +1006,21 @@ describe("Single page activity tests", function () {
     cy.get('[data-test="Assignment Percent"]').should("have.text", "100%");
   });
 
+  //Note: only runs once - needs work
   it("Update to new version, one attempt allowed", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid8";
+    const doenetId = "spa_activity8id";
+    const pageDoenetId = "spa_page8id";
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1015,11 +1066,11 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1078,11 +1129,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1125,11 +1175,12 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1162,11 +1213,11 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1196,12 +1247,19 @@ describe("Single page activity tests", function () {
   });
 
   it("Update to new version, two attempts allowed", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid10";
+    const doenetId = "spa_activity10id";
+    const pageDoenetId = "spa_page10id";
     const doenetML = `
   <problem name="prob">
     <p>What is <m>1+1</m>? <answer name="ans">2</answer></p>
     <p>Current response: <copy source="ans.currentResponse" assignNames="cr" /></p>
     <p>Credit: <copy source="prob.creditAchieved" assignNames="credit" /></p>
   </problem >`;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1210,6 +1268,7 @@ describe("Single page activity tests", function () {
       pageDoenetId,
       doenetML,
     });
+
 
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
@@ -1273,11 +1332,11 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
+
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1353,11 +1412,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1399,11 +1457,11 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
 
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1452,11 +1510,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1508,6 +1565,10 @@ describe("Single page activity tests", function () {
   });
 
   it("Clicking links does not give update version prompt", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid11";
+    const doenetId = "spa_activity11id";
+    const pageDoenetId = "spa_page11id";
     const doenetML = `
 <section name="sect">
   <title>Info only</title>
@@ -1534,6 +1595,9 @@ describe("Single page activity tests", function () {
 
 </section >
 `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1607,11 +1671,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p name='extra'>Extra content</p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1627,6 +1690,10 @@ describe("Single page activity tests", function () {
   });
 
   it("Presence of video does not give update version prompt", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid12";
+    const doenetId = "spa_activity12id";
+    const pageDoenetId = "spa_page12id";
     const doenetML = `
 <title>A video</title>
 <video youtube="tJ4ypc5L6uU" width="640px" height="360px" name="v" />
@@ -1638,6 +1705,9 @@ describe("Single page activity tests", function () {
   <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
 </p>
 `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1679,11 +1749,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p name='more1'>More content 1</p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1718,11 +1787,10 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p name='more2'>More content 2</p>{enter}{ctrl+s}",
     );
 
-    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
-    cy.get('[data-test="Assign Activity"]').click();
-    cy.get('[data-test="Unassign Activity"]').should("be.visible");
-
     cy.go("back");
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1742,6 +1810,10 @@ describe("Single page activity tests", function () {
   });
 
   it("Auto submit answers", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid13";
+    const doenetId = "spa_activity13id";
+    const pageDoenetId = "spa_page13id";
     const doenetML = `
 <p>Enter x: <answer name="x">x</answer></p>
 <p>Enter hello: <answer type="text" name="hello">hello</answer></p>
@@ -1750,6 +1822,9 @@ describe("Single page activity tests", function () {
 <graph><point name="P" /></graph>
 <answer name="firstQuad"><award><when>$P.x >0 and $P.y > 0</when></award></answer>
 `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1840,6 +1915,10 @@ describe("Single page activity tests", function () {
   });
 
   it("reload text answer without blurring or hitting enter", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid14";
+    const doenetId = "spa_activity14id";
+    const pageDoenetId = "spa_page14id";
     const doenetML = `
     <p>Enter 1: <answer>
       <textinput name="ti" />
@@ -1847,6 +1926,9 @@ describe("Single page activity tests", function () {
     </answer>
     </p>
 `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,
@@ -1886,6 +1968,10 @@ describe("Single page activity tests", function () {
   });
 
   it("reload text answer without blurring or hitting enter, clear IndexedDB", () => {
+    const studentUserId = "cyStudentUserId";
+    const courseId = "spa_courseid16";
+    const doenetId = "spa_activity16id";
+    const pageDoenetId = "spa_page16id";
     const doenetML = `
     <p>Enter 1: <answer>
       <textinput name="ti" />
@@ -1894,6 +1980,9 @@ describe("Single page activity tests", function () {
     </p>
     $ti.value, $ti.immediateValue
 `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
 
     cy.createActivity({
       courseId,

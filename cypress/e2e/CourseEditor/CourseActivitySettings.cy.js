@@ -1,19 +1,10 @@
-import { cesc2 } from "../../../src/_utils/url";
 
 describe("Course Editor Tests", function () {
-  const userId = "cyuserId";
-  const studentUserId = "cyStudentUserId";
-  const courseId = "courseid1";
-  const doenetId = "activity1id";
-  const pageDoenetId = "_page1id";
 
   before(() => {
-
   });
 
   beforeEach(() => {
-
-
   });
 
   Cypress.on("uncaught:exception", (err, runnable) => {
