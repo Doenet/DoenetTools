@@ -1075,43 +1075,7 @@ export function ActivityViewer({
 
     await saveState({ overrideThrottle: true });
 
-    setActivityAsCompleted?.(itemWeights);
-
-    // TODO: the below should be moved into setActivityAsCompleted
-    // so we dn't hardcode URIs here
-
-    // console.log("activityInfo here",activityInfo)
-
-    //Clear out history of exam if canViewAfterCompleted setting set as false
-    if (!activityInfo.canViewAfterCompleted) {
-      // console.log("CLEAR state from viewer and cache")
-      //Simple answer for now - lose all state info
-      //TODO: When should we clear this
-      //await idb_clear();
-    }
-    //Set assignment as completed for the user in the Data Base and Recoil
-    let resp = await axios.get(apiURLs.saveCompleted, {
-      params: { activityId, isCompleted: true },
-    });
-    // console.log("resp",resp.data)
-    if (resp.data.success) {
-      //Mark activity as completed in Recoil
-      setActivityAsCompleted?.();
-
-      //Go to end exam for the specific page
-      setPageToolView((prev) => {
-        return {
-          page: prev.page,
-          tool: "endExam",
-          view: "",
-          params: {
-            activityId,
-            attemptNumber,
-            itemWeights: itemWeights.join(","),
-          },
-        };
-      });
-    }
+    setActivityAsCompleted?.();
   }
 
   function setPageErrorsAndWarningsCallback(errorsAndWarnings, pageind) {

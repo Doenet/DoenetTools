@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { searchParamAtomFamily } from "../NewToolRoot";
 import styled from "styled-components";
+import { creditAchievedAtom } from "./AssignmentViewer";
 
 const Line = styled.div`
   border-bottom: 2px solid var(--canvastext);
@@ -37,12 +38,7 @@ export default function EndExamPanel() {
       totalPointsOrPercent,
     },
     setCreditItems,
-  ] = useState({
-    creditByItem: [],
-    creditForAssignment: null,
-    creditForAttempt: null,
-    totalPointsOrPercent: null,
-  });
+  ] = useRecoilState(creditAchievedAtom);
 
   useEffect(() => {
     axios
