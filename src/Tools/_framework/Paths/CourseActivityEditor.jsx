@@ -1810,6 +1810,7 @@ function AssignControlsAssigned({
           colorScheme="blue"
           size="md"
           isDisabled={unassignDisabled}
+          data-test="Unassign Activity Button"
           onClick={() => {
             setUnassignDisabled(true);
             setAlerts([
