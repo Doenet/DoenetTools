@@ -615,4 +615,30 @@ describe("Warning Tests", function () {
       expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(50);
     });
   });
+
+  it("No erroneous attribute warning in hidden component", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+      <boolean name="hide">true</boolean>
+
+      <section hide="$hide">
+        <p hide='$hide'>double hide</p>
+      </section>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/hide")).should("have.text", "true");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(0);
+    });
+  });
 });
