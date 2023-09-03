@@ -320,7 +320,6 @@ export default function GradebookStudentAssignmentView() {
       saveActivityState: "/api/saveActivityState.php",
       initAssignmentAttempt: "/api/initAssignmentAttempt.php",
       recordEvent: "/api/recordEvent.php",
-      saveCompleted: "/api/saveCompleted.php",
       loadPageState: "/api/loadPageState.php",
       savePageState: "/api/savePageState.php",
       saveCreditForItem: "/api/saveCreditForItem.php",

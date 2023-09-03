@@ -168,7 +168,7 @@ export default function AssignmentViewer() {
 
   const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
-  const pageToolView = useRecoilValue(pageToolViewAtom);
+  const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
 
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
@@ -469,16 +469,40 @@ export default function AssignmentViewer() {
   );
 
   const setActivityAsCompleted = useRecoilCallback(
-    ({ set }) =>
+    ({ snapshot, set }) =>
       async () => {
+        //Set assignment as completed for the user in the database and recoil
+
         set(itemByDoenetId(doenetId), (prev) => {
           let next = { ...prev };
           next.completed = true;
           next.completedDate = new Date();
           return next;
         });
+
+        let resp = await axios.get("/api/saveCompleted.php", {
+          params: { activityId: doenetId, isCompleted: true },
+        });
+        if (resp.data.success) {
+          const { itemWeights } = await snapshot.getPromise(activityStatusAtom);
+
+          // Go to end exam page
+          // TODO: this page always refers to "Exam". May want it more general eventually.
+          setPageToolView((prev) => {
+            return {
+              page: prev.page,
+              tool: "endExam",
+              view: "",
+              params: {
+                doenetId,
+                attemptNumber,
+                itemWeights: itemWeights.join(","),
+              },
+            };
+          });
+        }
       },
-    [doenetId],
+    [doenetId, attemptNumber, setPageToolView],
   );
 
   async function updateAttemptNumberAndRequestedVariant(
@@ -778,7 +802,6 @@ export default function AssignmentViewer() {
     saveActivityState: "/api/saveActivityState.php",
     initAssignmentAttempt: "/api/initAssignmentAttempt.php",
     recordEvent: "/api/recordEvent.php",
-    saveCompleted: "/api/saveCompleted.php",
     loadPageState: "/api/loadPageState.php",
     savePageState: "/api/savePageState.php",
     saveCreditForItem: "/api/saveCreditForItem.php",

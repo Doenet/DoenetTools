@@ -1,5 +1,5 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
-import { cesc } from "../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../src/_utils/url";
 
 describe("Multipage activity tests", function () {
   const userId = "cyuserId";
@@ -2510,7 +2510,6 @@ describe("Multipage activity tests", function () {
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500); // wait for update
 
-
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
       .type("{downArrow}{downArrow}{enter}");
@@ -2598,7 +2597,6 @@ describe("Multipage activity tests", function () {
     cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500); // wait for update
-
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -2968,5 +2966,129 @@ describe("Multipage activity tests", function () {
     cy.get("#page1").should("contain.text", "Page 1");
 
     cy.url().should("match", /#page1$/);
+  });
+
+  it("Finish assessment button", () => {
+    const doenetML1 = `
+      <p>What is 1+1? <answer name="ans2">2</answer></p>
+      <p>What is 1+2? <answer name="ans3">3</answer></p>
+      `;
+    const doenetML2 = `
+        <p>What is 2+2? <answer name="ans4">4</answer></p>
+        <p>What is 2+3? <answer name="ans5">5</answer></p>
+        `;
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+
+    cy.createMultipageActivity({
+      courseId,
+      doenetId,
+      parentDoenetId: courseId,
+      pageDoenetId1,
+      pageDoenetId2,
+      doenetML1,
+      doenetML2,
+    });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).get(".navigationColumn1").click();
+
+    cy.get('[data-test="Show Finish Button"]').click();
+
+    cy.get('[data-test="Assign Activity"]').click();
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.wait(100);
+
+    cy.signin({ userId: studentUserId });
+
+    cy.visit(`/course?tool=navigation&courseId=${courseId}`);
+    cy.get(".navigationRow").should("have.length", 1); //Need this to wait for the row to appear
+    cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
+
+    cy.get('[data-test="View Activity"]').click();
+
+    cy.get(cesc2("#page1/ans2") + " textarea").type("2", {
+      force: true,
+    });
+
+    cy.get('[data-test="FinishAssessmentPrompt"]').click();
+
+    cy.get('[data-test="CancelFinishAssessment"]').click();
+    cy.get('[data-test="FinishAssessmentPrompt"]').click();
+
+    cy.get('[data-test="ConfirmFinishAssessment"]').click();
+
+    // Note: we have two places where credit achieved shows up, so their values are concatenated
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%50%");
+    cy.get('[data-test="Item 2 Credit"]').should("have.text", "0%0%");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "25%25%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "25%25%");
+    cy.get('[data-test="Final Score"]').should("have.text", "2.52.5");
+
+    cy.log("go back to assignment");
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`);
+
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%");
+
+    cy.log("take second attempt");
+    cy.get('[data-test="New Attempt"]').click();
+
+    cy.get(cesc2("#page1/ans3") + " textarea").type("3", {
+      force: true,
+    });
+
+    cy.get("[data-test=next]").click();
+    cy.get(cesc2("#page2/ans4") + " textarea").type("4{enter}", {
+      force: true,
+    });
+
+    cy.get('[data-test="Item 2 Credit"]').should("have.text", "50%");
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "0%");
+
+    cy.get(cesc2("#page2/ans5") + " textarea").type("5", {
+      force: true,
+    });
+
+    cy.get('[data-test="FinishAssessmentPrompt"]').click();
+    cy.get('[data-test="ConfirmFinishAssessment"]').click();
+
+    // Note: we have two places where credit achieved shows up, so their values are concatenated
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%50%");
+    cy.get('[data-test="Item 2 Credit"]').should("have.text", "100%100%");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "75%75%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "75%75%");
+    cy.get('[data-test="Final Score"]').should("have.text", "7.57.5");
+
+    cy.log("go back to assignment");
+
+    cy.visit(`/course?tool=assignment&doenetId=${doenetId}`);
+
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "50%");
+
+    cy.log("take third attempt");
+    cy.get('[data-test="New Attempt"]').click();
+
+    cy.get("[data-test=next]").click();
+    cy.get(cesc2("#page2/ans4") + " textarea").type("4{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#page2/ans5") + " textarea").type("5", {
+      force: true,
+    });
+
+    cy.get('[data-test="FinishAssessmentPrompt"]').click();
+    cy.get('[data-test="ConfirmFinishAssessment"]').click();
+
+    // Note: we have two places where credit achieved shows up, so their values are concatenated
+    cy.get('[data-test="Item 2 Credit"]').should("have.text", "100%100%");
+    cy.get('[data-test="Item 1 Credit"]').should("have.text", "0%0%");
+    cy.get('[data-test="Attempt Percent"]').should("have.text", "50%50%");
+    cy.get('[data-test="Assignment Percent"]').should("have.text", "75%75%");
+    cy.get('[data-test="Final Score"]').should("have.text", "7.57.5");
   });
 });
