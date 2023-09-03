@@ -504,7 +504,7 @@ export function ActivityViewer({
         newVariantIndex = localInfo.variantIndex;
         setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
-        setOrder(newActivityInfo.orderWithCids);
+        setOrder(await normalizeLoadedOrder(newActivityInfo.orderWithCids));
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
@@ -574,7 +574,7 @@ export function ActivityViewer({
         newVariantIndex = resp.data.variantIndex;
         setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
-        setOrder(newActivityInfo.orderWithCids);
+        setOrder(await normalizeLoadedOrder(newActivityInfo.orderWithCids));
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
@@ -632,6 +632,23 @@ export function ActivityViewer({
     }
 
     return { newItemWeights, newVariantIndex, loadedFromInitialState };
+  }
+
+  async function normalizeLoadedOrder(order) {
+    // In case we load an order from the data base that was created before Sept 1, 2023,
+    // we need to check if the page has a doneetML attribute,
+    // and load the doenetML if needed
+
+    let newOrder = [];
+
+    for (let page of order) {
+      if (page.doenetML === undefined) {
+        page.doenetML = await retrieveTextFileForCid(page.cid, "doenet");
+      }
+      newOrder.push(page);
+    }
+
+    return newOrder;
   }
 
   async function saveLoadedLocalStateToDatabase(localInfo) {
