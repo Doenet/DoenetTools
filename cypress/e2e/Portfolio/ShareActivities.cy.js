@@ -106,7 +106,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="heading2"]').contains("Public Course Activities");
     cy.go("back");
 
-    cy.get('[data-test="Remix Button"]').click();
+    cy.get('[data-test="Copy to Portfolio Button"]').click();
 
     cy.log("rename the 2nd activity and make it public");
     cy.get('[data-test="Controls Button"]').click();
@@ -146,7 +146,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="heading2"]').contains("User Portfolio");
     cy.go("back");
 
-    cy.get('[data-test="Remix Button"]').click();
+    cy.get('[data-test="Copy to Portfolio Button"]').click();
 
     cy.log("label the third activity and examine public portfolio info");
 
@@ -424,7 +424,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, Mom!");
 
     cy.log("Remix");
-    cy.get('[data-test="Remix Button"]').click();
+    cy.get('[data-test="Copy to Portfolio Button"]').click();
 
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     cy.get(cesc2("#/draft")).should("not.exist");
@@ -502,7 +502,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, Bro!");
 
     cy.log("Remix");
-    cy.get('[data-test="Remix Button"]').click();
+    cy.get('[data-test="Copy to Portfolio Button"]').click();
 
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
     cy.get(cesc2("#/draft")).should("have.text", "Draft content");

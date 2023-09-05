@@ -248,12 +248,12 @@ export function PublicEditor() {
                   <WarningIcon color="orange.500" mr="6px" />
 
                   <Text size="xs" pl="4px" pr="4px">
-                    This is a public editor. Remix to save changes.
+                    This is a public editor. Copy to portfolio to save changes.
                   </Text>
                 </Center>
                 {signedIn ? (
                   <Button
-                    data-test="Remix Button"
+                    data-test="Copy to Portfolio Button"
                     size="xs"
                     colorScheme="blue"
                     onClick={async () => {
@@ -268,7 +268,7 @@ export function PublicEditor() {
                       );
                     }}
                   >
-                    Remix
+                    Copy to Portfolio
                   </Button>
                 ) : (
                   <Button
@@ -285,7 +285,7 @@ export function PublicEditor() {
                       });
                     }}
                   >
-                    Sign In To Remix
+                    Sign In To Copy
                   </Button>
                 )}
               </HStack>
