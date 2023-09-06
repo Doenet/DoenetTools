@@ -338,7 +338,7 @@ export default class Core {
       if (serializedComponents[0].variants.uniqueVariants) {
         let docClass =
           this.componentInfoObjects.allComponentClasses[
-            serializedComponents[0].componentType
+          serializedComponents[0].componentType
           ];
 
         let result = docClass.getUniqueVariant({
@@ -1343,7 +1343,7 @@ export default class Core {
 
       let componentClass =
         this.componentInfoObjects.allComponentClasses[
-          serializedComponent.componentType
+        serializedComponent.componentType
         ];
       if (componentClass === undefined) {
         // Note: This error shouldn't get reached from author-typed code,
@@ -1367,7 +1367,7 @@ export default class Core {
 
         componentClass =
           this.componentInfoObjects.allComponentClasses[
-            serializedComponent.componentType
+          serializedComponent.componentType
           ];
       }
 
@@ -1489,7 +1489,7 @@ export default class Core {
         );
         componentClass =
           this.componentInfoObjects.allComponentClasses[
-            serializedComponent.componentType
+          serializedComponent.componentType
           ];
         this.newErrorWarning = true;
         this.errorWarnings.errors.push({
@@ -1596,8 +1596,8 @@ export default class Core {
           if (childrenAddressed.has(Number(ind))) {
             throw Error(
               "Invalid instructions to keep children serialized from " +
-                componentClass.componentType +
-                ": child repeated",
+              componentClass.componentType +
+              ": child repeated",
             );
           }
           childrenAddressed.add(Number(ind));
@@ -1692,7 +1692,7 @@ export default class Core {
       attributes = {};
       componentClass =
         this.componentInfoObjects.allComponentClasses[
-          serializedComponent.componentType
+        serializedComponent.componentType
         ];
     }
 
@@ -1858,7 +1858,7 @@ export default class Core {
       let result = await this.processNewStateVariableValues({
         [componentName]:
           this.updateInfo.stateVariableUpdatesForMissingComponents[
-            componentName
+          componentName
           ],
       });
 
@@ -1892,7 +1892,7 @@ export default class Core {
               // of expressionWithCodes
               comp.reprocessAfterEvaluate =
                 this.updateInfo.stateVariableUpdatesForMissingComponents[
-                  componentName
+                componentName
                 ];
             }
           }
@@ -2032,9 +2032,8 @@ export default class Core {
         };
       } else {
         this.unmatchedChildren[parent.componentName] = {
-          message: `Invalid children for <${
-            parent.componentType
-          }>: Found invalid children: ${unmatchedChildrenTypes.join(", ")}`,
+          message: `Invalid children for <${parent.componentType
+            }>: Found invalid children: ${unmatchedChildrenTypes.join(", ")}`,
         };
       }
     }
@@ -2725,7 +2724,7 @@ export default class Core {
         compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
       let target =
         this._components[
-          compositeMediatingTheShadow.doenetAttributes.targetComponentName
+        compositeMediatingTheShadow.doenetAttributes.targetComponentName
         ];
       let nonCompositeTargetWithNewNamespace;
       if (target) {
@@ -2800,7 +2799,7 @@ export default class Core {
         );
         let componentClass =
           this.componentInfoObjects.allComponentClasses[
-            component.componentType
+          component.componentType
           ];
 
         if (!componentClass.includeBlankStringChildren) {
@@ -3006,7 +3005,7 @@ export default class Core {
 
           let componentType =
             this.componentInfoObjects.componentTypeLowerCaseMapping[
-              child.attributes.createComponentOfType.primitive.toLowerCase()
+            child.attributes.createComponentOfType.primitive.toLowerCase()
             ];
           replacements = [];
 
@@ -3422,7 +3421,7 @@ export default class Core {
       if (attributeSpecification.createComponentOfType) {
         let attributeClass =
           this.componentInfoObjects.allComponentClasses[
-            attributeSpecification.createComponentOfType
+          attributeSpecification.createComponentOfType
           ];
         if (!attributeClass) {
           throw Error(
@@ -3475,7 +3474,7 @@ export default class Core {
         if (dependencyValues.attributeComponent) {
           attributeValue =
             dependencyValues.attributeComponent.stateValues[
-              stateVariableForAttributeValue
+            stateVariableForAttributeValue
             ];
         } else if (
           dependencyValues.attributePrimitive !== undefined &&
@@ -3621,7 +3620,7 @@ export default class Core {
     // attributes depend on adapterTarget (if attribute exists in adapterTarget)
     let adapterTargetComponent =
       this._components[
-        redefineDependencies.adapterTargetIdentity.componentName
+      redefineDependencies.adapterTargetIdentity.componentName
       ];
 
     let attributes = componentClass.createAttributesObject();
@@ -3894,7 +3893,7 @@ export default class Core {
       if (attributeSpecification.createComponentOfType) {
         let attributeClass =
           this.componentInfoObjects.allComponentClasses[
-            attributeSpecification.createComponentOfType
+          attributeSpecification.createComponentOfType
           ];
         if (!attributeClass) {
           throw Error(
@@ -3947,7 +3946,7 @@ export default class Core {
         if (dependencyValues.attributeComponent) {
           attributeValue =
             dependencyValues.attributeComponent.stateValues[
-              stateVariableForAttributeValue
+            stateVariableForAttributeValue
             ];
         } else if (
           dependencyValues.attributePrimitive !== undefined &&
@@ -4856,12 +4855,12 @@ export default class Core {
           arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
         if (
           arrayStateVarObj.shadowingInstructions.createComponentOfType[
-            entryPrefixInd
+          entryPrefixInd
           ]
         ) {
           stateVarObj.shadowingInstructions.createComponentOfType = [
             arrayStateVarObj.shadowingInstructions.createComponentOfType[
-              entryPrefixInd
+            entryPrefixInd
             ],
           ];
         }
@@ -6795,7 +6794,7 @@ export default class Core {
 
         if (
           !this.essentialValuesSavedInDefinition[component.componentName][
-            varName
+          varName
           ]
         ) {
           // include key mergeObject to let external functions
@@ -7187,7 +7186,7 @@ export default class Core {
   matchPublicStateVariables({ stateVariables, componentClass }) {
     let stateVarInfo =
       this.componentInfoObjects.publicStateVariableInfo[
-        componentClass.componentType
+      componentClass.componentType
       ];
 
     let newVariables = [];
@@ -7560,7 +7559,7 @@ export default class Core {
       if (result.updateActionChaining) {
         let chainObj =
           this.updateInfo.componentsToUpdateActionChaining[
-            component.componentName
+          component.componentName
           ];
         if (!chainObj) {
           chainObj = this.updateInfo.componentsToUpdateActionChaining[
@@ -7728,7 +7727,7 @@ export default class Core {
     let changes = {};
     let downDeps =
       this.dependencies.downstreamDependencies[component.componentName][
-        varName
+      varName
       ];
 
     for (let dependencyName in downDeps) {
@@ -7940,7 +7939,7 @@ export default class Core {
             if (
               varName in
               this.rendererVariablesByComponentType[
-                this.components[upDep.upstreamComponentName].componentType
+              this.components[upDep.upstreamComponentName].componentType
               ]
             ) {
               this.updateInfo.componentsToUpdateRenderers.add(
@@ -8079,7 +8078,7 @@ export default class Core {
             if (result.updateActionChaining) {
               let chainObj =
                 this.updateInfo.componentsToUpdateActionChaining[
-                  upDep.componentName
+                upDep.componentName
                 ];
               if (!chainObj) {
                 chainObj = this.updateInfo.componentsToUpdateActionChaining[
@@ -8365,8 +8364,8 @@ export default class Core {
     ) {
       throw Error(
         "Can't add children at index " +
-          indexOfDefiningChildren +
-          ". Invalid index.",
+        indexOfDefiningChildren +
+        ". Invalid index.",
       );
     }
 
@@ -8510,7 +8509,7 @@ export default class Core {
       ]) {
         let upDeps =
           this.dependencies.upstreamDependencies[component.componentName][
-            varName
+          varName
           ];
         for (let upDep of upDeps) {
           if (
@@ -8520,12 +8519,12 @@ export default class Core {
             let dependenciesMissingComponent =
               this.dependencies.updateTriggers
                 .dependenciesMissingComponentBySpecifiedName[
-                upDep.specifiedComponentName
+              upDep.specifiedComponentName
               ];
             if (!dependenciesMissingComponent) {
               dependenciesMissingComponent =
                 this.dependencies.updateTriggers.dependenciesMissingComponentBySpecifiedName[
-                  upDep.specifiedComponentName
+                upDep.specifiedComponentName
                 ] = [];
             }
             if (!dependenciesMissingComponent.includes(upDep)) {
@@ -8886,7 +8885,7 @@ export default class Core {
 
             let parent =
               this._components[
-                newReplacementsByComposite[compositeName].parent.componentName
+              newReplacementsByComposite[compositeName].parent.componentName
               ];
 
             this.spliceChildren(
@@ -10544,7 +10543,7 @@ export default class Core {
         let composite = this._components[cName];
         if (
           composite instanceof
-            this.componentInfoObjects.allComponentClasses._composite &&
+          this.componentInfoObjects.allComponentClasses._composite &&
           composite.isExpanded &&
           !composite.isInErrorState
         ) {
@@ -10630,7 +10629,7 @@ export default class Core {
         if (updatesForComp === undefined) {
           updatesForComp =
             this.updateInfo.stateVariableUpdatesForMissingComponents[cName] =
-              {};
+            {};
         }
 
         Object.assign(updatesForComp, newStateVariableValues[cName]);
@@ -10897,7 +10896,7 @@ export default class Core {
             try {
               desiredValuesForArray[arrayKey] =
                 instruction.value.get_component(ind);
-            } catch (e) {}
+            } catch (e) { }
           }
         }
       }
@@ -11057,7 +11056,7 @@ export default class Core {
 
         let dep =
           this.dependencies.downstreamDependencies[component.componentName][
-            stateVariable
+          stateVariable
           ][dependencyName];
         if (
           ["stateVariable", "parentStateVariable"].includes(
@@ -11083,11 +11082,11 @@ export default class Core {
               !(
                 arrayInstructionInProgress.componentName === dComponentName &&
                 arrayInstructionInProgress.stateVariable ===
-                  arrayStateVariable &&
+                arrayStateVariable &&
                 arrayInstructionInProgress.shadowedVariable ===
-                  newInstruction.shadowedVariable &&
+                newInstruction.shadowedVariable &&
                 arrayInstructionInProgress.treatAsInitialChange ===
-                  newInstruction.treatAsInitialChange
+                newInstruction.treatAsInitialChange
               )
             ) {
               // arrayInstructionInProgress didn't match,
@@ -11342,7 +11341,7 @@ export default class Core {
 
         let dep =
           this.dependencies.downstreamDependencies[component.componentName][
-            stateVariable
+          stateVariable
           ][dependencyName];
 
         if (dep.dependencyType === "child") {
@@ -11431,7 +11430,7 @@ export default class Core {
             }
             let varName =
               dep.mappedDownstreamVariableNamesByComponent[
-                newInstruction.childIndex
+              newInstruction.childIndex
               ][newInstruction.variableIndex];
             if (!varName) {
               throw Error(
@@ -11463,7 +11462,7 @@ export default class Core {
           let cName = dep.downstreamComponentNames[0];
           let varName =
             dep.mappedDownstreamVariableNamesByComponent[0][
-              newInstruction.variableIndex
+            newInstruction.variableIndex
             ];
           if (!varName) {
             throw Error(
@@ -11511,7 +11510,7 @@ export default class Core {
             for (let dependencyName2 in newInstruction.additionalDependencyValues) {
               let dep2 =
                 this.dependencies.downstreamDependencies[
-                  component.componentName
+                component.componentName
                 ][stateVariable][dependencyName2];
               if (
                 !(
@@ -11972,16 +11971,16 @@ export default class Core {
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
-            if (!suppressToast) {
-              postMessage({
-                messageType: "sendToast",
-                coreId: this.coreId,
-                args: {
-                  message: "No credit awarded since solution was viewed.",
-                  toastType: toastType.INFO,
-                },
-              });
-            }
+            // if (!suppressToast) {
+            postMessage({
+              messageType: "sendToast",
+              coreId: this.coreId,
+              args: {
+                message: "No credit awarded since solution was viewed.",
+                toastType: toastType.INFO,
+              },
+            });
+            // }
           }
           if (data.timeExpired) {
             if (!suppressToast) {

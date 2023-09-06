@@ -17,6 +17,7 @@ import { atom, atomFamily, useRecoilCallback, useRecoilValue } from "recoil";
 import { get as idb_get, set as idb_set } from "idb-keyval";
 import axios from "axios";
 import { cesc } from "../_utils/url";
+import { AlertQueue } from "../Tools/_framework/ChakraBasedComponents/AlertQueue";
 
 const rendererUpdatesToIgnore = atomFamily({
   key: "rendererUpdatesToIgnore",
@@ -187,6 +188,8 @@ export function PageViewer({
 
   const [ignoreRendererError, setIgnoreRendererError] = useState(false);
 
+  let [alerts, setAlerts] = useState([]);
+
   let hash = location.hash;
 
   const contextForRenderers = {
@@ -208,7 +211,15 @@ export function PageViewer({
     if (coreWorker.current) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
-        if (e.data.messageType === "updateRenderers") {
+        if (e.data.messageType === "sendToast") {
+          setAlerts([
+            {
+              type: "info",
+              id: "solutionViewed",
+              title: e.data.args.message,
+            },
+          ]);
+        } else if (e.data.messageType === "updateRenderers") {
           if (
             e.data.init &&
             coreInfo.current &&
@@ -1296,6 +1307,7 @@ export function PageViewer({
       <div style={pageStyle} className="doenet-viewer">
         {errorOverview}
         <PageContext.Provider value={contextForRenderers}>
+          <AlertQueue alerts={alerts} setAlerts={setAlerts} />
           {documentRenderer}
         </PageContext.Provider>
       </div>
