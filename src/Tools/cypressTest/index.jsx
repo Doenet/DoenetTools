@@ -6,7 +6,6 @@ import { RecoilRoot } from "recoil";
 import { MathJaxContext } from "better-react-mathjax";
 import { mathjaxConfig } from "../../Core/utils/math.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import DarkmodeController from "../_framework/DarkmodeController.jsx";
 
 // function CypressTest(props){
 
@@ -23,15 +22,13 @@ root.render(
         <Route
           path="*"
           element={
-            <DarkmodeController>
-              <MathJaxContext
-                version={2}
-                config={mathjaxConfig}
-                onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-              >
-                <CypressTest />
-              </MathJaxContext>
-            </DarkmodeController>
+            <MathJaxContext
+              version={2}
+              config={mathjaxConfig}
+              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+            >
+              <CypressTest />
+            </MathJaxContext>
           }
         />
       </Routes>

@@ -1,11 +1,13 @@
 import axios from "axios";
 import { cidFromArrayBuffer } from "./cid";
 
-export async function retrieveMediaForCid(cid, mimeType) {
-  try {
-    return await retrieveMediaFromIPFS(cid);
-  } catch (e) {
-    // if have error from IPFS, fallback to retrieving from server
+export async function retrieveMediaForCid(cid, mimeType, useIPFS = false) {
+  if (useIPFS) {
+    try {
+      return await retrieveMediaFromIPFS(cid);
+    } catch (e) {
+      // if have error from IPFS, fallback to retrieving from server
+    }
   }
 
   //Only if doenetML tag is not providing mimeType and not on IPFS

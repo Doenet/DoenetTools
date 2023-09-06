@@ -402,51 +402,101 @@ export default class Function extends InlineComponent {
     };
 
     stateVariableDefinitions.domain = {
-      returnDependencies: () => ({
-        domainAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "domain",
-          variableNames: ["intervals"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childGroups: ["functions"],
-          variableNames: ["domain"],
-        },
+      isArray: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "interval",
+      },
+      returnArraySizeDependencies: () => ({
         numInputs: {
           dependencyType: "stateVariable",
           variableName: "numInputs",
         },
       }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.domainAttr !== null) {
-          let numInputs = dependencyValues.numInputs;
-          let domain = dependencyValues.domainAttr.stateValues.intervals.slice(
-            0,
-            numInputs,
-          );
-          if (domain.length !== numInputs) {
-            return { setValue: { domain: null } };
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numInputs];
+      },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          domainAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "domain",
+            variableNames: ["intervals"],
+          },
+          functionChild: {
+            dependencyType: "child",
+            childGroups: ["functions"],
+            variableNames: ["domain"],
+          },
+          numInputs: {
+            dependencyType: "stateVariable",
+            variableName: "numInputs",
+          },
+        },
+      }),
+      arrayDefinitionByKey({ globalDependencyValues, componentName }) {
+        if (globalDependencyValues.domainAttr !== null) {
+          let numInputs = globalDependencyValues.numInputs;
+          let specifiedDomain =
+            globalDependencyValues.domainAttr.stateValues.intervals.slice(
+              0,
+              numInputs,
+            );
+          if (specifiedDomain.length !== numInputs) {
+            let warning = {
+              message: `Insufficient dimensions for domain for function. Domain has ${
+                specifiedDomain.length
+              } interval${
+                specifiedDomain.length === 1 ? "" : "s"
+              } but the function has ${numInputs} input${
+                numInputs === 1 ? "" : "s"
+              }.`,
+              level: 1,
+            };
+            let infDomain = me.fromAst([
+              "interval",
+              ["tuple", -Infinity, Infinity],
+              ["tuple", false, false],
+            ]);
+            let domain = Array(numInputs).fill(infDomain);
+            return { setValue: { domain }, sendWarnings: [warning] };
           }
 
           if (
-            !domain.every(
+            !specifiedDomain.every(
               (interval) =>
                 Array.isArray(interval.tree) && interval.tree[0] === "interval",
             )
           ) {
-            return { setValue: { domain: null } };
+            let warning = {
+              message: `Invalid format for domain for function.`,
+              level: 1,
+            };
+            let infDomain = me.fromAst([
+              "interval",
+              ["tuple", -Infinity, Infinity],
+              ["tuple", false, false],
+            ]);
+            let domain = Array(numInputs).fill(infDomain);
+            return { setValue: { domain }, sendWarnings: [warning] };
           }
 
-          return { setValue: { domain } };
-        } else if (dependencyValues.functionChild.length > 0) {
+          return { setValue: { domain: specifiedDomain } };
+        } else if (globalDependencyValues.functionChild.length > 0) {
           return {
             setValue: {
-              domain: dependencyValues.functionChild[0].stateValues.domain,
+              domain:
+                globalDependencyValues.functionChild[0].stateValues.domain,
             },
           };
         } else {
-          return { setValue: { domain: null } };
+          let infDomain = me.fromAst([
+            "interval",
+            ["tuple", -Infinity, Infinity],
+            ["tuple", false, false],
+          ]);
+          let domain = Array(globalDependencyValues.numInputs).fill(infDomain);
+          return { setValue: { domain } };
         }
       },
     };
@@ -3872,6 +3922,7 @@ export default class Function extends InlineComponent {
 function calculateInterpolationPoints({ dependencyValues, numerics }) {
   let pointsWithX = [];
   let pointsWithoutX = [];
+  let warnings = [];
 
   let allPoints = {
     maximum: dependencyValues.prescribedMaxima,
@@ -3888,27 +3939,39 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
       if (point.x !== null) {
         x = point.x.evaluate_to_constant();
         if (!Number.isFinite(x)) {
-          console.warn(`Ignoring non-numerical ${type}`);
+          warnings.push({
+            message: `Ignoring non-numerical ${type} of function.`,
+            level: 1,
+          });
           continue;
         }
       }
       if (point.y !== null) {
         y = point.y.evaluate_to_constant();
         if (!Number.isFinite(y)) {
-          console.warn(`Ignoring non-numerical ${type}`);
+          warnings.push({
+            message: `Ignoring non-numerical ${type} of function.`,
+            level: 1,
+          });
           continue;
         }
       }
       if (point.slope !== null && point.slope !== undefined) {
         slope = point.slope.evaluate_to_constant();
         if (!Number.isFinite(slope)) {
-          console.warn(`Ignoring non-numerical slope`);
+          warnings.push({
+            message: `Ignoring non-numerical slope of function.`,
+            level: 1,
+          });
           slope = null;
         }
       }
       if (x === null) {
         if (y === null) {
-          console.warn(`Ignoring empty ${type}`);
+          warnings.push({
+            message: `Ignoring empty ${type} of function.`,
+            level: 1,
+          });
           continue;
         }
         pointsWithoutX.push({
@@ -3936,10 +3999,14 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
   for (let ind = 0; ind < pointsWithX.length; ind++) {
     let p = pointsWithX[ind];
     if (p.x <= xPrev + eps) {
-      console.warn(
-        `Two points with locations too close together.  Can't define function`,
-      );
-      return { setValue: { interpolationPoints: null } };
+      warnings.push({
+        message: `Function contains two points with locations too close together. Can't define function.`,
+        level: 1,
+      });
+      return {
+        setValue: { interpolationPoints: null },
+        sendWarnings: warnings,
+      };
     }
     xPrev = p.x;
   }
@@ -4230,7 +4297,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
     }
   }
 
-  return { setValue: { interpolationPoints } };
+  return { setValue: { interpolationPoints }, sendWarnings: warnings };
 
   function monotonicSlope({ point, prevPoint, nextPoint }) {
     // monotonic cubic interpolation formula from

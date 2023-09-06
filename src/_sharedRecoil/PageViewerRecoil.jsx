@@ -12,5 +12,5 @@ export const pageVariantPanelAtom = atom({
 
 export const activityVariantPanelAtom = atom({
   key: "activityVariantPanelAtom",
-  default: { index: 1, numberOfVariants: 0 },
+  default: { index: 1, numVariants: 0 },
 });

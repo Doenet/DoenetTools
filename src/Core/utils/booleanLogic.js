@@ -180,7 +180,6 @@ export function evaluateLogic({
       return logicTree === 0 ? 0 : 1;
     }
 
-    console.warn("Invalid format for boolean condition");
     return valueOnInvalid;
   }
 
@@ -189,7 +188,6 @@ export function evaluateLogic({
 
   if (operator === "not") {
     if (operands.length !== 1) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
     return evaluateSub(operands[0]) === 0 ? 1 : 0;
@@ -307,7 +305,6 @@ export function evaluateLogic({
     )
   ) {
     if (foundText || foundBoolean || foundOther) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
@@ -325,7 +322,6 @@ export function evaluateLogic({
 
   if (foundBoolean) {
     if (foundMath || foundText || foundOther) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
@@ -352,11 +348,9 @@ export function evaluateLogic({
         if (x === "false" || x === "f") {
           return false;
         }
-        console.warn("Invalid format for boolean condition");
         foundInvalidFormat = true;
         return valueOnInvalid;
       }
-      console.warn("Invalid format for boolean condition");
       foundInvalidFormat = true;
       return valueOnInvalid;
     });
@@ -404,7 +398,6 @@ export function evaluateLogic({
       }
     } else if (operator === "ne") {
       if (operands.length !== 2) {
-        console.warn("Invalid format for boolean condition");
         return valueOnInvalid;
       }
       let fraction_equal = checkEquality({
@@ -417,12 +410,10 @@ export function evaluateLogic({
 
       return fraction_equal === 0 ? 1 : 0;
     } else {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
   } else if (foundText) {
     if (foundMath || foundOther) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
@@ -453,7 +444,6 @@ export function evaluateLogic({
 
       // multiple words would become multiplication
       if (!(recurse && Array.isArray(tree) && tree[0] === "*")) {
-        console.warn("Invalid format for boolean condition");
         foundInvalidFormat = true;
         return "";
       }
@@ -509,7 +499,6 @@ export function evaluateLogic({
       }
     } else if (operator === "ne") {
       if (operands.length !== 2) {
-        console.warn("Invalid format for boolean condition");
         return 0;
       }
 
@@ -524,12 +513,10 @@ export function evaluateLogic({
 
       return fraction_equal === 0 ? 1 : 0;
     } else {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
   } else if (foundOther) {
     if (foundMath) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 
@@ -543,7 +530,6 @@ export function evaluateLogic({
         }
       }
 
-      console.warn("Invalid format for boolean condition");
       foundInvalidFormat = true;
       return null;
     });
@@ -562,7 +548,6 @@ export function evaluateLogic({
 
     if (operator === "ne") {
       if (operands.length !== 2) {
-        console.warn("Invalid format for boolean condition");
         return 0;
       }
 
@@ -573,7 +558,6 @@ export function evaluateLogic({
       }
     }
 
-    console.warn("Invalid format for boolean condition");
     return 0;
   }
 
@@ -721,7 +705,6 @@ export function evaluateLogic({
     let set = mathOperands[1];
     let set_tree = set.tree;
     if (!(Array.isArray(set_tree) && set_tree[0] === "set")) {
-      console.warn("Invalid format for boolean condition");
       return valueOnInvalid;
     }
 

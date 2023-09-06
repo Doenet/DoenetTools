@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { BoardContext, LINE_LAYER_OFFSET } from "./graph";
 import { createFunctionFromDefinition } from "../../Core/utils/function";
-import { useRecoilValue } from "recoil";
-import { darkModeAtom } from "../../Tools/_framework/DarkmodeController";
+import { PageContext } from "../PageViewer";
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let { name, id, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRenderer(props);
 
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = () => true;
 
@@ -15,7 +14,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
   let curveJXG = useRef(null);
   let integralJXG = useRef(null);
 
-  const darkMode = useRecoilValue(darkModeAtom);
+  const { darkMode } = useContext(PageContext) || {};
 
   useEffect(() => {
     //On unmount

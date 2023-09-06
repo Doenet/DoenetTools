@@ -29,19 +29,20 @@ if ($success) {
   cc.imagePath,
   cc.label,
   cc.courseId,
-  p.doenetId AS 'pageDoenetId',
-  concat(u.firstName, concat(' ', u.lastName)) as fullName
+  concat(u.firstName, concat(' ', u.lastName)) as fullName,
+  c.portfolioCourseForUserId,
+  c.label AS courseLabel,
+  c.color AS courseColor,
+  c.image AS courseImage
   FROM course_content AS cc
-  LEFT JOIN pages AS p
-    ON p.containingDoenetId = cc.doenetId
   LEFT JOIN course AS c
     ON c.courseId = cc.courseId
-  join user u on c.portfolioCourseForUserId = u.userId
+  LEFT JOIN user AS u 
+    ON c.portfolioCourseForUserId = u.userId
   WHERE cc.label LIKE '%$q%'
   AND cc.isPublic = 1
   AND cc.isDeleted = 0
   AND cc.isBanned = 0
-  AND c.portfolioCourseForUserId IS NOT NULL
   LIMIT 100
   ";
   
@@ -59,7 +60,10 @@ if ($success) {
         'label' => $row['label'],
         'fullName' => $row['fullName'],
         'public' => '1',
-        'pageDoenetId' => $row['pageDoenetId'],
+        'isUserPortfolio' => is_null($row["portfolioCourseForUserId"]) ? "0" : "1",
+        'courseLabel' => $row['courseLabel'],
+        'courseColor' => $row['courseColor'],
+        'courseImage' => $row['courseImage']
       ]);
     }
   }
@@ -98,9 +102,6 @@ if ($success) {
       ]);
     }
   }
-
-  
-
 }
 
 

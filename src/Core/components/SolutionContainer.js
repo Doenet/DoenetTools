@@ -35,17 +35,22 @@ export default class SolutionContainer extends Template {
     component,
     componentInfoObjects,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     // if this is the first time rendered, then create the replacements
     if (
       (await component.stateValues.rendered) &&
       component.replacements.length === 0
     ) {
-      let replacements = (
-        await this.createSerializedReplacements({
-          component,
-          componentInfoObjects,
-        })
-      ).replacements;
+      let replacementResults = await this.createSerializedReplacements({
+        component,
+        componentInfoObjects,
+      });
+      let replacements = replacementResults.replacements;
+      errors.push(...replacementResults.errors);
+      warnings.push(...replacementResults.warnings);
 
       if (replacements.length > 0) {
         let replacementInstruction = {

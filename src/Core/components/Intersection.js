@@ -6,6 +6,8 @@ import { processAssignNames } from "../utils/serializedStateProcessing";
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
+  static allowInSchemaAsComponent = ["_inline", "_block", "_graphical"];
+
   static assignNamesToReplacements = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
@@ -135,6 +137,9 @@ export default class Intersection extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let lines = (await component.stateValues.lineChildren).map(
       (x) => x.stateValues,
     );
@@ -153,10 +158,13 @@ export default class Intersection extends CompositeComponent {
     let totNums = numLines + numCircles + numPolys;
 
     if (totNums < 2) {
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     } else if (totNums > 2) {
-      console.warn("Haven't implemented intersection for more than two items");
-      return [];
+      warnings.push({
+        message: "Haven't implemented intersection for more than two items",
+        level: 1,
+      });
+      return { replacements: [], errors, warnings };
     }
 
     let points = [];
@@ -180,7 +188,7 @@ export default class Intersection extends CompositeComponent {
     }
 
     if (points.length === 0) {
-      return { replacements: [] };
+      return { replacements: [], errors, warnings };
     }
 
     let serializedReplacements = points.map((pt) => ({
@@ -223,10 +231,12 @@ export default class Intersection extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
     serializedReplacements = processResult.serializedComponents;
 
-    return { replacements: serializedReplacements };
+    return { replacements: serializedReplacements, errors, warnings };
   }
 
   static async calculateReplacementChanges({
@@ -235,16 +245,22 @@ export default class Intersection extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     let replacementChanges = [];
 
-    let serializedIntersections = (
-      await this.createSerializedReplacements({
-        component,
-        components,
-        componentInfoObjects,
-        flags,
-      })
-    ).replacements;
+    let replacementResults = await this.createSerializedReplacements({
+      component,
+      components,
+      componentInfoObjects,
+      flags,
+    });
+
+    let serializedIntersections = replacementResults.replacements;
+    errors.push(...replacementResults.errors);
+    warnings.push(...replacementResults.warnings);
 
     let nNewIntersections = serializedIntersections.length;
 
@@ -265,16 +281,11 @@ export default class Intersection extends CompositeComponent {
         // only need to change state variables
 
         if (serializedIntersections[ind].state === undefined) {
-          console.warn(
-            "No state by which to update intersection component, so recreating",
-          );
-          recreateReplacements = true;
+          // Note: No state by which to update intersection component, so recreating
           break;
         }
         if (serializedIntersections[ind].componentType !== "point") {
-          console.warn(
-            `Have not implemented state changes for an intersection that results in a  ${serializedIntersections[ind].componentType}, so recreating`,
-          );
+          // Note: Have not implemented state changes for an intersection that results in this component type, so recreating`,
           recreateReplacements = true;
           break;
         }

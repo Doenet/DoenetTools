@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 
 // import styled from "styled-components";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import VisibilitySensor from "react-visibility-sensor-v2";
 
 export default React.memo(function sideBySide(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
   // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
 

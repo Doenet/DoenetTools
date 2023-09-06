@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, createContext } from "react";
 import { sizeToCSS } from "./utils/css";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import me from "math-expressions";
 import VisibilitySensor from "react-visibility-sensor-v2";
 import JXG from "./jsxgraph-distrib/jsxgraphcore.mjs";
@@ -10,7 +10,8 @@ import { cesc } from "../../_utils/url";
 export const BoardContext = createContext();
 
 export default React.memo(function Graph(props) {
-  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } =
+    useDoenetRenderer(props);
   // console.log({ name, id, SVs, children, actions })
 
   const [board, setBoard] = useState(null);

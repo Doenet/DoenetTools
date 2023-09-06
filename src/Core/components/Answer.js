@@ -20,6 +20,19 @@ export default class Answer extends InlineComponent {
   }
   static componentType = "answer";
 
+  // Include children that can be added due to sugar
+  static additionalSchemaChildren = [
+    "math",
+    "mathList",
+    "number",
+    "numberList",
+    "text",
+    "textList",
+    "boolean",
+    "booleanList",
+    "choice",
+  ];
+
   static renderChildren = true;
 
   static variableForPlainMacro = "submittedResponses";
@@ -526,10 +539,15 @@ export default class Answer extends InlineComponent {
 
       let newChildren;
       let type;
+      let warnings = [];
+
       if (componentAttributes.type) {
         type = componentAttributes.type;
         if (!["math", "text", "boolean"].includes(type)) {
-          console.warn(`Invalid type ${type}`);
+          warnings.push({
+            message: `Invalid type for answer: ${type}`,
+            level: 1,
+          });
           type = "math";
         }
       } else {
@@ -591,6 +609,7 @@ export default class Answer extends InlineComponent {
       return {
         success: true,
         newChildren: newChildren,
+        warnings,
       };
     };
 
@@ -1919,9 +1938,6 @@ export default class Answer extends InlineComponent {
   }) {
     let numAttemptsLeft = await this.stateValues.numAttemptsLeft;
     if (numAttemptsLeft < 1) {
-      console.warn(
-        `Cannot submit answer for ${this.componentName} as number of attempts left is ${numAttemptsLeft}`,
-      );
       return;
     }
 

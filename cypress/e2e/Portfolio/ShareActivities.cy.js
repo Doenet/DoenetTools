@@ -1,17 +1,12 @@
-// import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
-const { cesc2 } = require("../../../src/_utils/url");
+import { cesc2 } from "../../../src/_utils/url";
 
 describe("Share Activities Using Portfolio", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-  });
   beforeEach(() => {
     cy.signin({ userId });
-
     cy.visit(`/`);
   });
 
@@ -19,6 +14,179 @@ describe("Share Activities Using Portfolio", function () {
     // returning false here prevents Cypress from
     // failing the test
     return false;
+  });
+
+  it("Contributors History Course", () => {
+    const activityLabel = "Contributors Activity";
+    const activityLabel2 = "Contributors Activity 2";
+    const activityLabel3 = "Contributors Activity 3";
+    const courseLabel = "Contributors Course";
+    const activityContent = "This is a popular activity!";
+    const userId1 = "cyContributors1";
+    const user1FirstName = "First";
+    const user1LastName = "Last";
+    const user1FullName = `${user1FirstName} ${user1LastName}`;
+    const userId2 = "cyContributors2";
+    const user2FirstName = "Second";
+    const user2LastName = "Last";
+    const user2FullName = `${user2FirstName} ${user2LastName}`;
+
+    cy.signin({
+      userId: userId1,
+      firstName: user1FirstName,
+      lastName: user1LastName,
+    });
+    cy.visit(`/`);
+
+    cy.log("Create an activity in a course");
+    cy.get('[data-test="My Courses"]').click();
+    cy.get('[data-test="Add Course"]').click();
+    cy.get('[data-test="Confirm Add Course"]').click();
+    cy.get('[data-test="List of courses"]')
+      .contains("Untitled Course")
+      .parent()
+      .parent()
+      .find('[data-test="Card Menu Button"]')
+      .click();
+
+    cy.get('[data-test="List of courses"]')
+      .contains("Untitled Course")
+      .parent()
+      .parent()
+      .find('[data-test="Course Settings MenuItem"]')
+      .click();
+
+    cy.get("#label").clear().type(courseLabel).blur();
+    cy.get(".chakra-modal__close-btn").click();
+
+    cy.get('[data-test="List of courses"]')
+      .contains(courseLabel)
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('[data-test="Card Image Link"]')
+      .click();
+
+    cy.get('[data-test="Dashboard Content Card"]').click();
+
+    cy.get('[data-test="Add Activity Button"]').click();
+
+    cy.get(".navigationRow").eq(0).click();
+
+    cy.get('[data-test="Label Activity"]').type(
+      `{selectAll}{backspace}${activityLabel}{enter}`,
+    );
+    cy.get(".navigationRow").eq(0).dblclick();
+
+    cy.get(".cm-content").type(activityContent);
+
+    cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
+    cy.get('[data-test="Assign Activity"]').click();
+
+    cy.get('[data-test="Unassign Activity"]').should("be.visible");
+
+    cy.get('[data-test="Show DoenetML Source"]').click();
+    cy.get('[data-test="Make Publicly Visible"]').click();
+
+    cy.log("remix the activity");
+    cy.get('[data-test="Crumb 0"]').click();
+    cy.get('[data-test="Community"]').click();
+    cy.get('[data-test="Search"]').clear().type(`${activityLabel}{enter}`);
+    cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"]')
+      .eq(0)
+      .click();
+
+    cy.get('[data-test="info on contributors"]').contains(courseLabel);
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 0"]').contains(courseLabel);
+    cy.get('[data-test="contributors menu item 0"]').click({ force: true });
+
+    cy.get('[data-test="heading1"]').contains(courseLabel);
+    cy.get('[data-test="heading2"]').contains("Public Course Activities");
+    cy.go("back");
+
+    cy.get('[data-test="Remix Button"]').click();
+
+    cy.log("rename the 2nd activity and make it public");
+    cy.get('[data-test="Controls Button"]').click();
+
+    cy.get('[data-test="Activity Label"]').clear().type(activityLabel2).blur();
+    cy.get('[data-test="Public Checkbox"]').click();
+    cy.get('[data-test="Close Settings Button"]').click();
+
+    cy.log("sign in as another user and remix");
+    cy.signin({
+      userId: userId2,
+      firstName: user2FirstName,
+      lastName: user2LastName,
+    });
+
+    cy.visit(`/community`);
+
+    cy.get('[data-test="Search"]').clear().type(`${activityLabel2}{enter}`);
+    cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"]')
+      .eq(0)
+      .click();
+
+    cy.get('[data-test="info on contributors"]').contains(user1FullName);
+    cy.get('[data-test="info on contributors"]').contains(courseLabel);
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 0"]').contains(user1FullName);
+    cy.get('[data-test="contributors menu item 1"]').contains(courseLabel);
+
+    cy.get('[data-test="contributors menu item 1"]').click({ force: true });
+    cy.get('[data-test="heading1"]').contains(courseLabel);
+    cy.get('[data-test="heading2"]').contains("Public Course Activities");
+    cy.go("back");
+
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 0"]').click({ force: true });
+    cy.get('[data-test="heading1"]').contains(user1FullName);
+    cy.get('[data-test="heading2"]').contains("User Portfolio");
+    cy.go("back");
+
+    cy.get('[data-test="Remix Button"]').click();
+
+    cy.log("label the third activity and examine public portfolio info");
+
+    cy.get('[data-test="Controls Button"]').click();
+
+    cy.get('[data-test="Activity Label"]').clear().type(activityLabel3).blur();
+    cy.get('[data-test="Public Checkbox"]').click();
+    cy.get('[data-test="Close Settings Button"]').click();
+
+    cy.visit(`/community`);
+
+    cy.get('[data-test="Search"]').clear().type(`${activityLabel3}{enter}`);
+    cy.get('[data-test="Results All Matches"] [data-test="Card Image Link"]')
+      .eq(0)
+      .click();
+
+    cy.get('[data-test="info on contributors"]').contains(user2FullName);
+    cy.get('[data-test="info on contributors"]').contains(user1FullName);
+    cy.get('[data-test="info on contributors"]').contains(", ...");
+
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 0"]').contains(user2FullName);
+    cy.get('[data-test="contributors menu item 1"]').contains(user1FullName);
+    cy.get('[data-test="contributors menu item 2"]').contains(courseLabel);
+
+    cy.get('[data-test="contributors menu item 2"]').click({ force: true });
+    cy.get('[data-test="heading1"]').contains(courseLabel);
+    cy.get('[data-test="heading2"]').contains("Public Course Activities");
+    cy.go("back");
+
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 1"]').click({ force: true });
+    cy.get('[data-test="heading1"]').contains(user1FullName);
+    cy.get('[data-test="heading2"]').contains("User Portfolio");
+    cy.go("back");
+
+    cy.get('[data-test="contributors menu"]').click();
+    cy.get('[data-test="contributors menu item 0"]').click({ force: true });
+    cy.get('[data-test="heading1"]').contains(user2FullName);
+    cy.get('[data-test="heading2"]').contains("User Portfolio");
   });
 
   it("Portfolio Settings Menu", () => {

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import {
@@ -54,7 +54,7 @@ export default function MathInput(props) {
     ignoreUpdate,
     rendererName,
     callAction,
-  } = useDoenetRender(props);
+  } = useDoenetRenderer(props);
 
   MathInput.baseStateVariable = "rawRendererValue";
 
@@ -358,9 +358,9 @@ export default function MathInput(props) {
       <span id={id}>
         <label style={{ display: "inline-flex", maxWidth: "100%" }}>
           {label}
-          <div
+          <span
             className="mathInputWrapper"
-            style={{ cursor: mathInputWrapperCursor }}
+            style={{ cursor: mathInputWrapperCursor, display: "block" }}
           >
             <EditableMathField
               style={mathInputStyle}
@@ -391,7 +391,7 @@ export default function MathInput(props) {
                       // can be converted to real arrays with Array.from()
                       // https://stackoverflow.com/a/22754453
                       let keyboards = Array.from(
-                        document.getElementsByClassName("keyboard"),
+                        document.getElementsByClassName("keyboardcontainer"),
                       );
                       keyboards.forEach((keyboard) => {
                         if (keyboard?.contains(e.relatedTarget)) {
@@ -416,7 +416,7 @@ export default function MathInput(props) {
                 setMathField(mf);
               }}
             />
-          </div>
+          </span>
         </label>
         {checkWorkButton}
       </span>

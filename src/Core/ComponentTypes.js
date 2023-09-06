@@ -155,7 +155,6 @@ import RegionBetweenCurveXAxis from "./components/RegionBetweenCurveXAxis";
 import RegionHalfPlane from "./components/RegionHalfPlane";
 import CodeEditor from "./components/CodeEditor";
 import CodeViewer from "./components/CodeViewer";
-import RenderDoenetML from "./components/RenderDoenetML";
 import HasSameFactoring from "./components/HasSameFactoring";
 import DataFrame from "./components/DataFrame";
 import SummaryStatistics from "./components/SummaryStatistics";
@@ -191,6 +190,8 @@ import VariableNameList from "./components/abstract/VariableNameList";
 import VariableName from "./components/abstract/VariableName";
 import ListOfNumberLists from "./components/abstract/ListOfNumberLists";
 import DirectionComponent from "./components/abstract/DirectionComponent";
+import ErrorComponent from "./components/abstract/Error";
+import Comment from "./components/abstract/Comment";
 
 const componentTypeArray = [
   ...Object.values(Aliases),
@@ -344,7 +345,6 @@ const componentTypeArray = [
   RegionHalfPlane,
   CodeEditor,
   CodeViewer,
-  RenderDoenetML,
   HasSameFactoring,
   DataFrame,
   SummaryStatistics,
@@ -384,6 +384,8 @@ const componentTypeArray = [
   VariableName,
   ListOfNumberLists,
   DirectionComponent,
+  ErrorComponent,
+  Comment,
 ];
 
 export function allComponentClasses() {

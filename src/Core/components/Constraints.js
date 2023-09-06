@@ -6,6 +6,8 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
+  static inSchemaOnlyInheritAs = [];
+
   static returnChildGroups() {
     return [
       {

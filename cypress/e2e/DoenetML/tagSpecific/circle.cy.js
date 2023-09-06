@@ -22034,6 +22034,110 @@ describe("Circle Tag Tests", function () {
       .should("have.text", "(1234.6,0.1235)");
   });
 
+  it("circle warnings", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+<text>a</text>
+<circle name="c1" through="(a,b) (c,d)" />
+<circle name="c2" through="(1,2) (3,4) (5,6) (7,8)" />
+<circle name="c3" center="(1,2)" radius="1" through="(3,4)" />
+<circle name="c4" center="(1,2)" through="(1,2) (3,4)" />
+<circle name="c5" radius="1" through="(-4,0) (4,0)" />
+<circle name="c6" radius="1" through="(-4,0) (3,4) (4,0)" />
+<circle name="c7" center="(a,b)" through="(c,d) (e,f)" />
+<circle name="c8" through="(a,b) (c,d)" radius="1" />
+
+$c7.radius
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_text1")).should("have.text", "a"); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(0);
+      expect(errorWarnings.warnings.length).eq(8);
+
+      expect(errorWarnings.warnings[0].message).contain(
+        "Cannot calculate radius of circle with specified center through more than 1 point",
+      );
+      expect(errorWarnings.warnings[0].level).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineBegin).eq(9);
+      expect(errorWarnings.warnings[0].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[0].doenetMLrange.lineEnd).eq(9);
+      expect(errorWarnings.warnings[0].doenetMLrange.charEnd).eq(57);
+
+      expect(errorWarnings.warnings[1].message).contain(
+        "Haven't implemented <circle> through 2 points in case where the points don't have numerical values",
+      );
+      expect(errorWarnings.warnings[1].level).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineBegin).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[1].doenetMLrange.lineEnd).eq(3);
+      expect(errorWarnings.warnings[1].doenetMLrange.charEnd).eq(42);
+
+      expect(errorWarnings.warnings[2].message).contain(
+        "Cannot calculate circle through more than 3 points",
+      );
+      expect(errorWarnings.warnings[2].level).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineBegin).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[2].doenetMLrange.lineEnd).eq(4);
+      expect(errorWarnings.warnings[2].doenetMLrange.charEnd).eq(54);
+
+      expect(errorWarnings.warnings[3].message).contain(
+        "Cannot calculate circle with specified radius, center and through points",
+      );
+      expect(errorWarnings.warnings[3].level).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineBegin).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[3].doenetMLrange.lineEnd).eq(5);
+      expect(errorWarnings.warnings[3].doenetMLrange.charEnd).eq(62);
+
+      expect(errorWarnings.warnings[4].message).contain(
+        "Cannot calculate circle with specified center through more than 1 point",
+      );
+      expect(errorWarnings.warnings[4].level).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineBegin).eq(6);
+      expect(errorWarnings.warnings[4].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[4].doenetMLrange.lineEnd).eq(6);
+      expect(errorWarnings.warnings[4].doenetMLrange.charEnd).eq(57);
+
+      expect(errorWarnings.warnings[5].message).contain(
+        "Cannot calculate circle: given that the distance between the two points is 8, the specified radius 1 is too small",
+      );
+      expect(errorWarnings.warnings[5].level).eq(1);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineBegin).eq(7);
+      expect(errorWarnings.warnings[5].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[5].doenetMLrange.lineEnd).eq(7);
+      expect(errorWarnings.warnings[5].doenetMLrange.charEnd).eq(54);
+
+      expect(errorWarnings.warnings[6].message).contain(
+        "Cannot create circle through more than two points with a specified radius",
+      );
+      expect(errorWarnings.warnings[6].level).eq(1);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineBegin).eq(8);
+      expect(errorWarnings.warnings[6].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[6].doenetMLrange.lineEnd).eq(8);
+      expect(errorWarnings.warnings[6].doenetMLrange.charEnd).eq(60);
+
+      expect(errorWarnings.warnings[7].message).contain(
+        "Cannot create circle through more than one point with specified radius when don't have numerical values",
+      );
+      expect(errorWarnings.warnings[7].level).eq(1);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineBegin).eq(10);
+      expect(errorWarnings.warnings[7].doenetMLrange.charBegin).eq(1);
+      expect(errorWarnings.warnings[7].doenetMLrange.lineEnd).eq(10);
+      expect(errorWarnings.warnings[7].doenetMLrange.charEnd).eq(53);
+    });
+  });
+
   it("handle bad center/through", () => {
     cy.window().then(async (win) => {
       win.postMessage(
@@ -22051,5 +22155,79 @@ describe("Circle Tag Tests", function () {
 
     // page loads
     cy.get(cesc2("#/_text1")).should("have.text", "a");
+  });
+
+  it("area and circumference", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+    <graph>
+      <circle center="(1,4)" name="c" />
+    </graph>
+    <p>Area: <math copySource="c.area" name="area" /></p>
+    <p>Area as number: <number copySource="c.area" name="area2" /></p>
+    <p>Circumference: <math copySource="c.circumference" name="circumference" /></p>
+    <p>Circumference as number: <number copySource="c.circumference" name="circumference2" /></p>
+    <p>Change radius: <mathinput name="r">$c.radius</mathinput></p>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "π");
+    cy.get(cesc2("#/area2")).should("have.text", "3.14");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "6.28");
+
+    cy.log("change radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}3{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "28.27");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "9π");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "6π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "18.85");
+
+    cy.log("change to symbolic radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}a{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "NaN");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "πa2");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "2aπ");
+    cy.get(cesc2("#/circumference2")).should("have.text", "NaN");
+
+    cy.log("back to numeric radius");
+
+    cy.get(cesc2("#/r") + " textarea").type("{end}{backspace}5{enter}", {
+      force: true,
+    });
+
+    cy.get(cesc2("#/area2")).should("have.text", "78.54");
+    cy.get(cesc2("#/area") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "25π");
+    cy.get(cesc2("#/circumference") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "10π");
+    cy.get(cesc2("#/circumference2")).should("have.text", "31.42");
   });
 });

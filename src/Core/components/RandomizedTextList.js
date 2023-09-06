@@ -3,9 +3,11 @@ import InlineComponent from "./abstract/InlineComponent";
 export default class TextList extends InlineComponent {
   static componentType = "randomizedTextList";
 
+  static excludeFromSchema = true;
+
   // when another component has a attribute that is a textList,
   // use the texts state variable to populate that attribute
-  static stateVariableForAttributeValue = "texts";
+  static stateVariableToBeShadowed = "texts";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

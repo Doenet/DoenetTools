@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton";
@@ -31,7 +31,7 @@ const TextNoSelect = styled.text`
 // `;
 
 export default React.memo(function subsetOfReals(props) {
-  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);

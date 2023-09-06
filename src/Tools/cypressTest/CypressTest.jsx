@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import PageViewer from "../../Viewer/PageViewer.jsx";
-import ActivityViewer from "../../Viewer/ActivityViewer.jsx";
+import { DoenetML } from "../../Viewer/DoenetML.jsx";
 import { useRecoilState } from "recoil";
-import { darkModeAtom } from "../_framework/DarkmodeController.jsx";
 // import testCodeDoenetML from './testCode.doenet?raw';
+import { useLocation, useNavigate } from "react-router";
 
 function Test() {
   // console.log("===Test")
@@ -23,6 +22,7 @@ function Test() {
     allowSaveEvents: false,
     autoSubmit: false,
     paginate: true,
+    darkMode: "light",
   };
   let testSettings = JSON.parse(localStorage.getItem("test settings"));
   if (!testSettings) {
@@ -30,12 +30,10 @@ function Test() {
     localStorage.setItem("test settings", JSON.stringify(defaultTestSettings));
   }
 
-  const [{ doenetML, activityDefinition, attemptNumber }, setBaseState] =
-    useState({
-      doenetML: null,
-      activityDefinition: null,
-      attemptNumber: testSettings.attemptNumber,
-    });
+  const [{ doenetMLstring, attemptNumber }, setBaseState] = useState({
+    doenetMLstring: null,
+    attemptNumber: testSettings.attemptNumber,
+  });
 
   const [updateNumber, setUpdateNumber] = useState(testSettings.updateNumber);
   const [controlsVisible, setControlsVisible] = useState(
@@ -48,7 +46,7 @@ function Test() {
   const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
   const [showHints, setShowHints] = useState(testSettings.showHints);
 
-  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
+  const [darkMode, setDarkMode] = useState(testSettings.darkMode);
 
   const [allowLoadState, setAllowLoadState] = useState(
     testSettings.allowLoadState,
@@ -70,6 +68,9 @@ function Test() {
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
+  let navigate = useNavigate();
+  let location = useLocation();
+
   // requestedVariantIndex is undefined by default so that viewer
   // will use attemptNumber for variant
   // unless get a message (from cypress) to select a particular variant
@@ -77,14 +78,11 @@ function Test() {
 
   //For Cypress Test Use
   window.onmessage = (e) => {
-    let newDoenetML = null,
-      newActivityDefinition = null,
+    let newDoenetMLstring = null,
       newAttemptNumber = attemptNumber;
 
     if (e.data.doenetML !== undefined) {
-      newDoenetML = e.data.doenetML;
-    } else if (e.data.activityDefinition !== undefined) {
-      newActivityDefinition = e.data.activityDefinition;
+      newDoenetMLstring = e.data.doenetML;
     }
 
     if (e.data.requestedVariantIndex !== undefined) {
@@ -97,14 +95,9 @@ function Test() {
     }
 
     // don't do anything if receive a message from another source (like the youtube player)
-    if (
-      newDoenetML ||
-      newActivityDefinition ||
-      newAttemptNumber !== attemptNumber
-    ) {
+    if (newDoenetMLstring || newAttemptNumber !== attemptNumber) {
       setBaseState({
-        doenetML: newDoenetML,
-        activityDefinition: newActivityDefinition,
+        doenetMLstring: newDoenetMLstring,
         attemptNumber: newAttemptNumber,
       });
     }
@@ -399,9 +392,9 @@ function Test() {
             <input
               id="testRunner_darkmode"
               type="checkbox"
-              checked={darkModeToggle === "dark"}
+              checked={darkMode === "dark"}
               onChange={() => {
-                setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark");
+                setDarkMode(darkMode === "dark" ? "light" : "dark");
               }}
             />
             Dark Mode
@@ -412,11 +405,12 @@ function Test() {
   }
 
   let viewer = null;
-  if (doenetML !== null) {
+
+  if (doenetMLstring) {
     viewer = (
-      <PageViewer
-        key={"pageviewer" + updateNumber}
-        doenetML={doenetML}
+      <DoenetML
+        key={"activityViewer" + updateNumber}
+        doenetML={doenetMLstring}
         // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         updateDataOnContentChange={true}
         flags={{
@@ -434,41 +428,16 @@ function Test() {
         }}
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex.current}
-        doenetId="doenetIdFromCypress"
-        pageIsActive={true}
-        // collaborate={true}
-        // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
-        // functionsSuppliedByChild = {this.functionsSuppliedByChild}
-      />
-    );
-  } else if (activityDefinition !== null) {
-    viewer = (
-      <ActivityViewer
-        key={"activityViewer" + updateNumber}
-        // doenetML={doenetML}
-        activityDefinition={activityDefinition}
-        // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
-        updateDataOnContentChange={true}
-        flags={{
-          showCorrectness,
-          readOnly,
-          solutionDisplayMode,
-          showFeedback,
-          showHints,
-          allowLoadState,
-          allowSaveState,
-          allowLocalState,
-          allowSaveSubmissions,
-          allowSaveEvents,
-          autoSubmit,
-        }}
-        attemptNumber={attemptNumber}
-        requestedVariantIndex={requestedVariantIndex.current}
-        doenetId="doenetIdFromCypress"
+        activityId="activityIdFromCypress"
+        idsIncludeActivityId={false}
         paginate={paginate}
-        // collaborate={true}
-        // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
-        // functionsSuppliedByChild = {this.functionsSuppliedByChild}
+        location={location}
+        navigate={navigate}
+        linkSettings={{
+          viewURL: "/portfolioviewer",
+          editURL: "/publiceditor",
+        }}
+        darkMode={darkMode}
       />
     );
   }
@@ -476,6 +445,7 @@ function Test() {
   return (
     <div
       style={{ backgroundColor: "var(--canvas)", color: "var(--canvastext)" }}
+      data-theme={darkMode}
     >
       <div style={{ backgroundColor: "var(--mainGray)" }}>
         <h3>
@@ -493,15 +463,5 @@ function Test() {
     </div>
   );
 }
-
-// if (import.meta.hot) {
-//   import.meta.hot.accept();
-//   // import.meta.hot.accept(({module}) => {
-//   //   Test = module.default;
-//   //   console.log(">>>ACCEPT CALLED in test!!!!!!!!!",module.default)
-//   //   console.log(">>>module",module)
-//   // }
-//   // );
-// }
 
 export default Test;

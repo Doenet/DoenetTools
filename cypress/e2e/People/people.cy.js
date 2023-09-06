@@ -9,7 +9,7 @@ describe("People Test", function () {
     email: "test@gmail.com",
     section: "testsect",
     externalId: "testExID",
-    roleId: "studentRoleId",
+    roleId: "courseid1SId",
   };
 
   // generate people in cypress/fixtures/peopleExample.csv

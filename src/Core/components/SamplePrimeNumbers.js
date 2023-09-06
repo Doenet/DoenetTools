@@ -14,6 +14,8 @@ export default class SamplePrimeNumbers extends CompositeComponent {
   }
   static componentType = "samplePrimeNumbers";
 
+  static allowInSchemaAsComponent = ["integer"];
+
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
@@ -212,6 +214,9 @@ export default class SamplePrimeNumbers extends CompositeComponent {
     componentInfoObjects,
     startNum = 0,
   }) {
+    let errors = [];
+    let warnings = [];
+
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let replacements = [];
@@ -233,8 +238,14 @@ export default class SamplePrimeNumbers extends CompositeComponent {
       indOffset: startNum,
       componentInfoObjects,
     });
+    errors.push(...processResult.errors);
+    warnings.push(...processResult.warnings);
 
-    return { replacements: processResult.serializedComponents };
+    return {
+      replacements: processResult.serializedComponents,
+      errors,
+      warnings,
+    };
   }
 
   static async calculateReplacementChanges({
@@ -242,6 +253,10 @@ export default class SamplePrimeNumbers extends CompositeComponent {
     componentInfoObjects,
     flags,
   }) {
+    // TODO: don't yet have a way to return errors and warnings!
+    let errors = [];
+    let warnings = [];
+
     let replacementChanges = [];
 
     let sampledValues = await component.stateValues.sampledValues;
@@ -275,6 +290,8 @@ export default class SamplePrimeNumbers extends CompositeComponent {
           startNum: component.replacements.length,
           flags,
         });
+        errors.push(...result.errors);
+        warnings.push(...result.warnings);
 
         let replacementInstruction = {
           changeType: "add",

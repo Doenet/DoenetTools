@@ -1,9 +1,9 @@
 import { MathJax } from "better-react-mathjax";
 import React from "react";
-import useDoenetRender from "../useDoenetRenderer";
+import useDoenetRenderer from "../useDoenetRenderer";
 
 export default React.memo(function MathList(props) {
-  let { name, id, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRenderer(props);
 
   if (SVs.hidden) {
     return null;

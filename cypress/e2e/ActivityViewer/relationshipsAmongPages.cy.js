@@ -7,49 +7,47 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Problem numbering continues across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
     <document type="activity">
-      <order>
-        <page>
-          <problem>
-            <p>The first problem</p>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <p>The second problem</p>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <p>The third problem</p>
-          </problem>
-          <problem>
-            <p>The fourth problem</p>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <p>The fifth problem</p>
-          </problem>
-          <problem includeAutoName includeAutoNumber>
-            <title>Named problem</title>
-            <p>The sixth problem</p>
-          </problem>
-        </page>
-        <page>
-          <problem>
-            <p>The seventh problem</p>
-          </problem>
-        </page>
-      </order>
+      <page>
+        <problem>
+          <p>The first problem</p>
+        </problem>
+      </page>
+      <page>
+        <problem>
+          <p>The second problem</p>
+        </problem>
+      </page>
+      <page>
+        <problem>
+          <p>The third problem</p>
+        </problem>
+        <problem>
+          <p>The fourth problem</p>
+        </problem>
+      </page>
+      <page>
+        <problem>
+          <p>The fifth problem</p>
+        </problem>
+        <problem includeAutoName includeAutoNumber>
+          <title>Named problem</title>
+          <p>The sixth problem</p>
+        </problem>
+      </page>
+      <page>
+        <problem>
+          <p>The seventh problem</p>
+        </problem>
+      </page>
     </document>
     `;
 
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -160,7 +158,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -194,67 +192,65 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Section numbering continues across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
       <document type="activity">
-        <order>
-          <page>
-            <section>
-              <p>The first section</p>
-            </section>
-          </page>
-          <page>
-            <section>
-              <p>The second section</p>
-              <subsection>
-                <p>First subsection of second section</p>
-              </subsection>
-              <subsection>
-                <p>Second subsection of second section</p>
-              </subsection>
-            </section>
-          </page>
-          <page>
-            <section>
-              <p>The third section</p>
-            </section>
-            <section>
-              <p>The fourth section</p>
-              <subsection>
-                <p>First subsection of fourth section</p>
-              </subsection>
-              <subsection>
-                <p>Second subsection of fourth section</p>
-              </subsection>
-            </section>
-          </page>
-          <page>
-            <section>
-              <p>The fifth section</p>
-            </section>
-            <section includeAutoName includeAutoNumber>
-              <title>Named section</title>
-              <p>The sixth section</p>
-              <subsection>
-                <p>First subsection of sixth section</p>
-              </subsection>
-              <subsection>
-                <p>Second subsection of sixth section</p>
-              </subsection>
-            </section>
-          </page>
-          <page>
-            <section>
-              <p>The seventh section</p>
-            </section>
-          </page>
-        </order>
+        <page>
+          <section>
+            <p>The first section</p>
+          </section>
+        </page>
+        <page>
+          <section>
+            <p>The second section</p>
+            <subsection>
+              <p>First subsection of second section</p>
+            </subsection>
+            <subsection>
+              <p>Second subsection of second section</p>
+            </subsection>
+          </section>
+        </page>
+        <page>
+          <section>
+            <p>The third section</p>
+          </section>
+          <section>
+            <p>The fourth section</p>
+            <subsection>
+              <p>First subsection of fourth section</p>
+            </subsection>
+            <subsection>
+              <p>Second subsection of fourth section</p>
+            </subsection>
+          </section>
+        </page>
+        <page>
+          <section>
+            <p>The fifth section</p>
+          </section>
+          <section includeAutoName includeAutoNumber>
+            <title>Named section</title>
+            <p>The sixth section</p>
+            <subsection>
+              <p>First subsection of sixth section</p>
+            </subsection>
+            <subsection>
+              <p>Second subsection of sixth section</p>
+            </subsection>
+          </section>
+        </page>
+        <page>
+          <section>
+            <p>The seventh section</p>
+          </section>
+        </page>
       </document>
         `;
 
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -365,7 +361,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -400,51 +396,49 @@ describe("Relationships among pages tests", function () {
   });
 
   it("Links across pages", () => {
-    let activityDefinition = `
+    let doenetML = `
       <document type="activity">
-        <order>
-          <page>
-            <section>
-              <p><ref name="toAbove" target="pAbove">Link to paragraph above aside</ref></p>
-              <p><ref name="toAside" target="aside">Link to aside</ref></p>
-              <p><ref name="toPage2" page="2">Link to page 2</ref></p>
-              <p><ref name="toAbove2" page="2" target="pAbove">Link to paragraph above page 2 aside</ref></p>
-              <p><ref name="toAside2" page="2" target="aside">Link to page 2 aside</ref></p>
-              <p>Checkbox to make it save state: <booleaninput name="bi" /> <boolean copySource="bi" name="b" /></p>
-              <lorem generateParagraphs="4" />
-              
-              <p name="pAbove">Paragraph above aside</p>
-              <aside name="aside">
-                <title name="asideTitle">The aside</title>
-                <p name="insideAside">Content in aside</p>
-              </aside>
+        <page>
+          <section>
+            <p><ref name="toAbove" target="pAbove">Link to paragraph above aside</ref></p>
+            <p><ref name="toAside" target="aside">Link to aside</ref></p>
+            <p><ref name="toPage2" page="2">Link to page 2</ref></p>
+            <p><ref name="toAbove2" page="2" target="pAbove">Link to paragraph above page 2 aside</ref></p>
+            <p><ref name="toAside2" page="2" target="aside">Link to page 2 aside</ref></p>
+            <p>Checkbox to make it save state: <booleaninput name="bi" /> <boolean copySource="bi" name="b" /></p>
+            <lorem generateParagraphs="4" />
+            
+            <p name="pAbove">Paragraph above aside</p>
+            <aside name="aside">
+              <title name="asideTitle">The aside</title>
+              <p name="insideAside">Content in aside</p>
+            </aside>
 
-              <lorem generateParagraphs="8" />
+            <lorem generateParagraphs="8" />
 
-            </section>
-          </page>
-          <page>
-            <section>
-              <p><ref name="toAbove" target="pAbove">Link to paragraph above aside</ref></p>
-              <p><ref name="toAside" target="aside">Link to aside</ref></p>
-              <p><ref name="toPage1" page="1">Link to page 1</ref></p>
-              <p><ref name="toAbove1" page="1" target="pAbove">Link to paragraph above page 1 aside</ref></p>
-              <p><ref name="toAside1" page="1" target="aside">Link to page 1 aside</ref></p>
-              <p>Checkbox to make it save state: <booleaninput name="bi" /> <boolean copySource="bi" name="b" /></p>
+          </section>
+        </page>
+        <page>
+          <section>
+            <p><ref name="toAbove" target="pAbove">Link to paragraph above aside</ref></p>
+            <p><ref name="toAside" target="aside">Link to aside</ref></p>
+            <p><ref name="toPage1" page="1">Link to page 1</ref></p>
+            <p><ref name="toAbove1" page="1" target="pAbove">Link to paragraph above page 1 aside</ref></p>
+            <p><ref name="toAside1" page="1" target="aside">Link to page 1 aside</ref></p>
+            <p>Checkbox to make it save state: <booleaninput name="bi" /> <boolean copySource="bi" name="b" /></p>
 
-              <lorem generateParagraphs="4" />
-              
-              <p name="pAbove">Paragraph above aside</p>
-              <aside name="aside">
-                <title name="asideTitle">The aside</title>
-                <p name="insideAside">Content in aside</p>
-              </aside>
+            <lorem generateParagraphs="4" />
+            
+            <p name="pAbove">Paragraph above aside</p>
+            <aside name="aside">
+              <title name="asideTitle">The aside</title>
+              <p name="insideAside">Content in aside</p>
+            </aside>
 
-              <lorem generateParagraphs="8" />
+            <lorem generateParagraphs="8" />
 
-            </section>
-          </page>
-        </order>
+          </section>
+        </page>
       </document>
         `;
 
@@ -456,7 +450,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -543,7 +537,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -596,7 +590,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );
@@ -637,7 +631,7 @@ describe("Relationships among pages tests", function () {
     cy.window().then(async (win) => {
       win.postMessage(
         {
-          activityDefinition,
+          doenetML,
         },
         "*",
       );

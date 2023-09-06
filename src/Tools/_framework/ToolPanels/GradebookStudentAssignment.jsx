@@ -12,6 +12,7 @@ import {
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
+  useRecoilCallback,
 } from "recoil";
 
 import {
@@ -21,11 +22,14 @@ import {
 } from "../NewToolRoot";
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import axios from "axios";
-import { currentAttemptNumber } from "../ToolPanels/AssignmentViewer";
-import PageViewer from "../../../Viewer/PageViewer";
+import {
+  activityStatusAtom,
+  currentAttemptNumber,
+} from "../ToolPanels/AssignmentViewer";
 import { effectivePermissionsByCourseId } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
-import ActivityViewer from "../../../Viewer/ActivityViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
+import { useLocation, useNavigate } from "react-router";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -58,6 +62,9 @@ export default function GradebookStudentAssignmentView() {
   );
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let overview = useRecoilValueLoadable(overviewData);
+
+  let navigate = useNavigate();
+  let location = useLocation();
 
   const totalPointsOrPercent = Number(
     assignments.contents[doenetId]?.totalPointsOrPercent,
@@ -99,6 +106,17 @@ export default function GradebookStudentAssignmentView() {
       setSuppressMenus([]);
     }
   }, [canViewAndModifyGrades, setSuppressMenus]);
+
+  const updateActivityStatus = useRecoilCallback(
+    ({ set }) =>
+      async ({ itemWeights, currentPage, activityAttemptNumberSetUp }) => {
+        set(activityStatusAtom, {
+          itemWeights,
+          currentPage,
+          activityAttemptNumberSetUp,
+        });
+      },
+  );
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -236,7 +254,7 @@ export default function GradebookStudentAssignmentView() {
       }
       let credit = overview.contents?.[userId]?.assignments?.[doenetId];
 
-      let score = totalPointsOrPercent * credit;
+      let score = Math.round(totalPointsOrPercent * credit * 100) / 100;
       let percentage = Math.round(credit * 1000) / 10 + "%";
 
       scoreRow["total"] = score;
@@ -296,14 +314,26 @@ export default function GradebookStudentAssignmentView() {
     // let doenetML = attemptsInfo[attemptNumber].doenetML;
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
     let paginate = attemptsInfo[attemptNumber].paginate;
+
+    const apiURLs = {
+      loadActivityState: "/api/loadActivityState.php",
+      saveActivityState: "/api/saveActivityState.php",
+      initAssignmentAttempt: "/api/initAssignmentAttempt.php",
+      recordEvent: "/api/recordEvent.php",
+      loadPageState: "/api/loadPageState.php",
+      savePageState: "/api/savePageState.php",
+      saveCreditForItem: "/api/saveCreditForItem.php",
+      reportSolutionViewed: "/api/reportSolutionViewed.php",
+    };
+
     dViewer = (
-      <ActivityViewer
+      <DoenetML
         /** REAL below */
         key={`activityViewer${doenetId}`}
         cid={cid}
         // cidChanged={cidChanged}
         // doenetML={doenetML}
-        doenetId={doenetId}
+        activityId={doenetId}
         userId={userId}
         forceDisable={true}
         forceShowCorrectness={true}
@@ -324,14 +354,24 @@ export default function GradebookStudentAssignmentView() {
           //   pageStateSource: "submissions",
         }}
         attemptNumber={attemptNumber}
+        idsIncludeActivityId={false}
         // requestedVariant={requestedVariant}
         // requestedVariant={variant}
         requestedVariantIndex={requestedVariantIndex}
+        updateActivityStatusCallback={updateActivityStatus}
         // updateAttemptNumber={setRecoilAttemptNumber}
         // updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}
         // pageChangedCallback={pageChanged}
         paginate={paginate}
+        location={location}
+        navigate={navigate}
+        apiURLs={apiURLs}
+        linkSettings={{
+          viewURL: "/course?tool=assignment",
+          editURL: "/public?tool=editor",
+          useQueryParameters: true,
+        }}
       />
     );
 

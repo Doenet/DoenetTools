@@ -16,6 +16,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $groupName = mysqli_real_escape_string($conn,$_POST["groupName"]);
 
 $currentlyFeatured = $_POST["currentlyFeatured"];
+$newGroupName = mysqli_real_escape_string($conn, $_POST["newGroupName"]);
 if ($currentlyFeatured) $currentlyFeatured = 1;
 else $currentlyFeatured = 0;
 
@@ -49,14 +50,20 @@ try {
     }
 
     $sql = 
-        "update promoted_content_group set currentlyFeatured = '$currentlyFeatured', homepage = '$homepage'
-         where groupName = '$groupName'";
+        "update promoted_content_group set 
+        currentlyFeatured = '$currentlyFeatured',
+        homepage = '$homepage' ";
+
+    if ($newGroupName) {
+        $sql .= ", groupName = '$newGroupName' ";
+    }
+    $sql .= 
+        " where groupName = '$groupName'";
 
     $result = $conn->query($sql);
     if ($result && $conn->affected_rows == 1) {
         $response_arr = [
             'success' => true,
-            'message' => $sql
         ];
     } else {
         throw new Exception("Failed to update the group. " . $conn->error);

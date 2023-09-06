@@ -76,8 +76,8 @@ export default class BaseComponent {
       this.variants = serializedComponent.variants;
     }
 
-    if (serializedComponent.range) {
-      this.doenetMLrange = serializedComponent.range;
+    if (serializedComponent.doenetMLrange) {
+      this.doenetMLrange = serializedComponent.doenetMLrange;
     }
 
     this.actions = {
@@ -319,6 +319,7 @@ export default class BaseComponent {
         defaultValue: true,
         public: true,
         propagateToProps: true,
+        excludeFromSchema: true,
       },
       styleNumber: {
         createComponentOfType: "integer",
@@ -344,6 +345,7 @@ export default class BaseComponent {
         createStateVariable: "permid",
         defaultValue: "",
         public: true,
+        excludeFromSchema: true,
       },
     };
   }
@@ -353,7 +355,12 @@ export default class BaseComponent {
   }
 
   static returnChildGroups() {
-    return [];
+    return [
+      {
+        group: "errors",
+        componentTypes: ["_error"],
+      },
+    ];
   }
 
   static get childGroups() {
@@ -1098,6 +1105,10 @@ export default class BaseComponent {
 
     // TODO: not serializing attribute children (as don't need them with forLink)
 
+    if (parameters.errorIfEncounterComponent?.includes(this.componentName)) {
+      throw Error("Encountered " + this.componentName);
+    }
+
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
@@ -1167,8 +1178,44 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if (parameters.copyPrimaryEssential) {
+      let primaryEssentialStateVariable = "value";
+      if (this.constructor.primaryEssentialStateVariable) {
+        primaryEssentialStateVariable =
+          this.constructor.primaryEssentialStateVariable;
+      } else if (this.constructor.primaryStateVariableForDefinition) {
+        primaryEssentialStateVariable =
+          this.constructor.primaryStateVariableForDefinition;
+      }
+
+      // primaryEssentialStateVariable is the state variable we want to set in the copy,
+      // but it might have a differently named essential state variable
+      // associated with it.
+      if (this.state[primaryEssentialStateVariable].essentialVarName) {
+        primaryEssentialStateVariable =
+          this.state[primaryEssentialStateVariable].essentialVarName;
+      }
+
+      let stateVariableToBeShadowed = "value";
+      if (this.constructor.stateVariableToBeShadowed) {
+        stateVariableToBeShadowed = this.constructor.stateVariableToBeShadowed;
+      } else if (this.constructor.primaryStateVariableForDefinition) {
+        stateVariableToBeShadowed =
+          this.constructor.primaryStateVariableForDefinition;
+      }
+
+      // copy the value of stateVariableToBeShadowed of source
+      // to the state of primaryEssentialStateVariable of the copy
+      if (!serializedComponent.state) {
+        serializedComponent.state = {};
+      }
+
+      serializedComponent.state[primaryEssentialStateVariable] = await this
+        .stateValues[stateVariableToBeShadowed];
+    }
+
     if (this.doenetMLrange) {
-      serializedComponent.range = JSON.parse(
+      serializedComponent.doenetMLrange = JSON.parse(
         JSON.stringify(this.doenetMLrange),
       );
     }
@@ -1232,8 +1279,10 @@ export default class BaseComponent {
       delete serializedCopy.doenetAttributes.assignNames;
     }
 
-    if (serializedComponent.range !== undefined) {
-      serializedCopy.range = deepClone(serializedComponent.range);
+    if (serializedComponent.doenetMLrange !== undefined) {
+      serializedCopy.doenetMLrange = deepClone(
+        serializedComponent.doenetMLrange,
+      );
     }
 
     if (serializedComponent.state !== undefined) {
@@ -1365,10 +1414,10 @@ export default class BaseComponent {
     serializedComponent,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    let numVariants = serializedComponent.variants?.numVariants;
 
-    if (numberOfVariants !== undefined) {
-      return { success: true, numberOfVariants };
+    if (numVariants !== undefined) {
+      return { success: true, numVariants };
     }
 
     let descendantVariantComponents = [];
@@ -1389,9 +1438,9 @@ export default class BaseComponent {
 
     // number of variants is the product of
     // number of variants for each descendantVariantComponent
-    numberOfVariants = 1;
+    numVariants = 1;
 
-    let numberOfVariantsByDescendant = [];
+    let numVariantsByDescendant = [];
     for (let descendant of descendantVariantComponents) {
       let descendantClass =
         componentInfoObjects.allComponentClasses[descendant.componentType];
@@ -1402,16 +1451,20 @@ export default class BaseComponent {
       if (!result.success) {
         return { success: false };
       }
-      numberOfVariantsByDescendant.push(result.numberOfVariants);
-      numberOfVariants *= result.numberOfVariants;
+      numVariantsByDescendant.push(result.numVariants);
+      numVariants *= result.numVariants;
     }
 
-    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    if (!(numVariants > 0)) {
+      return { success: false };
+    }
+
+    serializedComponent.variants.numVariants = numVariants;
     serializedComponent.variants.uniqueVariantData = {
-      numberOfVariantsByDescendant,
+      numVariantsByDescendant,
     };
 
-    return { success: true, numberOfVariants };
+    return { success: true, numVariants };
   }
 
   static getUniqueVariant({
@@ -1419,24 +1472,23 @@ export default class BaseComponent {
     variantIndex,
     componentInfoObjects,
   }) {
-    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
-    if (numberOfVariants === undefined) {
+    let numVariants = serializedComponent.variants?.numVariants;
+    if (numVariants === undefined) {
       return { success: false };
     }
 
     if (
       !Number.isInteger(variantIndex) ||
       variantIndex < 1 ||
-      variantIndex > numberOfVariants
+      variantIndex > numVariants
     ) {
       return { success: false };
     }
 
     let haveNontrivialSubvariants = false;
 
-    let numberOfVariantsByDescendant =
-      serializedComponent.variants.uniqueVariantData
-        .numberOfVariantsByDescendant;
+    let numVariantsByDescendant =
+      serializedComponent.variants.uniqueVariantData.numVariantsByDescendant;
     let descendantVariantComponents =
       serializedComponent.variants.descendantVariantComponents;
 
@@ -1444,7 +1496,7 @@ export default class BaseComponent {
 
     if (descendantVariantComponents.length > 0) {
       let indicesForEachDescendant = enumerateCombinations({
-        numberOfOptionsByIndex: numberOfVariantsByDescendant,
+        numberOfOptionsByIndex: numVariantsByDescendant,
         maxNumber: variantIndex,
       })[variantIndex - 1].map((x) => x + 1);
 
@@ -1453,10 +1505,10 @@ export default class BaseComponent {
 
       for (
         let descendantNum = 0;
-        descendantNum < numberOfVariantsByDescendant.length;
+        descendantNum < numVariantsByDescendant.length;
         descendantNum++
       ) {
-        if (numberOfVariantsByDescendant[descendantNum] > 1) {
+        if (numVariantsByDescendant[descendantNum] > 1) {
           let descendant = descendantVariantComponents[descendantNum];
           let compClass =
             componentInfoObjects.allComponentClasses[descendant.componentType];

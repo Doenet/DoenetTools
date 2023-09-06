@@ -1,5 +1,5 @@
 import me from "math-expressions";
-import { cesc } from "../../../../src/_utils/url";
+import { cesc, cesc2 } from "../../../../src/_utils/url";
 
 describe("SelectFromSequence Tag Tests", function () {
   beforeEach(() => {
@@ -921,12 +921,11 @@ describe("SelectFromSequence Tag Tests", function () {
     });
   });
 
-  it("select three numbers from 1 to 3, without replacement, exclude any place for 1", () => {
+  it("display error when select three numbers from 1 to 3, without replacement, exclude any place for 1", () => {
     cy.window().then(async (win) => {
       win.postMessage(
         {
           doenetML: `
-    <text>a</text>
     <p><aslist><selectfromsequence numToSelect="3" name="sample1" from="1" to="3" excludecombinations="(1 _ _) (_ 1 _) (_ _ 1)" /></aslist></p>
     `,
         },
@@ -934,7 +933,21 @@ describe("SelectFromSequence Tag Tests", function () {
       );
     });
 
-    cy.document().should("contain.text", "Excluded over 70%");
+    cy.get(cesc2("#/_document1")).should("contain.text", "Excluded over 70%");
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 2");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain("Excluded over 70%");
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(16);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(130);
+    });
   });
 
   it("select 10 numbers from 1 to 10, without replacement, exclude positions of each number", () => {
@@ -3647,6 +3660,40 @@ describe("SelectFromSequence Tag Tests", function () {
         String(Math.round(n3 * 10 ** 3) / 10 ** 3),
       );
       cy.get(cesc("#\\/n4a")).should("have.text", String(n4) + ".0");
+    });
+  });
+
+  it("display error when select 3 from 1, inside text", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+          <text><selectfromsequence numToSelect="3" length="1" /></text>
+    `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc2("#/_document1")).should(
+      "contain.text",
+      "Cannot select 3 values from a sequence of length 1",
+    );
+    cy.get(cesc2("#/_document1")).should("contain.text", "line 2");
+
+    cy.window().then(async (win) => {
+      let errorWarnings = await win.returnErrorWarnings1();
+
+      expect(errorWarnings.errors.length).eq(1);
+      expect(errorWarnings.warnings.length).eq(0);
+
+      expect(errorWarnings.errors[0].message).contain(
+        "Cannot select 3 values from a sequence of length 1",
+      );
+      expect(errorWarnings.errors[0].doenetMLrange.lineBegin).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charBegin).eq(17);
+      expect(errorWarnings.errors[0].doenetMLrange.lineEnd).eq(2);
+      expect(errorWarnings.errors[0].doenetMLrange.charEnd).eq(65);
     });
   });
 

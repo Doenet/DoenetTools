@@ -13,12 +13,12 @@ export function getVariantsForDescendantsForUniqueVariants({
     return { success: false };
   }
 
-  let numberOfVariantsByDescendant = descendantVariantComponents.map(
-    (x) => x.variants.numberOfVariants,
+  let numVariantsByDescendant = descendantVariantComponents.map(
+    (x) => x.variants.numVariants,
   );
 
   let indices = enumerateCombinations({
-    numberOfOptionsByIndex: numberOfVariantsByDescendant,
+    numberOfOptionsByIndex: numVariantsByDescendant,
     maxNumber: variantIndex,
   })[variantIndex - 1];
 
@@ -131,7 +131,15 @@ export function gatherVariantComponents({
       continue;
     }
 
-    if (!serializedComponent.children) {
+    let compClass =
+      componentInfoObjects.allComponentClasses[
+        serializedComponent.componentType
+      ];
+
+    if (
+      compClass?.ignoreVariantsFromChildren ||
+      !serializedComponent.children
+    ) {
       continue;
     }
 
@@ -164,10 +172,7 @@ export function gatherVariantComponents({
   return variantComponents;
 }
 
-export function getNumberOfVariants({
-  serializedComponent,
-  componentInfoObjects,
-}) {
+export function getNumVariants({ serializedComponent, componentInfoObjects }) {
   // get number of variants from document (or other sectioning component)
 
   if (!serializedComponent.variants) {
@@ -205,7 +210,7 @@ export function getNumberOfVariants({
     ) {
       let sectionChild = nonBlankChildren[0];
 
-      let results = getNumberOfVariants({
+      let results = getNumVariants({
         serializedComponent: sectionChild,
         componentInfoObjects,
       });
@@ -218,8 +223,8 @@ export function getNumberOfVariants({
           });
 
         serializedComponent.variants.uniqueVariants = true;
-        serializedComponent.variants.numberOfVariants =
-          sectionChild.variants.numberOfVariants;
+        serializedComponent.variants.numVariants =
+          sectionChild.variants.numVariants;
         serializedComponent.variants.allPossibleVariants =
           sectionChild.variants.allPossibleVariants;
         serializedComponent.variants.allVariantNames =
@@ -424,11 +429,11 @@ export function determineVariantsForSection({
       componentInfoObjects,
     });
 
-    if (!uniqueResult.success) {
+    if (!uniqueResult.success || !(uniqueResult.numVariants > 0)) {
       uniqueVariants = false;
     } else {
       uniqueVariants =
-        uniqueVariants || uniqueResult.numberOfVariants <= numVariantsSpecified;
+        uniqueVariants || uniqueResult.numVariants <= numVariantsSpecified;
     }
   }
 
@@ -438,7 +443,7 @@ export function determineVariantsForSection({
 
   if (uniqueVariants) {
     for (let [ind, num] of variantsToIncludeUniqueIndices.entries()) {
-      if (num <= uniqueResult.numberOfVariants) {
+      if (num <= uniqueResult.numVariants) {
         allPossibleVariantUniqueIndices.push(num);
         allPossibleVariants.push(variantsToInclude[ind]);
         allPossibleVariantSeeds.push(variantsToIncludeSeeds[ind]);
@@ -450,15 +455,15 @@ export function determineVariantsForSection({
     allPossibleVariantSeeds = variantsToIncludeSeeds;
   }
 
-  let numberOfVariants = allPossibleVariants.length;
-  if (numberOfVariants === 0) {
+  let numVariants = allPossibleVariants.length;
+  if (numVariants === 0) {
     throw Error(
       "No variants selected based on variantsToInclude, variantsToExclude, and the number of variants available",
     );
   }
 
   serializedComponent.variants.uniqueVariants = uniqueVariants;
-  serializedComponent.variants.numberOfVariants = numberOfVariants;
+  serializedComponent.variants.numVariants = numVariants;
   serializedComponent.variants.allPossibleVariants = allPossibleVariants;
   serializedComponent.variants.allVariantNames = variantNames;
   serializedComponent.variants.allPossibleVariantUniqueIndices =
@@ -468,7 +473,7 @@ export function determineVariantsForSection({
 
   return {
     success: true,
-    numberOfVariants,
+    numVariants,
   };
 }
 

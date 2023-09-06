@@ -1,7 +1,4 @@
-import {
-  returnRoundingAttributes,
-  returnRoundingStateVariableDefinitions,
-} from "../utils/rounding";
+import { returnRoundingStateVariableDefinitions } from "../utils/rounding";
 import MathComponent from "./Math";
 import me from "math-expressions";
 
@@ -28,8 +25,6 @@ export default class Matrix extends MathComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-
-    Object.assign(attributes, returnRoundingAttributes());
 
     attributes.defaultEntry = {
       createComponentOfType: "math",

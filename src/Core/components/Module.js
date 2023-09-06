@@ -1,9 +1,7 @@
-import Template from "./Template";
+import Group from "./Group";
 
-export default class Module extends Template {
+export default class Module extends Group {
   static componentType = "module";
-
-  static renderedDefault = true;
 
   static acceptAnyAttribute = true;
 

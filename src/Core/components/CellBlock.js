@@ -26,7 +26,7 @@ export default class CellBlock extends BaseComponent {
     return [
       {
         group: "children",
-        componentTypes: ["cell", "row", "column", "cellblock"],
+        componentTypes: ["cell", "row", "column", "cellBlock"],
       },
     ];
   }

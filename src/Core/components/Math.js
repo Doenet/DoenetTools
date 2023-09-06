@@ -112,12 +112,14 @@ export default class MathComponent extends InlineComponent {
       createStateVariable: "functionSymbols",
       defaultValue: ["f", "g"],
       public: true,
+      fallBackToParentStateVariable: "functionSymbols",
     };
 
     attributes.sourcesAreFunctionSymbols = {
       createComponentOfType: "textList",
       createStateVariable: "sourcesAreFunctionSymbols",
       defaultValue: [],
+      fallBackToParentStateVariable: "sourcesAreFunctionSymbols",
     };
 
     attributes.splitSymbols = {

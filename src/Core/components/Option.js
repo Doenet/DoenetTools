@@ -3,6 +3,9 @@ import Group from "./Group";
 export default class Option extends Group {
   static componentType = "option";
 
+  static inSchemaOnlyInheritAs = [];
+  static allowInSchemaAsComponent = undefined;
+
   static renderedDefault = false;
 
   static createAttributesObject() {

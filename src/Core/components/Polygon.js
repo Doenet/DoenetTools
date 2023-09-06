@@ -1,3 +1,4 @@
+import { returnRoundingAttributeComponentShadowing } from "../utils/rounding";
 import Polyline from "./Polyline";
 
 export default class Polygon extends Polyline {
@@ -266,6 +267,62 @@ export default class Polygon extends Polyline {
         }
 
         return { setValue: { fillStyleDescription } };
+      },
+    };
+
+    delete stateVariableDefinitions.length;
+
+    stateVariableDefinitions.perimeter = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      returnDependencies: () => ({
+        numericalVertices: {
+          dependencyType: "stateVariable",
+          variableName: "numericalVertices",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let perimeter = 0;
+        let verts = dependencyValues.numericalVertices;
+        let nVerts = dependencyValues.numericalVertices.length;
+        for (let i = 0; i < nVerts; i++) {
+          let dx = verts[(i + 1) % nVerts][0] - verts[i][0];
+          let dy = verts[(i + 1) % nVerts][1] - verts[i][1];
+          perimeter += Math.sqrt(dx * dx + dy * dy);
+        }
+
+        return { setValue: { perimeter } };
+      },
+    };
+
+    stateVariableDefinitions.area = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables:
+          returnRoundingAttributeComponentShadowing(),
+      },
+      returnDependencies: () => ({
+        numericalVertices: {
+          dependencyType: "stateVariable",
+          variableName: "numericalVertices",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let area2 = 0;
+        let verts = dependencyValues.numericalVertices;
+        let nVerts = dependencyValues.numericalVertices.length;
+        for (let i = 1; i <= nVerts; i++) {
+          area2 +=
+            verts[i % nVerts][1] *
+            (verts[(i + 1) % nVerts][0] - verts[i - 1][0]);
+        }
+
+        return { setValue: { area: Math.abs(area2 / 2) } };
       },
     };
 

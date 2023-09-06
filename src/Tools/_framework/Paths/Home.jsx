@@ -1,9 +1,6 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
-import styled from "styled-components";
-// import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-// import { checkIfUserClearedOut } from '../../../_utils/applicationUtils';
-import PageViewer from "../../../Viewer/PageViewer";
+import { DoenetML } from "../../../Viewer/DoenetML";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
@@ -21,11 +18,26 @@ import {
   Tooltip,
   useColorModeValue,
   Button,
+  VStack,
+  Grid,
+  GridItem,
+  HStack,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-// import { Link } from 'react-router-dom';
-// import RouterLogo from '../RouterLogo';
+import { MdBuild } from "react-icons/md";
+import axios from "axios";
+import { useFetcher } from "react-router-dom";
+
+// export async function action() {
+//   //Create a portfolio activity and redirect to the editor for it
+//   let { data } = await axios.get("/api/createPortfolioActivity.php");
+
+//   let { doenetId, pageDoenetId } = data;
+//   return redirect(
+//     `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
+//   );
+// }
 
 export async function loader() {
   const response = await fetch("/api/loadPromotedContent.php");
@@ -34,34 +46,6 @@ export async function loader() {
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
-
-// const CarouselSection = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   padding: 60px 10px 60px 10px;
-//   margin: 0px;
-//   row-gap: 45px;
-//   justify-content: center;
-//   align-items: center;
-//   text-align: center;
-//   background: var(--mainGray);
-//   height: 300px;
-// `;
-
-// const CreateContentSection = styled.div`
-//   display: flex;
-//   column-gap: 20px;
-//   justify-content: center;
-//   align-items: center;
-//   height: 500px;
-//   background: #0e1111;
-//   @media (max-width: 1024px) {
-//     /* height: 300px; */
-//     flex-direction: column;
-//     row-gap: 20px;
-//     height: 600px;
-//   }
-// `;
 
 let doenetML = `
 <example>
@@ -117,30 +101,11 @@ let doenetML = `
   
 </example>
 `;
-function Heading(props) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100px",
-      }}
-    >
-      <Text fontSize="24px" fontWeight="700">
-        {props.heading}
-      </Text>
-      <Text fontSize="16px" fontWeight="700">
-        {props.subheading}
-      </Text>
-    </div>
-  );
-}
 
 export function Home() {
   let context = useOutletContext();
   const loaderData = useLoaderData();
+
   const favorites = loaderData?.carouselData?.Homepage;
 
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
@@ -177,19 +142,30 @@ export function Home() {
 
   return (
     <>
-      <Center background={grayColor} padding="20px">
+      <Center background={blackColor} padding="20px">
+        {/* <Center background={grayColor} padding="20px"> */}
         <Flex>
-          <Box w="120px" h="120px" mr="20px">
+          <Box
+            w={["60px", "80px", "100px", "160px", "200px"]}
+            h={["60px", "80px", "100px", "160px", "200px"]}
+            mr="20px"
+          >
             <Image src="Doenet_Logo_Frontpage.png" />
           </Box>
           <Center>
             <Box>
-              <Text color="black" fontSize="30px" fontWeight="700">
+              <Text
+                color="white"
+                fontSize={["12px", "20px", "30px", "40px", "60px"]}
+                fontWeight="700"
+              >
+                {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
                 The Distributed Open Education Network
               </Text>
               <Text
-                color="black"
-                fontSize="16px"
+                color="white"
+                // color="black"
+                fontSize={["8px", "10px", "12px", "18px", "24px"]}
                 fontWeight="700"
                 textAlign="center"
               >
@@ -199,89 +175,101 @@ export function Home() {
           </Center>
         </Flex>
       </Center>
-      <Heading
-        heading="Announcements"
-        // subheading="Quickly create interactive activities"
-      />
-      <Center background={blueColor} padding="20px">
-        <Flex flexDirection="column">
-          <Text fontSize="16px" fontWeight="700" textAlign="left">
-            Doenet Office Hours
-          </Text>
-          <Text maxWidth="800px">
-            Doenet Staff we will be available to help you author learning
-            activities every Thursday at 1:00 PM - 3:00 PM CST on{" "}
-            <Link
-              href="https://umn.zoom.us/j/92354898791?pwd=MXl1ZDdXMnltc2xKR3NxcVFsMGVwUT09"
-              isExternal
-            >
-              <Text as="u">Zoom</Text>.
-            </Link>
-          </Text>
-        </Flex>
-      </Center>
-      <Heading
-        heading="Create Content"
-        subheading="Quickly create interactive activities"
-      />
       <Flex
         alignItems="center"
         justifyContent="center"
         bg={blackColor}
         py="30px"
       >
-        <Flex alignItems="center" justifyContent="center" gap={6} maxW="900px">
-          <Flex
-            textAlign="left"
-            flexDirection="column"
-            justifyContent="center"
-            gap={4}
-          >
-            <Text color={textColor} fontSize="16pt">
-              Introducing DoenetML
-            </Text>
-            <Text color={textColor} fontSize="10pt">
-              DoenetML is the markup language we&apos;ve created to let you
-              focus on the meaning of the elements you wish to create.
-            </Text>
-            <Button
-              // dataTest="Nav to course"
-              size="xs"
-              borderRadius={20}
-              onClick={() =>
-                window.open(
-                  "https://www.doenet.org/public?tool=editor&doenetId=_CPvw8cFvSsxh1TzuGZoP0",
-                  "_blank",
-                )
-              }
-            >
-              See Inside
-            </Button>
-            <Button
-              // dataTest="Nav to course"
-              size="xs"
-              borderRadius={20}
-              onClick={() =>
-                window.open(
-                  "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
-                  "_blank",
-                )
-              }
-            >
-              Documentation
-            </Button>
-          </Flex>
-          <Suspense fallback={"Loading..."}>
-            {" "}
-            {/* Does this lazy loading do anything? */}
-            <HomeIntroVideo />
-          </Suspense>
-        </Flex>
+        <Grid
+          gridTemplateAreas={`"Description Video"
+        `}
+          // gridTemplateRows={"120px auto"}
+          gridTemplateColumns={"300px auto"}
+        >
+          <GridItem area="Description">
+            <Center>
+              <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
+                <Button
+                  leftIcon={<MdBuild />}
+                  mt="40px"
+                  p="10px"
+                  colorScheme="blue"
+                  w={["120px", "140px", "180px", "200px", "260px"]}
+                  h={["20px", "30px", "40px", "50px", "60px"]}
+                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
+                >
+                  Start Creating
+                </Button>
+              </Link>
+            </Center>
+            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
+              <Text color={textColor} fontSize="16pt">
+                Introducing DoenetML
+              </Text>
+              <Text color={textColor} fontSize="10pt">
+                DoenetML is the markup language we&apos;ve created to let you
+                focus on the meaning of the elements you wish to create.
+              </Text>
+              <Button
+                size="xs"
+                borderRadius={20}
+                onClick={() =>
+                  window.open(
+                    "https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH",
+                    "_blank",
+                  )
+                }
+              >
+                Tutorial
+              </Button>
+              <Button
+                size="xs"
+                borderRadius={20}
+                onClick={() =>
+                  window.open(
+                    "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+                    "_blank",
+                  )
+                }
+              >
+                Documentation
+              </Button>
+            </Flex>
+          </GridItem>
+          <GridItem area="Video" p="40px">
+            <Suspense fallback={"Loading..."}>
+              {/* Does this lazy loading do anything? */}
+              <HomeIntroVideo />
+            </Suspense>
+          </GridItem>
+        </Grid>
       </Flex>
-      <Heading
-        heading="Explore"
-        subheading="Interact with our existing content"
-      />
+
+      <Center w="100%" bg={grayColor}>
+        <HStack maxWidth="750px" w="100%" spacing={4}>
+          <Text
+            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Explore
+          </Text>
+          <Text
+            pt="24px"
+            fontSize={["8px", "10px", "12px", "18px", "24px"]}
+            // fontSize="20px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Interact with{" "}
+            <Link href="/community" textDecoration="underline">
+              our existing content
+            </Link>
+          </Text>
+        </HStack>
+      </Center>
       <Flex
         justifyContent="center"
         alignItems="center"
@@ -290,10 +278,28 @@ export function Home() {
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
-      <Heading
-        heading="Learn"
-        subheading="Designed for the In-Person Classroom"
-      />
+
+      <Center w="100%" bg={blueColor}>
+        <HStack maxWidth="750px" w="100%" spacing={4}>
+          <Text
+            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Learn
+          </Text>
+          <Text
+            pt="24px"
+            fontSize={["8px", "10px", "12px", "18px", "24px"]}
+            // fontSize="20px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            Designed for the In-Person Classroom
+          </Text>
+        </HStack>
+      </Center>
       <Flex justifyContent="center" alignItems="center" bg={blueColor}>
         <Flex
           flexDirection="column"
@@ -336,7 +342,7 @@ export function Home() {
             justifyContent="center"
             alignItems="center"
           >
-            <PageViewer
+            <DoenetML
               key={`HPpageViewer`}
               doenetML={doenetML}
               flags={{
@@ -351,19 +357,24 @@ export function Home() {
                 allowSaveSubmissions: false,
                 allowSaveEvents: false,
               }}
-              // doenetId={doenetId}
+              // activityId={doenetId}
               attemptNumber={1}
               generatedVariantCallback={variantCallback} //TODO:Replace
               requestedVariantIndex={variantInfo.index}
               // setIsInErrorState={setIsInErrorState}
-              pageIsActive={true}
+              addBottomPadding={false}
+              linkSettings={{
+                viewURL: "/portfolioviewer",
+                editURL: "/publiceditor",
+              }}
             />
           </Flex>
         </Flex>
       </Flex>
       <Center
         width="100%"
-        bg={grayColor}
+        bg={blackColor}
+        // bg={grayColor}
         color="doenet.canvastext"
         padding="20px 40px"
         display="flex"
@@ -374,18 +385,33 @@ export function Home() {
         <Flex columnGap="10px" m="10px">
           <Link href="mailto:info@doenet.org">
             <Tooltip label="mailto:info@doenet.org">
-              <IconButton size="sm" fontSize="16pt" icon={<HiOutlineMail />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<HiOutlineMail />}
+              />
             </Tooltip>
           </Link>
 
           <Link href="https://github.com/Doenet/">
             <Tooltip label="Doenet Github">
-              <IconButton size="sm" fontSize="16pt" icon={<BsGithub />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<BsGithub />}
+              />
             </Tooltip>
           </Link>
           <Link href="https://discord.gg/PUduwtKJ5h">
             <Tooltip label="Doenet Discord">
-              <IconButton size="sm" fontSize="16pt" icon={<BsDiscord />} />
+              <IconButton
+                colorScheme="blue"
+                size="sm"
+                fontSize="16pt"
+                icon={<BsDiscord />}
+              />
             </Tooltip>
           </Link>
 
@@ -393,8 +419,14 @@ export function Home() {
             <Image src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
           </Link>
         </Flex>
-        <Text as="div" fontSize="14px" maxWidth="750px" textAlign="center">
-          <Text>
+        <Text
+          as="div"
+          fontSize="14px"
+          maxWidth="750px"
+          textAlign="center"
+          color="white"
+        >
+          <Text color="white">
             This work is licensed under a{" "}
             <Link
               color="doenet.mainBlue"
