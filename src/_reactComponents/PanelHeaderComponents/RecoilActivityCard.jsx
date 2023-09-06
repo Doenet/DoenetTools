@@ -12,6 +12,9 @@ import {
   MenuButton,
   Icon,
   MenuList,
+  Center,
+  VStack,
+  useTheme,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
@@ -35,13 +38,10 @@ export default function RecoilActivityCard({
   setDoenetId,
   onClose,
   onOpen,
+  isNewActivity = false,
 }) {
   const fetcher = useFetcher();
-  // const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
   const { compileActivity, updateAssignItem } = useCourse(courseId);
-
-  // const [recoilPageToolView, setRecoilPageToolView] =
-  //   useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 
@@ -52,7 +52,7 @@ export default function RecoilActivityCard({
     location.href = newHref;
   }
 
-  return (
+  const cardJSX = (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
       <Link to={`/portfolioeditor/${doenetId}/${pageDoenetId}`}>
         <Image
@@ -171,4 +171,28 @@ export default function RecoilActivityCard({
       </CardBody>
     </Card>
   );
+
+  if (isNewActivity) {
+    return (
+      <VStack spacing={1}>
+        {cardJSX}
+        <Center
+          width="180px"
+          height="30px"
+          p="10px"
+          m="0"
+          bg="blue.400"
+          data-test="New Activity Indicator"
+          borderBottomLeftRadius="lg"
+          borderBottomRightRadius="lg"
+          fontWeight="700"
+          boxShadow="base"
+        >
+          NEW
+        </Center>
+      </VStack>
+    );
+  } else {
+    return <>{cardJSX}</>;
+  }
 }

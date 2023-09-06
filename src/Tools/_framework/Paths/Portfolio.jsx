@@ -59,9 +59,10 @@ export async function action({ request }) {
 
     if (response.ok) {
       let { doenetId, pageDoenetId } = await response.json();
-      return redirect(
-        `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-      );
+      return { _action: formObj?._action, doenetId, pageDoenetId };
+      // return redirect(
+      //   `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
+      // );
     } else {
       throw Error(response.message);
     }
@@ -237,13 +238,28 @@ export function Portfolio() {
   let data = useLoaderData();
   const [doenetId, setDoenetId] = useState();
   const controlsBtnRef = useRef(null);
-
-  const navigate = useNavigate();
+  const fetcher = useFetcher();
   const {
     isOpen: settingsAreOpen,
     onOpen: settingsOnOpen,
     onClose: settingsOnClose,
   } = useDisclosure();
+
+  const settingsOpenedForDoenetId = useRef(null);
+
+  if (fetcher.state == "loading" && fetcher.data?._action == "Add Activity") {
+    if (fetcher.data.doenetId !== doenetId) {
+      setDoenetId(fetcher.data.doenetId);
+    }
+  } else if (
+    fetcher.state == "idle" &&
+    fetcher.data?._action == "Add Activity"
+  ) {
+    if (!settingsAreOpen && settingsOpenedForDoenetId.current != doenetId) {
+      settingsOpenedForDoenetId.current = doenetId;
+      settingsOnOpen();
+    }
+  }
 
   useEffect(() => {
     document.title = `Portfolio - Doenet`;
@@ -290,16 +306,11 @@ export function Portfolio() {
               data-test="Add Activity"
               size="xs"
               colorScheme="blue"
-              onClick={async () => {
-                //Create a portfilio activity and redirect to the editor for it
-                let response = await fetch("/api/createPortfolioActivity.php");
-
-                if (response.ok) {
-                  let { doenetId, pageDoenetId } = await response.json();
-                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                } else {
-                  throw Error(response.message);
-                }
+              onClick={() => {
+                fetcher.submit(
+                  { _action: "Add Activity", doenetId },
+                  { method: "post" },
+                );
               }}
             >
               Add Activity
@@ -368,6 +379,10 @@ export function Portfolio() {
             ) : (
               <>
                 {data.privateActivities.map((activity) => {
+                  let isNewActivity = false;
+                  if (settingsOpenedForDoenetId.current == activity.doenetId) {
+                    isNewActivity = true;
+                  }
                   return (
                     <RecoilActivityCard
                       key={`Card${activity.doenetId}`}
@@ -378,6 +393,7 @@ export function Portfolio() {
                       setDoenetId={setDoenetId}
                       onClose={settingsOnClose}
                       onOpen={settingsOnOpen}
+                      isNewActivity={isNewActivity}
                     />
                   );
                 })}
