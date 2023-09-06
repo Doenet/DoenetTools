@@ -434,7 +434,7 @@ function Test() {
         location={location}
         navigate={navigate}
         linkSettings={{
-          viewURL: "/portfolioviewer",
+          viewURL: "/publicOverview",
           editURL: "/publiceditor",
         }}
         darkMode={darkMode}

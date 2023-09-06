@@ -216,7 +216,7 @@ export function Home() {
                 borderRadius={20}
                 onClick={() =>
                   window.open(
-                    "https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH",
+                    "https://www.doenet.org/publicOverview/_7OlapeBhtcfQaa5f7sOCH",
                     "_blank",
                   )
                 }
@@ -228,7 +228,7 @@ export function Home() {
                 borderRadius={20}
                 onClick={() =>
                   window.open(
-                    "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+                    "https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4",
                     "_blank",
                   )
                 }
@@ -364,7 +364,7 @@ export function Home() {
               // setIsInErrorState={setIsInErrorState}
               addBottomPadding={false}
               linkSettings={{
-                viewURL: "/portfolioviewer",
+                viewURL: "/publicOverview",
                 editURL: "/publiceditor",
               }}
             />

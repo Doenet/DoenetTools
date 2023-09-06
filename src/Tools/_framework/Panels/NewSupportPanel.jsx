@@ -165,7 +165,7 @@ export default function SupportPanel({ hide, children }) {
           value="Documentation"
           onClick={() =>
             window.open(
-              "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
+              "https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4",
             )
           }
         />

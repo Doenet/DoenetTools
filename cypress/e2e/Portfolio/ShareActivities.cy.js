@@ -690,7 +690,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Viewer Update Button"]').click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "publicOverview");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
@@ -724,7 +724,7 @@ describe("Share Activities Using Portfolio", function () {
       .click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "publicOverview");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
@@ -749,7 +749,7 @@ describe("Share Activities Using Portfolio", function () {
       .click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "publicOverview");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");

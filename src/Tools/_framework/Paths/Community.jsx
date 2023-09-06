@@ -443,7 +443,7 @@ export function Community() {
                       courseImage,
                       courseColor,
                     } = itemObj;
-                    const imageLink = `/portfolioviewer/${doenetId}`;
+                    const imageLink = `/publicOverview/${doenetId}`;
 
                     return (
                       <ActivityCard
@@ -510,7 +510,7 @@ export function Community() {
                 {searchResults?.activities.map((activityObj) => {
                   const { doenetId, imagePath, label, fullName } = activityObj;
                   //{ activityLink, doenetId, imagePath, label, fullName }
-                  const imageLink = `/portfolioviewer/${doenetId}`;
+                  const imageLink = `/publicOverview/${doenetId}`;
 
                   return (
                     <ActivityCard
@@ -710,7 +710,7 @@ export function Community() {
                             fullName={
                               cardObj.firstName + " " + cardObj.lastName
                             }
-                            imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                            imageLink={`/publicOverview/${cardObj.doenetId}`}
                             menuItems={
                               <>
                                 <MenuItem

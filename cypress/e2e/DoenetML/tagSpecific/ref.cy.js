@@ -181,7 +181,7 @@ describe("ref Tag Tests", function () {
     cy.get(cesc("#\\/_ref1"))
       .should("have.text", "a Doenet doc")
       .invoke("attr", "href")
-      .then((href) => expect(href).eq("/portfolioviewer/abcdefg"));
+      .then((href) => expect(href).eq("/publicOverview/abcdefg"));
   });
 
   it("url with no link text", () => {

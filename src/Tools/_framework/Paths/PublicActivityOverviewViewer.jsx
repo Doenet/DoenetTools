@@ -82,7 +82,7 @@ const HeaderSectionRight = styled.div`
   justify-content: flex-end;
 `;
 
-export function PortfolioActivityViewer() {
+export function PublicActivityOverviewViewer() {
   const {
     success,
     message,
