@@ -211,7 +211,7 @@ export function PageViewer({
     if (coreWorker.current) {
       coreWorker.current.onmessage = function (e) {
         // console.log('message from core', e.data)
-        if (e.data.messageType === "sendToast") {
+        if (e.data.messageType === "sendAlert") {
           setAlerts([
             {
               type: "info",

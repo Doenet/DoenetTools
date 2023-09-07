@@ -243,9 +243,9 @@ export default class Answer extends InlineComponent {
     };
 
     // temporary attribute until fix toast
-    attributes.suppressToast = {
+    attributes.suppressAlert = {
       createComponentOfType: "boolean",
-      createStateVariable: "suppressToast",
+      createStateVariable: "suppressAlert",
       defaultValue: false,
     };
 
@@ -2091,7 +2091,7 @@ export default class Answer extends InlineComponent {
           creditAchieved,
         },
       },
-      suppressToast: await this.stateValues.suppressToast, // temporary
+      suppressAlert: await this.stateValues.suppressAlert, // temporary
     });
 
     return await this.coreFunctions.triggerChainedActions({

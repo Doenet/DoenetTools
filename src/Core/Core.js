@@ -459,7 +459,7 @@ export default class Core {
       // so that will get credit for viewing the page
       this.saveSubmissions({
         pageCreditAchieved: await this.document.stateValues.creditAchieved,
-        suppressToast: true,
+        suppressAlert: true,
       });
     }
 
@@ -9973,7 +9973,7 @@ export default class Core {
     canSkipUpdatingRenderer = false,
     skipRendererUpdate = false,
     sourceInformation = {},
-    suppressToast = false, // temporary
+    suppressAlert = false, // temporary
   }) {
     if (warnings && warnings.length > 0) {
       this.errorWarnings.warnings.push(...warnings);
@@ -10138,7 +10138,7 @@ export default class Core {
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved, suppressToast });
+        this.saveSubmissions({ pageCreditAchieved, suppressAlert });
       }
     }
 
@@ -10326,7 +10326,7 @@ export default class Core {
     } catch (e) {
       console.error(`Error saving event: ${e.message}`);
       // postMessage({
-      //   messageType: "sendToast",
+      //   messageType: "sendAlert",
       //   coreId: this.coreId,
       //   args: {
       //     message: `Error saving event: ${e.message}`,
@@ -11798,7 +11798,7 @@ export default class Core {
     // and send this toast if not online:
 
     // postMessage({
-    //   messageType: "sendToast",
+    //   messageType: "sendAlert",
     //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
@@ -11815,7 +11815,7 @@ export default class Core {
       );
     } catch (e) {
       postMessage({
-        messageType: "sendToast",
+        messageType: "sendAlert",
         coreId: this.coreId,
         args: {
           message:
@@ -11830,7 +11830,7 @@ export default class Core {
 
     if (resp.status === null) {
       postMessage({
-        messageType: "sendToast",
+        messageType: "sendAlert",
         coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
@@ -11844,7 +11844,7 @@ export default class Core {
 
     if (!data.success) {
       postMessage({
-        messageType: "sendToast",
+        messageType: "sendAlert",
         coreId: this.coreId,
         args: {
           message: data.message,
@@ -11917,7 +11917,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved, suppressToast = false }) {
+  saveSubmissions({ pageCreditAchieved, suppressAlert = false }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -11938,7 +11938,7 @@ export default class Core {
 
         if (resp.status === null) {
           postMessage({
-            messageType: "sendToast",
+            messageType: "sendAlert",
             coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
@@ -11947,7 +11947,7 @@ export default class Core {
           });
         } else if (!resp.data.success) {
           postMessage({
-            messageType: "sendToast",
+            messageType: "sendAlert",
             coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
@@ -11971,9 +11971,9 @@ export default class Core {
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
-            // if (!suppressToast) {
+            // if (!suppressAlert) {
             postMessage({
-              messageType: "sendToast",
+              messageType: "sendAlert",
               coreId: this.coreId,
               args: {
                 message: "No credit awarded since solution was viewed.",
@@ -11983,46 +11983,46 @@ export default class Core {
             // }
           }
           if (data.timeExpired) {
-            if (!suppressToast) {
-              postMessage({
-                messageType: "sendToast",
-                coreId: this.coreId,
-                args: {
-                  message:
-                    "No credit awarded since the time allowed has expired.",
-                  toastType: toastType.INFO,
-                },
-              });
-            }
+            // if (!suppressAlert) {
+            postMessage({
+              messageType: "sendAlert",
+              coreId: this.coreId,
+              args: {
+                message:
+                  "No credit awarded since the time allowed has expired.",
+                toastType: toastType.INFO,
+              },
+            });
+            // }
           }
           if (data.pastDueDate) {
-            if (!suppressToast) {
-              postMessage({
-                messageType: "sendToast",
-                coreId: this.coreId,
-                args: {
-                  message: "No credit awarded since the due date has passed.",
-                  toastType: toastType.INFO,
-                },
-              });
-            }
+            // if (!suppressAlert) {
+            postMessage({
+              messageType: "sendAlert",
+              coreId: this.coreId,
+              args: {
+                message: "No credit awarded since the due date has passed.",
+                toastType: toastType.INFO,
+              },
+            });
+            // }
           }
           if (data.exceededAttemptsAllowed) {
-            if (!suppressToast) {
-              postMessage({
-                messageType: "sendToast",
-                coreId: this.coreId,
-                args: {
-                  message:
-                    "No credit awarded since no more attempts are allowed.",
-                  toastType: toastType.INFO,
-                },
-              });
-            }
+            // if (!suppressAlert) {
+            postMessage({
+              messageType: "sendAlert",
+              coreId: this.coreId,
+              args: {
+                message:
+                  "No credit awarded since no more attempts are allowed.",
+                toastType: toastType.INFO,
+              },
+            });
+            // }
           }
           if (data.databaseError) {
             postMessage({
-              messageType: "sendToast",
+              messageType: "sendAlert",
               coreId: this.coreId,
               args: {
                 message: "Credit not saved due to database error.",
@@ -12034,7 +12034,7 @@ export default class Core {
       })
       .catch((e) => {
         postMessage({
-          messageType: "sendToast",
+          messageType: "sendAlert",
           coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
@@ -12173,7 +12173,7 @@ export default class Core {
       if (resp.status === null) {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
-          messageType: "sendToast",
+          messageType: "sendAlert",
           coreId: this.coreId,
           args: {
             message,
@@ -12206,7 +12206,7 @@ export default class Core {
       let message = `Cannot show solution due to error.`;
 
       postMessage({
-        messageType: "sendToast",
+        messageType: "sendAlert",
         coreId: this.coreId,
         args: {
           message,
