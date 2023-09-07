@@ -16,7 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
-import { Link, useFetcher } from "react-router-dom";
+import { Link, useFetcher, useNavigate } from "react-router-dom";
 import {
   // itemByDoenetId,
   useCourse,
@@ -41,6 +41,7 @@ export default function RecoilActivityCard({
 }) {
   const fetcher = useFetcher();
   const { compileActivity, updateAssignItem } = useCourse(courseId);
+  const navigate = useNavigate();
 
   let navigateTo = useRef("");
 
@@ -53,7 +54,7 @@ export default function RecoilActivityCard({
 
   const cardJSX = (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      <Link to={`/portfolioeditor/${doenetId}/${pageDoenetId}`}>
+      <Link to={`/portfolioActivityOverview/${doenetId}`}>
         <Image
           data-test="Card Image Link"
           height="120px"
@@ -154,6 +155,22 @@ export default function RecoilActivityCard({
                 }}
               >
                 Delete
+              </MenuItem>
+              <MenuItem
+                data-test="Overview Menu Item"
+                onClick={() =>
+                  navigate(`/portfolioActivityOverview/${doenetId}`)
+                }
+              >
+                Overview
+              </MenuItem>
+              <MenuItem
+                data-test="Edit Menu Item"
+                onClick={() =>
+                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`)
+                }
+              >
+                Edit
               </MenuItem>
               <MenuItem
                 data-test="Settings Menu Item"

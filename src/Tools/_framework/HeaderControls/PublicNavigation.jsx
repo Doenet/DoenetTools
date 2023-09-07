@@ -42,7 +42,7 @@ export default function PublicNavigation() {
             <Button
               value="Viewer"
               onClick={() => {
-                navigate(`/portfolioviewer/${doenetId}`);
+                navigate(`/publicOverview/${doenetId}`);
               }}
             />
           </>

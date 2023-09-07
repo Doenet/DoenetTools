@@ -44,8 +44,13 @@ import {
 import {
   loader as publicActivityOverviewLoader,
   action as publicActivityOverviewAction,
-  PublicActivityOverviewViewer,
-} from "./Tools/_framework/Paths/PublicActivityOverviewViewer";
+  PublicActivityOverview,
+} from "./Tools/_framework/Paths/PublicActivityOverview";
+import {
+  loader as portfolioActivityOverviewLoader,
+  action as portfolioActivityOverviewAction,
+  PortfolioActivityOverview,
+} from "./Tools/_framework/Paths/PortfolioActivityOverview";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
@@ -237,6 +242,7 @@ const router = createBrowserRouter([
             <ErrorPage />
           </ChakraProvider>
         ),
+
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -245,7 +251,31 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <ChakraProvider theme={theme}>
-              <PublicActivityOverviewViewer />
+              <PublicActivityOverview />
+            </ChakraProvider>
+          </MathJaxContext>
+          // </DarkmodeController>
+        ),
+      },
+      {
+        path: "portfolioActivityOverview/:doenetId",
+        loader: portfolioActivityOverviewLoader,
+        action: portfolioActivityOverviewAction,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+
+        element: (
+          // <DarkmodeController>
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <ChakraProvider theme={theme}>
+              <PortfolioActivityOverview />
             </ChakraProvider>
           </MathJaxContext>
           // </DarkmodeController>

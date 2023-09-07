@@ -82,7 +82,7 @@ const HeaderSectionRight = styled.div`
   justify-content: flex-end;
 `;
 
-export function PublicActivityOverviewViewer() {
+export function PortfolioActivityOverview() {
   const {
     success,
     message,
@@ -178,44 +178,13 @@ export function PublicActivityOverviewViewer() {
                   <Button
                     size="xs"
                     colorScheme="blue"
-                    data-test="See Inside"
+                    data-test="Edit"
                     onClick={() => {
-                      navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
+                      navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
                     }}
                   >
-                    See Inside
+                    Edit
                   </Button>
-                  {signedIn ? (
-                    <HeaderSectionRight>
-                      <Form method="post">
-                        <Button
-                          data-test="Copy to Portfolio Button"
-                          size="xs"
-                          colorScheme="blue"
-                          type="submit"
-                        >
-                          Copy to Portfolio
-                        </Button>
-                      </Form>
-                    </HeaderSectionRight>
-                  ) : (
-                    <Button
-                      dataTest="Nav to signin"
-                      colorScheme="blue"
-                      size="xs"
-                      onClick={() => {
-                        navigateTo.current = "/signin";
-                        setRecoilPageToolView({
-                          page: "signin",
-                          tool: "",
-                          view: "",
-                          params: {},
-                        });
-                      }}
-                    >
-                      Sign In To Copy
-                    </Button>
-                  )}
                 </VStack>
               </Flex>
             </GridItem>
