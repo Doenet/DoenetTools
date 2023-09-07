@@ -13,7 +13,7 @@ import {
   Icon,
   MenuList,
 } from "@chakra-ui/react";
-import { GoKebabVertical } from "react-icons/go";
+import { GoKebabHorizontal } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
 import {
   // itemByDoenetId,
@@ -93,7 +93,7 @@ export default function RecoilActivityCard({
 
           <Menu>
             <MenuButton height="30px" data-test="Card Menu Button">
-              <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+              <Icon color="#949494" as={GoKebabHorizontal} boxSize={4} />
             </MenuButton>
             <MenuList zIndex="1000">
               {isPublic ? (

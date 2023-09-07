@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { useFetcher, useNavigate } from "react-router-dom";
-import { GoKebabVertical } from "react-icons/go";
+import { GoKebabHorizontal } from "react-icons/go";
 import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
 import { useRecoilState } from "recoil";
 
@@ -109,7 +109,7 @@ export function CourseCard({
             {course.canModifyCourseSettings == "1" && (
               <Menu>
                 <MenuButton height="30px" data-test="Card Menu Button">
-                  <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+                  <Icon color="#949494" as={GoKebabHorizontal} boxSize={4} />
                 </MenuButton>
                 <MenuList zIndex="10">
                   <MenuItem

@@ -65,7 +65,7 @@ import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { GoKebabVertical } from "react-icons/go";
+import { GoKebabHorizontal } from "react-icons/go";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 import { cidFromText } from "../../../Core/utils/cid";
 import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
@@ -546,7 +546,7 @@ function SupportFilesControls() {
                             <MenuButton
                               as={IconButton}
                               aria-label="Options"
-                              icon={<GoKebabVertical />}
+                              icon={<GoKebabHorizontal />}
                               variant="ghost"
                             />
                             <MenuList>
@@ -727,7 +727,7 @@ function SupportFilesControls() {
                           <MenuButton
                             as={IconButton}
                             aria-label="Options"
-                            icon={<GoKebabVertical />}
+                            icon={<GoKebabHorizontal />}
                             variant="ghost"
                           />
                           <MenuList>
