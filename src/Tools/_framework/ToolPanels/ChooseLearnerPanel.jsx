@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 // import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from "axios";
-import { useToast, toastType } from "../../../Tools/_framework/Toast";
+import { useToast } from "../../../Tools/_framework/Toast";
 import { searchParamAtomFamily, pageToolViewAtom } from "../NewToolRoot";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
@@ -124,7 +124,7 @@ export const Styles = styled.div`
   }
 `;
 
-export default function ChooseLearnerPanel(props) {
+export default function ChooseLearnerPanel() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let [stage, setStage] = useState("request password");
@@ -147,26 +147,22 @@ export default function ChooseLearnerPanel(props) {
   const addToast = useToast();
 
   const newAttempt = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (doenetId, code, userId, resumeAttemptFlag) => {
-        if (!resumeAttemptFlag) {
-          const { data } = await axios.get(
-            "/api/incrementAttemptNumberForExam.php",
-            {
-              params: { doenetId, code, userId },
-            },
-          );
-        }
+    () => async (doenetId, code, userId, resumeAttemptFlag) => {
+      if (!resumeAttemptFlag) {
+        await axios.get("/api/incrementAttemptNumberForExam.php", {
+          params: { doenetId, code, userId },
+        });
+      }
 
-        // console.log(">>>>data 2",data)
-        // console.log(">>>>",doenetId,code,userId)
+      // console.log(">>>>data 2",data)
+      // console.log(">>>>",doenetId,code,userId)
 
-        location.href = `/api/examjwt.php?userId=${encodeURIComponent(
-          choosenLearner.userId,
-        )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(
-          code,
-        )}`;
-      },
+      location.href = `/api/examjwt.php?userId=${encodeURIComponent(
+        choosenLearner.userId,
+      )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(
+        code,
+      )}`;
+    },
   );
 
   const setDoenetId = useRecoilCallback(
@@ -464,7 +460,7 @@ export default function ChooseLearnerPanel(props) {
           <div style={{ marginRight: "15px", fontSize: "16pt" }}>
             Exam: {selectedExamLabel}
           </div>{" "}
-          <SearchBar autoFocus onChange={setFilter} width="100%" />
+          <SearchBar onChange={setFilter} width="100%" />
         </div>
         <table>
           <thead>
