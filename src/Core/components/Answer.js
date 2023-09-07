@@ -242,13 +242,6 @@ export default class Answer extends InlineComponent {
       public: true,
     };
 
-    // temporary attribute until fix toast
-    attributes.suppressAlert = {
-      createComponentOfType: "boolean",
-      createStateVariable: "suppressAlert",
-      defaultValue: false,
-    };
-
     return attributes;
   }
 
@@ -2091,7 +2084,7 @@ export default class Answer extends InlineComponent {
           creditAchieved,
         },
       },
-      suppressAlert: await this.stateValues.suppressAlert, // temporary
+      suppressAlerts: await this.stateValues.suppressAlerts, // temporary
     });
 
     return await this.coreFunctions.triggerChainedActions({

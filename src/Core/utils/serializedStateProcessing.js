@@ -527,6 +527,7 @@ function substituteAttributeDeprecations(serializedComponents) {
     video: { height: { removeInVersion: 0.7 } },
     conditionalcontent: { maximumnumbertoshow: { removeInVersion: 0.7 } },
     angle: { draggable: { removeInVersion: 0.7 } },
+    answer: { supresstoast: { removeInVersion: 0.7 } },
   };
 
   for (let component of serializedComponents) {
