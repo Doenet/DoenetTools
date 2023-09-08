@@ -11811,6 +11811,7 @@ export default class Core {
           message:
             "Error synchronizing data.  Changes not saved to the server.",
           alertType: "error",
+          id: "dataError",
         },
       });
       return;
@@ -11825,6 +11826,7 @@ export default class Core {
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           alertType: "error",
+          id: "dataError",
         },
       });
       return;
@@ -11839,6 +11841,7 @@ export default class Core {
         args: {
           message: data.message,
           alertType: "error",
+          id: "dataError",
         },
       });
       return;
@@ -11933,6 +11936,7 @@ export default class Core {
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               alertType: "error",
+              id: "creditDataError",
             },
           });
         } else if (!resp.data.success) {
@@ -11942,6 +11946,7 @@ export default class Core {
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               alertType: "error",
+              id: "creditDataError",
             },
           });
         } else {
@@ -11967,9 +11972,9 @@ export default class Core {
               args: {
                 message: "No credit awarded since solution was viewed.",
                 alertType: "info",
+                id: "solutionViewed",
               },
             });
-            // }
           }
           if (data.timeExpired) {
             postMessage({
@@ -11979,6 +11984,7 @@ export default class Core {
                 message:
                   "No credit awarded since the time allowed has expired.",
                 alertType: "info",
+                id: "timeExpired",
               },
             });
           }
@@ -11989,6 +11995,7 @@ export default class Core {
               args: {
                 message: "No credit awarded since the due date has passed.",
                 alertType: "info",
+                id: "pastDue",
               },
             });
           }
@@ -12000,6 +12007,7 @@ export default class Core {
                 message:
                   "No credit awarded since no more attempts are allowed.",
                 alertType: "info",
+                id: "noMoreAttempts",
               },
             });
           }
@@ -12010,6 +12018,7 @@ export default class Core {
               args: {
                 message: "Credit not saved due to database error.",
                 alertType: "error",
+                id: "creditDataError",
               },
             });
           }
@@ -12022,6 +12031,7 @@ export default class Core {
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             alertType: "error",
+            id: "creditDataError",
           },
         });
       });
@@ -12161,6 +12171,7 @@ export default class Core {
           args: {
             message,
             alertType: "error",
+            id: "solutionDataError",
           },
         });
         return {
@@ -12194,6 +12205,7 @@ export default class Core {
         args: {
           message,
           alertType: "error",
+          id: "solutionDataError",
         },
       });
 
