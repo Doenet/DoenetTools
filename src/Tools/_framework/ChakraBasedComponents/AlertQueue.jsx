@@ -28,9 +28,9 @@ export function AlertQueue({ alerts = [], setAlerts = () => {} }) {
                 right="8px"
                 top="8px"
                 onClick={() => {
-                  setAlerts((preAlerts) => {
-                    preAlerts.filter((alert) => alert.id == id);
-                  });
+                  setAlerts((preAlerts) =>
+                    preAlerts.filter((alert) => alert.id !== id),
+                  );
                 }}
               />
             </Alert>
