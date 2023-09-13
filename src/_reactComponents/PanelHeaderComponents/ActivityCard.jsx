@@ -13,7 +13,7 @@ import {
   Icon,
   MenuList,
 } from "@chakra-ui/react";
-import { GoKebabHorizontal } from "react-icons/go";
+import { GoKebabVertical } from "react-icons/go";
 import { Link } from "react-router-dom";
 
 export default function ActivityCard({
@@ -99,7 +99,7 @@ export default function ActivityCard({
           {menuItems ? (
             <Menu>
               <MenuButton height="30px" data-test="Card Menu Button">
-                <Icon color="#949494" as={GoKebabHorizontal} boxSize={4} />
+                <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
               </MenuButton>
               <MenuList zIndex="1000">{menuItems}</MenuList>
             </Menu>

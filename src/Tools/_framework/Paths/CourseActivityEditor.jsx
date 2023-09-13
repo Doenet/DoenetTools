@@ -82,7 +82,6 @@ import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import copyToClipboard from "copy-to-clipboard";
-
 import { GoKebabVertical } from "react-icons/go";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 import { cidFromText } from "../../../Core/utils/cid";
@@ -655,7 +654,7 @@ function SupportFilesControls({
                             <MenuButton
                               as={IconButton}
                               aria-label="Options"
-                              icon={<GoKebabHorizontal />}
+                              icon={<GoKebabVertical />}
                               variant="ghost"
                             />
                             <MenuList>
@@ -836,7 +835,7 @@ function SupportFilesControls({
                           <MenuButton
                             as={IconButton}
                             aria-label="Options"
-                            icon={<GoKebabHorizontal />}
+                            icon={<GoKebabVertical />}
                             variant="ghost"
                           />
                           <MenuList>
