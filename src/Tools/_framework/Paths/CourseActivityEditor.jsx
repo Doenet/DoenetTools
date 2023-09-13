@@ -3079,6 +3079,7 @@ export function GeneralActivityControls({
         size="sm"
         colorScheme="blue"
         leftIcon={<BsClipboardPlus />}
+        data-test="Copy DoenetML embed link"
         onClick={async () => {
           let params = {
             doenetML: currentDoenetML,
