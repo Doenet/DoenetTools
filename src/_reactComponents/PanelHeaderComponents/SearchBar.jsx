@@ -9,7 +9,12 @@ import {
 } from "@chakra-ui/react";
 import { IoSearchSharp } from "react-icons/io5";
 
-export default function Searchbar({ name = "q", defaultValue, dataTest }) {
+export default function Searchbar({
+  name = "q",
+  defaultValue,
+  dataTest,
+  onChange = () => {},
+}) {
   return (
     <>
       <InputGroup borderLeftRadius={5} size="sm">
@@ -24,6 +29,7 @@ export default function Searchbar({ name = "q", defaultValue, dataTest }) {
           name={name}
           data-test={dataTest}
           defaultValue={defaultValue}
+          onChange={onChange}
         />
         <InputRightAddon
           p={0}
