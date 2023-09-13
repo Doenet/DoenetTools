@@ -503,7 +503,7 @@ export default function ChooseLearnerPanel() {
               style={{ width: "200px" }}
               onClick={() => setColSort(sortColumns.FIRST_NAME)}
             >
-              First Name{" "}
+              <u>First Name</u>
               {sortedBy.column === sortColumns.FIRST_NAME && (
                 <FontAwesomeIcon
                   icon={sortedBy.descending ? faCaretDown : faCaretUp}
@@ -514,7 +514,7 @@ export default function ChooseLearnerPanel() {
               style={{ width: "200px" }}
               onClick={() => setColSort(sortColumns.LAST_NAME)}
             >
-              Last Name{" "}
+              <u>Last Name</u>
               {sortedBy.column === sortColumns.LAST_NAME && (
                 <FontAwesomeIcon
                   icon={sortedBy.descending ? faCaretDown : faCaretUp}
@@ -525,7 +525,7 @@ export default function ChooseLearnerPanel() {
               style={{ width: "200px" }}
               onClick={() => setColSort(sortColumns.STUDENT_ID)}
             >
-              Student ID
+              <u>Student ID</u>
               {sortedBy.column === sortColumns.STUDENT_ID && (
                 <FontAwesomeIcon
                   icon={sortedBy.descending ? faCaretDown : faCaretUp}
