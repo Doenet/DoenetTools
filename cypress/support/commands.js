@@ -154,6 +154,14 @@ Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId, label }
   // })
 });
 
+Cypress.Commands.add('assertValueCopiedToClipboard', value => {
+  cy.window().then(win => {
+    win.navigator.clipboard.readText().then(text => {
+      expect(text).to.eq(value)
+    })
+  })
+})
+
 Cypress.Commands.add("deleteCourseDBRows", ({ courseId }) => {
   cy.task(
     "queryDb",
