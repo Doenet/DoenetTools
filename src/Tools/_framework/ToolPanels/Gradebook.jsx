@@ -599,7 +599,7 @@ export const gradeCategories = [
   { category: "Quizzes", maximumNumber: 10 },
   { category: "Problem sets", maximumNumber: 30 },
   { category: "Projects" },
-  { category: "Participation", maximumValue: 50 },
+  { category: "Participation", maximumValue: 51 },
 ];
 
 function GradebookOverview() {
