@@ -13,6 +13,32 @@ describe("Course Editor Tests", function () {
     return false;
   });
 
+  //TODO: not sure how to handle alert when button is pushed
+  it.skip("DoenetML Code Copy", () => {
+    const userId = "cyuserId";
+    const studentUserId = "cyStudentUserId";
+    const courseId = "courseid20";
+
+    cy.deleteCourseDBRows({ courseId });
+    cy.createCourse({ userId, courseId, studentUserId });
+    cy.signin({ userId });
+    cy.visit(`course?tool=navigation&courseId=${courseId}`);
+
+    cy.log('Add single page activity')
+    cy.get('[data-test="Add Activity Button"]').click();
+    cy.get(".navigationRow").last().dblclick();
+    cy.get(".cm-content").type("TESTING!");
+    cy.get('[data-test="Viewer Update Button"]');
+    cy.get('[data-test="Controls Button"]').click();
+    cy.get('[data-test="Copy DoenetML embed link"]').click();
+    cy.contains('button', 'Copy to clipboard').click()
+    // cy.get('[data-test="Alert Title"]').contains("Embed Link Copied to Clipboard");
+    // win.navigator.clipboard.readText().then((text) => {
+    //   console.log("Clipboard content: " + text);
+    //   // You can add your assertions here
+    // });
+  });
+
   it("Rename Activity", () => {
     const activity1Label = "Renamed Activity 1";
     const activity1Labelb = "Renamed Activity 1 2nd time";

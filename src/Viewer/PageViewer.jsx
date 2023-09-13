@@ -23,8 +23,6 @@ const rendererUpdatesToIgnore = atomFamily({
   default: {},
 });
 
-const sendAlert = (msg, type) => console.log(msg);
-
 export const PageContext = createContext();
 
 export function PageViewer({
@@ -65,6 +63,7 @@ export function PageViewer({
   errorsActivitySpecific = {},
   scrollableContainer,
   darkMode,
+  sendAlert,
 }) {
   const updateRendererSVsWithRecoil = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -271,7 +270,7 @@ export function PageViewer({
           saveStateCallback?.();
         } else if (e.data.messageType === "sendAlert") {
           console.log(`Sending alert message: ${e.data.args.message}`);
-          sendAlert(e.data.args.message, e.data.args.alertType);
+          sendAlert(e.data.args);
         } else if (e.data.messageType === "resolveAction") {
           resolveAction(e.data.args);
         } else if (e.data.messageType === "returnAllStateVariables") {
@@ -786,10 +785,13 @@ export function PageViewer({
     // console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
     if (newAttemptNumber !== attemptNumber) {
-      sendAlert(
-        `Reverted activity as attempt number changed on other device`,
-        "info",
-      );
+      // TODO: this seems to be happening when it wasn't supposed to so removed it for now.
+      // Make sure this happens only in this case and then add the alert back
+
+      // sendAlert({
+      //   message: `Reverted activity as attempt number changed on other device`,
+      //   alertType: "info",
+      // });
       if (updateAttemptNumber) {
         updateAttemptNumber(newAttemptNumber);
       } else {
@@ -801,10 +803,13 @@ export function PageViewer({
       }
     } else {
       // TODO: are there cases where will get an infinite loop here?
-      sendAlert(
-        `Reverted page to state saved on device ${changedOnDevice}`,
-        "info",
-      );
+      // TODO: this seems to be happening when it wasn't supposed to so removed it for now.
+      // Make sure this happens only in this case and then add the alert back
+
+      // sendAlert({
+      //   message: `Reverted page to state saved on device ${changedOnDevice}`,
+      //   alertType: "info",}
+      // );
 
       coreId.current = nanoid();
       setPageContentChanged(true);
@@ -852,10 +857,13 @@ export function PageViewer({
             console.log(
               `sending alert: Reverted page to state saved on device ${result.changedOnDevice}`,
             );
-            sendAlert(
-              `Reverted page to state saved on device ${result.changedOnDevice}`,
-              "info",
-            );
+            // TODO: this seems to be happening when it wasn't supposed to so removed it for now.
+            // Make sure this happens only in this case and then add the alert back
+
+            // sendAlert({
+            //   message: `Reverted page to state saved on device ${result.changedOnDevice}`,
+            //   alertType: "info",
+            // });
           }
         }
 
