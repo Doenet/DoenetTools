@@ -24,8 +24,6 @@ describe("People Test", function () {
       externalId: `exIdCsv${i}`,
     });
   }
-  console.log('peopleInCsv', peopleInCsv)
-
 
   it("Add Person Test", () => {
     const courseId = "people_courseid1";
