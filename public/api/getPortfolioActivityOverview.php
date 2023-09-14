@@ -34,51 +34,44 @@ try {
     }
 
     $sql = "
-    SELECT cc.label,
-    cc.courseId,
-    cc.isDeleted,
-    cc.isBanned,
-    CAST(cc.jsonDefinition as CHAR) AS json,
-    c.label as courseLabel,
-    c.image,
-    c.color
-    FROM course_content AS cc
-    LEFT JOIN course AS c
-        ON c.courseId = cc.courseId
-    LEFT JOIN user As u
-        ON u.userId = c.portfolioCourseForUserId
-    WHERE cc.doenetId = '$doenetId'
-    AND cc.isPublic = '1'
+    SELECT label,
+    courseId,
+    isDeleted,
+    isBanned,
+    isPublic,
+    CAST(jsonDefinition as CHAR) AS json,
+    imagePath
+    FROM course_content
+    WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
 
-    // if ($result->num_rows > 0) {
-    //     $row = $result->fetch_assoc();
-    //     $isBanned = $row['isBanned'];
-    //     $label = $row['label'];
-    //     $json = json_decode($row["json"], true);
-    // array_push($contributors, [
-    //     "courseId" => $row["courseId"],
-    //     "isUserPortfolio" => is_null($row["portfolioCourseForUserId"]) ? "0" : "1",
-    //     "courseLabel" => $row['courseLabel'],
-    //     "courseImage" => $row['image'],
-    //     "courseColor" => $row['color'],
-    //     "firstName" => $row['firstName'],
-    //     "lastName" => $row['lastName'],
-    //     "profilePicture" => $row['profilePicture'],
-    // ]);
-    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
 
-    // }else{
-    //     throw new Exception("Activity not found.");
-    // }
+        $label = $row['label'];
+        $courseId = $row['courseId'];
+        $isDeleted = $row['isDeleted'];
+        $isBanned = $row['isBanned'];
+        $isPublic = $row['isPublic'];
+        $json = json_decode($row["json"], true);
+        $imagePath = $row['imagePath'];
+
+    }else{
+        throw new Exception("Activity not found.");
+    }
 
    
 
     $response_arr = [
         'success' => true,
         'label' => $label,
+        'courseId' => $courseId,
+        'isDeleted' => $isDeleted,
+        'isBanned' => $isBanned,
+        'isPublic' => $isPublic,
         'json' => $json,
+        'imagePath' => $imagePath,
     ];
     // set response code - 200 OK
     http_response_code(200);

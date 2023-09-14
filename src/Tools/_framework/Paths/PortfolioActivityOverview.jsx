@@ -4,6 +4,7 @@ import {
   useLoaderData,
   useNavigate,
   useLocation,
+  useOutletContext,
 } from "react-router";
 import styled from "styled-components";
 import { DoenetML } from "../../../Viewer/DoenetML";
@@ -26,53 +27,69 @@ import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 
-export async function action({ params }) {
-  let { data } = await axios.get(
-    `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  );
-
-  const { nextActivityDoenetId, nextPageDoenetId } = data;
-  return redirect(
-    `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  );
-}
-
 export async function loader({ params }) {
-  //Check if signedIn
-  const profileInfo = await checkIfUserClearedOut();
-  let signedIn = true;
-  if (profileInfo.cookieRemoved) {
-    signedIn = false;
-  }
   try {
     const { data } = await axios.get(
-      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+      `/api/getPortfolioActivityOverview.php?doenetId=${params.doenetId}`,
     );
+
+    const { label, courseId, isDeleted, isBanned, isPublic, json, imagePath } =
+      data;
 
     const { data: activityML } = await axios.get(
       `/media/${data.json.assignedCid}.doenet`,
     );
 
+    console.log("activityML", activityML);
     //Find the first page's doenetML
     const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
     const pageIds = activityML.match(regex);
 
     let firstPage = findFirstPageIdInContent(data.json.content);
 
-    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
+    const pageId = pageIds[1];
+
+    const { data: doenetML } = await axios.get(`/media/${pageId}.doenet`);
+
+    //Get the doenetML of the pageId.
+    //we need transformResponse because
+    //large numbers are simplified with toString if used on doenetMLResponse.data
+    //which was causing errors
+    // const doenetMLResponse = await axios.get(
+    //   `/media/byPageId/${pageId}.doenet`,
+    //   { transformResponse: (data) => data.toString() },
+    // );
+    // let doenetML2 = doenetMLResponse.data;
+
+    //TODO: Need draft and assigned doenetML
+    ///and should be able to switch between them!!!
+    console.log("doenetML", doenetML);
+    // console.log("doenetML2", doenetML2);
 
     return {
       success: true,
+      pageDoenetId: firstPage,
       doenetId: params.doenetId,
       doenetML,
-      signedIn,
-      label: data.label,
-      contributors: data.contributors,
-      pageDoenetId: firstPage,
+      label,
+      courseId,
+      isDeleted,
+      isBanned,
+      isPublic,
+      json,
+      imagePath,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
   }
+}
+
+//TODO: stub for edit overview future feature
+export async function action({ request }) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+
+  return formObj;
 }
 
 const HeaderSectionRight = styled.div`
@@ -85,14 +102,19 @@ const HeaderSectionRight = styled.div`
 export function PortfolioActivityOverview() {
   const {
     success,
-    message,
-    doenetML,
-    signedIn,
-    label,
-    doenetId,
     pageDoenetId,
-    contributors,
+    doenetId,
+    doenetML,
+    label,
+    courseId,
+    isDeleted,
+    isBanned,
+    isPublic,
+    json,
+    imagePath,
   } = useLoaderData();
+
+  const { signedIn } = useOutletContext();
 
   if (!success) {
     throw new Error(message);
@@ -170,9 +192,6 @@ export function PortfolioActivityOverview() {
                   >
                     {label}
                   </Text>
-                  <Box mt="10px">
-                    <ContributorsMenu contributors={contributors} />
-                  </Box>
                 </Flex>
                 <VStack mt="20px" alignItems="flex-end" spacing="4">
                   <Button
