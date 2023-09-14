@@ -224,10 +224,6 @@ export default function ChooseLearnerPanel() {
     });
   }
 
-  useEffect(()=> {
-    setSortedBy({column: sortColumns.LAST_NAME, descending: true})
-  },[])
-
   useEffect(() => {
     const descMultiplier = sortedBy.descending ? 1 : -1;
     setLearners((prev) =>
@@ -396,6 +392,9 @@ export default function ChooseLearnerPanel() {
     let learnerRows = [];
 
     let examTimeLimit = examsById[doenetId].timeLimit;
+    if (sortedBy.column === "") {
+      setColSort(sortColumns.LAST_NAME);
+    }
     for (let learner of learners) {
       //filter
       if (
