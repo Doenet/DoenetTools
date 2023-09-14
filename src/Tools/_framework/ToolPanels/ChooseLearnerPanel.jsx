@@ -147,7 +147,7 @@ export default function ChooseLearnerPanel() {
   let [selectedExamLabel, setSelectedExamLabel] = useState("");
   let clearingUserRef = useRef(false);
   let [clearingMessageJSX, setClearingMessageJSX] = useState(null);
-  const [sortedBy, setSortedBy] = useState({ column: sortColumns.LAST_NAME, descending: true });
+  const [sortedBy, setSortedBy] = useState({ column: "", descending: true });
 
   // checkIfUserClearedOut().then((resp)=>{
   //   console.log("Check",resp)
@@ -223,6 +223,10 @@ export default function ChooseLearnerPanel() {
       };
     });
   }
+
+  useEffect(()=> {
+    setSortedBy({column: sortColumns.LAST_NAME, descending: true})
+  },[])
 
   useEffect(() => {
     const descMultiplier = sortedBy.descending ? 1 : -1;
