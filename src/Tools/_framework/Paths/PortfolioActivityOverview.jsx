@@ -18,6 +18,8 @@ import {
   Flex,
   Grid,
   GridItem,
+  HStack,
+  Select,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -40,37 +42,43 @@ export async function loader({ params }) {
       `/media/${data.json.assignedCid}.doenet`,
     );
 
-    console.log("activityML", activityML);
+    // console.log("activityML", activityML);
     //Find the first page's doenetML
     const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
     const pageIds = activityML.match(regex);
 
-    let firstPage = findFirstPageIdInContent(data.json.content);
+    let pageId = findFirstPageIdInContent(data.json.content);
 
-    const pageId = pageIds[1];
+    const pageCId = pageIds[1];
 
-    const { data: doenetML } = await axios.get(`/media/${pageId}.doenet`);
+    // const { data: publicDoenetML } = await axios.get(
+    //   `/media/${pageCId}.doenet`,
+    // );
 
     //Get the doenetML of the pageId.
     //we need transformResponse because
     //large numbers are simplified with toString if used on doenetMLResponse.data
     //which was causing errors
-    // const doenetMLResponse = await axios.get(
-    //   `/media/byPageId/${pageId}.doenet`,
-    //   { transformResponse: (data) => data.toString() },
-    // );
-    // let doenetML2 = doenetMLResponse.data;
+    const publicDoenetMLResponse = await axios.get(`/media/${pageCId}.doenet`, {
+      transformResponse: (data) => data.toString(),
+    });
+    let publicDoenetML = publicDoenetMLResponse.data;
 
-    //TODO: Need draft and assigned doenetML
-    ///and should be able to switch between them!!!
-    console.log("doenetML", doenetML);
-    // console.log("doenetML2", doenetML2);
+    const draftDoenetMLResponse = await axios.get(
+      `/media/byPageId/${pageId}.doenet`,
+      { transformResponse: (data) => data.toString() },
+    );
+    let draftDoenetML = draftDoenetMLResponse.data;
+    console.log("publicDoenetML", publicDoenetML);
+    console.log("draftDoenetML", draftDoenetML);
 
     return {
       success: true,
-      pageDoenetId: firstPage,
+      message: "",
+      pageDoenetId: pageId,
       doenetId: params.doenetId,
-      doenetML,
+      publicDoenetML,
+      draftDoenetML,
       label,
       courseId,
       isDeleted,
@@ -102,9 +110,11 @@ const HeaderSectionRight = styled.div`
 export function PortfolioActivityOverview() {
   const {
     success,
+    message,
     pageDoenetId,
     doenetId,
-    doenetML,
+    publicDoenetML,
+    draftDoenetML,
     label,
     courseId,
     isDeleted,
@@ -114,11 +124,13 @@ export function PortfolioActivityOverview() {
     imagePath,
   } = useLoaderData();
 
-  const { signedIn } = useOutletContext();
+  // const { signedIn } = useOutletContext();
 
   if (!success) {
     throw new Error(message);
   }
+
+  const [doenetML, setDoenetML] = useState(publicDoenetML);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -193,7 +205,21 @@ export function PortfolioActivityOverview() {
                     {label}
                   </Text>
                 </Flex>
-                <VStack mt="20px" alignItems="flex-end" spacing="4">
+                <HStack mt="20px" alignItems="flex-end" spacing="4">
+                  <Select
+                    bg="blue.500"
+                    size="sm"
+                    onChange={(e) => {
+                      if (e.target.value == "draft") {
+                        setDoenetML(draftDoenetML);
+                      } else {
+                        setDoenetML(publicDoenetML);
+                      }
+                    }}
+                  >
+                    <option value="public">Public</option>
+                    <option value="draft">Draft</option>
+                  </Select>
                   <Button
                     size="xs"
                     colorScheme="blue"
@@ -204,7 +230,7 @@ export function PortfolioActivityOverview() {
                   >
                     Edit
                   </Button>
-                </VStack>
+                </HStack>
               </Flex>
             </GridItem>
           </Grid>
@@ -278,9 +304,8 @@ export function PortfolioActivityOverview() {
                   overflow="scroll"
                 >
                   <DoenetML
-                    key={`HPpageViewer`}
+                    key={`ActivityOverviewPageViewer`}
                     doenetML={doenetML}
-                    // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
                     flags={{
                       showCorrectness: true,
                       solutionDisplayMode: "button",
