@@ -27,49 +27,54 @@ import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
-import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 
 export async function loader({ params }) {
   try {
     const { data } = await axios.get(
-      `/api/getPortfolioActivityOverview.php?doenetId=${params.doenetId}`,
+      `/api/getPortfolioActivity.php?doenetId=${params.doenetId}`,
     );
 
     const { label, courseId, isDeleted, isBanned, isPublic, json, imagePath } =
       data;
 
-    const { data: activityML } = await axios.get(
-      `/media/${data.json.assignedCid}.doenet`,
-    );
+    let publicDoenetML = null;
+    let draftDoenetML = "";
 
-    // console.log("activityML", activityML);
-    //Find the first page's doenetML
-    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-    const pageIds = activityML.match(regex);
+    if (data.json.assignedCid != null) {
+      const { data: activityML } = await axios.get(
+        `/media/${data.json.assignedCid}.doenet`,
+      );
+
+      // console.log("activityML", activityML);
+      //Find the first page's doenetML
+      const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
+      const pageIds = activityML.match(regex);
+
+      const pageCId = pageIds[1];
+
+      //Get the doenetML of the pageId.
+      //we need transformResponse because
+      //large numbers are simplified with toString if used on doenetMLResponse.data
+      //which was causing errors
+
+      const publicDoenetMLResponse = await axios.get(
+        `/media/${pageCId}.doenet`,
+        {
+          transformResponse: (data) => data.toString(),
+        },
+      );
+      publicDoenetML = publicDoenetMLResponse.data;
+    }
 
     let pageId = findFirstPageIdInContent(data.json.content);
-
-    const pageCId = pageIds[1];
-
-    // const { data: publicDoenetML } = await axios.get(
-    //   `/media/${pageCId}.doenet`,
-    // );
-
-    //Get the doenetML of the pageId.
-    //we need transformResponse because
-    //large numbers are simplified with toString if used on doenetMLResponse.data
-    //which was causing errors
-    const publicDoenetMLResponse = await axios.get(`/media/${pageCId}.doenet`, {
-      transformResponse: (data) => data.toString(),
-    });
-    let publicDoenetML = publicDoenetMLResponse.data;
-
     const draftDoenetMLResponse = await axios.get(
       `/media/byPageId/${pageId}.doenet`,
       { transformResponse: (data) => data.toString() },
     );
-    let draftDoenetML = draftDoenetMLResponse.data;
-    console.log("publicDoenetML", publicDoenetML);
+    draftDoenetML = draftDoenetMLResponse.data;
+
+    console.log("pageId", pageId);
+    console.log("draftDoenetML", draftDoenetML);
     console.log("draftDoenetML", draftDoenetML);
 
     return {
@@ -107,7 +112,7 @@ const HeaderSectionRight = styled.div`
   justify-content: flex-end;
 `;
 
-export function PortfolioActivityOverview() {
+export function PortfolioActivity() {
   const {
     success,
     message,

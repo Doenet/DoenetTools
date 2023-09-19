@@ -54,7 +54,7 @@ export default function RecoilActivityCard({
 
   const cardJSX = (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      <Link to={`/portfolioActivityOverview/${doenetId}`}>
+      <Link to={`/portfolioActivity/${doenetId}`}>
         <Image
           data-test="Card Image Link"
           height="120px"
@@ -158,9 +158,7 @@ export default function RecoilActivityCard({
               </MenuItem>
               <MenuItem
                 data-test="Overview Menu Item"
-                onClick={() =>
-                  navigate(`/portfolioActivityOverview/${doenetId}`)
-                }
+                onClick={() => navigate(`/portfolioActivity/${doenetId}`)}
               >
                 Overview
               </MenuItem>

@@ -47,10 +47,10 @@ import {
   PublicActivityOverview,
 } from "./Tools/_framework/Paths/PublicActivityOverview";
 import {
-  loader as portfolioActivityOverviewLoader,
-  action as portfolioActivityOverviewAction,
-  PortfolioActivityOverview,
-} from "./Tools/_framework/Paths/PortfolioActivityOverview";
+  loader as portfolioActivityLoader,
+  action as portfolioActivityAction,
+  PortfolioActivity,
+} from "./Tools/_framework/Paths/PortfolioActivity";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
@@ -258,9 +258,9 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioActivityOverview/:doenetId",
-        loader: portfolioActivityOverviewLoader,
-        action: portfolioActivityOverviewAction,
+        path: "portfolioActivity/:doenetId",
+        loader: portfolioActivityLoader,
+        action: portfolioActivityAction,
         errorElement: (
           <ChakraProvider theme={theme}>
             <ErrorPage />
@@ -275,7 +275,7 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <ChakraProvider theme={theme}>
-              <PortfolioActivityOverview />
+              <PortfolioActivity />
             </ChakraProvider>
           </MathJaxContext>
           // </DarkmodeController>
