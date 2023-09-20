@@ -694,10 +694,16 @@ const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
       } else if (leftPixels >= 150 && hideLeft) {
         setHideLeft(false);
       }
-      if (rightPixels < 150 && !hideRight) {
+      if (leftPixels < 150) {
+        proportion = 0;
+      }
+      if (rightPixels < 300 && !hideRight) {
         setHideRight(true);
-      } else if (rightPixels >= 150 && hideRight) {
+      } else if (rightPixels >= 300 && hideRight) {
         setHideRight(false);
+      }
+      if (rightPixels < 300) {
+        proportion = 1;
       }
 
       //using a ref to save without react refresh
@@ -715,6 +721,18 @@ const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
         wrapperRef.current.handleDragged = false;
       }
     }
+  };
+
+  const onDoubleClick = () => {
+    setHideRight(false);
+    setHideLeft(false);
+    const proportion = 0.5;
+
+    //using a ref to save without react refresh
+    wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
+      1 - proportion
+    }fr`;
+    wrapperRef.current.proportion = proportion;
   };
 
   return (
@@ -757,6 +775,7 @@ const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
           onMouseDown={onMouseDown}
           data-test="contentPanelDragHandle"
           paddingLeft="1px"
+          onDoubleClick={onDoubleClick}
         >
           <Icon ml="0" as={BsGripVertical} />
         </Center>
