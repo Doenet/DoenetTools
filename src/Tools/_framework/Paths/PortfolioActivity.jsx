@@ -4,29 +4,29 @@ import {
   useLoaderData,
   useNavigate,
   useLocation,
-  useOutletContext,
 } from "react-router";
 import { DoenetML } from "../../../Viewer/DoenetML";
 
-import { useRecoilState } from "recoil";
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
-import { Form } from "react-router-dom";
+import { Form, useFetcher } from "react-router-dom";
 import {
   Box,
   Button,
-  Flex,
+  Editable,
+  EditableInput,
+  EditablePreview,
   Grid,
   GridItem,
   HStack,
+  IconButton,
   Select,
-  Text,
   VStack,
+  useEditableControls,
 } from "@chakra-ui/react";
-import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import AccountMenu from "../ChakraBasedComponents/AccountMenu";
+import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -115,12 +115,90 @@ export async function loader({ params }) {
   }
 }
 
-//TODO: stub for edit overview future feature
+//TODO: stub for future features
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-
+  console.log("action formObj", formObj);
   return formObj;
+}
+
+//This is separate as <Editable> wasn't updating when defaultValue was changed
+function EditableActivityLabel() {
+  const { label: loaderLabel } = useLoaderData();
+  const [label, setLabel] = useState(loaderLabel);
+  const fetcher = useFetcher();
+
+  let lastActivityDataLabel = useRef(loaderLabel);
+
+  //Update when something else updates the label
+  if (loaderLabel != lastActivityDataLabel.current) {
+    if (label != loaderLabel) {
+      setLabel(loaderLabel);
+    }
+  }
+  lastActivityDataLabel.current = loaderLabel;
+
+  function EditableControls() {
+    const { isEditing, getEditButtonProps } = useEditableControls();
+
+    return isEditing ? (
+      <IconButton
+        size="sm"
+        ml="5px"
+        mt="4px"
+        rounded="full"
+        icon={<CheckIcon />}
+        {...getEditButtonProps()}
+      />
+    ) : (
+      <IconButton
+        size="sm"
+        ml="5px"
+        mt="4px"
+        rounded="full"
+        icon={<EditIcon />}
+        {...getEditButtonProps()}
+      />
+    );
+  }
+
+  return (
+    <Editable
+      data-test="Activity Label"
+      isPreviewFocusable={false}
+      value={label}
+      display="flex" //Need this or the button isn't idependent of the preview
+      onChange={(value) => {
+        setLabel(value);
+      }}
+      onSubmit={(value) => {
+        let submitValue = value;
+
+        fetcher.submit(
+          { _action: "update label", label: submitValue },
+          { method: "post" },
+        );
+      }}
+    >
+      <EditablePreview
+        mt="2px"
+        fontSize="1.2em"
+        // whiteSpace="nowrap"
+        textOverflow="ellipsis"
+        overflow="hidden"
+        data-test="Activity Label Editable Preview"
+      />
+      <EditableInput
+        fontSize="1.2em"
+        whiteSpace="nowrap"
+        textOverflow="ellipsis"
+        overflow="hidden"
+        data-test="Activity Label Editable Input"
+      />
+      <EditableControls />
+    </Editable>
+  );
 }
 
 export function PortfolioActivity() {
@@ -185,24 +263,11 @@ export function PortfolioActivity() {
             overflow="hidden"
             background="doenet.canvas"
           >
-            <GridItem area="leftHeader" mt="4px" pl="10px">
-              <Text
-                fontSize="1.4em"
-                fontWeight="bold"
-                maxWidth="500px"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                whiteSpace="nowrap"
-              >
-                {label}
-              </Text>
+            <GridItem area="leftHeader" pl="10px" pr="10px">
+              <EditableActivityLabel />
             </GridItem>
             <GridItem area="rightHeader">
-              <HStack
-                // alignItems="flex-end"
-                spacing="4"
-                mr="10px"
-              >
+              <HStack spacing="4" mr="10px">
                 <Select
                   size="sm"
                   onChange={(e) => {
