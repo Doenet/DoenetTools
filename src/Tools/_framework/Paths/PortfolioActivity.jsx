@@ -14,11 +14,14 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
+  Flex,
   Grid,
   GridItem,
   HStack,
+  Icon,
   IconButton,
   Select,
+  Tooltip,
   VStack,
   useEditableControls,
 } from "@chakra-ui/react";
@@ -26,7 +29,9 @@ import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import AccountMenu from "../ChakraBasedComponents/AccountMenu";
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
+import { CheckIcon, EditIcon } from "@chakra-ui/icons";
+import { SlLayers } from "react-icons/sl";
+import { FaCog } from "react-icons/fa";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -92,6 +97,14 @@ export async function loader({ params }) {
     console.log("publicDoenetML", publicDoenetML);
     console.log("draftDoenetML", draftDoenetML);
 
+    //Win, Mac or Linux
+    let platform = "Linux";
+    if (navigator.platform.indexOf("Win") != -1) {
+      platform = "Win";
+    } else if (navigator.platform.indexOf("Mac") != -1) {
+      platform = "Mac";
+    }
+
     return {
       success: true,
       message: "",
@@ -109,6 +122,7 @@ export async function loader({ params }) {
       firstName,
       lastName,
       email,
+      platform,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -219,6 +233,7 @@ export function PortfolioActivity() {
     firstName,
     lastName,
     email,
+    platform,
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -259,7 +274,7 @@ export function PortfolioActivity() {
             width="100%"
             height="40px"
             templateAreas={`"leftHeader rightHeader"`}
-            templateColumns={`1fr 200px`}
+            templateColumns={`1fr 300px`}
             overflow="hidden"
             background="doenet.canvas"
           >
@@ -267,20 +282,45 @@ export function PortfolioActivity() {
               <EditableActivityLabel />
             </GridItem>
             <GridItem area="rightHeader">
-              <HStack spacing="4" mr="10px">
-                <Select
-                  size="sm"
-                  onChange={(e) => {
-                    if (e.target.value == "draft") {
-                      setDoenetML(draftDoenetML);
-                    } else {
-                      setDoenetML(publicDoenetML);
-                    }
-                  }}
+              <HStack spacing="5" mr="10px" justifyContent="flex-end">
+                <HStack spacing="2">
+                  <Icon as={SlLayers} />
+                  <Select
+                    size="sm"
+                    onChange={(e) => {
+                      if (e.target.value == "draft") {
+                        setDoenetML(draftDoenetML);
+                      } else {
+                        setDoenetML(publicDoenetML);
+                      }
+                    }}
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="public">Public</option>
+                  </Select>
+                </HStack>
+
+                <Tooltip
+                  hasArrow
+                  label={
+                    platform == "Mac"
+                      ? "Open Settings cmd+u"
+                      : "Open Settings ctrl+u"
+                  }
                 >
-                  <option value="draft">Draft</option>
-                  <option value="public">Public</option>
-                </Select>
+                  <Button
+                    data-test="Settings Button"
+                    mt="4px"
+                    size="sm"
+                    variant="outline"
+                    leftIcon={<FaCog />}
+                    // onClick={controlsOnOpen}
+                    // ref={controlsBtnRef}
+                  >
+                    Settings
+                  </Button>
+                </Tooltip>
+
                 <AccountMenu
                   firstName={firstName}
                   lastName={lastName}
@@ -325,21 +365,20 @@ export function PortfolioActivity() {
             >
               <VStack
                 margin="10px 0px 10px 0px" //Only need when there is an outline
-                height="calc(100vh - 80px)" //40px header height
+                height="calc(100vh - 50px)" //40px header height
                 spacing={0}
                 width="100%"
               >
-                <Button
-                  size="xs"
-                  data-test="Edit"
-                  onClick={() => {
-                    navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                  }}
+                <Flex
+                  w="100%"
+                  mb="2px"
+                  roundedTop="md"
+                  justifyContent={
+                    variants.numVariants > 1 ? "space-between" : "flex-end"
+                  }
                 >
-                  Edit
-                </Button>
-                {variants.numVariants > 1 && (
-                  <Box bg="doenet.lightBlue" h="32px" width="100%">
+                  {variants.numVariants > 1 && (
+                    // <Box bg="doenet.lightBlue" h="32px" width="100%">
                     <VariantSelect
                       size="sm"
                       menuWidth="140px"
@@ -352,8 +391,20 @@ export function PortfolioActivity() {
                         })
                       }
                     />
-                  </Box>
-                )}
+                    // </Box>
+                  )}
+                  <Button
+                    size="sm"
+                    data-test="Edit"
+                    rightIcon={<EditIcon />}
+                    onClick={() => {
+                      navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Flex>
+
                 <Box
                   h="calc(100vh - 80px)"
                   background="var(--canvas)"
