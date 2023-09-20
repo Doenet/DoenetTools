@@ -6,7 +6,6 @@ import {
   useLocation,
   useOutletContext,
 } from "react-router";
-import styled from "styled-components";
 import { DoenetML } from "../../../Viewer/DoenetML";
 
 import { useRecoilState } from "recoil";
@@ -29,9 +28,12 @@ import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function loader({ params }) {
+  let doenetId = params.doenetId;
+  let pageId = params.pageId;
+
   try {
     const { data } = await axios.get(
-      `/api/getPortfolioActivity.php?doenetId=${params.doenetId}`,
+      `/api/getPortfolioActivity.php?doenetId=${doenetId}`,
     );
 
     const { label, courseId, isDeleted, isBanned, isPublic, json, imagePath } =
@@ -39,6 +41,16 @@ export async function loader({ params }) {
 
     let publicDoenetML = null;
     let draftDoenetML = "";
+
+    //Links to activity shouldn't need to know the pageId so they use and underscore
+    if (pageId == "_") {
+      let nextPageId = findFirstPageIdInContent(json.content);
+
+      //TODO: code what should happen when there are only orders and no pageIds
+      if (nextPageId != "_") {
+        return redirect(`/portfolioActivity/${doenetId}/${nextPageId}`);
+      }
+    }
 
     if (data.json.assignedCid != null) {
       const { data: activityML } = await axios.get(
@@ -66,7 +78,6 @@ export async function loader({ params }) {
       publicDoenetML = publicDoenetMLResponse.data;
     }
 
-    let pageId = findFirstPageIdInContent(data.json.content);
     const draftDoenetMLResponse = await axios.get(
       `/media/byPageId/${pageId}.doenet`,
       { transformResponse: (data) => data.toString() },
@@ -74,14 +85,14 @@ export async function loader({ params }) {
     draftDoenetML = draftDoenetMLResponse.data;
 
     console.log("pageId", pageId);
-    console.log("draftDoenetML", draftDoenetML);
+    console.log("publicDoenetML", publicDoenetML);
     console.log("draftDoenetML", draftDoenetML);
 
     return {
       success: true,
       message: "",
       pageDoenetId: pageId,
-      doenetId: params.doenetId,
+      doenetId,
       publicDoenetML,
       draftDoenetML,
       label,
@@ -104,13 +115,6 @@ export async function action({ request }) {
 
   return formObj;
 }
-
-const HeaderSectionRight = styled.div`
-  margin: 5px;
-  height: 30px;
-  display: flex;
-  justify-content: flex-end;
-`;
 
 export function PortfolioActivity() {
   const {
@@ -135,21 +139,10 @@ export function PortfolioActivity() {
     throw new Error(message);
   }
 
-  const [doenetML, setDoenetML] = useState(publicDoenetML);
+  const [doenetML, setDoenetML] = useState(draftDoenetML);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
-
-  let navigateTo = useRef("");
-
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    location.href = newHref;
-  }
 
   useEffect(() => {
     document.title = `${label} - Doenet`;
@@ -222,8 +215,8 @@ export function PortfolioActivity() {
                       }
                     }}
                   >
-                    <option value="public">Public</option>
                     <option value="draft">Draft</option>
+                    <option value="public">Public</option>
                   </Select>
                   <Button
                     size="xs"

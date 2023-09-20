@@ -258,30 +258,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioActivity/:doenetId",
-        loader: portfolioActivityLoader,
-        action: portfolioActivityAction,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-
-        element: (
-          // <DarkmodeController>
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ChakraProvider theme={theme}>
-              <PortfolioActivity />
-            </ChakraProvider>
-          </MathJaxContext>
-          // </DarkmodeController>
-        ),
-      },
-      {
         path: "portfolioeditor/:doenetId",
         loader: async ({ params }) => {
           //This leaves a location in history
@@ -353,6 +329,28 @@ const router = createBrowserRouter([
         onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
       >
         <ToolRoot />
+      </MathJaxContext>
+    ),
+  },
+  {
+    path: "portfolioActivity/:doenetId/:pageId",
+    loader: portfolioActivityLoader,
+    action: portfolioActivityAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ChakraProvider theme={theme}>
+          <PortfolioActivity />
+        </ChakraProvider>
       </MathJaxContext>
     ),
   },
