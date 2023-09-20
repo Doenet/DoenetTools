@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -6,11 +6,14 @@ import {
   useLocation,
 } from "react-router";
 import { DoenetML } from "../../../Viewer/DoenetML";
+import CodeMirror from "../CodeMirror";
 
 import { Form, useFetcher } from "react-router-dom";
 import {
+  Link,
   Box,
   Button,
+  Center,
   Editable,
   EditableInput,
   EditablePreview,
@@ -21,6 +24,7 @@ import {
   Icon,
   IconButton,
   Select,
+  Spacer,
   Tooltip,
   VStack,
   useEditableControls,
@@ -29,9 +33,21 @@ import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import AccountMenu from "../ChakraBasedComponents/AccountMenu";
-import { CheckIcon, EditIcon } from "@chakra-ui/icons";
+import {
+  CheckIcon,
+  CloseIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  WarningTwoIcon,
+} from "@chakra-ui/icons";
 import { SlLayers } from "react-icons/sl";
 import { FaCog } from "react-icons/fa";
+import { BsGripVertical } from "react-icons/bs";
+import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
+import { useSetRecoilState } from "recoil";
+import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
+import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
+import { RxUpdate } from "react-icons/rx";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -234,6 +250,7 @@ export function PortfolioActivity() {
     lastName,
     email,
     platform,
+    modes, //single page view, single page edit, multipage view, multipage edit
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -244,8 +261,72 @@ export function PortfolioActivity() {
 
   const [doenetML, setDoenetML] = useState(draftDoenetML);
 
+  const [editMode, setEditMode] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  let editorRef = useRef(null);
+  let timeout = useRef(null);
+  //Warning: this will reboot codeMirror Editor sending cursor to the top
+  let initializeEditorDoenetML = useRef(doenetML);
+  let textEditorDoenetML = useRef(doenetML);
+  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
+  let [codeChanged, setCodeChanged] = useState(false);
+  const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
+  codeChangedRef.current = codeChanged;
+  const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+
+  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
+    errors: [],
+    warnings: [],
+  });
+
+  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
+  const warningsObjs = errorsAndWarnings.warnings.filter(
+    (w) => w.level <= warningsLevel,
+  );
+  const errorsObjs = [...errorsAndWarnings.errors];
+
+  const { saveDraft } = useSaveDraft();
+
+  function handleSaveDraft() {
+    console.log("SAVE!");
+  }
+
+  // const handleSaveDraft = useCallback(async () => {
+  //   const doenetML = textEditorDoenetML.current;
+  //   const lastKnownCid = lastKnownCidRef.current;
+  //   const backup = backupOldDraft.current;
+
+  //   if (inTheMiddleOfSaving.current) {
+  //     postponedSaving.current = true;
+  //   } else {
+  //     inTheMiddleOfSaving.current = true;
+  //     let result = await saveDraft({
+  //       pageId,
+  //       courseId,
+  //       backup,
+  //       lastKnownCid,
+  //       doenetML,
+  //     });
+
+  //     if (result.success) {
+  //       backupOldDraft.current = false;
+  //       lastKnownCidRef.current = result.cid;
+  //     }
+  //     inTheMiddleOfSaving.current = false;
+  //     timeout.current = null;
+
+  //     //If we postponed then potentially
+  //     //some changes were saved again while we were saving
+  //     //so save again
+  //     if (postponedSaving.current) {
+  //       postponedSaving.current = false;
+  //       handleSaveDraft();
+  //     }
+  //   }
+  // }, [pageId, courseId, saveDraft]);
 
   useEffect(() => {
     document.title = `${label} - Doenet`;
@@ -256,6 +337,192 @@ export function PortfolioActivity() {
     numVariants: 1,
     allPossibleVariants: ["a"],
   });
+
+  let viewerPanel = (
+    <VStack mt="0px" height="calc(100vh - 50px)" spacing={0} width="100%">
+      <HStack
+        w="100%"
+        h="32px"
+        mb="2px"
+        justifyContent={variants.numVariants > 1 ? "space-between" : "flex-end"}
+      >
+        {variants.numVariants > 1 && (
+          <VariantSelect
+            size="sm"
+            menuWidth="140px"
+            array={variants.allPossibleVariants}
+            onChange={(index) =>
+              setVariants((prev) => {
+                let next = { ...prev };
+                next.index = index + 1;
+                return next;
+              })
+            }
+          />
+        )}
+        {editMode ? (
+          <Spacer h="32px" />
+        ) : (
+          <Button
+            size="sm"
+            data-test="Edit"
+            rightIcon={<EditIcon />}
+            onClick={() => {
+              // navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
+              setEditMode(true);
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </HStack>
+
+      <Box
+        h="calc(100vh - 80px)"
+        background="var(--canvas)"
+        borderWidth="1px"
+        borderStyle="solid"
+        borderColor="doenet.mediumGray"
+        width="100%"
+        overflow="scroll"
+      >
+        <DoenetML
+          key={`ActivityOverviewPageViewer`}
+          doenetML={viewerDoenetML}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveSubmissions: false,
+            allowSaveEvents: false,
+          }}
+          setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+          // doenetId={doenetId}
+          attemptNumber={1}
+          idsIncludeActivityId={false}
+          generatedVariantCallback={setVariants}
+          requestedVariantIndex={variants.index}
+          // setIsInErrorState={setIsInErrorState}
+          location={location}
+          navigate={navigate}
+          linkSettings={{
+            viewURL: "/portfolioviewer",
+            editURL: "/publiceditor",
+          }}
+        />
+      </Box>
+    </VStack>
+  );
+
+  let editorPanel = (
+    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
+      <HStack w="100%" h="32px" mb="2px" justifyContent="flex-end">
+        <Box>
+          <Tooltip
+            hasArrow
+            label={
+              platform == "Mac"
+                ? "Updates Viewer cmd+s"
+                : "Updates Viewer ctrl+s"
+            }
+          >
+            <Button
+              size="sm"
+              variant="outline"
+              data-test="Viewer Update Button"
+              bg="doenet.canvas"
+              leftIcon={<RxUpdate />}
+              rightIcon={
+                codeChanged ? (
+                  <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
+                ) : (
+                  ""
+                )
+              }
+              isDisabled={!codeChanged}
+              onClick={() => {
+                setViewerDoenetML(textEditorDoenetML.current);
+                setCodeChanged(false);
+                clearTimeout(timeout.current);
+                handleSaveDraft();
+              }}
+            >
+              Update
+            </Button>
+          </Tooltip>
+        </Box>
+        <Link
+          borderRadius="lg"
+          p="4px 5px 0px 5px"
+          h="32px"
+          bg="#EDF2F7"
+          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
+          isExternal
+          data-test="Documentation Link"
+        >
+          Documentation <ExternalLinkIcon mx="2px" />
+        </Link>
+
+        <Button
+          size="sm"
+          data-test="Edit"
+          rightIcon={<CloseIcon />}
+          onClick={() => {
+            setEditMode(false);
+          }}
+        >
+          Close
+        </Button>
+      </HStack>
+
+      <Box
+        top="50px"
+        boxSizing="border-box"
+        background="doenet.canvas"
+        height={`calc(100vh - 84px)`}
+        overflowY="scroll"
+        borderRight="solid 1px"
+        borderTop="solid 1px"
+        borderBottom="solid 1px"
+        borderColor="doenet.mediumGray"
+        w="100%"
+        id="codeEditorContainer"
+      >
+        <Box height={`calc(100vh - 118px)`} w="100%" overflow="scroll">
+          <CodeMirror
+            editorRef={editorRef}
+            setInternalValueTo={initializeEditorDoenetML.current}
+            onBeforeChange={(value) => {
+              textEditorDoenetML.current = value;
+              setEditorDoenetML(value);
+              if (!codeChangedRef.current) {
+                setCodeChanged(true);
+              }
+              // Debounce save to server at 3 seconds
+              clearTimeout(timeout.current);
+              timeout.current = setTimeout(async function () {
+                handleSaveDraft();
+              }, 3000); //3 seconds
+            }}
+          />
+        </Box>
+
+        <Box bg="doenet.mainGray" h="32px" w="100%">
+          <Flex ml="0px" h="32px" bg="doenet.mainGray" pl="10px" pt="1px">
+            <ErrorWarningPopovers
+              warningsObjs={warningsObjs}
+              errorsObjs={errorsObjs}
+            />
+          </Flex>
+        </Box>
+      </Box>
+    </VStack>
+  );
 
   return (
     <>
@@ -333,122 +600,175 @@ export function PortfolioActivity() {
         <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="centerContent">
-          <Grid
-            width="100%"
-            height="calc(100vh - 40px)"
-            templateAreas={`"leftViewer viewer rightViewer"`}
-            templateColumns={`1fr minmax(400px,850px) 1fr`}
-            overflow="hidden"
-          >
-            <GridItem
-              area="leftViewer"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            ></GridItem>
-            <GridItem
-              area="rightViewer"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
+          {editMode ? (
+            <EditSingleActivityMode
+              viewerPanel={viewerPanel}
+              editorPanel={editorPanel}
             />
-
-            <GridItem
-              area="viewer"
-              width="100%"
-              maxWidth="850px"
-              placeSelf="center"
-              minHeight="100%"
-              overflow="hidden"
-            >
-              <VStack
-                margin="10px 0px 10px 0px" //Only need when there is an outline
-                height="calc(100vh - 50px)" //40px header height
-                spacing={0}
-                width="100%"
-              >
-                <Flex
-                  w="100%"
-                  mb="2px"
-                  roundedTop="md"
-                  justifyContent={
-                    variants.numVariants > 1 ? "space-between" : "flex-end"
-                  }
-                >
-                  {variants.numVariants > 1 && (
-                    // <Box bg="doenet.lightBlue" h="32px" width="100%">
-                    <VariantSelect
-                      size="sm"
-                      menuWidth="140px"
-                      array={variants.allPossibleVariants}
-                      onChange={(index) =>
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index + 1;
-                          return next;
-                        })
-                      }
-                    />
-                    // </Box>
-                  )}
-                  <Button
-                    size="sm"
-                    data-test="Edit"
-                    rightIcon={<EditIcon />}
-                    onClick={() => {
-                      navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </Flex>
-
-                <Box
-                  h="calc(100vh - 80px)"
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  width="100%"
-                  overflow="scroll"
-                >
-                  <DoenetML
-                    key={`ActivityOverviewPageViewer`}
-                    doenetML={doenetML}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    // doenetId={doenetId}
-                    attemptNumber={1}
-                    idsIncludeActivityId={false}
-                    generatedVariantCallback={setVariants}
-                    requestedVariantIndex={variants.index}
-                    // setIsInErrorState={setIsInErrorState}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/portfolioviewer",
-                      editURL: "/publiceditor",
-                    }}
-                  />
-                </Box>
-                <Box marginBottom="50vh" />
-              </VStack>
-            </GridItem>
-          </Grid>
+          ) : (
+            <ViewSingleActivityMode viewerPanel={viewerPanel} />
+          )}
         </GridItem>
       </Grid>
     </>
   );
 }
+
+const ViewSingleActivityMode = ({ viewerPanel }) => {
+  return (
+    <Grid
+      width="100%"
+      mt="5px"
+      height="calc(100vh - 40px)"
+      templateAreas={`"leftViewer viewer rightViewer"`}
+      templateColumns={`1fr minmax(400px,850px) 1fr`}
+      overflow="hidden"
+    >
+      <GridItem
+        area="leftViewer"
+        background="doenet.lightBlue"
+        width="100%"
+        alignSelf="start"
+      ></GridItem>
+      <GridItem
+        area="rightViewer"
+        background="doenet.lightBlue"
+        width="100%"
+        alignSelf="start"
+      />
+
+      <GridItem
+        area="viewer"
+        width="100%"
+        maxWidth="850px"
+        placeSelf="center"
+        minHeight="100%"
+        overflow="hidden"
+      >
+        {viewerPanel}
+      </GridItem>
+    </Grid>
+  );
+};
+
+const clamp = (
+  value,
+  min = Number.POSITIVE_INFINITY,
+  max = Number.NEGATIVE_INFINITY,
+) => {
+  return Math.min(Math.max(value, min), max);
+};
+
+const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
+  const centerWidth = "10px";
+  const wrapperRef = useRef();
+  const [hideLeft, setHideLeft] = useState(false);
+  const [hideRight, setHideRight] = useState(false);
+
+  useEffect(() => {
+    wrapperRef.current.handleClicked = false;
+    wrapperRef.current.handleDragged = false;
+  }, []);
+
+  const onMouseDown = (event) => {
+    event.preventDefault();
+    wrapperRef.current.handleClicked = true;
+  };
+
+  const onMouseMove = (event) => {
+    //TODO: minimum movment calc
+    if (wrapperRef.current.handleClicked) {
+      event.preventDefault();
+      wrapperRef.current.handleDragged = true;
+
+      let proportion = clamp(
+        (event.clientX - wrapperRef.current.offsetLeft) /
+          wrapperRef.current.clientWidth,
+        0,
+        1,
+      );
+      const leftPixels = proportion * wrapperRef.current.clientWidth;
+      const rightPixels = wrapperRef.current.clientWidth - leftPixels;
+      if (leftPixels < 150 && !hideLeft) {
+        setHideLeft(true);
+      } else if (leftPixels >= 150 && hideLeft) {
+        setHideLeft(false);
+      }
+      if (rightPixels < 150 && !hideRight) {
+        setHideRight(true);
+      } else if (rightPixels >= 150 && hideRight) {
+        setHideRight(false);
+      }
+
+      //using a ref to save without react refresh
+      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
+        1 - proportion
+      }fr`;
+      wrapperRef.current.proportion = proportion;
+    }
+  };
+
+  const onMouseUp = () => {
+    if (wrapperRef.current.handleClicked) {
+      wrapperRef.current.handleClicked = false;
+      if (wrapperRef.current.handleDragged) {
+        wrapperRef.current.handleDragged = false;
+      }
+    }
+  };
+
+  return (
+    <Grid
+      width="100vw"
+      height={`calc(100vh - 40px)`}
+      templateAreas={`"viewer middleGutter textEditor"`}
+      templateColumns={`.5fr ${centerWidth} .5fr`}
+      overflow="hidden"
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseUp}
+      ref={wrapperRef}
+    >
+      <GridItem
+        area="viewer"
+        width="100%"
+        placeSelf="center"
+        maxWidth="850px"
+        overflow="hidden"
+      >
+        {hideLeft ? null : viewerPanel}
+      </GridItem>
+      <GridItem
+        area="middleGutter"
+        background="doenet.lightBlue"
+        width="100%"
+        paddingTop="39px"
+        alignSelf="start"
+      >
+        <Center
+          cursor="col-resize"
+          background="doenet.mainGray"
+          borderLeft="solid 1px"
+          borderTop="solid 1px"
+          borderBottom="solid 1px"
+          borderColor="doenet.mediumGray"
+          height={`calc(100vh - 84px)`}
+          width="10px"
+          onMouseDown={onMouseDown}
+          data-test="contentPanelDragHandle"
+          paddingLeft="1px"
+        >
+          <Icon ml="0" as={BsGripVertical} />
+        </Center>
+      </GridItem>
+      <GridItem
+        area="textEditor"
+        width="100%"
+        background="doenet.lightBlue"
+        alignSelf="start"
+      >
+        {hideRight ? null : editorPanel}
+      </GridItem>
+    </Grid>
+  );
+};

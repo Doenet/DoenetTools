@@ -1562,9 +1562,7 @@ export function PortfolioActivityEditor() {
                         bg="doenet.lightBlue"
                         margin="10px 0px 0px 0px" //Only need when there is an outline
                       >
-                        <Box
-                        //bg="doenet.canvas"
-                        >
+                        <Box>
                           <Tooltip
                             hasArrow
                             label={
