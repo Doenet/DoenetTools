@@ -26,6 +26,7 @@ import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
+import AccountMenu from "../ChakraBasedComponents/AccountMenu";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -51,6 +52,9 @@ export async function loader({ params }) {
         return redirect(`/portfolioActivity/${doenetId}/${nextPageId}`);
       }
     }
+
+    const response = await axios.get("/api/getPorfolioCourseId.php");
+    let { firstName, lastName, email } = response.data;
 
     if (data.json.assignedCid != null) {
       const { data: activityML } = await axios.get(
@@ -102,6 +106,9 @@ export async function loader({ params }) {
       isPublic,
       json,
       imagePath,
+      firstName,
+      lastName,
+      email,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -131,6 +138,9 @@ export function PortfolioActivity() {
     isPublic,
     json,
     imagePath,
+    firstName,
+    lastName,
+    email,
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -158,78 +168,60 @@ export function PortfolioActivity() {
     <>
       <Grid
         background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
+        minHeight="100vh"
         templateAreas={`"header header header"
       "leftGutter centerContent rightGutter"
       `}
-        templateRows="100px auto"
+        templateRows="40px auto"
         templateColumns=".06fr 1fr .06fr"
         position="relative"
       >
-        <GridItem
-          area="header"
-          height="100px"
-          zIndex="500"
-          background="doenet.mainGray"
-        >
+        <GridItem area="header" zIndex="500">
           <Grid
             width="100%"
-            height="100px"
-            templateAreas={`"leftHeader headerContent rightHeader"`}
-            templateColumns={`1fr minmax(400px,800px) 1fr`}
+            height="40px"
+            templateAreas={`"leftHeader rightHeader"`}
+            templateColumns={`1fr 200px`}
             overflow="hidden"
-            background="doenet.mainGray"
+            background="doenet.canvas"
           >
-            <GridItem area="leftHeader" background="doenet.mainGray"></GridItem>
-            <GridItem
-              area="rightHeader"
-              background="doenet.mainGray"
-            ></GridItem>
-            <GridItem
-              area="rightHeader"
-              background="doenet.mainGray"
-            ></GridItem>
-            <GridItem area="headerContent" maxWidth="800px" width="100%">
-              <Flex justifyContent="space-between">
-                <Flex flexDirection="column" alignItems="flex-start" mt="10px">
-                  <Text
-                    fontSize="1.4em"
-                    fontWeight="bold"
-                    maxWidth="500px"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                  >
-                    {label}
-                  </Text>
-                </Flex>
-                <HStack mt="20px" alignItems="flex-end" spacing="4">
-                  <Select
-                    bg="blue.500"
-                    size="sm"
-                    onChange={(e) => {
-                      if (e.target.value == "draft") {
-                        setDoenetML(draftDoenetML);
-                      } else {
-                        setDoenetML(publicDoenetML);
-                      }
-                    }}
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="public">Public</option>
-                  </Select>
-                  <Button
-                    size="xs"
-                    colorScheme="blue"
-                    data-test="Edit"
-                    onClick={() => {
-                      navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </HStack>
-              </Flex>
+            <GridItem area="leftHeader" mt="4px" pl="10px">
+              <Text
+                fontSize="1.4em"
+                fontWeight="bold"
+                maxWidth="500px"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {label}
+              </Text>
+            </GridItem>
+            <GridItem area="rightHeader">
+              <HStack
+                // alignItems="flex-end"
+                spacing="4"
+                mr="10px"
+              >
+                <Select
+                  size="sm"
+                  onChange={(e) => {
+                    if (e.target.value == "draft") {
+                      setDoenetML(draftDoenetML);
+                    } else {
+                      setDoenetML(publicDoenetML);
+                    }
+                  }}
+                >
+                  <option value="draft">Draft</option>
+                  <option value="public">Public</option>
+                </Select>
+                <AccountMenu
+                  firstName={firstName}
+                  lastName={lastName}
+                  email={email}
+                />
+              </HStack>
             </GridItem>
           </Grid>
         </GridItem>
@@ -238,7 +230,7 @@ export function PortfolioActivity() {
         <GridItem area="centerContent">
           <Grid
             width="100%"
-            height="calc(100vh - 140px)"
+            height="calc(100vh - 40px)"
             templateAreas={`"leftViewer viewer rightViewer"`}
             templateColumns={`1fr minmax(400px,850px) 1fr`}
             overflow="hidden"
@@ -268,10 +260,19 @@ export function PortfolioActivity() {
             >
               <VStack
                 margin="10px 0px 10px 0px" //Only need when there is an outline
-                height="calc(100vh - 160px)" //40px header height
+                height="calc(100vh - 80px)" //40px header height
                 spacing={0}
                 width="100%"
               >
+                <Button
+                  size="xs"
+                  data-test="Edit"
+                  onClick={() => {
+                    navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
+                  }}
+                >
+                  Edit
+                </Button>
                 {variants.numVariants > 1 && (
                   <Box bg="doenet.lightBlue" h="32px" width="100%">
                     <VariantSelect
@@ -289,11 +290,7 @@ export function PortfolioActivity() {
                   </Box>
                 )}
                 <Box
-                  h={
-                    variants.numVariants > 1
-                      ? "calc(100vh - 192px)"
-                      : "calc(100vh - 160px)"
-                  }
+                  h="calc(100vh - 80px)"
                   background="var(--canvas)"
                   borderWidth="1px"
                   borderStyle="solid"
