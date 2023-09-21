@@ -28,6 +28,7 @@ import {
   Tooltip,
   VStack,
   useEditableControls,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -108,10 +109,6 @@ export async function loader({ params }) {
       { transformResponse: (data) => data.toString() },
     );
     draftDoenetML = draftDoenetMLResponse.data;
-
-    console.log("pageId", pageId);
-    console.log("publicDoenetML", publicDoenetML);
-    console.log("draftDoenetML", draftDoenetML);
 
     //Win, Mac or Linux
     let platform = "Linux";
@@ -259,8 +256,6 @@ export function PortfolioActivity() {
     throw new Error(message);
   }
 
-  const [doenetML, setDoenetML] = useState(draftDoenetML);
-
   const [editMode, setEditMode] = useState(false);
 
   const navigate = useNavigate();
@@ -269,13 +264,15 @@ export function PortfolioActivity() {
   let editorRef = useRef(null);
   let timeout = useRef(null);
   //Warning: this will reboot codeMirror Editor sending cursor to the top
-  let initializeEditorDoenetML = useRef(doenetML);
-  let textEditorDoenetML = useRef(doenetML);
+  let initializeEditorDoenetML = useRef(draftDoenetML);
+  let textEditorDoenetML = useRef(draftDoenetML);
+
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   let [codeChanged, setCodeChanged] = useState(false);
   const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
   codeChangedRef.current = codeChanged;
-  const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
+  const [viewerDoenetML, setViewerDoenetML] = useState(draftDoenetML);
+  const [layer, setLayer] = useState("draft");
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [],
@@ -360,7 +357,7 @@ export function PortfolioActivity() {
             }
           />
         )}
-        {editMode ? (
+        {editMode || layer == "public" ? (
           <Spacer h="32px" />
         ) : (
           <Button
@@ -368,7 +365,6 @@ export function PortfolioActivity() {
             data-test="Edit"
             rightIcon={<EditIcon />}
             onClick={() => {
-              // navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
               setEditMode(true);
             }}
           >
@@ -552,19 +548,24 @@ export function PortfolioActivity() {
               <HStack spacing="5" mr="10px" justifyContent="flex-end">
                 <HStack spacing="2">
                   <Icon as={SlLayers} />
-                  <Select
-                    size="sm"
-                    onChange={(e) => {
-                      if (e.target.value == "draft") {
-                        setDoenetML(draftDoenetML);
-                      } else {
-                        setDoenetML(publicDoenetML);
-                      }
-                    }}
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="public">Public</option>
-                  </Select>
+                  {editMode ? (
+                    <Text>Draft</Text>
+                  ) : (
+                    <Select
+                      size="sm"
+                      onChange={(e) => {
+                        setLayer(e.target.value);
+                        if (e.target.value == "draft") {
+                          setViewerDoenetML(draftDoenetML);
+                        } else {
+                          setViewerDoenetML(publicDoenetML);
+                        }
+                      }}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="public">Public</option>
+                    </Select>
+                  )}
                 </HStack>
 
                 <Tooltip
