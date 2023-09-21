@@ -600,56 +600,16 @@ export function PortfolioActivity() {
         <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="centerContent">
-          {editMode ? (
-            <EditSingleActivityMode
-              viewerPanel={viewerPanel}
-              editorPanel={editorPanel}
-            />
-          ) : (
-            <ViewSingleActivityMode viewerPanel={viewerPanel} />
-          )}
+          <MainContent
+            viewerPanel={viewerPanel}
+            editorPanel={editorPanel}
+            editMode={editMode}
+          />
         </GridItem>
       </Grid>
     </>
   );
 }
-
-const ViewSingleActivityMode = ({ viewerPanel }) => {
-  return (
-    <Grid
-      width="100%"
-      mt="5px"
-      height="calc(100vh - 40px)"
-      templateAreas={`"leftViewer viewer rightViewer"`}
-      templateColumns={`1fr minmax(400px,850px) 1fr`}
-      overflow="hidden"
-    >
-      <GridItem
-        area="leftViewer"
-        background="doenet.lightBlue"
-        width="100%"
-        alignSelf="start"
-      ></GridItem>
-      <GridItem
-        area="rightViewer"
-        background="doenet.lightBlue"
-        width="100%"
-        alignSelf="start"
-      />
-
-      <GridItem
-        area="viewer"
-        width="100%"
-        maxWidth="850px"
-        placeSelf="center"
-        minHeight="100%"
-        overflow="hidden"
-      >
-        {viewerPanel}
-      </GridItem>
-    </Grid>
-  );
-};
 
 const clamp = (
   value,
@@ -659,11 +619,23 @@ const clamp = (
   return Math.min(Math.max(value, min), max);
 };
 
-const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
+const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
   const centerWidth = "10px";
   const wrapperRef = useRef();
   const [hideLeft, setHideLeft] = useState(false);
   const [hideRight, setHideRight] = useState(false);
+
+  useEffect(() => {
+    let templateAreas = `"viewer"`;
+    let templateColumns = `1fr`;
+    if (editMode) {
+      templateAreas = `"viewer middleGutter textEditor"`;
+      templateColumns = `.5fr ${centerWidth} .5fr`;
+    }
+
+    wrapperRef.current.style.gridTemplateColumns = templateColumns;
+    wrapperRef.current.style.gridTemplateAreas = templateAreas;
+  }, [editMode]);
 
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
@@ -739,8 +711,8 @@ const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
     <Grid
       width="100vw"
       height={`calc(100vh - 40px)`}
-      templateAreas={`"viewer middleGutter textEditor"`}
-      templateColumns={`.5fr ${centerWidth} .5fr`}
+      templateAreas={`"viewer"`}
+      templateColumns={`1fr`}
       overflow="hidden"
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
@@ -756,38 +728,43 @@ const EditSingleActivityMode = ({ viewerPanel, editorPanel }) => {
       >
         {hideLeft ? null : viewerPanel}
       </GridItem>
-      <GridItem
-        area="middleGutter"
-        background="doenet.lightBlue"
-        width="100%"
-        paddingTop="39px"
-        alignSelf="start"
-      >
-        <Center
-          cursor="col-resize"
-          background="doenet.mainGray"
-          borderLeft="solid 1px"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
-          borderColor="doenet.mediumGray"
-          height={`calc(100vh - 84px)`}
-          width="10px"
-          onMouseDown={onMouseDown}
-          data-test="contentPanelDragHandle"
-          paddingLeft="1px"
-          onDoubleClick={onDoubleClick}
-        >
-          <Icon ml="0" as={BsGripVertical} />
-        </Center>
-      </GridItem>
-      <GridItem
-        area="textEditor"
-        width="100%"
-        background="doenet.lightBlue"
-        alignSelf="start"
-      >
-        {hideRight ? null : editorPanel}
-      </GridItem>
+      {editMode && (
+        <>
+          <GridItem
+            area="middleGutter"
+            background="doenet.lightBlue"
+            width="100%"
+            paddingTop="39px"
+            alignSelf="start"
+          >
+            <Center
+              cursor="col-resize"
+              background="doenet.mainGray"
+              borderLeft="solid 1px"
+              borderTop="solid 1px"
+              borderBottom="solid 1px"
+              borderColor="doenet.mediumGray"
+              height={`calc(100vh - 84px)`}
+              width="10px"
+              onMouseDown={onMouseDown}
+              data-test="contentPanelDragHandle"
+              paddingLeft="1px"
+              onDoubleClick={onDoubleClick}
+            >
+              <Icon ml="0" as={BsGripVertical} />
+            </Center>
+          </GridItem>
+
+          <GridItem
+            area="textEditor"
+            width="100%"
+            background="doenet.lightBlue"
+            alignSelf="start"
+          >
+            {hideRight ? null : editorPanel}
+          </GridItem>
+        </>
+      )}
     </Grid>
   );
 };
