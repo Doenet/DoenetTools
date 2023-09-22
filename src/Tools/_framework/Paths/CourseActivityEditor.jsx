@@ -179,9 +179,13 @@ export async function loader({ request, params }) {
     if (e.response.data.message == "Redirect to public activity.") {
       return redirect(`/publiceditor/${params.doenetId}/${params.pageId}`);
     } else {
-      throw new Error(e);
+      let message = e.message;
+      //If php provides a message pass it along
+      if (e.response?.data?.message) {
+        message = e.response?.data?.message;
+      }
+      throw new Error(message);
     }
-    // console.log("response", response);
   }
 }
 
