@@ -6,6 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -15,10 +16,10 @@ $pageId = mysqli_real_escape_string($conn, $_REQUEST['pageId']);
 
 $response_arr;
 try {
-
     $sql = "
     SELECT 
-    label
+    label,
+    courseId
     FROM pages
     WHERE doenetId = '$pageId'
     ";
@@ -27,8 +28,18 @@ try {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $pageLabel = $row['label'];
+        $courseId = $row['courseId'];
     }
 
+    $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+    if ($permissions["canEditContent"] != '1'){
+        throw new Exception("No permission to edit this activity");
+    }
+    if ($permissions["canViewContentSource"] != '1'){
+        throw new Exception("No permission to view this activity");
+    }
+
+    
     $sql = "
     SELECT 
     type,
