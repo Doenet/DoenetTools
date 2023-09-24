@@ -49,6 +49,7 @@ import { useSetRecoilState } from "recoil";
 import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
 import { RxUpdate } from "react-icons/rx";
+import { cidFromText } from "../../../Core/utils/cid";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -110,6 +111,8 @@ export async function loader({ params }) {
     );
     draftDoenetML = draftDoenetMLResponse.data;
 
+    const lastKnownCid = await cidFromText(draftDoenetML);
+
     //Win, Mac or Linux
     let platform = "Linux";
     if (navigator.platform.indexOf("Win") != -1) {
@@ -121,7 +124,7 @@ export async function loader({ params }) {
     return {
       success: true,
       message: "",
-      pageDoenetId: pageId,
+      pageId,
       doenetId,
       publicDoenetML,
       draftDoenetML,
@@ -136,6 +139,7 @@ export async function loader({ params }) {
       lastName,
       email,
       platform,
+      lastKnownCid,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -232,7 +236,7 @@ export function PortfolioActivity() {
   const {
     success,
     message,
-    pageDoenetId,
+    pageId,
     doenetId,
     publicDoenetML,
     draftDoenetML,
@@ -247,7 +251,7 @@ export function PortfolioActivity() {
     lastName,
     email,
     platform,
-    modes, //single page view, single page edit, multipage view, multipage edit
+    lastKnownCid,
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -285,45 +289,81 @@ export function PortfolioActivity() {
   );
   const errorsObjs = [...errorsAndWarnings.errors];
 
+  let lastKnownCidRef = useRef(lastKnownCid);
+  let backupOldDraft = useRef(true);
+  let inTheMiddleOfSaving = useRef(false);
+  let postponedSaving = useRef(false);
+
   const { saveDraft } = useSaveDraft();
 
-  function handleSaveDraft() {
-    console.log("SAVE!");
-  }
+  const handleSaveDraft = useCallback(async () => {
+    const doenetML = textEditorDoenetML.current;
+    const lastKnownCid = lastKnownCidRef.current;
+    const backup = backupOldDraft.current;
 
-  // const handleSaveDraft = useCallback(async () => {
-  //   const doenetML = textEditorDoenetML.current;
-  //   const lastKnownCid = lastKnownCidRef.current;
-  //   const backup = backupOldDraft.current;
+    if (inTheMiddleOfSaving.current) {
+      postponedSaving.current = true;
+    } else {
+      inTheMiddleOfSaving.current = true;
+      let result = await saveDraft({
+        pageId,
+        courseId,
+        backup,
+        lastKnownCid,
+        doenetML,
+      });
 
-  //   if (inTheMiddleOfSaving.current) {
-  //     postponedSaving.current = true;
-  //   } else {
-  //     inTheMiddleOfSaving.current = true;
-  //     let result = await saveDraft({
-  //       pageId,
-  //       courseId,
-  //       backup,
-  //       lastKnownCid,
-  //       doenetML,
-  //     });
+      if (result.success) {
+        backupOldDraft.current = false;
+        lastKnownCidRef.current = result.cid;
+      }
+      inTheMiddleOfSaving.current = false;
+      timeout.current = null;
 
-  //     if (result.success) {
-  //       backupOldDraft.current = false;
-  //       lastKnownCidRef.current = result.cid;
-  //     }
-  //     inTheMiddleOfSaving.current = false;
-  //     timeout.current = null;
+      //If we postponed then potentially
+      //some changes were saved again while we were saving
+      //so save again
+      if (postponedSaving.current) {
+        postponedSaving.current = false;
+        handleSaveDraft();
+      }
+    }
+  }, [pageId, courseId, saveDraft]);
 
-  //     //If we postponed then potentially
-  //     //some changes were saved again while we were saving
-  //     //so save again
-  //     if (postponedSaving.current) {
-  //       postponedSaving.current = false;
-  //       handleSaveDraft();
-  //     }
-  //   }
-  // }, [pageId, courseId, saveDraft]);
+  useEffect(() => {
+    const handleEditorKeyDown = (event) => {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        setViewerDoenetML(textEditorDoenetML.current);
+        setCodeChanged(false);
+        clearTimeout(timeout.current);
+        handleSaveDraft();
+      }
+    };
+
+    // const handleDocumentKeyDown = (event) => {
+    //   if (
+    //     (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
+    //     (platform != "Mac" && event.ctrlKey && event.code === "KeyU")
+    //   ) {
+    //     event.preventDefault();
+    //     event.stopPropagation();
+    //     // controlsOnOpen();
+    //   }
+    // };
+
+    // window.addEventListener("keydown", handleDocumentKeyDown);
+    window.addEventListener("keydown", handleEditorKeyDown);
+
+    return () => {
+      // window.removeEventListener("keydown", handleDocumentKeyDown);
+      window.removeEventListener("keydown", handleEditorKeyDown);
+    };
+  }, [textEditorDoenetML, platform, handleSaveDraft]);
 
   useEffect(() => {
     document.title = `${label} - Doenet`;
@@ -469,6 +509,7 @@ export function PortfolioActivity() {
           data-test="Edit"
           rightIcon={<CloseIcon />}
           onClick={() => {
+            initializeEditorDoenetML.current = textEditorDoenetML.current;
             setEditMode(false);
           }}
         >
@@ -487,7 +528,6 @@ export function PortfolioActivity() {
         borderBottom="solid 1px"
         borderColor="doenet.mediumGray"
         w="100%"
-        id="codeEditorContainer"
       >
         <Box height={`calc(100vh - 118px)`} w="100%" overflow="scroll">
           <CodeMirror
@@ -521,94 +561,92 @@ export function PortfolioActivity() {
   );
 
   return (
-    <>
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="100vh"
-        templateAreas={`"header header header"
+    <Grid
+      background="doenet.lightBlue"
+      minHeight="100vh"
+      templateAreas={`"header header header"
       "leftGutter centerContent rightGutter"
       `}
-        templateRows="40px auto"
-        templateColumns=".06fr 1fr .06fr"
-        position="relative"
-      >
-        <GridItem area="header" zIndex="500">
-          <Grid
-            width="100%"
-            height="40px"
-            templateAreas={`"leftHeader rightHeader"`}
-            templateColumns={`1fr 300px`}
-            overflow="hidden"
-            background="doenet.canvas"
-          >
-            <GridItem area="leftHeader" pl="10px" pr="10px">
-              <EditableActivityLabel />
-            </GridItem>
-            <GridItem area="rightHeader">
-              <HStack spacing="5" mr="10px" justifyContent="flex-end">
-                <HStack spacing="2">
-                  <Icon as={SlLayers} />
-                  {editMode ? (
-                    <Text>Draft</Text>
-                  ) : (
-                    <Select
-                      size="sm"
-                      onChange={(e) => {
-                        setLayer(e.target.value);
-                        if (e.target.value == "draft") {
-                          setViewerDoenetML(draftDoenetML);
-                        } else {
-                          setViewerDoenetML(publicDoenetML);
-                        }
-                      }}
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="public">Public</option>
-                    </Select>
-                  )}
-                </HStack>
-
-                <Tooltip
-                  hasArrow
-                  label={
-                    platform == "Mac"
-                      ? "Open Settings cmd+u"
-                      : "Open Settings ctrl+u"
-                  }
-                >
-                  <Button
-                    data-test="Settings Button"
-                    mt="4px"
+      templateRows="40px auto"
+      templateColumns=".06fr 1fr .06fr"
+      position="relative"
+    >
+      <GridItem area="header" zIndex="500">
+        <Grid
+          width="100%"
+          height="40px"
+          templateAreas={`"leftHeader rightHeader"`}
+          templateColumns={`1fr 300px`}
+          overflow="hidden"
+          background="doenet.canvas"
+        >
+          <GridItem area="leftHeader" pl="10px" pr="10px">
+            <EditableActivityLabel />
+          </GridItem>
+          <GridItem area="rightHeader">
+            <HStack spacing="5" mr="10px" justifyContent="flex-end">
+              <HStack spacing="2">
+                <Icon as={SlLayers} />
+                {editMode ? (
+                  <Text>Draft</Text>
+                ) : (
+                  <Select
                     size="sm"
-                    variant="outline"
-                    leftIcon={<FaCog />}
-                    // onClick={controlsOnOpen}
-                    // ref={controlsBtnRef}
+                    onChange={(e) => {
+                      setLayer(e.target.value);
+                      if (e.target.value == "draft") {
+                        setViewerDoenetML(draftDoenetML);
+                      } else {
+                        setViewerDoenetML(publicDoenetML);
+                      }
+                    }}
                   >
-                    Settings
-                  </Button>
-                </Tooltip>
-
-                <AccountMenu
-                  firstName={firstName}
-                  lastName={lastName}
-                  email={email}
-                />
+                    <option value="draft">Draft</option>
+                    <option value="public">Public</option>
+                  </Select>
+                )}
               </HStack>
-            </GridItem>
-          </Grid>
-        </GridItem>
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="centerContent">
-          <MainContent
-            viewerPanel={viewerPanel}
-            editorPanel={editorPanel}
-            editMode={editMode}
-          />
-        </GridItem>
-      </Grid>
-    </>
+
+              <Tooltip
+                hasArrow
+                label={
+                  platform == "Mac"
+                    ? "Open Settings cmd+u"
+                    : "Open Settings ctrl+u"
+                }
+              >
+                <Button
+                  data-test="Settings Button"
+                  mt="4px"
+                  size="sm"
+                  variant="outline"
+                  leftIcon={<FaCog />}
+                  // onClick={controlsOnOpen}
+                  // ref={controlsBtnRef}
+                >
+                  Settings
+                </Button>
+              </Tooltip>
+
+              <AccountMenu
+                firstName={firstName}
+                lastName={lastName}
+                email={email}
+              />
+            </HStack>
+          </GridItem>
+        </Grid>
+      </GridItem>
+      <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
+      <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
+      <GridItem area="centerContent">
+        <MainContent
+          viewerPanel={viewerPanel}
+          editorPanel={editorPanel}
+          editMode={editMode}
+        />
+      </GridItem>
+    </Grid>
   );
 }
 
