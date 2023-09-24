@@ -267,11 +267,15 @@ export default function GradebookStudent() {
   }
 
   let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
+  const section = students.contents[userId]?.section;
 
   return (
     <>
       <div style={{ marginLeft: "18px" }}>
         <b>Gradebook for {studentName}</b>
+      </div>
+      <div style={{ marginLeft: "18px" }}>
+        <b>Section {section}</b>
       </div>
       <div style={{ marginLeft: "18px" }}>
         <b>
