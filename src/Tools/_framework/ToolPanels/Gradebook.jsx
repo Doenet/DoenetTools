@@ -210,7 +210,6 @@ export const studentData = selector({
   get: ({ get }) => {
     let data = get(studentDataQuery);
     let students = {};
-
     for (let row of data) {
       let [
         userId,
@@ -219,6 +218,7 @@ export const studentData = selector({
         courseCredit,
         courseGrade,
         overrideCourseGrade,
+        section,
       ] = row;
 
       students[userId] = {
@@ -227,6 +227,7 @@ export const studentData = selector({
         courseCredit,
         courseGrade,
         overrideCourseGrade,
+        section,
       };
     }
     return students;
@@ -536,10 +537,6 @@ export function Table({ columns, data }) {
       </tbody>
 
       <tfoot>
-        {/* <tr>
-
-            </tr> */}
-
         <tr>
           {footerGroups[0].headers.map((column) => (
             // eslint-disable-next-line react/jsx-key
@@ -617,9 +614,6 @@ function GradebookOverview() {
   useEffect(() => {
     setSuppressMenus(canViewAndModifyGrades === "1" ? [] : ["GradeDownload"]);
   }, [canViewAndModifyGrades, setSuppressMenus]);
-  // console.log(">>>>students",students)
-  // console.log(">>>>assignments",assignments)
-  // console.log(">>>>overview",overview)
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -646,6 +640,12 @@ function GradebookOverview() {
     Header: "Name",
     accessor: "name",
     Footer: "Possible Points",
+  });
+  overviewTable.headers.push({
+    Header: "Section",
+    accessor: "section",
+    Footer: "",
+    disableFilters: true,
   });
 
   let sortedAssignments = Object.entries(assignments.contents);
@@ -783,8 +783,8 @@ function GradebookOverview() {
 
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName,
-      lastName = students.contents[userId].lastName;
-
+      lastName = students.contents[userId].lastName,
+      section = students.contents[userId].section;
     // let grade = overrideGrade ? overrideGrade : generatedGrade
 
     let row = {};
@@ -806,6 +806,7 @@ function GradebookOverview() {
         {name}{" "}
       </a>
     );
+    row["section"] = section;
 
     let totalScore = 0;
 
@@ -904,32 +905,5 @@ function GradebookOverview() {
 }
 
 export default function Gradebook() {
-  // let specificAttempt = useRecoilValueLoadable(specificAttemptData({courseId, doenetId: 'ass1', userId: 'temp1', attemptNumber: 1}))
-
-  // if(specificAttempt.state === 'hasValue'){
-  //     console.log(">>> specificAttempt", specificAttempt.contents)
-  // }else{
-  //     console.log(">>> specificAttempt", specificAttempt.state)
-  // }
-
-  // return(
-  //     <p>Test</p>
-  // )
-
-  // let [driveIdVal, setDriveIdVal] = useRecoilState(driveId);
-  // const history = useHistory();
-  // let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-
-  // useEffect(()=>{
-  //     if(urlParamsObj.driveId){
-  //         setDriveIdVal(urlParamsObj.driveId);
-  //     }else{
-  //         setDriveIdVal('');
-  //     }
-  //   },[urlParamsObj]);
-  // let courseList = useRecoilValueLoadable(coursesData);
-  // console.log(courseList.contents)
-
-  //console.log("driveId: ", useRecoilValue(driveId))
   return <GradebookOverview />;
 }
