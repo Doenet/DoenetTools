@@ -9844,7 +9844,7 @@ export default class Core {
       // check if it is shadowing another component and use that component name instead
       let comp = this._components[id];
 
-      if (comp.shadows) {
+      if (comp?.shadows) {
         id = comp.shadows.componentName;
       } else {
         break;
