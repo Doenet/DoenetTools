@@ -35,11 +35,13 @@ try {
 
     $sql = "
     SELECT label,
+    type,
     courseId,
     isDeleted,
     isBanned,
     isPublic,
     CAST(jsonDefinition as CHAR) AS json,
+    CAST(learningOutcomes as CHAR) AS learningOutcomes,
     imagePath
     FROM course_content
     WHERE doenetId = '$doenetId'
@@ -50,12 +52,15 @@ try {
         $row = $result->fetch_assoc();
 
         $label = $row['label'];
+        $type = $row['type'];
         $courseId = $row['courseId'];
         $isDeleted = $row['isDeleted'];
         $isBanned = $row['isBanned'];
         $isPublic = $row['isPublic'];
         $json = json_decode($row["json"], true);
         $imagePath = $row['imagePath'];
+    $learningOutcomes = json_decode($row['learningOutcomes'], true);
+
 
     }else{
         throw new Exception("Activity not found.");
@@ -72,6 +77,16 @@ try {
         'isPublic' => $isPublic,
         'json' => $json,
         'imagePath' => $imagePath,
+        'activityData' => [
+            'type' => $type,
+            'label' => $label,
+            'imagePath' => $imagePath,
+            'content' => $json['content'],
+            'isSinglePage' => $json['isSinglePage'],
+            'isPublic' => $isPublic,
+            'version' => $json['version'],
+            'learningOutcomes' => $learningOutcomes,
+        ],
     ];
     // set response code - 200 OK
     http_response_code(200);
