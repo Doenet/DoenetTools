@@ -394,9 +394,11 @@ export default function GradebookStudentAssignmentView() {
       <div style={{ marginLeft: "18px" }}>
         <b>Gradebook for {studentName}</b>
       </div>
-      <div style={{ marginLeft: "18px" }}>
-        <b>Section {section}</b>
-      </div>
+      {section != "" && (
+        <div style={{ marginLeft: "18px" }}>
+          <b>Section {section}</b>
+        </div>
+      )}
       <div style={{ paddingLeft: "18px" }}>
         <b>{label}</b>
       </div>

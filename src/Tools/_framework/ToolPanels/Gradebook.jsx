@@ -210,6 +210,22 @@ export const studentData = selector({
   get: ({ get }) => {
     let data = get(studentDataQuery);
     let students = {};
+    let noStudentHasASection = true;
+    for (let row of data) {
+      let [
+        userId,
+        firstName,
+        lastName,
+        courseCredit,
+        courseGrade,
+        overrideCourseGrade,
+        section,
+      ] = row;
+      if (section != "") {
+        noStudentHasASection = false;
+        break;
+      }
+    }
     for (let row of data) {
       let [
         userId,
@@ -228,6 +244,7 @@ export const studentData = selector({
         courseGrade,
         overrideCourseGrade,
         section,
+        noStudentHasASection,
       };
     }
     return students;
@@ -604,6 +621,10 @@ function GradebookOverview() {
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let students = useRecoilValueLoadable(studentData);
+  let noStudentHasASection =
+    students.contents[Object.keys(students.contents)?.[0]]
+      ?.noStudentHasASection;
+
   let assignments = useRecoilValueLoadable(assignmentData);
   let overview = useRecoilValueLoadable(overviewData);
   let { canViewAndModifyGrades } = useRecoilValue(
@@ -641,12 +662,14 @@ function GradebookOverview() {
     accessor: "name",
     Footer: "Possible Points",
   });
-  overviewTable.headers.push({
-    Header: "Section",
-    accessor: "section",
-    Footer: "",
-    disableFilters: true,
-  });
+  if (!noStudentHasASection) {
+    overviewTable.headers.push({
+      Header: "Section",
+      accessor: "section",
+      Footer: "",
+      disableFilters: true,
+    });
+  }
 
   let sortedAssignments = Object.entries(assignments.contents);
   sortedAssignments.sort((a, b) => (a[1].sortOrder < b[1].sortOrder ? -1 : 1));
@@ -806,7 +829,9 @@ function GradebookOverview() {
         {name}{" "}
       </a>
     );
-    row["section"] = section;
+    if (!noStudentHasASection) {
+      row["section"] = section;
+    }
 
     let totalScore = 0;
 
