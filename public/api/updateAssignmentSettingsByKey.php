@@ -6,12 +6,15 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "baseModel.php";
 include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
+
+error_log("DEBUG updateAssignmentSettingsByKey Request parameters: " . print_r($_POST, true));
 
 $response_arr = ["success" => true];
 try {
@@ -113,11 +116,8 @@ $updates = implode(
         WHERE doenetId='$doenetId'
         AND courseId='$courseId'
     ";
-    $result = $conn->query($sql);
 
-    if ($result == false) {
-      throw new Exception("Database error.");
-    }
+    Base_Model::runQuery($conn, $sql);
   }
 
     // set response code - 200 OK
