@@ -221,7 +221,7 @@ export const studentData = selector({
         overrideCourseGrade,
         section,
       ] = row;
-      if (section != "") {
+      if (section) {
         noStudentHasASection = false;
         break;
       }
