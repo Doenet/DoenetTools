@@ -6,12 +6,15 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "baseModel.php";
 include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
+
+error_log("DEBUG updateContentSettingsByKey Request parameters: " . print_r($_POST, true));
 
 $response_arr = ["success" => true];
 try {
@@ -95,7 +98,8 @@ if(array_key_exists("learningOutcomes", $_POST)) {
   SET learningOutcomes=JSON_MERGE('[]','$textLearningOutcomes')
   WHERE doenetId = '$doenetId'
   ";
-  $conn->query($sql);
+
+  Base_Model::runQuery($conn, $sql);
 
 }else{
 
@@ -121,12 +125,8 @@ if(array_key_exists("learningOutcomes", $_POST)) {
           WHERE doenetId='$doenetId'
           AND courseId='$courseId'
       ";
-      $result = $conn->query($sql);
-  
-  
-      if ($result == false) {
-        throw new Exception("Database error.");
-      }
+
+      Base_Model::runQuery($conn, $sql);
     }
 
 }
