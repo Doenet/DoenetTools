@@ -1,85 +1,87 @@
 import React, { useRef } from "react";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
-  Box,
   Button,
-  ButtonGroup,
-  Card,
-  CardBody,
   Center,
-  Checkbox,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Grid,
   GridItem,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Link,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Progress,
-  Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Table,
   TableCaption,
   TableContainer,
-  Tabs,
-  Tag,
   Tbody,
   Td,
   Text,
   Th,
   Thead,
-  Tooltip,
   Tr,
-  VStack,
-  useDisclosure,
-  useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
 import axios from "axios";
 import { pageToolViewAtom } from "../NewToolRoot";
+import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 
 export async function loader({ params }) {
   const doenetId = params.doenetId;
   try {
-    const { data: surveyData } = await axios.get(
-      `/api/getSurveyList.php?doenetId=${doenetId}`,
+    const { data } = await axios.get(
+      `/api/getSurveyData.php?doenetId=${doenetId}`,
     );
-    const { data, courseId } = surveyData;
+    const { responses, courseId, label } = data;
+
+    let columns = ["User's Name", "Email", "Student Id"];
+
+    let svars_arr = [];
+    for (let svObj of responses) {
+      let svars = JSON.parse(svObj.stateVariables, serializedComponentsReviver);
+      svars_arr.push(svars);
+      // console.log("svars", svars);
+      for (let key of Object.keys(svars)) {
+        if (!columns.includes(key)) {
+          let value = svars[key];
+          if (
+            value?.immediateValue ||
+            value?.value ||
+            value?.allSelectedIndices
+          ) {
+            columns.push(key);
+          }
+        }
+      }
+    }
+    let rows = [];
+    for (let [i, svars] of Object.entries(svars_arr)) {
+      const response = responses[i];
+      let row = [
+        `${response.firstName} ${response.lastName}`,
+        response.email,
+        response.studentId,
+      ];
+      for (let [i, key] of Object.entries(columns)) {
+        if (i > 2) {
+          let value = svars[key];
+          let response = "N/A";
+          if (value?.immediateValue) {
+            response = value.immediateValue;
+          } else if (value?.value) {
+            response = value.value;
+          } else if (value?.allSelectedIndices) {
+            response = value.allSelectedIndices[0];
+          }
+          row.push(response);
+        }
+      }
+      rows.push(row);
+    }
+
     return {
       courseId,
       doenetId,
-      data,
+      columns,
+      rows,
+      label,
     };
   } catch (e) {
     let message = e.message;
@@ -92,7 +94,7 @@ export async function loader({ params }) {
 }
 
 export function SurveyResults() {
-  const { courseId, doenetId, data } = useLoaderData();
+  const { courseId, doenetId, columns, rows, label } = useLoaderData();
 
   let location = useLocation();
 
@@ -109,19 +111,6 @@ export function SurveyResults() {
     location.href = newHref;
     navigate(newHref);
   }
-
-  //Optimistic UI
-  // let effectiveLabel = activityData.pageLabel;
-  // if (activityData.isSinglePage) {
-  //   effectiveLabel = activityData.label;
-  //   if (fetcher.data?._action == "update label") {
-  //     effectiveLabel = fetcher.data.label;
-  //   }
-  // } else {
-  //   if (fetcher.data?._action == "update page label") {
-  //     effectiveLabel = fetcher.data.pageLabel;
-  //   }
-  // }
 
   return (
     <>
@@ -158,7 +147,7 @@ export function SurveyResults() {
           >
             <GridItem area="leftHeader">
               <Text mt="10px" ml="10px">
-                Survey Results for
+                Survey Results for <b>{label}</b>
               </Text>
             </GridItem>
             {/* <GridItem area="menus"></GridItem> */}
@@ -185,55 +174,31 @@ export function SurveyResults() {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
-          {/* <Center mt="40px">
-            <TableContainer w="400px" maxWidth="850px">
+          <Center mt="40px">
+            <TableContainer width="90%">
               <Table variant="simple" size="sm">
-                <TableCaption>All Assigned Activities</TableCaption>
+                <TableCaption>All Results</TableCaption>
                 <Thead>
                   <Tr>
-                    <Th>Activity</Th>
-                    <Th></Th>
+                    {columns.map((column, i) => {
+                      return <Th key={`header${i}`}>{column}</Th>;
+                    })}
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {activities.map((activity, i) => {
+                  {rows.map((row, i) => {
                     return (
-                      <Tr key={`tr${activity.doenetId}`}>
-                        <Td>{activity.label}</Td>
-                        <Td>
-                          <Menu>
-                            <MenuButton
-                              as={IconButton}
-                              size="xs"
-                              aria-label="Options"
-                              icon={<GoKebabHorizontal />}
-                              variant="outline"
-                            />
-                            <MenuList>
-                              <MenuItem
-                                as="a"
-                                href={`/surveyResults/${activity.doenetId}`}
-                                target="_blank"
-                              >
-                                Open Survey Results
-                              </MenuItem>
-                              <MenuItem
-                                as="a"
-                                href={`https://doenet.shinyapps.io/analyzer/?data=${activity.doenetId}`}
-                                target="_blank"
-                              >
-                                Open Data Analysis
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Td>
+                      <Tr key={`tr${i}`}>
+                        {row.map((info, i2) => {
+                          return <Td key={`cell${(i, i2)}`}>{info}</Td>;
+                        })}
                       </Tr>
                     );
                   })}
                 </Tbody>
               </Table>
             </TableContainer>
-          </Center> */}
+          </Center>
         </GridItem>
       </Grid>
     </>

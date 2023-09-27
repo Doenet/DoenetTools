@@ -407,7 +407,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/surveyresults/:courseId",
+    path: "/surveyresults/:doenetId",
     loader: surveyResultsLoader,
     element: (
       <ChakraProvider theme={theme}>

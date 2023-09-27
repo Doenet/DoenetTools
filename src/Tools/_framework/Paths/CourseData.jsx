@@ -1,68 +1,26 @@
 import React, { useRef } from "react";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
-  Box,
   Button,
-  ButtonGroup,
-  Card,
-  CardBody,
   Center,
-  Checkbox,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Grid,
   GridItem,
-  HStack,
-  Icon,
   IconButton,
-  Image,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Progress,
-  Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Table,
   TableCaption,
   TableContainer,
-  Tabs,
-  Tag,
   Tbody,
   Td,
   Text,
   Th,
   Thead,
-  Tooltip,
   Tr,
-  VStack,
-  useDisclosure,
-  useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
@@ -109,19 +67,6 @@ export function CourseData() {
     location.href = newHref;
     navigate(newHref);
   }
-
-  //Optimistic UI
-  // let effectiveLabel = activityData.pageLabel;
-  // if (activityData.isSinglePage) {
-  //   effectiveLabel = activityData.label;
-  //   if (fetcher.data?._action == "update label") {
-  //     effectiveLabel = fetcher.data.label;
-  //   }
-  // } else {
-  //   if (fetcher.data?._action == "update page label") {
-  //     effectiveLabel = fetcher.data.pageLabel;
-  //   }
-  // }
 
   return (
     <>
