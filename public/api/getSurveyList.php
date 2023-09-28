@@ -16,6 +16,11 @@ $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 $response_arr;
 try {
+  
+  if ($courseId == ""){
+    throw new Exception("Internal Error: missing courseId.");
+  }
+
   $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
     $conn,
     $userId,
