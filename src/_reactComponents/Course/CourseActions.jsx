@@ -621,7 +621,7 @@ export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
               sectionDoenetIdsInSection.push(doenetId);
             }
           } else {
-            break;
+            continue;
           }
         }
       }
