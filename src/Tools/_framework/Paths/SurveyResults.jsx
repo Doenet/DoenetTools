@@ -183,10 +183,10 @@ export function SurveyResults() {
                     size="xs"
                     onClick={() => {
                       let filename = `${label}.csv`;
-                      let csvText = columns.join(",") + "\n";
+                      let csvText = '"' + columns.join('","') + '"\n';
 
                       rows.forEach((row) => {
-                        csvText += row.join(",") + "\n";
+                        csvText += '"' + row.join('","') + '"\n';
                       });
 
                       var element = document.createElement("a");
