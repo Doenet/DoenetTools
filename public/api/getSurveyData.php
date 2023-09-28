@@ -50,6 +50,7 @@ if ($requestorPermissions['dataAccessPermission'] != 'Identified') {
   FROM 
     (SELECT userId, MAX(id) AS max_id
     FROM page_state
+    WHERE doenetId = '$doenetId'
     GROUP BY userId) AS max_ps
   JOIN page_state AS ps
     ON ps.userId = max_ps.userId AND ps.id = max_ps.max_id
