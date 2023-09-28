@@ -177,7 +177,33 @@ export function SurveyResults() {
           <Center mt="40px">
             <TableContainer width="90%">
               <Table variant="simple" size="sm">
-                <TableCaption>Latest Results For All Participants</TableCaption>
+                <TableCaption>
+                  Latest Results For All Participants{" "}
+                  <Button
+                    size="xs"
+                    onClick={() => {
+                      let filename = `${label}.csv`;
+                      let csvText = columns.join(",") + "\n";
+
+                      rows.forEach((row) => {
+                        csvText += row.join(",") + "\n";
+                      });
+
+                      var element = document.createElement("a");
+                      element.setAttribute(
+                        "href",
+                        "data:text/plain;charset=utf-8, " +
+                          encodeURIComponent(csvText),
+                      );
+                      element.setAttribute("download", filename);
+                      document.body.appendChild(element);
+                      element.click();
+                      document.body.removeChild(element);
+                    }}
+                  >
+                    Download CSV
+                  </Button>
+                </TableCaption>
                 <Thead>
                   <Tr>
                     {columns.map((column, i) => {
