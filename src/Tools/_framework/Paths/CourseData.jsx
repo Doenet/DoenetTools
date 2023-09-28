@@ -131,12 +131,16 @@ export function CourseData() {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="scroll">
           <Center mt="40px">
-            <TableContainer w="400px" maxWidth="850px">
-              <Table variant="simple" size="sm">
+            <TableContainer w="90%">
+              <Table
+                variant="simple"
+                size="sm"
+                __css={{ "table-layout": "fixed", width: "full" }}
+              >
                 <TableCaption>All Assigned Activities</TableCaption>
                 <Thead>
                   <Tr>
-                    <Th>Activity</Th>
+                    <Th width="80%">Activity</Th>
                     <Th></Th>
                   </Tr>
                 </Thead>
@@ -144,7 +148,7 @@ export function CourseData() {
                   {activities.map((activity, i) => {
                     return (
                       <Tr key={`tr${activity.doenetId}`}>
-                        <Td>{activity.label}</Td>
+                        <Td isTruncated>{activity.label}</Td>
                         <Td>
                           <Menu>
                             <MenuButton

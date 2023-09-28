@@ -181,7 +181,11 @@ export function SurveyResults() {
                 <Thead>
                   <Tr>
                     {columns.map((column, i) => {
-                      return <Th key={`header${i}`}>{column}</Th>;
+                      return (
+                        <Th maxW="100px" isTruncated key={`header${i}`}>
+                          {column}
+                        </Th>
+                      );
                     })}
                   </Tr>
                 </Thead>
