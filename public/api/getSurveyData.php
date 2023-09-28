@@ -17,6 +17,10 @@ $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $response_arr;
 try {
 
+  if ($doenetId == ""){
+    throw new Exception("Internal Error: missing doenetId.");
+  }
+  
   $sql= "
   SELECT courseId,
   label
