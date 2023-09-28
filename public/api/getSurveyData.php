@@ -1,75 +1,67 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
-include "permissionsAndSettingsForOneCourseFunction.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-
-$jwtArray = include "jwtArray.php";
+$jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
-$success = TRUE;
-$message = "";
 
-if ($doenetId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing doenetId';
-}
+$response_arr;
+try {
 
-$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
-
-if ($permissions["dataAccessPermission"] != 'Identified'){
-  $success = FALSE;
-  $message = "You need permission to view data";
-}
-
-//Check if they have view rights
-if ($success){
-
-  $sql = "
-  SELECT du.role 
-  FROM drive_user AS du
-  LEFT JOIN drive_content AS dc
-  ON dc.driveId = du.driveId
-  WHERE du.userId = '$userId'
-  AND dc.doenetId = '$doenetId'
+  $sql= "
+  SELECT courseId,
+  label
+  FROM course_content
+  WHERE doenetId='$doenetId'
   ";
-
-  $result = $conn->query($sql);  
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
   $row = $result->fetch_assoc();
-  $role = $row['role'];
-
-  //Students should only see their own data
-  if ($role != 'Instructor' && 
-      $role != 'Owner'
-  ){
-    $success = FALSE;
-    $message = "No access to view survey.";
-  }
-
+  $courseId = $row['courseId'];
+  $label = $row['label'];
+}else{
+  throw new Exception("Activity $doenetId not found.");
 }
 
-//Get Survey data
-if ($success){
+  $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
+    $conn,
+    $userId,
+    $courseId
+);
+
+if ($requestorPermissions['dataAccessPermission'] != 'Identified') {
+    throw new Exception("You need to have Identified data access in order to view data.");
+}
+
   $sql = "SELECT u.firstName,
   u.lastName,
   u.email,
   cu.externalId,
-  ci.stateVariables
-  FROM content_interactions AS ci
+  ps.coreState
+  FROM 
+    (SELECT userId, MAX(id) AS max_id
+    FROM page_state
+    WHERE doenetId = '$doenetId'
+    GROUP BY userId) AS max_ps
+  JOIN page_state AS ps
+    ON ps.userId = max_ps.userId AND ps.id = max_ps.max_id
   LEFT JOIN assignment AS a
-  ON a.doenetId = ci.doenetId
+    ON a.doenetId = ps.doenetId
   LEFT JOIN course_user AS cu
-  ON cu.userId = ci.userId AND a.courseId = cu.courseId
+    ON cu.userId = ps.userId AND a.courseId = cu.courseId
   LEFT JOIN user As u
-  ON ci.userId = u.userId
-  WHERE ci.doenetId = '$doenetId'
+    ON ps.userId = u.userId
+  WHERE ps.doenetId = '$doenetId'
+  ORDER BY ps.id;
   ";
 
 $result = $conn->query($sql); 
@@ -81,24 +73,32 @@ if ($result->num_rows > 0) {
                 "lastName"=>$row['lastName'],
                 "studentId"=>$row['externalId'],
                 "email"=>$row['email'],
-                "stateVariables"=>$row['stateVariables'],
+                "stateVariables"=>$row['coreState'],
       ));
     }
 }
+
+
+$response_arr = [
+  'success' => true,
+  'courseId' => $courseId,
+  'label' => $label,
+  'responses' => $responses,
+];
+
+    // set response code - 200 OK
+    http_response_code(200);
+
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+    http_response_code(400);
+
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
 }
-
-$response_arr = array(
-  "success"=>$success,
-  "message"=>$message,
-  "responses"=>$responses,
-  );
-
-
-// set response code - 200 OK
-http_response_code(200);
-
-// make it json format
-echo json_encode($response_arr);
-$conn->close();
-
 ?>
