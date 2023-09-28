@@ -177,7 +177,7 @@ export function SurveyResults() {
           <Center mt="40px">
             <TableContainer width="90%">
               <Table variant="simple" size="sm">
-                <TableCaption>All Results</TableCaption>
+                <TableCaption>Latest Results For All Participants</TableCaption>
                 <Thead>
                   <Tr>
                     {columns.map((column, i) => {
