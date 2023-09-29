@@ -15,6 +15,9 @@ $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 $response_arr;
 $contributors = [];
 try {
+    if ($doenetId == ''){
+        throw new Exception("Internal Error: missing doenetId");
+    }
 
     //Is this the portfolio owner?
     $sql = "

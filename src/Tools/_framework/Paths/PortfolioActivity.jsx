@@ -202,77 +202,66 @@ export async function loader({ params }) {
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
+  const _action = formObj._action;
 
-  //Don't let label be blank
+  //Don't let label be blank and trim it
   let label = formObj?.label?.trim();
   if (label == "") {
     label = "Untitled";
   }
 
-  // console.log("formObj", formObj, params.doenetId);
-  if (formObj._action == "update label") {
-    let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
-    );
-    let respObj = await response.json();
-  }
+  try {
+    if (_action == "update label") {
+      await axios.get(
+        `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
+      );
+      return { success: true, _action };
+    }
 
-  if (formObj._action == "update general") {
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
+    if (_action == "update general") {
+      let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+      await axios.post("/api/updatePortfolioActivitySettings.php", {
         label,
         imagePath: formObj.imagePath,
         public: formObj.public,
         doenetId: params.doenetId,
         learningOutcomes,
-      },
-    );
-    return {
-      label,
-      imagePath: formObj.imagePath,
-      public: formObj.public,
-      doenetId: params.doenetId,
-      learningOutcomes,
-    };
-  }
-  if (formObj._action == "update description") {
-    let { data } = await axios.get("/api/updateFileDescription.php", {
-      params: {
-        doenetId: formObj.doenetId,
-        cid: formObj.cid,
-        description: formObj.description,
-      },
-    });
-  }
-  if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile.php", {
-      params: { doenetId: formObj.doenetId, cid: formObj.cid },
-    });
+      });
+      return {
+        label,
+        imagePath: formObj.imagePath,
+        public: formObj.public,
+        doenetId: params.doenetId,
+        learningOutcomes,
+      };
+    }
+    if (_action == "update description") {
+      await axios.get("/api/updateFileDescription.php", {
+        params: {
+          doenetId: formObj.doenetId,
+          cid: formObj.cid,
+          description: formObj.description,
+        },
+      });
+    }
+    if (_action == "remove file") {
+      await axios.get("/api/deleteFile.php", {
+        params: { doenetId: formObj.doenetId, cid: formObj.cid },
+      });
 
-    return {
-      _action: formObj._action,
-      fileRemovedCid: formObj.cid,
-      success: resp.data.success,
-    };
+      return {
+        success: true,
+        _action,
+        fileRemovedCid: formObj.cid,
+      };
+    }
+
+    if (_action == "noop") {
+      return { nothingToReturn: true };
+    }
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
   }
-
-  if (formObj._action == "noop") {
-    // console.log("noop");
-  }
-
-  return { nothingToReturn: true };
-  // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  // );
-  // let respObj = await response.json();
-
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(
-  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  // );
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed

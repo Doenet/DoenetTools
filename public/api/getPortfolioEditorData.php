@@ -15,8 +15,14 @@ $publicEditor = mysqli_real_escape_string($conn, $_REQUEST['publicEditor']);
 
 $response_arr;
 try {
+    if ($doenetId == ''){
+        throw new Exception("Internal Error: missing doenetId");
+    }
+    if ($publicEditor == ''){
+        throw new Exception("Internal Error: missing publicEditor");
+    }
 
-    //Check if it's in there portfolio
+    //Check if it's in their portfolio
 
     $sql = "SELECT 
     cc.isPublic,
