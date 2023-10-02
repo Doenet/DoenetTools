@@ -10,9 +10,11 @@ import { cesc } from "../../_utils/url";
 export const BoardContext = createContext();
 
 export default React.memo(function Graph(props) {
-  let { name, id, SVs, children, actions, callAction } =
+  let { name, id, SVs, children, ignoreUpdate, actions, callAction } =
     useDoenetRenderer(props);
   // console.log({ name, id, SVs, children, actions })
+
+  Graph.baseStateVariable = "boundingbox";
 
   const [board, setBoard] = useState(null);
 
@@ -111,6 +113,7 @@ export default React.memo(function Graph(props) {
           callAction({
             action: actions.changeAxisLimits,
             args: { xmin, xmax, ymin, ymax },
+            baseVariableValue: newBoundingbox,
           });
         }
       }
@@ -406,20 +409,24 @@ export default React.memo(function Graph(props) {
       previousDimensions.current = currentDimensions;
     }
 
-    let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
+    // since baseStateVariable is boundingbox,
+    // ignoreUpdate means ignore change in boundingbox
+    if (!ignoreUpdate) {
+      let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
 
-    if (boundingbox.some((v, i) => v !== previousBoundingbox.current[i])) {
-      settingBoundingBox.current = true;
-      board.setBoundingBox(boundingbox);
-      settingBoundingBox.current = false;
-      // seem to need to call this again to get the ticks correct
-      board.fullUpdate();
+      if (boundingbox.some((v, i) => v !== previousBoundingbox.current[i])) {
+        settingBoundingBox.current = true;
+        board.setBoundingBox(boundingbox);
+        settingBoundingBox.current = false;
+        // seem to need to call this again to get the ticks correct
+        board.fullUpdate();
 
-      if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[id] = board;
+        if (board.updateQuality === board.BOARD_QUALITY_LOW) {
+          board.itemsRenderedLowQuality[id] = board;
+        }
+
+        previousBoundingbox.current = boundingbox;
       }
-
-      previousBoundingbox.current = boundingbox;
     }
   }
 
