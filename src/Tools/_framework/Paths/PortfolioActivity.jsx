@@ -84,6 +84,7 @@ import { GoKebabVertical } from "react-icons/go";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
+import { useBreakpointValue } from "@chakra-ui/media-query";
 
 export async function loader({ params }) {
   let doenetId = params.doenetId;
@@ -1758,27 +1759,79 @@ const clamp = (
 };
 
 const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
+  const STACK_BREAKPOINT = 768; //Chakra medium value
   const centerWidth = "10px";
   const wrapperRef = useRef();
-  const [hideLeft, setHideLeft] = useState(false);
-  const [hideRight, setHideRight] = useState(false);
+
+  const direction = useBreakpointValue({
+    base: "vertical",
+    ["md"]: "horizontal",
+  });
+
+  function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
+    // console.log("browserWidth", browserWidth);
+    //Not in edit mode or smaller than the stacked layout breakpoint
+    if (!editMode || browserWidth < STACK_BREAKPOINT) {
+      return;
+    }
+    //Lock to not squish either side too much
+    if (leftPixels < 150) {
+      leftPixels = 150;
+    }
+    if (rightPixels < 300) {
+      leftPixels = browserWidth - 300;
+    }
+    let proportion = clamp(leftPixels / browserWidth, 0, 1);
+    //using a ref to save without react refresh
+    wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
+      1 - proportion
+    }fr`;
+    wrapperRef.current.proportion = proportion;
+  }
+
+  //Listen to resize to enforce min sizes
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  });
 
   useEffect(() => {
     let templateAreas = `"viewer"`;
     let templateColumns = `1fr`;
+    let templateRows = `1fr`;
     if (editMode) {
-      templateAreas = `"viewer middleGutter textEditor"`;
-      templateColumns = `.5fr ${centerWidth} .5fr`;
+      if (direction == "horizontal") {
+        templateAreas = `"viewer middleGutter textEditor"`;
+        templateColumns = `.5fr ${centerWidth} .5fr`;
+        templateRows = `1fr`;
+      } else {
+        templateAreas = `"viewer" "textEditor"`;
+        templateColumns = `1fr`;
+        templateRows = `.5fr .5fr`;
+      }
     }
 
     wrapperRef.current.style.gridTemplateColumns = templateColumns;
     wrapperRef.current.style.gridTemplateAreas = templateAreas;
-  }, [editMode]);
+    wrapperRef.current.style.gridTemplateRows = templateRows;
+  }, [editMode, direction]);
 
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
     wrapperRef.current.handleDragged = false;
+    wrapperRef.current.proportion = 0.5;
   }, []);
+
+  const handleWindowResize = () => {
+    const browserWidth = wrapperRef.current.clientWidth;
+    const currentProportion = wrapperRef.current.proportion;
+    let leftPixels = currentProportion * browserWidth;
+    let rightPixels = wrapperRef.current.clientWidth - leftPixels;
+
+    updateWrapper({ leftPixels, rightPixels, browserWidth });
+  };
 
   const onMouseDown = (event) => {
     event.preventDefault();
@@ -1791,36 +1844,11 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
       event.preventDefault();
       wrapperRef.current.handleDragged = true;
 
-      let proportion = clamp(
-        (event.clientX - wrapperRef.current.offsetLeft) /
-          wrapperRef.current.clientWidth,
-        0,
-        1,
-      );
-      const leftPixels = proportion * wrapperRef.current.clientWidth;
-      const rightPixels = wrapperRef.current.clientWidth - leftPixels;
-      if (leftPixels < 150 && !hideLeft) {
-        setHideLeft(true);
-      } else if (leftPixels >= 150 && hideLeft) {
-        setHideLeft(false);
-      }
-      if (leftPixels < 150) {
-        proportion = 0;
-      }
-      if (rightPixels < 300 && !hideRight) {
-        setHideRight(true);
-      } else if (rightPixels >= 300 && hideRight) {
-        setHideRight(false);
-      }
-      if (rightPixels < 300) {
-        proportion = 1;
-      }
+      let leftPixels = event.clientX - wrapperRef.current.offsetLeft;
+      let rightPixels = wrapperRef.current.clientWidth - leftPixels;
+      const browserWidth = wrapperRef.current.clientWidth;
 
-      //using a ref to save without react refresh
-      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
-        1 - proportion
-      }fr`;
-      wrapperRef.current.proportion = proportion;
+      updateWrapper({ leftPixels, rightPixels, browserWidth });
     }
   };
 
@@ -1851,6 +1879,7 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
       height={`calc(100vh - 40px)`}
       templateAreas={`"viewer"`}
       templateColumns={`1fr`}
+      templateRows={`1fr`}
       overflow="hidden"
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
@@ -1864,7 +1893,7 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
         maxWidth="850px"
         overflow="hidden"
       >
-        {hideLeft ? null : viewerPanel}
+        {viewerPanel}
       </GridItem>
       {editMode && (
         <>
@@ -1899,7 +1928,7 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
             background="doenet.lightBlue"
             alignSelf="start"
           >
-            {hideRight ? null : editorPanel}
+            {editorPanel}
           </GridItem>
         </>
       )}
