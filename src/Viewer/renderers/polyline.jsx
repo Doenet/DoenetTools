@@ -194,14 +194,16 @@ export default React.memo(function Polyline(props) {
     polylineJXG.current = null;
 
     for (let i = 0; i < SVs.numVertices; i++) {
-      pointsJXG.current[i].off("drag");
-      pointsJXG.current[i].off("down");
-      pointsJXG.current[i].off("hit");
-      pointsJXG.current[i].off("up");
-      pointsJXG.current[i].off("keyfocusout");
-      pointsJXG.current[i].off("keydown");
-      board.removeObject(pointsJXG.current[i]);
-      delete pointsJXG.current[i];
+      if (pointsJXG.current[i]) {
+        pointsJXG.current[i].off("drag");
+        pointsJXG.current[i].off("down");
+        pointsJXG.current[i].off("hit");
+        pointsJXG.current[i].off("up");
+        pointsJXG.current[i].off("keyfocusout");
+        pointsJXG.current[i].off("keydown");
+        board.removeObject(pointsJXG.current[i]);
+        delete pointsJXG.current[i];
+      }
     }
   }
 
