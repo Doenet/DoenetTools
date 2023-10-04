@@ -1307,12 +1307,12 @@ export function PortfolioActivity() {
   const {
     success,
     message,
-    pageId,
-    doenetId,
+    // pageId,
+    // doenetId,
     publicDoenetML,
     draftDoenetML,
     label,
-    courseId,
+    // courseId,
     // isDeleted,
     // isBanned,
     // isPublic,
@@ -1320,7 +1320,7 @@ export function PortfolioActivity() {
     lastName,
     email,
     platform,
-    lastKnownCid,
+    // lastKnownCid,
     activityData,
   } = useLoaderData();
 
@@ -1332,16 +1332,10 @@ export function PortfolioActivity() {
 
   const [editMode, setEditMode] = useState(false);
 
-  let editorRef = useRef(null);
-  let timeout = useRef(null);
   //Warning: this will reboot codeMirror Editor sending cursor to the top
   let initializeEditorDoenetML = useRef(draftDoenetML);
   let textEditorDoenetML = useRef(draftDoenetML);
 
-  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
-  let [codeChanged, setCodeChanged] = useState(false);
-  const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
-  codeChangedRef.current = codeChanged;
   const [viewerDoenetML, setViewerDoenetML] = useState(draftDoenetML);
   const [layer, setLayer] = useState("draft");
 
@@ -1364,64 +1358,7 @@ export function PortfolioActivity() {
   );
   const errorsObjs = [...errorsAndWarnings.errors];
 
-  let lastKnownCidRef = useRef(lastKnownCid);
-  let backupOldDraft = useRef(true);
-  let inTheMiddleOfSaving = useRef(false);
-  let postponedSaving = useRef(false);
-
-  const { saveDraft } = useSaveDraft();
-
-  const handleSaveDraft = useCallback(async () => {
-    const doenetML = textEditorDoenetML.current;
-    const lastKnownCid = lastKnownCidRef.current;
-    const backup = backupOldDraft.current;
-
-    if (inTheMiddleOfSaving.current) {
-      postponedSaving.current = true;
-    } else {
-      inTheMiddleOfSaving.current = true;
-      let result = await saveDraft({
-        pageId,
-        courseId,
-        backup,
-        lastKnownCid,
-        doenetML,
-      });
-
-      if (result.success) {
-        backupOldDraft.current = false;
-        lastKnownCidRef.current = result.cid;
-      }
-      inTheMiddleOfSaving.current = false;
-      timeout.current = null;
-
-      //If we postponed then potentially
-      //some changes were saved again while we were saving
-      //so save again
-      if (postponedSaving.current) {
-        postponedSaving.current = false;
-        handleSaveDraft();
-      }
-    }
-  }, [pageId, courseId, saveDraft]);
-
   useEffect(() => {
-    const handleEditorKeyDown = (event) => {
-      if (
-        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
-        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
-      ) {
-        event.preventDefault();
-        event.stopPropagation();
-        setViewerDoenetML(textEditorDoenetML.current);
-        setCodeChanged(false);
-        clearTimeout(timeout.current);
-        handleSaveDraft();
-        // Log the currently focused element
-        console.log(document.activeElement);
-      }
-    };
-
     const handleDocumentKeyDown = (event) => {
       if (
         (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
@@ -1438,16 +1375,13 @@ export function PortfolioActivity() {
     };
 
     window.addEventListener("keydown", handleDocumentKeyDown);
-    window.addEventListener("keydown", handleEditorKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleDocumentKeyDown);
-      window.removeEventListener("keydown", handleEditorKeyDown);
     };
   }, [
     textEditorDoenetML,
     platform,
-    handleSaveDraft,
     controlsOnOpen,
     controlsOnClose,
     controlsAreOpen,
@@ -1456,111 +1390,6 @@ export function PortfolioActivity() {
   useEffect(() => {
     document.title = `${label} - Doenet`;
   }, [label]);
-
-  let editorPanel = (
-    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
-      <HStack w="100%" h="32px" mb="2px" justifyContent="flex-end">
-        <Box>
-          <Tooltip
-            hasArrow
-            label={
-              platform == "Mac"
-                ? "Updates Viewer cmd+s"
-                : "Updates Viewer ctrl+s"
-            }
-          >
-            <Button
-              size="sm"
-              variant="outline"
-              data-test="Viewer Update Button"
-              bg="doenet.canvas"
-              leftIcon={<RxUpdate />}
-              rightIcon={
-                codeChanged ? (
-                  <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
-                ) : (
-                  ""
-                )
-              }
-              isDisabled={!codeChanged}
-              onClick={() => {
-                setViewerDoenetML(textEditorDoenetML.current);
-                setCodeChanged(false);
-                clearTimeout(timeout.current);
-                handleSaveDraft();
-              }}
-            >
-              Update
-            </Button>
-          </Tooltip>
-        </Box>
-        <Link
-          borderRadius="lg"
-          p="4px 5px 0px 5px"
-          h="32px"
-          bg="#EDF2F7"
-          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
-          isExternal
-          data-test="Documentation Link"
-        >
-          Documentation <ExternalLinkIcon mx="2px" />
-        </Link>
-
-        <Button
-          size="sm"
-          data-test="Edit"
-          rightIcon={<CloseIcon />}
-          onClick={() => {
-            initializeEditorDoenetML.current = textEditorDoenetML.current;
-            setEditMode(false);
-          }}
-        >
-          Close
-        </Button>
-      </HStack>
-
-      <Box
-        top="50px"
-        boxSizing="border-box"
-        background="doenet.canvas"
-        height={`calc(100vh - 84px)`}
-        overflowY="scroll"
-        borderRight="solid 1px"
-        borderTop="solid 1px"
-        borderBottom="solid 1px"
-        borderColor="doenet.mediumGray"
-        w="100%"
-      >
-        <Box height={`calc(100vh - 118px)`} w="100%" overflow="scroll">
-          <CodeMirror
-            editorRef={editorRef}
-            setInternalValueTo={initializeEditorDoenetML.current}
-            onBeforeChange={(value) => {
-              textEditorDoenetML.current = value;
-              setEditorDoenetML(value);
-              if (!codeChangedRef.current) {
-                setCodeChanged(true);
-              }
-              // Debounce save to server at 3 seconds
-              clearTimeout(timeout.current);
-              timeout.current = setTimeout(async function () {
-                handleSaveDraft();
-              }, 3000); //3 seconds
-            }}
-          />
-        </Box>
-
-        <Box bg="doenet.mainGray" h="32px" w="100%">
-          <Flex ml="0px" h="32px" bg="doenet.mainGray" pl="10px" pt="1px">
-            <ErrorWarningPopovers
-              warningsObjs={warningsObjs}
-              errorsObjs={errorsObjs}
-            />
-          </Flex>
-        </Box>
-      </Box>
-    </VStack>
-  );
 
   return (
     <>
@@ -1651,12 +1480,16 @@ export function PortfolioActivity() {
         <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="centerContent">
           <MainContent
-            editorPanel={editorPanel}
             editMode={editMode}
             setEditMode={setEditMode}
             layer={layer}
             setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
             viewerDoenetML={viewerDoenetML}
+            textEditorDoenetML={textEditorDoenetML}
+            setViewerDoenetML={setViewerDoenetML}
+            initializeEditorDoenetML={initializeEditorDoenetML}
+            warningsObjs={warningsObjs}
+            errorsObjs={errorsObjs}
           />
         </GridItem>
       </Grid>
@@ -1761,6 +1594,200 @@ function ViewerPanel({
   );
 }
 
+function EditorPanel({
+  textEditorDoenetML,
+  setViewerDoenetML,
+  initializeEditorDoenetML,
+  setEditMode,
+  warningsObjs,
+  errorsObjs,
+}) {
+  const {
+    pageId,
+    // doenetId,
+    // publicDoenetML,
+    // draftDoenetML,
+    courseId,
+    platform,
+    lastKnownCid,
+  } = useLoaderData();
+  let [codeChanged, setCodeChanged] = useState(false);
+  const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
+  codeChangedRef.current = codeChanged;
+  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
+
+  let editorRef = useRef(null);
+  let timeout = useRef(null);
+
+  let lastKnownCidRef = useRef(lastKnownCid);
+  let backupOldDraft = useRef(true);
+  let inTheMiddleOfSaving = useRef(false);
+  let postponedSaving = useRef(false);
+
+  const { saveDraft } = useSaveDraft();
+
+  const handleSaveDraft = useCallback(async () => {
+    const doenetML = textEditorDoenetML.current;
+    const lastKnownCid = lastKnownCidRef.current;
+    const backup = backupOldDraft.current;
+
+    if (inTheMiddleOfSaving.current) {
+      postponedSaving.current = true;
+    } else {
+      inTheMiddleOfSaving.current = true;
+      let result = await saveDraft({
+        pageId,
+        courseId,
+        backup,
+        lastKnownCid,
+        doenetML,
+      });
+
+      if (result.success) {
+        backupOldDraft.current = false;
+        lastKnownCidRef.current = result.cid;
+      }
+      inTheMiddleOfSaving.current = false;
+      timeout.current = null;
+
+      //If we postponed then potentially
+      //some changes were saved again while we were saving
+      //so save again
+      if (postponedSaving.current) {
+        postponedSaving.current = false;
+        handleSaveDraft();
+      }
+    }
+  }, [pageId, courseId, saveDraft, textEditorDoenetML]);
+
+  useEffect(() => {
+    const handleEditorKeyDown = (event) => {
+      if (
+        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
+        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        setViewerDoenetML(textEditorDoenetML.current);
+        setCodeChanged(false);
+        clearTimeout(timeout.current);
+        handleSaveDraft();
+      }
+    };
+
+    window.addEventListener("keydown", handleEditorKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleEditorKeyDown);
+    };
+  }, [textEditorDoenetML, platform, handleSaveDraft, setViewerDoenetML]);
+
+  return (
+    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
+      <HStack w="100%" h="32px" mb="2px" justifyContent="flex-end">
+        <Box>
+          <Tooltip
+            hasArrow
+            label={
+              platform == "Mac"
+                ? "Updates Viewer cmd+s"
+                : "Updates Viewer ctrl+s"
+            }
+          >
+            <Button
+              size="sm"
+              variant="outline"
+              data-test="Viewer Update Button"
+              bg="doenet.canvas"
+              leftIcon={<RxUpdate />}
+              rightIcon={
+                codeChanged ? (
+                  <WarningTwoIcon color="doenet.mainBlue" fontSize="18px" />
+                ) : (
+                  ""
+                )
+              }
+              isDisabled={!codeChanged}
+              onClick={() => {
+                setViewerDoenetML(textEditorDoenetML.current);
+                setCodeChanged(false);
+                clearTimeout(timeout.current);
+                handleSaveDraft();
+              }}
+            >
+              Update
+            </Button>
+          </Tooltip>
+        </Box>
+        <Link
+          borderRadius="lg"
+          p="4px 5px 0px 5px"
+          h="32px"
+          bg="#EDF2F7"
+          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
+          isExternal
+          data-test="Documentation Link"
+        >
+          Documentation <ExternalLinkIcon mx="2px" />
+        </Link>
+
+        <Button
+          size="sm"
+          data-test="Edit"
+          rightIcon={<CloseIcon />}
+          onClick={() => {
+            initializeEditorDoenetML.current = textEditorDoenetML.current; //Need to save what will be init in the text editor if we return
+            setEditMode(false);
+          }}
+        >
+          Close
+        </Button>
+      </HStack>
+
+      <Box
+        top="50px"
+        boxSizing="border-box"
+        background="doenet.canvas"
+        height={`calc(100vh - 84px)`}
+        overflowY="scroll"
+        borderRight="solid 1px"
+        borderTop="solid 1px"
+        borderBottom="solid 1px"
+        borderColor="doenet.mediumGray"
+        w="100%"
+      >
+        <Box height={`calc(100vh - 118px)`} w="100%" overflow="scroll">
+          <CodeMirror
+            editorRef={editorRef}
+            setInternalValueTo={initializeEditorDoenetML.current}
+            onBeforeChange={(value) => {
+              textEditorDoenetML.current = value;
+              setEditorDoenetML(value);
+              if (!codeChangedRef.current) {
+                setCodeChanged(true);
+              }
+              // Debounce save to server at 3 seconds
+              clearTimeout(timeout.current);
+              timeout.current = setTimeout(async function () {
+                handleSaveDraft();
+              }, 3000); //3 seconds
+            }}
+          />
+        </Box>
+
+        <Box bg="doenet.mainGray" h="32px" w="100%">
+          <Flex ml="0px" h="32px" bg="doenet.mainGray" pl="10px" pt="1px">
+            <ErrorWarningPopovers
+              warningsObjs={warningsObjs}
+              errorsObjs={errorsObjs}
+            />
+          </Flex>
+        </Box>
+      </Box>
+    </VStack>
+  );
+}
+
 const clamp = (
   value,
   min = Number.POSITIVE_INFINITY,
@@ -1771,12 +1798,15 @@ const clamp = (
 
 const MainContent = ({
   layer,
-  viewerPanel,
-  editorPanel,
   editMode,
   setEditMode,
   viewerDoenetML,
   setErrorsAndWarningsCallback,
+  textEditorDoenetML,
+  setViewerDoenetML,
+  initializeEditorDoenetML,
+  warningsObjs,
+  errorsObjs,
 }) => {
   const STACK_BREAKPOINT = 768; //Chakra medium value
   const centerWidth = "10px";
@@ -1912,7 +1942,6 @@ const MainContent = ({
         maxWidth="850px"
         overflow="hidden"
       >
-        {viewerPanel}
         <ViewerPanel
           layer={layer}
           editMode={editMode}
@@ -1954,7 +1983,14 @@ const MainContent = ({
             background="doenet.lightBlue"
             alignSelf="start"
           >
-            {editorPanel}
+            <EditorPanel
+              textEditorDoenetML={textEditorDoenetML}
+              setViewerDoenetML={setViewerDoenetML}
+              initializeEditorDoenetML={initializeEditorDoenetML}
+              setEditMode={setEditMode}
+              warningsObjs={warningsObjs}
+              errorsObjs={errorsObjs}
+            />
           </GridItem>
         </>
       )}
