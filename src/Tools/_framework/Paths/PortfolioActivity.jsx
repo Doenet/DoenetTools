@@ -1332,9 +1332,6 @@ export function PortfolioActivity() {
 
   const [editMode, setEditMode] = useState(false);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
   let editorRef = useRef(null);
   let timeout = useRef(null);
   //Warning: this will reboot codeMirror Editor sending cursor to the top
@@ -1459,92 +1456,6 @@ export function PortfolioActivity() {
   useEffect(() => {
     document.title = `${label} - Doenet`;
   }, [label]);
-
-  const [variants, setVariants] = useState({
-    index: 1,
-    numVariants: 1,
-    allPossibleVariants: ["a"],
-  });
-
-  let viewerPanel = (
-    <VStack mt="0px" height="calc(100vh - 50px)" spacing={0} width="100%">
-      <HStack
-        w="100%"
-        h="32px"
-        mb="2px"
-        justifyContent={variants.numVariants > 1 ? "space-between" : "flex-end"}
-      >
-        {variants.numVariants > 1 && (
-          <VariantSelect
-            size="sm"
-            menuWidth="140px"
-            array={variants.allPossibleVariants}
-            onChange={(index) =>
-              setVariants((prev) => {
-                let next = { ...prev };
-                next.index = index + 1;
-                return next;
-              })
-            }
-          />
-        )}
-        {editMode || layer == "public" ? (
-          <Spacer h="32px" />
-        ) : (
-          <Button
-            size="sm"
-            data-test="Edit"
-            rightIcon={<EditIcon />}
-            onClick={() => {
-              setEditMode(true);
-            }}
-          >
-            Edit
-          </Button>
-        )}
-      </HStack>
-
-      <Box
-        h="calc(100vh - 80px)"
-        background="var(--canvas)"
-        borderWidth="1px"
-        borderStyle="solid"
-        borderColor="doenet.mediumGray"
-        width="100%"
-        overflow="scroll"
-      >
-        <DoenetML
-          key={`ActivityOverviewPageViewer`}
-          doenetML={viewerDoenetML}
-          flags={{
-            showCorrectness: true,
-            solutionDisplayMode: "button",
-            showFeedback: true,
-            showHints: true,
-            autoSubmit: false,
-            allowLoadState: false,
-            allowSaveState: false,
-            allowLocalState: false,
-            allowSaveSubmissions: false,
-            allowSaveEvents: false,
-          }}
-          setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
-          // doenetId={doenetId}
-          attemptNumber={1}
-          idsIncludeActivityId={false}
-          generatedVariantCallback={setVariants}
-          requestedVariantIndex={variants.index}
-          // setIsInErrorState={setIsInErrorState}
-          location={location}
-          navigate={navigate}
-          linkSettings={{
-            viewURL: "/portfolioviewer",
-            editURL: "/publiceditor",
-          }}
-        />
-      </Box>
-    </VStack>
-  );
 
   let editorPanel = (
     <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
@@ -1740,13 +1651,113 @@ export function PortfolioActivity() {
         <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem area="centerContent">
           <MainContent
-            viewerPanel={viewerPanel}
             editorPanel={editorPanel}
             editMode={editMode}
+            setEditMode={setEditMode}
+            layer={layer}
+            setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+            viewerDoenetML={viewerDoenetML}
           />
         </GridItem>
       </Grid>
     </>
+  );
+}
+
+function ViewerPanel({
+  layer,
+  editMode,
+  setEditMode,
+  viewerDoenetML,
+  setErrorsAndWarningsCallback,
+}) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [variants, setVariants] = useState({
+    index: 1,
+    numVariants: 1,
+    allPossibleVariants: ["a"],
+  });
+
+  return (
+    <VStack mt="0px" height="calc(100vh - 50px)" spacing={0} width="100%">
+      <HStack
+        w="100%"
+        h="32px"
+        mb="2px"
+        justifyContent={variants.numVariants > 1 ? "space-between" : "flex-end"}
+      >
+        {variants.numVariants > 1 && (
+          <VariantSelect
+            size="sm"
+            menuWidth="140px"
+            array={variants.allPossibleVariants}
+            onChange={(index) =>
+              setVariants((prev) => {
+                let next = { ...prev };
+                next.index = index + 1;
+                return next;
+              })
+            }
+          />
+        )}
+        {editMode || layer == "public" ? (
+          <Spacer h="32px" />
+        ) : (
+          <Button
+            size="sm"
+            data-test="Edit"
+            rightIcon={<EditIcon />}
+            onClick={() => {
+              setEditMode(true);
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </HStack>
+
+      <Box
+        h="calc(100vh - 80px)"
+        background="var(--canvas)"
+        borderWidth="1px"
+        borderStyle="solid"
+        borderColor="doenet.mediumGray"
+        width="100%"
+        overflow="scroll"
+      >
+        <DoenetML
+          key={`ActivityOverviewPageViewer`}
+          doenetML={viewerDoenetML}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveSubmissions: false,
+            allowSaveEvents: false,
+          }}
+          setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+          // doenetId={doenetId}
+          attemptNumber={1}
+          idsIncludeActivityId={false}
+          generatedVariantCallback={setVariants}
+          requestedVariantIndex={variants.index}
+          // setIsInErrorState={setIsInErrorState}
+          location={location}
+          navigate={navigate}
+          linkSettings={{
+            viewURL: "/portfolioviewer",
+            editURL: "/publiceditor",
+          }}
+        />
+      </Box>
+    </VStack>
   );
 }
 
@@ -1758,11 +1769,21 @@ const clamp = (
   return Math.min(Math.max(value, min), max);
 };
 
-const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
+const MainContent = ({
+  layer,
+  viewerPanel,
+  editorPanel,
+  editMode,
+  setEditMode,
+  viewerDoenetML,
+  setErrorsAndWarningsCallback,
+}) => {
   const STACK_BREAKPOINT = 768; //Chakra medium value
   const centerWidth = "10px";
   const wrapperRef = useRef();
 
+  //Chakra based responsive design to
+  //swap vertical and horizontal viewer and text editor
   const direction = useBreakpointValue({
     base: "vertical",
     ["md"]: "horizontal",
@@ -1862,8 +1883,6 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
   };
 
   const onDoubleClick = () => {
-    setHideRight(false);
-    setHideLeft(false);
     const proportion = 0.5;
 
     //using a ref to save without react refresh
@@ -1894,6 +1913,13 @@ const MainContent = ({ viewerPanel, editorPanel, editMode }) => {
         overflow="hidden"
       >
         {viewerPanel}
+        <ViewerPanel
+          layer={layer}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          viewerDoenetML={viewerDoenetML}
+          setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+        />
       </GridItem>
       {editMode && (
         <>
