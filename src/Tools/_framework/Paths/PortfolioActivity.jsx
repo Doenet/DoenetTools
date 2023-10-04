@@ -1617,6 +1617,7 @@ function EditorPanel({
   warningsObjs,
   errorsObjs,
   direction,
+  showDocLink,
 }) {
   const {
     pageId,
@@ -1627,6 +1628,7 @@ function EditorPanel({
     platform,
     lastKnownCid,
   } = useLoaderData();
+
   let [codeChanged, setCodeChanged] = useState(false);
   const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
   codeChangedRef.current = codeChanged;
@@ -1743,17 +1745,19 @@ function EditorPanel({
             </Button>
           </Tooltip>
         </Box>
-        <Link
-          borderRadius="lg"
-          p="4px 5px 0px 5px"
-          h="32px"
-          bg="#EDF2F7"
-          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
-          isExternal
-          data-test="Documentation Link"
-        >
-          Documentation <ExternalLinkIcon mx="2px" />
-        </Link>
+        {showDocLink && (
+          <Link
+            borderRadius="lg"
+            p="4px 5px 0px 5px"
+            h="32px"
+            bg="#EDF2F7"
+            href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
+            isExternal
+            data-test="Documentation Link"
+          >
+            Documentation <ExternalLinkIcon mx="2px" />
+          </Link>
+        )}
 
         <Button
           size="sm"
@@ -1846,6 +1850,8 @@ const MainContent = ({
     ["md"]: "horizontal",
   });
 
+  const [showDocLink, setShowDocLink] = useState(true);
+
   function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
     // console.log("browserWidth", browserWidth);
     //Not in edit mode or smaller than the stacked layout breakpoint
@@ -1853,11 +1859,16 @@ const MainContent = ({
       return;
     }
     //Lock to not squish either side too much
-    if (leftPixels < 150) {
-      leftPixels = 150;
+    if (leftPixels < 200) {
+      leftPixels = 200;
     }
-    if (rightPixels < 300) {
-      leftPixels = browserWidth - 300;
+    if (rightPixels < 200) {
+      leftPixels = browserWidth - 200;
+    }
+    if (rightPixels < 350 && showDocLink) {
+      setShowDocLink(false);
+    } else if (!showDocLink && rightPixels >= 350) {
+      setShowDocLink(true);
     }
     let proportion = clamp(leftPixels / browserWidth, 0, 1);
     //using a ref to save without react refresh
@@ -2023,6 +2034,7 @@ const MainContent = ({
               warningsObjs={warningsObjs}
               errorsObjs={errorsObjs}
               direction={direction}
+              showDocLink={showDocLink}
             />
           </GridItem>
         </>
