@@ -85,10 +85,16 @@ import { MdOutlineCloudUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import { useBreakpointValue } from "@chakra-ui/media-query";
+import { useSearchParams } from "react-router-dom";
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   let doenetId = params.doenetId;
   let pageId = params.pageId;
+  const url = new URL(request.url);
+  let editModeInit = false;
+  if (url.searchParams.get("edit") == "true") {
+    editModeInit = true;
+  }
 
   try {
     const { data } = await axios.get(
@@ -194,6 +200,7 @@ export async function loader({ params }) {
       lastKnownCid,
       activityData,
       supportingFileData,
+      editModeInit,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -1322,6 +1329,7 @@ export function PortfolioActivity() {
     platform,
     // lastKnownCid,
     activityData,
+    editModeInit,
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -1330,7 +1338,7 @@ export function PortfolioActivity() {
     throw new Error(message);
   }
 
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(editModeInit);
 
   //Warning: this will reboot codeMirror Editor sending cursor to the top
   let initializeEditorDoenetML = useRef(draftDoenetML);
@@ -1507,6 +1515,7 @@ function ViewerPanel({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  let [_, setSearchParams] = useSearchParams();
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -1544,6 +1553,7 @@ function ViewerPanel({
             data-test="Edit"
             rightIcon={<EditIcon />}
             onClick={() => {
+              setSearchParams({ edit: "true" }, { replace: true });
               setEditMode(true);
             }}
           >
@@ -1621,6 +1631,7 @@ function EditorPanel({
   const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
   codeChangedRef.current = codeChanged;
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
+  let [_, setSearchParams] = useSearchParams();
 
   let editorRef = useRef(null);
   let timeout = useRef(null);
@@ -1751,6 +1762,7 @@ function EditorPanel({
           onClick={() => {
             initializeEditorDoenetML.current = textEditorDoenetML.current; //Need to save what will be init in the text editor if we return
             setEditMode(false);
+            setSearchParams({ edit: "false" }, { replace: true });
           }}
         >
           Close
