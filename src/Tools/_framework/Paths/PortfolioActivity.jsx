@@ -1503,6 +1503,7 @@ function ViewerPanel({
   setEditMode,
   viewerDoenetML,
   setErrorsAndWarningsCallback,
+  direction,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1552,7 +1553,11 @@ function ViewerPanel({
       </HStack>
 
       <Box
-        h="calc(100vh - 80px)"
+        h={
+          direction == "vertical" && editMode
+            ? "calc(50vh - 80px)"
+            : "calc(100vh - 80px)"
+        }
         background="var(--canvas)"
         borderWidth="1px"
         borderStyle="solid"
@@ -1601,6 +1606,7 @@ function EditorPanel({
   setEditMode,
   warningsObjs,
   errorsObjs,
+  direction,
 }) {
   const {
     pageId,
@@ -1683,7 +1689,14 @@ function EditorPanel({
   }, [textEditorDoenetML, platform, handleSaveDraft, setViewerDoenetML]);
 
   return (
-    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
+    <VStack
+      mt="5px"
+      height={
+        direction == "vertical" ? "calc(50vh - 50px)" : "calc(100vh - 50px)"
+      }
+      spacing={0}
+      width="100%"
+    >
       <HStack w="100%" h="32px" mb="2px" justifyContent="flex-end">
         <Box>
           <Tooltip
@@ -1748,7 +1761,9 @@ function EditorPanel({
         top="50px"
         boxSizing="border-box"
         background="doenet.canvas"
-        height={`calc(100vh - 84px)`}
+        height={
+          direction == "vertical" ? `calc(50vh - 84px)` : `calc(100vh - 84px)`
+        }
         overflowY="scroll"
         borderRight="solid 1px"
         borderTop="solid 1px"
@@ -1941,6 +1956,7 @@ const MainContent = ({
         placeSelf="center"
         maxWidth="850px"
         overflow="hidden"
+        height="100%"
       >
         <ViewerPanel
           layer={layer}
@@ -1948,38 +1964,42 @@ const MainContent = ({
           setEditMode={setEditMode}
           viewerDoenetML={viewerDoenetML}
           setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
+          direction={direction}
         />
       </GridItem>
       {editMode && (
         <>
-          <GridItem
-            area="middleGutter"
-            background="doenet.lightBlue"
-            width="100%"
-            paddingTop="39px"
-            alignSelf="start"
-          >
-            <Center
-              cursor="col-resize"
-              background="doenet.mainGray"
-              borderLeft="solid 1px"
-              borderTop="solid 1px"
-              borderBottom="solid 1px"
-              borderColor="doenet.mediumGray"
-              height={`calc(100vh - 84px)`}
-              width="10px"
-              onMouseDown={onMouseDown}
-              data-test="contentPanelDragHandle"
-              paddingLeft="1px"
-              onDoubleClick={onDoubleClick}
+          {direction != "vertical" && (
+            <GridItem
+              area="middleGutter"
+              background="doenet.lightBlue"
+              width="100%"
+              paddingTop="39px"
+              alignSelf="start"
             >
-              <Icon ml="0" as={BsGripVertical} />
-            </Center>
-          </GridItem>
+              <Center
+                cursor="col-resize"
+                background="doenet.mainGray"
+                borderLeft="solid 1px"
+                borderTop="solid 1px"
+                borderBottom="solid 1px"
+                borderColor="doenet.mediumGray"
+                height={`calc(100vh - 84px)`}
+                width="10px"
+                onMouseDown={onMouseDown}
+                data-test="contentPanelDragHandle"
+                paddingLeft="1px"
+                onDoubleClick={onDoubleClick}
+              >
+                <Icon ml="0" as={BsGripVertical} />
+              </Center>
+            </GridItem>
+          )}
 
           <GridItem
             area="textEditor"
             width="100%"
+            h="100%"
             background="doenet.lightBlue"
             alignSelf="start"
           >
@@ -1990,6 +2010,7 @@ const MainContent = ({
               setEditMode={setEditMode}
               warningsObjs={warningsObjs}
               errorsObjs={errorsObjs}
+              direction={direction}
             />
           </GridItem>
         </>
