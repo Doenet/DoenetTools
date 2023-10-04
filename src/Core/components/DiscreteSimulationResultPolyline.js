@@ -9,6 +9,8 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     Object.assign(this.actions, {
       movePolyline: this.movePolyline.bind(this),
       finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+      polylineClicked: this.polylineClicked.bind(this),
+      polylineFocused: this.polylineFocused.bind(this),
     });
   }
   static componentType = "discreteSimulationResultPolyline";
@@ -579,5 +581,39 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       sourceInformation,
       skipRendererUpdate,
     });
+  }
+
+  async polylineClicked({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "click",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    }
+  }
+
+  async polylineFocused({
+    actionId,
+    name,
+    sourceInformation = {},
+    skipRendererUpdate = false,
+  }) {
+    if (!(await this.stateValues.fixed)) {
+      await this.coreFunctions.triggerChainedActions({
+        triggeringAction: "focus",
+        componentName: name, // use name rather than this.componentName to get original name if adapted
+        actionId,
+        sourceInformation,
+        skipRendererUpdate,
+      });
+    }
   }
 }
