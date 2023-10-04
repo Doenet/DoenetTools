@@ -1524,7 +1524,7 @@ function ViewerPanel({
   });
 
   return (
-    <VStack mt="0px" height="calc(100vh - 50px)" spacing={0} width="100%">
+    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
       <HStack
         w="100%"
         h="32px"
