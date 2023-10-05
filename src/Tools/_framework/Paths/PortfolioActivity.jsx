@@ -1617,7 +1617,6 @@ function EditorPanel({
   warningsObjs,
   errorsObjs,
   direction,
-  showDocLink,
 }) {
   const {
     pageId,
@@ -1745,19 +1744,18 @@ function EditorPanel({
             </Button>
           </Tooltip>
         </Box>
-        {showDocLink && (
-          <Link
-            borderRadius="lg"
-            p="4px 5px 0px 5px"
-            h="32px"
-            bg="#EDF2F7"
-            href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
-            isExternal
-            data-test="Documentation Link"
-          >
-            Documentation <ExternalLinkIcon mx="2px" />
-          </Link>
-        )}
+
+        <Link
+          borderRadius="lg"
+          p="4px 5px 0px 5px"
+          h="32px"
+          bg="#EDF2F7"
+          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
+          isExternal
+          data-test="Documentation Link"
+        >
+          Documentation <ExternalLinkIcon mx="2px" />
+        </Link>
 
         <Button
           size="sm"
@@ -1850,8 +1848,6 @@ const MainContent = ({
     ["md"]: "horizontal",
   });
 
-  const [showDocLink, setShowDocLink] = useState(true);
-
   function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
     // console.log("browserWidth", browserWidth);
     //Not in edit mode or smaller than the stacked layout breakpoint
@@ -1862,14 +1858,14 @@ const MainContent = ({
     if (leftPixels < 200) {
       leftPixels = 200;
     }
-    if (rightPixels < 200) {
-      leftPixels = browserWidth - 200;
+    if (rightPixels < 350) {
+      leftPixels = browserWidth - 350;
     }
-    if (rightPixels < 350 && showDocLink) {
-      setShowDocLink(false);
-    } else if (!showDocLink && rightPixels >= 350) {
-      setShowDocLink(true);
+
+    if (leftPixels >= 850) {
+      leftPixels = 850;
     }
+
     let proportion = clamp(leftPixels / browserWidth, 0, 1);
     //using a ref to save without react refresh
     wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
@@ -2034,7 +2030,6 @@ const MainContent = ({
               warningsObjs={warningsObjs}
               errorsObjs={errorsObjs}
               direction={direction}
-              showDocLink={showDocLink}
             />
           </GridItem>
         </>
