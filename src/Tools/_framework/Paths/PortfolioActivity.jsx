@@ -1848,8 +1848,29 @@ const MainContent = ({
     ["md"]: "horizontal",
   });
 
+  function calculateTemplateColumns({ leftPixels, rightPixels, browserWidth }) {
+    //Not in edit mode or smaller than the stacked layout breakpoint
+    if (!editMode || browserWidth < STACK_BREAKPOINT) {
+      return;
+    }
+    //Lock to not squish either side too much
+    if (leftPixels < 200) {
+      leftPixels = 200;
+    }
+    if (rightPixels < 350) {
+      leftPixels = browserWidth - 350;
+    }
+
+    if (leftPixels >= 850) {
+      leftPixels = 850;
+    }
+
+    let proportion = clamp(leftPixels / browserWidth, 0, 1);
+
+    return `${proportion}fr ${centerWidth} ${1 - proportion}fr`;
+  }
+
   function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
-    // console.log("browserWidth", browserWidth);
     //Not in edit mode or smaller than the stacked layout breakpoint
     if (!editMode || browserWidth < STACK_BREAKPOINT) {
       return;
@@ -1868,9 +1889,11 @@ const MainContent = ({
 
     let proportion = clamp(leftPixels / browserWidth, 0, 1);
     //using a ref to save without react refresh
-    wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
-      1 - proportion
-    }fr`;
+    wrapperRef.current.style.gridTemplateColumns = calculateTemplateColumns({
+      leftPixels,
+      rightPixels,
+      browserWidth,
+    });
     wrapperRef.current.proportion = proportion;
   }
 
@@ -1882,6 +1905,8 @@ const MainContent = ({
     };
   });
 
+  const initialRender = useRef(true);
+
   useEffect(() => {
     let templateAreas = `"viewer"`;
     let templateColumns = `1fr`;
@@ -1889,7 +1914,14 @@ const MainContent = ({
     if (editMode) {
       if (direction == "horizontal") {
         templateAreas = `"viewer middleGutter textEditor"`;
-        templateColumns = `.5fr ${centerWidth} .5fr`;
+        const browserWidth = wrapperRef.current.clientWidth;
+        let leftPixels = 0.5 * browserWidth;
+        let rightPixels = wrapperRef.current.clientWidth - leftPixels;
+        templateColumns = calculateTemplateColumns({
+          leftPixels,
+          rightPixels,
+          browserWidth,
+        });
         templateRows = `1fr`;
       } else {
         templateAreas = `"viewer" "textEditor"`;
@@ -1906,7 +1938,14 @@ const MainContent = ({
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
     wrapperRef.current.handleDragged = false;
-    wrapperRef.current.proportion = 0.5;
+    // wrapperRef.current.proportion = 0.5;
+    const proportion = 0.5;
+
+    const browserWidth = wrapperRef.current.clientWidth;
+    let leftPixels = proportion * browserWidth;
+    let rightPixels = wrapperRef.current.clientWidth - leftPixels;
+
+    updateWrapper({ leftPixels, rightPixels, browserWidth });
   }, []);
 
   const handleWindowResize = () => {
@@ -1948,13 +1987,13 @@ const MainContent = ({
 
   const onDoubleClick = () => {
     const proportion = 0.5;
+    const browserWidth = wrapperRef.current.clientWidth;
+    let leftPixels = proportion * browserWidth;
+    let rightPixels = wrapperRef.current.clientWidth - leftPixels;
 
-    //using a ref to save without react refresh
-    wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
-      1 - proportion
-    }fr`;
-    wrapperRef.current.proportion = proportion;
+    updateWrapper({ leftPixels, rightPixels, browserWidth });
   };
+  console.log(wrapperRef?.current?.style?.gridTemplateColumns);
 
   return (
     <Grid
