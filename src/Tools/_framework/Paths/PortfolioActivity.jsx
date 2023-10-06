@@ -71,7 +71,6 @@ import {
   CheckIcon,
   CloseIcon,
   EditIcon,
-  ExternalLinkIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
 import { SlLayers } from "react-icons/sl";
@@ -90,8 +89,9 @@ import { GoKebabVertical } from "react-icons/go";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { useCourse } from "../../../_reactComponents/Course/CourseActions";
-import { useBreakpointValue } from "@chakra-ui/media-query";
 import { useSearchParams } from "react-router-dom";
+
+import { FiBook } from "react-icons/fi";
 
 export async function loader({ params, request }) {
   let doenetId = params.doenetId;
@@ -1750,17 +1750,15 @@ function EditorPanel({
             </Button>
           </Tooltip>
         </Box>
-
         <Link
-          borderRadius="lg"
-          p="4px 5px 0px 5px"
-          h="32px"
-          bg="#EDF2F7"
           href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
           isExternal
           data-test="Documentation Link"
         >
-          Documentation <ExternalLinkIcon mx="2px" />
+          <HStack borderRadius="lg" bg="#EDF2F7" p="4px 5px 0px 5px" h="32px">
+            <FiBook mx="2px" />
+            <Text>Documentation</Text>
+          </HStack>
         </Link>
 
         <Button
