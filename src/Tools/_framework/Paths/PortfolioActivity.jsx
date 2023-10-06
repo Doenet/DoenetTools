@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   redirect,
   useLoaderData,
@@ -1841,34 +1847,32 @@ const MainContent = ({
   const centerWidth = "10px";
   const wrapperRef = useRef();
 
-  //Chakra based responsive design to
-  //swap vertical and horizontal viewer and text editor
-  const direction = useBreakpointValue({
-    base: "vertical",
-    ["md"]: "horizontal",
-  });
+  const [direction, setDirection] = useState(null);
 
-  function calculateTemplateColumns({ leftPixels, rightPixels, browserWidth }) {
-    //Not in edit mode or smaller than the stacked layout breakpoint
-    if (!editMode || browserWidth < STACK_BREAKPOINT) {
-      return;
-    }
-    //Lock to not squish either side too much
-    if (leftPixels < 200) {
-      leftPixels = 200;
-    }
-    if (rightPixels < 350) {
-      leftPixels = browserWidth - 350;
-    }
+  const calculateTemplateColumns = useCallback(
+    ({ leftPixels, rightPixels, browserWidth }) => {
+      //Not in edit mode or smaller than the stacked layout breakpoint
+      if (!editMode || browserWidth < STACK_BREAKPOINT) {
+        return;
+      }
+      //Lock to not squish either side too much
+      if (leftPixels < 200) {
+        leftPixels = 200;
+      }
+      if (rightPixels < 350) {
+        leftPixels = browserWidth - 350;
+      }
 
-    if (leftPixels >= 850) {
-      leftPixels = 850;
-    }
+      if (leftPixels >= 850) {
+        leftPixels = 850;
+      }
 
-    let proportion = clamp(leftPixels / browserWidth, 0, 1);
+      let proportion = clamp(leftPixels / browserWidth, 0, 1);
 
-    return `${proportion}fr ${centerWidth} ${1 - proportion}fr`;
-  }
+      return `${proportion}fr ${centerWidth} ${1 - proportion}fr`;
+    },
+    [editMode],
+  );
 
   function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
     //Not in edit mode or smaller than the stacked layout breakpoint
@@ -1897,6 +1901,16 @@ const MainContent = ({
     wrapperRef.current.proportion = proportion;
   }
 
+  //Only used to initialize direction
+  useLayoutEffect(() => {
+    const browserWidth = wrapperRef.current.clientWidth;
+    if (browserWidth > STACK_BREAKPOINT) {
+      setDirection("horizontal");
+    } else {
+      setDirection("vertical");
+    }
+  }, [setDirection]);
+
   //Listen to resize to enforce min sizes
   useEffect(() => {
     window.addEventListener("resize", handleWindowResize);
@@ -1904,8 +1918,6 @@ const MainContent = ({
       window.removeEventListener("resize", handleWindowResize);
     };
   });
-
-  const initialRender = useRef(true);
 
   useEffect(() => {
     let templateAreas = `"viewer"`;
@@ -1933,7 +1945,7 @@ const MainContent = ({
     wrapperRef.current.style.gridTemplateColumns = templateColumns;
     wrapperRef.current.style.gridTemplateAreas = templateAreas;
     wrapperRef.current.style.gridTemplateRows = templateRows;
-  }, [editMode, direction]);
+  }, [editMode, direction, calculateTemplateColumns]);
 
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
@@ -1955,6 +1967,11 @@ const MainContent = ({
     let rightPixels = wrapperRef.current.clientWidth - leftPixels;
 
     updateWrapper({ leftPixels, rightPixels, browserWidth });
+    if (browserWidth > STACK_BREAKPOINT) {
+      setDirection("horizontal");
+    } else {
+      setDirection("vertical");
+    }
   };
 
   const onMouseDown = (event) => {
@@ -1993,7 +2010,6 @@ const MainContent = ({
 
     updateWrapper({ leftPixels, rightPixels, browserWidth });
   };
-  console.log(wrapperRef?.current?.style?.gridTemplateColumns);
 
   return (
     <Grid
