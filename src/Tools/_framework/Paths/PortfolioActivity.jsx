@@ -1538,18 +1538,20 @@ function ViewerPanel({
         justifyContent={variants.numVariants > 1 ? "space-between" : "flex-end"}
       >
         {variants.numVariants > 1 && (
-          <VariantSelect
-            size="sm"
-            menuWidth="140px"
-            array={variants.allPossibleVariants}
-            onChange={(index) =>
-              setVariants((prev) => {
-                let next = { ...prev };
-                next.index = index + 1;
-                return next;
-              })
-            }
-          />
+          <Box ml="4px">
+            <VariantSelect
+              size="sm"
+              menuWidth="140px"
+              array={variants.allPossibleVariants}
+              onChange={(index) =>
+                setVariants((prev) => {
+                  let next = { ...prev };
+                  next.index = index + 1;
+                  return next;
+                })
+              }
+            />
+          </Box>
         )}
         {editMode || layer == "public" ? (
           <Spacer h="32px" />
@@ -1715,7 +1717,7 @@ function EditorPanel({
       spacing={0}
       width="100%"
     >
-      <HStack w="100%" h="32px" mb="2px" justifyContent="flex-end">
+      <HStack w="100%" h="32px" mb="2px" mr="10px" justifyContent="flex-end">
         <Box>
           <Tooltip
             hasArrow
