@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   redirect,
   useLoaderData,
@@ -1350,7 +1344,7 @@ export function PortfolioActivity() {
     throw new Error(message);
   }
 
-  const [horizontalMode] = useMediaQuery("(max-width: 1000px)");
+  const [narrowMode] = useMediaQuery("(max-width: 1000px)");
 
   const [editMode, setEditMode] = useState(editModeInit);
 
@@ -1439,18 +1433,18 @@ export function PortfolioActivity() {
             // templateAreas={`"leftHeader alertHeader rightHeader"`}
             // templateColumns={`1fr 400px 1fr`}
             templateAreas={
-              horizontalMode
+              narrowMode
                 ? `"leftHeader rightHeader"`
                 : `"leftHeader alertHeader rightHeader"`
             }
-            templateColumns={horizontalMode ? "1fr 300px" : "1fr 400px 1fr"}
+            templateColumns={narrowMode ? "1fr 300px" : "1fr 400px 1fr"}
             overflow="hidden"
             background="doenet.canvas"
           >
             <GridItem area="leftHeader" pl="10px" pr="10px">
               <EditableActivityLabel />
             </GridItem>
-            {!horizontalMode && (
+            {!narrowMode && (
               <GridItem
                 area="alertHeader"
                 pl="10px"
@@ -1528,7 +1522,7 @@ export function PortfolioActivity() {
             initializeEditorDoenetML={initializeEditorDoenetML}
             warningsObjs={warningsObjs}
             errorsObjs={errorsObjs}
-            horizontalMode={horizontalMode}
+            narrowMode={narrowMode}
           />
         </GridItem>
       </Grid>
@@ -1542,7 +1536,7 @@ function ViewerPanel({
   setEditMode,
   viewerDoenetML,
   setErrorsAndWarningsCallback,
-  direction,
+  narrowMode,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1555,7 +1549,14 @@ function ViewerPanel({
   });
 
   return (
-    <VStack mt="5px" height="calc(100vh - 50px)" spacing={0} width="100%">
+    <VStack
+      mt="5px"
+      height={
+        narrowMode && editMode ? "calc(50vh - 50px)" : "calc(100vh - 50px)"
+      }
+      spacing={0}
+      width="100%"
+    >
       <HStack
         w="100%"
         h="32px"
@@ -1596,11 +1597,7 @@ function ViewerPanel({
       </HStack>
 
       <Box
-        h={
-          direction == "vertical" && editMode
-            ? "calc(50vh - 80px)"
-            : "calc(100vh - 80px)"
-        }
+        h={narrowMode && editMode ? "calc(50vh - 80px)" : "calc(100vh - 80px)"}
         background="var(--canvas)"
         borderWidth="1px"
         borderStyle="solid"
@@ -1649,7 +1646,7 @@ function EditorPanel({
   setEditMode,
   warningsObjs,
   errorsObjs,
-  direction,
+  narrowMode,
 }) {
   const {
     pageId,
@@ -1736,9 +1733,7 @@ function EditorPanel({
   return (
     <VStack
       mt="5px"
-      height={
-        direction == "vertical" ? "calc(50vh - 50px)" : "calc(100vh - 50px)"
-      }
+      height={narrowMode ? "calc(50vh - 50px)" : "calc(100vh - 50px)"}
       spacing={0}
       width="100%"
     >
@@ -1806,9 +1801,7 @@ function EditorPanel({
         top="50px"
         boxSizing="border-box"
         background="doenet.canvas"
-        height={
-          direction == "vertical" ? `calc(50vh - 84px)` : `calc(100vh - 84px)`
-        }
+        height={narrowMode ? `calc(50vh - 84px)` : `calc(100vh - 84px)`}
         overflowY="scroll"
         borderRight="solid 1px"
         borderTop="solid 1px"
@@ -1816,7 +1809,11 @@ function EditorPanel({
         borderColor="doenet.mediumGray"
         w="100%"
       >
-        <Box height={`calc(100vh - 118px)`} w="100%" overflow="scroll">
+        <Box
+          height={narrowMode ? `calc(50vh - 118px)` : `calc(100vh - 118px)`}
+          w="100%"
+          overflow="scroll"
+        >
           <CodeMirror
             editorRef={editorRef}
             setInternalValueTo={initializeEditorDoenetML.current}
@@ -1867,19 +1864,15 @@ const MainContent = ({
   initializeEditorDoenetML,
   warningsObjs,
   errorsObjs,
-  horizontalMode,
+  narrowMode,
 }) => {
-  console.log("horizontalMode", horizontalMode);
-  const STACK_BREAKPOINT = 768; //Chakra medium value
   const centerWidth = "10px";
   const wrapperRef = useRef();
-
-  const [direction, setDirection] = useState(null); //DELETE!
 
   const calculateTemplateColumns = useCallback(
     ({ leftPixels, rightPixels, browserWidth }) => {
       //Not in edit mode or smaller than the stacked layout breakpoint
-      if (!editMode || browserWidth < STACK_BREAKPOINT) {
+      if (!editMode || narrowMode) {
         return;
       }
       //Lock to not squish either side too much
@@ -1898,12 +1891,12 @@ const MainContent = ({
 
       return `${proportion}fr ${centerWidth} ${1 - proportion}fr`;
     },
-    [editMode],
+    [editMode, narrowMode],
   );
 
   function updateWrapper({ leftPixels, rightPixels, browserWidth }) {
     //Not in edit mode or smaller than the stacked layout breakpoint
-    if (!editMode || browserWidth < STACK_BREAKPOINT) {
+    if (!editMode || narrowMode) {
       return;
     }
     //Lock to not squish either side too much
@@ -1928,16 +1921,6 @@ const MainContent = ({
     wrapperRef.current.proportion = proportion;
   }
 
-  //Only used to initialize direction
-  useLayoutEffect(() => {
-    const browserWidth = wrapperRef.current.clientWidth;
-    if (browserWidth > STACK_BREAKPOINT) {
-      setDirection("horizontal");
-    } else {
-      setDirection("vertical");
-    }
-  }, [setDirection]);
-
   //Listen to resize to enforce min sizes
   useEffect(() => {
     window.addEventListener("resize", handleWindowResize);
@@ -1951,7 +1934,7 @@ const MainContent = ({
     let templateColumns = `1fr`;
     let templateRows = `1fr`;
     if (editMode) {
-      if (direction == "horizontal") {
+      if (!narrowMode) {
         templateAreas = `"viewer middleGutter textEditor"`;
         const browserWidth = wrapperRef.current.clientWidth;
         let leftPixels = 0.5 * browserWidth;
@@ -1972,7 +1955,7 @@ const MainContent = ({
     wrapperRef.current.style.gridTemplateColumns = templateColumns;
     wrapperRef.current.style.gridTemplateAreas = templateAreas;
     wrapperRef.current.style.gridTemplateRows = templateRows;
-  }, [editMode, direction, calculateTemplateColumns]);
+  }, [editMode, narrowMode, calculateTemplateColumns]);
 
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
@@ -1994,11 +1977,6 @@ const MainContent = ({
     let rightPixels = wrapperRef.current.clientWidth - leftPixels;
 
     updateWrapper({ leftPixels, rightPixels, browserWidth });
-    if (browserWidth > STACK_BREAKPOINT) {
-      setDirection("horizontal");
-    } else {
-      setDirection("vertical");
-    }
   };
 
   const onMouseDown = (event) => {
@@ -2065,12 +2043,12 @@ const MainContent = ({
           setEditMode={setEditMode}
           viewerDoenetML={viewerDoenetML}
           setErrorsAndWarningsCallback={setErrorsAndWarningsCallback}
-          direction={direction}
+          narrowMode={narrowMode}
         />
       </GridItem>
       {editMode && (
         <>
-          {direction != "vertical" && (
+          {!narrowMode && (
             <GridItem
               area="middleGutter"
               background="doenet.lightBlue"
@@ -2111,7 +2089,7 @@ const MainContent = ({
               setEditMode={setEditMode}
               warningsObjs={warningsObjs}
               errorsObjs={errorsObjs}
-              direction={direction}
+              narrowMode={narrowMode}
             />
           </GridItem>
         </>
