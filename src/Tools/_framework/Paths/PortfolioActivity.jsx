@@ -62,6 +62,10 @@ import {
   InputGroup,
   Progress,
   useDisclosure,
+  useMediaQuery,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -336,14 +340,16 @@ function EditableActivityLabel() {
         );
       }}
     >
-      <EditablePreview
-        mt="2px"
-        fontSize="1.2em"
-        // whiteSpace="nowrap"
-        textOverflow="ellipsis"
-        overflow="hidden"
-        data-test="Activity Label Editable Preview"
-      />
+      <Tooltip label={label} offset={[0, -30]} shouldWrapChildren={true}>
+        <EditablePreview
+          mt="2px"
+          fontSize="1.2em"
+          noOfLines={1}
+          textOverflow="ellipsis"
+          overflow="hidden"
+          data-test="Activity Label Editable Preview"
+        />
+      </Tooltip>
       <EditableInput
         fontSize="1.2em"
         whiteSpace="nowrap"
@@ -1344,6 +1350,8 @@ export function PortfolioActivity() {
     throw new Error(message);
   }
 
+  const [horizontalMode] = useMediaQuery("(max-width: 1000px)");
+
   const [editMode, setEditMode] = useState(editModeInit);
 
   //Warning: this will reboot codeMirror Editor sending cursor to the top
@@ -1428,14 +1436,30 @@ export function PortfolioActivity() {
           <Grid
             width="100%"
             height="40px"
-            templateAreas={`"leftHeader rightHeader"`}
-            templateColumns={`1fr 300px`}
+            // templateAreas={`"leftHeader alertHeader rightHeader"`}
+            // templateColumns={`1fr 400px 1fr`}
+            templateAreas={
+              horizontalMode
+                ? `"leftHeader rightHeader"`
+                : `"leftHeader alertHeader rightHeader"`
+            }
+            templateColumns={horizontalMode ? "1fr 300px" : "1fr 400px 1fr"}
             overflow="hidden"
             background="doenet.canvas"
           >
             <GridItem area="leftHeader" pl="10px" pr="10px">
               <EditableActivityLabel />
             </GridItem>
+            {!horizontalMode && (
+              <GridItem
+                area="alertHeader"
+                pl="10px"
+                pr="10px"
+                w="400px"
+                // bg="purple.300"
+              ></GridItem>
+            )}
+
             <GridItem area="rightHeader">
               <HStack spacing="5" mr="10px" justifyContent="flex-end">
                 <HStack spacing="2">
@@ -1504,6 +1528,7 @@ export function PortfolioActivity() {
             initializeEditorDoenetML={initializeEditorDoenetML}
             warningsObjs={warningsObjs}
             errorsObjs={errorsObjs}
+            horizontalMode={horizontalMode}
           />
         </GridItem>
       </Grid>
@@ -1842,12 +1867,14 @@ const MainContent = ({
   initializeEditorDoenetML,
   warningsObjs,
   errorsObjs,
+  horizontalMode,
 }) => {
+  console.log("horizontalMode", horizontalMode);
   const STACK_BREAKPOINT = 768; //Chakra medium value
   const centerWidth = "10px";
   const wrapperRef = useRef();
 
-  const [direction, setDirection] = useState(null);
+  const [direction, setDirection] = useState(null); //DELETE!
 
   const calculateTemplateColumns = useCallback(
     ({ leftPixels, rightPixels, browserWidth }) => {
