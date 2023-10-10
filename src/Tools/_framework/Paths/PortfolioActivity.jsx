@@ -277,10 +277,33 @@ export async function action({ params, request }) {
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableActivityLabel() {
+function EditableActivityLabel({ setMainAlerts }) {
   const { label: loaderLabel } = useLoaderData();
   const [label, setLabel] = useState(loaderLabel);
   const fetcher = useFetcher();
+
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, message } = fetcher.data;
+      if (success) {
+        setMainAlerts([
+          {
+            type: "success",
+            id: "label",
+            title: "Label Updated!",
+          },
+        ]);
+      } else {
+        setMainAlerts([
+          {
+            type: "error",
+            id: "label",
+            title: message,
+          },
+        ]);
+      }
+    }
+  }, [fetcher.state, fetcher.data, setMainAlerts]);
 
   let lastActivityDataLabel = useRef(loaderLabel);
 
@@ -327,6 +350,14 @@ function EditableActivityLabel() {
       }}
       onSubmit={(value) => {
         let submitValue = value;
+
+        setMainAlerts([
+          {
+            type: "info",
+            id: "Label",
+            title: "Attempting to update label",
+          },
+        ]);
 
         fetcher.submit(
           { _action: "update label", label: submitValue },
@@ -940,7 +971,6 @@ function SupportFilesControls() {
       </Center>
 
       <Box h="360px" w="100%" overflowY="scroll">
-        {/* <Box h="415px" overflowY="scroll"> */}
         {supportingFiles.map((file, i) => {
           let previewImagePath = `/media/${file.fileName}`;
 
@@ -1348,6 +1378,8 @@ export function PortfolioActivity() {
 
   const [editMode, setEditMode] = useState(editModeInit);
 
+  let [mainAlerts, setMainAlerts] = useState([]);
+
   //Warning: this will reboot codeMirror Editor sending cursor to the top
   let initializeEditorDoenetML = useRef(draftDoenetML);
   let textEditorDoenetML = useRef(draftDoenetML);
@@ -1430,8 +1462,6 @@ export function PortfolioActivity() {
           <Grid
             width="100%"
             height="40px"
-            // templateAreas={`"leftHeader alertHeader rightHeader"`}
-            // templateColumns={`1fr 400px 1fr`}
             templateAreas={
               narrowMode
                 ? `"leftHeader rightHeader"`
@@ -1442,16 +1472,16 @@ export function PortfolioActivity() {
             background="doenet.canvas"
           >
             <GridItem area="leftHeader" pl="10px" pr="10px">
-              <EditableActivityLabel />
+              <EditableActivityLabel setMainAlerts={setMainAlerts} />
             </GridItem>
             {!narrowMode && (
-              <GridItem
-                area="alertHeader"
-                pl="10px"
-                pr="10px"
-                w="400px"
-                // bg="purple.300"
-              ></GridItem>
+              <GridItem area="alertHeader" pl="10px" pr="10px" w="400px">
+                <AlertQueue
+                  alerts={mainAlerts}
+                  setAlerts={setMainAlerts}
+                  short={true}
+                />
+              </GridItem>
             )}
 
             <GridItem area="rightHeader">
