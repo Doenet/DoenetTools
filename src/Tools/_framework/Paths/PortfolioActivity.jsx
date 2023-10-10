@@ -1582,7 +1582,7 @@ function ViewerPanel({
     <VStack
       mt="5px"
       height={
-        narrowMode && editMode ? "calc(50vh - 50px)" : "calc(100vh - 50px)"
+        narrowMode && editMode ? "calc(50vh - 30px)" : "calc(100vh - 50px)"
       }
       spacing={0}
       width="100%"
@@ -1627,7 +1627,7 @@ function ViewerPanel({
       </HStack>
 
       <Box
-        h={narrowMode && editMode ? "calc(50vh - 80px)" : "calc(100vh - 80px)"}
+        h={narrowMode && editMode ? "calc(50vh - 64px)" : "calc(100vh - 80px)"}
         background="var(--canvas)"
         borderWidth="1px"
         borderStyle="solid"
