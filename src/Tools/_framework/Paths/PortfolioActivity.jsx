@@ -1439,6 +1439,10 @@ export function PortfolioActivity() {
     document.title = `${label} - Doenet`;
   }, [label]);
 
+  const mainAlertQueue = (
+    <AlertQueue alerts={mainAlerts} setAlerts={setMainAlerts} short={true} />
+  );
+
   return (
     <>
       <PortfolioActivitySettingsDrawer
@@ -1476,11 +1480,7 @@ export function PortfolioActivity() {
             </GridItem>
             {!narrowMode && (
               <GridItem area="alertHeader" pl="10px" pr="10px" w="400px">
-                <AlertQueue
-                  alerts={mainAlerts}
-                  setAlerts={setMainAlerts}
-                  short={true}
-                />
+                {mainAlertQueue}
               </GridItem>
             )}
 
@@ -1553,6 +1553,7 @@ export function PortfolioActivity() {
             warningsObjs={warningsObjs}
             errorsObjs={errorsObjs}
             narrowMode={narrowMode}
+            mainAlertQueue={mainAlertQueue}
           />
         </GridItem>
       </Grid>
@@ -1763,7 +1764,7 @@ function EditorPanel({
   return (
     <VStack
       mt="5px"
-      height={narrowMode ? "calc(50vh - 50px)" : "calc(100vh - 50px)"}
+      height={narrowMode ? "calc(50vh - 60px)" : "calc(100vh - 50px)"}
       spacing={0}
       width="100%"
     >
@@ -1840,7 +1841,7 @@ function EditorPanel({
         w="100%"
       >
         <Box
-          height={narrowMode ? `calc(50vh - 118px)` : `calc(100vh - 118px)`}
+          height={narrowMode ? `calc(50vh - 128px)` : `calc(100vh - 118px)`}
           w="100%"
           overflow="scroll"
         >
@@ -1895,6 +1896,7 @@ const MainContent = ({
   warningsObjs,
   errorsObjs,
   narrowMode,
+  mainAlertQueue,
 }) => {
   const centerWidth = "10px";
   const wrapperRef = useRef();
@@ -1964,7 +1966,13 @@ const MainContent = ({
     let templateColumns = `1fr`;
     let templateRows = `1fr`;
     if (editMode) {
-      if (!narrowMode) {
+      if (narrowMode) {
+        templateAreas = `"alerts"
+        "viewer" 
+        "textEditor"`;
+        templateColumns = `1fr`;
+        templateRows = `40px .5fr .5fr`;
+      } else {
         templateAreas = `"viewer middleGutter textEditor"`;
         const browserWidth = wrapperRef.current.clientWidth;
         let leftPixels = 0.5 * browserWidth;
@@ -1975,10 +1983,6 @@ const MainContent = ({
           browserWidth,
         });
         templateRows = `1fr`;
-      } else {
-        templateAreas = `"viewer" "textEditor"`;
-        templateColumns = `1fr`;
-        templateRows = `.5fr .5fr`;
       }
     }
 
@@ -2059,6 +2063,17 @@ const MainContent = ({
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
     >
+      {narrowMode && (
+        <GridItem
+          area="alerts"
+          width="100%"
+          placeSelf="center"
+          overflow="hidden"
+          height="100%"
+        >
+          {mainAlertQueue}
+        </GridItem>
+      )}
       <GridItem
         area="viewer"
         width="100%"
