@@ -172,11 +172,6 @@ export async function loader({ params, request }) {
       publicDoenetML = publicDoenetMLResponse.data;
     }
 
-    console.log(
-      "onLoadPublicAndDraftAreTheSame",
-      onLoadPublicAndDraftAreTheSame,
-    );
-
     const supportingFileResp = await axios.get(
       "/api/loadSupportingFileInfo.php",
       {
@@ -429,6 +424,7 @@ export function GeneralActivityControls({
   courseId,
   doenetId,
   activityData,
+  setPublicAndDraftAreTheSame,
 }) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
   if (!isPublic && activityData?.public) {
@@ -773,6 +769,10 @@ export function GeneralActivityControls({
                 });
               }
               setCheckboxIsPublic(nextIsPublic);
+              //If we are making content public we can assume it's the same now
+              if (nextIsPublic == "1") {
+                setPublicAndDraftAreTheSame(true);
+              }
               saveDataToServer({ nextIsPublic });
             }}
           >
@@ -1295,6 +1295,7 @@ function PortfolioActivitySettingsDrawer({
   onClose,
   finalFocusRef,
   controlsTabsLastIndex,
+  setPublicAndDraftAreTheSame,
 }) {
   const { courseId, doenetId, activityData } = useLoaderData();
   //Need fetcher at this level to get label refresh
@@ -1346,6 +1347,7 @@ function PortfolioActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    setPublicAndDraftAreTheSame={setPublicAndDraftAreTheSame}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -1472,6 +1474,7 @@ export function PortfolioActivity() {
         finalFocusRef={controlsBtnRef}
         activityData={activityData}
         controlsTabsLastIndex={controlsTabsLastIndex}
+        setPublicAndDraftAreTheSame={setPublicAndDraftAreTheSame}
       />
       <Grid
         background="doenet.lightBlue"
@@ -1522,20 +1525,24 @@ export function PortfolioActivity() {
                   ) : (
                     <>
                       <Icon as={SlLayers} />
-                      <Select
-                        size="sm"
-                        onChange={(e) => {
-                          setLayer(e.target.value);
-                          if (e.target.value == "draft") {
-                            setViewerDoenetML(draftDoenetML);
-                          } else {
-                            setViewerDoenetML(publicDoenetML);
-                          }
-                        }}
-                      >
-                        <option value="draft">Draft</option>
-                        <option value="public">Public</option>
-                      </Select>
+                      {publicDoenetML == null ? (
+                        <Text>Draft</Text>
+                      ) : (
+                        <Select
+                          size="sm"
+                          onChange={(e) => {
+                            setLayer(e.target.value);
+                            if (e.target.value == "draft") {
+                              setViewerDoenetML(draftDoenetML);
+                            } else {
+                              setViewerDoenetML(publicDoenetML);
+                            }
+                          }}
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="public">Public</option>
+                        </Select>
+                      )}
                     </>
                   )}
                 </HStack>
@@ -1586,6 +1593,7 @@ export function PortfolioActivity() {
             errorsObjs={errorsObjs}
             narrowMode={narrowMode}
             mainAlertQueue={mainAlertQueue}
+            setPublicAndDraftAreTheSame={setPublicAndDraftAreTheSame}
           />
         </GridItem>
       </Grid>
@@ -1710,6 +1718,7 @@ function EditorPanel({
   warningsObjs,
   errorsObjs,
   narrowMode,
+  setPublicAndDraftAreTheSame,
 }) {
   const {
     pageId,
@@ -1738,6 +1747,8 @@ function EditorPanel({
   const { saveDraft } = useSaveDraft();
 
   const handleSaveDraft = useCallback(async () => {
+    setPublicAndDraftAreTheSame(false);
+
     const doenetML = textEditorDoenetML.current;
     const lastKnownCid = lastKnownCidRef.current;
     const backup = backupOldDraft.current;
@@ -1769,7 +1780,13 @@ function EditorPanel({
         handleSaveDraft();
       }
     }
-  }, [pageId, courseId, saveDraft, textEditorDoenetML]);
+  }, [
+    pageId,
+    courseId,
+    saveDraft,
+    textEditorDoenetML,
+    setPublicAndDraftAreTheSame,
+  ]);
 
   useEffect(() => {
     const handleEditorKeyDown = (event) => {
@@ -1929,6 +1946,7 @@ const MainContent = ({
   errorsObjs,
   narrowMode,
   mainAlertQueue,
+  setPublicAndDraftAreTheSame,
 }) => {
   const centerWidth = "10px";
   const wrapperRef = useRef();
@@ -2167,6 +2185,7 @@ const MainContent = ({
               warningsObjs={warningsObjs}
               errorsObjs={errorsObjs}
               narrowMode={narrowMode}
+              setPublicAndDraftAreTheSame={setPublicAndDraftAreTheSame}
             />
           </GridItem>
         </>
