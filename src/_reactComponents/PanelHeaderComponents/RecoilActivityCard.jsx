@@ -165,7 +165,9 @@ export default function RecoilActivityCard({
               <MenuItem
                 data-test="Edit Menu Item"
                 onClick={() =>
-                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`)
+                  navigate(
+                    `/portfolioActivity/${doenetId}/${pageDoenetId}?edit=true`,
+                  )
                 }
               >
                 Edit

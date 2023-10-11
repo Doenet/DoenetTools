@@ -132,6 +132,16 @@ export async function loader({ params, request }) {
     const response = await axios.get("/api/getPorfolioCourseId.php");
     let { firstName, lastName, email } = response.data;
 
+    const draftDoenetMLResponse = await axios.get(
+      `/media/byPageId/${pageId}.doenet`,
+      { transformResponse: (data) => data.toString() },
+    );
+    draftDoenetML = draftDoenetMLResponse.data;
+
+    const lastKnownCid = await cidFromText(draftDoenetML);
+
+    let onLoadPublicAndDraftAreTheSame = false;
+
     if (data.json.assignedCid != null) {
       const { data: activityML } = await axios.get(
         `/media/${data.json.assignedCid}.doenet`,
@@ -143,6 +153,10 @@ export async function loader({ params, request }) {
       const pageIds = activityML.match(regex);
 
       const pageCId = pageIds[1];
+
+      if (lastKnownCid == pageCId) {
+        onLoadPublicAndDraftAreTheSame = true;
+      }
 
       //Get the doenetML of the pageId.
       //we need transformResponse because
@@ -158,13 +172,10 @@ export async function loader({ params, request }) {
       publicDoenetML = publicDoenetMLResponse.data;
     }
 
-    const draftDoenetMLResponse = await axios.get(
-      `/media/byPageId/${pageId}.doenet`,
-      { transformResponse: (data) => data.toString() },
+    console.log(
+      "onLoadPublicAndDraftAreTheSame",
+      onLoadPublicAndDraftAreTheSame,
     );
-    draftDoenetML = draftDoenetMLResponse.data;
-
-    const lastKnownCid = await cidFromText(draftDoenetML);
 
     const supportingFileResp = await axios.get(
       "/api/loadSupportingFileInfo.php",
@@ -205,6 +216,7 @@ export async function loader({ params, request }) {
       activityData,
       supportingFileData,
       editModeInit,
+      onLoadPublicAndDraftAreTheSame,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -350,19 +362,26 @@ function EditableActivityLabel({ setMainAlerts }) {
       }}
       onSubmit={(value) => {
         let submitValue = value;
+        if (submitValue == "") {
+          submitValue = "Untitled";
+          setLabel("Untitled");
+        }
 
-        setMainAlerts([
-          {
-            type: "info",
-            id: "Label",
-            title: "Attempting to update label",
-          },
-        ]);
+        //Only fire when label changed
+        if (loaderLabel != submitValue) {
+          setMainAlerts([
+            {
+              type: "info",
+              id: "Label",
+              title: "Attempting to update label",
+            },
+          ]);
 
-        fetcher.submit(
-          { _action: "update label", label: submitValue },
-          { method: "post" },
-        );
+          fetcher.submit(
+            { _action: "update label", label: submitValue },
+            { method: "post" },
+          );
+        }
       }}
     >
       <Tooltip label={label} offset={[0, -30]} shouldWrapChildren={true}>
@@ -721,8 +740,6 @@ export function GeneralActivityControls({
           </Flex>
         </FormControl>
         <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-
           <Checkbox
             size="lg"
             data-test="Public Checkbox"
@@ -1366,6 +1383,7 @@ export function PortfolioActivity() {
     // lastKnownCid,
     activityData,
     editModeInit,
+    onLoadPublicAndDraftAreTheSame,
   } = useLoaderData();
 
   // const { signedIn } = useOutletContext();
@@ -1377,6 +1395,9 @@ export function PortfolioActivity() {
   const [narrowMode] = useMediaQuery("(max-width: 1000px)");
 
   const [editMode, setEditMode] = useState(editModeInit);
+  const [publicAndDraftAreTheSame, setPublicAndDraftAreTheSame] = useState(
+    onLoadPublicAndDraftAreTheSame,
+  );
 
   let [mainAlerts, setMainAlerts] = useState([]);
 
@@ -1487,24 +1508,35 @@ export function PortfolioActivity() {
             <GridItem area="rightHeader">
               <HStack spacing="5" mr="10px" justifyContent="flex-end">
                 <HStack spacing="2">
-                  <Icon as={SlLayers} />
                   {editMode ? (
-                    <Text>Draft</Text>
-                  ) : (
-                    <Select
+                    <Button
                       size="sm"
-                      onChange={(e) => {
-                        setLayer(e.target.value);
-                        if (e.target.value == "draft") {
-                          setViewerDoenetML(draftDoenetML);
-                        } else {
-                          setViewerDoenetML(publicDoenetML);
-                        }
+                      colorScheme="blue"
+                      isDisabled={publicAndDraftAreTheSame}
+                      onClick={() => {
+                        setPublicAndDraftAreTheSame(true);
                       }}
                     >
-                      <option value="draft">Draft</option>
-                      <option value="public">Public</option>
-                    </Select>
+                      Publish Draft
+                    </Button>
+                  ) : (
+                    <>
+                      <Icon as={SlLayers} />
+                      <Select
+                        size="sm"
+                        onChange={(e) => {
+                          setLayer(e.target.value);
+                          if (e.target.value == "draft") {
+                            setViewerDoenetML(draftDoenetML);
+                          } else {
+                            setViewerDoenetML(publicDoenetML);
+                          }
+                        }}
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="public">Public</option>
+                      </Select>
+                    </>
                   )}
                 </HStack>
 
