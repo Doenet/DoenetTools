@@ -69,6 +69,7 @@ import {
   CheckIcon,
   CloseIcon,
   EditIcon,
+  QuestionOutlineIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
 import { SlLayers } from "react-icons/sl";
@@ -235,6 +236,24 @@ export async function action({ params, request }) {
         `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
       );
       return { success: true, _action };
+    }
+    if (formObj._action == "update content via keyToUpdate") {
+      let value = formObj.value;
+      if (formObj.keyToUpdate == "learningOutcomes") {
+        value = JSON.parse(formObj.value);
+      }
+
+      let resp = await axios.post("/api/updateContentSettingsByKey.php", {
+        doenetId: formObj.doenetId,
+        [formObj.keyToUpdate]: value,
+      });
+
+      return {
+        _action: formObj._action,
+        keyToUpdate: formObj.keyToUpdate,
+        value: formObj.value,
+        success: resp.data.success,
+      };
     }
 
     if (_action == "update general") {
@@ -434,6 +453,40 @@ export function GeneralActivityControls({
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
+  let [successMessage, setSuccessMessage] = useState("");
+  let [keyToUpdateState, setKeyToUpdateState] = useState("");
+
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, keyToUpdate, message } = fetcher.data;
+      if (success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "success",
+            id: keyToUpdateState,
+            title: successMessage,
+          },
+        ]);
+      } else if (!success && keyToUpdate == keyToUpdateState) {
+        setAlerts([
+          {
+            type: "error",
+            id: keyToUpdateState,
+            title: message,
+          },
+        ]);
+      } else {
+        console.log("else fetcher.data", fetcher.data);
+        // throw Error(message);
+      }
+    }
+  }, [
+    fetcher.state,
+    fetcher.data,
+    keyToUpdateState,
+    successMessage,
+    setAlerts,
+  ]);
 
   function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
@@ -736,7 +789,76 @@ export function GeneralActivityControls({
           </Flex>
         </FormControl>
         <FormControl>
+          <FormLabel mt="16px">Visibility</FormLabel>
           <Checkbox
+            size="lg"
+            data-test="Public Checkbox"
+            name="public"
+            isChecked={checkboxIsPublic == "1"}
+            onChange={(e) => {
+              let nextIsPublic = "0";
+              if (e.target.checked) {
+                nextIsPublic = "1";
+                //Process making activity public here
+                compileActivity({
+                  activityDoenetId: doenetId,
+                  isAssigned: true,
+                  courseId,
+                  activity: {
+                    version: activityData.version,
+                    isSinglePage: true,
+                    content: activityData.content,
+                  },
+                  // successCallback: () => {
+                  //   addToast('Activity Assigned.', toastType.INFO);
+                  // },
+                });
+                updateAssignItem({
+                  doenetId,
+                  isAssigned: true,
+                  successCallback: () => {
+                    //addToast(assignActivityToast, toastType.INFO);
+                  },
+                });
+              }
+              let isPublic = true;
+              let title = "Setting Activity as public.";
+              let nextSuccessMessage = "Activity is public.";
+              if (nextIsPublic == "0") {
+                isPublic = false;
+                title = "Setting Activity as private.";
+                nextSuccessMessage = "Activity is private.";
+              }
+
+              //Alert Messages
+              setSuccessMessage(nextSuccessMessage);
+              setKeyToUpdateState("isPublic");
+              setAlerts([
+                {
+                  type: "info",
+                  id: "isPublic",
+                  title,
+                },
+              ]);
+
+              setCheckboxIsPublic(nextIsPublic);
+              fetcher.submit(
+                {
+                  _action: "update content via keyToUpdate",
+                  keyToUpdate: "isPublic",
+                  value: nextIsPublic,
+                  doenetId,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Public{" "}
+            <Tooltip label="Enables others to copy and then modify the content">
+              <QuestionOutlineIcon />
+            </Tooltip>
+          </Checkbox>
+          {/* <Checkbox
             size="lg"
             data-test="Public Checkbox"
             name="public"
@@ -777,7 +899,7 @@ export function GeneralActivityControls({
             }}
           >
             Public
-          </Checkbox>
+          </Checkbox> */}
         </FormControl>
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
@@ -1370,11 +1492,11 @@ export function PortfolioActivity() {
     success,
     message,
     // pageId,
-    // doenetId,
+    doenetId,
     publicDoenetML,
     draftDoenetML,
     label,
-    // courseId,
+    courseId,
     // isDeleted,
     // isBanned,
     // isPublic,
@@ -1395,6 +1517,8 @@ export function PortfolioActivity() {
   }
 
   const [narrowMode] = useMediaQuery("(max-width: 1000px)");
+  const fetcher = useFetcher();
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   const [editMode, setEditMode] = useState(editModeInit);
   const [publicAndDraftAreTheSame, setPublicAndDraftAreTheSame] = useState(
@@ -1402,6 +1526,40 @@ export function PortfolioActivity() {
   );
 
   let [mainAlerts, setMainAlerts] = useState([]);
+  let [successMessage, setSuccessMessage] = useState("");
+  let [keyToUpdateState, setKeyToUpdateState] = useState("");
+
+  useEffect(() => {
+    if (fetcher.state == "loading") {
+      const { success, keyToUpdate, message } = fetcher.data;
+      if (success && keyToUpdate == keyToUpdateState) {
+        setMainAlerts([
+          {
+            type: "success",
+            id: keyToUpdateState,
+            title: successMessage,
+          },
+        ]);
+      } else if (!success && keyToUpdate == keyToUpdateState) {
+        setMainAlerts([
+          {
+            type: "error",
+            id: keyToUpdateState,
+            title: message,
+          },
+        ]);
+      } else {
+        console.log("else fetcher.data", fetcher.data);
+        // throw Error(message);
+      }
+    }
+  }, [
+    fetcher.state,
+    fetcher.data,
+    keyToUpdateState,
+    successMessage,
+    setMainAlerts,
+  ]);
 
   //Warning: this will reboot codeMirror Editor sending cursor to the top
   let initializeEditorDoenetML = useRef(draftDoenetML);
@@ -1518,6 +1676,52 @@ export function PortfolioActivity() {
                       isDisabled={publicAndDraftAreTheSame}
                       onClick={() => {
                         setPublicAndDraftAreTheSame(true);
+
+                        //Process making activity public here
+                        compileActivity({
+                          activityDoenetId: doenetId,
+                          isAssigned: true,
+                          courseId,
+                          activity: {
+                            version: activityData.version,
+                            isSinglePage: true,
+                            content: activityData.content,
+                          },
+                          // successCallback: () => {
+                          //   addToast('Activity Assigned.', toastType.INFO);
+                          // },
+                        });
+                        updateAssignItem({
+                          doenetId,
+                          isAssigned: true,
+                          successCallback: () => {
+                            //addToast(assignActivityToast, toastType.INFO);
+                          },
+                        });
+
+                        let title = "Publishing draft to public.";
+                        let nextSuccessMessage = "Public activity is updated.";
+
+                        //Alert Messages
+                        setSuccessMessage(nextSuccessMessage);
+                        setKeyToUpdateState("isPublic");
+                        setMainAlerts([
+                          {
+                            type: "info",
+                            id: "isPublic",
+                            title,
+                          },
+                        ]);
+
+                        fetcher.submit(
+                          {
+                            _action: "update content via keyToUpdate",
+                            keyToUpdate: "isPublic",
+                            value: "1",
+                            doenetId,
+                          },
+                          { method: "post" },
+                        );
                       }}
                     >
                       Publish Draft
