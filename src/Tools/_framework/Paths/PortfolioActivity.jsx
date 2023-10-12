@@ -57,9 +57,6 @@ import {
   Progress,
   useDisclosure,
   useMediaQuery,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
 } from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -91,6 +88,7 @@ import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import { useSearchParams } from "react-router-dom";
 
 import { FiBook } from "react-icons/fi";
+import Papa from "papaparse";
 
 export async function loader({ params, request }) {
   let doenetId = params.doenetId;
@@ -231,19 +229,25 @@ export async function action({ params, request }) {
   }
 
   try {
-    if (_action == "update label") {
-      await axios.get(
-        `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
-      );
-      return { success: true, _action };
+    if (formObj._action == "update label") {
+      const resp = await axios.get("/api/updatePortfolioActivityLabel.php", {
+        params: { doenetId: params.doenetId, label },
+      });
+      return {
+        _action: formObj._action,
+        label,
+        keyToUpdate: "activityLabel",
+        success: resp.data.success,
+      };
     }
+
     if (formObj._action == "update content via keyToUpdate") {
       let value = formObj.value;
       if (formObj.keyToUpdate == "learningOutcomes") {
         value = JSON.parse(formObj.value);
       }
 
-      let resp = await axios.post("/api/updateContentSettingsByKey.php", {
+      const resp = await axios.post("/api/updateContentSettingsByKey.php", {
         doenetId: formObj.doenetId,
         [formObj.keyToUpdate]: value,
       });
@@ -256,32 +260,21 @@ export async function action({ params, request }) {
       };
     }
 
-    if (_action == "update general") {
-      let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-      await axios.post("/api/updatePortfolioActivitySettings.php", {
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: params.doenetId,
-        learningOutcomes,
-      });
-      return {
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: params.doenetId,
-        learningOutcomes,
-      };
-    }
-    if (_action == "update description") {
-      await axios.get("/api/updateFileDescription.php", {
+    if (formObj._action == "update description") {
+      const resp = await axios.get("/api/updateFileDescription.php", {
         params: {
           doenetId: formObj.doenetId,
           cid: formObj.cid,
           description: formObj.description,
         },
       });
+
+      return {
+        _action: formObj._action,
+        success: resp.data.success,
+      };
     }
+
     if (_action == "remove file") {
       await axios.get("/api/deleteFile.php", {
         params: { doenetId: formObj.doenetId, cid: formObj.cid },
@@ -444,6 +437,7 @@ export function GeneralActivityControls({
   doenetId,
   activityData,
   setPublicAndDraftAreTheSame,
+  setAlerts,
 }) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
   if (!isPublic && activityData?.public) {
@@ -452,7 +446,6 @@ export function GeneralActivityControls({
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
-  let [alerts, setAlerts] = useState([]);
   let [successMessage, setSuccessMessage] = useState("");
   let [keyToUpdateState, setKeyToUpdateState] = useState("");
 
@@ -487,43 +480,6 @@ export function GeneralActivityControls({
     successMessage,
     setAlerts,
   ]);
-
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
-    let learningOutcomesToSubmit = learningOutcomes;
-    if (nextLearningOutcomes) {
-      learningOutcomesToSubmit = nextLearningOutcomes;
-    }
-
-    let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
-      isPublicToSubmit = nextIsPublic;
-    }
-
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelValue;
-    if (labelValue == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
-    } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
-      }
-    }
-    lastAcceptedLabelValue.current = labelToSubmit;
-    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
-    fetcher.submit(
-      {
-        _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
-        doenetId,
-      },
-      { method: "post" },
-    );
-  }
 
   const onDrop = useCallback(
     async (files) => {
@@ -621,25 +577,62 @@ export function GeneralActivityControls({
   if (learningOutcomesInit == null) {
     learningOutcomesInit = [""];
   }
+  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
 
   let [labelValue, setLabel] = useState(label);
-  let lastAcceptedLabelValue = useRef(label);
   let [labelIsInvalid, setLabelIsInvalid] = useState(false);
 
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   const { compileActivity, updateAssignItem } = useCourse(courseId);
 
-  //TODO: Cypress is opening the drawer so fast
-  //the activitieData is out of date
-  //We need something like this. But this code sets learningOutcomes too often
-  // useEffect(() => {
-  //   setLearningOutcomes(learningOutcomesInit);
-  // }, [learningOutcomesInit]);
+  function saveActivityLabel() {
+    // Turn on/off label error messages and
+    // only set the value if it's not blank
+    if (labelValue == "") {
+      setLabelIsInvalid(true);
+    } else {
+      if (labelIsInvalid) {
+        setLabelIsInvalid(false);
+      }
+
+      //Alert Messages
+      setSuccessMessage("Activity Label Updated");
+      setKeyToUpdateState("activityLabel");
+      setAlerts([
+        {
+          type: "info",
+          id: "activityLabel",
+          title: "Attempting to update activity label.",
+        },
+      ]);
+
+      fetcher.submit(
+        { _action: "update label", label: labelValue },
+        { method: "post" },
+      );
+    }
+  }
+
+  function saveLearningOutcomes({ nextLearningOutcomes } = {}) {
+    let learningOutcomesToSubmit = learningOutcomes;
+    if (nextLearningOutcomes) {
+      learningOutcomesToSubmit = nextLearningOutcomes;
+    }
+
+    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    fetcher.submit(
+      {
+        _action: "update content via keyToUpdate",
+        keyToUpdate: "learningOutcomes",
+        value: serializedLearningOutcomes,
+        doenetId,
+      },
+      { method: "post" },
+    );
+  }
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
       <Form method="post">
         <FormControl>
           <FormLabel>Thumbnail</FormLabel>
@@ -698,10 +691,10 @@ export function GeneralActivityControls({
             onChange={(e) => {
               setLabel(e.target.value);
             }}
-            onBlur={saveDataToServer}
+            onBlur={saveActivityLabel}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                saveDataToServer();
+                saveActivityLabel();
               }
             }}
           />
@@ -728,14 +721,45 @@ export function GeneralActivityControls({
                         return next;
                       });
                     }}
-                    onBlur={() =>
-                      saveDataToServer({
-                        nextLearningOutcomes: learningOutcomes,
-                      })
-                    }
+                    onBlur={(e) => {
+                      //Only update when changed
+                      if (e.target.value != activityData.learningOutcomes[i]) {
+                        //Alert Messages
+                        setSuccessMessage(
+                          `Updated learning outcome #${i + 1}.`,
+                        );
+                        setKeyToUpdateState("learningOutcomes");
+                        setAlerts([
+                          {
+                            type: "info",
+                            id: "learningOutcomes",
+                            title: `Attempting to update learning outcome #${
+                              i + 1
+                            }.`,
+                          },
+                        ]);
+                        saveLearningOutcomes({
+                          nextLearningOutcomes: learningOutcomes,
+                        });
+                      }
+                    }}
                     onKeyDown={(e) => {
                       if (e.key == "Enter") {
-                        saveDataToServer({
+                        //Alert Messages
+                        setSuccessMessage(
+                          `Updated learning outcome #${i + 1}.`,
+                        );
+                        setKeyToUpdateState("learningOutcomes");
+                        setAlerts([
+                          {
+                            type: "info",
+                            id: "learningOutcomes",
+                            title: `Attempting to update learning outcome #${
+                              i + 1
+                            }.`,
+                          },
+                        ]);
+                        saveLearningOutcomes({
                           nextLearningOutcomes: learningOutcomes,
                         });
                       }
@@ -758,9 +782,21 @@ export function GeneralActivityControls({
                       } else {
                         nextLearningOutcomes.splice(i, 1);
                       }
+                      //Alert Messages
+                      setSuccessMessage(`Deleted learning outcome #${i + 1}.`);
+                      setKeyToUpdateState("learningOutcomes");
+                      setAlerts([
+                        {
+                          type: "info",
+                          id: "learningOutcomes",
+                          title: `Attempting to delete learning outcome #${
+                            i + 1
+                          }.`,
+                        },
+                      ]);
 
                       setLearningOutcomes(nextLearningOutcomes);
-                      saveDataToServer({ nextLearningOutcomes });
+                      saveLearningOutcomes({ nextLearningOutcomes });
                     }}
                   />
                 </Flex>
@@ -781,8 +817,19 @@ export function GeneralActivityControls({
                     nextLearningOutcomes.push("");
                   }
 
+                  //Alert Messages
+                  setSuccessMessage("Blank learning outcome added.");
+                  setKeyToUpdateState("learningOutcomes");
+                  setAlerts([
+                    {
+                      type: "info",
+                      id: "learningOutcomes",
+                      title: "Attempting to add a learning outcome.",
+                    },
+                  ]);
+
                   setLearningOutcomes(nextLearningOutcomes);
-                  saveDataToServer({ nextLearningOutcomes });
+                  saveLearningOutcomes({ nextLearningOutcomes });
                 }}
               />
             </Center>
@@ -799,6 +846,7 @@ export function GeneralActivityControls({
               let nextIsPublic = "0";
               if (e.target.checked) {
                 nextIsPublic = "1";
+                setPublicAndDraftAreTheSame(true);
                 //Process making activity public here
                 compileActivity({
                   activityDoenetId: doenetId,
@@ -821,11 +869,9 @@ export function GeneralActivityControls({
                   },
                 });
               }
-              let isPublic = true;
               let title = "Setting Activity as public.";
               let nextSuccessMessage = "Activity is public.";
               if (nextIsPublic == "0") {
-                isPublic = false;
                 title = "Setting Activity as private.";
                 nextSuccessMessage = "Activity is private.";
               }
@@ -858,48 +904,6 @@ export function GeneralActivityControls({
               <QuestionOutlineIcon />
             </Tooltip>
           </Checkbox>
-          {/* <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic == "1"}
-            onChange={(e) => {
-              let nextIsPublic = "0";
-              if (e.target.checked) {
-                nextIsPublic = "1";
-                //Process making activity public here
-                compileActivity({
-                  activityDoenetId: doenetId,
-                  isAssigned: true,
-                  courseId,
-                  activity: {
-                    version: activityData.version,
-                    isSinglePage: true,
-                    content: activityData.content,
-                  },
-                  // successCallback: () => {
-                  //   addToast('Activity Assigned.', toastType.INFO);
-                  // },
-                });
-                updateAssignItem({
-                  doenetId,
-                  isAssigned: true,
-                  successCallback: () => {
-                    //addToast(assignActivityToast, toastType.INFO);
-                  },
-                });
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              //If we are making content public we can assume it's the same now
-              if (nextIsPublic == "1") {
-                setPublicAndDraftAreTheSame(true);
-              }
-              saveDataToServer({ nextIsPublic });
-            }}
-          >
-            Public
-          </Checkbox> */}
         </FormControl>
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
@@ -908,15 +912,12 @@ export function GeneralActivityControls({
   );
 }
 
-function SupportFilesControls() {
+function SupportFilesControls({ alerts, setAlerts }) {
   const { supportingFileData, doenetId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
 
   const fetcher = useFetcher();
-
-  let [alerts, setAlerts] = useState([]);
-
   //Update messages after action completes
   if (fetcher.data) {
     if (fetcher.data._action == "remove file") {
@@ -927,14 +928,44 @@ function SupportFilesControls() {
       if (index !== -1) {
         newAlerts.splice(index, 1, {
           id: newAlerts[index].id,
-          type: "info",
+          type: "success",
           title: `Removed`,
           description: newAlerts[index].description,
           stage: 2,
         });
         setAlerts(newAlerts);
       }
+    } else if (fetcher.data._action == "update description") {
+      //Guard against infinite loops
+      if (alerts[0]?.description != "Updated file description.") {
+        setAlerts([
+          {
+            type: "success",
+            id: `update file description`,
+            description: "Updated file description.",
+          },
+        ]);
+      }
     }
+  }
+
+  function updateFileDescription({ cid, description }) {
+    setAlerts([
+      {
+        type: "info",
+        id: `update file description`,
+        description: "Attempting to update file description.",
+      },
+    ]);
+    fetcher.submit(
+      {
+        _action: "update description",
+        doenetId,
+        cid,
+        description,
+      },
+      { method: "post" },
+    );
   }
 
   const onDrop = useCallback(async (acceptedFiles) => {
@@ -1034,7 +1065,6 @@ function SupportFilesControls() {
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
       <Tooltip
         hasArrow
         label={`${formatBytes(userQuotaBytesAvailable)}/${formatBytes(
@@ -1129,143 +1159,128 @@ function SupportFilesControls() {
           //Only allow to copy doenetML if they entered a description
           if (file.description == "") {
             return (
-              <Form key={`file${i}`} method="post">
-                <Card
-                  width="100%"
-                  height="100px"
-                  p="0"
-                  mt="5px"
-                  mb="5px"
-                  data-test="Support File Card Alt text"
-                  // background="doenet.mainGray"
-                >
-                  <HStack>
-                    <Image
-                      height="100px"
-                      maxWidth="100px"
-                      src={previewImagePath}
-                      alt="Support File Image"
-                      objectFit="cover"
-                      borderLeftRadius="md"
-                    />
+              <Card
+                key={`file${i}`}
+                width="100%"
+                height="100px"
+                p="0"
+                mt="5px"
+                mb="5px"
+                data-test="Support File Card Alt text"
+                // background="doenet.mainGray"
+              >
+                <HStack>
+                  <Image
+                    height="100px"
+                    maxWidth="100px"
+                    src={previewImagePath}
+                    alt="Support File Image"
+                    objectFit="cover"
+                    borderLeftRadius="md"
+                  />
 
-                    <CardBody p="1px">
-                      <VStack spacing="0px" align="flex-start">
-                        <Flex width="100%" justifyContent="space-between">
-                          <Center>
-                            <Text
-                              height="26px"
-                              lineHeight="1.1"
-                              fontSize="sm"
-                              fontWeight="700"
-                              noOfLines={1}
-                              textAlign="left"
-                            >
-                              File name: {file.asFileName}
-                            </Text>
-                          </Center>
-                          <Menu>
-                            <MenuButton
-                              as={IconButton}
-                              aria-label="Options"
-                              icon={<GoKebabVertical />}
-                              variant="ghost"
-                            />
-                            <MenuList>
-                              <MenuItem
-                                onClick={() => {
-                                  setAlerts([
-                                    {
-                                      id: file.cid,
-                                      type: "info",
-                                      title: "Removing",
-                                      description: file.asFileName,
-                                      stage: 1,
-                                    },
-                                  ]);
-                                  fetcher.submit(
-                                    {
-                                      _action: "remove file",
-                                      doenetId,
-                                      cid: file.cid,
-                                    },
-                                    { method: "post" },
-                                  );
-                                }}
-                              >
-                                Remove
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Flex>
-                        <Text fontSize="xs">
-                          {file.fileType == "text/csv" ? (
-                            <>DoenetML Name needed to use file</>
-                          ) : (
-                            <>Alt Text Description required to use file</>
-                          )}
-                        </Text>
-                        <InputGroup size="xs">
-                          <Input
-                            size="sm"
-                            name="description"
-                            mr="10px"
-                            placeholder={
-                              file.fileType == "text/csv"
-                                ? "Enter Name Here"
-                                : "Enter Description Here"
-                            }
-                            onBlur={(e) => {
-                              fetcher.submit(
-                                {
-                                  _action: "update description",
-                                  doenetId,
-                                  cid: file.cid,
-                                  description: e.target.value,
-                                },
-                                { method: "post" },
-                              );
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                  <CardBody p="1px">
+                    <VStack spacing="0px" align="flex-start">
+                      <Flex width="100%" justifyContent="space-between">
+                        <Center>
+                          <Text
+                            height="26px"
+                            lineHeight="1.1"
+                            fontSize="sm"
+                            fontWeight="700"
+                            noOfLines={1}
+                            textAlign="left"
+                          >
+                            File name: {file.asFileName}
+                          </Text>
+                        </Center>
+                        <Menu>
+                          <MenuButton
+                            as={IconButton}
+                            aria-label="Options"
+                            icon={<GoKebabVertical />}
+                            variant="ghost"
+                          />
+                          <MenuList>
+                            <MenuItem
+                              onClick={() => {
+                                setAlerts([
+                                  {
+                                    id: file.cid,
+                                    type: "info",
+                                    title: "Removing",
+                                    description: file.asFileName,
+                                    stage: 1,
+                                  },
+                                ]);
                                 fetcher.submit(
                                   {
-                                    _action: "update description",
+                                    _action: "remove file",
                                     doenetId,
                                     cid: file.cid,
-                                    description: e.target.value,
                                   },
                                   { method: "post" },
                                 );
-                              }
-                            }}
-                          />
-                          <InputRightElement width="4.5rem">
-                            <Button
-                              type="submit"
-                              colorScheme="blue"
-                              mt="8px"
-                              mr="12px"
-                              size="xs"
+                              }}
                             >
-                              Submit
-                            </Button>
-                          </InputRightElement>
-                          <input type="hidden" name="cid" value={file.cid} />
-                          <input
-                            type="hidden"
-                            name="doenetId"
-                            value={doenetId}
-                          />
-                        </InputGroup>
-                      </VStack>
-                    </CardBody>
-                  </HStack>
-                </Card>
-              </Form>
-              // <div key={`file${i}`}>{file.asFileName}Needs a alt text</div>
+                              Remove
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Flex>
+                      <Text fontSize="xs">
+                        {file.fileType == "text/csv" ? (
+                          <>DoenetML Name needed to use file</>
+                        ) : (
+                          <>Alt Text Description required to use file</>
+                        )}
+                      </Text>
+                      <InputGroup size="xs">
+                        <Input
+                          size="sm"
+                          name="description"
+                          mr="10px"
+                          placeholder={
+                            file.fileType == "text/csv"
+                              ? "Enter Name Here"
+                              : "Enter Description Here"
+                          }
+                          onBlur={(e) => {
+                            updateFileDescription({
+                              cid: file.cid,
+                              description: e?.target?.value,
+                            });
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              updateFileDescription({
+                                cid: file.cid,
+                                description: e?.target?.value,
+                              });
+                            }
+                          }}
+                        />
+                        <InputRightElement width="4.5rem">
+                          {/* Fires on blur */}
+                          <Button
+                            colorScheme="blue"
+                            mt="8px"
+                            mr="12px"
+                            size="xs"
+                          >
+                            Submit
+                          </Button>
+                        </InputRightElement>
+                        <input type="hidden" name="cid" value={file.cid} />
+                        <input type="hidden" name="doenetId" value={doenetId} />
+                      </InputGroup>
+                    </VStack>
+                  </CardBody>
+                </HStack>
+              </Card>
             );
           }
+
           return (
             <Card
               key={`file${file.cid}`}
@@ -1296,37 +1311,21 @@ function SupportFilesControls() {
                       <VStack spacing="2px" height="50px" align="flex-start">
                         {/* TODO: Make this editable */}
                         <Editable
-                          // mt="4px"
                           fontSize="md"
                           fontWeight="700"
                           noOfLines={1}
                           textAlign="left"
                           defaultValue={file.description}
                           onSubmit={(value) => {
-                            fetcher.submit(
-                              {
-                                _action: "update description",
-                                description: value,
-                                doenetId,
-                                cid: file.cid,
-                              },
-                              { method: "post" },
-                            );
+                            updateFileDescription({
+                              cid: file.cid,
+                              description: value,
+                            });
                           }}
                         >
                           <EditablePreview />
                           <EditableInput width="300px" />
                         </Editable>
-                        {/* <Text
-                          height="26px"
-                          // lineHeight="1.1"
-                          fontSize="md"
-                          fontWeight="700"
-                          noOfLines={1}
-                          textAlign="left"
-                        >
-                          {file.description}
-                        </Text> */}
                         <Text>
                           {file.fileType == "text/csv" ? (
                             <>{file.fileType} </>
@@ -1423,6 +1422,7 @@ function PortfolioActivitySettingsDrawer({
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
   const fetcher = useFetcher();
+  let [alerts, setAlerts] = useState([]);
 
   return (
     <Drawer
@@ -1437,9 +1437,13 @@ function PortfolioActivitySettingsDrawer({
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader>
           <Center>
-            {/* <Icon as={FaCog} mr="14px" /> */}
             <Text>Activity Controls</Text>
           </Center>
+          {alerts.length > 0 ? (
+            <AlertQueue alerts={alerts} setAlerts={setAlerts} />
+          ) : (
+            <Box h="48px" />
+          )}
         </DrawerHeader>
 
         <DrawerBody>
@@ -1457,9 +1461,6 @@ function PortfolioActivitySettingsDrawer({
               >
                 Support Files
               </Tab>
-              {/* <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
-                Pages & Orders
-              </Tab> */}
             </TabList>
             <Box overflowY="scroll" height="calc(100vh - 120px)">
               <TabPanels>
@@ -1470,14 +1471,16 @@ function PortfolioActivitySettingsDrawer({
                     activityData={activityData}
                     courseId={courseId}
                     setPublicAndDraftAreTheSame={setPublicAndDraftAreTheSame}
+                    setAlerts={setAlerts}
                   />
                 </TabPanel>
                 <TabPanel>
-                  <SupportFilesControls onClose={onClose} />
+                  <SupportFilesControls
+                    onClose={onClose}
+                    alerts={alerts}
+                    setAlerts={setAlerts}
+                  />
                 </TabPanel>
-                {/* <TabPanel>
-                  <Button size="sm">Enable Pages & Orders</Button>
-                </TabPanel> */}
               </TabPanels>
             </Box>
           </Tabs>
