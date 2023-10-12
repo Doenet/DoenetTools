@@ -21,10 +21,13 @@ import {
   faTasks,
 } from "@fortawesome/free-solid-svg-icons";
 import { coursePermissionsAndSettingsByCourseId } from "../../../_reactComponents/Course/CourseActions";
+import { useNavigate } from "react-router";
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const navigate = useNavigate();
+
   const {
     canModifyCourseSettings,
     canManageUsers,
@@ -92,14 +95,7 @@ export default function Dashboard(props) {
               name="Data"
               icon={<FontAwesomeIcon icon={faChartPie} />}
               value="Data"
-              onClick={() =>
-                setPageToolView({
-                  page: "course",
-                  tool: "data",
-                  view: "",
-                  params: { courseId },
-                })
-              }
+              onClick={() => navigate(`/coursedata/${courseId}/`)}
             />
           ) : null}
           {canViewAndModifyGrades === "1" ? (

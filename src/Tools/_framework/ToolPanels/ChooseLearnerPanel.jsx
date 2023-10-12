@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 // import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from "axios";
-import { useToast, toastType } from "../../../Tools/_framework/Toast";
+import { useToast } from "../../../Tools/_framework/Toast";
 import { searchParamAtomFamily, pageToolViewAtom } from "../NewToolRoot";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import ButtonGroup from "../../../_reactComponents/PanelHeaderComponents/ButtonGroup";
@@ -17,6 +17,8 @@ import {
   checkIfUserClearedOut,
   clearUsersInformationFromTheBrowser,
 } from "../../../_utils/applicationUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 
 export const Styles = styled.div`
   padding: 1rem;
@@ -124,7 +126,13 @@ export const Styles = styled.div`
   }
 `;
 
-export default function ChooseLearnerPanel(props) {
+const sortColumns = Object.freeze({
+  FIRST_NAME: "firstName",
+  LAST_NAME: "lastName",
+  STUDENT_ID: "studentId",
+});
+
+export default function ChooseLearnerPanel() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   let [stage, setStage] = useState("request password");
@@ -139,6 +147,7 @@ export default function ChooseLearnerPanel(props) {
   let [selectedExamLabel, setSelectedExamLabel] = useState("");
   let clearingUserRef = useRef(false);
   let [clearingMessageJSX, setClearingMessageJSX] = useState(null);
+  const [sortedBy, setSortedBy] = useState({ column: "", descending: true });
 
   // checkIfUserClearedOut().then((resp)=>{
   //   console.log("Check",resp)
@@ -147,26 +156,22 @@ export default function ChooseLearnerPanel(props) {
   const addToast = useToast();
 
   const newAttempt = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (doenetId, code, userId, resumeAttemptFlag) => {
-        if (!resumeAttemptFlag) {
-          const { data } = await axios.get(
-            "/api/incrementAttemptNumberForExam.php",
-            {
-              params: { doenetId, code, userId },
-            },
-          );
-        }
+    () => async (doenetId, code, userId, resumeAttemptFlag) => {
+      if (!resumeAttemptFlag) {
+        await axios.get("/api/incrementAttemptNumberForExam.php", {
+          params: { doenetId, code, userId },
+        });
+      }
 
-        // console.log(">>>>data 2",data)
-        // console.log(">>>>",doenetId,code,userId)
+      // console.log(">>>>data 2",data)
+      // console.log(">>>>",doenetId,code,userId)
 
-        location.href = `/api/examjwt.php?userId=${encodeURIComponent(
-          choosenLearner.userId,
-        )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(
-          code,
-        )}`;
-      },
+      location.href = `/api/examjwt.php?userId=${encodeURIComponent(
+        choosenLearner.userId,
+      )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(
+        code,
+      )}`;
+    },
   );
 
   const setDoenetId = useRecoilCallback(
@@ -202,6 +207,33 @@ export default function ChooseLearnerPanel(props) {
       }
     }
   }
+
+  function updateFilter(e) {
+    setFilter(e.target.value);
+  }
+
+  function setColSort(column, descending = null) {
+    setSortedBy((prev) => {
+      if (prev.column !== column) {
+        return { column, descending: true };
+      }
+      return {
+        column,
+        descending: descending !== null ? descending : !prev.descending,
+      };
+    });
+  }
+
+  useEffect(() => {
+    const descMultiplier = sortedBy.descending ? 1 : -1;
+    setLearners((prev) =>
+      [...prev].sort((a, b) => {
+        return (
+          (a[sortedBy.column] < b[sortedBy.column] ? -1 : 1) * descMultiplier
+        );
+      }),
+    );
+  }, [sortedBy.column, sortedBy.descending]);
 
   if (stage === "request password" || stage === "problem with code") {
     return (
@@ -360,7 +392,9 @@ export default function ChooseLearnerPanel(props) {
     let learnerRows = [];
 
     let examTimeLimit = examsById[doenetId].timeLimit;
-
+    if (sortedBy.column === "") {
+      setColSort(sortColumns.LAST_NAME);
+    }
     for (let learner of learners) {
       //filter
       if (
@@ -464,13 +498,43 @@ export default function ChooseLearnerPanel(props) {
           <div style={{ marginRight: "15px", fontSize: "16pt" }}>
             Exam: {selectedExamLabel}
           </div>{" "}
-          <SearchBar autoFocus onChange={setFilter} width="100%" />
+          <SearchBar onChange={updateFilter} width="100%" />
         </div>
         <table>
           <thead>
-            <th style={{ width: "200px" }}>First Name</th>
-            <th style={{ width: "200px" }}>Last Name</th>
-            <th style={{ width: "200px" }}>Student ID</th>
+            <th
+              style={{ width: "200px" }}
+              onClick={() => setColSort(sortColumns.FIRST_NAME)}
+            >
+              <u>First Name</u>{" "}
+              {sortedBy.column === sortColumns.FIRST_NAME && (
+                <FontAwesomeIcon
+                  icon={sortedBy.descending ? faCaretUp : faCaretDown}
+                />
+              )}
+            </th>
+            <th
+              style={{ width: "200px" }}
+              onClick={() => setColSort(sortColumns.LAST_NAME)}
+            >
+              <u>Last Name</u>{" "}
+              {sortedBy.column === sortColumns.LAST_NAME && (
+                <FontAwesomeIcon
+                  icon={sortedBy.descending ? faCaretUp : faCaretDown}
+                />
+              )}
+            </th>
+            <th
+              style={{ width: "200px" }}
+              onClick={() => setColSort(sortColumns.STUDENT_ID)}
+            >
+              <u>Student ID</u>{" "}
+              {sortedBy.column === sortColumns.STUDENT_ID && (
+                <FontAwesomeIcon
+                  icon={sortedBy.descending ? faCaretUp : faCaretDown}
+                />
+              )}
+            </th>
             <th style={{ width: "240px" }}>Last Exam</th>
             <th style={{ width: "60px" }}>Choose</th>
           </thead>

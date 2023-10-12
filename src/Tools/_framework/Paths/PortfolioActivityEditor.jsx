@@ -493,7 +493,7 @@ function SupportFilesControls() {
 
           let fileNameNoExtension = file.fileName.split(".")[0];
 
-          let doenetMLCode = `<image source='doenet:cid=${fileNameNoExtension}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' height='${file.height}' mimeType='${file.fileType}' />`;
+          let doenetMLCode = `<image source='doenet:cid=${fileNameNoExtension}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' mimeType='${file.fileType}' />`;
 
           if (file.fileType == "text/csv") {
             previewImagePath = "/activity_default.jpg";

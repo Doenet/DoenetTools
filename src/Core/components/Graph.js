@@ -1221,6 +1221,40 @@ export default class Graph extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.boundingbox = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        xmin: {
+          dependencyType: "stateVariable",
+          variableName: "xmin",
+        },
+        xmax: {
+          dependencyType: "stateVariable",
+          variableName: "xmax",
+        },
+        ymin: {
+          dependencyType: "stateVariable",
+          variableName: "ymin",
+        },
+        ymax: {
+          dependencyType: "stateVariable",
+          variableName: "ymax",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          setValue: {
+            boundingbox: [
+              dependencyValues.xmin,
+              dependencyValues.ymax,
+              dependencyValues.xmax,
+              dependencyValues.ymin,
+            ],
+          },
+        };
+      },
+    };
+
     stateVariableDefinitions.xscale = {
       public: true,
       shadowingInstructions: {

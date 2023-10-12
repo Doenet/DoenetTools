@@ -20,7 +20,6 @@ import {
   searchParamAtomFamily,
   suppressMenusAtom,
 } from "../NewToolRoot";
-import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import axios from "axios";
 import {
   activityStatusAtom,
@@ -389,12 +388,17 @@ export default function GradebookStudentAssignmentView() {
   }
 
   let studentName = `${students.contents[userId]?.firstName} ${students.contents[userId]?.lastName}`;
-
+  const section = students.contents[userId]?.section;
   return (
     <>
       <div style={{ marginLeft: "18px" }}>
         <b>Gradebook for {studentName}</b>
       </div>
+      {section && (
+        <div style={{ marginLeft: "18px" }}>
+          <b>Section {section}</b>
+        </div>
+      )}
       <div style={{ paddingLeft: "18px" }}>
         <b>{label}</b>
       </div>

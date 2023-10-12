@@ -10529,6 +10529,23 @@ describe("Point Tag Tests 2", function () {
       .should("have.text", "(1,√−1)");
 
     cy.get(cesc2("#/mi1") + " textarea").type(
+      "{end}{leftArrow}{backspace}2{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/mi2") + " textarea").type(
+      "{home}{rightArrow}{rightArrow}{backspace}2{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc2("#/C1a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(√−1,2)");
+    cy.get(cesc2("#/C2a") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "(2,√−1)");
+
+    cy.get(cesc2("#/mi1") + " textarea").type(
       "{end}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}-1{enter}",
       { force: true },
     );
@@ -10538,14 +10555,14 @@ describe("Point Tag Tests 2", function () {
       { force: true },
     );
 
-    cy.get(cesc2("#/C2a") + " .mjx-mrow").should("contain.text", "(1,−1)");
+    cy.get(cesc2("#/C2a") + " .mjx-mrow").should("contain.text", "(2,−1)");
 
     cy.get(cesc2("#/C1a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(−1,1)");
+      .should("have.text", "(−1,2)");
     cy.get(cesc2("#/C2a") + " .mjx-mrow")
       .eq(0)
-      .should("have.text", "(1,−1)");
+      .should("have.text", "(2,−1)");
   });
 
   it("skip actions when drag slow point", () => {

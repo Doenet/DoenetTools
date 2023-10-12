@@ -74,6 +74,14 @@ import {
   action as courseActivityEditorAction,
 } from "./Tools/_framework/Paths/CourseActivityEditor";
 import {
+  CourseData,
+  loader as courseDataLoader,
+} from "./Tools/_framework/Paths/CourseData";
+import {
+  SurveyResults,
+  loader as surveyResultsLoader,
+} from "./Tools/_framework/Paths/SurveyResults";
+import {
   CourseLinkPageViewer,
   loader as courseLinkPageViewerLoader,
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
@@ -395,7 +403,6 @@ const router = createBrowserRouter([
     path: "/courseactivityeditor/:doenetId/:pageId",
     loader: courseActivityEditorLoader,
     action: courseActivityEditorAction,
-    // errorElement: <div>Error!</div>,
     element: (
       <MathJaxContext
         version={2}
@@ -406,6 +413,34 @@ const router = createBrowserRouter([
           <CourseActivityEditor />
         </ChakraProvider>
       </MathJaxContext>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/coursedata/:courseId",
+    loader: courseDataLoader,
+    element: (
+      <ChakraProvider theme={theme}>
+        <CourseData />
+      </ChakraProvider>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "/surveyresults/:doenetId",
+    loader: surveyResultsLoader,
+    element: (
+      <ChakraProvider theme={theme}>
+        <SurveyResults />
+      </ChakraProvider>
     ),
     errorElement: (
       <ChakraProvider theme={theme}>

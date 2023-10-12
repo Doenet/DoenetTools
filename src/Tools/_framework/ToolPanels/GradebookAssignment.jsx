@@ -305,6 +305,9 @@ export default function GradebookAssignmentView() {
   let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let overview = useRecoilValueLoadable(overviewData);
   let students = useRecoilValueLoadable(studentData);
+  let noStudentHasASection =
+    students.contents[Object.keys(students.contents)?.[0]]
+      ?.noStudentHasASection;
   let process = useRecoilValue(processGradesAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let { canViewAndModifyGrades } = useRecoilValue(
@@ -366,6 +369,15 @@ export default function GradebookAssignmentView() {
     accessor: "student",
   });
 
+  if (!noStudentHasASection) {
+    assignmentsTable.headers.push({
+      Header: "Section",
+      Footer: "",
+      accessor: "section",
+      disableFilters: true,
+    });
+  }
+
   for (let i = 1; i <= maxAttempts; i++) {
     assignmentsTable.headers.push({
       Header: "Attempt " + i,
@@ -414,6 +426,7 @@ export default function GradebookAssignmentView() {
   for (let userId in students.contents) {
     let firstName = students.contents[userId].firstName;
     let lastName = students.contents[userId].lastName;
+    let section = students.contents[userId].section;
     let row = {};
 
     let name = firstName + " " + lastName;
@@ -431,7 +444,9 @@ export default function GradebookAssignmentView() {
         {name}
       </a>
     );
-
+    if (!noStudentHasASection) {
+      row["section"] = section;
+    }
     for (let i = 1; i <= maxAttempts; i++) {
       let attemptCredit = attempts.contents[userId]?.attempts[i];
       let pointsEarned =

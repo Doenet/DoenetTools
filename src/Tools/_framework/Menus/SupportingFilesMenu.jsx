@@ -406,11 +406,11 @@ export default function SupportingFilesMenu(props) {
   let supportFilesJSX = [];
 
   supportingFiles.map(
-    ({ cid, fileName, fileType, width, height, description, asFileName }) => {
+    ({ cid, fileName, fileType, width, description, asFileName }) => {
       let doenetMLCode = "Error";
       let source = `doenet:cid=${cid}`;
       if (fileType === "image/jpeg" || fileType === "image/png") {
-        doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`;
+        doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' mimeType='${fileType}' />`;
         let description_required_css = {};
         // if (description === ''){
         //   description_required_css = {border:"solid 2px #C1292E"}
