@@ -9791,7 +9791,7 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/a3"].stateValues.value).eq(Infinity);
     });
 
-    cy.log(`unicode µ U+u00B5 becomes mu`);
+    cy.log(`unicode µ U+00B5 becomes mu`);
 
     cy.get(cesc("#\\/a") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}\u00B5{enter}",
@@ -9831,7 +9831,7 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/a3"].stateValues.value).eq("mu");
     });
 
-    cy.log(`unicode μ U+u03BC becomes mu`);
+    cy.log(`unicode μ U+03BC becomes mu`);
 
     cy.get(cesc("#\\/a") + " textarea").type(
       "{ctrl+home}{shift+end}{backspace}\u03BC{enter}",
@@ -9869,6 +9869,46 @@ describe("MathInput Tag Tests", function () {
       expect(stateVariables["/a"].stateValues.value).eq("mu");
       expect(stateVariables["/a2"].stateValues.value).eq("mu");
       expect(stateVariables["/a3"].stateValues.value).eq("mu");
+    });
+
+    cy.log(`unicode ′ U+2032 becomes apostrophe`);
+
+    cy.get(cesc("#\\/a") + " textarea").type(
+      "{ctrl+home}{shift+end}{backspace}f\u2032{enter}",
+      { force: true },
+    );
+
+    cy.get(cesc("#\\/a") + " .mq-editable-field").should(
+      "contain.text",
+      "f\u2032",
+    );
+    cy.get(cesc("#\\/a2") + " .mjx-mrow").should("contain.text", "f\u2032");
+    cy.get(cesc("#\\/a3") + " .mjx-mrow").should("contain.text", "f\u2032");
+
+    cy.get(cesc("#\\/a") + " .mq-editable-field")
+      .invoke("text")
+      .then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, "")).equal("f\u2032");
+      });
+    cy.get(cesc("#\\/a2"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f\u2032");
+      });
+    cy.get(cesc("#\\/a3"))
+      .find(".mjx-mrow")
+      .eq(0)
+      .invoke("text")
+      .then((text) => {
+        expect(text.trim()).equal("f\u2032");
+      });
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/a"].stateValues.value).eqls(["prime", "f"]);
+      expect(stateVariables["/a2"].stateValues.value).eqls(["prime", "f"]);
+      expect(stateVariables["/a3"].stateValues.value).eqls(["prime", "f"]);
     });
   });
 
