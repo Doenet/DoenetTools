@@ -261,7 +261,7 @@ export default class SolveEquations extends InlineComponent {
           f_base = formula.f();
         } catch (e) {
           let message =
-            "Cannot solve equation as could not parse equation: " +
+            "Cannot solve equation as could not evaluate equation: " +
             expression.toString();
           let warnings = [{ message, level: 1 }];
 
