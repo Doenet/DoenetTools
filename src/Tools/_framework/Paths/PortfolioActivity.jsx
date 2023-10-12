@@ -1830,7 +1830,9 @@ function ViewerPanel({
         narrowMode && editMode ? "calc(50vh - 30px)" : "calc(100vh - 50px)"
       }
       spacing={0}
-      width="100%"
+      width={narrowMode ? "calc(100% - 20px)" : "calc(100% - 10px)"}
+      ml="10px"
+      mr={narrowMode ? "10px" : undefined}
     >
       <HStack
         w="100%"
@@ -2019,7 +2021,10 @@ function EditorPanel({
       mt="5px"
       height={narrowMode ? "calc(50vh - 60px)" : "calc(100vh - 50px)"}
       spacing={0}
-      width="100%"
+      // width="100%"
+      width={narrowMode ? "calc(100% - 20px)" : "calc(100% - 10px)"}
+      ml={narrowMode ? "10px" : undefined}
+      mr="10px"
     >
       <HStack w="100%" h="32px" mb="2px" mr="10px" justifyContent="flex-end">
         <Box>
