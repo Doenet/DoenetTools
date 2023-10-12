@@ -1023,4 +1023,20 @@ describe("SolveEquations Tag Tests", function () {
       );
     });
   });
+
+  it("handle bad equation", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <solveEquations name="solve">x_(2t)=1</solveEquations>
+  <p>Number of solutions: <copy prop="numSolutions" target="solve" assignNames="num" /></p>
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/num")).should("have.text", 0);
+  });
 });

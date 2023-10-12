@@ -255,7 +255,19 @@ export default class SolveEquations extends InlineComponent {
         let formula = me
           .fromAst(["+", expression.tree[1], ["-", expression.tree[2]]])
           .subscripts_to_strings();
-        let f_base = formula.f();
+
+        let f_base;
+        try {
+          f_base = formula.f();
+        } catch (e) {
+          let message =
+            "Cannot solve equation as could not parse equation: " +
+            expression.toString();
+          let warnings = [{ message, level: 1 }];
+
+          return { setValue: { allSolutions: [] }, sendWarnings: warnings };
+        }
+
         let f = (x) => f_base({ [varName]: x });
 
         let f_symbolic = (x) =>
