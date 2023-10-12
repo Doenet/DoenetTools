@@ -2021,7 +2021,6 @@ function EditorPanel({
       mt="5px"
       height={narrowMode ? "calc(50vh - 60px)" : "calc(100vh - 50px)"}
       spacing={0}
-      // width="100%"
       width={narrowMode ? "calc(100% - 20px)" : "calc(100% - 10px)"}
       ml={narrowMode ? "10px" : undefined}
       mr="10px"
@@ -2242,6 +2241,13 @@ const MainContent = ({
           browserWidth,
         });
         templateRows = `1fr`;
+      }
+    } else {
+      if (narrowMode) {
+        templateAreas = `"alerts"
+        "viewer"`;
+        templateColumns = `1fr`;
+        templateRows = `40px 1fr`;
       }
     }
 
