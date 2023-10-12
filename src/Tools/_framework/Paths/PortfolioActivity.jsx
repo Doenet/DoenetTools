@@ -1823,12 +1823,21 @@ function ViewerPanel({
     allPossibleVariants: ["a"],
   });
 
+  //Not narrow
+  let wrappingHeight = "calc(100vh - 50px)";
+  if (narrowMode) {
+    //Narrow not editting
+    wrappingHeight = "calc(100vh - 90px)";
+    if (editMode) {
+      //Narrow and editting
+      wrappingHeight = "calc(50vh - 45px)";
+    }
+  }
+
   return (
     <VStack
       mt="5px"
-      height={
-        narrowMode && editMode ? "calc(50vh - 30px)" : "calc(100vh - 50px)"
-      }
+      height={wrappingHeight}
       spacing={0}
       width={narrowMode ? "calc(100% - 20px)" : "calc(100% - 10px)"}
       ml="10px"
