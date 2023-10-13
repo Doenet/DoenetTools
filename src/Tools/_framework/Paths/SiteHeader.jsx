@@ -137,7 +137,7 @@ export function SiteHeader(props) {
                 {/* <Button display={{ base: "flex", md: "none" }}>
                   TABS HERE
                 </Button> */}
-                <RouterLogo />
+                <RouterLogo to={`portfolio/${portfolioCourseId}`} />
                 <Text ml={1}>Doenet</Text>
               </Center>
             </GridItem>

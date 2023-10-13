@@ -27,7 +27,7 @@ const LogoButton = styled.button`
   }
 `;
 
-export default function RouterLogo({ hasLink = true }) {
+export default function RouterLogo({ to, hasLink = true }) {
   let navigate = useNavigate();
 
   return (
@@ -35,7 +35,7 @@ export default function RouterLogo({ hasLink = true }) {
       hasLink={hasLink}
       onClick={() => {
         if (hasLink) {
-          navigate("/");
+          navigate(to);
         }
       }}
     />

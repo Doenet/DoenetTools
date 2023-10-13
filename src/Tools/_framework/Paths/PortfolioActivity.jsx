@@ -89,6 +89,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { FiBook } from "react-icons/fi";
 import Papa from "papaparse";
+import RouterLogo from "../RouterLogo";
 
 export async function loader({ params, request }) {
   let doenetId = params.doenetId;
@@ -129,7 +130,7 @@ export async function loader({ params, request }) {
     }
 
     const response = await axios.get("/api/getPorfolioCourseId.php");
-    let { firstName, lastName, email } = response.data;
+    let { firstName, lastName, email, portfolioCourseId } = response.data;
 
     const draftDoenetMLResponse = await axios.get(
       `/media/byPageId/${pageId}.doenet`,
@@ -211,6 +212,7 @@ export async function loader({ params, request }) {
       supportingFileData,
       editModeInit,
       onLoadPublicAndDraftAreTheSame,
+      portfolioCourseId,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -1511,8 +1513,8 @@ export function PortfolioActivity() {
     activityData,
     editModeInit,
     onLoadPublicAndDraftAreTheSame,
+    portfolioCourseId,
   } = useLoaderData();
-
   // const { signedIn } = useOutletContext();
 
   if (!success) {
@@ -1660,8 +1662,13 @@ export function PortfolioActivity() {
             overflow="hidden"
             background="doenet.canvas"
           >
-            <GridItem area="leftHeader" pl="10px" pr="10px">
-              <EditableActivityLabel setMainAlerts={setMainAlerts} />
+            <GridItem area="leftHeader" pl="0px" pr="10px">
+              <HStack>
+                <Box w="50px" mt="7px">
+                  <RouterLogo to={`/portfolio/${portfolioCourseId}`} />
+                </Box>
+                <EditableActivityLabel setMainAlerts={setMainAlerts} />
+              </HStack>
             </GridItem>
             {!narrowMode && (
               <GridItem area="alertHeader" pl="10px" pr="10px" w="400px">
