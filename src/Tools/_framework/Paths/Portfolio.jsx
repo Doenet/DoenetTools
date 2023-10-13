@@ -14,13 +14,13 @@ import {
   DrawerContent,
   DrawerOverlay,
   Drawer,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useOutletContext,
   useLoaderData,
-  useNavigate,
   useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
@@ -247,6 +247,8 @@ export function Portfolio() {
 
   const settingsOpenedForDoenetId = useRef(null);
 
+  const [addingActivity, setAddingActivity] = useState(false);
+
   if (fetcher.state == "loading" && fetcher.data?._action == "Add Activity") {
     if (fetcher.data.doenetId !== doenetId) {
       setDoenetId(fetcher.data.doenetId);
@@ -257,6 +259,7 @@ export function Portfolio() {
   ) {
     if (!settingsAreOpen && settingsOpenedForDoenetId.current != doenetId) {
       settingsOpenedForDoenetId.current = doenetId;
+      setAddingActivity(false);
       settingsOnOpen();
     }
   }
@@ -304,16 +307,18 @@ export function Portfolio() {
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
               data-test="Add Activity"
+              isDisabled={addingActivity}
               size="xs"
               colorScheme="blue"
               onClick={() => {
+                setAddingActivity(true);
                 fetcher.submit(
                   { _action: "Add Activity", doenetId },
                   { method: "post" },
                 );
               }}
             >
-              Add Activity
+              Add Activity {addingActivity && <Spinner ml="10px" size="xs" />}
             </Button>
           </div>
         </Box>
