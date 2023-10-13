@@ -2073,7 +2073,7 @@ function EditorPanel({
           </Tooltip>
         </Box>
         <Link
-          href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
+          href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
           isExternal
           data-test="Documentation Link"
         >
