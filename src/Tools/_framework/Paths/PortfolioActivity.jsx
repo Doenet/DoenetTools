@@ -1746,8 +1746,8 @@ export function PortfolioActivity() {
                             }
                           }}
                         >
-                          <option value="draft">Draft</option>
                           <option value="public">Public</option>
+                          <option value="draft">Draft</option>
                         </Select>
                       )}
                     </>
@@ -1868,20 +1868,30 @@ function ViewerPanel({
             />
           </Box>
         )}
-        {editMode || layer == "public" ? (
+        {editMode ? (
           <Spacer h="32px" />
         ) : (
-          <Button
-            size="sm"
-            data-test="Edit"
-            rightIcon={<EditIcon />}
-            onClick={() => {
-              setSearchParams({ edit: "true" }, { replace: true });
-              setEditMode(true);
-            }}
+          <Tooltip
+            label={
+              layer == "public"
+                ? "Not Allowed to Edit the Public Layer"
+                : "Enter Edit Mode"
+            }
+            hasArrow
           >
-            Edit
-          </Button>
+            <Button
+              size="sm"
+              data-test="Edit"
+              isDisabled={layer == "public"}
+              rightIcon={<EditIcon />}
+              onClick={() => {
+                setSearchParams({ edit: "true" }, { replace: true });
+                setEditMode(true);
+              }}
+            >
+              Edit
+            </Button>
+          </Tooltip>
         )}
       </HStack>
 
