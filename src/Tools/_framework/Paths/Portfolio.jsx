@@ -178,9 +178,8 @@ function PortfolioSettingsDrawer({
   doenetId,
   data,
   courseId,
+  newActivityDoenetId,
 }) {
-  // const { pageId, activityData } = useLoaderData();
-  // console.log({ doenetId, data });
   const fetcher = useFetcher();
   let activityData;
   if (doenetId) {
@@ -214,7 +213,11 @@ function PortfolioSettingsDrawer({
         <DrawerCloseButton />
         <DrawerHeader>
           <Center>
-            <Text>Activity Settings</Text>
+            {newActivityDoenetId == doenetId ? (
+              <Text>Activity Settings For New Activity</Text>
+            ) : (
+              <Text>Activity Settings</Text>
+            )}
           </Center>
         </DrawerHeader>
 
@@ -248,10 +251,12 @@ export function Portfolio() {
   const settingsOpenedForDoenetId = useRef(null);
 
   const [addingActivity, setAddingActivity] = useState(false);
+  const [newActivityDoenetId, setNewActivityDoenetId] = useState("");
 
   if (fetcher.state == "loading" && fetcher.data?._action == "Add Activity") {
     if (fetcher.data.doenetId !== doenetId) {
       setDoenetId(fetcher.data.doenetId);
+      setNewActivityDoenetId(fetcher.data.doenetId);
     }
   } else if (
     fetcher.state == "idle" &&
@@ -282,6 +287,7 @@ export function Portfolio() {
         doenetId={doenetId}
         data={data}
         courseId={data.courseId}
+        newActivityDoenetId={newActivityDoenetId}
       />
       <PortfolioGrid>
         <Box
@@ -384,10 +390,6 @@ export function Portfolio() {
             ) : (
               <>
                 {data.privateActivities.map((activity) => {
-                  let isNewActivity = false;
-                  if (settingsOpenedForDoenetId.current == activity.doenetId) {
-                    isNewActivity = true;
-                  }
                   return (
                     <RecoilActivityCard
                       key={`Card${activity.doenetId}`}
@@ -398,7 +400,7 @@ export function Portfolio() {
                       setDoenetId={setDoenetId}
                       onClose={settingsOnClose}
                       onOpen={settingsOnOpen}
-                      isNewActivity={isNewActivity}
+                      isNewActivity={newActivityDoenetId == activity.doenetId}
                     />
                   );
                 })}
