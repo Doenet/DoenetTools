@@ -1664,9 +1664,9 @@ export function PortfolioActivity() {
           >
             <GridItem area="leftHeader" pl="0px" pr="10px">
               <HStack>
-                <Box w="50px" mt="7px">
+                <Flex>
                   <RouterLogo to={`/portfolio/${portfolioCourseId}`} />
-                </Box>
+                </Flex>
                 <EditableActivityLabel setMainAlerts={setMainAlerts} />
               </HStack>
             </GridItem>

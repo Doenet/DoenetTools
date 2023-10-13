@@ -17,9 +17,10 @@ const LogoButton = styled.button`
   border-radius: 10px;
   align-items: center;
   border-style: none;
+
   // border-radius: 50%;
   // margin-top: 8px;
-  // margin-left: 90px;
+  margin-left: 5px;
   cursor: ${(props) => (props.hasLink ? "pointer" : "default")};
   &:focus {
     outline: 2px solid var(--canvastext);
