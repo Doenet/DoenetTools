@@ -5,8 +5,11 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
 import { RecoilRoot } from "recoil";
 import { createRoot } from "react-dom/client";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
@@ -46,12 +49,10 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
-import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
 import {
@@ -80,6 +81,11 @@ import {
   CourseLinkPageViewer,
   loader as courseLinkPageViewerLoader,
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
+import {
+  SignIn,
+  loader as signInLoader,
+  action as signInAction,
+} from "./Tools/_framework/Paths/SignIn";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -318,6 +324,21 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "signin",
+    loader: signInLoader,
+    action: signInAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignIn />
+      </ChakraProvider>
+    ),
   },
   {
     path: "public",
