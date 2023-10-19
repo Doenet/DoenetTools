@@ -11,12 +11,16 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Heading,
   Image,
   Input,
+  PinInput,
+  PinInputField,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 import { useFetcher } from "react-router-dom";
@@ -38,11 +42,12 @@ export async function action({ params, request }) {
 
   try {
     if (formObj._action == "submit email") {
-      let { data } = axios.get("/api/sendSignInEmail.php", {
-        params: { email: params.emailAddress },
+      let { data } = await axios.get("/api/sendSignInEmail.php", {
+        params: { email: formObj.emailAddress },
       });
       return {
         _action: formObj._action,
+        deviceName: data.deviceName,
         success: true,
       };
     }
@@ -53,12 +58,11 @@ export async function action({ params, request }) {
   }
 }
 
-function AskForEmailCard() {
+function AskForEmailCard({ fetcher }) {
   const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const fetcher = useFetcher();
 
   return (
     <Card
@@ -148,12 +152,112 @@ function AskForEmailCard() {
   );
 }
 
+function EnterCodeCard({ fetcher }) {
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState(null);
+  console.log("code", code);
+  console.log("codeError", codeError);
+  return (
+    <Card
+      direction={{ base: "column", sm: "row" }}
+      overflow="hidden"
+      pt={4}
+      pb={1}
+    >
+      <Flex alignItems="center" justifyContent="center">
+        <Image
+          objectFit="cover"
+          w={{ base: "0px", lg: "160px", xl: "250px" }}
+          h={{ base: "0px", lg: "160px", xl: "250px" }}
+          alt="Doenet Logo"
+          src={"/Doenet_Logo_Frontpage.png"}
+        />
+      </Flex>
+      <Stack>
+        <CardBody w="350px" p={2}>
+          <Flex alignItems="center" justifyContent="center" mb="20px">
+            <Image
+              objectFit="cover"
+              w={{ base: "200px", lg: "0px" }}
+              h={{ base: "200px", lg: "0px" }}
+              alt="Doenet Logo"
+              src={"/Doenet_Logo_Frontpage.png"}
+            />
+          </Flex>
+          <Heading size="lg">Check your email for the code.</Heading>
+
+          <FormControl isInvalid={codeError} mt="20px">
+            <FormLabel>Code (9 digit code):</FormLabel>
+            <HStack>
+              <PinInput onChange={(code) => setCode(code)}>
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+              </PinInput>
+            </HStack>
+            <FormErrorMessage>{codeError}</FormErrorMessage>
+          </FormControl>
+        </CardBody>
+
+        <CardFooter>
+          <Flex w="100%" justifyContent="center">
+            <Button
+              variant="solid"
+              colorScheme="blue"
+              onClick={() => {
+                if (code == "") {
+                  setCodeError(
+                    "Please enter the nine digits sent to your email.",
+                  );
+                } else if (code.length < 9) {
+                  setCodeError("Please enter all nine digits.");
+                } else {
+                  setCodeError(null);
+                }
+                //else if (!emailRegex.test(emailAddress)) {
+                //   setEmailError("Invalid email format");
+                // } else {
+                //   setEmailError(null);
+                //   //Email is correct
+                //   fetcher.submit(
+                //     {
+                //       _action: "submit email",
+                //       emailAddress,
+                //       staySignedIn: isChecked,
+                //     },
+                //     { method: "post" },
+                //   );
+                // }
+              }}
+            >
+              Submit Code
+            </Button>
+          </Flex>
+        </CardFooter>
+      </Stack>
+    </Card>
+  );
+}
+
 export function SignIn() {
   const { success } = useLoaderData();
+  const fetcher = useFetcher();
 
-  const [stage, setStage] = useState("Init");
-  console.log(success);
-  // const fetcher = useFetcher();
+  let card = <AskForEmailCard fetcher={fetcher} />;
+
+  // console.log("fetcher", fetcher);
+  if (fetcher.state === "idle" && fetcher.data?._action === "submit email") {
+    card = <div>test</div>;
+  }
+
+  card = <EnterCodeCard fetcher={fetcher} />;
+
   // const setActivityByDoenetId = useSetRecoilState(itemByDoenetId(doenetId)); //TODO: remove after recoil is gone
   // const setPageByDoenetId = useSetRecoilState(itemByDoenetId(pageId)); //TODO: remove after recoil is gone
 
@@ -189,9 +293,7 @@ export function SignIn() {
   return (
     <>
       <Box w="100vw" h="100vh" bg="gray.100">
-        <AbsoluteCenter>
-          <AskForEmailCard />
-        </AbsoluteCenter>
+        <AbsoluteCenter>{card}</AbsoluteCenter>
       </Box>
     </>
   );
