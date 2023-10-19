@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { useFetcher } from "react-router-dom";
 
 export async function loader({ request, params }) {
@@ -38,16 +38,48 @@ export async function loader({ request, params }) {
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  console.log({ formObj });
 
   try {
     if (formObj._action == "submit email") {
       let { data } = await axios.get("/api/sendSignInEmail.php", {
-        params: { email: formObj.emailAddress },
+        params: { emailaddress: formObj.emailAddress },
       });
       return {
         _action: formObj._action,
         deviceName: data.deviceName,
+        emailAddress: formObj.emailAddress,
+        staySignedIn: formObj.staySignedIn,
+        success: true,
+      };
+    } else if (formObj._action == "submit code") {
+      let { data } = await axios.get("/api/checkCredentials.php", {
+        params: {
+          emailaddress: formObj.emailAddress,
+          nineCode: formObj.code,
+          deviceName: formObj.deviceName,
+        },
+      });
+
+      // if (data.hasFullName == 1) {
+      //Only should get here with success
+      //Store cookies!
+      const { data: jwtdata } = await axios.get(
+        `/api/jwt.php?emailaddress=${encodeURIComponent(
+          formObj.emailAddress,
+        )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
+          formObj.deviceName
+        }&newAccount=${data.existed}&stay=${
+          formObj.staySignedIn == "true" ? "1" : "0"
+        }`,
+        { withCredentials: true },
+      );
+
+      console.log("jwtdata", jwtdata);
+      // }
+      return {
+        _action: formObj._action,
+        isNewAccount: data.existed,
+        hasFullName: data.hasFullName,
         success: true,
       };
     }
@@ -152,11 +184,10 @@ function AskForEmailCard({ fetcher }) {
   );
 }
 
-function EnterCodeCard({ fetcher }) {
+function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
-  console.log("code", code);
-  console.log("codeError", codeError);
+
   return (
     <Card
       direction={{ base: "column", sm: "row" }}
@@ -187,7 +218,7 @@ function EnterCodeCard({ fetcher }) {
           <Heading size="lg">Check your email for the code.</Heading>
 
           <FormControl isInvalid={codeError} mt="20px">
-            <FormLabel>Code (9 digit code):</FormLabel>
+            <FormLabel>Sign-in code (9 digit code):</FormLabel>
             <HStack>
               <PinInput onChange={(code) => setCode(code)}>
                 <PinInputField />
@@ -219,21 +250,17 @@ function EnterCodeCard({ fetcher }) {
                   setCodeError("Please enter all nine digits.");
                 } else {
                   setCodeError(null);
+                  fetcher.submit(
+                    {
+                      _action: "submit code",
+                      emailAddress,
+                      deviceName,
+                      staySignedIn,
+                      code,
+                    },
+                    { method: "post" },
+                  );
                 }
-                //else if (!emailRegex.test(emailAddress)) {
-                //   setEmailError("Invalid email format");
-                // } else {
-                //   setEmailError(null);
-                //   //Email is correct
-                //   fetcher.submit(
-                //     {
-                //       _action: "submit email",
-                //       emailAddress,
-                //       staySignedIn: isChecked,
-                //     },
-                //     { method: "post" },
-                //   );
-                // }
               }}
             >
               Submit Code
@@ -248,15 +275,38 @@ function EnterCodeCard({ fetcher }) {
 export function SignIn() {
   const { success } = useLoaderData();
   const fetcher = useFetcher();
+  console.log("fetcher", fetcher);
+
+  let emailAddress = useRef(null);
+  let deviceName = useRef(null);
+  let staySignedIn = useRef(null);
 
   let card = <AskForEmailCard fetcher={fetcher} />;
 
-  // console.log("fetcher", fetcher);
   if (fetcher.state === "idle" && fetcher.data?._action === "submit email") {
-    card = <div>test</div>;
+    emailAddress.current = fetcher.data.emailAddress;
+    staySignedIn.current = fetcher.data.staySignedIn;
+    deviceName.current = fetcher.data.deviceName;
+
+    card = (
+      <EnterCodeCard
+        fetcher={fetcher}
+        emailAddress={emailAddress.current}
+        deviceName={deviceName.current}
+        staySignedIn={staySignedIn.current}
+      />
+    );
+  } else if (
+    fetcher.state === "idle" &&
+    fetcher.data?._action === "submit code"
+  ) {
+    // if (fetcher.data?.hasFullName == 1) {
+    // }
+    // console.log("fetcher", fetcher);
+    card = <Text>Full name</Text>;
   }
 
-  card = <EnterCodeCard fetcher={fetcher} />;
+  // card = <EnterCodeCard fetcher={fetcher} emailAddress={emailAddress.current} deviceName={deviceName.current} />;
 
   // const setActivityByDoenetId = useSetRecoilState(itemByDoenetId(doenetId)); //TODO: remove after recoil is gone
   // const setPageByDoenetId = useSetRecoilState(itemByDoenetId(pageId)); //TODO: remove after recoil is gone

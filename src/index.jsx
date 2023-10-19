@@ -441,6 +441,15 @@ const router = createBrowserRouter([
       </ChakraProvider>
     ),
   },
+  // {
+  //   path: "/api/",
+  //   element: <div>Loading...</div>,
+  //   errorElement: (
+  //     <ChakraProvider theme={theme}>
+  //       <ErrorPage />
+  //     </ChakraProvider>
+  //   ),
+  // },
 
   {
     path: "*",
