@@ -89,6 +89,11 @@ if ($row['minutes'] > 10) {
         false
     );
 
+    $response_arr = [
+        'success' => true,
+    ];
+
+    http_response_code(200);
 
 } catch (Exception $e) {
     $response_arr = [
@@ -103,5 +108,4 @@ if ($row['minutes'] > 10) {
     $conn->close();
 }
 
-$conn->close();
 ?>

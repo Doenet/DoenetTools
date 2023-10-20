@@ -53,6 +53,7 @@ export async function action({ params, request }) {
         success: true,
       };
     } else if (formObj._action == "submit code") {
+      //TODO: need check credentials to give back the portfolio course id
       let { data } = await axios.get("/api/checkCredentials.php", {
         params: {
           emailaddress: formObj.emailAddress,
@@ -61,21 +62,24 @@ export async function action({ params, request }) {
         },
       });
 
-      if (data.hasFullName == 1) {
-        //Only should get here with success
-        //Store cookies!
-        const { data: jwtdata } = await axios.get(
-          `/api/jwt.php?emailaddress=${encodeURIComponent(
-            formObj.emailAddress,
-          )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
-            formObj.deviceName
-          }&newAccount=${data.existed}&stay=${
-            formObj.staySignedIn == "true" ? "1" : "0"
-          }`,
-          { withCredentials: true },
-        );
+      //Attempt to store cookies!
+      const { data: jwtdata } = await axios.get(
+        `/api/jwt.php?emailaddress=${encodeURIComponent(
+          formObj.emailAddress,
+        )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
+          formObj.deviceName
+        }&newAccount=${data.existed}&stay=${
+          formObj.staySignedIn == "true" ? "1" : "0"
+        }`,
+        { withCredentials: true },
+      );
 
-        // console.log("jwtdata", jwtdata);
+      console.log("jwtdata", jwtdata);
+
+      if (data.hasFullName == 1) {
+        //Redirect if we have their full name
+        //and there wasn't an error with sign in
+        // TODO: Redirect to portfolio
       }
       return {
         _action: formObj._action,
@@ -83,6 +87,18 @@ export async function action({ params, request }) {
         hasFullName: data.hasFullName,
         success: true,
       };
+    } else if (formObj._action == "submit name") {
+      let { data } = await axios.get("/api/saveUsersName.php", {
+        params: {
+          firstName: formObj.firstName,
+          lastName: formObj.lastName,
+          email: formObj.emailAddress,
+        },
+      });
+      console.log("data", data);
+      return true;
+
+      // TODO: Redirect to portfolio
     }
 
     return { success: true };
@@ -320,11 +336,11 @@ function AskForNameCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
           <FormControl isInvalid={firstNameError} mt="20px">
             <FormLabel>First Name:</FormLabel>
             <Input
-              onChange={(firstName) => {
-                if (firstName != "") {
+              onChange={(e) => {
+                if (e.target.value != "") {
                   setFirstNameError(null);
                 }
-                setFirstName(firstName);
+                setFirstName(e.target.value);
               }}
             />
             <FormErrorMessage>{firstNameError}</FormErrorMessage>
@@ -332,11 +348,11 @@ function AskForNameCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
           <FormControl isInvalid={lastNameError} mt="20px">
             <FormLabel>Last Name:</FormLabel>
             <Input
-              onChange={(lastName) => {
-                if (lastName != "") {
+              onChange={(e) => {
+                if (e.target.value != "") {
                   setLastNameError(null);
                 }
-                setLastName(lastName);
+                setLastName(e.target.value);
               }}
             />
             <FormErrorMessage>{lastNameError}</FormErrorMessage>
@@ -361,18 +377,16 @@ function AskForNameCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
                   setFirstNameError(null);
                   setLastNameError(null);
                   setIsDisabled(true);
-                  console.log("firstName", firstName);
-                  console.log("lastName", lastName);
-                  // fetcher.submit(
-                  //   {
-                  //     _action: "submit code",
-                  //     emailAddress,
-                  //     deviceName,
-                  //     staySignedIn,
-                  //     code,
-                  //   },
-                  //   { method: "post" },
-                  // );
+
+                  fetcher.submit(
+                    {
+                      _action: "submit name",
+                      firstName,
+                      lastName,
+                      emailAddress,
+                    },
+                    { method: "post" },
+                  );
                 }
               }}
             >
