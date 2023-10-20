@@ -64,7 +64,7 @@ $sql = "INSERT INTO user_device (userId,email,signInCode,timestampOfSignInCode, 
 
 // Generate and modify email content
 $htmlContent = file_get_contents("signInEmail.html");
-$htmlContent = str_replace(array("deviceName", "signInCode"), array($deviceName, $signInCode), $htmlContent);
+$htmlContent = str_replace(array("signInCode"), array($signInCode), $htmlContent);
 
 $from = 'noreply@doenet.org';
 $fromName = 'Doenet Accounts';

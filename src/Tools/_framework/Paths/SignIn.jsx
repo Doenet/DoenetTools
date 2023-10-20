@@ -17,6 +17,7 @@ import {
   Input,
   PinInput,
   PinInputField,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -60,22 +61,22 @@ export async function action({ params, request }) {
         },
       });
 
-      // if (data.hasFullName == 1) {
-      //Only should get here with success
-      //Store cookies!
-      const { data: jwtdata } = await axios.get(
-        `/api/jwt.php?emailaddress=${encodeURIComponent(
-          formObj.emailAddress,
-        )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
-          formObj.deviceName
-        }&newAccount=${data.existed}&stay=${
-          formObj.staySignedIn == "true" ? "1" : "0"
-        }`,
-        { withCredentials: true },
-      );
+      if (data.hasFullName == 1) {
+        //Only should get here with success
+        //Store cookies!
+        const { data: jwtdata } = await axios.get(
+          `/api/jwt.php?emailaddress=${encodeURIComponent(
+            formObj.emailAddress,
+          )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
+            formObj.deviceName
+          }&newAccount=${data.existed}&stay=${
+            formObj.staySignedIn == "true" ? "1" : "0"
+          }`,
+          { withCredentials: true },
+        );
 
-      console.log("jwtdata", jwtdata);
-      // }
+        // console.log("jwtdata", jwtdata);
+      }
       return {
         _action: formObj._action,
         isNewAccount: data.existed,
@@ -94,6 +95,7 @@ function AskForEmailCard({ fetcher }) {
   const [emailAddress, setEmailAddress] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   return (
@@ -155,6 +157,8 @@ function AskForEmailCard({ fetcher }) {
           <Flex w="100%" justifyContent="center">
             <Button
               variant="solid"
+              isDisabled={isDisabled}
+              rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
               colorScheme="blue"
               onClick={() => {
                 if (emailAddress == "") {
@@ -163,6 +167,7 @@ function AskForEmailCard({ fetcher }) {
                   setEmailError("Invalid email format");
                 } else {
                   setEmailError(null);
+                  setIsDisabled(true);
                   //Email is correct
                   fetcher.submit(
                     {
@@ -187,6 +192,7 @@ function AskForEmailCard({ fetcher }) {
 function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   return (
     <Card
@@ -241,6 +247,8 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
             <Button
               variant="solid"
               colorScheme="blue"
+              isDisabled={isDisabled}
+              rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
               onClick={() => {
                 if (code == "") {
                   setCodeError(
@@ -250,6 +258,7 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
                   setCodeError("Please enter all nine digits.");
                 } else {
                   setCodeError(null);
+                  setIsDisabled(true);
                   fetcher.submit(
                     {
                       _action: "submit code",
@@ -272,6 +281,110 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
   );
 }
 
+function AskForNameCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
+  const [firstName, setFirstName] = useState("");
+  const [firstNameError, setFirstNameError] = useState(null);
+  const [lastName, setLastName] = useState("");
+  const [lastNameError, setLastNameError] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  return (
+    <Card
+      direction={{ base: "column", sm: "row" }}
+      overflow="hidden"
+      pt={4}
+      pb={1}
+    >
+      <Flex alignItems="center" justifyContent="center">
+        <Image
+          objectFit="cover"
+          w={{ base: "0px", lg: "160px", xl: "250px" }}
+          h={{ base: "0px", lg: "160px", xl: "250px" }}
+          alt="Doenet Logo"
+          src={"/Doenet_Logo_Frontpage.png"}
+        />
+      </Flex>
+      <Stack>
+        <CardBody w="350px" p={2}>
+          <Flex alignItems="center" justifyContent="center" mb="20px">
+            <Image
+              objectFit="cover"
+              w={{ base: "200px", lg: "0px" }}
+              h={{ base: "200px", lg: "0px" }}
+              alt="Doenet Logo"
+              src={"/Doenet_Logo_Frontpage.png"}
+            />
+          </Flex>
+          <Heading size="lg">Please Enter Your Name.</Heading>
+
+          <FormControl isInvalid={firstNameError} mt="20px">
+            <FormLabel>First Name:</FormLabel>
+            <Input
+              onChange={(firstName) => {
+                if (firstName != "") {
+                  setFirstNameError(null);
+                }
+                setFirstName(firstName);
+              }}
+            />
+            <FormErrorMessage>{firstNameError}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={lastNameError} mt="20px">
+            <FormLabel>Last Name:</FormLabel>
+            <Input
+              onChange={(lastName) => {
+                if (lastName != "") {
+                  setLastNameError(null);
+                }
+                setLastName(lastName);
+              }}
+            />
+            <FormErrorMessage>{lastNameError}</FormErrorMessage>
+          </FormControl>
+        </CardBody>
+
+        <CardFooter>
+          <Flex w="100%" justifyContent="center">
+            <Button
+              variant="solid"
+              colorScheme="blue"
+              isDisabled={isDisabled}
+              rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
+              onClick={() => {
+                if (firstName == "") {
+                  setFirstNameError("Please enter your first name.");
+                }
+                if (lastName == "") {
+                  setLastNameError("Please enter your last name.");
+                }
+                if (firstName != "" && lastName != "") {
+                  setFirstNameError(null);
+                  setLastNameError(null);
+                  setIsDisabled(true);
+                  console.log("firstName", firstName);
+                  console.log("lastName", lastName);
+                  // fetcher.submit(
+                  //   {
+                  //     _action: "submit code",
+                  //     emailAddress,
+                  //     deviceName,
+                  //     staySignedIn,
+                  //     code,
+                  //   },
+                  //   { method: "post" },
+                  // );
+                }
+              }}
+            >
+              Submit Name
+            </Button>
+          </Flex>
+        </CardFooter>
+      </Stack>
+    </Card>
+  );
+}
+
 export function SignIn() {
   const { success } = useLoaderData();
   const fetcher = useFetcher();
@@ -280,15 +393,16 @@ export function SignIn() {
   let emailAddress = useRef(null);
   let deviceName = useRef(null);
   let staySignedIn = useRef(null);
-
-  let card = <AskForEmailCard fetcher={fetcher} />;
+  //card is a ref because we need the card to stay
+  // and not have to track every possible state
+  let card = useRef(<AskForEmailCard fetcher={fetcher} />);
 
   if (fetcher.state === "idle" && fetcher.data?._action === "submit email") {
     emailAddress.current = fetcher.data.emailAddress;
     staySignedIn.current = fetcher.data.staySignedIn;
     deviceName.current = fetcher.data.deviceName;
 
-    card = (
+    card.current = (
       <EnterCodeCard
         fetcher={fetcher}
         emailAddress={emailAddress.current}
@@ -300,10 +414,14 @@ export function SignIn() {
     fetcher.state === "idle" &&
     fetcher.data?._action === "submit code"
   ) {
-    // if (fetcher.data?.hasFullName == 1) {
-    // }
-    // console.log("fetcher", fetcher);
-    card = <Text>Full name</Text>;
+    card.current = (
+      <AskForNameCard
+        fetcher={fetcher}
+        emailAddress={emailAddress.current}
+        deviceName={deviceName.current}
+        staySignedIn={staySignedIn.current}
+      />
+    );
   }
 
   // card = <EnterCodeCard fetcher={fetcher} emailAddress={emailAddress.current} deviceName={deviceName.current} />;
@@ -343,7 +461,7 @@ export function SignIn() {
   return (
     <>
       <Box w="100vw" h="100vh" bg="gray.100">
-        <AbsoluteCenter>{card}</AbsoluteCenter>
+        <AbsoluteCenter>{card.current}</AbsoluteCenter>
       </Box>
     </>
   );
