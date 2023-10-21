@@ -38,7 +38,7 @@ export async function loader({ request, params }) {
 
 export async function action({ params, request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   try {
     if (formObj._action == "submit email") {
@@ -103,7 +103,11 @@ export async function action({ params, request }) {
 
     return { success: true };
   } catch (e) {
-    return { success: false, message: e.response.data.message };
+    return {
+      success: false,
+      message: e.response.data.message,
+      _action: formObj._action,
+    };
   }
 }
 
@@ -209,6 +213,20 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+
+  console.log("EnterCodeCard fetcher", fetcher);
+  //Handle code entry errors
+  if (fetcher.data?.success == false) {
+    //Guard against an infinite loop
+    if (codeError !== fetcher.data.message) {
+      setCodeError(fetcher.data.message);
+      setIsDisabled(false);
+      if (fetcher.data.message == "Code expired.") {
+        setIsExpired(true);
+      }
+    }
+  }
 
   return (
     <Card
@@ -242,7 +260,7 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
           <FormControl isInvalid={codeError} mt="20px">
             <FormLabel>Sign-in code (9 digit code):</FormLabel>
             <HStack>
-              <PinInput onChange={(code) => setCode(code)}>
+              <PinInput value={code} onChange={(code) => setCode(code)}>
                 <PinInputField />
                 <PinInputField />
                 <PinInputField />
@@ -260,36 +278,64 @@ function EnterCodeCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
 
         <CardFooter>
           <Flex w="100%" justifyContent="center">
-            <Button
-              variant="solid"
-              colorScheme="blue"
-              isDisabled={isDisabled}
-              rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
-              onClick={() => {
-                if (code == "") {
-                  setCodeError(
-                    "Please enter the nine digits sent to your email.",
-                  );
-                } else if (code.length < 9) {
-                  setCodeError("Please enter all nine digits.");
-                } else {
+            {isExpired ? (
+              <Button
+                variant="solid"
+                colorScheme="blue"
+                onClick={() => {
+                  //TODO: WHY NOT WORKING???
+                  setIsExpired(false);
                   setCodeError(null);
-                  setIsDisabled(true);
+                  setCode("");
+                  console.log({
+                    _action: "submit email",
+                    emailAddress,
+                    staySignedIn,
+                  });
                   fetcher.submit(
                     {
-                      _action: "submit code",
-                      emailAddress,
-                      deviceName,
-                      staySignedIn,
-                      code,
+                      _action: "submit email",
+                      emailAddress: "char0042@umn.edu",
+                      staySignedIn: true,
                     },
                     { method: "post" },
                   );
-                }
-              }}
-            >
-              Submit Code
-            </Button>
+                }}
+              >
+                Send New Code
+              </Button>
+            ) : (
+              <Button
+                variant="solid"
+                colorScheme="blue"
+                isDisabled={isDisabled}
+                rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
+                onClick={() => {
+                  if (code == "") {
+                    setCodeError(
+                      "Please enter the nine digits sent to your email.",
+                    );
+                  } else if (code.length < 9) {
+                    setCodeError("Please enter all nine digits.");
+                  } else {
+                    setCodeError(null);
+                    setIsDisabled(true);
+                    fetcher.submit(
+                      {
+                        _action: "submit code",
+                        emailAddress,
+                        deviceName,
+                        staySignedIn,
+                        code,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+              >
+                Submit Code
+              </Button>
+            )}
           </Flex>
         </CardFooter>
       </Stack>
@@ -400,42 +446,57 @@ function AskForNameCard({ fetcher, emailAddress, deviceName, staySignedIn }) {
 }
 
 export function SignIn() {
-  const { success } = useLoaderData();
+  // const { success } = useLoaderData();
   const fetcher = useFetcher();
-  console.log("fetcher", fetcher);
+  let formObj = {};
+  if (fetcher.formData !== undefined) {
+    formObj = Object.fromEntries(fetcher.formData);
+  }
+  console.log("fetcher.state", fetcher.state);
+  console.log("fetcher.data", fetcher.data);
+  console.log("formObj", formObj);
+  console.log("---------------------\n");
 
   let emailAddress = useRef(null);
   let deviceName = useRef(null);
   let staySignedIn = useRef(null);
   //card is a ref because we need the card to stay
   // and not have to track every possible state
+
+  //Enter Email
   let card = useRef(<AskForEmailCard fetcher={fetcher} />);
+  if (fetcher.state === "idle") {
+    if (
+      (fetcher.data?._action === "submit email" && fetcher.data?.success) ||
+      (fetcher.data?._action === "submit code" && !fetcher.data?.success)
+    ) {
+      //Enter Code
+      emailAddress.current = fetcher.data.emailAddress;
+      staySignedIn.current = fetcher.data.staySignedIn;
+      deviceName.current = fetcher.data.deviceName;
 
-  if (fetcher.state === "idle" && fetcher.data?._action === "submit email") {
-    emailAddress.current = fetcher.data.emailAddress;
-    staySignedIn.current = fetcher.data.staySignedIn;
-    deviceName.current = fetcher.data.deviceName;
-
-    card.current = (
-      <EnterCodeCard
-        fetcher={fetcher}
-        emailAddress={emailAddress.current}
-        deviceName={deviceName.current}
-        staySignedIn={staySignedIn.current}
-      />
-    );
-  } else if (
-    fetcher.state === "idle" &&
-    fetcher.data?._action === "submit code"
-  ) {
-    card.current = (
-      <AskForNameCard
-        fetcher={fetcher}
-        emailAddress={emailAddress.current}
-        deviceName={deviceName.current}
-        staySignedIn={staySignedIn.current}
-      />
-    );
+      card.current = (
+        <EnterCodeCard
+          fetcher={fetcher}
+          emailAddress={emailAddress.current}
+          deviceName={deviceName.current}
+          staySignedIn={staySignedIn.current}
+        />
+      );
+    } else if (
+      (fetcher.data?._action === "submit code" && fetcher.data?.success) ||
+      (fetcher.data?._action === "submit name" && !fetcher.data?.success)
+    ) {
+      //Enter Name
+      card.current = (
+        <AskForNameCard
+          fetcher={fetcher}
+          emailAddress={emailAddress.current}
+          deviceName={deviceName.current}
+          staySignedIn={staySignedIn.current}
+        />
+      );
+    }
   }
 
   // card = <EnterCodeCard fetcher={fetcher} emailAddress={emailAddress.current} deviceName={deviceName.current} />;
