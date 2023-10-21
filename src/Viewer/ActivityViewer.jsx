@@ -942,10 +942,10 @@ export function ActivityViewer({
             alertType: "error",
           });
         } else if (!resp.data.success) {
-          sendAlert.current(
-            `Could not initialize assignment tables: ${resp.data.message}.`,
-            "error",
-          );
+          sendAlert.current({
+            message: `Could not initialize assignment tables: ${resp.data.message}.`,
+            alertType: "error",
+          });
         }
       } catch (e) {
         sendAlert.current({
@@ -1085,10 +1085,12 @@ export function ActivityViewer({
       if (coreWorker) {
         let actionId = nanoid();
         let resolveTerminatePromise;
+        let rejectTerminatePromise;
 
         terminatePromises.push(
           new Promise((resolve, reject) => {
             resolveTerminatePromise = resolve;
+            rejectTerminatePromise = reject;
           }),
         );
 
@@ -1110,6 +1112,25 @@ export function ActivityViewer({
 
             // resolve promise
             resolveTerminatePromise();
+          } else if (
+            e.data.messageType === "sendAlert" &&
+            e.data.alertType === "error"
+          ) {
+            // If any error occurred, try (again) to save state
+            // but don't wait for the results.
+            // Reject the terminate promise, which display alert
+            // and cancel the finish assessment sequence
+
+            coreWorker.postMessage({
+              messageType: "saveImmediately",
+            });
+
+            coreWorker.removeEventListener(
+              "message",
+              submitAllAndTerminateListener,
+            );
+
+            rejectTerminatePromise();
           }
         };
 
@@ -1127,10 +1148,13 @@ export function ActivityViewer({
 
       await saveState({ overrideThrottle: true });
     } catch (e) {
-      sendAlert.current(
-        `Error occurred. Assessment was not successfully submitted.`,
-        "error",
-      );
+      sendAlert.current({
+        message: `An error occurred. Assessment was not successfully submitted.`,
+        alertType: "error",
+      });
+
+      setFinishAssessmentMessageOpen(false);
+      setProcessingSubmitAll(false);
 
       // return so don't set activity as completed
       return;

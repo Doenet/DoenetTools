@@ -44,6 +44,8 @@ onmessage = function (e) {
       actionName: "submitAllAnswers",
       args: e.data.args,
     });
+  } else if (e.data.messageType === "saveImmediately") {
+    core.saveImmediately();
   }
 };
 

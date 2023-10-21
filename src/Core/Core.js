@@ -11704,6 +11704,19 @@ export default class Core {
     }
   }
 
+  async saveImmediately() {
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true);
+    }
+  }
+
   async saveState(overrideThrottle = false) {
     this.savePageStateTimeoutID = null;
 
@@ -12311,16 +12324,7 @@ export default class Core {
       }
     }
 
-    if (this.savePageStateTimeoutID) {
-      // if in debounce to save page to local storage
-      // then immediate save to local storage
-      // and override timeout to save to database
-      clearTimeout(this.savePageStateTimeoutID);
-      await this.saveState(true);
-    } else {
-      // else override timeout to save any pending changes to database
-      await this.saveChangesToDatabase(true);
-    }
+    await this.saveImmediately();
   }
 
   recordAnswerToAutoSubmit(componentName) {
