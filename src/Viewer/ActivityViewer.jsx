@@ -1092,7 +1092,7 @@ export function ActivityViewer({
           }),
         );
 
-        coreWorker.onmessage = function (e) {
+        let submitAllAndTerminateListener = function (e) {
           if (
             e.data.messageType === "resolveAction" &&
             e.data.args.actionId === actionId
@@ -1103,10 +1103,17 @@ export function ActivityViewer({
               messageType: "terminate",
             });
           } else if (e.data.messageType === "terminated") {
+            coreWorker.removeEventListener(
+              "message",
+              submitAllAndTerminateListener,
+            );
+
             // resolve promise
             resolveTerminatePromise();
           }
         };
+
+        coreWorker.addEventListener("message", submitAllAndTerminateListener);
 
         coreWorker.postMessage({
           messageType: "submitAllAnswers",
@@ -1115,9 +1122,19 @@ export function ActivityViewer({
       }
     }
 
-    await Promise.all(terminatePromises);
+    try {
+      await Promise.all(terminatePromises);
 
-    await saveState({ overrideThrottle: true });
+      await saveState({ overrideThrottle: true });
+    } catch (e) {
+      sendAlert.current(
+        `Error occurred. Assessment was not successfully submitted.`,
+        "error",
+      );
+
+      // return so don't set activity as completed
+      return;
+    }
 
     setActivityAsCompleted?.();
   }
