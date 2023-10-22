@@ -86,14 +86,6 @@ export async function action({ request }) {
 
 export function SignInCode() {
   const fetcher = useFetcher();
-  // let formObj = {};
-  // if (fetcher.formData !== undefined) {
-  //   formObj = Object.fromEntries(fetcher.formData);
-  // }
-  // console.log("fetcher.state", fetcher.state);
-  // console.log("fetcher.data", fetcher.data);
-  // console.log("formObj", formObj);
-  // console.log("---------------------\n");
 
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
@@ -101,12 +93,12 @@ export function SignInCode() {
   const [isExpired, setIsExpired] = useState(false);
 
   //Handle code entry errors
-  if (fetcher.data?.success == false) {
+  if (fetcher.data?.success === false && fetcher.state === "idle") {
     //Guard against an infinite loop
     if (codeError !== fetcher.data.message) {
       setCodeError(fetcher.data.message);
       setIsDisabled(false);
-      if (fetcher.data.message == "Code expired.") {
+      if (fetcher.data.message == "Code expired") {
         setIsExpired(true);
       }
     }

@@ -1,5 +1,6 @@
 <?php
 include 'db_connection.php';
+include "baseModel.php";
 
 use \Firebase\JWT\JWT;
 // require_once "/var/www/html/vendor/autoload.php";
@@ -14,6 +15,7 @@ $stay = mysqli_real_escape_string($conn, $_REQUEST['stay']);
 
 $response_arr;
 try {
+    Base_Model::checkForRequiredInputs($_REQUEST,["emailaddress","nineCode","deviceName","newAccount","stay"]);
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
 FROM user_device

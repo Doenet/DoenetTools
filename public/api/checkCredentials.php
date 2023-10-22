@@ -6,23 +6,15 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "baseModel.php";
 
 $emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
 $nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);  
 $deviceName =  mysqli_real_escape_string($conn,$_REQUEST["deviceName"]);  
 
-if(!isset($_REQUEST["emailaddress"])){
-    throw new Exception("Internal Error: missing emailaddress");
-}
-if(!isset($_REQUEST["nineCode"])){
-    throw new Exception("Internal Error: missing nineCode");
-}
-if(!isset($_REQUEST["deviceName"])){
-    throw new Exception("Internal Error: missing deviceName");
-}
-
 $response_arr;
 try {
+    Base_Model::checkForRequiredInputs($_REQUEST,["emailaddress","nineCode","deviceName"]);
 
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
@@ -36,6 +28,7 @@ $row = $result->fetch_assoc();
 $existed = true;
 $hasFullName = false;
 $reason = "";
+throw new Exception("Code expired"); //Delete me
 
 //Check if it took longer than 10 minutes to enter the code
 if ($row['minutes'] > 10){
@@ -110,6 +103,9 @@ $response_arr = array(
     "portfolioCourseId" => $portfolioCourseId,
     );
 
+http_response_code(200);
+
+
 } catch (Exception $e) {
     $response_arr = [
         'success' => false,
@@ -122,4 +118,4 @@ $response_arr = array(
     echo json_encode($response_arr);
     $conn->close();
 }
-
+?>
