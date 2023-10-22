@@ -6,11 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 //ONLY TESTING IF THE SECURE SIGNED IN (JWT) COOKIE EXISTS
-$signedIn = false;
-
-if ($_COOKIE["JWT"] != NULL){
-    $signedIn = true;
-}
+$signedIn = isset($_COOKIE["JWT"]);
 
 $response_arr = ['signedIn' => $signedIn];
 
