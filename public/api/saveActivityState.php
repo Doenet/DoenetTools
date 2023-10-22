@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 include "db_connection.php";
+include "baseModel.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray["userId"];
@@ -14,73 +15,67 @@ $examDoenetId = $jwtArray["doenetId"];
 
 $device = $jwtArray["deviceName"];
 
-$_POST = json_decode(file_get_contents("php://input"), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST["activityId"]);
-$cid = mysqli_real_escape_string($conn, $_POST["cid"]);
-$attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
-$variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
-$activityInfo = mysqli_real_escape_string($conn, $_POST["activityInfo"]);
-$activityState = mysqli_real_escape_string($conn, $_POST["activityState"]);
-$saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
-$serverSaveId = mysqli_real_escape_string($conn, $_POST["serverSaveId"]);
-$updateDataOnContentChange = mysqli_real_escape_string(
-    $conn,
-    $_POST["updateDataOnContentChange"]
-);
+$response_arr = [];
+try {
+    $_POST = json_decode(file_get_contents("php://input"), true);
 
-$success = true;
-$message = "";
-if ($doenetId == "") {
-    $success = false;
-    $message = "Internal Error: missing doenetId";
-} elseif ($cid == "") {
-    $success = false;
-    $message = "Internal Error: missing cid";
-} elseif ($attemptNumber == "") {
-    $success = false;
-    $message = "Internal Error: missing attemptNumber";
-} elseif ($variantIndex == "") {
-    $success = false;
-    $message = "Internal Error: missing variantIndex";
-} elseif ($activityInfo == "") {
-    $success = false;
-    $message = "Internal Error: missing activityInfo";
-} elseif ($activityState == "") {
-    $success = false;
-    $message = "Internal Error: missing activityState";
-} elseif ($saveId == "") {
-    $success = false;
-    $message = "Internal Error: missing saveId";
-    // }elseif ($serverSaveId == ""){
-    //   $success = FALSE;
-    //   $message = 'Internal Error: missing serverSaveId';
-} elseif ($userId == "") {
-    if ($examUserId == "") {
-        $success = false;
-        $message = "No access - Need to sign in";
-    } elseif ($examDoenetId != $doenetId) {
-        $success = false;
-        $message = "No access for doenetId: $doenetId";
-    } else {
-        $userId = $examUserId;
+    //validate input
+    Base_Model::checkForRequiredInputs(
+        $_POST,
+        [
+            "activityId",
+            "cid",
+            "attemptNumber",
+            "variantIndex",
+            "activityInfo",
+            "activityState",
+            "saveId",
+            // "serverSaveId", 
+            "updateDataOnContentChange"
+        ]
+    );
+
+    //sanitize input
+    $doenetId = mysqli_real_escape_string($conn, $_POST["activityId"]);
+    $cid = mysqli_real_escape_string($conn, $_POST["cid"]);
+    $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
+    $variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
+    $activityInfo = mysqli_real_escape_string($conn, $_POST["activityInfo"]);
+    $activityState = mysqli_real_escape_string($conn, $_POST["activityState"]);
+    $saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
+    $serverSaveId = mysqli_real_escape_string($conn, $_POST["serverSaveId"]);
+    $updateDataOnContentChange = mysqli_real_escape_string(
+        $conn,
+        $_POST["updateDataOnContentChange"]
+    );
+
+    //exam security
+    if ($userId == "") {
+        if ($examUserId == "") {
+            throw new Exception("No access - Need to sign in");
+        } elseif ($examDoenetId != $doenetId) {
+            throw new Exception("No access for doenetId: $doenetId");
+        } else {
+            $userId = $examUserId;
+        }
     }
-}
 
-$stateOverwritten = false;
-$savedState = false;
-$cidChanged = false;
+    $stateOverwritten = false;
+    $savedState = false;
+    $cidChanged = false;
 
-if ($success) {
     // check if cid of assignment has changed,
     // if so, include {cidChanged: true} in response
     // in order to alert the user
 
-    $sql = "SELECT JSONdefinition->>'$.assignedCid' as assignedCid
+    $sql =
+        "SELECT JSONdefinition->>'$.assignedCid' as assignedCid
         FROM course_content
-        WHERE doenetId = '$doenetId'
-        ";
+        WHERE doenetId = '$doenetId'";
 
-    $result = $conn->query($sql);
+    //TODO: could be a queryExpectingOneRow?
+    $result = Base_Model::runQuery($conn, $sql);
+
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $newCid = $row["assignedCid"];
@@ -90,25 +85,24 @@ if ($success) {
         }
     } elseif ($updateDataOnContentChange != "1") {
         // something strange happened
-        $success = false;
-        $message = "Database error 1";
+        throw new Exception("Database error 1");
     }
-}
 
-if ($success) {
     if ($serverSaveId != "") {
         $sql = "UPDATE activity_state SET
-            activityState = '$activityState',
-            saveId = '$saveId',
-            deviceName = '$device'
-            WHERE userId='$userId'
-            AND doenetId='$doenetId'
-            AND attemptNumber='$attemptNumber'
-            AND cid = '$cid'
-            AND saveId = '$serverSaveId'
-            ";
+        activityState = '$activityState',
+        saveId = '$saveId',
+        deviceName = '$device'
+        WHERE userId='$userId'
+        AND doenetId='$doenetId'
+        AND attemptNumber='$attemptNumber'
+        AND cid = '$cid'
+        AND saveId = '$serverSaveId'
+        ";
 
-        $conn->query($sql);
+        //TODO: verify that this works for the following if statement
+        Base_Model::runQuery($conn, $sql);
+
         if ($conn->affected_rows > 0) {
             $savedState = true;
         }
@@ -126,20 +120,19 @@ if ($success) {
             // get new attempt number from user_assignment_attempt
             // since that gets updated as soon as a new attempt is created
 
-            $sql = "SELECT MAX(attemptNumber) as maxAttemptNumber
+            $sql =
+                "SELECT MAX(attemptNumber) as maxAttemptNumber
                 FROM user_assignment_attempt 
                 WHERE userId = '$userId' 
-                AND doenetId = '$doenetId'
-                ";
+                AND doenetId = '$doenetId'";
 
-            $result = $conn->query($sql);
+            $result = Base_Model::runQuery($conn, $sql);
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 $newAttemptNumber = $row["maxAttemptNumber"];
             } else {
                 // something strange happened
-                $success = false;
-                $message = "Database error 2";
+                throw new Exception("Database error 2");
             }
 
             if ($newAttemptNumber !== $attemptNumber) {
@@ -150,15 +143,16 @@ if ($success) {
             }
         }
 
-        if ($success && !$stateOverwritten) {
+        if (!$stateOverwritten) {
             // attempt to insert a rows in activity_state
 
-            $sql = "INSERT INTO activity_state
+            $sql =
+                "INSERT INTO activity_state
                 (userId,doenetId,cid,attemptNumber,deviceName,saveId,variantIndex,activityInfo,activityState)
-                VALUES ('$userId','$doenetId','$cid','$attemptNumber','$device','$saveId','$variantIndex','$activityInfo','$activityState')
-            ";
+                VALUES ('$userId','$doenetId','$cid','$attemptNumber','$device','$saveId','$variantIndex','$activityInfo','$activityState')";
 
-            $conn->query($sql);
+            //TODO: verify that this works for the following if statement
+            Base_Model::runQuery($conn, $sql);
 
             if ($conn->affected_rows < 1) {
                 // no rows were inserted
@@ -170,40 +164,40 @@ if ($success) {
                     // if the cid changed,
                     // then update the table rather than getting information from the table
 
-                    $sql = "SELECT cid
-                    FROM activity_state
-                    WHERE userId='$userId'
-                    AND doenetId='$doenetId'
-                    AND attemptNumber = '$attemptNumber'
-                    ";
+                    $sql =
+                        "SELECT cid
+                        FROM activity_state
+                        WHERE userId='$userId'
+                        AND doenetId='$doenetId'
+                        AND attemptNumber = '$attemptNumber'";
 
-                    $result = $conn->query($sql);
+                    $result = Base_Model::runQuery($conn, $sql);
 
                     if ($result->num_rows > 0) {
                         $row = $result->fetch_assoc();
                         if ($row["cid"] != $cid) {
                             // update the matching row in activity_state
                             // to match current cid and state
-                            $sql = "UPDATE activity_state SET
-                            cid = '$cid',
-                            variantIndex = '$variantIndex',
-                            activityInfo = '$activityInfo',
-                            activityState = '$activityState',
-                            saveId = '$saveId',
-                            deviceName = '$device'
-                            WHERE userId='$userId'
-                            AND doenetId='$doenetId'
-                            AND attemptNumber='$attemptNumber'
-                            ";
+                            $sql =
+                                "UPDATE activity_state SET
+                                cid = '$cid',
+                                variantIndex = '$variantIndex',
+                                activityInfo = '$activityInfo',
+                                activityState = '$activityState',
+                                saveId = '$saveId',
+                                deviceName = '$device'
+                                WHERE userId='$userId'
+                                AND doenetId='$doenetId'
+                                AND attemptNumber='$attemptNumber'";
 
-                            $conn->query($sql);
+                            //TODO: verify that this works for the following if statement
+                            Base_Model::runQuery($conn, $sql);
 
                             $modifiedDBRecord = true;
 
                             if (!($conn->affected_rows > 0)) {
                                 // something went wrong
-                                $success = false;
-                                $message = "Database error 3";
+                                throw new Exception("Database error 3");
                             }
                         }
                     }
@@ -215,14 +209,14 @@ if ($success) {
                     $stateOverwritten = true;
                     $newAttemptNumber = $attemptNumber;
 
-                    $sql = "SELECT cid, attemptNumber, saveId, deviceName, variantIndex, activityInfo, activityState
+                    $sql =
+                        "SELECT cid, attemptNumber, saveId, deviceName, variantIndex, activityInfo, activityState
                         FROM activity_state
                         WHERE userId = '$userId'
                         AND doenetId = '$doenetId'
-                        AND attemptNumber = '$attemptNumber'
-                        ";
+                        AND attemptNumber = '$attemptNumber'";
 
-                    $result = $conn->query($sql);
+                    $result = Base_Model::runQuery($conn, $sql);
 
                     if ($result->num_rows > 0) {
                         $row = $result->fetch_assoc();
@@ -235,32 +229,40 @@ if ($success) {
                         $newActivityState = $row["activityState"];
                     } else {
                         // something strange happened (another process changed the database in between queries?)
-                        $success = false;
-                        $message = "Database error 4";
+                        throw new Exception("Database error 4");
                     }
                 }
             }
         }
     }
+
+    //build response array
+    $response_arr = [
+        "success" => true,
+        "saveId" => $saveId,
+        "stateOverwritten" => $stateOverwritten,
+        "cid" => $newCid,
+        "attemptNumber" => $newAttemptNumber,
+        "variantIndex" => $newVariantIndex,
+        "activityInfo" => $newActivityInfo,
+        "activityState" => $newActivityState,
+        "device" => $newDevice,
+        "message" => "Activity state saved",
+        "cidChanged" => $cidChanged,
+    ];
+
+    //set response code - 200 OK
+    http_response_code(200);
+} catch (Exception $e) {
+    $response_arr = [
+        "success" => false,
+        "message" => $e->getMessage(),
+    ];
+    //set response code - 400 bad request
+    http_response_code(400);
+} finally {
+    // make it json format and echo it out
+    echo json_encode($response_arr);
+    //close database connection
+    $conn->close();
 }
-
-$response_arr = [
-    "success" => $success,
-    "saveId" => $saveId,
-    "stateOverwritten" => $stateOverwritten,
-    "cid" => $newCid,
-    "attemptNumber" => $newAttemptNumber,
-    "variantIndex" => $newVariantIndex,
-    "activityInfo" => $newActivityInfo,
-    "activityState" => $newActivityState,
-    "device" => $newDevice,
-    "message" => $message,
-    "cidChanged" => $cidChanged,
-];
-
-http_response_code(200);
-
-echo json_encode($response_arr);
-
-$conn->close();
-?>
