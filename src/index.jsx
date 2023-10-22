@@ -87,13 +87,11 @@ import {
 } from "./Tools/_framework/Paths/SignIn";
 import {
   SignInCode,
-  loader as signInCodeLoader,
   action as signInCodeAction,
 } from "./Tools/_framework/Paths/SignInCode";
 import {
   SignInName,
   action as signInNameAction,
-  loader as signInNameLoader,
 } from "./Tools/_framework/Paths/SignInName";
 
 {
@@ -350,7 +348,6 @@ const router = createBrowserRouter([
   },
   {
     path: "signinCode",
-    loader: signInCodeLoader,
     action: signInCodeAction,
     errorElement: (
       <ChakraProvider theme={theme}>
@@ -365,7 +362,6 @@ const router = createBrowserRouter([
   },
   {
     path: "signinName",
-    loader: signInNameLoader,
     action: signInNameAction,
     errorElement: (
       <ChakraProvider theme={theme}>

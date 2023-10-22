@@ -5,8 +5,6 @@ import {
   Card,
   CardBody,
   CardFooter,
-  Center,
-  Checkbox,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -14,35 +12,28 @@ import {
   HStack,
   Heading,
   Image,
-  Input,
   PinInput,
   PinInputField,
   Spinner,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import { useFetcher } from "react-router-dom";
 
-export async function loader({ request }) {
-  //Search Parameters to useLoaderData
+export async function action({ request }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
   const url = new URL(request.url);
   const emailAddress = url.searchParams.get("email");
   const deviceName = url.searchParams.get("device");
   const staySignedIn = url.searchParams.get("stay");
-  return { emailAddress, deviceName, staySignedIn };
-}
-
-export async function action({ params, request }) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
 
   try {
     if (formObj._action == "send new code") {
       let { data } = await axios.get("/api/sendSignInEmail.php", {
-        params: { emailaddress: formObj.emailAddress },
+        params: { emailaddress: emailAddress },
       });
       return {
         success: true,
@@ -52,26 +43,23 @@ export async function action({ params, request }) {
       //TODO: need check credentials to give back the portfolio course id
       let { data } = await axios.get("/api/checkCredentials.php", {
         params: {
-          emailaddress: formObj.emailAddress,
+          emailaddress: emailAddress,
           nineCode: formObj.code,
-          deviceName: formObj.deviceName,
+          deviceName: deviceName,
         },
       });
-      console.log("submit code data", data);
 
       //Attempt to store cookies!
       const { data: jwtdata } = await axios.get(
         `/api/jwt.php?emailaddress=${encodeURIComponent(
-          formObj.emailAddress,
-        )}&nineCode=${encodeURIComponent(formObj.code)}&deviceName=${
-          formObj.deviceName
-        }&newAccount=${data.existed}&stay=${
-          formObj.staySignedIn == "true" ? "1" : "0"
+          emailAddress,
+        )}&nineCode=${encodeURIComponent(
+          formObj.code,
+        )}&deviceName=${deviceName}&newAccount=${data.existed}&stay=${
+          staySignedIn == "true" ? "1" : "0"
         }`,
         { withCredentials: true },
       );
-
-      console.log("jwtdata", jwtdata);
 
       //Redirect to portfolio
       //or ask for name
@@ -80,7 +68,11 @@ export async function action({ params, request }) {
         return redirect(`/portfolio/${data.portfolioCourseId}`);
       } else {
         //Redirect to askname
-        return redirect(`/signinName`);
+        return redirect(
+          `/signinName?email=${encodeURIComponent(
+            emailAddress,
+          )}&portfolioId=${encodeURIComponent(data.portfolioCourseId)}`,
+        );
       }
     }
   } catch (e) {
@@ -93,17 +85,15 @@ export async function action({ params, request }) {
 }
 
 export function SignInCode() {
-  const { emailAddress, deviceName, staySignedIn } = useLoaderData();
-
   const fetcher = useFetcher();
-  let formObj = {};
-  if (fetcher.formData !== undefined) {
-    formObj = Object.fromEntries(fetcher.formData);
-  }
-  console.log("fetcher.state", fetcher.state);
-  console.log("fetcher.data", fetcher.data);
-  console.log("formObj", formObj);
-  console.log("---------------------\n");
+  // let formObj = {};
+  // if (fetcher.formData !== undefined) {
+  //   formObj = Object.fromEntries(fetcher.formData);
+  // }
+  // console.log("fetcher.state", fetcher.state);
+  // console.log("fetcher.data", fetcher.data);
+  // console.log("formObj", formObj);
+  // console.log("---------------------\n");
 
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
@@ -186,8 +176,6 @@ export function SignInCode() {
                         fetcher.submit(
                           {
                             _action: "send new code",
-                            emailAddress: "char0042@umn.edu",
-                            staySignedIn: true,
                           },
                           { method: "post" },
                         );
@@ -214,9 +202,6 @@ export function SignInCode() {
                           fetcher.submit(
                             {
                               _action: "submit code",
-                              emailAddress,
-                              deviceName,
-                              staySignedIn,
                               code,
                             },
                             { method: "post" },
