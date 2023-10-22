@@ -13,6 +13,8 @@ $deviceNames = include "deviceNames.php";
 
 //Nine digit random number
 $signInCode = rand(100000000,999999999);
+$response_arr;
+try {
 
 $sql = "SELECT email, userId
 FROM user
@@ -76,18 +78,29 @@ $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 $headers .= 'From: '.$fromName.'<'.$from.'>' . "\r\n";
 
 //SEND EMAIL WITH CODE HERE
-mail($emailaddress,$subject,$htmlContent, $headers);
+$mailSuccess = mail($emailaddress,$subject,$htmlContent, $headers);
 
-$response_arr = array(
-    "success" => 1,
+if (!$mailSuccess && $mode != 'development'){
+    throw new Exception("Sending Email Failed.");
+}
+
+$response_arr = [
+    'success' => true,
     "deviceName" => $deviceName,
-    );
+    ];
 
-// set response code - 200 OK
-http_response_code(200);
+    http_response_code(200);
 
-echo json_encode($response_arr);
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+    http_response_code(400);
 
-
-$conn->close();
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
+}
 

@@ -83,9 +83,18 @@ import {
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
 import {
   SignIn,
-  loader as signInLoader,
   action as signInAction,
 } from "./Tools/_framework/Paths/SignIn";
+import {
+  SignInCode,
+  loader as signInCodeLoader,
+  action as signInCodeAction,
+} from "./Tools/_framework/Paths/SignInCode";
+import {
+  SignInName,
+  action as signInNameAction,
+  loader as signInNameLoader,
+} from "./Tools/_framework/Paths/SignInName";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -327,7 +336,6 @@ const router = createBrowserRouter([
   },
   {
     path: "signin",
-    loader: signInLoader,
     action: signInAction,
     errorElement: (
       <ChakraProvider theme={theme}>
@@ -337,6 +345,36 @@ const router = createBrowserRouter([
     element: (
       <ChakraProvider theme={theme}>
         <SignIn />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinCode",
+    loader: signInCodeLoader,
+    action: signInCodeAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInCode />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinName",
+    loader: signInNameLoader,
+    action: signInNameAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInName />
       </ChakraProvider>
     ),
   },
