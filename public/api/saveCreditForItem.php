@@ -28,7 +28,7 @@ try {
     Base_Model::checkForRequiredInputs(
         $_POST,
         [
-            'doenetId',
+            'activityId',
             'attemptNumber',
             'credit',
             'itemNumber',
