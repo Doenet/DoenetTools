@@ -18,44 +18,45 @@ $examDoenetId = array_key_exists('doenetId', $jwtArray)
     ? $jwtArray['doenetId']
     : '';
 
-$_POST = json_decode(file_get_contents('php://input'), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST['activityId']);
-$attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
-$credit = mysqli_real_escape_string($conn, $_POST['credit']);
-$itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
+try {
+    $_POST = json_decode(file_get_contents('php://input'), true);
 
-//TODO: check if attempt is older than given attempt
+    //validate input
+    Base_Model::checkForRequiredInputs(
+        $_POST,
+        [
+            'doenetId',
+            'attemptNumber',
+            'credit',
+            'itemNumber',
+        ]
+    );
 
-$success = true;
-$message = '';
-
-if ($doenetId == '') {
-    $success = false;
-    $message = 'Internal Error: missing doenetId';
-} elseif ($attemptNumber == '') {
-    $success = false;
-    $message = 'Internal Error: missing attemptNumber';
-} elseif ($credit == '') {
-    $success = false;
-    $message = 'Internal Error: missing credit';
-} elseif ($itemNumber == '') {
-    $success = false;
-    $message = 'Internal Error: missing itemNumber';
-} elseif ($userId == '') {
-    if ($examUserId == '') {
-        $success = false;
-        $message = 'No access - Need to sign in';
-    } elseif ($examDoenetId != $doenetId) {
-        $success = false;
-        $message = "No access for doenetId: $doenetId";
-    } else {
-        $userId = $examUserId;
+    //exam security
+    if ($userId == '') {
+        if ($examUserId == '') {
+            http_response_code(401);
+            throw new Exception('No access - Need to sign in');
+        } elseif ($examDoenetId != $doenetId) {
+            http_response_code(403);
+            throw new Exception("No access for doenetId: $doenetId");
+        } else {
+            $userId = $examUserId;
+        }
     }
-}
 
-if ($success) {
+    //sanitize input
+    $doenetId = mysqli_real_escape_string($conn, $_POST['activityId']);
+    $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
+    $credit = mysqli_real_escape_string($conn, $_POST['credit']);
+    $itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
+
+    //TODO: check if attempt is older than given attempt
+
+
     //**Find assessment settings
-    $sql = "SELECT attemptAggregation,
+    $sql =
+        "SELECT attemptAggregation,
         timeLimit,
         numberOfAttemptsAllowed,
         dueDate,
@@ -63,8 +64,7 @@ if ($success) {
         FROM assignment
         WHERE doenetId='$doenetId'";
 
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::queryExpectingOneRow($conn, $sql);
     $attemptAggregation = $row['attemptAggregation'];
     $timeLimit = $row['timeLimit'];
     $numberOfAttemptsAllowed = $row['numberOfAttemptsAllowed'];
@@ -92,7 +92,7 @@ if ($success) {
             AND cu.userId = '$userId'
             ";
 
-        $result = $conn->query($sql);
+        $result = Base_Model::runQuery($conn, $sql);
 
         if ($result->num_rows < 1) {
             $databaseError = 1;
@@ -185,7 +185,7 @@ if ($success) {
 
         //$numberOfAttemptsAllowed is '' when unlimited
         if ($numberOfAttemptsAllowed != '') {
-            if($numberOfAttemptsAllowedAdjustment) {
+            if ($numberOfAttemptsAllowedAdjustment) {
                 $numberOfAttemptsAllowed = $numberOfAttemptsAllowed + $numberOfAttemptsAllowedAdjustment;
             }
             if ($attemptNumber > $numberOfAttemptsAllowed) {
@@ -372,34 +372,40 @@ if ($success) {
             $credit_by_item[] = $row['credit'];
         }
     }
+
+
+    $response_arr = [
+        'success' => true,
+        'message' => "Credit for item $itemNumber saved",
+        'access' => true,
+        'viewedSolution' => $viewedSolution,
+        'timeExpired' => $timeExpired,
+        'pastDueDate' => $pastDueDate,
+        'exceededAttemptsAllowed' => $exceededAttemptsAllowed,
+        'databaseError' => $databaseError,
+        'valid' => $valid,
+        'creditForItem' => $credit_for_item,
+        'creditForAttempt' => $credit_for_attempt,
+        'creditForAssignment' => $credit_for_assignment,
+        'creditByItem' => $credit_by_item,
+        'began_seconds' => $began_seconds,
+        'effective_timelimit_seconds' => $effective_timelimit_seconds,
+        'now_seconds' => $now_seconds,
+        'diff_seconds' => $diff_seconds,
+        'dueDate_diff' => $dueDate_diff,
+        'totalPointsOrPercent' => $totalPointsOrPercent,
+    ];
+} catch (Exception $e) {
+    $response_arr = [
+        $success = false,
+        $message = $e->getMessage()
+    ];
+    if (http_response_code() == 200) {
+        http_response_code(500);
+    }
+} finally {
+    // set response code - 200 OK
+    http_response_code(200);
+    echo json_encode($response_arr);
+    $conn->close();
 }
-
-$response_arr = [
-    'success' => $success,
-    'message' => $message,
-    'access' => true,
-    'viewedSolution' => $viewedSolution,
-    'timeExpired' => $timeExpired,
-    'pastDueDate' => $pastDueDate,
-    'exceededAttemptsAllowed' => $exceededAttemptsAllowed,
-    'databaseError' => $databaseError,
-    'valid' => $valid,
-    'creditForItem' => $credit_for_item,
-    'creditForAttempt' => $credit_for_attempt,
-    'creditForAssignment' => $credit_for_assignment,
-    'creditByItem' => $credit_by_item,
-    'began_seconds' => $began_seconds,
-    'effective_timelimit_seconds' => $effective_timelimit_seconds,
-    'now_seconds' => $now_seconds,
-    'diff_seconds' => $diff_seconds,
-    'dueDate_diff' => $dueDate_diff,
-    'totalPointsOrPercent' => $totalPointsOrPercent,
-];
-
-// set response code - 200 OK
-http_response_code(200);
-
-echo json_encode($response_arr);
-
-$conn->close();
-?>
