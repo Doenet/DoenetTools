@@ -11,6 +11,8 @@ class Base_Model {
                       "\n" . $query);
             throw new Exception(
                 "Unexpected internal error occurred, please provide this error id to the doenet team " . $errorId);
+            //TODO: review if this is the right http response code, or if we should use a diffrent strategy
+            http_response_code(500);
         } else {
             return $result;
         }
@@ -72,8 +74,9 @@ class Base_Model {
         foreach($requiredKeys as $key) {
             if (!array_key_exists($key, $inputArray)) {
                 throw new Exception("Missing required field '$key'.");
+                //TODO: review if this is the right http response code, or if we should use a diffrent strategy
+                http_response_code(400);
             }
         }
     }
 }
-?>
