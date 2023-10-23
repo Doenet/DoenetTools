@@ -121,8 +121,7 @@ try {
         AND doenetId = '$doenetId'
         ";
 
-    $result = Base_Model::queryExpectingOneRow($conn, $sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::queryExpectingOneRow($conn, $sql);
     $dueDateOverride = $row['dueDateOverride'];
     $creditOverride_for_assignment = $row['creditOverride'];
     $previousCredit_for_assignment = $row['credit'];
@@ -352,8 +351,6 @@ try {
         'totalPointsOrPercent' => $totalPointsOrPercent,
     ];
 } catch (Exception $e) {
-    $response_arr['success'] = false;
-    $response_arr['message'] = $e->getMessage();
     $response_arr = [
         'success' => false,
         'message' => $e->getMessage(),
@@ -367,8 +364,6 @@ try {
         http_response_code(500);
     }
 } finally {
-    $response_arr['creditByItem'] = $credit_by_item;
-
     // set response code - 200 OK
     http_response_code(200);
 
