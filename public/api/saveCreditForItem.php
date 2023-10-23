@@ -160,7 +160,6 @@ try {
     //If null then it's never past due
     if ($dueDate) {
         $dueDate_seconds = strtotime($dueDate);
-        $now_seconds = strtotime($row['now']);
         $dueDate_diff = $now_seconds - $dueDate_seconds;
         // give one minute buffer on due date
         if ($dueDate_seconds < $now_seconds) {
@@ -338,7 +337,6 @@ try {
         'success' => true,
         'message' => "Credit for item $itemNumber saved",
         'access' => true,
-        'valid' => $valid,
         'creditByItem' => $credit_by_item,
         'creditForItem' => $credit_for_item,
         'creditForAttempt' => $credit_for_attempt,
