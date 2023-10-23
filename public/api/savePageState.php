@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 include "db_connection.php";
+include "baseModel.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray["userId"];

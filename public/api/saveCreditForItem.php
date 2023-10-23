@@ -5,6 +5,7 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 include 'db_connection.php';
+include 'baseModel.php';
 
 date_default_timezone_set('UTC');
 // America/Chicago
