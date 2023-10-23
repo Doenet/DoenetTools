@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect } from "react-router";
 import { useFetcher } from "react-router-dom";
 
 export async function action({ request }) {
@@ -33,8 +33,9 @@ export async function action({ request }) {
   try {
     if (formObj._action == "send new code") {
       let { data } = await axios.get("/api/sendSignInEmail.php", {
-        params: { emailaddress: emailAddress },
+        params: { emailaddress: emailAddress, deviceName },
       });
+
       return {
         success: true,
         _action: formObj._action,
@@ -98,7 +99,7 @@ export function SignInCode() {
     if (codeError !== fetcher.data.message) {
       setCodeError(fetcher.data.message);
       setIsDisabled(false);
-      if (fetcher.data.message == "Code expired") {
+      if (fetcher.data.message == "Code expired.") {
         setIsExpired(true);
       }
     }

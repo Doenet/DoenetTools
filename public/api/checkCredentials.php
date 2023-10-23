@@ -16,28 +16,37 @@ $response_arr;
 try {
     Base_Model::checkForRequiredInputs($_REQUEST,["emailaddress","nineCode","deviceName"]);
 
-//Check if expired
-$sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
-FROM user_device 
-WHERE email='$emailaddress' AND deviceName='$deviceName'";
+    //Check if expired
+    $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
+    FROM user_device 
+    WHERE email='$emailaddress' AND deviceName='$deviceName'
+    ORDER BY timestampOfSignInCode DESC
+    LIMIT 1
+    ";
 
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
 
-//Assume it already exists
-$existed = true;
-$hasFullName = false;
-$reason = "";
-throw new Exception("Code expired"); //Delete me
+    //Assume it already exists
+    $existed = true;
+    $hasFullName = false;
+    $reason = "";
 
-//Check if it took longer than 10 minutes to enter the code
-if ($row['minutes'] > 10){
-    throw new Exception("Code expired");
-}
+    // throw new Exception("Code expired"); //DELETE ME!!!
 
+
+    //Check if it took longer than 10 minutes to enter the code
+    if ($row['minutes'] > 10){
+        throw new Exception("Code expired");
+    }
+
+    //Only the most recent one
     $sql = "SELECT signInCode AS nineCode 
     FROM user_device 
-    WHERE email='$emailaddress' AND deviceName='$deviceName'";
+    WHERE email='$emailaddress' AND deviceName='$deviceName'
+    ORDER BY timestampOfSignInCode DESC
+    LIMIT 1
+    ";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
 
@@ -91,7 +100,7 @@ if ($row['minutes'] > 10){
         WHERE u.email = '$emailaddress'";
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
-        $portfolioCourseId = "_";
+        $portfolioCourseId = "not_created";
         if ($result->num_rows > 0) {
             $portfolioCourseId = $row['courseId'];
         }

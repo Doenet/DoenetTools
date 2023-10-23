@@ -16,21 +16,26 @@ $stay = mysqli_real_escape_string($conn, $_REQUEST['stay']);
 $response_arr;
 try {
     Base_Model::checkForRequiredInputs($_REQUEST,["emailaddress","nineCode","deviceName","newAccount","stay"]);
-//Check if expired
-$sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
-FROM user_device
-WHERE email='$emailaddress' AND deviceName='$deviceName'";
+    //Check if expired
+    $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
+    FROM user_device 
+    WHERE email='$emailaddress' AND deviceName='$deviceName'
+    ORDER BY timestampOfSignInCode DESC
+    LIMIT 1
+    ";
 
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
 
-//Check if it took longer than 10 minutes to enter the code
-if ($row['minutes'] > 10) {
-    throw new Exception("Code expired.");
-} 
-    $sql = "SELECT signInCode AS nineCode, userId
-    FROM user_device
-    WHERE email='$emailaddress' AND deviceName='$deviceName'";
+    //Check if it took longer than 10 minutes to enter the code
+    if ($row['minutes'] > 10) {
+        throw new Exception("Code expired.");
+    } 
+    $sql = "SELECT signInCode AS nineCode,userId
+    FROM user_device 
+    WHERE email='$emailaddress' AND deviceName='$deviceName'
+    ORDER BY timestampOfSignInCode DESC
+    LIMIT 1";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
     $userId = $row['userId'];
