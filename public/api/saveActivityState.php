@@ -52,11 +52,11 @@ try {
     //exam security
     if ($userId == "") {
         if ($examUserId == "") {
-            throw new Exception("No access - Need to sign in");
             http_response_code(401);
+            throw new Exception("No access - Need to sign in");
         } elseif ($examDoenetId != $doenetId) {
-            throw new Exception("No access for doenetId: $doenetId");
             http_response_code(403);
+            throw new Exception("No access for doenetId: $doenetId");
         } else {
             $userId = $examUserId;
         }
@@ -87,8 +87,8 @@ try {
         }
     } elseif ($updateDataOnContentChange != "1") {
         // something strange happened
-        throw new Exception("Database error 1");
         http_response_code(500);
+        throw new Exception("Database error 1");
     }
 
     if ($serverSaveId != "") {
@@ -135,8 +135,8 @@ try {
                 $newAttemptNumber = $row["maxAttemptNumber"];
             } else {
                 // something strange happened
-                throw new Exception("Database error 2");
                 http_response_code(500);
+                throw new Exception("Database error 2");
             }
 
             if ($newAttemptNumber !== $attemptNumber) {
@@ -201,8 +201,8 @@ try {
 
                             if (!($conn->affected_rows > 0)) {
                                 // something went wrong
-                                throw new Exception("Database error 3");
                                 http_response_code(500);
+                                throw new Exception("Database error 3");
                             }
                         }
                     }
@@ -234,8 +234,8 @@ try {
                         $newActivityState = $row["activityState"];
                     } else {
                         // something strange happened (another process changed the database in between queries?)
-                        throw new Exception("Database error 4");
                         http_response_code(500);
+                        throw new Exception("Database error 4");
                     }
                 }
             }

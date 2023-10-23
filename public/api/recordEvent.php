@@ -34,12 +34,11 @@ try {
 
   if ($userId == "") {
     if ($examUserId == "") {
-      $message = "No access - Need to sign in";
-      throw new Exception("No access - Need to sign in");
       http_response_code(401);
+      throw new Exception("No access - Need to sign in");
     } else if ($examDoenetId != $doenetId) {
-      throw new Exception("No access for doenetId: $doenetId");
       http_response_code(403);
+      throw new Exception("No access for doenetId: $doenetId");
     } else {
       $userId = $examUserId;
     }
@@ -82,8 +81,8 @@ try {
 
   //build response array
   $response_arr = array(
-    "success" => $success,
-    "message" => $message
+    "success" => true,
+    "message" => "Event recorded"
   );
   //set response code - 200 OK
   http_response_code(200);

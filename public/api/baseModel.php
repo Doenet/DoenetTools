@@ -9,10 +9,10 @@ class Base_Model {
             error_log("Error occurred " . $errorId  .
                       "\n " . $conn->error .
                       "\n" . $query);
-            throw new Exception(
-                "Unexpected internal error occurred, please provide this error id to the doenet team " . $errorId);
             //TODO: review if this is the right http response code, or if we should use a diffrent strategy
             http_response_code(500);
+            throw new Exception(
+                "Unexpected internal error occurred, please provide this error id to the doenet team " . $errorId);
         } else {
             return $result;
         }
@@ -73,9 +73,9 @@ class Base_Model {
     public static function checkForRequiredInputs($inputArray, $requiredKeys) {
         foreach($requiredKeys as $key) {
             if (!array_key_exists($key, $inputArray)) {
-                throw new Exception("Missing required field '$key'.");
                 //TODO: review if this is the right http response code, or if we should use a diffrent strategy
                 http_response_code(400);
+                throw new Exception("Missing required field '$key'.");
             }
         }
     }
