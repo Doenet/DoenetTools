@@ -1079,62 +1079,41 @@ export function ActivityViewer({
   async function submitAllAndFinishAssessment() {
     setProcessingSubmitAll(true);
 
-    let terminatePromises = [];
+    let submitAndSavePromises = [];
 
     for (let coreWorker of pageInfo.pageCoreWorker) {
       if (coreWorker) {
         let actionId = nanoid();
-        let resolveTerminatePromise;
-        let rejectTerminatePromise;
+        let resolveSubmitAndSavePromise;
+        let rejectSubmitAndSavePromise;
 
-        terminatePromises.push(
+        submitAndSavePromises.push(
           new Promise((resolve, reject) => {
-            resolveTerminatePromise = resolve;
-            rejectTerminatePromise = reject;
+            resolveSubmitAndSavePromise = resolve;
+            rejectSubmitAndSavePromise = reject;
           }),
         );
 
-        let submitAllAndTerminateListener = function (e) {
+        let submitAllAndSaveListener = function (e) {
           if (
             e.data.messageType === "resolveAction" &&
             e.data.args.actionId === actionId
           ) {
-            // posting terminate will make sure page state gets saved
-            // (as navigating to another URL will not initiate a state save)
-            coreWorker.postMessage({
-              messageType: "terminate",
-            });
-          } else if (e.data.messageType === "terminated") {
-            coreWorker.removeEventListener(
-              "message",
-              submitAllAndTerminateListener,
-            );
-
-            // resolve promise
-            resolveTerminatePromise();
-          } else if (
-            e.data.messageType === "sendAlert" &&
-            e.data.alertType === "error"
-          ) {
-            // If any error occurred, try (again) to save state
-            // but don't wait for the results.
-            // Reject the terminate promise, which display alert
-            // and cancel the finish assessment sequence
-
             coreWorker.postMessage({
               messageType: "saveImmediately",
             });
+          } else if (e.data.messageType === "saveImmediatelyResult") {
+            coreWorker.removeEventListener("message", submitAllAndSaveListener);
 
-            coreWorker.removeEventListener(
-              "message",
-              submitAllAndTerminateListener,
-            );
-
-            rejectTerminatePromise();
+            if (e.data.success) {
+              resolveSubmitAndSavePromise();
+            } else {
+              rejectSubmitAndSavePromise();
+            }
           }
         };
 
-        coreWorker.addEventListener("message", submitAllAndTerminateListener);
+        coreWorker.addEventListener("message", submitAllAndSaveListener);
 
         coreWorker.postMessage({
           messageType: "submitAllAnswers",
@@ -1144,7 +1123,9 @@ export function ActivityViewer({
     }
 
     try {
-      await Promise.all(terminatePromises);
+      await Promise.all(submitAndSavePromises);
+
+      await terminateAllCores();
 
       await saveState({ overrideThrottle: true });
     } catch (e) {
@@ -1161,6 +1142,44 @@ export function ActivityViewer({
     }
 
     setActivityAsCompleted?.();
+  }
+
+  async function terminateAllCores() {
+    let terminatePromises = [];
+
+    for (let coreWorker of pageInfo.pageCoreWorker) {
+      if (coreWorker) {
+        let resolveTerminatePromise;
+        let rejectTerminatePromise;
+
+        terminatePromises.push(
+          new Promise((resolve, reject) => {
+            resolveTerminatePromise = resolve;
+            rejectTerminatePromise = reject;
+          }),
+        );
+
+        let terminateListener = function (e) {
+          if (e.data.messageType === "terminated") {
+            coreWorker.removeEventListener("message", terminateListener);
+
+            resolveTerminatePromise();
+          } else if (e.data.messageType === "terminateFailed") {
+            coreWorker.removeEventListener("message", terminateListener);
+
+            rejectTerminatePromise();
+          }
+        };
+
+        coreWorker.addEventListener("message", terminateListener);
+
+        coreWorker.postMessage({
+          messageType: "terminate",
+        });
+      }
+    }
+
+    await Promise.all(terminatePromises);
   }
 
   function setPageErrorsAndWarningsCallback(errorsAndWarnings, pageind) {
