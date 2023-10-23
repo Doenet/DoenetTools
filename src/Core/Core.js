@@ -237,6 +237,9 @@ export default class Core {
     this.errorWarnings.errors.push(...res.errors);
     this.errorWarnings.warnings.push(...res.warnings);
 
+    this.failedToSavePageState = false;
+    this.failedToSaveCreditForItem = false;
+
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
 
@@ -11704,6 +11707,24 @@ export default class Core {
     }
   }
 
+  async saveImmediately() {
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true);
+    }
+
+    postMessage({
+      messageType: "saveImmediatelyResult",
+      success: !(this.failedToSavePageState || this.failedToSaveCreditForItem),
+    });
+  }
+
   async saveState(overrideThrottle = false) {
     this.savePageStateTimeoutID = null;
 
@@ -11814,6 +11835,9 @@ export default class Core {
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+
       return;
     }
 
@@ -11829,6 +11853,9 @@ export default class Core {
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+
       return;
     }
 
@@ -11844,8 +11871,13 @@ export default class Core {
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+
       return;
     }
+
+    this.failedToSavePageState = false;
 
     this.serverSaveId = data.saveId;
 
@@ -11939,6 +11971,8 @@ export default class Core {
               id: "creditDataError",
             },
           });
+
+          this.failedToSaveCreditForItem = true;
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendAlert",
@@ -11949,6 +11983,8 @@ export default class Core {
               id: "creditDataError",
             },
           });
+
+          this.failedToSaveCreditForItem = true;
         } else {
           let data = resp.data;
 
@@ -11963,6 +11999,8 @@ export default class Core {
               totalPointsOrPercent: Number(data.totalPointsOrPercent),
             },
           });
+
+          this.failedToSaveCreditForItem = false;
 
           //TODO: need type warning (red but doesn't hang around)
           if (data.viewedSolution) {
@@ -12034,6 +12072,8 @@ export default class Core {
             id: "creditDataError",
           },
         });
+
+        this.failedToSaveCreditForItem = true;
       });
   }
 
@@ -12311,15 +12351,10 @@ export default class Core {
       }
     }
 
-    if (this.savePageStateTimeoutID) {
-      // if in debounce to save page to local storage
-      // then immediate save to local storage
-      // and override timeout to save to database
-      clearTimeout(this.savePageStateTimeoutID);
-      await this.saveState(true);
-    } else {
-      // else override timeout to save any pending changes to database
-      await this.saveChangesToDatabase(true);
+    await this.saveImmediately();
+
+    if (this.failedToSavePageState || this.failedToSaveCreditForItem) {
+      throw Error("Terminating core failed due to failure to save data.");
     }
   }
 
