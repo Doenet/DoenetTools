@@ -11830,7 +11830,7 @@ export default class Core {
         coreId: this.coreId,
         args: {
           message:
-            "Error synchronizing data.  Changes not saved to the server.",
+          `${resp.data.message}`,
           alertType: "error",
           id: "dataError",
         },
