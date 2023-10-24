@@ -172,6 +172,7 @@ export class Paginator extends BlockComponent {
       actionId,
       sourceInformation,
       skipRendererUpdate,
+      overrideReadOnly: true,
       event: {
         verb: "selected",
         object: {
@@ -328,6 +329,73 @@ export class PaginatorControls extends BlockComponent {
           };
         } else {
           return { setValue: { numPages: 1 } };
+        }
+      },
+    };
+
+    // disabledDirectly for paginatorControls is not affected by the readOnly flag
+    // nor the parentDisabled flag
+    stateVariableDefinitions.disabledDirectly = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      forRenderer: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        disabledPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "disabledPreliminary",
+          variablesOptional: true,
+        },
+        sourceCompositeDisabled: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "disabled",
+        },
+        adapterSourceDisabled: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "disabled",
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (!usedDefault.disabledPreliminary) {
+          return {
+            setValue: {
+              disabledDirectly: dependencyValues.disabledPreliminary,
+            },
+          };
+        }
+
+        let disabledDirectly = false;
+        let useEssential = true;
+
+        if (
+          dependencyValues.sourceCompositeDisabled !== null &&
+          !usedDefault.sourceCompositeDisabled
+        ) {
+          disabledDirectly =
+            disabledDirectly || dependencyValues.sourceCompositeDisabled;
+          useEssential = false;
+        }
+        if (
+          dependencyValues.adapterSourceDisabled !== null &&
+          !usedDefault.adapterSourceDisabled
+        ) {
+          disabledDirectly =
+            disabledDirectly || dependencyValues.adapterSourceDisabled;
+          useEssential = false;
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabledDirectly: true,
+            },
+          };
+        } else {
+          return { setValue: { disabledDirectly } };
         }
       },
     };
