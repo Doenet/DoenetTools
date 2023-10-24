@@ -7,116 +7,96 @@ header("Access-Control-Allow-Credentials: true");
 
 
 include "db_connection.php";
+include "baseModel.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-$examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
-$examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
+$examUserId = array_key_exists("examineeUserId", $jwtArray) ? $jwtArray['examineeUserId'] : "";
+$examDoenetId = array_key_exists("doenetId", $jwtArray) ? $jwtArray['doenetId'] : "";
 
-$_POST = json_decode(file_get_contents("php://input"),true);
-$doenetId =  mysqli_real_escape_string($conn,$_POST["activityId"]);
-$activityCid =  mysqli_real_escape_string($conn,$_POST["activityCid"]);
-$pageCid =  mysqli_real_escape_string($conn,$_POST["pageCid"]);
-$pageNumber =  mysqli_real_escape_string($conn,$_POST["pageNumber"]);
-$attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
-$verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
-$object =  mysqli_real_escape_string($conn,$_POST["object"]);
-$result =  mysqli_real_escape_string($conn,$_POST["result"]);
-$context =  mysqli_real_escape_string($conn,$_POST["context"]);
-$version =  mysqli_real_escape_string($conn,$_POST["version"]);
-$activityVariantIndex =  mysqli_real_escape_string($conn,$_POST["activityVariantIndex"]);
-$pageVariantIndex =  mysqli_real_escape_string($conn,$_POST["pageVariantIndex"]);
-$timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
+try {
+  $_POST = json_decode(file_get_contents("php://input"), true);
 
-$success = TRUE;
-$message = "";
-
-if ($doenetId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing doenetId';
-}elseif ($attemptNumber == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing attemptNumber';
-}elseif ($verb == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing verb';
-}elseif ($object == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing object';
-}elseif ($result == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing result';
-}elseif ($context == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing context';
-}elseif ($version == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing version';
-}elseif ($timestamp == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing timestamp';
-}elseif ($userId == ""){
-  if ($examUserId == ""){
-    $success = FALSE;
-    $message = "No access - Need to sign in";
-  }else if ($examDoenetId != $doenetId){
-      $success = FALSE;
-      $message = "No access for doenetId: $doenetId";
-  }else{
-      $userId = $examUserId;
-  }
-}
-//TODO: Handle Anonymous
-// elseif ($userId == ""){
-//   $success = FALSE;
-//   $message = "You need to be signed in to create a $type";
-// }
-
-if ($pageCid == ""){
-  $pageCid = 'NULL';
-} else {
-  $pageCid = "'$pageCid'";
-}
-
-if ($activityCid == ""){
-  $activityCid = 'NULL';
-} else {
-  $activityCid = "'$activityCid'";
-}
-
-if ($pageVariantIndex == ""){
-  $pageVariantIndex = 'NULL';
-} else {
-  $pageVariantIndex = "'$pageVariantIndex'";
-}
-
-if ($activityVariantIndex == ""){
-  $activityVariantIndex = 'NULL';
-} else {
-  $activityVariantIndex = "'$activityVariantIndex'";
-}
-
-if ($pageNumber == ""){
-  $pageNumber = 'NULL';
-}
-
-if ($success){
-  $sql = "INSERT INTO event (userId,doenetId,activityCid,pageCid,pageNumber,attemptNumber,activityVariantIndex,pageVariantIndex,verb,object,result,context,version,timestamp)
-  VALUES ('$userId','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$activityVariantIndex,$pageVariantIndex,'$verb','$object','$result','$context','$version','$timestamp')";
-  $result = $conn->query($sql);
-}
-
-$response_arr = array(
-  "success"=>$success,
-  "message"=>$message
+  //validate input
+  Base_Model::checkForRequiredInputs(
+    $_POST,
+    [
+      "activityId",
+      "attemptNumber",
+      "verb",
+      "object",
+      "result",
+      "context",
+      "version",
+      "timestamp"
+    ]
   );
 
-http_response_code(200);
+  if ($userId == "") {
+    if ($examUserId == "") {
+      http_response_code(401);
+      throw new Exception("No access - Need to sign in");
+    } else if ($examDoenetId != $doenetId) {
+      http_response_code(403);
+      throw new Exception("No access for doenetId: $doenetId");
+    } else {
+      $userId = $examUserId;
+    }
+  }
 
-// make it json format
-echo json_encode($response_arr);
+  //TODO: Handle Anonymous
+  // elseif ($userId == ""){
+  //   $success = FALSE;
+  //   $message = "You need to be signed in to create a $type";
+  // }
 
-$conn->close();
+  $doenetId =  mysqli_real_escape_string($conn, $_POST["activityId"]);
+  $activityCid =  mysqli_real_escape_string($conn, $_POST["activityCid"]);
+  $pageCid =  mysqli_real_escape_string($conn, $_POST["pageCid"]);
+  $pageNumber =  mysqli_real_escape_string($conn, $_POST["pageNumber"]);
+  $attemptNumber =  mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
+  $verb =  mysqli_real_escape_string($conn, $_POST["verb"]);
+  $object =  mysqli_real_escape_string($conn, $_POST["object"]);
+  $result =  mysqli_real_escape_string($conn, $_POST["result"]);
+  $context =  mysqli_real_escape_string($conn, $_POST["context"]);
+  $version =  mysqli_real_escape_string($conn, $_POST["version"]);
+  $activityVariantIndex =  mysqli_real_escape_string($conn, $_POST["activityVariantIndex"]);
+  $pageVariantIndex =  mysqli_real_escape_string($conn, $_POST["pageVariantIndex"]);
+  $timestamp =  mysqli_real_escape_string($conn, $_POST["timestamp"]);
 
-?>
+  $pageCid = $pageCid == "" ? "NULL" : "'$pageCid'";
+  $activityCid = $activityCid == "" ? "NULL" : "'$activityCid'";
+  $pageVariantIndex = $pageVariantIndex == "" ? "NULL" : "'$pageVariantIndex'";
+  $activityVariantIndex = $activityVariantIndex == "" ? "NULL" : "'$activityVariantIndex'";
 
+  if ($pageNumber == "") {
+    $pageNumber = 'NULL';
+  }
+
+  $sql =
+    "INSERT INTO event (userId,doenetId,activityCid,pageCid,pageNumber,attemptNumber,activityVariantIndex,pageVariantIndex,verb,object,result,context,version,timestamp)
+    VALUES ('$userId','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$activityVariantIndex,$pageVariantIndex,'$verb','$object','$result','$context','$version','$timestamp')";
+
+  Base_Model::runQuery($conn, $sql);
+
+  //build response array
+  $response_arr = array(
+    "success" => true,
+    "message" => "Event recorded"
+  );
+  //set response code - 200 OK
+  http_response_code(200);
+} catch (Exception $e) {
+  $response_arr = array(
+    "success" => false,
+    "message" => $e->getMessage()
+  );
+  if (http_response_code() == 200) {
+    http_response_code(500);
+  }
+} finally {
+  // make it json format
+  echo json_encode($response_arr);
+  //close database connection
+  $conn->close();
+}

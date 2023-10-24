@@ -799,12 +799,12 @@ export default function AssignmentViewer() {
 
   const apiURLs = {
     loadActivityState: "/api/loadActivityState.php",
-    saveActivityState: "/api/saveActivityState.php",
+    saveActivityState: "/api/saveActivityState.php", //logging enabled
     initAssignmentAttempt: "/api/initAssignmentAttempt.php",
-    recordEvent: "/api/recordEvent.php",
+    recordEvent: "/api/recordEvent.php", //logging enabled
     loadPageState: "/api/loadPageState.php",
-    savePageState: "/api/savePageState.php",
-    saveCreditForItem: "/api/saveCreditForItem.php",
+    savePageState: "/api/savePageState.php", //logging enabled 
+    saveCreditForItem: "/api/saveCreditForItem.php",//logging enabled
     reportSolutionViewed: "/api/reportSolutionViewed.php",
   };
 

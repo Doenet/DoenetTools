@@ -11830,7 +11830,7 @@ export default class Core {
         coreId: this.coreId,
         args: {
           message:
-            "Error synchronizing data.  Changes not saved to the server.",
+          `${resp.data.message}`,
           alertType: "error",
           id: "dataError",
         },
@@ -11978,7 +11978,7 @@ export default class Core {
             messageType: "sendAlert",
             coreId: this.coreId,
             args: {
-              message: `Credit not saved due to error: ${resp.data.message}`,
+              message: `${resp.data.message}`,
               alertType: "error",
               id: "creditDataError",
             },
@@ -12001,65 +12001,6 @@ export default class Core {
           });
 
           this.failedToSaveCreditForItem = false;
-
-          //TODO: need type warning (red but doesn't hang around)
-          if (data.viewedSolution) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "No credit awarded since solution was viewed.",
-                alertType: "info",
-                id: "solutionViewed",
-              },
-            });
-          }
-          if (data.timeExpired) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message:
-                  "No credit awarded since the time allowed has expired.",
-                alertType: "info",
-                id: "timeExpired",
-              },
-            });
-          }
-          if (data.pastDueDate) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "No credit awarded since the due date has passed.",
-                alertType: "info",
-                id: "pastDue",
-              },
-            });
-          }
-          if (data.exceededAttemptsAllowed) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message:
-                  "No credit awarded since no more attempts are allowed.",
-                alertType: "info",
-                id: "noMoreAttempts",
-              },
-            });
-          }
-          if (data.databaseError) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "Credit not saved due to database error.",
-                alertType: "error",
-                id: "creditDataError",
-              },
-            });
-          }
         }
       })
       .catch((e) => {
