@@ -21,11 +21,10 @@ try {
     lastName='$lastName'
     WHERE email='$email'
     ";
-    $conn->query($sql);
+    Base_Model::runQuery($conn,$sql);
 
     $response_arr = array(
         'success' => true,
-        'message' => $message,
     );
 
     http_response_code(200);

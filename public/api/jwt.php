@@ -24,8 +24,7 @@ try {
     LIMIT 1
     ";
 
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::runQuery($conn,$sql)->fetch_assoc();
 
     //Check if it took longer than 10 minutes to enter the code
     if ($row['minutes'] > 10) {
@@ -36,8 +35,7 @@ try {
     WHERE email='$emailaddress' AND deviceName='$deviceName'
     ORDER BY timestampOfSignInCode DESC
     LIMIT 1";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::runQuery($conn,$sql)->fetch_assoc();
     $userId = $row['userId'];
     if ($row['nineCode'] != $nineCode) {
         throw new Exception("Invalid Code.");
@@ -61,7 +59,7 @@ try {
     $sql = "UPDATE user_device
     SET signedIn = '1'
     WHERE userId='$userId' AND deviceName='$deviceName'";
-    $result = $conn->query($sql);
+    Base_Model::runQuery($conn,$sql);
 
     $value = $jwt;
 

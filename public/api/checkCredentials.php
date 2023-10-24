@@ -24,8 +24,7 @@ try {
     LIMIT 1
     ";
 
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::runQuery($conn,$sql)->fetch_assoc();
 
     //Assume it already exists
     $existed = true;
@@ -47,8 +46,7 @@ try {
     ORDER BY timestampOfSignInCode DESC
     LIMIT 1
     ";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
+    $row = Base_Model::runQuery($conn,$sql)->fetch_assoc();
 
     if ($row["nineCode"] != $nineCode){
         throw new Exception("Invalid Code");
@@ -59,15 +57,14 @@ try {
         $sql = "UPDATE user_device 
         SET signedIn='1' 
         WHERE email='$emailaddress' AND deviceName='$deviceName'";
-        $result = $conn->query($sql);
+        Base_Model::runQuery($conn,$sql);
 
         //Test if it's a new account
         $sql = "SELECT firstName,lastName, screenName 
         FROM user 
         WHERE email='$emailaddress'
         ";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
+        $row = Base_Model::runQuery($conn,$sql)->fetch_assoc();
 
         if ($row["firstName"] != "" && $row["lastName"] != ""){
             $hasFullName = true;
@@ -90,7 +87,7 @@ try {
         $profile_pic = $profile_pics[$randomNumber];
         // Store screen name and profile picture
         $sql = "UPDATE user SET screenName='$screen_name',profilePicture='$profile_pic' WHERE email='$emailaddress' ";
-        $result = $conn->query($sql);
+        Base_Model::runQuery($conn,$sql);
         }
 
         $sql = "SELECT c.courseId
@@ -98,7 +95,7 @@ try {
         LEFT JOIN user AS u
         ON u.userId = c.portfolioCourseForUserId
         WHERE u.email = '$emailaddress'";
-        $result = $conn->query($sql);
+        $result = Base_Model::runQuery($conn,$sql);
         $row = $result->fetch_assoc();
         $portfolioCourseId = "not_created";
         if ($result->num_rows > 0) {
