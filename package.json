@@ -10,6 +10,8 @@
     "artifactory:push": "npm run artifactory:build -- --push",
     "deploy:local": "npm run dc up -- -d --no-deps --build apache",
     "deploy:development": "npm run build -- --mode development --outDir dist --minify false",
+    "deploy:production": "npm run build -- --mode production --outDir dist",
+    "deploy:prod": "npm run deploy:production",
     "deploy:dev": "npm run deploy:development",
     "start:ci": "docker compose up -d",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
