@@ -126,14 +126,13 @@ try {
 
         if (!$stateOverwritten) {
             // attempt to insert a rows in page_state
-
+            //TODO: better way to deal with this conditional insert. Update the Base_Model to handle correclty
             $sql =
                 "INSERT INTO page_state
                 (userId,doenetId,cid,pageNumber,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState)
                 VALUES ('$userId','$doenetId','$cid','$pageNumber','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState')";
 
-            //TODO: verify that this works for the following if statement
-            Base_Model::runQuery($conn, $sql);
+            $conn->query($sql);
 
             if ($conn->affected_rows < 1) {
                 // no rows were inserted

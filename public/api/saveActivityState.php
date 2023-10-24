@@ -150,13 +150,13 @@ try {
         if (!$stateOverwritten) {
             // attempt to insert a rows in activity_state
 
+            //TODO: better way to deal with this conditional insert. Update the Base_Model to handle correclty
             $sql =
                 "INSERT INTO activity_state
                 (userId,doenetId,cid,attemptNumber,deviceName,saveId,variantIndex,activityInfo,activityState)
                 VALUES ('$userId','$doenetId','$cid','$attemptNumber','$device','$saveId','$variantIndex','$activityInfo','$activityState')";
 
-            //TODO: verify that this works for the following if statement
-            Base_Model::runQuery($conn, $sql);
+            $conn->query($sql);
 
             if ($conn->affected_rows < 1) {
                 // no rows were inserted
