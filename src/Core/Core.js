@@ -11851,8 +11851,7 @@ export default class Core {
         messageType: "sendAlert",
         coreId: this.coreId,
         args: {
-          message:
-          `${resp.data.message}`,
+          message: `${resp.data.message}`,
           alertType: "error",
           id: "dataError",
         },
@@ -11862,11 +11861,6 @@ export default class Core {
 
       return;
     }
-
-    console.log(
-      `result from saving to database ${this.itemNumber}:`,
-      resp.data,
-    );
 
     if (resp.status === null) {
       postMessage({
@@ -11981,8 +11975,6 @@ export default class Core {
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
     };
-
-    console.log("payload for save credit for item", payload);
 
     axios
       .post(this.apiURLs.saveCreditForItem, payload)
