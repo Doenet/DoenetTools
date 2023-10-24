@@ -113,6 +113,8 @@ export function ActivityViewer({
   const currentPageRef = useRef(currentPage); // so that event listener can get new current page
   currentPageRef.current = currentPage; // so updates on every refresh
 
+  const savingActivityState = useRef(false);
+
   const [activityAttemptNumberSetUp, setActivityAttemptNumberSetUp] =
     useState(0);
 
@@ -850,7 +852,28 @@ export function ActivityViewer({
     // TODO: find out how to test if not online
     // and send this sendAlert if not online:
 
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100);
+      });
+    };
+
+    if (savingActivityState.current) {
+      for (let i = 0; i < 100; i++) {
+        await pause100();
+
+        if (!savingActivityState.current) {
+          break;
+        }
+      }
+    }
+
+    activityStateToBeSavedToDatabase.current.serverSaveId =
+      serverSaveId.current;
+
     let resp;
+
+    savingActivityState.current = true;
 
     try {
       console.log(
@@ -862,6 +885,7 @@ export function ActivityViewer({
         activityStateToBeSavedToDatabase.current,
       );
     } catch (e) {
+      savingActivityState.current = false;
       console.log(
         `sending sendAlert: Error synchronizing data.  Changes not saved to the server.`,
       );
@@ -883,6 +907,7 @@ export function ActivityViewer({
           "Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?",
         alertType: "error",
       });
+      savingActivityState.current = false;
       return;
     }
 
@@ -891,9 +916,11 @@ export function ActivityViewer({
     if (!data.success) {
       console.log(`sending sendAlert: ${data.message}`);
       sendAlert.current({ message: data.message, alertType: "error" });
+      savingActivityState.current = false;
       return;
     }
 
+    savingActivityState.current = false;
     serverSaveId.current = data.saveId;
 
     if (flags.allowLocalState) {
