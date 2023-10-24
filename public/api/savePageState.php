@@ -82,7 +82,7 @@ try {
             AND saveId = '$serverSaveId'
             ";
 
-        $conn->query($sql);
+        Base_Model::runQuery($conn,$sql);
         if ($conn->affected_rows > 0) {
             $savedState = true;
         }
