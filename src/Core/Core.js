@@ -11817,7 +11817,27 @@ export default class Core {
     //   }
     // })
 
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100);
+      });
+    };
+
+    if (this.savingPageState) {
+      for (let i = 0; i < 100; i++) {
+        await pause100();
+
+        if (!this.savingPageState) {
+          break;
+        }
+      }
+    }
+
+    this.pageStateToBeSavedToDatabase.serverSaveId = this.serverSaveId;
+
     let resp;
+
+    this.savingPageState = true;
 
     try {
       resp = await axios.post(
@@ -11825,12 +11845,13 @@ export default class Core {
         this.pageStateToBeSavedToDatabase,
       );
     } catch (e) {
+      this.savingPageState = false;
+
       postMessage({
         messageType: "sendAlert",
         coreId: this.coreId,
         args: {
-          message:
-          `${resp.data.message}`,
+          message: `${resp.data.message}`,
           alertType: "error",
           id: "dataError",
         },
@@ -11840,8 +11861,6 @@ export default class Core {
 
       return;
     }
-
-    console.log("result from saving to database:", resp.data);
 
     if (resp.status === null) {
       postMessage({
@@ -11855,6 +11874,7 @@ export default class Core {
       });
 
       this.failedToSavePageState = true;
+      this.savingPageState = false;
 
       return;
     }
@@ -11873,11 +11893,13 @@ export default class Core {
       });
 
       this.failedToSavePageState = true;
+      this.savingPageState = false;
 
       return;
     }
 
     this.failedToSavePageState = false;
+    this.savingPageState = false;
 
     this.serverSaveId = data.saveId;
 
@@ -11953,8 +11975,6 @@ export default class Core {
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
     };
-
-    console.log("payload for save credit for item", payload);
 
     axios
       .post(this.apiURLs.saveCreditForItem, payload)
