@@ -3,7 +3,7 @@ import { clear as idb_clear, keys as idb_keys } from "idb-keyval";
 
 export async function clearUsersInformationFromTheBrowser() {
   localStorage.clear(); //Clear out the profile of the last exam taker
-  await axios.get("/api/signOut.php");
+  await axios.get("/api/signOut.php", { withCredentials: true }); //Clear all cookies
   await idb_clear();
   return true;
 }

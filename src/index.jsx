@@ -93,6 +93,10 @@ import {
   SignInName,
   action as signInNameAction,
 } from "./Tools/_framework/Paths/SignInName";
+import {
+  SignOut,
+  loader as signOutLoader,
+} from "./Tools/_framework/Paths/SignOut";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -371,6 +375,20 @@ const router = createBrowserRouter([
     element: (
       <ChakraProvider theme={theme}>
         <SignInName />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signout",
+    loader: signOutLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignOut />
       </ChakraProvider>
     ),
   },
