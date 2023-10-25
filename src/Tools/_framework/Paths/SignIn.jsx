@@ -97,6 +97,7 @@ export function SignIn() {
                     size="md"
                     type="email"
                     value={emailAddress}
+                    data-test="email input"
                     onChange={(e) => {
                       let nextValue = e.target.value;
                       //Clear error if email is now good
@@ -124,6 +125,7 @@ export function SignIn() {
                     isDisabled={isDisabled}
                     rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
                     colorScheme="blue"
+                    data-test="sendEmailButton"
                     onClick={() => {
                       if (emailAddress == "") {
                         setEmailError("Please enter your email address");

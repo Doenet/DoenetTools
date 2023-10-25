@@ -140,19 +140,25 @@ export function SignInCode() {
                 <FormControl isInvalid={codeError} mt="20px">
                   <FormLabel>Sign-in code (9 digit code):</FormLabel>
                   <HStack>
-                    <PinInput value={code} onChange={(code) => setCode(code)}>
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
-                      <PinInputField />
+                    <PinInput
+                      data-test="signinCodeInput"
+                      value={code}
+                      onChange={(code) => setCode(code)}
+                    >
+                      <PinInputField data-test="code-input-0" />
+                      <PinInputField data-test="code-input-1" />
+                      <PinInputField data-test="code-input-2" />
+                      <PinInputField data-test="code-input-3" />
+                      <PinInputField data-test="code-input-4" />
+                      <PinInputField data-test="code-input-5" />
+                      <PinInputField data-test="code-input-6" />
+                      <PinInputField data-test="code-input-7" />
+                      <PinInputField data-test="code-input-8" />
                     </PinInput>
                   </HStack>
-                  <FormErrorMessage>{codeError}</FormErrorMessage>
+                  <FormErrorMessage data-test="code-err">
+                    {codeError}
+                  </FormErrorMessage>
                 </FormControl>
               </CardBody>
 
@@ -162,6 +168,7 @@ export function SignInCode() {
                     <Button
                       variant="solid"
                       colorScheme="blue"
+                      data-test="sendNewCodeButton"
                       onClick={() => {
                         setIsExpired(false);
                         setCodeError(null);
@@ -180,6 +187,7 @@ export function SignInCode() {
                     <Button
                       variant="solid"
                       colorScheme="blue"
+                      data-test="submitCodeButton"
                       isDisabled={isDisabled}
                       rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
                       onClick={() => {

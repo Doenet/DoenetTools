@@ -72,6 +72,7 @@ export function SignOut() {
                         <Button
                           colorScheme="blue"
                           onClick={() => navigate("/")}
+                          data-test="homepage button"
                         >
                           Home
                         </Button>

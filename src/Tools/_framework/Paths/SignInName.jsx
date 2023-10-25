@@ -99,6 +99,7 @@ export function SignInName() {
                 <FormControl isInvalid={firstNameError} mt="20px">
                   <FormLabel>First Name:</FormLabel>
                   <Input
+                    data-test="firstNameInput"
                     onChange={(e) => {
                       if (e.target.value != "") {
                         setFirstNameError(null);
@@ -106,11 +107,14 @@ export function SignInName() {
                       setFirstName(e.target.value);
                     }}
                   />
-                  <FormErrorMessage>{firstNameError}</FormErrorMessage>
+                  <FormErrorMessage data-test="firstNameError">
+                    {firstNameError}
+                  </FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={lastNameError} mt="20px">
                   <FormLabel>Last Name:</FormLabel>
                   <Input
+                    data-test="lastNameInput"
                     onChange={(e) => {
                       if (e.target.value != "") {
                         setLastNameError(null);
@@ -118,7 +122,9 @@ export function SignInName() {
                       setLastName(e.target.value);
                     }}
                   />
-                  <FormErrorMessage>{lastNameError}</FormErrorMessage>
+                  <FormErrorMessage data-test="lastNameError">
+                    {lastNameError}
+                  </FormErrorMessage>
                 </FormControl>
               </CardBody>
 
@@ -129,6 +135,7 @@ export function SignInName() {
                     colorScheme="blue"
                     isDisabled={isDisabled}
                     rightIcon={isDisabled ? <Spinner size="sm" /> : undefined}
+                    data-test="submitName"
                     onClick={() => {
                       if (firstName == "") {
                         setFirstNameError("Please enter your first name.");
