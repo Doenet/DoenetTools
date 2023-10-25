@@ -35,6 +35,12 @@ try {
         ]
     );
 
+    //sanitize input
+    $doenetId = mysqli_real_escape_string($conn, $_POST['activityId']);
+    $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
+    $credit = mysqli_real_escape_string($conn, $_POST['credit']);
+    $itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
+
     //exam security
     if ($userId == '') {
         if ($examUserId == '') {
@@ -47,12 +53,6 @@ try {
             $userId = $examUserId;
         }
     }
-
-    //sanitize input
-    $doenetId = mysqli_real_escape_string($conn, $_POST['activityId']);
-    $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
-    $credit = mysqli_real_escape_string($conn, $_POST['credit']);
-    $itemNumber = mysqli_real_escape_string($conn, $_POST['itemNumber']);
 
     //TODO: check if attempt is older than given attempt
 

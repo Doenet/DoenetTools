@@ -32,18 +32,6 @@ try {
     ]
   );
 
-  if ($userId == "") {
-    if ($examUserId == "") {
-      http_response_code(401);
-      throw new Exception("No access - Need to sign in");
-    } else if ($examDoenetId != $doenetId) {
-      http_response_code(403);
-      throw new Exception("No access for doenetId: $doenetId");
-    } else {
-      $userId = $examUserId;
-    }
-  }
-
   //TODO: Handle Anonymous
   // elseif ($userId == ""){
   //   $success = FALSE;
@@ -71,6 +59,18 @@ try {
 
   if ($pageNumber == "") {
     $pageNumber = 'NULL';
+  }
+
+  if ($userId == "") {
+    if ($examUserId == "") {
+      http_response_code(401);
+      throw new Exception("No access - Need to sign in");
+    } else if ($examDoenetId != $doenetId) {
+      http_response_code(403);
+      throw new Exception("No access for doenetId: $doenetId");
+    } else {
+      $userId = $examUserId;
+    }
   }
 
   $sql =
