@@ -17,7 +17,6 @@ if (isset($_SERVER['HTTP_COOKIE'])) {
       $parts = explode('=', $cookie);
       $name = trim($parts[0]);
       // Set the cookie to expire one hour ago
-      // $success = setcookie($name, '', time()-3600);
       $success = setcookie($name, '', time()-3600, '/', $domain);
       //Stop the script if deleting a cookie fails
       if (!$success){

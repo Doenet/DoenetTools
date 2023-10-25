@@ -5,14 +5,18 @@ header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-//ONLY TESTING IF THE SECURE SIGNED IN (JWT) COOKIE EXISTS
-$signedIn = false;
-
+$secureCookieExists = false;
 if ($_COOKIE["JWT"] != NULL){
-    $signedIn = true;
+    $secureCookieExists = true;
+}
+$unsecureCookieExists = false;
+if ($_COOKIE["JWT_JS"] != NULL){
+    $unsecureCookieExists = true;
 }
 
-$response_arr = ['signedIn' => $signedIn];
+$response_arr = ['secureCookieExists' => $secureCookieExists,
+'unsecureCookieExists' => $unsecureCookieExists,
+];
 
 // set response code - 200 OK
 http_response_code(200);

@@ -32,15 +32,13 @@ export async function checkIfUserClearedOut() {
   //Check for cookie
   //Ask the server without hitting the database
   const { data } = await axios.get("/api/getQuickCheckSignedIn.php");
-  const secureCookieRemoved = !data?.signedIn;
 
-  const vanillaCookies = document.cookie.split(";");
-  const vanillaCookieRemoved =
-    vanillaCookies.length === 1 && vanillaCookies[0] === "";
+  const secureCookieRemoved = !data?.secureCookieExists;
+  const unsecureCookieRemoved = !data?.unsecureCookieExists;
 
-  let cookieRemoved = vanillaCookieRemoved && secureCookieRemoved;
+  let cookieRemoved = unsecureCookieRemoved && secureCookieRemoved;
 
-  if (!vanillaCookieRemoved) {
+  if (!unsecureCookieRemoved) {
     messageArray.push("cookie not removed");
   }
 
