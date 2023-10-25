@@ -20,6 +20,11 @@ export async function checkIfUserClearedOut() {
   //Check for local storage
   //TODO: find something is stored in localStorage and test if this clears it
   let localStorageRemoved = localStorage.length == 0;
+  //Chakra UI will put darkmode back so check that 
+  if (localStorage.length === 1 && localStorage.key(0) === 'chakra-ui-color-mode') {
+    localStorageRemoved = true;
+  }
+
   if (!localStorageRemoved) {
     messageArray.push("local storage not removed");
   }
