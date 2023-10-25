@@ -107,7 +107,6 @@ export default function ToolRoot() {
       import("./ToolPanels/PublicActivityViewer"),
     ),
     CourseCards: lazy(() => import("./ToolPanels/CourseCards")),
-    SignOut: lazy(() => import("./ToolPanels/SignOut")),
     NavigationPanel: lazy(() => import("./ToolPanels/NavigationPanel")),
     Dashboard: lazy(() => import("./ToolPanels/Dashboard")),
     Gradebook: lazy(() => import("./ToolPanels/Gradebook")),
