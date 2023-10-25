@@ -6,34 +6,39 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-
-
-$success = true;
-$message = '';
-
+include "baseModel.php";
 
 $email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
 $firstName = mysqli_real_escape_string($conn,$_REQUEST["firstName"]);
 $lastName = mysqli_real_escape_string($conn,$_REQUEST["lastName"]);
+$response_arr;
+try {
+    Base_Model::checkForRequiredInputs($_REQUEST,["email","firstName","lastName"]);
 
-$sql = "
-UPDATE user
-SET firstName='$firstName',
-lastName='$lastName'
-WHERE email='$email'
-";
-$conn->query($sql);
+    $sql = "
+    UPDATE user
+    SET firstName='$firstName',
+    lastName='$lastName'
+    WHERE email='$email'
+    ";
+    Base_Model::runQuery($conn,$sql);
 
-$response_arr = array(
-    'success' => $success,
-    'message' => $message,
-);
+    $response_arr = array(
+        'success' => true,
+    );
 
-// set response code - 200 OK
-http_response_code(200);
+    http_response_code(200);
 
-// make it json format
-echo json_encode($response_arr);
+} catch (Exception $e) {
+    $response_arr = [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+    http_response_code(400);
 
-$conn->close();
+} finally {
+    // make it json format
+    echo json_encode($response_arr);
+    $conn->close();
+}
 ?>

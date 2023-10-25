@@ -5,8 +5,11 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
 import { RecoilRoot } from "recoil";
 import { createRoot } from "react-dom/client";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
@@ -46,12 +49,10 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
-import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
 import {
@@ -80,6 +81,22 @@ import {
   CourseLinkPageViewer,
   loader as courseLinkPageViewerLoader,
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
+import {
+  SignIn,
+  action as signInAction,
+} from "./Tools/_framework/Paths/SignIn";
+import {
+  SignInCode,
+  action as signInCodeAction,
+} from "./Tools/_framework/Paths/SignInCode";
+import {
+  SignInName,
+  action as signInNameAction,
+} from "./Tools/_framework/Paths/SignInName";
+import {
+  SignOut,
+  loader as signOutLoader,
+} from "./Tools/_framework/Paths/SignOut";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -320,6 +337,62 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "signin",
+    action: signInAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignIn />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinCode",
+    action: signInCodeAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInCode />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinName",
+    action: signInNameAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInName />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signout",
+    loader: signOutLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignOut />
+      </ChakraProvider>
+    ),
+  },
+  {
     path: "public",
     loader: editorSupportPanelLoader,
     action: editorSupportPanelAction,
@@ -420,7 +493,6 @@ const router = createBrowserRouter([
       </ChakraProvider>
     ),
   },
-
   {
     path: "*",
     element: (
