@@ -1,13 +1,28 @@
 import React, { useRef } from "react";
-import { Button, Center, Grid, GridItem, Text, HStack } from "@chakra-ui/react";
+import {
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  Text,
+  useColorMode,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+  VStack,
+  ButtonGroup,
+} from "@chakra-ui/react";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
+import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
 import axios from "axios";
-import AccountMenu from "../ChakraBasedComponents/AccountMenu";
 
 export async function loader() {
   //Check if signedIn
@@ -82,6 +97,7 @@ export function SiteHeader(props) {
     useLoaderData();
   const { childComponent } = props;
 
+  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
   let location = useLocation();
 
   // const navColor = useColorModeValue("#ffffff", "gray.800");
@@ -137,7 +153,7 @@ export function SiteHeader(props) {
                 {/* <Button display={{ base: "flex", md: "none" }}>
                   TABS HERE
                 </Button> */}
-                <RouterLogo to={`portfolio/${portfolioCourseId}`} />
+                <RouterLogo />
                 <Text ml={1}>Doenet</Text>
               </Center>
             </GridItem>
@@ -171,11 +187,54 @@ export function SiteHeader(props) {
             </GridItem>
             <GridItem area="rightHeader">
               {signedIn ? (
-                <AccountMenu
-                  firstName={firstName}
-                  lastName={lastName}
-                  email={email}
-                />
+                <Center h="40px" mr="10px">
+                  <Menu>
+                    <MenuButton data-test="AvatarMenuButton">
+                      <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                    </MenuButton>
+                    <MenuList>
+                      <VStack mb="20px">
+                        <Avatar size="xl" name={`${firstName} ${lastName}`} />
+                        <Text>
+                          {firstName} {lastName}
+                        </Text>
+                        <Text>{email}</Text>
+                        <ButtonGroup size="sm" isAttached variant="outline">
+                          <Button
+                            leftIcon={<FaSun />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "light"}
+                          >
+                            Light
+                          </Button>
+                          <Button
+                            leftIcon={<FaMoon />}
+                            onClick={toggleColorMode}
+                            isDisabled={colorMode == "dark"}
+                            // cursor="not-allowed"
+                          >
+                            Dark
+                          </Button>
+                          {/* <Button
+                            leftIcon={<FaRobot />}
+                            onClick={() => setColorMode("system")}
+                            // isDisabled={colorMode == ""}
+                            // cursor="not-allowed"
+                          >
+                            Auto
+                          </Button> */}
+                        </ButtonGroup>
+                      </VStack>
+                      <MenuItem
+                        as="a"
+                        href="/signout"
+                        data-test="AvatarMenuSignOut"
+                      >
+                        Sign Out
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Center>
               ) : (
                 <Center h="40px" mr="10px">
                   <Button
