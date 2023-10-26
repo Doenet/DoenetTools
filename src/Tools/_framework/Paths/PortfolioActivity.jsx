@@ -1744,6 +1744,7 @@ export function PortfolioActivity() {
                       ) : (
                         <Select
                           size="sm"
+                          value={layer}
                           onChange={(e) => {
                             setLayer(e.target.value);
                             if (e.target.value == "draft") {
