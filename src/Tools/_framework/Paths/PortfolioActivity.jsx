@@ -1496,24 +1496,24 @@ export function PortfolioActivity() {
   const {
     success,
     message,
-    // pageId,
     doenetId,
     publicDoenetML,
     draftDoenetML,
     label,
     courseId,
-    // isDeleted,
-    // isBanned,
-    // isPublic,
     firstName,
     lastName,
     email,
     platform,
-    // lastKnownCid,
     activityData,
     editModeInit,
     onLoadPublicAndDraftAreTheSame,
     portfolioCourseId,
+    // pageId,
+    // isDeleted,
+    // isBanned,
+    // isPublic,
+    // lastKnownCid,
   } = useLoaderData();
   // const { signedIn } = useOutletContext();
 
@@ -2109,6 +2109,12 @@ function EditorPanel({
             initializeEditorDoenetML.current = textEditorDoenetML.current; //Need to save what will be init in the text editor if we return
             setEditMode(false);
             setSearchParams({ edit: "false" }, { replace: true });
+
+            //SAVE ON CLOSE
+            setViewerDoenetML(textEditorDoenetML.current);
+            setCodeChanged(false);
+            clearTimeout(timeout.current);
+            handleSaveDraft();
           }}
         >
           Close
