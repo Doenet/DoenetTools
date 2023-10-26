@@ -33,9 +33,14 @@ onmessage = function (e) {
   } else if (e.data.messageType === "visibilityChange") {
     core.handleVisibilityChange(e.data.args);
   } else if (e.data.messageType === "terminate") {
-    core.terminate().then(() => {
-      postMessage({ messageType: "terminated" });
-    });
+    core
+      .terminate()
+      .then(() => {
+        postMessage({ messageType: "terminated" });
+      })
+      .catch(() => {
+        postMessage({ messageType: "terminateFailed" });
+      });
   } else if (e.data.messageType === "navigatingToComponent") {
     core.handleNavigatingToComponent(e.data.args);
   } else if (e.data.messageType === "submitAllAnswers") {
@@ -44,6 +49,8 @@ onmessage = function (e) {
       actionName: "submitAllAnswers",
       args: e.data.args,
     });
+  } else if (e.data.messageType === "saveImmediately") {
+    core.saveImmediately();
   }
 };
 

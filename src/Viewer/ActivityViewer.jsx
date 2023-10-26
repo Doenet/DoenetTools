@@ -113,6 +113,8 @@ export function ActivityViewer({
   const currentPageRef = useRef(currentPage); // so that event listener can get new current page
   currentPageRef.current = currentPage; // so updates on every refresh
 
+  const savingActivityState = useRef(false);
+
   const [activityAttemptNumberSetUp, setActivityAttemptNumberSetUp] =
     useState(0);
 
@@ -701,10 +703,6 @@ export function ActivityViewer({
     let resp;
 
     try {
-      console.log(
-        "first one saveActivityState activityStateToBeSavedToDatabase",
-        activityStateToBeSavedToDatabase,
-      );
       resp = await axios.post(
         apiURLs.saveActivityState,
         activityStateToBeSavedToDatabase,
@@ -850,21 +848,37 @@ export function ActivityViewer({
     // TODO: find out how to test if not online
     // and send this sendAlert if not online:
 
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100);
+      });
+    };
+
+    if (savingActivityState.current) {
+      for (let i = 0; i < 100; i++) {
+        await pause100();
+
+        if (!savingActivityState.current) {
+          break;
+        }
+      }
+    }
+
+    activityStateToBeSavedToDatabase.current.serverSaveId =
+      serverSaveId.current;
+
     let resp;
 
+    savingActivityState.current = true;
+
     try {
-      console.log(
-        "activity state params",
-        activityStateToBeSavedToDatabase.current,
-      );
       resp = await axios.post(
         apiURLs.saveActivityState,
         activityStateToBeSavedToDatabase.current,
       );
     } catch (e) {
-      console.log(
-        `sending sendAlert: Error synchronizing data.  Changes not saved to the server.`,
-      );
+      savingActivityState.current = false;
+
       sendAlert.current({
         message: "Error synchronizing data.  Changes not saved to the server.",
         alertType: "error",
@@ -872,28 +886,25 @@ export function ActivityViewer({
       return;
     }
 
-    console.log("result from saving activity to database:", resp.data);
-
     if (resp.status === null) {
-      console.log(
-        `sending sendAlert: Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
-      );
       sendAlert.current({
         message:
           "Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?",
         alertType: "error",
       });
+      savingActivityState.current = false;
       return;
     }
 
     let data = resp.data;
 
     if (!data.success) {
-      console.log(`sending sendAlert: ${data.message}`);
       sendAlert.current({ message: data.message, alertType: "error" });
+      savingActivityState.current = false;
       return;
     }
 
+    savingActivityState.current = false;
     serverSaveId.current = data.saveId;
 
     if (flags.allowLocalState) {
@@ -942,10 +953,10 @@ export function ActivityViewer({
             alertType: "error",
           });
         } else if (!resp.data.success) {
-          sendAlert.current(
-            `Could not initialize assignment tables: ${resp.data.message}.`,
-            "error",
-          );
+          sendAlert.current({
+            message: `Could not initialize assignment tables: ${resp.data.message}.`,
+            alertType: "error",
+          });
         }
       } catch (e) {
         sendAlert.current({
@@ -1079,34 +1090,41 @@ export function ActivityViewer({
   async function submitAllAndFinishAssessment() {
     setProcessingSubmitAll(true);
 
-    let terminatePromises = [];
+    let submitAndSavePromises = [];
 
     for (let coreWorker of pageInfo.pageCoreWorker) {
       if (coreWorker) {
         let actionId = nanoid();
-        let resolveTerminatePromise;
+        let resolveSubmitAndSavePromise;
+        let rejectSubmitAndSavePromise;
 
-        terminatePromises.push(
+        submitAndSavePromises.push(
           new Promise((resolve, reject) => {
-            resolveTerminatePromise = resolve;
+            resolveSubmitAndSavePromise = resolve;
+            rejectSubmitAndSavePromise = reject;
           }),
         );
 
-        coreWorker.onmessage = function (e) {
+        let submitAllAndSaveListener = function (e) {
           if (
             e.data.messageType === "resolveAction" &&
             e.data.args.actionId === actionId
           ) {
-            // posting terminate will make sure page state gets saved
-            // (as navigating to another URL will not initiate a state save)
             coreWorker.postMessage({
-              messageType: "terminate",
+              messageType: "saveImmediately",
             });
-          } else if (e.data.messageType === "terminated") {
-            // resolve promise
-            resolveTerminatePromise();
+          } else if (e.data.messageType === "saveImmediatelyResult") {
+            coreWorker.removeEventListener("message", submitAllAndSaveListener);
+
+            if (e.data.success) {
+              resolveSubmitAndSavePromise();
+            } else {
+              rejectSubmitAndSavePromise();
+            }
           }
         };
+
+        coreWorker.addEventListener("message", submitAllAndSaveListener);
 
         coreWorker.postMessage({
           messageType: "submitAllAnswers",
@@ -1115,11 +1133,64 @@ export function ActivityViewer({
       }
     }
 
-    await Promise.all(terminatePromises);
+    try {
+      await Promise.all(submitAndSavePromises);
 
-    await saveState({ overrideThrottle: true });
+      await terminateAllCores();
+
+      await saveState({ overrideThrottle: true });
+    } catch (e) {
+      sendAlert.current({
+        message: `An error occurred. Assessment was not successfully submitted.`,
+        alertType: "error",
+      });
+
+      setFinishAssessmentMessageOpen(false);
+      setProcessingSubmitAll(false);
+
+      // return so don't set activity as completed
+      return;
+    }
 
     setActivityAsCompleted?.();
+  }
+
+  async function terminateAllCores() {
+    let terminatePromises = [];
+
+    for (let coreWorker of pageInfo.pageCoreWorker) {
+      if (coreWorker) {
+        let resolveTerminatePromise;
+        let rejectTerminatePromise;
+
+        terminatePromises.push(
+          new Promise((resolve, reject) => {
+            resolveTerminatePromise = resolve;
+            rejectTerminatePromise = reject;
+          }),
+        );
+
+        let terminateListener = function (e) {
+          if (e.data.messageType === "terminated") {
+            coreWorker.removeEventListener("message", terminateListener);
+
+            resolveTerminatePromise();
+          } else if (e.data.messageType === "terminateFailed") {
+            coreWorker.removeEventListener("message", terminateListener);
+
+            rejectTerminatePromise();
+          }
+        };
+
+        coreWorker.addEventListener("message", terminateListener);
+
+        coreWorker.postMessage({
+          messageType: "terminate",
+        });
+      }
+    }
+
+    await Promise.all(terminatePromises);
   }
 
   function setPageErrorsAndWarningsCallback(errorsAndWarnings, pageind) {

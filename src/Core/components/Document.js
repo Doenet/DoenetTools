@@ -728,22 +728,26 @@ export default class Document extends BaseComponent {
       },
     });
 
-    let numAnswers = await this.stateValues.answerDescendants;
-    for (let [
-      ind,
-      answer,
-    ] of await this.stateValues.answerDescendants.entries()) {
+    let answersToSubmit = [];
+
+    for (let answer of await this.stateValues.answerDescendants) {
       if (!(await answer.stateValues.justSubmitted)) {
-        await this.coreFunctions.performAction({
-          componentName: answer.componentName,
-          actionName: "submitAnswer",
-          args: {
-            actionId,
-            sourceInformation,
-            skipRendererUpdate: skipRendererUpdate || ind < numAnswers - 1,
-          },
-        });
+        answersToSubmit.push(answer);
       }
+    }
+
+    let numAnswers = answersToSubmit.length;
+
+    for (let [ind, answer] of answersToSubmit.entries()) {
+      await this.coreFunctions.performAction({
+        componentName: answer.componentName,
+        actionName: "submitAnswer",
+        args: {
+          actionId,
+          sourceInformation,
+          skipRendererUpdate: skipRendererUpdate || ind < numAnswers - 1,
+        },
+      });
     }
   }
 

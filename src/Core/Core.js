@@ -237,6 +237,9 @@ export default class Core {
     this.errorWarnings.errors.push(...res.errors);
     this.errorWarnings.warnings.push(...res.warnings);
 
+    this.failedToSavePageState = false;
+    this.failedToSaveCreditForItem = false;
+
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
 
@@ -11704,6 +11707,24 @@ export default class Core {
     }
   }
 
+  async saveImmediately() {
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true);
+    }
+
+    postMessage({
+      messageType: "saveImmediatelyResult",
+      success: !(this.failedToSavePageState || this.failedToSaveCreditForItem),
+    });
+  }
+
   async saveState(overrideThrottle = false) {
     this.savePageStateTimeoutID = null;
 
@@ -11796,7 +11817,27 @@ export default class Core {
     //   }
     // })
 
+    let pause100 = function () {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 100);
+      });
+    };
+
+    if (this.savingPageState) {
+      for (let i = 0; i < 100; i++) {
+        await pause100();
+
+        if (!this.savingPageState) {
+          break;
+        }
+      }
+    }
+
+    this.pageStateToBeSavedToDatabase.serverSaveId = this.serverSaveId;
+
     let resp;
+
+    this.savingPageState = true;
 
     try {
       resp = await axios.post(
@@ -11804,20 +11845,22 @@ export default class Core {
         this.pageStateToBeSavedToDatabase,
       );
     } catch (e) {
+      this.savingPageState = false;
+
       postMessage({
         messageType: "sendAlert",
         coreId: this.coreId,
         args: {
-          message:
-            "Error synchronizing data.  Changes not saved to the server.",
+          message: `${resp.data.message}`,
           alertType: "error",
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+
       return;
     }
-
-    console.log("result from saving to database:", resp.data);
 
     if (resp.status === null) {
       postMessage({
@@ -11829,6 +11872,10 @@ export default class Core {
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+      this.savingPageState = false;
+
       return;
     }
 
@@ -11844,8 +11891,15 @@ export default class Core {
           id: "dataError",
         },
       });
+
+      this.failedToSavePageState = true;
+      this.savingPageState = false;
+
       return;
     }
+
+    this.failedToSavePageState = false;
+    this.savingPageState = false;
 
     this.serverSaveId = data.saveId;
 
@@ -11922,8 +11976,6 @@ export default class Core {
       itemNumber: this.itemNumber,
     };
 
-    console.log("payload for save credit for item", payload);
-
     axios
       .post(this.apiURLs.saveCreditForItem, payload)
       .then((resp) => {
@@ -11939,16 +11991,20 @@ export default class Core {
               id: "creditDataError",
             },
           });
+
+          this.failedToSaveCreditForItem = true;
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendAlert",
             coreId: this.coreId,
             args: {
-              message: `Credit not saved due to error: ${resp.data.message}`,
+              message: `${resp.data.message}`,
               alertType: "error",
               id: "creditDataError",
             },
           });
+
+          this.failedToSaveCreditForItem = true;
         } else {
           let data = resp.data;
 
@@ -11964,64 +12020,7 @@ export default class Core {
             },
           });
 
-          //TODO: need type warning (red but doesn't hang around)
-          if (data.viewedSolution) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "No credit awarded since solution was viewed.",
-                alertType: "info",
-                id: "solutionViewed",
-              },
-            });
-          }
-          if (data.timeExpired) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message:
-                  "No credit awarded since the time allowed has expired.",
-                alertType: "info",
-                id: "timeExpired",
-              },
-            });
-          }
-          if (data.pastDueDate) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "No credit awarded since the due date has passed.",
-                alertType: "info",
-                id: "pastDue",
-              },
-            });
-          }
-          if (data.exceededAttemptsAllowed) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message:
-                  "No credit awarded since no more attempts are allowed.",
-                alertType: "info",
-                id: "noMoreAttempts",
-              },
-            });
-          }
-          if (data.databaseError) {
-            postMessage({
-              messageType: "sendAlert",
-              coreId: this.coreId,
-              args: {
-                message: "Credit not saved due to database error.",
-                alertType: "error",
-                id: "creditDataError",
-              },
-            });
-          }
+          this.failedToSaveCreditForItem = false;
         }
       })
       .catch((e) => {
@@ -12034,6 +12033,8 @@ export default class Core {
             id: "creditDataError",
           },
         });
+
+        this.failedToSaveCreditForItem = true;
       });
   }
 
@@ -12311,15 +12312,10 @@ export default class Core {
       }
     }
 
-    if (this.savePageStateTimeoutID) {
-      // if in debounce to save page to local storage
-      // then immediate save to local storage
-      // and override timeout to save to database
-      clearTimeout(this.savePageStateTimeoutID);
-      await this.saveState(true);
-    } else {
-      // else override timeout to save any pending changes to database
-      await this.saveChangesToDatabase(true);
+    await this.saveImmediately();
+
+    if (this.failedToSavePageState || this.failedToSaveCreditForItem) {
+      throw Error("Terminating core failed due to failure to save data.");
     }
   }
 
