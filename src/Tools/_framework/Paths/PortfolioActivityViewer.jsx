@@ -319,7 +319,6 @@ export function PortfolioActivityViewer() {
                     }}
                   />
                 </Box>
-                <Box marginBottom="50vh" />
               </VStack>
             </GridItem>
           </Grid>
