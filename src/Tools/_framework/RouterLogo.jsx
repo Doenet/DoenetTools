@@ -33,6 +33,7 @@ export default function RouterLogo({ to, hasLink = true }) {
 
   return (
     <LogoButton
+      data-test="Logo Button"
       hasLink={hasLink}
       onClick={() => {
         if (hasLink) {

@@ -1558,7 +1558,6 @@ export function PortfolioActivity() {
 
   const [narrowMode] = useMediaQuery("(max-width: 1000px)");
   const fetcher = useFetcher();
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   const [editMode, setEditMode] = useState(editModeInit);
   const [publicAndDraftAreTheSame, setPublicAndDraftAreTheSame] = useState(
