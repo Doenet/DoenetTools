@@ -5,7 +5,7 @@ describe("Porfolio Errors and Warnings ", function () {
   const userId2 = "cyuserId2";
 
   before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
+    cy.clearAllOfAUsersActivities({ userId })
   });
   beforeEach(() => {
     cy.signin({ userId });
@@ -26,13 +26,12 @@ describe("Porfolio Errors and Warnings ", function () {
 
     cy.log("Create an activity");
     cy.get('[data-test="Add Activity"]').click();
+    cy.get('[data-test="Activity Label"]').clear().type(label);
+    cy.get('.chakra-modal__close-btn').click();
+    cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').eq(0).click();
+    cy.get('[data-test="Edit Menu Item"]').eq(0).click();
 
-    cy.get(
-      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
-    ).click();
-    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
-      .type(label)
-      .blur();
+    cy.get('[data-test="Activity Label Editable Preview"]').contains(label)
 
     cy.get(".cm-content").type(`<p name="goodp">A good paragraph</p>{enter}`);
 
@@ -78,8 +77,10 @@ describe("Porfolio Errors and Warnings ", function () {
       "contain.text",
       "ErrorLine #3 Invalid component type: <invalid>",
     );
+    cy.get('[data-test="Error Button"]').click();
 
-    cy.get(".cm-content").type(`{ctrl+end}{leftarrow}{leftarrow}{backspace}`);
+    cy.get(".cm-content").type(`{ctrl+end}{leftarrow}{backspace}`); //Delete the / in invalid
+
     cy.get('[data-test="Viewer Update Button"]').click();
 
     cy.get(cesc2("#/__error1")).should(
@@ -120,7 +121,9 @@ describe("Porfolio Errors and Warnings ", function () {
     cy.get('[data-test="Warning Button"]').click();
     cy.get('[data-test="Warning Content"]').should(
       "contain.text",
-      "WarningLine #5 Attribute ninputs is deprecated. Use numInputs instead. Its use will become an error in the next major version (0.7). Version 0.6 will be phased out in summer 2024.",
+      "WarningLine #4 Attribute ninputs is deprecated. Use numInputs instead. Its use will become an error in the next major version (0.7). Version 0.6 will be phased out in summer 2024.",
     );
+    cy.get('[data-test="Warning Button"]').click();
+
   });
 });
