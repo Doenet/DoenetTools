@@ -90,6 +90,7 @@ import { useSearchParams } from "react-router-dom";
 import { FiBook } from "react-icons/fi";
 import Papa from "papaparse";
 import RouterLogo from "../RouterLogo";
+import { buildSinglePageActivityML } from "../../../Core/utils/buildActivityML";
 
 export async function loader({ params, request }) {
   let doenetId = params.doenetId;
@@ -142,9 +143,9 @@ export async function loader({ params, request }) {
 
     let onLoadPublicAndDraftAreTheSame = false;
 
-    if (data.json.assignedCid != null) {
+    if (json.assignedCid != null) {
       const { data: activityML } = await axios.get(
-        `/media/${data.json.assignedCid}.doenet`,
+        `/media/${json.assignedCid}.doenet`,
       );
 
       // console.log("activityML", activityML);
@@ -152,9 +153,9 @@ export async function loader({ params, request }) {
       const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
       const pageIds = activityML.match(regex);
 
-      const pageCId = pageIds[1];
+      const pageCID = pageIds[1];
 
-      if (lastKnownCid == pageCId) {
+      if (lastKnownCid == pageCID) {
         onLoadPublicAndDraftAreTheSame = true;
       }
 
@@ -164,7 +165,7 @@ export async function loader({ params, request }) {
       //which was causing errors
 
       const publicDoenetMLResponse = await axios.get(
-        `/media/${pageCId}.doenet`,
+        `/media/${pageCID}.doenet`,
         {
           transformResponse: (data) => data.toString(),
         },
@@ -240,6 +241,40 @@ export async function action({ params, request }) {
         label,
         keyToUpdate: "activityLabel",
         success: resp.data.success,
+      };
+    }
+
+    if (formObj._action == "publish draft") {
+      const { success, pageCID, activityDoenetML } =
+        await buildSinglePageActivityML({
+          activityId: params.doenetId,
+          pageId: params.pageId,
+          isAssigned: true,
+          courseId: formObj.courseId,
+          version: formObj.version,
+          doenetML: formObj.doenetML,
+        });
+
+      //Save PageDoenetML
+      await axios.post("/api/saveDoenetML.php", {
+        doenetML: formObj.doenetML,
+        pageId: params.pageId,
+        courseId: formObj.courseId,
+        saveAsCid: true,
+      });
+
+      //Save ActivityDoenetML
+      await axios.post("/api/saveCompiledActivity.php", {
+        courseId: formObj.courseId,
+        doenetId: params.doenetId,
+        isAssigned: true,
+        activityDoenetML,
+      });
+
+      return {
+        _action: formObj._action,
+        success,
+        pageCID,
       };
     }
 
@@ -1536,8 +1571,11 @@ export function PortfolioActivity() {
 
   useEffect(() => {
     if (fetcher.state == "loading") {
-      const { success, keyToUpdate, message } = fetcher.data;
-      if (success && keyToUpdate == keyToUpdateState) {
+      const { success, keyToUpdate, message, _action } = fetcher.data;
+      if (
+        success &&
+        (keyToUpdate == keyToUpdateState || _action == keyToUpdateState)
+      ) {
         setMainAlerts([
           {
             type: "success",
@@ -1545,7 +1583,10 @@ export function PortfolioActivity() {
             title: successMessage,
           },
         ]);
-      } else if (!success && keyToUpdate == keyToUpdateState) {
+      } else if (
+        !success &&
+        (keyToUpdate == keyToUpdateState || _action == keyToUpdateState)
+      ) {
         setMainAlerts([
           {
             type: "error",
@@ -1687,48 +1728,24 @@ export function PortfolioActivity() {
                       onClick={() => {
                         setPublicAndDraftAreTheSame(true);
 
-                        //Process making activity public here
-                        compileActivity({
-                          activityDoenetId: doenetId,
-                          isAssigned: true,
-                          courseId,
-                          activity: {
-                            version: activityData.version,
-                            isSinglePage: true,
-                            content: activityData.content,
-                          },
-                          // successCallback: () => {
-                          //   addToast('Activity Assigned.', toastType.INFO);
-                          // },
-                        });
-                        updateAssignItem({
-                          doenetId,
-                          isAssigned: true,
-                          successCallback: () => {
-                            //addToast(assignActivityToast, toastType.INFO);
-                          },
-                        });
-
-                        let title = "Publishing draft to public.";
-                        let nextSuccessMessage = "Public activity is updated.";
-
                         //Alert Messages
-                        setSuccessMessage(nextSuccessMessage);
-                        setKeyToUpdateState("isPublic");
+                        setSuccessMessage("Public activity is updated.");
+                        setKeyToUpdateState("publish draft");
                         setMainAlerts([
                           {
                             type: "info",
-                            id: "isPublic",
-                            title,
+                            id: "publish draft",
+                            title: "Publishing draft to public.",
                           },
                         ]);
 
                         fetcher.submit(
                           {
-                            _action: "update content via keyToUpdate",
-                            keyToUpdate: "isPublic",
-                            value: "1",
-                            doenetId,
+                            _action: "publish draft",
+                            courseId,
+                            version: activityData.version,
+                            isSinglePage: true,
+                            doenetML: textEditorDoenetML.current,
                           },
                           { method: "post" },
                         );
@@ -1983,8 +2000,6 @@ function EditorPanel({
   const { saveDraft } = useSaveDraft();
 
   const handleSaveDraft = useCallback(async () => {
-    setPublicAndDraftAreTheSame(false);
-
     const doenetML = textEditorDoenetML.current;
     const lastKnownCid = lastKnownCidRef.current;
     const backup = backupOldDraft.current;
@@ -2142,6 +2157,7 @@ function EditorPanel({
             editorRef={editorRef}
             setInternalValueTo={initializeEditorDoenetML.current}
             onBeforeChange={(value) => {
+              setPublicAndDraftAreTheSame(false); //Any text change can be published
               textEditorDoenetML.current = value;
               setEditorDoenetML(value);
               if (!codeChangedRef.current) {

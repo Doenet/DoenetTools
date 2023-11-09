@@ -34,76 +34,67 @@ import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update general") {
-    //Don't let label be blank
-    let label = formObj?.label?.trim();
-    if (label == "") {
-      label = "Untitled";
-    }
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
+  try {
+    if (formObj._action == "update general") {
+      //Don't let label be blank
+      let label = formObj?.label?.trim();
+      if (label == "") {
+        label = "Untitled";
+      }
+      let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+      let resp = await axios.post("/api/updatePortfolioActivitySettings.php", {
         label,
         imagePath: formObj.imagePath,
         public: formObj.public,
         doenetId: formObj.doenetId,
         learningOutcomes,
-      },
-    );
-    return true;
-  } else if (formObj?._action == "Add Activity") {
-    //Create a portfilio activity and redirect to the editor for it
-    let response = await fetch("/api/createPortfolioActivity.php");
-
-    if (response.ok) {
-      let { doenetId, pageDoenetId } = await response.json();
+      });
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Add Activity") {
+      //Create a portfilio activity and redirect to the editor for it
+      let resp = await axios.get("/api/createPortfolioActivity.php");
+      let { doenetId, pageDoenetId } = resp.data;
       return { _action: formObj?._action, doenetId, pageDoenetId };
-      // return redirect(
-      //   `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-      // );
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "Delete") {
-    let response = await fetch(
-      `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
-    );
+    } else if (formObj?._action == "Delete") {
+      let resp = await axios.get(
+        `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
+      );
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Make Public") {
+      let resp = await axios.get(
+        `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
+      );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "Make Public") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
-    );
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Make Private") {
+      let resp = await axios.get(
+        `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
+      );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "noop") {
+      return {
+        _action: formObj?._action,
+        success: true,
+      };
     }
-  } else if (formObj?._action == "Make Private") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
-    );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "noop") {
-    return true;
+    throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
   }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
 export async function loader({ params }) {
