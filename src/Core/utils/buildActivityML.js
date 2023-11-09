@@ -15,8 +15,6 @@ export async function buildSinglePageActivityML({
 }) {
 
   const pageCID = await cidFromText(doenetML);
-  console.log("new pageCID", pageCID)
-
   let attributeString = ` xmlns="https://doenet.org/spec/doenetml/v${version}" type="activity"`;
   if (itemWeights) {
     attributeString += ` itemWeights = "${itemWeights.join(" ")}"`;
@@ -30,12 +28,8 @@ export async function buildSinglePageActivityML({
 
   attributeString += ` isSinglePage="true"`;
 
-
   const pageML = ` <page cid="${pageCID}" label="Untitled" />\n`;
-
-
   let activityDoenetML = `<document${attributeString}>\n${pageML}</document>`;
-
 
   return { success: true, pageCID, activityDoenetML };
 }
