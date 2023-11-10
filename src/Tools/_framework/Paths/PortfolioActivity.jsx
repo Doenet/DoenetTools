@@ -255,6 +255,12 @@ export async function action({ params, request }) {
           doenetML: formObj.doenetML,
         });
 
+      //Make activity public
+      await axios.post("/api/updateContentSettingsByKey.php", {
+        doenetId: params.doenetId,
+        isPublic: "1",
+      });
+
       //Save PageDoenetML
       await axios.post("/api/saveDoenetML.php", {
         doenetML: formObj.doenetML,
@@ -328,7 +334,11 @@ export async function action({ params, request }) {
       return { nothingToReturn: true };
     }
   } catch (e) {
-    return { success: false, message: e.response.data.message };
+    return {
+      success: false,
+      _action: formObj._action,
+      message: e.response.data.message,
+    };
   }
 }
 
