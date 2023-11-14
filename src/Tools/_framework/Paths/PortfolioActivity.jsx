@@ -8,7 +8,7 @@ import {
 import { DoenetML } from "../../../Viewer/DoenetML";
 import CodeMirror from "../CodeMirror";
 
-import { Form, useFetcher } from "react-router-dom";
+import { Form, useBeforeUnload, useFetcher } from "react-router-dom";
 import {
   Link,
   Box,
@@ -2047,6 +2047,22 @@ function EditorPanel({
     textEditorDoenetML,
     setPublicAndDraftAreTheSame,
   ]);
+
+  //Save on refresh or leaving the site
+  useBeforeUnload(() => {
+    if (codeChanged) {
+      handleSaveDraft();
+    }
+  });
+
+  //Save when navigating somewhere else in Doenet.org
+  useEffect(() => {
+    return () => {
+      if (codeChanged) {
+        handleSaveDraft();
+      }
+    };
+  }, [handleSaveDraft, codeChanged]);
 
   useEffect(() => {
     const handleEditorKeyDown = (event) => {
