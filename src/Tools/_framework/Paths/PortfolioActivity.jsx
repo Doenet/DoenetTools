@@ -1963,9 +1963,13 @@ function ViewerPanel({
           location={location}
           navigate={navigate}
           linkSettings={{
-            viewURL: "/portfolioviewer",
-            editURL: "/publiceditor",
+            viewURL: "/portfolioActivity",
+            editURL: "/portfolioActivity",
           }}
+          // linkSettings={{
+          //   viewURL: "/portfolioviewer",
+          //   editURL: "/publiceditor",
+          // }}
         />
       </Box>
     </VStack>
@@ -2143,7 +2147,7 @@ function EditorPanel({
 
         <Button
           size="sm"
-          data-test="Edit"
+          data-test="Close Editor"
           rightIcon={<CloseIcon />}
           onClick={() => {
             initializeEditorDoenetML.current = textEditorDoenetML.current; //Need to save what will be init in the text editor if we return

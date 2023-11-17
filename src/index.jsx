@@ -414,6 +414,21 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "portfolioActivity/:doenetId/",
+    loader: ({ params }) => {
+      let doenetId = params.doenetId;
+      return redirect(`/portfolioActivity/${doenetId}/_`);
+    },
+
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+
+    element: null,
+  },
+  {
     path: "portfolioActivity/:doenetId/:pageId",
     loader: portfolioActivityLoader,
     action: portfolioActivityAction,
