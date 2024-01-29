@@ -1,45 +1,33 @@
 <?php
 
-$env_path = '../etc/env.ini';
 $remoteuser = 'devuser';
 // $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 // $db_temp = "cse_doenet";
 
-if (
-    $_SERVER['HTTP_HOST'] == 'localhost' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:3000' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
-    $_SERVER['HTTP_HOST'] == 'apache' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:81'
-) {
-    $env_path = 'env.ini';
-    $remoteuser = 'devuser';
-}
+$ini_array = parse_ini_file('../etc/env.ini');
 
-$ini_array = parse_ini_file($env_path);
+if($ini_array == false) {
+    http_response_code(500);
+}
 
 $dbhost = $ini_array['dbhost'];
 $username = $ini_array['username'];
 $password = $ini_array['password'];
 $database = $ini_array['database'];
+$mode = $ini_array['mode'];
 
-if (
-    $_SERVER['HTTP_HOST'] == 'localhost' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
-    $_SERVER['HTTP_HOST'] == 'apache' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:81'
+if ($mode == 'development'
 ) {
-    $database = 'doenet_local';
-    $dbhost = 'mysql';
-    $_SERVER['givenName'] = "chocolate";  //For shib test on localhost
-    $_SERVER['surname'] = "eclair"; //For shib test on localhost
-    $_SERVER['mail'] = "eclair@doenet.org"; //For shib test on localhost
+    /*For shib test on localhost*/
+    $_SERVER['givenName'] = "chocolate";  
+    $_SERVER['surname'] = "eclair"; 
+    $_SERVER['mail'] = "eclair@doenet.org"; 
 }
 
-if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {
-    $dbhost = '127.0.0.1';
-    $password = 'root';
-}
+// if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {
+//     $dbhost = '127.0.0.1';
+//     $password = 'root';
+// }
 
 
 $conn = new mysqli();
