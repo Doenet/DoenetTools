@@ -40,7 +40,7 @@ export default React.memo(function Cell(props) {
   let content = children;
 
   if (content.length === 0) {
-    content = SVs.text;
+    content = String(SVs.text);
   }
 
   if (SVs.inHeader) {

@@ -5968,4 +5968,28 @@ describe("Spreadsheet Tag Tests", function () {
     cy.get(cesc("#\\/P5") + " .mjx-mrow").should("not.exist");
     cy.get(cesc("#\\/P6") + " .mjx-mrow").should("not.exist");
   });
+
+  it("handle bad spreadsheet evaluated function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+        <text>a</text>
+
+        <spreadsheet name="sheet">
+          <row>
+            <cell>=mod(x,26)</cell>
+          </row>
+        </spreadsheet>
+        <copy prop="evaluatedCellA1" source="sheet" />
+        
+    `,
+        },
+        "*",
+      );
+    });
+
+    // just make sure page loads
+    cy.get(cesc("#\\/_text1")).should("have.text", "a");
+  });
 });
