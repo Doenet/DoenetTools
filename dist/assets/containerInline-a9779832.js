@@ -1,0 +1,1 @@
+import{ao as s,bl as t,a as i,j as o}from"./index-e270c841.js";const m=s.memo(function(n){let{name:d,id:e,SVs:a,children:r}=t(n);return a.hidden?null:i("span",{id:e,children:[o("a",{name:e}),r]})});export{m as default};

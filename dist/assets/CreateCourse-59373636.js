@@ -1,0 +1,1 @@
+import{bh as s,j as e,_ as a,B as o}from"./index-e270c841.js";const C=t=>{const{createCourse:r}=s();return e("div",{style:t.style,children:e(a,{vertical:!0,children:e(o,{width:"menu",value:"Create New Course",onClick:r,"data-test":"createCourse",children:"Create New Course"})})})};export{C as default};
