@@ -5,6 +5,7 @@
     "dev": "vite",
     "preview": "view preview",
     "build": "vite build",
+    "build:prod": "npm run build -- --mode production --outDir dist",
     "dc": "docker compose -f ./docker-compose.yml -f ./.devcontainer/docker-compose.extend.yml",
     "artifactory:build": "docker buildx build --platform linux/arm64,linux/amd64 -t cse-docker-doenet.artifactory.umn.edu/doenet_$npm_config_service:$npm_package_version -f docker/$npm_config_service/Dockerfile -t cse-docker-doenet.artifactory.umn.edu/doenet_$npm_config_service --provenance=false .",
     "artifactory:push": "npm run artifactory:build -- --push",
