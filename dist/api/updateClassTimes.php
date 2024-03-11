@@ -69,7 +69,7 @@ if ($success) {
         $values
         ";
     $result = $conn->query($sql);
-    echo $sql;
+    // echo $sql;
 }
 
 http_response_code(200);

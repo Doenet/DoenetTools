@@ -46,6 +46,7 @@ if ($success) {
                 u.userId, 
                 u.firstName, 
                 u.lastName, 
+                cu.section,
                 cu.courseCredit, 
                 cu.courseGrade, 
                 cu.overrideCourseGrade
@@ -65,6 +66,7 @@ if ($success) {
                 u.userId, 
                 u.firstName, 
                 u.lastName, 
+                cu.section,
                 cu.courseCredit, 
                 cu.courseGrade, 
                 cu.overrideCourseGrade
@@ -88,6 +90,7 @@ if ($success) {
                 $row['courseCredit'],
                 $row['courseGrade'],
                 $row['overrideCourseGrade'],
+                $row['section'],
             ]);
         }
     } elseif ($result == false) {

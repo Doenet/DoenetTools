@@ -1,0 +1,1 @@
+import{ao as t,bl as s,a as l,j as o}from"./index-e270c841.js";const u=t.memo(function(n){let{name:i,id:e,SVs:r,children:a}=s(n);return r.hidden?null:l("strong",{id:e,children:[o("a",{name:e}),a]})});export{u as default};

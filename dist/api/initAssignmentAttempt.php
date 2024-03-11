@@ -16,7 +16,7 @@ $examDoenetId = array_key_exists("doenetId", $jwtArray)
     : "";
 
 $_POST = json_decode(file_get_contents("php://input"), true);
-$doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
+$doenetId = mysqli_real_escape_string($conn, $_POST["activityId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 
 $weights = array_map(function ($item) use ($conn) {

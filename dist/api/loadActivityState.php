@@ -17,7 +17,7 @@ $examDoenetId = $jwtArray["doenetId"];
 
 $cid = mysqli_real_escape_string($conn, $_REQUEST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
-$doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST["activityId"]);
 $allowLoadState = mysqli_real_escape_string($conn, $_REQUEST["allowLoadState"]);
 
 $effectiveUserId = $requestorUserId;

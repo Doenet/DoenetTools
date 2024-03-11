@@ -18,7 +18,7 @@ $examDoenetId = $jwtArray['doenetId'];
 $cid = mysqli_real_escape_string($conn, $_REQUEST['cid']);
 $pageNumber = mysqli_real_escape_string($conn, $_REQUEST['pageNumber']);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST['attemptNumber']);
-$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST['activityId']);
 $requestedVariantIndex = mysqli_real_escape_string(
     $conn,
     $_REQUEST['requestedVariantIndex']

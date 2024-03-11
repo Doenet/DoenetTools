@@ -3,6 +3,7 @@
 //Note using object oriented variables to avoild variable collisions
 
 require_once "db_connection.php";
+require_once "permissionsAndSettingsFunction.php";
 error_reporting(E_ERROR | E_PARSE);
 
 
@@ -113,81 +114,11 @@ if (array_key_exists("examineeUserId",$settings->ejwt_array)){
     }
     }
 
-}else{
+} else {
+    $permissionsAndSettings = getpermissionsAndSettings($conn, $userId);
 
-
-    $settings->sql = "SELECT
-    c.courseId,
-    c.label,
-    c.isPublic,
-    c.image,
-    c.color,
-    c.defaultRoleId,
-    c.canAutoEnroll,
-    cr.roleId,
-    cr.label AS roleLabel,
-    cr.isIncludedInGradebook,
-    cr.canViewContentSource,
-    cr.canEditContent,
-    cr.canPublishContent,
-    cr.canViewUnassignedContent,
-    cr.canProctor,
-    cr.canViewAndModifyGrades,
-    cr.canViewActivitySettings,
-    cr.canModifyActivitySettings,
-    cr.canModifyCourseSettings,
-    cr.canViewUsers,
-    cr.canManageUsers,
-    cr.canViewCourse,
-    cr.isAdmin,
-    cr.dataAccessPermission,
-    cr.isOwner
-    FROM course_role AS cr
-    LEFT JOIN course_user as cu
-    ON cu.roleId = cr.roleId
-    RIGHT JOIN course AS c
-    ON c.courseId = cu.courseId
-    WHERE cu.userId = '$userId'
-    AND c.isDeleted = '0'
-    ORDER BY c.id DESC
-    ";
-
-
-    $settings->result = $conn->query($settings->sql);
-    if ($settings->result->num_rows > 0) {
-        while ($settings->row = $settings->result->fetch_assoc()) {
-            $settings->oneCourse = [
-                'courseId' => $settings->row['courseId'],
-                'label' => $settings->row['label'],
-                'isPublic' => $settings->row['isPublic'],
-                'image' => $settings->row['image'],
-                'color' => $settings->row['color'],
-                'defaultRoleId' => $settings->row['defaultRoleId'],
-                'canAutoEnroll' => $settings->row['canAutoEnroll'],
-                'roleId' => $settings->row['roleId'],
-                'roleLabel' => $settings->row['roleLabel'],
-                'isIncludedInGradebook' => $settings->row['isIncludedInGradebook'],
-                'canViewContentSource' => $settings->row['canViewContentSource'],
-                'canEditContent' => $settings->row['canEditContent'],
-                'canPublishContent' => $settings->row['canPublishContent'],
-                'canViewUnassignedContent' => $settings->row['canViewUnassignedContent'],
-                'canProctor' => $settings->row['canProctor'],
-                'canViewAndModifyGrades' => $settings->row['canViewAndModifyGrades'],
-                'canViewActivitySettings' => $settings->row['canViewActivitySettings'],
-                'canModifyActivitySettings' =>
-                    $settings->row['canModifyActivitySettings'],
-                'canModifyCourseSettings' => $settings->row['canModifyCourseSettings'],
-                'canViewUsers' => $settings->row['canViewUsers'],
-                'canViewCourse' => $settings->row['canViewCourse'],
-                'canManageUsers' => $settings->row['canManageUsers'],
-                'isAdmin' => $settings->row['isAdmin'],
-                'dataAccessPermission' => $settings->row['dataAccessPermission'],
-                'isOwner' => $settings->row['isOwner'],
-            ];
-            array_push($permissionsAndSettings, $settings->oneCourse);
-            $permissionsAndSettingsByCourseId[$settings->row['courseId']] = $settings->oneCourse;
-
-        }
+    foreach ($permissionsAndSettings as $courseInfo) {
+        $permissionsAndSettingsByCourseId[$courseInfo['courseId']] = $courseInfo;
     }
 }
 

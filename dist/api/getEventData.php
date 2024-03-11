@@ -75,7 +75,10 @@ if ($success){
 	version
 	FROM event
 	WHERE doenetId IN ($sql_doenetIds)
+	LIMIT 30000
 	";
+	//
+	//ORDER BY timestamp
 
 		$result = $conn->query($sql);
 		if ($result->num_rows > 0) {
