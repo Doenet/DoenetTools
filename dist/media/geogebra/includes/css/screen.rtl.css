@@ -1,8 +1,0 @@
-/*!
-* direction.less v0.1.0
-*
-* Copyright 2013 Moshe Simantov
-* Licensed under the MIT license
-* 
-* Keep tracking: https://github.com/DevelopmentIL/direction.less
-*/.floatRight{float:right}.floatLeft{float:left}#ggbFooter #ggbFooterMenu,#ggbHeader #ggbHeaderContent #ggbLogo,#ggbHeader #ggbHeaderContent #ggbNavigation>*{float:right}#ggbHeader #ggbHeaderContent{max-width:1200px;margin:0 auto}#ggbHeader #ggbHeaderContent #ggbNavigation{float:left}#ggbHeader #ggbHeaderContent #ggbNavigation #ggbMainMenu{margin-top:20px}#ggbHeader #ggbHeaderContent #ggbNavigation #ggbMainMenu>li{height:100%;display:inline-block;margin-right:50px;vertical-align:middle}#ggbHeader #ggbHeaderContent #ggbNavigation #ggbLoginContainer{margin-right:50px;margin-top:16px}#ggbHeader #ggbHeaderContent.visible{height:auto}#ggbSubHeader #ggbSubHeaderContent{max-width:1200px;margin:0 auto}#ggbSubHeader #ggbSubHeaderContent ul li{display:inline-block;margin-left:50px}#ggbSubHeader #ggbSubHeaderContent ul.right li{margin-left:0;margin-right:50px}#ggbFooter #ggbFooterBottom,#ggbFooter #ggbFooterTop,.ggbBannerContent,.ggbPageContent{max-width:1200px;margin:0 auto}#ggbFooter #ggbFooterMenu li{display:inline-block;margin-left:50px}#ggbFooter #ggbFooterMenu li ul{margin-top:15px}#ggbFooter #ggbFooterMenu li ul li{display:block;padding:.1em 0}#ggbFooter #ggbFooterOptions{float:left;text-align:left}#ggbFooter #ggbFooterBottomContent ul{display:inline-block}#ggbFooter #ggbFooterBottomContent ul li{display:inline-block;padding:0 .5em}
