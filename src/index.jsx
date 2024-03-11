@@ -5,8 +5,11 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
 import { RecoilRoot } from "recoil";
 import { createRoot } from "react-dom/client";
+import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
@@ -42,16 +45,19 @@ import {
   PublicPortfolio,
 } from "./Tools/_framework/Paths/PublicPortfolio";
 import {
-  loader as portfolioActivityViewerLoader,
-  action as portfolioActivityViewerAction,
-  PortfolioActivityViewer,
-} from "./Tools/_framework/Paths/PortfolioActivityViewer";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+  loader as publicActivityOverviewLoader,
+  action as publicActivityOverviewAction,
+  PublicActivityOverview,
+} from "./Tools/_framework/Paths/PublicActivityOverview";
+import {
+  loader as portfolioActivityLoader,
+  action as portfolioActivityAction,
+  PortfolioActivity,
+} from "./Tools/_framework/Paths/PortfolioActivity";
 import {
   action as editorSupportPanelAction,
   loader as editorSupportPanelLoader,
 } from "./Tools/_framework/Panels/NewSupportPanel";
-import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
 import {
@@ -80,6 +86,22 @@ import {
   CourseLinkPageViewer,
   loader as courseLinkPageViewerLoader,
 } from "./Tools/_framework/Paths/CourseLinkPageViewer";
+import {
+  SignIn,
+  action as signInAction,
+} from "./Tools/_framework/Paths/SignIn";
+import {
+  SignInCode,
+  action as signInCodeAction,
+} from "./Tools/_framework/Paths/SignInCode";
+import {
+  SignInName,
+  action as signInNameAction,
+} from "./Tools/_framework/Paths/SignInName";
+import {
+  SignOut,
+  loader as signOutLoader,
+} from "./Tools/_framework/Paths/SignOut";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -237,14 +259,15 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioviewer/:doenetId",
-        loader: portfolioActivityViewerLoader,
-        action: portfolioActivityViewerAction,
+        path: "publicOverview/:doenetId",
+        loader: publicActivityOverviewLoader,
+        action: publicActivityOverviewAction,
         errorElement: (
           <ChakraProvider theme={theme}>
             <ErrorPage />
           </ChakraProvider>
         ),
+
         element: (
           // <DarkmodeController>
           <MathJaxContext
@@ -253,7 +276,7 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <ChakraProvider theme={theme}>
-              <PortfolioActivityViewer />
+              <PublicActivityOverview />
             </ChakraProvider>
           </MathJaxContext>
           // </DarkmodeController>
@@ -320,6 +343,62 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "signin",
+    action: signInAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignIn />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinCode",
+    action: signInCodeAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInCode />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signinName",
+    action: signInNameAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignInName />
+      </ChakraProvider>
+    ),
+  },
+  {
+    path: "signout",
+    loader: signOutLoader,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+    element: (
+      <ChakraProvider theme={theme}>
+        <SignOut />
+      </ChakraProvider>
+    ),
+  },
+  {
     path: "public",
     loader: editorSupportPanelLoader,
     action: editorSupportPanelAction,
@@ -331,6 +410,43 @@ const router = createBrowserRouter([
         onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
       >
         <ToolRoot />
+      </MathJaxContext>
+    ),
+  },
+  {
+    path: "portfolioActivity/:doenetId/",
+    loader: ({ params }) => {
+      let doenetId = params.doenetId;
+      return redirect(`/portfolioActivity/${doenetId}/_`);
+    },
+
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+
+    element: null,
+  },
+  {
+    path: "portfolioActivity/:doenetId/:pageId",
+    loader: portfolioActivityLoader,
+    action: portfolioActivityAction,
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
+    ),
+
+    element: (
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
+        <ChakraProvider theme={theme}>
+          <PortfolioActivity />
+        </ChakraProvider>
       </MathJaxContext>
     ),
   },
@@ -420,7 +536,6 @@ const router = createBrowserRouter([
       </ChakraProvider>
     ),
   },
-
   {
     path: "*",
     element: (

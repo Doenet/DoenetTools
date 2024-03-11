@@ -14,13 +14,13 @@ import {
   DrawerContent,
   DrawerOverlay,
   Drawer,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
   useOutletContext,
   useLoaderData,
-  useNavigate,
   useFetcher,
 } from "react-router-dom";
 import styled from "styled-components";
@@ -34,75 +34,67 @@ import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update general") {
-    //Don't let label be blank
-    let label = formObj?.label?.trim();
-    if (label == "") {
-      label = "Untitled";
-    }
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
+  try {
+    if (formObj._action == "update general") {
+      //Don't let label be blank
+      let label = formObj?.label?.trim();
+      if (label == "") {
+        label = "Untitled";
+      }
+      let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+      let resp = await axios.post("/api/updatePortfolioActivitySettings.php", {
         label,
         imagePath: formObj.imagePath,
         public: formObj.public,
         doenetId: formObj.doenetId,
         learningOutcomes,
-      },
-    );
-    return true;
-  } else if (formObj?._action == "Add Activity") {
-    //Create a portfilio activity and redirect to the editor for it
-    let response = await fetch("/api/createPortfolioActivity.php");
-
-    if (response.ok) {
-      let { doenetId, pageDoenetId } = await response.json();
-      return redirect(
-        `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
+      });
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Add Activity") {
+      //Create a portfilio activity and redirect to the editor for it
+      let resp = await axios.get("/api/createPortfolioActivity.php");
+      let { doenetId, pageDoenetId } = resp.data;
+      return { _action: formObj?._action, doenetId, pageDoenetId };
+    } else if (formObj?._action == "Delete") {
+      let resp = await axios.get(
+        `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
       );
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "Delete") {
-    let response = await fetch(
-      `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
-    );
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Make Public") {
+      let resp = await axios.get(
+        `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
+      );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "Make Public") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
-    );
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "Make Private") {
+      let resp = await axios.get(
+        `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
+      );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
+      return {
+        _action: formObj?._action,
+        success: resp.data.success,
+      };
+    } else if (formObj?._action == "noop") {
+      return {
+        _action: formObj?._action,
+        success: true,
+      };
     }
-  } else if (formObj?._action == "Make Private") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
-    );
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
-  } else if (formObj?._action == "noop") {
-    return true;
+    throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+  } catch (e) {
+    return { success: false, message: e.response.data.message };
   }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
 export async function loader({ params }) {
@@ -177,9 +169,8 @@ function PortfolioSettingsDrawer({
   doenetId,
   data,
   courseId,
+  newActivityDoenetId,
 }) {
-  // const { pageId, activityData } = useLoaderData();
-  // console.log({ doenetId, data });
   const fetcher = useFetcher();
   let activityData;
   if (doenetId) {
@@ -213,7 +204,11 @@ function PortfolioSettingsDrawer({
         <DrawerCloseButton />
         <DrawerHeader>
           <Center>
-            <Text>Activity Settings</Text>
+            {newActivityDoenetId == doenetId ? (
+              <Text>Activity Settings For New Activity</Text>
+            ) : (
+              <Text>Activity Settings</Text>
+            )}
           </Center>
         </DrawerHeader>
 
@@ -237,13 +232,33 @@ export function Portfolio() {
   let data = useLoaderData();
   const [doenetId, setDoenetId] = useState();
   const controlsBtnRef = useRef(null);
-
-  const navigate = useNavigate();
+  const fetcher = useFetcher();
   const {
     isOpen: settingsAreOpen,
     onOpen: settingsOnOpen,
     onClose: settingsOnClose,
   } = useDisclosure();
+
+  const settingsOpenedForDoenetId = useRef(null);
+
+  const [addingActivity, setAddingActivity] = useState(false);
+  const [newActivityDoenetId, setNewActivityDoenetId] = useState("");
+
+  if (fetcher.state == "loading" && fetcher.data?._action == "Add Activity") {
+    if (fetcher.data.doenetId !== doenetId) {
+      setDoenetId(fetcher.data.doenetId);
+      setNewActivityDoenetId(fetcher.data.doenetId);
+    }
+  } else if (
+    fetcher.state == "idle" &&
+    fetcher.data?._action == "Add Activity"
+  ) {
+    if (!settingsAreOpen && settingsOpenedForDoenetId.current != doenetId) {
+      settingsOpenedForDoenetId.current = doenetId;
+      setAddingActivity(false);
+      settingsOnOpen();
+    }
+  }
 
   useEffect(() => {
     document.title = `Portfolio - Doenet`;
@@ -263,6 +278,7 @@ export function Portfolio() {
         doenetId={doenetId}
         data={data}
         courseId={data.courseId}
+        newActivityDoenetId={newActivityDoenetId}
       />
       <PortfolioGrid>
         <Box
@@ -288,21 +304,18 @@ export function Portfolio() {
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
               data-test="Add Activity"
+              isDisabled={addingActivity}
               size="xs"
               colorScheme="blue"
-              onClick={async () => {
-                //Create a portfilio activity and redirect to the editor for it
-                let response = await fetch("/api/createPortfolioActivity.php");
-
-                if (response.ok) {
-                  let { doenetId, pageDoenetId } = await response.json();
-                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                } else {
-                  throw Error(response.message);
-                }
+              onClick={() => {
+                setAddingActivity(true);
+                fetcher.submit(
+                  { _action: "Add Activity", doenetId },
+                  { method: "post" },
+                );
               }}
             >
-              Add Activity
+              Add Activity {addingActivity && <Spinner ml="10px" size="xs" />}
             </Button>
           </div>
         </Box>
@@ -378,6 +391,7 @@ export function Portfolio() {
                       setDoenetId={setDoenetId}
                       onClose={settingsOnClose}
                       onOpen={settingsOnOpen}
+                      isNewActivity={newActivityDoenetId == activity.doenetId}
                     />
                   );
                 })}

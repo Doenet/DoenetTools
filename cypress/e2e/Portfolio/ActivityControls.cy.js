@@ -21,25 +21,21 @@ describe("Activity Controls Tests", function () {
     return false;
   });
 
-  it("Update Label of an Activity both ways", () => {
+  it("Update Label of an Activity twice", () => {
     const label1 = "Scooby Doo";
     const label2 = "Duck Tails";
     cy.get('[data-test="Portfolio"]').click();
     cy.get('[data-test="Add Activity"]').click();
-    cy.get('[data-test="Controls Button"]').click();
     cy.get('[data-test="Activity Label"]').clear().type(label1);
-    cy.get('[data-test="Close Settings Button"]').click();
-    cy.get('[data-test="Activity Label Editable"]').contains(label1);
+    // cy.get('[data-test="Close Settings Button"]').click(); //Why does this not work?
+    cy.get('.chakra-modal__close-btn').click();
+    cy.get('[data-test="Private Activities"] [data-test="Card Label"]').eq(0).contains(label1);
 
-    cy.get(
-      '[data-test="Activity Label Editable"] [data-test="Editable Preview"]',
-    ).click();
-    cy.get('[data-test="Activity Label Editable"] [data-test="Editable Input"]')
-      .type(label2)
-      .blur();
-    cy.wait(1000); //Need the interface to be faster to not have this
-    cy.get('[data-test="Controls Button"]').click();
-    cy.get('[data-test="Activity Label"]').should("have.value", label2);
+    cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').eq(0).click();
+    cy.get('[data-test="Settings Menu Item"]').click();
+    cy.get('[data-test="Activity Label"]').clear().type(label2);
+    cy.get('.chakra-modal__close-btn').click();
+    cy.get('[data-test="Private Activities"] [data-test="Card Label"]').eq(0).contains(label2);
   });
 
   it("Learning Outcomes", () => {
@@ -48,9 +44,9 @@ describe("Activity Controls Tests", function () {
     const learningOutcome3 = "Five, six, pick up sticks";
     const learningOutcome4 = "Seven, eight, lay them straight";
     const learningOutcome5 = "Nine, ten, a big fat hen";
+    const learningOutcome6 = "The End";
     cy.get('[data-test="Portfolio"]').click();
     cy.get('[data-test="Add Activity"]').click();
-    cy.get('[data-test="Controls Button"]').click();
     cy.get('[data-test="add a learning outcome button"]').click();
     cy.get('[data-test="add a learning outcome button"]').click();
     cy.get('[data-test="add a learning outcome button"]').click();
@@ -61,12 +57,11 @@ describe("Activity Controls Tests", function () {
     cy.get('[data-test="learning outcome 2"]').type(learningOutcome3);
     cy.get('[data-test="learning outcome 3"]').type(learningOutcome4);
     cy.get('[data-test="learning outcome 4"]').type(learningOutcome5);
-    // cy.get('[data-test="add a learning outcome button"]').click();
 
-    cy.get('[data-test="Close Settings Button"]').click();
-    cy.wait(3000);
+    cy.get('.chakra-modal__close-btn').click();
+    cy.get('[data-test="Private Activities"] [data-test="Card Menu Button"]').eq(0).click();
+    cy.get('[data-test="Settings Menu Item"]').click();
 
-    cy.get('[data-test="Controls Button"]').click();
     //Check the text.
     cy.get('[data-test="learning outcome 0"]').should(
       "have.value",
@@ -89,7 +84,40 @@ describe("Activity Controls Tests", function () {
       learningOutcome5,
     );
 
-    //Delete some
+    //Delete the first two
+    cy.get('[data-test="delete learning outcome 0 button"]').click();
+    cy.get('[data-test="delete learning outcome 0 button"]').click();
+    cy.get('[data-test="learning outcome 0"]').should(
+      "have.value",
+      learningOutcome3,
+    );
+    cy.get('[data-test="learning outcome 1"]').should(
+      "have.value",
+      learningOutcome4,
+    );
+    cy.get('[data-test="learning outcome 2"]').should(
+      "have.value",
+      learningOutcome5,
+    );
     //Add another
+    cy.get('[data-test="add a learning outcome button"]').click();
+    cy.get('[data-test="learning outcome 3"]').type(learningOutcome6);
+
+    cy.get('[data-test="learning outcome 0"]').should(
+      "have.value",
+      learningOutcome3,
+    );
+    cy.get('[data-test="learning outcome 1"]').should(
+      "have.value",
+      learningOutcome4,
+    );
+    cy.get('[data-test="learning outcome 2"]').should(
+      "have.value",
+      learningOutcome5,
+    );
+    cy.get('[data-test="learning outcome 3"]').should(
+      "have.value",
+      learningOutcome6,
+    );
   });
 });

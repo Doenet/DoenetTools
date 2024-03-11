@@ -49,7 +49,13 @@ export function Carousel({ title = "", data = [] }) {
   return (
     <>
       <Box padding="10px" minWidth="320px" maxWidth="1000px" width="80%">
-        <Text fontSize="18px" fontWeight="700" color="black" mb="10px" textAlign="left">
+        <Text
+          fontSize="18px"
+          fontWeight="700"
+          color="black"
+          mb="10px"
+          textAlign="left"
+        >
           {title}
         </Text>
         <Flex>
@@ -110,7 +116,7 @@ export function Carousel({ title = "", data = [] }) {
                   <ActivityCard
                     {...cardObj}
                     fullName={cardObj.firstName + " " + cardObj.lastName}
-                    imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                    imageLink={`/publicOverview/${cardObj.doenetId}`}
                     menuItems={
                       null
                       /* z-index stacking issues, might be related to the carousel

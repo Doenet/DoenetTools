@@ -288,7 +288,7 @@ export function CourseLinkPageViewer() {
                           location={location}
                           navigate={navigate}
                           linkSettings={{
-                            viewURL: "/portfolioviewer",
+                            viewURL: "/publicOverview",
                             editURL: "/publiceditor",
                           }}
                           scrollableContainer={

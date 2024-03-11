@@ -80,7 +80,7 @@ export function Admin() {
               <>
                 {publicActivities.map((activity) => {
                   const { doenetId, label, imagePath } = activity;
-                  const imageLink = `/portfolioviewer/${doenetId}`;
+                  const imageLink = `/publicOverview/${doenetId}`;
 
                   return (
                     <ActivityCard

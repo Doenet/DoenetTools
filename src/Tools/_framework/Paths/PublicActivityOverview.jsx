@@ -82,7 +82,7 @@ const HeaderSectionRight = styled.div`
   justify-content: flex-end;
 `;
 
-export function PortfolioActivityViewer() {
+export function PublicActivityOverview() {
   const {
     success,
     message,
@@ -189,12 +189,12 @@ export function PortfolioActivityViewer() {
                     <HeaderSectionRight>
                       <Form method="post">
                         <Button
-                          data-test="Remix Button"
+                          data-test="Copy to Portfolio Button"
                           size="xs"
                           colorScheme="blue"
                           type="submit"
                         >
-                          Remix
+                          Copy to Portfolio
                         </Button>
                       </Form>
                     </HeaderSectionRight>
@@ -213,7 +213,7 @@ export function PortfolioActivityViewer() {
                         });
                       }}
                     >
-                      Sign In To Remix
+                      Sign In To Copy
                     </Button>
                   )}
                 </VStack>

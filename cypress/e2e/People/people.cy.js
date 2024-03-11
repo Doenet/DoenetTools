@@ -80,6 +80,7 @@ describe("People Test", function () {
     cy.wait(1000);
 
     peopleInCsv.forEach((person) => {
+      console.log("person", person)
       cy.task(
         "queryDb",
         `SELECT * FROM course_user WHERE externalId="${person.externalId}"`,
@@ -89,6 +90,7 @@ describe("People Test", function () {
           "queryDb",
           `SELECT * FROM user WHERE userId="${res[0].userId}"`,
         ).then((result) => {
+          console.log("result", result)
           expect(result[0].firstName).to.equals(person.first);
           expect(result[0].lastName).to.equals(person.last);
           expect(result[0].email).to.equals(person.email);

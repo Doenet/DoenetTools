@@ -1,17 +1,13 @@
-import {
-  ChevronDownIcon,
-  TriangleDownIcon,
-  TriangleUpIcon,
-} from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Button,
   HStack,
-  IconButton,
   Input,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
   Tooltip,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
@@ -44,6 +40,9 @@ export default function VariantSelect({
   return (
     <>
       <HStack m={0} spacing={0} borderRadius="lg">
+        <Text borderLeftRadius="md" bg="#EDF2F7" p="4px 5px 0px 5px" h="32px">
+          Variant
+        </Text>
         <Menu
           onOpen={() => {
             setShowTooltip(false);
@@ -57,8 +56,7 @@ export default function VariantSelect({
           <Tooltip hasArrow label="Variant" isOpen={showTooltip}>
             <MenuButton
               data-test="Variant Select Menu Button"
-              borderBottomRightRadius={0}
-              borderTopRightRadius={0}
+              borderLeftRadius={0}
               size={size}
               as={Button}
               rightIcon={<ChevronDownIcon />}
@@ -105,44 +103,6 @@ export default function VariantSelect({
             })}
           </MenuList>
         </Menu>
-
-        <IconButton
-          isDisabled={index == array.length - 1}
-          data-test="Variant Select Down Button"
-          borderRadius={0}
-          size={size}
-          icon={<TriangleDownIcon />}
-          m={0}
-          onClick={() => {
-            if (index == array.length - 1) {
-              return;
-            }
-            const nextIndex = index + 1;
-            setIndex(nextIndex);
-            setValue(array[nextIndex]);
-            setInputValue("");
-            onChange(nextIndex);
-          }}
-        />
-        <IconButton
-          isDisabled={index < 1}
-          data-test="Variant Select Up Button"
-          size={size}
-          borderBottomLeftRadius={0}
-          borderTopLeftRadius={0}
-          icon={<TriangleUpIcon />}
-          m={0}
-          onClick={() => {
-            if (index < 1) {
-              return;
-            }
-            const nextIndex = index - 1;
-            setIndex(nextIndex);
-            setValue(array[nextIndex]);
-            setInputValue("");
-            onChange(nextIndex);
-          }}
-        />
       </HStack>
     </>
   );

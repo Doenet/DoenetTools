@@ -220,7 +220,7 @@ export function PublicEditor() {
                     variant="outline"
                     leftIcon={<BsPlayBtnFill />}
                     onClick={() => {
-                      navigate(`/portfolioviewer/${doenetId}`);
+                      navigate(`/publicOverview/${doenetId}`);
                     }}
                   >
                     View
@@ -248,12 +248,12 @@ export function PublicEditor() {
                   <WarningIcon color="orange.500" mr="6px" />
 
                   <Text size="xs" pl="4px" pr="4px">
-                    This is a public editor. Remix to save changes.
+                    This is a public editor. Copy to portfolio to save changes.
                   </Text>
                 </Center>
                 {signedIn ? (
                   <Button
-                    data-test="Remix Button"
+                    data-test="Copy to Portfolio Button"
                     size="xs"
                     colorScheme="blue"
                     onClick={async () => {
@@ -268,7 +268,7 @@ export function PublicEditor() {
                       );
                     }}
                   >
-                    Remix
+                    Copy to Portfolio
                   </Button>
                 ) : (
                   <Button
@@ -285,7 +285,7 @@ export function PublicEditor() {
                       });
                     }}
                   >
-                    Sign In To Remix
+                    Sign In To Copy
                   </Button>
                 )}
               </HStack>
@@ -397,7 +397,7 @@ export function PublicEditor() {
                       location={location}
                       navigate={navigate}
                       linkSettings={{
-                        viewURL: "/portfolioviewer",
+                        viewURL: "/publicOverview",
                         editURL: "/publiceditor",
                       }}
                     />
@@ -420,7 +420,7 @@ export function PublicEditor() {
                     p="4px 5px 0px 5px"
                     h="32px"
                     bg="#EDF2F7"
-                    href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                    href="https://www.doenet.org/publicOverview/_7KL7tiBBS2MhM6k1OrPt4"
                     isExternal
                     data-test="Documentation Link"
                   >
