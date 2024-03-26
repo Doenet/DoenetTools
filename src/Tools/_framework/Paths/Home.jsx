@@ -142,6 +142,19 @@ export function Home() {
 
   return (
     <>
+      <Center w="100%" bg={"#fefa78"}>
+        <Text
+          fontSize={["8px", "10px", "12px", "18px", "24px"]}
+          // fontSize="60px"
+          fontWeight="700"
+          color={"#0f0f0f"}
+        >
+          Join us at 3rd annual Doenet Workshop May 20 - May 24, 2024.{" "}
+          <Link href="#workshop" textDecoration={"underline"}>
+            More Info
+          </Link>
+        </Text>
+      </Center>
       <Center background={blackColor} padding="20px">
         {/* <Center background={grayColor} padding="20px"> */}
         <Flex>
@@ -245,6 +258,48 @@ export function Home() {
           </GridItem>
         </Grid>
       </Flex>
+      <Center w="100%" bg={blueColor}>
+        <VStack maxWidth="750px" w="100%" spacing={4} marginBottom={"30px"}>
+          <Text
+            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+            id="workshop"
+          >
+            Doenet Workshop 2024
+          </Text>
+          <Text
+            pt="24px"
+            fontSize={"18px"}
+            // fontSize="20px"
+            fontWeight="500"
+            color={blackColor}
+          >
+            From May 20 - May 24, 2024, we will host our third{" "}
+            <Link
+              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2024"
+              textDecoration="underline"
+            >
+              workshop
+            </Link>{" "}
+            on developing content and learning experiments in Doenet. Held at
+            the University of Minnesota, the workshop for instructors of college
+            STEM courses will be a hands-on introduction to authoring and
+            running experiments, led by the developers of Doenet.
+            <br />
+            <br />
+            For more information and to apply to the workshop, please visit the{" "}
+            <Link
+              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2024"
+              textDecoration="underline"
+            >
+              workshop website
+            </Link>
+            .
+          </Text>
+        </VStack>
+      </Center>
 
       <Center w="100%" bg={grayColor}>
         <HStack maxWidth="750px" w="100%" spacing={4}>
