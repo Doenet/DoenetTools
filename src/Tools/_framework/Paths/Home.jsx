@@ -155,39 +155,6 @@ export function Home() {
           </Link>
         </Text>
       </Center>
-      <Center background={blackColor} padding="20px">
-        {/* <Center background={grayColor} padding="20px"> */}
-        <Flex>
-          <Box
-            w={["60px", "80px", "100px", "160px", "200px"]}
-            h={["60px", "80px", "100px", "160px", "200px"]}
-            mr="20px"
-          >
-            <Image src="Doenet_Logo_Frontpage.png" />
-          </Box>
-          <Center>
-            <Box>
-              <Text
-                color="white"
-                fontSize={["12px", "20px", "30px", "40px", "60px"]}
-                fontWeight="700"
-              >
-                {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
-                The Distributed Open Education Network
-              </Text>
-              <Text
-                color="white"
-                // color="black"
-                fontSize={["8px", "10px", "12px", "18px", "24px"]}
-                fontWeight="700"
-                textAlign="center"
-              >
-                The free and open data-driven education technology platform
-              </Text>
-            </Box>
-          </Center>
-        </Flex>
-      </Center>
       <Flex
         alignItems="center"
         justifyContent="center"
@@ -198,56 +165,43 @@ export function Home() {
           gridTemplateAreas={`"Description Video"
         `}
           // gridTemplateRows={"120px auto"}
-          gridTemplateColumns={"300px auto"}
+          gridTemplateColumns={"60vw auto"}
         >
-          <GridItem area="Description">
-            <Center>
+          <GridItem area="Description" margin="10vh 0 0 10vh">
+            <Text color="white" fontSize={"5vw"} fontWeight="700">
+              {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
+              Interactive activities to engage your students
+            </Text>
+            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
+              <Text color="white" fontSize={"2vw"} fontWeight="700">
+                {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
+                Enhance your classroom with great OER resources, and learn how
+                our new authoring tools make it easy to create your own.
+              </Text>
               <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
                 <Button
-                  leftIcon={<MdBuild />}
-                  mt="40px"
+                  mt="20px"
                   p="10px"
                   colorScheme="blue"
-                  w={["120px", "140px", "180px", "200px", "260px"]}
+                  w={["180px", "200px", "260px", "300px"]}
                   h={["20px", "30px", "40px", "50px", "60px"]}
                   fontSize={["10px", "14px", "18px", "22px", "26px"]}
                 >
-                  Start Creating
+                  Explore Activities
                 </Button>
               </Link>
-            </Center>
-            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
-              <Text color={textColor} fontSize="16pt">
-                Introducing DoenetML
-              </Text>
-              <Text color={textColor} fontSize="10pt">
-                DoenetML is the markup language we&apos;ve created to let you
-                focus on the meaning of the elements you wish to create.
-              </Text>
-              <Button
-                size="xs"
-                borderRadius={20}
-                onClick={() =>
-                  window.open(
-                    "https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH",
-                    "_blank",
-                  )
-                }
-              >
-                Tutorial
-              </Button>
-              <Button
-                size="xs"
-                borderRadius={20}
-                onClick={() =>
-                  window.open(
-                    "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
-                    "_blank",
-                  )
-                }
-              >
-                Documentation
-              </Button>
+              <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
+                <Button
+                  mt="20px"
+                  p="10px"
+                  colorScheme="blue"
+                  w={["180px", "200px", "260px", "300px"]}
+                  h={["20px", "30px", "40px", "50px", "60px"]}
+                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
+                >
+                  Learn to Make Your Own
+                </Button>
+              </Link>
             </Flex>
           </GridItem>
           <GridItem area="Video" p="40px">
