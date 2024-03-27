@@ -174,7 +174,7 @@ export function Home() {
             <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
               <Text color="white" fontSize={"2vw"} fontWeight="700">
                 Enhance your classroom with great OER resources from Doenet and
-                learn how we make it easy to create your own
+                learn how we make it easy to create your own.
               </Text>
               <Link href="/community">
                 <Button
