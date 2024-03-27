@@ -208,6 +208,12 @@ export function Home() {
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
               <HomeIntroVideo />
+              <Link
+                color={textColor}
+                href="https://www.doenet.org/portfolioeditor/_PQ52rNxexS153g3HSx383/_4RqkF0zBOTkEJWF1ukwkS"
+              >
+                How to Make this Animation
+              </Link>
             </Suspense>
           </GridItem>
         </Grid>
