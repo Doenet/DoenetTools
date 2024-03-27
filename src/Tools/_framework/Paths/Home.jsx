@@ -149,7 +149,7 @@ export function Home() {
           fontWeight="700"
           color={"#0f0f0f"}
         >
-          Join us at 3rd annual Doenet Workshop May 20 - May 24, 2024.{" "}
+          Join us at the 3rd annual Doenet Workshop May 20 - May 24, 2024.{" "}
           <Link href="#workshop" textDecoration={"underline"}>
             More Info
           </Link>
@@ -169,14 +169,12 @@ export function Home() {
         >
           <GridItem area="Description" margin="10vh 0 0 10vh">
             <Text color="white" fontSize={"5vw"} fontWeight="700">
-              {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
               Interactive activities to engage your students
             </Text>
             <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
               <Text color="white" fontSize={"2vw"} fontWeight="700">
-                {/* <Text color="black" fontSize="60px" fontWeight="700"> */}
-                Enhance your classroom with great OER resources, and learn how
-                our new authoring tools make it easy to create your own.
+                Enhance your classroom with great OER resources from Doenet and
+                learn how we make it easy to create your own
               </Text>
               <Link href="/community">
                 <Button
