@@ -131,7 +131,7 @@ export function Home() {
 
   const grayColor = useColorModeValue("doenet.mainGray", "doenet.lightGray");
   const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
-  const blackColor = useColorModeValue("gray.900", "white");
+  const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
   const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
 
@@ -144,7 +144,7 @@ export function Home() {
     <>
       <Center w="100%" bg={"#fefa78"}>
         <Text
-          fontSize={["8px", "10px", "12px", "18px", "24px"]}
+          fontSize={["18px", "18px", "18px", "24px"]}
           // fontSize="60px"
           fontWeight="700"
           color={"#0f0f0f"}
@@ -178,7 +178,7 @@ export function Home() {
                 Enhance your classroom with great OER resources, and learn how
                 our new authoring tools make it easy to create your own.
               </Text>
-              <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
+              <Link href="/community">
                 <Button
                   mt="20px"
                   p="10px"
@@ -190,7 +190,7 @@ export function Home() {
                   Explore Activities
                 </Button>
               </Link>
-              <Link href="https://www.doenet.org/portfolioeditor/_KfPv0YUsU1VoRNR7HCGA5/_VRU9SbxWNvTrUwUeJDfkb">
+              <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
                 <Button
                   mt="20px"
                   p="10px"
