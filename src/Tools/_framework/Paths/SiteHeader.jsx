@@ -154,7 +154,6 @@ export function SiteHeader(props) {
                   TABS HERE
                 </Button> */}
                 <RouterLogo />
-                <Text ml={1}>Doenet</Text>
               </Center>
             </GridItem>
             <GridItem area="menus">

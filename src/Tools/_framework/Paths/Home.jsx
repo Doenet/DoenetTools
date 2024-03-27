@@ -216,17 +216,27 @@ export function Home() {
           </GridItem>
         </Grid>
       </Flex>
-      <Center w="100%" bg={blueColor}>
-        <VStack maxWidth="750px" w="100%" spacing={4} marginBottom={"30px"}>
-          <Text
-            fontSize={["12px", "20px", "30px", "40px", "60px"]}
-            // fontSize="60px"
-            fontWeight="700"
-            color={blackColor}
-            id="workshop"
-          >
-            Doenet Workshop 2024
-          </Text>
+      <Center w="100%" bg={grayColor}>
+        <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
+          <HStack>
+            <Box
+              w={["60px", "80px", "100px", "160px", "200px"]}
+              h={["60px", "80px", "100px", "160px", "200px"]}
+              mr="20px"
+            >
+              <Image src="Doenet_Logo_Frontpage.png" />
+            </Box>
+
+            <Text
+              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              // fontSize="60px"
+              fontWeight="700"
+              color={blackColor}
+              id="workshop"
+            >
+              Doenet Workshop 2024
+            </Text>
+          </HStack>
           <Text
             pt="24px"
             fontSize={"18px"}
@@ -259,7 +269,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={grayColor}>
+      <Center w="100%" bg={"white"}>
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -286,7 +296,7 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={grayColor}
+        bg={"white"}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
