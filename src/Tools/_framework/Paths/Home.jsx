@@ -208,7 +208,7 @@ export function Home() {
               <HomeIntroVideo />
               <Link
                 color={textColor}
-                href="https://www.doenet.org/portfolioeditor/_PQ52rNxexS153g3HSx383/_4RqkF0zBOTkEJWF1ukwkS"
+                href="https://www.doenet.org/portfolioviewer/_PQ52rNxexS153g3HSx383"
               >
                 How to Make this Animation
               </Link>
@@ -223,6 +223,7 @@ export function Home() {
               w={["60px", "80px", "100px", "160px", "200px"]}
               h={["60px", "80px", "100px", "160px", "200px"]}
               mr="20px"
+              id="workshop"
             >
               <Image src="Doenet_Logo_Frontpage.png" />
             </Box>
@@ -232,7 +233,6 @@ export function Home() {
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
-              id="workshop"
             >
               Doenet Workshop 2024
             </Text>
