@@ -2,12 +2,16 @@ import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 const HPVideo = styled.video`
-  height: 350px;
+  width: 1200px;
+  /* margin-left: 20vw; */
+  //transform: scale(1.3);
+  object-fit: cover;
+  object-position: 25% 25%;
   @media (max-width: 780px) {
-    height: 240px;
+    height: 500px;
   }
   @media (max-width: 450px) {
-    height: 180px;
+    height: 400px;
   }
 `;
 
@@ -27,19 +31,23 @@ export default function HomeIntroVideo() {
   }, []);
 
   return (
-    <HPVideo
-      // height='420px'
-      fluid="false"
-      // src='/media/homepagevideo2.mp4'
-      // loop
-      muted
-      playsInline
-      alt="Demonstration video on making DoenetML content"
-      ref={videoEl}
-      // autoplay
-      controls
-    >
-      <source src="/homepagevideo.mp4" type="video/mp4" />
-    </HPVideo>
+    <div style={{ overflow: "hidden", width: "30vw" }}>
+      <div style={{ marginLeft: "-300px", overflow: "hidden", width: "100vw" }}>
+        <HPVideo
+          // height='420px'
+          fluid="false"
+          // src='/media/homepagevideo2.mp4'
+          loop
+          muted
+          playsInline
+          alt="Demonstration video on making DoenetML content"
+          ref={videoEl}
+          controls
+          zIndex="1"
+        >
+          <source src="/planet_orbits_smooth.webm" type="video/webm" />
+        </HPVideo>
+      </div>
+    </div>
   );
 }
