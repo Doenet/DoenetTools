@@ -357,7 +357,7 @@ export function Home() {
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
 
-      <Center w="100%" bg={blueColor} paddingTop="40px" paddingBottom="10px">
+      <Center w="100%" bg={blueColor} paddingTop="40px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
