@@ -208,7 +208,7 @@ export function Home() {
               <HomeIntroVideo />
               <Link
                 color={textColor}
-                href="https://www.doenet.org/portfolioeditor/_PQ52rNxexS153g3HSx383/_4RqkF0zBOTkEJWF1ukwkS"
+                href="https://www.doenet.org/portfolioviewer/_PQ52rNxexS153g3HSx383"
               >
                 How to Make this Animation
               </Link>
@@ -223,6 +223,7 @@ export function Home() {
               w={["60px", "80px", "100px", "160px", "200px"]}
               h={["60px", "80px", "100px", "160px", "200px"]}
               mr="20px"
+              id="workshop"
             >
               <Image src="Doenet_Logo_Frontpage.png" />
             </Box>
@@ -232,7 +233,6 @@ export function Home() {
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
-              id="workshop"
             >
               Doenet Workshop 2024
             </Text>
@@ -270,6 +270,61 @@ export function Home() {
       </Center>
 
       <Center w="100%" bg={"white"}>
+        <VStack
+          maxWidth="900px"
+          w="100%"
+          spacing={4}
+          marginTop="40px"
+          marginBottom="40px"
+        >
+          <HStack>
+            <Text
+              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              // fontSize="60px"
+              fontWeight="700"
+              color={blackColor}
+            >
+              Drop-In Office Hours
+            </Text>
+          </HStack>
+          <Text
+            pt="24px"
+            fontSize={"18px"}
+            // fontSize="20px"
+            fontWeight="500"
+            color={blackColor}
+          >
+            As a member of the{" "}
+            <Link
+              href="https://prose.runestone.academy/"
+              textDecoration="underline"
+            >
+              PROSE Consortium
+            </Link>
+            , Doenet invites you to join us each Thursday 1-3pm Central{" "}
+            <Link
+              href="https://prose.runestone.academy/dropin/"
+              textDecoration="underline"
+            >
+              on Zoom
+            </Link>
+            . Learn how to create great interactive activities for your classes
+            in DoenetML and other powerful open source tools of the PROSE
+            ecosystem.
+            <br />
+            <br />
+            Join us at{" "}
+            <Link
+              href="https://prose.runestone.academy/dropin/"
+              textDecoration="underline"
+            >
+              this Zoom link
+            </Link>
+            .
+          </Text>
+        </VStack>
+      </Center>
+      <Center w="100%" bg={grayColor} paddingTop="40px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -296,13 +351,13 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={"white"}
+        bg={grayColor}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
 
-      <Center w="100%" bg={blueColor}>
+      <Center w="100%" bg={blueColor} paddingTop="40px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
