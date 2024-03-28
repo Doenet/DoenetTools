@@ -270,6 +270,55 @@ export function Home() {
       </Center>
 
       <Center w="100%" bg={"white"}>
+        <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
+          <HStack>
+            <Text
+              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              // fontSize="60px"
+              fontWeight="700"
+              color={blackColor}
+            >
+              Drop-In Office Hours
+            </Text>
+          </HStack>
+          <Text
+            pt="24px"
+            fontSize={"18px"}
+            // fontSize="20px"
+            fontWeight="500"
+            color={blackColor}
+          >
+            As a member of the{" "}
+            <Link
+              href="https://prose.runestone.academy/"
+              textDecoration="underline"
+            >
+              PROSE Consortium
+            </Link>
+            , Doenet invites you to join us each Thursday 1-3pm Central{" "}
+            <Link
+              href="https://prose.runestone.academy/dropin/"
+              textDecoration="underline"
+            >
+              on Zoom
+            </Link>
+            . Learn how to create great interactive activities for your classes
+            in DoenetML and other powerful open source tools of the PROSE
+            ecosystem.
+            <br />
+            <br />
+            Join us at{" "}
+            <Link
+              href="https://prose.runestone.academy/dropin/"
+              textDecoration="underline"
+            >
+              this Zoom link
+            </Link>
+            .
+          </Text>
+        </VStack>
+      </Center>
+      <Center w="100%" bg={grayColor}>
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -296,7 +345,7 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={"white"}
+        bg={grayColor}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
