@@ -270,7 +270,13 @@ export function Home() {
       </Center>
 
       <Center w="100%" bg={"white"}>
-        <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
+        <VStack
+          maxWidth="900px"
+          w="100%"
+          spacing={4}
+          marginTop="40px"
+          marginBottom="40px"
+        >
           <HStack>
             <Text
               fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -318,7 +324,7 @@ export function Home() {
           </Text>
         </VStack>
       </Center>
-      <Center w="100%" bg={grayColor}>
+      <Center w="100%" bg={grayColor} paddingTop="40px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -351,7 +357,7 @@ export function Home() {
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
 
-      <Center w="100%" bg={blueColor}>
+      <Center w="100%" bg={blueColor} paddingTop="40px" paddingBottom="10px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
