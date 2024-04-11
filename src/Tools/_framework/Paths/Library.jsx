@@ -19,11 +19,11 @@ import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar
 import { Form, useFetcher } from "react-router-dom";
 
 export async function loader() {
-  let libraryContent = axios.get(`/media/library_content.csv`, {
+  let libraryContent = axios.get(`/library_content.csv`, {
     responseType: "text",
     transformResponse: [(data) => data],
   });
-  let webworkTaxonomy = axios.get(`/media/webwork_taxonomy_algebra.csv`, {
+  let webworkTaxonomy = axios.get(`/webwork_taxonomy_algebra.csv`, {
     responseType: "text",
     transformResponse: [(data) => data],
   });
