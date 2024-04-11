@@ -324,42 +324,30 @@ export function Library() {
           </Box>
         </Box>
         <PublicActivitiesSection>
-          <SimpleGrid columns={[1, 2, 2, 2, 3]} spacing="10px">
-            {libraryData.length < 1 ? (
-              <Text fontSize="28px">
-                No Matching Library Activities Found
-                <br />
-                <br />
-                <Link href="/Community">
-                  Consider searching the community contributed activites.
-                </Link>
-              </Text>
-            ) : (
-              <>
-                {libraryData.map((section) => {
-                  return (
-                    <Section
-                      section={section}
-                      searchStr={searchStr}
-                      key={section.label}
-                    />
-                  );
-                })}
-                {/*activity[4] ? (
-                    ) : (
-                      <>
-                        <a
-                          key={activity[2]}
-                          href={`/portfolioviewer/${activity[3]}/${activity[2]}`}
-                        >
-                          {activity[5]}
-                        </a>
-                        <br />
-                      </>
-                    ) */}
-              </>
-            )}
-          </SimpleGrid>
+          {libraryData.length < 1 ? (
+            <Text fontSize="28px">
+              No Matching Library Activities Found
+              <br />
+              <br />
+              Consider searching the{" "}
+              <Link href="/Community" textDecoration="underline">
+                community contributed activities
+              </Link>
+              .
+            </Text>
+          ) : (
+            <SimpleGrid columns={[1, 2, 2, 2, 3]} spacing="10px">
+              {libraryData.map((section) => {
+                return (
+                  <Section
+                    section={section}
+                    searchStr={searchStr}
+                    key={section.label}
+                  />
+                );
+              })}
+            </SimpleGrid>
+          )}
         </PublicActivitiesSection>
       </PortfolioGrid>
     </>
