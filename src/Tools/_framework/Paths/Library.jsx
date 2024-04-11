@@ -33,11 +33,11 @@ export async function loader() {
   webworkTaxonomy = responses[1].data;
 
   libraryContent = Papa.parse(libraryContent, {
-    dynamicTyping: true,
+    // dynamicTyping: true,
   }).data;
 
   webworkTaxonomy = Papa.parse(webworkTaxonomy, {
-    dynamicTyping: true,
+    // dynamicTyping: true,
   }).data;
 
   //console.log(libraryContent);
@@ -90,7 +90,7 @@ export function Subsection({ label, activities }) {
             <Box key={activity.doenetId + label}>
               <Link
                 key={activity.label}
-                href={`https://www.doenet.org/portfolioviewer/${activity.doenetId}`}
+                href={`https://dev.doenet.org/portfolioviewer/${activity.doenetId}`}
               >
                 {activity.label}
               </Link>
@@ -257,6 +257,8 @@ export function Library() {
       }
       matchingSubsection.activities = activities.map((activityInfo) => {
         let label = activityInfo[6];
+
+        console.log(label);
 
         // some of the problems start with a number followed by a colon or the string "Problem XX:",
         // instead of a number followed by a period, strip that off first, so it doesn't mess up the
